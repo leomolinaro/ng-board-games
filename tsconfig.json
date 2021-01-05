@@ -19,7 +19,12 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@bg-services": ["src/app/bg-services"],
+      "@bg-utils": ["src/app/bg-utils"],
+      "@bg-home": ["src/app/bg-home"]
+    }
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

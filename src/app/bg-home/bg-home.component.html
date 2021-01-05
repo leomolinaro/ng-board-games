@@ -1,0 +1,11 @@
+
+<div class="bg-apps">
+  <div *ngFor="let app of apps" class="bg-app-wrapper">
+    <a class="bg-app" [routerLink]="app.routerLink">
+      <img class="bg-app-image"
+        [src]="app.imageSource"
+        [alt]="app.name">
+    </a>
+  </div>
+</div>
+

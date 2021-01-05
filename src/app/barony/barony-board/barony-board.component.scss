@@ -1,0 +1,56 @@
+.b-board {
+  position: absolute;
+  min-height: 300px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  background: lime;
+  .b-board-map-layer {
+
+  }
+  .b-board-widgets-layer {
+    .b-board-widget-slot {
+      position: relative;
+      &.b-board-widget-slot-top-left {
+        background-color: aliceblue;
+        width: 100px;
+        height: 100px;
+      }
+      &.b-board-widget-slot-top-center {
+        background-color: red;
+        width: 100%;
+        height: 100px;
+      }
+      &.b-board-widget-slot-top-right {
+        background-color: blue;
+        width: 100px;
+        height: 100px;
+      }
+      &.b-board-widget-slot-center-left {
+        background-color: darkgray;
+      }
+      &.b-board-widget-slot-center-right {
+        background-color: darkviolet;
+      }
+      &.b-board-widget-slot-bottom-left {
+        background-color: wheat;
+      }
+      &.b-board-widget-slot-bottom-center {
+        background-color: deeppink;
+      }
+      &.b-board-widget-slot-bottom-right {
+        background-color: tan;
+      }
+
+    }
+  }
+
+  .barony-player-widget {
+    width: 100px;
+    height: 100px;
+    background-color: antiquewhite;
+  }
+}
+
