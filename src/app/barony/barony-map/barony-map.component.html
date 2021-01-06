@@ -26,19 +26,15 @@
     (focus)="onFocus ($event)"
     points="300,150 225,280 75,280 0,150 75,20 225,20"
     (keypress)="onKeyPress ($event)"> -->
+
+  <svg:g
+    [attr.transform]="'translate(600 300) scale(30 30)'">
     <svg:g
-      [attr.transform]="'translate(600 100)'"
-      *ngFor="let landTile of landTiles">
-      <svg:polygon
-        class="hex"
-        [attr.points]="landTile.coordinates | baronyLandTileCoordinates:'hexagon'"
-        [attr.fill]="'url(\'#' + landTile.type + '\')'">
-      </svg:polygon>    
-      <!-- <svg:text
-        [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x'"
-        [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y'"
-        text-anchor="middle" fill="white" font-size="14">
-        {{ landTile.coordinates.x }} {{ landTile.coordinates.y }} {{ landTile.coordinates.z }}
-      </svg:text> -->
+      *ngFor="let landTile of landTiles"
+      baronyLandTile
+      [type]="landTile.type"
+      [coordinates]="landTile.coordinates"
+      [pawns]="landTile.pawns">
+    </svg:g>
   </svg:g>
 </svg>

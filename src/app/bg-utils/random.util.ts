@@ -15,3 +15,12 @@ export function getRandomBoolean () {
 export function getRandomElement<T> (array: T[]): T {
   return array[Math.floor (Math.random () * array.length)];
 } // getRandomElement
+
+export function getRandomArrayLength<T> (min: number, max: number, pusher: (index: number) => T): T[] {
+  const length = getRandomInteger (min, max);
+  const array: T[] = [];
+  for (let i = 0; i < length; i++) {
+    array.push (pusher (i));
+  } // for
+  return array;
+} // getRandomArrayLength

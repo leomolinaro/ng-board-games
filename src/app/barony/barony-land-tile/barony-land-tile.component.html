@@ -1,1 +1,43 @@
-<p>barony-land-tile works!</p>
+<svg:polygon
+  class="hex"
+  [attr.points]="coordinates | baronyLandTileCoordinates:'hexagon'"
+  [attr.fill]="'url(\'#' + type + '\')'">
+</svg:polygon>
+
+
+<svg:image
+  *ngFor="let pawnNode of pawnNodes"
+  [attr.width]="pawnWidth"
+  [attr.height]="pawnHeight"
+  preserveAspectRatio="none"
+  [attr.xlink:href]="pawnNode.href"
+  [attr.x]="pawnNode.x"
+  [attr.y]="pawnNode.y"
+></svg:image>
+
+<!-- <svg:image
+  *ngIf="building"
+  width="0.7" height="0.7" preserveAspectRatio="none"
+  [attr.xlink:href]="'"
+  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x':-0.35"
+  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y':-0.75">
+</svg:image> -->
+
+<!-- <svg:text
+  *ngIf="building"
+  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x'"
+  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y'"
+  [attr.fill]="building!.color"
+  font-size="0.3px"
+  text-anchor="middle">
+  {{ building!.type }}
+</svg:text>
+<svg:text
+  *ngFor="let knight of knights"
+  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x'"
+  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y'"
+  [attr.fill]="knight.color"
+  font-size="0.3px"
+  text-anchor="middle">
+  K: {{ knight.quantity }}
+</svg:text> -->

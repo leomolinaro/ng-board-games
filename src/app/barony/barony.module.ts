@@ -7,6 +7,8 @@ import { RouterModule, Routes } from "@angular/router";
 import { BaronyMapComponent } from "./barony-map/barony-map.component";
 import { BaronyLandTileCoordinatesPipe } from "./pipes/barony-land-tile-coordinates.pipe";
 import { BaronyLandTileComponent } from "./barony-land-tile/barony-land-tile.component";
+import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
+import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
@@ -21,7 +23,9 @@ const routes: Routes = [
     BaronyBoardComponent,
     BaronyMapComponent,
     BaronyLandTileCoordinatesPipe,
-    BaronyLandTileComponent
+    BaronyLandTileComponent,
+    BaronyPlayerStatusComponent,
+    BaronyActionsComponent
   ],
   imports: [
     CommonModule,

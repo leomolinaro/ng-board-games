@@ -12,10 +12,10 @@ const sqrt3 = Math.sqrt (3);
 })
 export class BaronyLandTileCoordinatesPipe implements PipeTransform {
 
-  transform (c: BaronyLandTileCoordinates, to: "hexagon" | "center-x" | "center-y"): string {
+  transform (c: BaronyLandTileCoordinates, to: "hexagon" | "center-x" | "center-y", translate?: number): string {
     switch (to) {
       case "hexagon": {
-        const center = this.hexToCartesian (c);
+        const center = hexToCartesian (c);
         
         const p1x = center.x - sqrt3Half;
         const p6x = p1x;
@@ -34,19 +34,27 @@ export class BaronyLandTileCoordinatesPipe implements PipeTransform {
         return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y} ${p6x},${p6y}`;
       } // case
       case "center-x": {
-        return this.hexToCartesian (c).x + "";
+        if (translate) {
+          return (hexToCartesian (c).x + translate) + "";
+        } else {
+          return hexToCartesian (c).x + "";
+        } // if - else
       } // case
       case "center-y": {
-        return this.hexToCartesian (c).y + "";
+        if (translate) {
+          return (hexToCartesian (c).y + translate) + "";
+        } else {
+          return hexToCartesian (c).y + "";
+        } // if - else
       } // case
     } // switch
   } // transform
 
-  private hexToCartesian (hex: { x: number, y: number}): { x: number, y: number} {
-    return {
-      x: sqrt3 * hex.x + sqrt3Half * hex.y,
-      y: oneHalf * hex.y
-    };
-  } // hexToCartesian
-
 } // BaronyLandTileCoordinatesPipe
+
+export function hexToCartesian (hex: { x: number, y: number}): { x: number, y: number} {
+  return {
+    x: sqrt3 * hex.x + sqrt3Half * hex.y,
+    y: oneHalf * hex.y
+  };
+} // hexToCartesian

@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { BaronyContext, BaronyPlayService } from "../services";
+import { BaronyContext } from "../process";
+import { BaronyPlayService } from "../services";
 
 @Component ({
   selector: "barony-board",
@@ -15,6 +16,7 @@ export class BaronyBoardComponent implements OnInit {
   private context = new BaronyContext ();
 
   landTiles$ = this.context.selectLandTiles$ ();
+  players$ = this.context.selectPlayers$ ();
 
   ngOnInit (): void {
     const tasks = this.playService.startGame (this.context);
