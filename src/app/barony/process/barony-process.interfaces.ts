@@ -8,13 +8,14 @@ export interface IBaronyProcess extends IBgProcess<BaronyContext> {
 export interface IBaronySubProcess extends IBgSubProcess<BaronyContext> {
   start (context: BaronyContext): IBaronyProcessStep;
   next (context: BaronyContext): IBaronyProcessStep;
-  parent: IBaronySubProcess | IBaronyProcess;
+  readonly parent: IBaronySubProcess | IBaronyProcess;
 } // IBaronySubProcess
 
 export interface IBaronyProcessTask<A = any> extends IBgProcessTask<BaronyContext> {
   next (context: BaronyContext): IBaronyProcessStep;
-  parent: IBaronySubProcess;
+  readonly parent: IBaronySubProcess;
   resolve (action: A): void;
+  readonly taskName: string;
 } // IBaronyProcessTask
 
 export interface IBaronyProcessEndEvent extends IBgProcessEndEvent {

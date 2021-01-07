@@ -1,5 +1,21 @@
 import { arrayUtil, randomUtil } from "@bg-utils";
-import { baronyColors, BaronyLandTile, BaronyLandTileCoordinates, baronyLandTypes, baronyPawnTypes, getLandTileCoordinateKey } from "../models";
+import { BaronyColor, baronyColors, BaronyLandTile, BaronyLandTileCoordinates, baronyLandTypes, BaronyPawn, baronyPawnTypes, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+
+export function createPlayer (index: number, name: string, color: BaronyColor): BaronyPlayer {
+  const pawns: BaronyPawn[] = [];
+  for (let i = 0; i < 5; i++) { pawns.push ({ color: color, type: "city" }); }
+  for (let i = 0; i < 2; i++) { pawns.push ({ color: color, type: "stronghold" }); }
+  for (let i = 0; i < 7; i++) { pawns.push ({ color: color, type: "knight" }); }
+  for (let i = 0; i < 14; i++) { pawns.push ({ color: color, type: "village" }); }
+  return {
+    index: index,
+    name: name,
+    color: color,
+    score: 0,
+    pawns: pawns,
+    resources: []
+  };
+} // createPlayer
 
 export function getRandomLandTiles (nPlayers: number): {
   map: { [key: string]: BaronyLandTile };

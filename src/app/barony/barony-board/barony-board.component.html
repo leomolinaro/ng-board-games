@@ -7,9 +7,15 @@
   </div>
   <div class="b-board-widgets-layer">
     <div class="b-board-player-widgets">
-      <div *ngFor="let player of (players$ | async)" class="b-board-player-widget">
+      <div *ngFor="let otherPlayer of (otherPlayers$ | async)" class="b-board-player-widget">
         <barony-player-status
-          [name]="player.name">
+          [name]="otherPlayer.name">
+        </barony-player-status>
+      </div>
+      <div class="b-board-player-widget" *ngIf="currentPlayer$ | async as currentPlayer">
+        <barony-player-status
+          [name]="currentPlayer.name"
+          currentPlayer>
         </barony-player-status>
       </div>
     </div>

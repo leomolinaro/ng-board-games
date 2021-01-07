@@ -1,34 +1,34 @@
 import { Injectable } from "@angular/core";
 
 export interface IBgProcess<C> {
-  type: "process";
+  readonly type: "process";
   start (context: C): IBgProcessStep<C>;
 } // IBgProcess
 
 export interface IBgSubProcess<C> {
-  type: "sub-process";
+  readonly type: "sub-process";
   start (context: C): IBgProcessStep<C>;
   next (context: C): IBgProcessStep<C>;
-  parent: IBgSubProcess<C> | IBgProcess<C>;
+  readonly parent: IBgSubProcess<C> | IBgProcess<C>;
 } // IBgSubProcess
 
 export interface IBgProcessTask<C> {
-  type: "task";
+  readonly type: "task";
   next (context: C): IBgProcessStep<C>;
-  parent: IBgSubProcess<C>;
+  readonly parent: IBgSubProcess<C>;
 } // IBgProcessTask
 
 export interface IBgProcessParallelSplit<C> {
-  type: "parallel-split";
+  readonly type: "parallel-split";
   getSteps (): IBgProcessStep<C>[];
 } // IBgGatewayParallelSplit
 
 export interface IBgProcessParallelJoin {
-  type: "parallel-join";
+  readonly type: "parallel-join";
 } // IBgProcessParallelJoin
 
 export interface IBgProcessEndEvent {
-  type: "end-event";
+  readonly type: "end-event";
 } // IBgProcessEndEvent
 
 export type IBgProcessStep<C> = IBgSubProcess<C> | IBgProcessTask<C> | IBgProcessParallelSplit<C>| IBgProcessParallelJoin | IBgProcessEndEvent;

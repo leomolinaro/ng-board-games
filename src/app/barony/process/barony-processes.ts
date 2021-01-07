@@ -1,8 +1,8 @@
 import { BaronyContext } from "./barony-context";
 import { IBaronySubProcess, IBaronyProcessStep, IBaronyProcessTask, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
+import { BaronySetupPlacement, IHasBaronySetupPlacement } from "./barony-tasks";
 
 export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep; }
-export interface IHasBaronySetupPlacement { afterPlacement (placement: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep; }
 
 export interface BaronySetupPlacementAction {
   playerIndex: number;
@@ -60,18 +60,3 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
 
 } // BaronySetup
 
-export class BaronySetupPlacement implements IBaronyProcessTask {
-
-  constructor (
-    private playerIndex: number,
-    public readonly parent: IHasBaronySetupPlacement & IBaronySubProcess
-  ) { }
-  
-  readonly type = "task";
-  next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterPlacement (this, context); }
-  
-  resolve (action: any): void {
-    throw new Error ("Method not implemented.");
-  } // resolve
-
-} // BaronySetupPlacement
