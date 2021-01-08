@@ -1,10 +1,11 @@
-import { Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { BgAppService } from "@bg-services";
 
 @Component ({
   selector: "bg-home",
   templateUrl: "./bg-home.component.html",
-  styleUrls: ["./bg-home.component.scss"]
+  styleUrls: ["./bg-home.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BgHomeComponent {
 

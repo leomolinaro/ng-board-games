@@ -27,11 +27,20 @@ export class NgLetDirective implements OnInit {
 
 } // NgLetDirective
 
+/**
+ * Da usare come annotazione sugli @Input () booleani.
+ * es. @Input () @BooleanInput () readOnly: boolean;
+ * Permette di poter utilizzare l'input nei seguenti modi:
+ * - per true: readOnly | readOnly=true | [readOnly]="true"
+ * - per false: readOnly=false | [readOnly]="false"
+ */
 export function BooleanInput () {
   return (component: any, inputKey: string) => {
     Object.defineProperty (component, inputKey, {
-      get: () => component["__" + inputKey],
-      set: (value: any) => component["__" + inputKey] = value != null && `${value}` !== "false"
+      get: function () { return this["__" + inputKey]; },
+      set: function (value: any) {
+        this["__" + inputKey] = (value != null && `${value}` !== "false");
+      }
     });
   };
 } // BooleanInput

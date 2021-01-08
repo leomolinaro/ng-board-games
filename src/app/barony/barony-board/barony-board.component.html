@@ -2,13 +2,14 @@
   {{ landTile.coordinates.x }} {{ landTile.type }}
 </div> -->
 <div class="b-board">
-  <div class="b-board-map-layer">
-    <barony-map [landTiles]="(landTiles$ | async)!"></barony-map>
-  </div>
-  <div class="b-board-widgets-layer">
-    <div class="b-board-player-widgets">
+  <div class="b-board-layer">
+    <div class="b-board-layer-top">
+      <div class="b-board-instruction-widget">{{ message$ | async }}</div>
+    </div>
+    <div class="b-board-layer-bottom-left">
       <div *ngFor="let otherPlayer of (otherPlayers$ | async)" class="b-board-player-widget">
         <barony-player-status
+          (selectPlayer)="onSelectPlayerChange (otherPlayer)"
           [name]="otherPlayer.name">
         </barony-player-status>
       </div>
@@ -19,8 +20,14 @@
         </barony-player-status>
       </div>
     </div>
-    <div class="b-board-action-widget">
+    <div class="b-board-layer-bottom-right">
       <barony-actions></barony-actions>
     </div>
+  </div>
+  <div class="b-board-map">
+    <barony-map
+      [landTiles]="(landTiles$ | async)!"
+      (landTileClick)="onLandTileClick ($event)">
+    </barony-map>
   </div>
 </div>

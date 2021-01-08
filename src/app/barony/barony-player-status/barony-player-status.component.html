@@ -1,3 +1,6 @@
-<div class="b-player-card">
-  {{ name }}
+<div
+  class="b-player-card" 
+  [ngClass]="{ 'is-current': currentPlayer }"
+  (click)="onCardClick ()">
+  {{ name }} {{currentPlayer}}
 </div>

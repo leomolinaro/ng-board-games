@@ -1,9 +1,9 @@
 <svg:polygon
   class="hex"
   [attr.points]="coordinates | baronyLandTileCoordinates:'hexagon'"
-  [attr.fill]="'url(\'#' + type + '\')'">
+  [attr.fill]="'url(\'#' + type + '\')'"
+  (click)="onLandTileClick ()">
 </svg:polygon>
-
 
 <svg:image
   *ngFor="let pawnNode of pawnNodes"
@@ -13,6 +13,7 @@
   [attr.xlink:href]="pawnNode.href"
   [attr.x]="pawnNode.x"
   [attr.y]="pawnNode.y"
+  (click)="onPawnClick (pawnNode)"
 ></svg:image>
 
 <!-- <svg:image

@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 
-@Component({
-  selector: 'app-barony-home',
-  templateUrl: './barony-home.component.html',
-  styleUrls: ['./barony-home.component.scss']
+@Component ({
+  selector: "app-barony-home",
+  templateUrl: "./barony-home.component.html",
+  styleUrls: ["./barony-home.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaronyHomeComponent implements OnInit {
 
-  constructor() { }
+  constructor () { }
 
-  ngOnInit(): void {
+  ngOnInit (): void {
   }
 
 }

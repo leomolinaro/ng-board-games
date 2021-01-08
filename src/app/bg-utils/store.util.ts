@@ -81,6 +81,7 @@ export class BgStore<S extends object> {
     } else {
       newState = { ...state, ...updaterFnOrPatch };
     } // if - else
+    this.$state.next (newState);
   } // update
 
 } // SStore

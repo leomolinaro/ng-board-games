@@ -1,15 +1,8 @@
 import { BaronyContext } from "./barony-context";
-import { IBaronySubProcess, IBaronyProcessStep, IBaronyProcessTask, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
+import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
 import { BaronySetupPlacement, IHasBaronySetupPlacement } from "./barony-tasks";
 
 export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep; }
-
-export interface BaronySetupPlacementAction {
-  playerIndex: number;
-  tileX: number;
-  tileY: number;
-  tileZ: number;
-} // BaronySetupPlacementAction
 
 export class BaronyPlay implements IBaronyProcess, IHasBaronySetup {
   
@@ -50,6 +43,9 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   } // start
 
   afterPlacement (placement: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep {
+
+    // TODO placement
+
     if (this.placementPlayerIndexes.length) {
       const playerIndex = this.placementPlayerIndexes.shift () as number;
       return new BaronySetupPlacement (playerIndex, this);
@@ -59,4 +55,3 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   } // afterPlacement
 
 } // BaronySetup
-

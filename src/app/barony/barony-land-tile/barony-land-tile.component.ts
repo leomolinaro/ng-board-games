@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { BaronyColor, BaronyLandTileCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
 import { immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";
@@ -15,7 +15,8 @@ interface BaronyPawnNode {
 @Component ({
   selector: "[baronyLandTile]",
   templateUrl: "./barony-land-tile.component.html",
-  styleUrls: ["./barony-land-tile.component.scss"]
+  styleUrls: ["./barony-land-tile.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaronyLandTileComponent implements OnChanges {
 
@@ -24,6 +25,7 @@ export class BaronyLandTileComponent implements OnChanges {
   @Input () type!: BaronyLandType;
   @Input () coordinates!: BaronyLandTileCoordinates;
   @Input () pawns!: BaronyPawn[];
+  @Output () landTileClick = new EventEmitter<void> ();
 
   pawnNodes!: BaronyPawnNode[];
   private hexCenter!: { x: number; y: number; };
@@ -82,5 +84,11 @@ export class BaronyLandTileComponent implements OnChanges {
   private getPawnNodeDeltaY (index: number, total: number) {
     return total === 1 ? 0 : -1 * Math.cos (2 * Math.PI * index / total);
   } // getPawnNodeX
+
+  onLandTileClick () { this.landTileClick.next (); }
+
+  onPawnClick (node: BaronyPawnNode) {
+    console.log("🚀 ~ file: barony-land-tile.component.ts ~ line 91 ~ BaronyLandTileComponent ~ onPawnClick ~ node", node)
+  } // onPawnClick
 
 } // BaronyLandTileComponent

@@ -1,3 +1,6 @@
 .b-player-card {
   padding: 1rem;
+  &.is-current {
+    font-weight: 500;
+  }
 }

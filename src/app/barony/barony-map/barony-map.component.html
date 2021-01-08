@@ -28,10 +28,12 @@
     (keypress)="onKeyPress ($event)"> -->
 
   <svg:g
+    class="b-map"
     [attr.transform]="'translate(600 300) scale(30 30)'">
     <svg:g
       *ngFor="let landTile of landTiles"
       baronyLandTile
+      (landTileClick)="onLandTileClick (landTile)"
       [type]="landTile.type"
       [coordinates]="landTile.coordinates"
       [pawns]="landTile.pawns">

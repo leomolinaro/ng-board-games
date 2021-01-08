@@ -1,3 +1,5 @@
+@import "./../barony-variables.scss";
+
 .b-board {
   display: grid;
   position: absolute;
@@ -7,23 +9,37 @@
   right: 0;
   overflow: hidden;
   background: #eee;
-  .b-board-map-layer {
+  .b-board-map {
     grid-area: 1 / 1;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    pointer-events: none;
   }
-  .b-board-widgets-layer {
+  .b-board-layer {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     overflow: auto;
-    display: flex;
-    .b-board-player-widgets {
+    display: grid;
+    .b-board-layer-top {
+      grid-column-start: 1;
+      grid-column-end: 3;
+      display: flex;
+      justify-content: center;
+      .b-board-instruction-widget {
+        margin-top: 1rem;
+        margin-bottom: auto;
+        padding: 1rem;
+        background-color: white;
+        box-shadow: $widget-shadow;
+      }
+    }
+    .b-board-layer-bottom-left {
       margin-top: auto;
       margin-right: auto;
       margin-bottom: 1rem;
@@ -33,10 +49,14 @@
       grid-gap: 1rem;
       .b-board-player-widget {
         background-color: white;
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+        box-shadow: $widget-shadow;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        &:hover {
+          box-shadow: $widget-shadow-hover;
+        }
       }
     }
-    .b-board-action-widget {
+    .b-board-layer-bottom-right {
       margin-top: auto;
       margin-left: auto;
       margin-bottom: 1rem;
