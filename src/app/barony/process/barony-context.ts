@@ -1,6 +1,7 @@
+import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyLandTile, BaronyLandTileCoordinates, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+import { BaronyLandTile, BaronyLandTileCoordinates, BaronyPawn, BaronyPawnType, BaronyPlayer, getLandTileCoordinateKey } from "../models";
 import { createPlayer, getRandomLandTiles } from "./barony-initializer";
 
 interface BaronyState {
@@ -39,5 +40,41 @@ export class BaronyContext extends BgStore<BaronyState> {
     );
   } // selectLandTiles$
   selectPlayers$ (): Observable<BaronyPlayer[]> { return this.select$ (s => s.players); }
-  
+
+  placePawn (pawnType: BaronyPawnType, playerIndex: number, landTileCoordinates: BaronyLandTileCoordinates) {
+    this.placePawns ([pawnType], playerIndex, landTileCoordinates);
+  } // placePawn
+
+  placePawns (pawnTypes: BaronyPawnType[], playerIndex: number, landTileCoordinates: BaronyLandTileCoordinates) {
+
+    const key = getLandTileCoordinateKey (landTileCoordinates);
+
+    const player = this.getPlayerByIndex (playerIndex);
+    const playerPawns = { ...player.pawns };
+    pawnTypes.forEach (pawnType => {
+      playerPawns[pawnType]--; 
+    });
+    const newPlayer = {
+      ...player,
+      pawns: playerPawns
+    };
+
+    const pawns = pawnTypes.map (pawnType => ({ type: pawnType, color: player.color }));
+
+    this.update (s => ({
+      ...s,
+      landTiles: {
+        ...s.landTiles,
+        map: {
+          ...s.landTiles.map,
+          [key]: {
+            ...s.landTiles.map[key],
+            pawns: immutableUtil.listPush (pawns, s.landTiles.map[key].pawns)
+          }
+        }
+      },
+      players: immutableUtil.listReplaceByIndex (playerIndex, newPlayer, s.players)
+    }));
+  } // placePawn
+
 } // BaronyContext

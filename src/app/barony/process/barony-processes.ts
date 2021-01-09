@@ -43,11 +43,9 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   } // start
 
   afterPlacement (placement: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep {
-
-    // TODO placement
-
+    context.placePawns (["knight", "village"], placement.playerIndex, placement.landTileCoordinates!);
     if (this.placementPlayerIndexes.length) {
-      const playerIndex = this.placementPlayerIndexes.shift () as number;
+      const playerIndex = this.placementPlayerIndexes.shift ()!;
       return new BaronySetupPlacement (playerIndex, this);
     } else {
       return BARONY_PROCESS_END_EVENT;

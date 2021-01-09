@@ -3,16 +3,17 @@ import { BaronyColor, baronyColors, BaronyLandTile, BaronyLandTileCoordinates, b
 
 export function createPlayer (index: number, name: string, color: BaronyColor): BaronyPlayer {
   const pawns: BaronyPawn[] = [];
-  for (let i = 0; i < 5; i++) { pawns.push ({ color: color, type: "city" }); }
-  for (let i = 0; i < 2; i++) { pawns.push ({ color: color, type: "stronghold" }); }
-  for (let i = 0; i < 7; i++) { pawns.push ({ color: color, type: "knight" }); }
-  for (let i = 0; i < 14; i++) { pawns.push ({ color: color, type: "village" }); }
   return {
     index: index,
     name: name,
     color: color,
     score: 0,
-    pawns: pawns,
+    pawns: {
+      city: 5,
+      stronghold: 2,
+      knight: 7,
+      village: 14
+    },
     resources: []
   };
 } // createPlayer
@@ -29,10 +30,10 @@ export function getRandomLandTiles (nPlayers: number): {
       coordinates: { ...c },
       type: randomUtil.getRandomElement (baronyLandTypes),
       pawns: [
-        ...randomUtil.getRandomArrayLength (0, 6, () => ({
-          color: randomUtil.getRandomElement (baronyColors),
-          type: randomUtil.getRandomElement (baronyPawnTypes)
-        }))
+        // ...randomUtil.getRandomArrayLength (0, 6, () => ({
+        //   color: randomUtil.getRandomElement (baronyColors),
+        //   type: randomUtil.getRandomElement (baronyPawnTypes)
+        // }))
       ]
     }))
   };

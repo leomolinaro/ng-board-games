@@ -7,7 +7,7 @@ export interface BaronyPlayer {
   name: string;
   color: BaronyColor;
   score: number;
-  pawns: BaronyPawn[];
+  pawns: { [type in BaronyPawnType]: number };
   resources: BaronyResource[];
 } // BaronyPlayer
 
