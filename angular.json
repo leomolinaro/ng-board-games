@@ -33,6 +33,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/app/barony/styles"]
+            },
             "assets": [
               "src/favicon.ico",
               "src/assets"

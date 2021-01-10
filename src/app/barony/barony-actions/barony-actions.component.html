@@ -1,5 +1,12 @@
 <div class="b-actions">
-  <button *ngFor="let action of actions" class="b-action">
-    {{ action.label }}
+  <button
+    *ngFor="let action of actions"
+    class="b-action"
+    [ngClass]="{
+      'is-active': isCandidate ? isCandidate[action] : false,
+      'is-disabled': isCandidate ? !isCandidate[action] : false
+    }"
+    (click)="onActionClick (action)">
+    {{ labels[action] }}
   </button>
 </div>

@@ -27,10 +27,17 @@ export function translate<T> (firstIndex: number, array: T[]): T[] {
   return toReturn;
 } // translate
 
-export function toMap<T, K extends Key, V> (array: T[], keyGetter: (e: T, index: number) => K, valueGetter?: (e: T, index: number) => V): { [key: string]: V } {
+export function toMap<T, K extends Key, V> (
+  array: T[],
+  keyGetter: (e: T, index: number) => K,
+  valueGetter?: (e: T, key: K, index: number) => V
+): { [key: string]: V } {
   const vG = valueGetter || (e => (e as unknown as V));
   const map: { [key: string]: V } = { };
-  array?.forEach ((e, index) => map[keyGetter (e, index)] = vG (e, index));
+  array?.forEach ((e, index) => {
+    const key = keyGetter (e, index);
+    map[key] = vG (e, key, index);
+  });
   return map;
 } // toMap
 

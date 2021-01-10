@@ -2,31 +2,38 @@
   {{ landTile.coordinates.x }} {{ landTile.type }}
 </div> -->
 <div class="b-board">
-  <div class="b-board-layer">
+  <div class="b-board-layer" *ngLet="currentPlayer$ | async as currentPlayer">
     <div class="b-board-layer-top">
-      <div class="b-board-instruction-widget">{{ message$ | async }}</div>
+      <div
+        [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
+        {{ message$ | async }}
+      </div>
     </div>
     <div class="b-board-layer-bottom-left">
       <div *ngFor="let otherPlayer of (otherPlayers$ | async)" class="b-board-player-widget">
         <barony-player-status
           (selectPlayer)="onSelectPlayerChange (otherPlayer)"
-          [name]="otherPlayer.name">
+          [player]="otherPlayer">
         </barony-player-status>
       </div>
-      <div class="b-board-player-widget" *ngIf="currentPlayer$ | async as currentPlayer">
+      <div class="b-board-player-widget" *ngIf="currentPlayer">
         <barony-player-status
-          [name]="currentPlayer.name"
+          [player]="currentPlayer"
           currentPlayer>
         </barony-player-status>
       </div>
     </div>
     <div class="b-board-layer-bottom-right">
-      <barony-actions></barony-actions>
+      <barony-actions
+        *ngIf="candidateActions$ | async as candidateActions"
+        [candidateActions]="candidateActions">
+      </barony-actions>
     </div>
   </div>
   <div class="b-board-map">
     <barony-map
       [landTiles]="(landTiles$ | async)!"
+      [candidateLandTiles]="(candidateLandTiles$ | async)!"
       (landTileClick)="onLandTileClick ($event)">
     </barony-map>
   </div>

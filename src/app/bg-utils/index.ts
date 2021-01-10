@@ -4,6 +4,7 @@ import * as randomUtil from "./random.util";
 import * as immutableUtil from "./immutable.util";
 import { BooleanInput } from "./ng.util";
 import { BgUtilsModule } from "./bg-utils.module";
+import { BgReduxDevtools } from "./redux-devtools";
 
 export {
   typesUtil,
@@ -11,5 +12,6 @@ export {
   randomUtil,
   immutableUtil,
   BooleanInput,
-  BgUtilsModule
+  BgUtilsModule,
+  BgReduxDevtools
 };

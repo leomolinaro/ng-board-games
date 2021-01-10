@@ -1,4 +1,4 @@
-@import "./../barony-variables.scss";
+@import "barony-variables";
 
 .b-actions {
   display: grid;
@@ -12,6 +12,7 @@
     cursor: pointer;
     border: 0;
     background-color: white;
+    outline: none;
     &:hover {
       box-shadow: $widget-shadow-hover;
     }

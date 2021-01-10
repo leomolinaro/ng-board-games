@@ -1,6 +1,21 @@
+@import "barony-variables";
+
 .b-player-card {
   padding: 1rem;
+  cursor: pointer;
   &.is-current {
-    font-weight: 500;
+    font-weight: 800;
+  }
+  &.is-red {
+    background-color: $red-light;
+  }
+  &.is-yellow {
+    background-color: $yellow-light;
+  }
+  &.is-green {
+    background-color: $green-light;
+  }
+  &.is-blue {
+    background-color: $blue-light;
   }
 }

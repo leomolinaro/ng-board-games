@@ -1,6 +1,6 @@
 <div
-  class="b-player-card" 
+  [class]="'b-player-card ' + 'is-' + player.color" 
   [ngClass]="{ 'is-current': currentPlayer }"
   (click)="onCardClick ()">
-  {{ name }} {{currentPlayer}}
+  {{ player.name }}
 </div>

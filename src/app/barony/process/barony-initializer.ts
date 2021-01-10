@@ -26,15 +26,11 @@ export function getRandomLandTiles (nPlayers: number): {
   const coordinates = getLandTilesCoordinates (nTiles);
   return {
     coordinates: coordinates,
-    map: arrayUtil.toMap (coordinates, c => getLandTileCoordinateKey (c), c => ({
+    map: arrayUtil.toMap (coordinates, c => getLandTileCoordinateKey (c), (c, k) => ({
+      key: k,
       coordinates: { ...c },
       type: randomUtil.getRandomElement (baronyLandTypes),
-      pawns: [
-        // ...randomUtil.getRandomArrayLength (0, 6, () => ({
-        //   color: randomUtil.getRandomElement (baronyColors),
-        //   type: randomUtil.getRandomElement (baronyPawnTypes)
-        // }))
-      ]
+      pawns: []
     }))
   };
 } // getRandomLandTiles

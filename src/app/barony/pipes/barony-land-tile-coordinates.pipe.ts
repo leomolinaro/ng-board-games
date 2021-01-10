@@ -7,6 +7,8 @@ const one = 1.0;
 const oneHalf = 1.5;
 const sqrt3 = Math.sqrt (3);
 
+const scaleForGap = 1.02;
+
 @Pipe ({
   name: "baronyLandTileCoordinates"
 })
@@ -53,8 +55,9 @@ export class BaronyLandTileCoordinatesPipe implements PipeTransform {
 } // BaronyLandTileCoordinatesPipe
 
 export function hexToCartesian (hex: { x: number, y: number}): { x: number, y: number} {
+  const radius = (Math.abs (hex.x) + Math.abs (hex.y) + Math.abs (hex.x + hex.y)) / 2;
   return {
-    x: sqrt3 * hex.x + sqrt3Half * hex.y,
-    y: oneHalf * hex.y
+    x: (sqrt3 * hex.x + sqrt3Half * hex.y) * scaleForGap,
+    y: (oneHalf * hex.y) * scaleForGap
   };
 } // hexToCartesian

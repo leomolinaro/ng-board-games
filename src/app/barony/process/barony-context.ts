@@ -29,6 +29,33 @@ export class BaronyContext extends BgStore<BaronyState> {
   getPlayers (): BaronyPlayer[] { return this.get (s => s.players); }
   getPlayerByIndex (index: number): BaronyPlayer { return this.getPlayers ()[index]; }
   getNumberOfPlayers (): number { return this.getPlayers ().length; }
+  getLandTiles (): BaronyLandTile[] {
+    const map = this.get (s => s.landTiles.map);
+    const coordinates = this.get (s => s.landTiles.coordinates);
+    return coordinates.map (coordinate => map[getLandTileCoordinateKey (coordinate)]);
+  } // getLandTiles
+  getFilteredLandTiles (matcher: (lt: BaronyLandTile) => boolean) {
+    return this.getLandTiles ().filter (lt => matcher (lt));
+  } // getFilteredLandTiles
+  getLandTileByCoordinates (landTileCoordinates: BaronyLandTileCoordinates): BaronyLandTile | null {
+    const key = getLandTileCoordinateKey (landTileCoordinates);
+    const landTile = this.get (s => s.landTiles.map[key]);
+    return landTile || null;
+  } // getLandTileByCoordinates
+  getNearbyLandTiles (landTileCoordinates: BaronyLandTileCoordinates): BaronyLandTile[] {
+    const x = landTileCoordinates.x;
+    const y = landTileCoordinates.y;
+    const z = landTileCoordinates.z;
+    const toReturn: BaronyLandTile[] = [];
+    let lt;
+    lt = this.getLandTileByCoordinates ({ x: x + 1, y: y - 1, z }); if (lt) { toReturn.push (lt); }
+    lt = this.getLandTileByCoordinates ({ x: x - 1, y: y + 1, z }); if (lt) { toReturn.push (lt); }
+    lt = this.getLandTileByCoordinates ({ x: x, y: y + 1 , z: z - 1 }); if (lt) { toReturn.push (lt); }
+    lt = this.getLandTileByCoordinates ({ x: x, y: y - 1, z: z + 1 }); if (lt) { toReturn.push (lt); }
+    lt = this.getLandTileByCoordinates ({ x: x - 1, y, z: z + 1 }); if (lt) { toReturn.push (lt); }
+    lt = this.getLandTileByCoordinates ({ x: x + 1, y, z: z - 1 }); if (lt) { toReturn.push (lt); }
+    return toReturn;
+  } // getNearbyLandTiles
 
   private selectLandTileMap$ () { return this.select$ (s => s.landTiles.map); }
   private selectLandTileKeys$ () { return this.select$ (s => s.landTiles.coordinates); }
@@ -75,6 +102,6 @@ export class BaronyContext extends BgStore<BaronyState> {
       },
       players: immutableUtil.listReplaceByIndex (playerIndex, newPlayer, s.players)
     }));
-  } // placePawn
+  } // placePawns
 
 } // BaronyContext

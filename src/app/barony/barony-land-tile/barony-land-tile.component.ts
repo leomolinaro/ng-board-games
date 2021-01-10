@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { BaronyColor, BaronyLandTileCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
-import { immutableUtil } from "@bg-utils";
+import { BooleanInput, immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";
 
 interface BaronyPawnNode {
@@ -25,6 +25,8 @@ export class BaronyLandTileComponent implements OnChanges {
   @Input () type!: BaronyLandType;
   @Input () coordinates!: BaronyLandTileCoordinates;
   @Input () pawns!: BaronyPawn[];
+  @Input () @BooleanInput () active: boolean = false;
+  @Input () @BooleanInput () disabled: boolean = false;
   @Output () landTileClick = new EventEmitter<void> ();
 
   pawnNodes!: BaronyPawnNode[];
@@ -33,6 +35,8 @@ export class BaronyLandTileComponent implements OnChanges {
   pawnWidth = 0.7;
   pawnHeight = 0.7;
   pawnPositionRadius = 0.5;
+
+  activeCircleRadius = Math.sqrt (3) / 2;
 
   ngOnChanges (changes: SimpleChanges): void {
     if (changes.coordinates) {

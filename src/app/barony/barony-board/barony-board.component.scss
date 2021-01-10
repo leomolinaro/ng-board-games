@@ -1,4 +1,4 @@
-@import "./../barony-variables.scss";
+@import "barony-variables";
 
 .b-board {
   display: grid;
@@ -37,6 +37,18 @@
         padding: 1rem;
         background-color: white;
         box-shadow: $widget-shadow;
+        &.is-red {
+          border-bottom: 3px solid $red;
+        }
+        &.is-blue {
+          border-bottom: 3px solid $blue;
+        }
+        &.is-yellow {
+          border-bottom: 3px solid $yellow;
+        }
+        &.is-green {
+          border-bottom: 3px solid $green;
+        }
       }
     }
     .b-board-layer-bottom-left {

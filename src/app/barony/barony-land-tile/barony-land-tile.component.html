@@ -1,28 +1,32 @@
-<svg:polygon
-  class="hex"
-  [attr.points]="coordinates | baronyLandTileCoordinates:'hexagon'"
-  [attr.fill]="'url(\'#' + type + '\')'"
+<svg:g
+  class="b-land-tile"
+  [ngClass]="{
+    'is-active': active,
+    'is-disabled': disabled
+  }"
   (click)="onLandTileClick ()">
-</svg:polygon>
-
-<svg:image
-  *ngFor="let pawnNode of pawnNodes"
-  [attr.width]="pawnWidth"
-  [attr.height]="pawnHeight"
-  preserveAspectRatio="none"
-  [attr.xlink:href]="pawnNode.href"
-  [attr.x]="pawnNode.x"
-  [attr.y]="pawnNode.y"
-  (click)="onPawnClick (pawnNode)"
-></svg:image>
-
-<!-- <svg:image
-  *ngIf="building"
-  width="0.7" height="0.7" preserveAspectRatio="none"
-  [attr.xlink:href]="'"
-  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x':-0.35"
-  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y':-0.75">
-</svg:image> -->
+  <svg:polygon
+    [attr.points]="coordinates | baronyLandTileCoordinates:'hexagon'"
+    [attr.fill]="'url(\'#' + type + '\')'">
+  </svg:polygon>
+  
+  <svg:circle *ngIf="active"
+    class="b-land-tile-active-signal"
+    [attr.cx]="coordinates | baronyLandTileCoordinates:'center-x'"
+    [attr.cy]="coordinates | baronyLandTileCoordinates:'center-y'"
+    [attr.r]="activeCircleRadius" stroke="black" stroke-width="0.03" fill="transparent"/>
+  
+  <svg:image
+    *ngFor="let pawnNode of pawnNodes"
+    [attr.width]="pawnWidth"
+    [attr.height]="pawnHeight"
+    preserveAspectRatio="none"
+    [attr.xlink:href]="pawnNode.href"
+    [attr.x]="pawnNode.x"
+    [attr.y]="pawnNode.y"
+    (click)="onPawnClick (pawnNode)"
+  ></svg:image>
+</svg:g>
 
 <!-- <svg:text
   *ngIf="building"

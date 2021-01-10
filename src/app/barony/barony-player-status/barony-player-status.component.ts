@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, Output, EventEmitter, ChangeDetectionStrategy } from "@angular/core";
 import { BooleanInput } from "@bg-utils";
+import { BaronyPlayer } from "../models";
 
 @Component ({
   selector: "barony-player-status",
@@ -11,7 +12,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
 
   constructor () { }
 
-  @Input () name!: string;
+  @Input () player!: BaronyPlayer;
   @Input () @BooleanInput () currentPlayer: boolean = false;
   @Output () selectPlayer = new EventEmitter<void> ();
 

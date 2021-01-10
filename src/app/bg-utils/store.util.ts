@@ -1,13 +1,18 @@
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { distinctUntilChanged, map } from "rxjs/operators";
+import { bgReduxDevtools, BgReduxDevtoolsInstance } from "./redux-devtools";
 
 export class BgStore<S extends object> {
 
   constructor (
     private defaultState: S
-  ) { }
+  ) {
+    this.devtoolsInstance = bgReduxDevtools.connect ("Bg");
+    if (this.devtoolsInstance) { this.devtoolsInstance.init (defaultState); }
+  } // constructor
 
   private $state = new BehaviorSubject<S> (this.defaultState);
+  private devtoolsInstance: BgReduxDevtoolsInstance | null;
 
   get (): S;
   get<R> (projector: (s: S) => R): R;
@@ -82,6 +87,9 @@ export class BgStore<S extends object> {
       newState = { ...state, ...updaterFnOrPatch };
     } // if - else
     this.$state.next (newState);
+    if (this.devtoolsInstance) {
+      this.devtoolsInstance.send ("Action", newState);
+    } // if
   } // update
 
 } // SStore
