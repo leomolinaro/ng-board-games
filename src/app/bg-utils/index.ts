@@ -5,6 +5,7 @@ import * as immutableUtil from "./immutable.util";
 import { BooleanInput } from "./ng.util";
 import { BgUtilsModule } from "./bg-utils.module";
 import { BgReduxDevtools } from "./redux-devtools";
+import { BgStore, debounceSync } from "./store.util";
 
 export {
   typesUtil,
@@ -13,5 +14,7 @@ export {
   immutableUtil,
   BooleanInput,
   BgUtilsModule,
-  BgReduxDevtools
+  BgReduxDevtools,
+  BgStore,
+  debounceSync
 };

@@ -12,8 +12,8 @@ export class BaronyActionsComponent implements OnChanges {
 
   constructor () { }
 
-  @Input () candidateActions: BaronyAction[] | null = null;
-  @Output () actionClick = new EventEmitter<void> ();
+  @Input () availableActions: BaronyAction[] | null = null;
+  @Output () actionClick = new EventEmitter<BaronyAction> ();
 
   actions = baronyActions;
 
@@ -26,21 +26,21 @@ export class BaronyActionsComponent implements OnChanges {
     nobleTitle: "Noble title"
   };
   
-  isCandidate: { [action: string]: boolean } | null = null;
+  isAvailable: { [action: string]: boolean } | null = null;
 
   ngOnChanges (changes: SimpleChanges): void {
-    if (changes.candidateActions) {
-      if (this.candidateActions) {
-        this.isCandidate = arrayUtil.toMap (this.candidateActions, a => a, () => true) as any;
+    if (changes.availableActions) {
+      if (this.availableActions) {
+        this.isAvailable = arrayUtil.toMap (this.availableActions, a => a, () => true) as any;
       } else {
-        this.isCandidate = null;
+        this.isAvailable = null;
       } // if - else
     } // if
   } // ngOnChanges
 
   onActionClick (action: BaronyAction) {
-    if (this.isCandidate && this.isCandidate[action]) {
-      this.actionClick.next ();
+    if (this.isAvailable && this.isAvailable[action]) {
+      this.actionClick.next (action);
     } // if
   } // onActionClick
 

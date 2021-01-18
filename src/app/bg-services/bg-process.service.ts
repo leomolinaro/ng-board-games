@@ -15,7 +15,7 @@ export interface IBgSubProcess<C> {
 export interface IBgProcessTask<C> {
   readonly type: "task";
   next (context: C): IBgProcessStep<C>;
-  readonly parent: IBgSubProcess<C>;
+  readonly parent: IBgProcess<C> | IBgSubProcess<C>;
 } // IBgProcessTask
 
 export interface IBgProcessParallelSplit<C> {

@@ -1,5 +1,5 @@
 import { BG_PROCESS_END_EVENT, IBgProcess, IBgProcessEndEvent, IBgProcessTask, IBgSubProcess } from "@bg-services";
-import { BaronyContext } from "./barony-context";
+import { BaronyContext } from "../logic";
 
 export interface IBaronyProcess extends IBgProcess<BaronyContext> {
   start (context: BaronyContext): IBaronyProcessStep;
@@ -11,10 +11,11 @@ export interface IBaronySubProcess extends IBgSubProcess<BaronyContext> {
   readonly parent: IBaronySubProcess | IBaronyProcess;
 } // IBaronySubProcess
 
-export interface IBaronyProcessTask<A = any> extends IBgProcessTask<BaronyContext> {
+export interface IBaronyProcessTask<D = any, R = any> extends IBgProcessTask<BaronyContext> {
   next (context: BaronyContext): IBaronyProcessStep;
-  readonly parent: IBaronySubProcess;
-  resolve (action: A): void;
+  readonly data: D;
+  readonly parent: IBaronyProcess | IBaronySubProcess;
+  result: R | null;
   readonly taskName: string;
 } // IBaronyProcessTask
 

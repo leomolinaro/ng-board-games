@@ -6,7 +6,15 @@
     <div class="b-board-layer-top">
       <div
         [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
-        {{ message$ | async }}
+        <div class="b-board-instruction">{{ message$ | async }}</div>
+        <div *ngLet="maxNumberOfKnights$ | async as maxNumberOfKnights"
+          class="b-board-knights-selector">
+          <span>{{ numberOfKnights }} / {{ maxNumberOfKnights }}</span>
+          <div>
+            <button>+</button>
+            <button>-</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="b-board-layer-bottom-left">
@@ -25,15 +33,16 @@
     </div>
     <div class="b-board-layer-bottom-right">
       <barony-actions
-        *ngIf="candidateActions$ | async as candidateActions"
-        [candidateActions]="candidateActions">
+        *ngIf="availableActions$ | async as availableActions"
+        [availableActions]="availableActions"
+        (actionClick)="onActionClick ($event)">
       </barony-actions>
     </div>
   </div>
   <div class="b-board-map">
     <barony-map
       [landTiles]="(landTiles$ | async)!"
-      [candidateLandTiles]="(candidateLandTiles$ | async)!"
+      [availableLandTiles]="(availableLandTiles$ | async)!"
       (landTileClick)="onLandTileClick ($event)">
     </barony-map>
   </div>

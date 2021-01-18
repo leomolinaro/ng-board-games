@@ -3,8 +3,8 @@
     *ngFor="let action of actions"
     class="b-action"
     [ngClass]="{
-      'is-active': isCandidate ? isCandidate[action] : false,
-      'is-disabled': isCandidate ? !isCandidate[action] : false
+      'is-active': isAvailable ? isAvailable[action] : false,
+      'is-disabled': isAvailable ? !isAvailable[action] : false
     }"
     (click)="onActionClick (action)">
     {{ labels[action] }}

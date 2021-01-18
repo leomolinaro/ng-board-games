@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
-import { BaronyLandTile, BaronyPlayer } from "../models";
+import { BaronyAction, BaronyLandTile, BaronyPlayer } from "../models";
 import { BaronyBoardService } from "./barony-board.service";
-import { BaronyAiService } from "./barony-ia.service";
 
 @Component ({
   selector: "barony-board",
@@ -13,34 +12,41 @@ import { BaronyAiService } from "./barony-ia.service";
 export class BaronyBoardComponent implements OnInit, OnDestroy {
 
   constructor (
-    private service: BaronyBoardService,
-    private aiService: BaronyAiService
+    private service: BaronyBoardService
   ) { }
 
   landTiles$ = this.service.selectLandTiles$ ();
-  candidateLandTiles$ = this.service.selectCandidateLandTiles$ ();
-  candidateActions$ = this.service.selectCandidateActions$ ();
+  availableLandTiles$ = this.service.selectAvailableLandTiles$ ();
+  availableActions$ = this.service.selectAvailableActions$ ();
+  maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ();
   otherPlayers$ = this.service.selectOtherPlayers$ ();
   currentPlayer$ = this.service.selectCurrentPlayer$ ();
   message$ = this.service.selectMessage$ ();
 
-  aiSubscription!: Subscription;
+  numberOfKnights = 1;
+
+  resolveTasksSubscription!: Subscription;
 
   ngOnInit (): void {
-    this.aiSubscription = this.aiService.resolveActions$ ([1]).subscribe ();
-    this.service.startGame ();
+    this.service.setCurrentPlayer (0);
+    this.service.setAiPlayers ([1]);
+    this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
   } // ngOnInit
 
   ngOnDestroy () {
-    this.aiSubscription.unsubscribe ();
+    this.resolveTasksSubscription.unsubscribe ();
   } // ngOnDestroy
 
   onSelectPlayerChange (player: BaronyPlayer) {
-    this.service.setCurrentPlayer (player);
+    this.service.setCurrentPlayer (player.index);
   } // onSelectPlayerChange
 
   onLandTileClick (landTile: BaronyLandTile) {
     this.service.selectLandTile (landTile);
   } // onLandTileClick
+
+  onActionClick (action: BaronyAction) {
+    this.service.selectAction (action);
+  } // onActionClick
 
 } // BaronyBoardComponent

@@ -1,7 +1,7 @@
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyLandTile, BaronyLandTileCoordinates, BaronyPawn, BaronyPawnType, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+import { BaronyLandTile, BaronyLandTileCoordinates, BaronyPawnType, BaronyPlayer, getLandTileCoordinateKey } from "../models";
 import { createPlayer, getRandomLandTiles } from "./barony-initializer";
 
 interface BaronyState {
@@ -79,7 +79,7 @@ export class BaronyContext extends BgStore<BaronyState> {
     const player = this.getPlayerByIndex (playerIndex);
     const playerPawns = { ...player.pawns };
     pawnTypes.forEach (pawnType => {
-      playerPawns[pawnType]--; 
+      playerPawns[pawnType]--;
     });
     const newPlayer = {
       ...player,

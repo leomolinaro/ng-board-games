@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { BaronyColor, BaronyLandTileCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
 import { BooleanInput, immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";
@@ -61,11 +61,6 @@ export class BaronyLandTileComponent implements OnChanges {
         );
       });
 
-      this.pawnNodes.forEach ((pawnNode, index) => {
-        pawnNode.x = this.hexCenter?.x - this.pawnWidth / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaX (index, this.pawnNodes.length);
-        pawnNode.y = this.hexCenter?.y - this.pawnHeight / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaY (index, this.pawnNodes.length);
-      });
-
       this.pawnNodes.sort ((a, b) => {
         if (a.type === b.type) {
           return 0;
@@ -76,6 +71,11 @@ export class BaronyLandTileComponent implements OnChanges {
             return -1;
           } // if - else
         } // if - else
+      });
+
+      this.pawnNodes.forEach ((pawnNode, index) => {
+        pawnNode.x = this.hexCenter?.x - this.pawnWidth / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaX (index, this.pawnNodes.length);
+        pawnNode.y = this.hexCenter?.y - this.pawnHeight / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaY (index, this.pawnNodes.length);
       });
 
     } // if

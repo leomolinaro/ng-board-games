@@ -1,27 +1,30 @@
-import { BaronyAction, baronyActions, BaronyLandTileCoordinates } from "../models";
-import { BaronyContext } from "./barony-context";
+import { baronyRules, BaronyContext } from "../logic";
+import { BaronyPlayer } from "../models";
 import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
-import { BaronyChooseAction, BaronySetupPlacement, IHasBaronyChooseAction, IHasBaronySetupPlacement } from "./barony-tasks";
+import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult } from "./barony-tasks";
 
 export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep; }
-export interface IHasBaronyTurn { afterTurn (turn: BaronyTurn, context: BaronyContext): IBaronyProcessStep; }
 
 export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTurn {
   
   readonly type = "process";
+  private turnPlayer!: BaronyPlayer;
 
   start (context: BaronyContext): IBaronyProcessStep {
     return new BaronySetup (this);
   } // start
 
   afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep {
-    const firstPlayerIndex = 0;
-    return new BaronyTurn (firstPlayerIndex, this);
+    this.turnPlayer = context.getPlayerByIndex (0);
+    const availableActions = baronyRules.getAvailableActions (this.turnPlayer, context);
+    return new BaronyTurn ({ player: this.turnPlayer, availableActions: availableActions }, this);
   } // afterSetup
 
-  afterTurn (turn: BaronyTurn, context: BaronyContext): IBaronyProcessStep {
-    const nextPlayerIndex = (turn.playerIndex + 1) % context.getNumberOfPlayers ();
-    return new BaronyTurn (nextPlayerIndex, this);
+  afterTurn (result: BaronyTurnResult, context: BaronyContext): IBaronyProcessStep {
+    const turnPlayerIndex = (this.turnPlayer.index + 1) % context.getNumberOfPlayers ();
+    this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
+    const availableActions = baronyRules.getAvailableActions (this.turnPlayer, context);
+    return new BaronyTurn ({ player: this.turnPlayer, availableActions: availableActions }, this);
   } // afterTurn
 
 } // BaronyPlay
@@ -35,6 +38,7 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   readonly type = "sub-process";
   next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterSetup (this, context); }
   private placementPlayerIndexes: number[] = [];
+  private turnPlayer!: BaronyPlayer;
 
   start (context: BaronyContext): IBaronyProcessStep {
     const numPlayers = context.getNumberOfPlayers ();
@@ -45,30 +49,20 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
       this.placementPlayerIndexes.push (i);
       this.placementPlayerIndexes.push (i);
     } // for
-    const playerIndex = this.placementPlayerIndexes.shift () as number;
-    const candidateLandTiles = this.getCandidateSetupPlacementLandTiles (context);
-    return new BaronySetupPlacement (playerIndex, candidateLandTiles, this);
+    const turnPlayerIndex = this.placementPlayerIndexes.shift () as number;
+    this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
+    const availableLandTiles = baronyRules.getAvailableLandTilesForSetupPlacement (context);
+    return new BaronySetupPlacement ({ player: this.turnPlayer, availableLandTiles }, this);
   } // start
   
-  private getCandidateSetupPlacementLandTiles (context: BaronyContext) {
-    const candidateLandTiles = context.getFilteredLandTiles (lt => {
-      if (lt.type === "lake") { return false; }
-      if (lt.type === "forest") { return false; }
-      if (lt.pawns.length) { return false; }
-      const nearbyLandTiles = context.getNearbyLandTiles (lt.coordinates);
-      if (nearbyLandTiles.some (nlt => nlt.pawns.length)) { return false; }
-      return true;
-    });
-    return candidateLandTiles;
-  } // getCandidateSetupPlacementLandTiles
-  
-  afterPlacement (placement: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep {
-    if (placement.landTileCoordinates) {
-      context.placePawns (["knight", "city"], placement.playerIndex, placement.landTileCoordinates);
+  afterPlacement (result: BaronySetupPlacementResult, context: BaronyContext): IBaronyProcessStep {
+    if (result.choosenLandTileCoordinates) {
+      context.placePawns (["knight", "city"], this.turnPlayer.index, result.choosenLandTileCoordinates);
       if (this.placementPlayerIndexes.length) {
-        const playerIndex = this.placementPlayerIndexes.shift () as number;
-        const candidateLandTiles = this.getCandidateSetupPlacementLandTiles (context);
-        return new BaronySetupPlacement (playerIndex, candidateLandTiles, this);
+        const turnPlayerIndex = this.placementPlayerIndexes.shift () as number;
+        this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
+        const availableLandTiles = baronyRules.getAvailableLandTilesForSetupPlacement (context);
+        return new BaronySetupPlacement ({ player: this.turnPlayer, availableLandTiles }, this);
       } else {
         return BARONY_PROCESS_END_EVENT;
       } // if - else
@@ -78,24 +72,3 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   } // afterPlacement
 
 } // BaronySetup
-
-export class BaronyTurn implements IBaronySubProcess, IHasBaronyChooseAction {
-  
-  constructor (
-    public playerIndex: number,
-    public readonly parent: IHasBaronyTurn & IBaronyProcess
-  ) { }
-  
-  readonly type = "sub-process";
-  next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterTurn (this, context); }
-  
-  start (context: BaronyContext): IBaronyProcessStep {
-    const candidateActions: BaronyAction[] = baronyActions;
-    return new BaronyChooseAction (this.playerIndex, candidateActions, this);
-  } // start
-  
-  afterChooseAction (chooseAction: BaronyChooseAction, context: BaronyContext): IBaronyProcessStep {
-    return BARONY_PROCESS_END_EVENT;
-  } // afterChooseAction
-
-} // BaronyTurn

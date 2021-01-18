@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { arrayUtil } from "@bg-utils";
-import { BaronyLandTile } from "../models";
+import { BaronyLandTile, BaronyLandTileCoordinates, getLandTileCoordinateKey } from "../models";
 
 @Component ({
   selector: "barony-map",
@@ -13,23 +13,23 @@ export class BaronyMapComponent implements OnChanges {
   constructor () { }
 
   @Input () landTiles!: BaronyLandTile[];
-  @Input () candidateLandTiles: BaronyLandTile[] | null = null;
+  @Input () availableLandTiles: BaronyLandTileCoordinates[] | null = null;
   @Output () landTileClick = new EventEmitter<BaronyLandTile> ();
 
-  isCandidate: { [key: string]: boolean } | null = null;
+  isAvailable: { [key: string]: boolean } | null = null;
 
   ngOnChanges (changes: SimpleChanges): void {
-    if (changes.candidateLandTiles) {
-      if (this.candidateLandTiles) {
-        this.isCandidate = arrayUtil.toMap (this.candidateLandTiles, lt => lt.key, () => true);
+    if (changes.availableLandTiles) {
+      if (this.availableLandTiles) {
+        this.isAvailable = arrayUtil.toMap (this.availableLandTiles, lt => getLandTileCoordinateKey (lt), () => true);
       } else {
-        this.isCandidate = null;
+        this.isAvailable = null;
       } // if - else
     } // if
   } // ngOnChanges
 
   onLandTileClick (landTile: BaronyLandTile) {
-    if (this.isCandidate && this.isCandidate[landTile.key]) {
+    if (this.isAvailable && this.isAvailable[landTile.key]) {
       this.landTileClick.next (landTile);
     } // if
   } // onLandTileClick

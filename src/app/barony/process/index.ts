@@ -1,4 +1,3 @@
-export * from "./barony-context";
-export * from "./barony-processes";
-export * from "./barony-tasks";
-export * from "./barony-process.interfaces";
+export * from "../process/barony-processes";
+export * from "../process/barony-tasks";
+export * from "../process/barony-process.interfaces";
