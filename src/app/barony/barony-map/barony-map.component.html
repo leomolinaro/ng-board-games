@@ -36,8 +36,8 @@
       [type]="landTile.type"
       [coordinates]="landTile.coordinates"
       [pawns]="landTile.pawns"
-      [active]="isAvailable ? isAvailable[landTile.key] : false"
-      [disabled]="isAvailable ? !isAvailable[landTile.key] : false"
+      [active]="isValid ? isValid[landTile.key] : false"
+      [disabled]="isValid ? !isValid[landTile.key] : false"
       (landTileClick)="onLandTileClick (landTile)">
     </svg:g>
   </svg:g>

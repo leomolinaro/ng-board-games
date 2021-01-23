@@ -13,23 +13,23 @@ export class BaronyMapComponent implements OnChanges {
   constructor () { }
 
   @Input () landTiles!: BaronyLandTile[];
-  @Input () availableLandTiles: BaronyLandTileCoordinates[] | null = null;
+  @Input () validLandTiles: BaronyLandTileCoordinates[] | null = null;
   @Output () landTileClick = new EventEmitter<BaronyLandTile> ();
 
-  isAvailable: { [key: string]: boolean } | null = null;
+  isValid: { [key: string]: boolean } | null = null;
 
   ngOnChanges (changes: SimpleChanges): void {
-    if (changes.availableLandTiles) {
-      if (this.availableLandTiles) {
-        this.isAvailable = arrayUtil.toMap (this.availableLandTiles, lt => getLandTileCoordinateKey (lt), () => true);
+    if (changes.validLandTiles) {
+      if (this.validLandTiles) {
+        this.isValid = arrayUtil.toMap (this.validLandTiles, lt => getLandTileCoordinateKey (lt), () => true);
       } else {
-        this.isAvailable = null;
+        this.isValid = null;
       } // if - else
     } // if
   } // ngOnChanges
 
   onLandTileClick (landTile: BaronyLandTile) {
-    if (this.isAvailable && this.isAvailable[landTile.key]) {
+    if (this.isValid && this.isValid[landTile.key]) {
       this.landTileClick.next (landTile);
     } // if
   } // onLandTileClick

@@ -1,10 +1,19 @@
 <div class="b-actions">
   <button
+    class="b-action b-pass"
+    [ngClass]="{
+      'is-active': canPass,
+      'is-disabled': !canPass
+    }"
+    (click)="onPassClick ()">
+    {{ labels.pass }}
+  </button>
+  <button
     *ngFor="let action of actions"
     class="b-action"
     [ngClass]="{
-      'is-active': isAvailable ? isAvailable[action] : false,
-      'is-disabled': isAvailable ? !isAvailable[action] : false
+      'is-active': isValid ? isValid[action] : false,
+      'is-disabled': isValid ? !isValid[action] : false
     }"
     (click)="onActionClick (action)">
     {{ labels[action] }}

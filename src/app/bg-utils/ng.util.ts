@@ -27,6 +27,15 @@ export class NgLetDirective implements OnInit {
 
 } // NgLetDirective
 
+export type SimpleChanges<C> = {
+  [K in keyof C]: {
+    isFirstChange: () => boolean;
+    currentValue: C[K],
+    firstChange: boolean,
+    previousValue: C[K];
+  }
+};
+
 /**
  * Da usare come annotazione sugli @Input () booleani.
  * es. @Input () @BooleanInput () readOnly: boolean;

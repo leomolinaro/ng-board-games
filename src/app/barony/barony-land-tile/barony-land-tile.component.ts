@@ -10,6 +10,8 @@ interface BaronyPawnNode {
   href: string;
   x: number;
   y: number;
+  xText: number;
+  yText: number;
 } // BaronyPawnNode
 
 @Component ({
@@ -35,6 +37,8 @@ export class BaronyLandTileComponent implements OnChanges {
   pawnWidth = 0.7;
   pawnHeight = 0.7;
   pawnPositionRadius = 0.5;
+  textXOffset = 0.2;
+  textYOffset = 0.6;
 
   activeCircleRadius = Math.sqrt (3) / 2;
 
@@ -55,7 +59,9 @@ export class BaronyLandTileComponent implements OnChanges {
             quantity: 1,
             href: `assets/barony/pawns/${pawn.color}-${pawn.type}.png`,
             x: 0,
-            y: 0
+            y: 0,
+            xText: 0,
+            yText: 0
           }),
           this.pawnNodes
         );
@@ -76,6 +82,8 @@ export class BaronyLandTileComponent implements OnChanges {
       this.pawnNodes.forEach ((pawnNode, index) => {
         pawnNode.x = this.hexCenter?.x - this.pawnWidth / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaX (index, this.pawnNodes.length);
         pawnNode.y = this.hexCenter?.y - this.pawnHeight / 2.0 + this.pawnPositionRadius * this.getPawnNodeDeltaY (index, this.pawnNodes.length);
+        pawnNode.xText = pawnNode.x + this.textXOffset;
+        pawnNode.yText = pawnNode.y + this.textYOffset;
       });
 
     } // if

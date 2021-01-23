@@ -19,6 +19,11 @@
     animation-iteration-count: infinite;
     animation-direction: normal;
   }
+  .b-land-tile-pawn-quantity {
+    font-size: 0.5px;
+    fill: white;
+    font-weight: 600;
+  }
 }
 
 @keyframes activeSignal {

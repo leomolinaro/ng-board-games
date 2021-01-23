@@ -16,8 +16,9 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
   ) { }
 
   landTiles$ = this.service.selectLandTiles$ ();
-  availableLandTiles$ = this.service.selectAvailableLandTiles$ ();
-  availableActions$ = this.service.selectAvailableActions$ ();
+  validLandTiles$ = this.service.selectValidLandTiles$ ();
+  validActions$ = this.service.selectValidActions$ ();
+  canPass$ = this.service.selectCanPass$ ();
   maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ();
   otherPlayers$ = this.service.selectOtherPlayers$ ();
   currentPlayer$ = this.service.selectCurrentPlayer$ ();
@@ -48,5 +49,14 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
   onActionClick (action: BaronyAction) {
     this.service.selectAction (action);
   } // onActionClick
+
+  onPassClick () {
+    this.service.selectPass ();
+  } // onPassClick
+
+  onKnightsConfirm () {
+    this.service.selectNumberOfKnights (this.numberOfKnights);
+    this.numberOfKnights = 1;
+  } // onKnightsConfirm
 
 } // BaronyBoardComponent

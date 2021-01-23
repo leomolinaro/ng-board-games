@@ -24,8 +24,18 @@
     [attr.xlink:href]="pawnNode.href"
     [attr.x]="pawnNode.x"
     [attr.y]="pawnNode.y"
-    (click)="onPawnClick (pawnNode)"
-  ></svg:image>
+    (click)="onPawnClick (pawnNode)">
+  </svg:image>
+
+  <ng-container *ngFor="let pawnNode of pawnNodes">
+    <svg:text
+      class="b-land-tile-pawn-quantity"
+      *ngIf="pawnNode.quantity > 1"
+      [attr.x]="pawnNode.xText"
+      [attr.y]="pawnNode.yText">
+      {{ pawnNode.quantity }}
+    </svg:text>
+  </ng-container>
 </svg:g>
 
 <!-- <svg:text

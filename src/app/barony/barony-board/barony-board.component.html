@@ -7,14 +7,13 @@
       <div
         [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
         <div class="b-board-instruction">{{ message$ | async }}</div>
-        <div *ngLet="maxNumberOfKnights$ | async as maxNumberOfKnights"
-          class="b-board-knights-selector">
-          <span>{{ numberOfKnights }} / {{ maxNumberOfKnights }}</span>
-          <div>
-            <button>+</button>
-            <button>-</button>
-          </div>
-        </div>
+        <barony-knights-selector
+          *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
+          [(number)]="numberOfKnights"
+          [max]="maxNumberOfKnights"
+          min=1
+          (confirm)="onKnightsConfirm ()">
+        </barony-knights-selector>
       </div>
     </div>
     <div class="b-board-layer-bottom-left">
@@ -32,17 +31,23 @@
       </div>
     </div>
     <div class="b-board-layer-bottom-right">
-      <barony-actions
-        *ngIf="availableActions$ | async as availableActions"
-        [availableActions]="availableActions"
-        (actionClick)="onActionClick ($event)">
-      </barony-actions>
+      <ng-container *ngLet="validActions$ | async as validActions">
+        <ng-container *ngLet="canPass$ | async as canPass">
+          <barony-actions
+            *ngIf="validActions || canPass"
+            [canPass]="canPass"
+            [validActions]="validActions"
+            (actionClick)="onActionClick ($event)"
+            (passClick)="onPassClick ()">
+          </barony-actions>
+        </ng-container>
+      </ng-container>
     </div>
   </div>
   <div class="b-board-map">
     <barony-map
       [landTiles]="(landTiles$ | async)!"
-      [availableLandTiles]="(availableLandTiles$ | async)!"
+      [validLandTiles]="(validLandTiles$ | async)!"
       (landTileClick)="onLandTileClick ($event)">
     </barony-map>
   </div>

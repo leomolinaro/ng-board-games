@@ -10,6 +10,7 @@ import { BaronyLandTileComponent } from "./barony-land-tile/barony-land-tile.com
 import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
 import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 import { BgUtilsModule } from "@bg-utils";
+import { BaronyKnightsSelectorComponent } from './barony-knights-selector/barony-knights-selector.component';
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
@@ -26,7 +27,8 @@ const routes: Routes = [
     BaronyLandTileCoordinatesPipe,
     BaronyLandTileComponent,
     BaronyPlayerStatusComponent,
-    BaronyActionsComponent
+    BaronyActionsComponent,
+    BaronyKnightsSelectorComponent
   ],
   imports: [
     CommonModule,

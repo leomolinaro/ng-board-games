@@ -12,8 +12,10 @@ export class BaronyActionsComponent implements OnChanges {
 
   constructor () { }
 
-  @Input () availableActions: BaronyAction[] | null = null;
+  @Input () validActions: BaronyAction[] | null = null;
+  @Input () canPass!: boolean;
   @Output () actionClick = new EventEmitter<BaronyAction> ();
+  @Output () passClick = new EventEmitter<void> ();
 
   actions = baronyActions;
 
@@ -23,25 +25,32 @@ export class BaronyActionsComponent implements OnChanges {
     construction: "Construction",
     newCity: "New city",
     expedition: "Expedition",
-    nobleTitle: "Noble title"
+    nobleTitle: "Noble title",
+    pass: "Pass"
   };
   
-  isAvailable: { [action: string]: boolean } | null = null;
+  isValid: { [action: string]: boolean } | null = null;
 
   ngOnChanges (changes: SimpleChanges): void {
-    if (changes.availableActions) {
-      if (this.availableActions) {
-        this.isAvailable = arrayUtil.toMap (this.availableActions, a => a, () => true) as any;
+    if (changes.validActions || changes.canPass) {
+      if (this.validActions) {
+        this.isValid = arrayUtil.toMap (this.validActions, a => a, () => true) as any;
       } else {
-        this.isAvailable = null;
+        this.isValid = null;
       } // if - else
     } // if
   } // ngOnChanges
 
   onActionClick (action: BaronyAction) {
-    if (this.isAvailable && this.isAvailable[action]) {
+    if (this.isValid && this.isValid[action]) {
       this.actionClick.next (action);
     } // if
   } // onActionClick
+
+  onPassClick () {
+    if (this.canPass) {
+      this.passClick.next ();
+    } // if
+  } // onPassClick
 
 } // BaronyActionsComponent
