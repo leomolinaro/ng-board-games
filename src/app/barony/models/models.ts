@@ -2,6 +2,7 @@ export type BaronyColor = "blue" | "yellow" | "red" | "green";
 export type BaronyLandType = "mountain" | "forest" | "plain" | "fields" | "lake";
 export type BaronyPawnType = "city" | "knight" | "village" | "stronghold";
 export type BaronyAction = "recruitment" | "movement" | "construction" | "newCity" | "expedition" | "nobleTitle";
+export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
 
 export interface BaronyPlayer {
   index: number;
@@ -9,19 +10,13 @@ export interface BaronyPlayer {
   color: BaronyColor;
   score: number;
   pawns: { [type in BaronyPawnType]: number };
-  resources: BaronyResource[];
+  resources: { [type in BaronyResourceType]: number };
 } // BaronyPlayer
 
 export interface BaronyPawn {
   color: BaronyColor;
   type: BaronyPawnType;
 } // BaronyPawn
-
-export interface BaronyResource {
-  type: BaronyLandType;
-  goldNumber: number;
-  silverNumber: number;
-} // BaronyResource
 
 export interface BaronyLandTileCoordinates {
   x: number;

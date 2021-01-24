@@ -2,21 +2,28 @@
   {{ landTile.coordinates.x }} {{ landTile.type }}
 </div> -->
 <div class="b-board">
-  <div class="b-board-layer" *ngLet="currentPlayer$ | async as currentPlayer">
-    <div class="b-board-layer-top">
+  <div class="b-board-map">
+    <barony-map
+      [landTiles]="(landTiles$ | async)!"
+      [validLandTiles]="(validLandTiles$ | async)!"
+      (landTileClick)="onLandTileClick ($event)">
+    </barony-map>
+  </div>
+  <ng-container *ngLet="currentPlayer$ | async as currentPlayer">
+    <div class="b-board-top">
       <div
         [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
         <div class="b-board-instruction">{{ message$ | async }}</div>
         <barony-knights-selector
           *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
           [(number)]="numberOfKnights"
-          [max]="maxNumberOfKnights"
+          [max]="3"
           min=1
           (confirm)="onKnightsConfirm ()">
         </barony-knights-selector>
       </div>
     </div>
-    <div class="b-board-layer-bottom-left">
+    <div class="b-board-bottom-left">
       <div *ngFor="let otherPlayer of (otherPlayers$ | async)" class="b-board-player-widget">
         <barony-player-status
           (selectPlayer)="onSelectPlayerChange (otherPlayer)"
@@ -30,7 +37,7 @@
         </barony-player-status>
       </div>
     </div>
-    <div class="b-board-layer-bottom-right">
+    <div class="b-board-bottom-right">
       <ng-container *ngLet="validActions$ | async as validActions">
         <ng-container *ngLet="canPass$ | async as canPass">
           <barony-actions
@@ -43,12 +50,5 @@
         </ng-container>
       </ng-container>
     </div>
-  </div>
-  <div class="b-board-map">
-    <barony-map
-      [landTiles]="(landTiles$ | async)!"
-      [validLandTiles]="(validLandTiles$ | async)!"
-      (landTileClick)="onLandTileClick ($event)">
-    </barony-map>
-  </div>
+  </ng-container>
 </div>

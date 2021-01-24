@@ -1,4 +1,4 @@
-import { BaronyAction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPawnType, BaronyPlayer, BaronyResource } from "../models";
+import { BaronyAction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPawnType, BaronyPlayer } from "../models";
 import { BaronyContext } from "../logic";
 import { IBaronyProcess, IBaronyProcessStep, IBaronyProcessTask, IBaronySubProcess } from "./barony-process.interfaces";
 

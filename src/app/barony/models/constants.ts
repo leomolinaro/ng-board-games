@@ -1,6 +1,7 @@
-import { BaronyAction, BaronyColor, BaronyLandPiece, BaronyLandType, BaronyPawnType } from "./models";
+import { BaronyAction, BaronyColor, BaronyLandPiece, BaronyLandType, BaronyPawnType, BaronyResourceType } from "./models";
 
 export const baronyLandTypes: BaronyLandType[] = ["fields", "forest", "lake", "mountain", "plain"];
+export const baronyResourceTypes: BaronyResourceType[] = ["fields", "forest", "mountain", "plain"];
 export const baronyColors: BaronyColor[] = ["blue", "green", "red", "yellow"];
 export const baronyPawnTypes: BaronyPawnType[] = ["city", "knight", "stronghold", "village"];
 export const baronyActions: BaronyAction[] = ["recruitment", "movement", "construction", "newCity", "expedition", "nobleTitle"];

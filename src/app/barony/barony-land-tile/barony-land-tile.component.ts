@@ -99,8 +99,4 @@ export class BaronyLandTileComponent implements OnChanges {
 
   onLandTileClick () { this.landTileClick.next (); }
 
-  onPawnClick (node: BaronyPawnNode) {
-    console.log("🚀 ~ file: barony-land-tile.component.ts ~ line 91 ~ BaronyLandTileComponent ~ onPawnClick ~ node", node)
-  } // onPawnClick
-
 } // BaronyLandTileComponent

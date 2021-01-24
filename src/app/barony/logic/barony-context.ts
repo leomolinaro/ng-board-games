@@ -72,7 +72,7 @@ export class BaronyContext extends BgStore<BaronyState> {
         ...s.players[playerIndex],
         pawns: {
           ...s.players[playerIndex].pawns,
-          [pawnType]: s.players[playerIndex].pawns[pawnType]--
+          [pawnType]: s.players[playerIndex].pawns[pawnType] - 1
         }
       }, s.players)
     }));

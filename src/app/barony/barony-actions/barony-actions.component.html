@@ -13,7 +13,7 @@
     class="b-action"
     [ngClass]="{
       'is-active': isValid ? isValid[action] : false,
-      'is-disabled': isValid ? !isValid[action] : false
+      'is-disabled': isValid ? !isValid[action] : true
     }"
     (click)="onActionClick (action)">
     {{ labels[action] }}

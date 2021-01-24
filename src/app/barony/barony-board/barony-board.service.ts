@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BgProcessService } from "@bg-services";
 import { BehaviorSubject, combineLatest, Observable, of, race, Subject } from "rxjs";
-import { BgStore } from "@bg-utils";
-import { BaronyAction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPlayer, BaronyResource } from "../models";
+import { BgStore, randomUtil } from "@bg-utils";
+import { BaronyAction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPlayer } from "../models";
 import { BaronyContext, baronyRules } from "../logic";
 import { BaronyMovement, BaronyPlay, BaronyProcessTask, BaronySetupPlacement, BaronyTurn, BaronyTurnMovementResult, BaronyTurnRectruitmentResult } from "../process";
 import { debounceTime, first, map, mapTo, switchMap, tap } from "rxjs/operators";
@@ -199,14 +199,47 @@ export class BaronyBoardService {
         return of ({ choosenLandTileCoordinates: task.data.validLandTiles[0].coordinates });
       } // case
       case "turn": {
-        const action = task.data.validActions[0];
+        const action = randomUtil.getRandomElement (task.data.validActions);
         const player = task.data.player;
         switch (action) {
           case "recruitment": {
             const validLandTiles = baronyRules.getValidLandTilesForRecruitment (player, this.context);
-            const landTile = validLandTiles[0];
+            const landTile = randomUtil.getRandomElement (validLandTiles);
             const maxKnights = baronyRules.getMaxKnightForRecruitment (landTile, player, this.context);
             return of<BaronyTurnRectruitmentResult> ({ choosenAction: "recruitment", landTileCoordinates: landTile.coordinates, numberOfKnights: maxKnights });
+          } // case
+          case "movement": {
+            const validSourceLandTiles = baronyRules.getValidSourceLandTilesForFirstMovement (player, this.context);
+            const sourceLandTile = randomUtil.getRandomElement (validSourceLandTiles);
+            const validTargetLandTiles = baronyRules.getValidTargetLandTilesForFirstMovement (sourceLandTile, player, this.context);
+            const targetLandTile = randomUtil.getRandomElement (validTargetLandTiles);
+            const firstMovement: BaronyMovement = {
+              fromLandTileCoordinates: sourceLandTile.coordinates,
+              toLandTileCoordinates: targetLandTile.coordinates
+            };
+            // TODO conflict
+            if (baronyRules.isSecondMovementValid (player, firstMovement, this.context)) {
+              const validSourceLandTiles2 = baronyRules.getValidSourceLandTilesForSecondMovement (player, firstMovement, this.context);
+              const sourceLandTile2 = randomUtil.getRandomElement (validSourceLandTiles2);
+              const validTargetLandTiles2 = baronyRules.getValidTargetLandTilesForFirstMovement (sourceLandTile2, player, this.context);
+              const targetLandTile2 = randomUtil.getRandomElement (validTargetLandTiles2);
+              const secondMovement: BaronyMovement = {
+                fromLandTileCoordinates: sourceLandTile2.coordinates,
+                toLandTileCoordinates: targetLandTile2.coordinates
+              };
+              // TODO conflict
+              return of<BaronyTurnMovementResult> ({
+                choosenAction: "movement",
+                movements: [firstMovement, secondMovement],
+                gainedResources: [null, null]
+              });
+            } else {
+              return of<BaronyTurnMovementResult> ({
+                choosenAction: "movement",
+                movements: [firstMovement],
+                gainedResources: [null]
+              });
+            } // if - else
           } // case
         } // switch
         throw new Error ("TODO");

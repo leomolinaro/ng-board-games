@@ -18,72 +18,63 @@
     right: 0;
     pointer-events: none;
   }
-  .b-board-layer {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    overflow: auto;
-    display: grid;
-    .b-board-layer-top {
-      grid-column-start: 1;
-      grid-column-end: 3;
-      display: flex;
-      justify-content: center;
-      .b-board-instruction-widget {
-        margin-top: 1rem;
-        margin-bottom: auto;
-        padding: 1rem;
-        background-color: white;
-        box-shadow: $widget-shadow;
-        &.is-red {
-          border-bottom: 3px solid $red;
-        }
-        &.is-blue {
-          border-bottom: 3px solid $blue;
-        }
-        &.is-yellow {
-          border-bottom: 3px solid $yellow;
-        }
-        &.is-green {
-          border-bottom: 3px solid $green;
-        }
-        .b-board-instruction {
+  .b-board-top {
+    z-index: 1;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    display: flex;
+    justify-content: center;
+    .b-board-instruction-widget {
+      margin-top: 3vh;
+      margin-bottom: auto;
+      padding: 3vh;
+      background-color: white;
+      box-shadow: $widget-shadow;
+      &.is-red {
+        border-bottom: 3px solid $red;
+      }
+      &.is-blue {
+        border-bottom: 3px solid $blue;
+      }
+      &.is-yellow {
+        border-bottom: 3px solid $yellow;
+      }
+      &.is-green {
+        border-bottom: 3px solid $green;
+      }
+      .b-board-instruction {
 
-        }
-        .b-board-knights-selector-widget {
-          margin-top: 1rem;
-          margin-bottom: auto;
-          padding: 1rem;
-          background-color: white;
-          box-shadow: $widget-shadow;
-        }
+      }
+      barony-knights-selector {
+        display: block;
+        margin-top: 2vh;
       }
     }
-    .b-board-layer-bottom-left {
-      margin-top: auto;
-      margin-right: auto;
-      margin-bottom: 1rem;
-      margin-left: 1rem;
-      display: grid;
-      grid-template-columns: auto;
-      grid-gap: 1rem;
-      .b-board-player-widget {
-        background-color: white;
-        box-shadow: $widget-shadow;
-        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-        &:hover {
-          box-shadow: $widget-shadow-hover;
-        }
+  }
+  .b-board-bottom-left {
+    z-index: 1;
+    margin-top: auto;
+    margin-right: auto;
+    margin-bottom: 2vh;
+    margin-left: 2vw;
+    display: grid;
+    grid-template-columns: auto;
+    grid-gap: 2vmin;
+    .b-board-player-widget {
+      background-color: white;
+      box-shadow: $widget-shadow;
+      transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      &:hover {
+        box-shadow: $widget-shadow-hover;
       }
     }
-    .b-board-layer-bottom-right {
-      margin-top: auto;
-      margin-left: auto;
-      margin-bottom: 1rem;
-      margin-right: 1rem;
-    }
+  }
+  .b-board-bottom-right {
+    z-index: 1;
+    margin-top: auto;
+    margin-left: auto;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
   }
 }
 

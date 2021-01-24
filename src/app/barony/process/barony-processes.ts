@@ -1,5 +1,5 @@
 import { baronyRules, BaronyContext } from "../logic";
-import { BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPlayer, BaronyResource } from "../models";
+import { BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPlayer } from "../models";
 import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
 import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult, BaronyContruction as BaronyConstruction, BaronyMovement } from "./barony-tasks";
 

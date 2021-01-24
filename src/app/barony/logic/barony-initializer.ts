@@ -1,8 +1,7 @@
 import { arrayUtil, randomUtil } from "@bg-utils";
-import { BaronyColor, baronyColors, BaronyLandTile, BaronyLandTileCoordinates, baronyLandTypes, BaronyPawn, baronyPawnTypes, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+import { BaronyColor, BaronyLandTile, BaronyLandTileCoordinates, baronyLandTypes, BaronyPlayer, getLandTileCoordinateKey } from "../models";
 
 export function createPlayer (index: number, name: string, color: BaronyColor): BaronyPlayer {
-  const pawns: BaronyPawn[] = [];
   return {
     index: index,
     name: name,
@@ -14,7 +13,12 @@ export function createPlayer (index: number, name: string, color: BaronyColor): 
       knight: 7,
       village: 14
     },
-    resources: []
+    resources: {
+      forest: 0,
+      mountain: 0,
+      plain: 0,
+      fields: 0
+    }
   };
 } // createPlayer
 

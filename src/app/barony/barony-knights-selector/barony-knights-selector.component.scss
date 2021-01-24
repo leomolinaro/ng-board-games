@@ -1,0 +1,52 @@
+.b-knights-selector-container {
+  display: flex;
+  align-items: center;
+  .b-knights {
+    .b-knights-number {
+      font-size: 4vmin;
+    }
+    .b-knights-fraction-sign {
+      margin-right: 0.3vw;
+      margin-left: 0.3vw;
+      font-size: 3vmin;
+    }
+    .b-knights-max {
+      font-size: 3vmin;
+    }
+  }
+  .b-knights-buttons {
+    margin-left: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    & > button {
+      border: 0;
+      background-color: white;
+      outline: none;
+      font-size: 4vmin;
+      width: 4vw;
+      &.is-active {
+        cursor: pointer;
+        &:hover {
+          background-color: #eee;
+        }
+      }
+      &.is-disabled {
+        cursor: no-drop;
+        color: #ccc
+      }
+    }
+  }
+  .b-knights-confirm {
+    margin-left: auto;
+    align-self: stretch;
+    border: 0;
+    background-color: white;
+    outline: none;
+    cursor: pointer;
+    font-size: 3vmin;
+    width: 4vw;
+    &:hover {
+      background-color: #eee;
+    }
+  }
+}

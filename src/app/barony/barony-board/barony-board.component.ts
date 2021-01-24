@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { Subscription } from "rxjs";
+import { tap } from "rxjs/operators";
 import { BaronyAction, BaronyLandTile, BaronyPlayer } from "../models";
 import { BaronyBoardService } from "./barony-board.service";
 
@@ -19,7 +20,7 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
   validLandTiles$ = this.service.selectValidLandTiles$ ();
   validActions$ = this.service.selectValidActions$ ();
   canPass$ = this.service.selectCanPass$ ();
-  maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ();
+  maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ().pipe (tap (max => this.numberOfKnights = max ? max : 0));
   otherPlayers$ = this.service.selectOtherPlayers$ ();
   currentPlayer$ = this.service.selectCurrentPlayer$ ();
   message$ = this.service.selectMessage$ ();
