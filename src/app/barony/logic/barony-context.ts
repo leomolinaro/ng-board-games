@@ -1,7 +1,7 @@
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyColor, BaronyLandTile, BaronyLandTileCoordinates, BaronyPawn, BaronyPawnType, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+import { BaronyColor, BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, getLandTileCoordinateKey } from "../models";
 import { createPlayer, getRandomLandTiles } from "./barony-initializer";
 
 interface BaronyState {
@@ -25,6 +25,20 @@ export class BaronyContext extends BgStore<BaronyState> {
       landTiles: getRandomLandTiles (2)
     });
   } // constructor
+
+  private notTemporaryState: BaronyState | null = null;
+  startTemporaryState () {
+    this.notTemporaryState = this.get ();
+  } // startTemporaryState
+  endTemporaryState () {
+    if (this.notTemporaryState) {
+      const state = this.notTemporaryState;
+      this.update (s => ({ ...state }));
+      this.notTemporaryState = null;
+    } else {
+      throw new Error ("endTemporaryState without startTemporaryState");
+    } // if - else
+  } // endTemporaryState
 
   getPlayers (): BaronyPlayer[] { return this.get (s => s.players); }
   getPlayerByIndex (index: number): BaronyPlayer { return this.getPlayers ()[index]; }
@@ -65,7 +79,7 @@ export class BaronyContext extends BgStore<BaronyState> {
   } // selectLandTiles$
   selectPlayers$ (): Observable<BaronyPlayer[]> { return this.select$ (s => s.players); }
 
-  removePawnFromPlayer (pawnType: BaronyPawnType, playerIndex: number) {
+  private removePawnFromPlayer (pawnType: BaronyPawnType, playerIndex: number) {
     this.update (s => ({
       ...s,
       players: immutableUtil.listReplaceByIndex (playerIndex, {
@@ -78,7 +92,7 @@ export class BaronyContext extends BgStore<BaronyState> {
     }));
   } // removePawnFromPlayer
 
-  addPawnToLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
+  private addPawnToLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
     const key = getLandTileCoordinateKey (landTileCoordinates);
     this.update (s => ({
       ...s,
@@ -95,7 +109,7 @@ export class BaronyContext extends BgStore<BaronyState> {
     }));
   } // addPawnToLandTile
   
-  removePawnFromLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
+  private removePawnFromLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
     const key = getLandTileCoordinateKey (landTileCoordinates);
     this.update (s => ({
       ...s,
@@ -111,5 +125,48 @@ export class BaronyContext extends BgStore<BaronyState> {
       }
     }));
   } // removePawnFromLandTile
+
+  private addResourceToPlayer (landTileCoordinates: BaronyLandTileCoordinates, playerIndex: number) {
+    this.update (s => {
+      const key = getLandTileCoordinateKey (landTileCoordinates);
+      const resource: BaronyResourceType = s.landTiles.map[key].type as BaronyResourceType;
+      const player = s.players[playerIndex];
+      const resources = player.resources;
+      return {
+        ...s,
+        players: immutableUtil.listReplaceByIndex (playerIndex, {
+          ...player,
+          resources: {
+            ...resources,
+            [resource]: resources[resource] + 1
+          }
+        }, s.players)
+      };
+    });
+  } // addResourceToPlayer
+
+  applySetup (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer) {
+    this.removePawnFromPlayer ("knight", player.index);
+    this.addPawnToLandTile ("knight", player.color, landTileCoordinates);
+    this.removePawnFromPlayer ("city", player.index);
+    this.addPawnToLandTile ("city", player.color, landTileCoordinates);
+  } // applySetup
+
+  applyRecruitment (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer) {
+    this.removePawnFromPlayer ("knight", player.index);
+    this.addPawnToLandTile ("knight", player.color, landTileCoordinates);
+  } // applyRecruitment
+
+  applyMovement (movement: BaronyMovement, gainedResource: BaronyResourceType | null, player: BaronyPlayer) {
+    this.removePawnFromLandTile ("knight", player.color, movement.fromLandTileCoordinates);
+    this.addPawnToLandTile ("knight", player.color, movement.toLandTileCoordinates);
+    // TODO firstGainedResource
+  } // applyMovement
+
+  applyConstruction (construction: BaronyConstruction, player: BaronyPlayer) {
+    this.removePawnFromLandTile ("knight", player.color, construction.landTileCoordinates);
+    this.addPawnToLandTile (construction.building, player.color, construction.landTileCoordinates);
+    this.addResourceToPlayer (construction.landTileCoordinates, player.index);
+  } // applyConstruction
 
 } // BaronyContext

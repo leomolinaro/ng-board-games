@@ -2,7 +2,6 @@
 
 .b-player-card {
   padding: 2vmin;
-  cursor: pointer;
   font-size: 3vmin;
   &.is-red {
     background-color: $red-light;
@@ -21,6 +20,9 @@
       font-weight: 800;
     }
   }
+  &:not(.is-current) {
+    cursor: pointer;
+  }
 
   .b-player-content {
     margin-top: 2vh;
@@ -34,6 +36,14 @@
       & > img {
         width: 100%;
       }
+      &.is-active {
+        cursor: pointer;
+        background: linear-gradient(90deg, white 50%, transparent 50%), linear-gradient(90deg, white 50%, transparent 50%), linear-gradient(0deg, white 50%, transparent 50%), linear-gradient(0deg, white 50%, transparent 50%);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 16px 4px, 16px 4px, 4px 16px, 4px 16px;
+        background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px;
+        animation: dash 1s linear infinite;
+      }
     }
     .b-player-pawn-quantity, .b-player-resource-quantity {
       color: white;
@@ -41,5 +51,11 @@
       justify-content: center;
       align-items: center;
     }
+  }
+}
+
+@keyframes dash {
+  to {
+      background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
   }
 }

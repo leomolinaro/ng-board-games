@@ -1,4 +1,4 @@
-import { BaronyAction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPawnType, BaronyPlayer } from "../models";
+import { BaronyAction, BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyMovement, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../models";
 import { BaronyContext } from "../logic";
 import { IBaronyProcess, IBaronyProcessStep, IBaronyProcessTask, IBaronySubProcess } from "./barony-process.interfaces";
 
@@ -18,14 +18,6 @@ export class BaronySetupPlacement implements IBaronyProcessTask<BaronySetupPlace
 export interface IHasBaronyTurn { afterTurn (result: BaronyTurnResult, context: BaronyContext): IBaronyProcessStep; }
 export interface BaronyTurnData { player: BaronyPlayer; validActions: BaronyAction[]; }
 
-export interface BaronyMovement {
-  fromLandTileCoordinates: BaronyLandTileCoordinates;
-  toLandTileCoordinates: BaronyLandTileCoordinates;
-} // BaronyMovement
-export interface BaronyContruction {
-  landTileCoordinates: BaronyLandTileCoordinates;
-  building: Extract<BaronyPawnType, "village" | "stronghold">;
-} // BaronyContruction
 interface ABaornyTurnResult {
   readonly choosenAction: BaronyAction;
 } // ABaornyTurnResult
@@ -37,11 +29,11 @@ export interface BaronyTurnRectruitmentResult extends ABaornyTurnResult {
 export interface BaronyTurnMovementResult extends ABaornyTurnResult {
   readonly choosenAction: "movement";
   movements: BaronyMovement[];
-  gainedResources: (BaronyLandType | null)[];
+  gainedResources: (BaronyResourceType | null)[];
 } // BaronyTurnRectruitmentResult
 export interface BaronyTurnConstructionResult extends ABaornyTurnResult {
   readonly choosenAction: "construction";
-  constructions: BaronyContruction[];
+  constructions: BaronyConstruction[];
 } // BaronyTurnConstructionResult
 export interface BaronyTurnNewCityResult extends ABaornyTurnResult {
   readonly choosenAction: "newCity";

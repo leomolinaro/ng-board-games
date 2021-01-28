@@ -24,7 +24,9 @@
     grid-column-end: 3;
     display: flex;
     justify-content: center;
+    pointer-events: none;
     .b-board-instruction-widget {
+      pointer-events: auto;
       margin-top: 3vh;
       margin-bottom: auto;
       padding: 3vh;
@@ -60,7 +62,9 @@
     display: grid;
     grid-template-columns: auto;
     grid-gap: 2vmin;
+    pointer-events: none;
     .b-board-player-widget {
+      pointer-events: auto;
       background-color: white;
       box-shadow: $widget-shadow;
       transition: all 0.3s cubic-bezier(.25,.8,.25,1);
@@ -75,6 +79,10 @@
     margin-left: auto;
     margin-bottom: 1rem;
     margin-right: 1rem;
+    pointer-events: none;
+    barony-actions {
+      pointer-events: auto;
+    }
   }
 }
 

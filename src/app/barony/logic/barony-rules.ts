@@ -1,5 +1,5 @@
 import { BaronyAction, BaronyColor, baronyColors, BaronyLandTile, BaronyPawnType, BaronyPlayer } from "../models";
-import { BaronyMovement } from "../process";
+import { BaronyMovement, BaronyConstruction } from "../models";
 import { BaronyContext } from "./barony-context";
 
 export function getValidActions (player: BaronyPlayer, context: BaronyContext): BaronyAction[] {
@@ -44,6 +44,17 @@ export function getValidTargetLandTilesForFirstMovement (movementSource: BaronyL
   return context.getNearbyLandTiles (movementSource.coordinates).filter (lt => isValidMovementTarget (lt, player));
 } // getValidTargetLandTilesForFirstMovement
 
+export function getValidLandTilesForConstruction (player: BaronyPlayer, context: BaronyContext) {
+  return context.getLandTiles ().filter (lt => isValidLandTileForConstruction (lt, player, context));
+} // getValidLandTilesForConstruction
+
+export function getValidBuildingsForConstruction (player: BaronyPlayer, context: BaronyContext): ("stronghold" | "village")[] {
+  const toReturn: ("stronghold" | "village")[] = [];
+  if (player.pawns.stronghold > 0) { toReturn.push ("stronghold"); }
+  if (player.pawns.village > 0) { toReturn.push ("village"); }
+  return toReturn;
+} // getValidBuildingsForConstruction
+
 export function getMaxKnightForRecruitment (landTile: BaronyLandTile, player: BaronyPlayer, context: BaronyContext): number {
   const playerKnights = player.pawns.knight;
   if (isLandTileAdiacentToLake (landTile, context)) {
@@ -69,8 +80,8 @@ export function isSecondMovementValid (player: BaronyPlayer, firstMovement: Baro
 
 function isValidSecondMovementSource (landTile: BaronyLandTile, player: BaronyPlayer, firstMovement: BaronyMovement, context: BaronyContext) {
   return (
-    (landTile.coordinates !== firstMovement.fromLandTileCoordinates && hasOneOrMoreOwnKnight (landTile, player)) ||
-    (landTile.coordinates === firstMovement.fromLandTileCoordinates && hasTwoOrMoreOwnKigths (landTile, player))
+    (landTile.coordinates !== firstMovement.toLandTileCoordinates && hasOneOrMoreOwnKnight (landTile, player)) ||
+    (landTile.coordinates === firstMovement.toLandTileCoordinates && hasTwoOrMoreOwnKigths (landTile, player))
   ) &&
   context.getNearbyLandTiles (landTile.coordinates).some (nlt => isValidMovementTarget (nlt, player));
 } // isValidSecondMovementSource
@@ -84,12 +95,17 @@ function isValidMovementTarget (landTile: BaronyLandTile, player: BaronyPlayer) 
   return landTile.type !== "lake" &&
   !landTile.pawns.some (p => p.color !== player.color && (p.type === "city" || p.type === "stronghold")) &&
   !hasTwoOrMorePawnsOfSameOpponent (landTile, player) &&
-  !(landTile.type === "mountain" && hasOneOrMoreOppoentKnight (landTile, player))
+  !(landTile.type === "mountain" && hasOneOrMoreOppoentKnight (landTile, player));
 } // isValidMovementTarget
 
 export function isConstructionValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return false;
+  return context.getLandTiles ().some (lt => isValidLandTileForConstruction (lt, player, context));
 } // isConstructionValid
+
+function isValidLandTileForConstruction (landTile: BaronyLandTile, player: BaronyPlayer, context: BaronyContext) {
+  if (!hasOneOrMoreOwnKnight (landTile, player)) { return false; }
+  return landTile.pawns.every (p => p.type !== "city" && p.type !== "stronghold" && p.type !== "village" && p.color === player.color);
+} // isValidLandTileForConstruction
 
 export function isNewCityValid (player: BaronyPlayer, context: BaronyContext): boolean {
   return false;

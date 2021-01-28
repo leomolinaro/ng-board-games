@@ -2,11 +2,12 @@
   [class]="'b-player-card ' + 'is-' + player.color" 
   [ngClass]="{ 'is-current': currentPlayer }"
   (click)="onCardClick ()">
-  
   <span class="b-player-name">{{ player.name }}</span>
-
   <div class="b-player-content">
-    <div *ngFor="let pawnNode of pawnNodes" class="b-player-pawn-image">
+    <div *ngFor="let pawnNode of pawnNodes"
+      class="b-player-pawn-image"
+      [ngClass]="{ 'is-active': pawnNode.active }"
+      (click)="onPawnClick (pawnNode)">
       <img [src]="pawnNode.source">
     </div>
     <div *ngFor="let pawnNode of pawnNodes" class="b-player-pawn-quantity">
@@ -19,6 +20,4 @@
       {{ resourceNode.quantity }}
     </div>
   </div>
-
-
 </div>

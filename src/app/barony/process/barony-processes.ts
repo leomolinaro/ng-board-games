@@ -1,7 +1,7 @@
 import { baronyRules, BaronyContext } from "../logic";
-import { BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyPlayer } from "../models";
+import { BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyMovement, BaronyPlayer, BaronyResourceType } from "../models";
 import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
-import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult, BaronyContruction as BaronyConstruction, BaronyMovement } from "./barony-tasks";
+import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult } from "./barony-tasks";
 
 export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep; }
 
@@ -37,8 +37,7 @@ export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTu
 
   private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer, context: BaronyContext) {
     for (let i = 0; i < numberOfKnights; i++) {
-      context.removePawnFromPlayer ("knight", player.index);
-      context.addPawnToLandTile ("knight", player.color, landTileCoordinates);
+      context.applyRecruitment (landTileCoordinates, player);
     } // for
   } // recruitment
 
@@ -50,10 +49,9 @@ export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTu
     console.error ("TODO");
   } // expedition
 
-  private movement (movements: BaronyMovement[], gainedResources: (BaronyLandType | null)[], player: BaronyPlayer, context: BaronyContext) {
+  private movement (movements: BaronyMovement[], gainedResources: (BaronyResourceType | null)[], player: BaronyPlayer, context: BaronyContext) {
     movements.forEach ((movement, index) => {
-      context.removePawnFromLandTile ("knight", player.color, movement.fromLandTileCoordinates);
-      context.addPawnToLandTile ("knight", player.color, movement.toLandTileCoordinates);
+      context.applyMovement (movement, gainedResources[index], player);
     });
   } // movement
 
@@ -95,10 +93,7 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
   
   afterPlacement (result: BaronySetupPlacementResult, context: BaronyContext): IBaronyProcessStep {
     if (result.choosenLandTileCoordinates) {
-      context.removePawnFromPlayer ("knight", this.turnPlayer.index);
-      context.addPawnToLandTile ("knight", this.turnPlayer.color, result.choosenLandTileCoordinates);
-      context.removePawnFromPlayer ("city", this.turnPlayer.index);
-      context.addPawnToLandTile ("city", this.turnPlayer.color, result.choosenLandTileCoordinates);
+      context.applySetup (result.choosenLandTileCoordinates, this.turnPlayer);
       if (this.placementPlayerIndexes.length) {
         const turnPlayerIndex = this.placementPlayerIndexes.shift () as number;
         this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);

@@ -12,12 +12,13 @@
   <ng-container *ngLet="currentPlayer$ | async as currentPlayer">
     <div class="b-board-top">
       <div
-        [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
+      [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
+      <button (click)="$click.next ()">Click</button>
         <div class="b-board-instruction">{{ message$ | async }}</div>
         <barony-knights-selector
           *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
           [(number)]="numberOfKnights"
-          [max]="3"
+          [max]="maxNumberOfKnights"
           min=1
           (confirm)="onKnightsConfirm ()">
         </barony-knights-selector>
@@ -33,6 +34,8 @@
       <div class="b-board-player-widget" *ngIf="currentPlayer">
         <barony-player-status
           [player]="currentPlayer"
+          [validBuildings]="validBuildings$ | async"
+          (clickPawn)="onPlayerBuildingClick ($event)"
           currentPlayer>
         </barony-player-status>
       </div>
