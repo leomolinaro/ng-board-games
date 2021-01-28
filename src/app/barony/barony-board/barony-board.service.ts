@@ -49,11 +49,11 @@ export class BaronyBoardService {
   private $selectNumberOfKnights = new Subject<number> ();
   private $selectPass = new Subject<void> ();
   private $selectBuilding = new Subject<"village" | "stronghold"> ();
-  private selectAction$ () { return this.$selectAction.asObservable ().pipe (first (), tap (x => console.log ("selectAction"))); }
-  private selectLandTile$ () { return this.$selectLandTile.asObservable ().pipe (first (), tap (x => console.log ("selectLandTile"))); }
-  private selectNumberOfKnights$ () { return this.$selectNumberOfKnights.asObservable ().pipe (first (), tap (x => console.log ("selectNumberOfKnights"))); }
-  private selectPass$ () { return this.$selectPass.asObservable ().pipe (first (), tap (x => console.log ("selectPass"))); }
-  private selectBuilding$ () { return this.$selectBuilding.asObservable ().pipe (first (), tap (x => console.log ("selectBuilding"))); }
+  private selectAction$ () { return this.$selectAction.asObservable ().pipe (first ()); }
+  private selectLandTile$ () { return this.$selectLandTile.asObservable ().pipe (first ()); }
+  private selectNumberOfKnights$ () { return this.$selectNumberOfKnights.asObservable ().pipe (first ()); }
+  private selectPass$ () { return this.$selectPass.asObservable ().pipe (first ()); }
+  private selectBuilding$ () { return this.$selectBuilding.asObservable ().pipe (first ()); }
 
   selectPendingTask$ () { return this.$pendingTask.asObservable (); }
 
@@ -138,19 +138,23 @@ export class BaronyBoardService {
 
   resolveTasks$ (): Observable<void> {
     return combineLatest ([
-      this.selectCurrentPlayer$ (),
-      this.selectAiPlayers$ (),
+      this.selectCurrentPlayerIndex$ (),
+      this.selectAiPlayerIndicies$ (),
       this.selectPendingTask$ ()
     ]).pipe (
       debounceTime (0),
-      switchMap (([currentPlayer, aiPlayers, task]) => this.resolveTask$ (task, currentPlayer, aiPlayers).pipe (
-        tap (nextTask => {
-          if (nextTask) {
-            this.$pendingTask.next (nextTask);
-            this.autoRefreshCurrentPlayer (currentPlayer, aiPlayers, nextTask);
-          } // if
-        })
-      )),
+      switchMap (([currentPlayerIndex, aiPlayersIndicies, task]) => {
+        const currentPlayer = (currentPlayerIndex || currentPlayerIndex === 0) ? this.context.getPlayerByIndex (currentPlayerIndex) : null;
+        const aiPlayers = aiPlayersIndicies.map (i => this.context.getPlayerByIndex (i));
+        return this.resolveTask$ (task, currentPlayer, aiPlayers).pipe (
+          tap (nextTask => {
+            if (nextTask) {
+              this.$pendingTask.next (nextTask);
+              this.autoRefreshCurrentPlayer (currentPlayer, aiPlayers, nextTask);
+            } // if
+          })
+        );
+      }),
       mapTo (void 0)
     );
   } // resolveTasks$
@@ -488,7 +492,6 @@ export class BaronyBoardService {
     if (prevConstructions) {
       return this.chooseConstructionOrPass$ (player).pipe (
         switchMap (construction => {
-          console.log ("construction", construction);
           if (construction) {
             this.context.applyConstruction (construction, player);
             const constructions = [...prevConstructions, construction];
@@ -512,31 +515,16 @@ export class BaronyBoardService {
           } else {
             return of (constructions);
           } // if - else
-        }),
-        finalize (() => console.log ("finalize chooseConstructions$"))
+        })
       );
     } // if - else
   } // chooseConstructions$
 
   private chooseConstructionOrPass$ (player: BaronyPlayer): Observable<BaronyConstruction | null> {
-
-    // return new Observable (s => {
-    //   race (
-    //     this.chooseConstruction$ (player, true),
-    //     this.selectPass$ ().pipe (mapTo (null))
-    //   ).subscribe (x => console.log ("x", x));
-
-    //   console.log ("return")
-    //   s.next (null);
-    // });
-    console.log ("Ciao");
-    return this.selectLandTile$ ().pipe (map (x => <any> x), tap (x => console.log ("chooseConstruction!!!!")), finalize (() => console.log ("finalize chooseConstructionOrPass$ 1")));
-    // return race (
-      // this.chooseConstruction$ (player, true).pipe (tap (x => console.log ("chooseConstruction!!!!")), finalize (() => console.log ("finalize chooseConstructionOrPass$ 1"))),
-    //   this.selectPass$ ().pipe (mapTo (null), tap (x => console.log ("selectPass!!!!")), finalize (() => console.log ("finalize chooseConstructionOrPass$ 2")))
-    // ).pipe (finalize (() => console.log ("finalize chooseConstructionOrPass$")));
-
-    // return (of ({ building: "stronghold", landTileCoordinates: <any> null }));
+    return race (
+      this.chooseConstruction$ (player, true),
+      this.selectPass$ ().pipe (mapTo (null))
+    );
   } // chooseConstructionOrPass$
 
   private chooseConstruction$ (player: BaronyPlayer, orPass: boolean): Observable<BaronyConstruction> {
@@ -546,8 +534,7 @@ export class BaronyBoardService {
           building: building,
           landTileCoordinates: landTile.coordinates
         }))
-      )),
-      finalize (() => console.log ("finalize chooseConstruction$"))
+      ))
     );
   } // chooseConstruction$
 
@@ -560,7 +547,7 @@ export class BaronyBoardService {
       validLandTiles: validLandTiles.map (lt => lt.coordinates),
       canPass: orPass
     }));
-    return this.selectLandTile$ ().pipe (finalize (() => console.log ("finalize chooseLandTileForConstruction$")));
+    return this.selectLandTile$ ();
   } // chooseLandTileForConstruction$
 
   private chooseBuildingForConstruction$ (player: BaronyPlayer, orPass: boolean): Observable<"stronghold" | "village"> {
@@ -572,7 +559,7 @@ export class BaronyBoardService {
       validBuildings: validBuildings,
       canPass: orPass
     }));
-    return this.selectBuilding$ ().pipe (finalize (() => console.log ("finalize chooseBuildingForConstruction$")));
+    return this.selectBuilding$ ();
   } // chooseBuildingForConstruction$
 
 } // BaronyBoardService

@@ -34,9 +34,6 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     this.service.setCurrentPlayer (0);
     this.service.setAiPlayers ([1]);
     this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
-
-
-    this.do ();
   } // ngOnInit
 
   ngOnDestroy () {
@@ -48,7 +45,6 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
   } // onSelectPlayerChange
 
   onPlayerBuildingClick (pawnType: BaronyPawnType) {
-    console.log ("QUI")
     this.service.selectBuilding (pawnType as BaronyBuilding);
   } // onPlayerBuildingClick
 
@@ -68,23 +64,5 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     this.service.selectNumberOfKnights (this.numberOfKnights);
     this.numberOfKnights = 1;
   } // onKnightsConfirm
-
-
-
-
-
-
-  $click = new Subject ();
-  click$ () { return this.$click.asObservable ().pipe (first ()); }
-  wrapClick$ () { return of (1).pipe (switchMap (() => this.click$ ())); }
-
-  do () {
-    this.wrapClick$ ().pipe (
-      switchMap (() => {
-        console.log ("1")
-        return this.wrapClick$ ();
-      })
-    ).subscribe (() => console.log ("2"));
-  }
 
 } // BaronyBoardComponent

@@ -79,6 +79,19 @@ export class BaronyContext extends BgStore<BaronyState> {
   } // selectLandTiles$
   selectPlayers$ (): Observable<BaronyPlayer[]> { return this.select$ (s => s.players); }
 
+  private addPawnToPlayer (pawnType: BaronyPawnType, playerIndex: number) {
+    this.update (s => ({
+      ...s,
+      players: immutableUtil.listReplaceByIndex (playerIndex, {
+        ...s.players[playerIndex],
+        pawns: {
+          ...s.players[playerIndex].pawns,
+          [pawnType]: s.players[playerIndex].pawns[pawnType] + 1
+        }
+      }, s.players)
+    }));
+  } // addPawnToPlayer
+
   private removePawnFromPlayer (pawnType: BaronyPawnType, playerIndex: number) {
     this.update (s => ({
       ...s,
@@ -165,7 +178,9 @@ export class BaronyContext extends BgStore<BaronyState> {
 
   applyConstruction (construction: BaronyConstruction, player: BaronyPlayer) {
     this.removePawnFromLandTile ("knight", player.color, construction.landTileCoordinates);
+    this.removePawnFromPlayer (construction.building, player.index);
     this.addPawnToLandTile (construction.building, player.color, construction.landTileCoordinates);
+    this.addPawnToPlayer ("knight", player.index);
     this.addResourceToPlayer (construction.landTileCoordinates, player.index);
   } // applyConstruction
 

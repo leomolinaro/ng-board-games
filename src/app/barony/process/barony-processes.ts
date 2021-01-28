@@ -41,8 +41,10 @@ export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTu
     } // for
   } // recruitment
 
-  private construction (construction: BaronyConstruction[], player: BaronyPlayer, context: BaronyContext) {
-    console.error ("TODO");
+  private construction (constructions: BaronyConstruction[], player: BaronyPlayer, context: BaronyContext) {
+    constructions.forEach (construction => {
+      context.applyConstruction (construction, player);
+    });
   } // construction
 
   private expedition (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer, context: BaronyContext) {

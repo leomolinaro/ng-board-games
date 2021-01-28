@@ -13,7 +13,6 @@
     <div class="b-board-top">
       <div
       [class]="'b-board-instruction-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
-      <button (click)="$click.next ()">Click</button>
         <div class="b-board-instruction">{{ message$ | async }}</div>
         <barony-knights-selector
           *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
