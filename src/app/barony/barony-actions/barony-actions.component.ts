@@ -14,8 +14,10 @@ export class BaronyActionsComponent implements OnChanges {
 
   @Input () validActions: BaronyAction[] | null = null;
   @Input () canPass!: boolean;
+  @Input () canCancel!: boolean;
   @Output () actionClick = new EventEmitter<BaronyAction> ();
   @Output () passClick = new EventEmitter<void> ();
+  @Output () cancelClick = new EventEmitter<void> ();
 
   actions = baronyActions;
 
@@ -26,7 +28,8 @@ export class BaronyActionsComponent implements OnChanges {
     newCity: "New city",
     expedition: "Expedition",
     nobleTitle: "Noble title",
-    pass: "Pass"
+    pass: "Pass",
+    cancel: "Cancel"
   };
   
   isValid: { [action: string]: boolean } | null = null;
@@ -52,5 +55,11 @@ export class BaronyActionsComponent implements OnChanges {
       this.passClick.next ();
     } // if
   } // onPassClick
+
+  onCancelClick () {
+    if (this.canCancel) {
+      this.cancelClick.next ();
+    } // if
+  } // onCancelClick
 
 } // BaronyActionsComponent

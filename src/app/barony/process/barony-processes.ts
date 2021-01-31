@@ -1,5 +1,5 @@
-import { baronyRules, BaronyContext } from "../logic";
-import { BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyMovement, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyContext } from "../logic";
+import { BaronyConstruction, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyResourceType } from "../models";
 import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
 import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult } from "./barony-tasks";
 
@@ -8,61 +8,61 @@ export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: Baro
 export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTurn {
   
   readonly type = "process";
-  private turnPlayer!: BaronyPlayer;
+  private player!: string;
 
   start (context: BaronyContext): IBaronyProcessStep {
     return new BaronySetup (this);
   } // start
 
   afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep {
-    this.turnPlayer = context.getPlayerByIndex (0);
-    const validActions = baronyRules.getValidActions (this.turnPlayer, context);
-    return new BaronyTurn ({ player: this.turnPlayer, validActions: validActions }, this);
+    const player = context.getPlayers ()[0];
+    this.player = player.id;
+    return new BaronyTurn ({ player: this.player }, this);
   } // afterSetup
 
   afterTurn (result: BaronyTurnResult, context: BaronyContext): IBaronyProcessStep {
-    switch (result.choosenAction) {
-      case "recruitment": this.recruitment (result.numberOfKnights, result.landTileCoordinates, this.turnPlayer, context); break;
-      case "construction": this.construction (result.constructions, this.turnPlayer, context); break;
-      case "expedition": this.expedition (result.landTileCoordinates, this.turnPlayer, context); break;
-      case "movement": this.movement (result.movements, result.gainedResources, this.turnPlayer, context); break;
-      case "newCity": this.newCity (result.landTileCoordinates, this.turnPlayer, context); break;
-      case "nobleTitle": this.nobleTitle (result.discardedResources, this.turnPlayer, context); break;
+    switch (result.action) {
+      case "recruitment": this.recruitment (result.numberOfKnights, result.land, this.player, context); break;
+      case "construction": this.construction (result.constructions, this.player, context); break;
+      case "expedition": this.expedition (result.land, this.player, context); break;
+      case "movement": this.movement (result.movements, this.player, context); break;
+      case "newCity": this.newCity (result.land, this.player, context); break;
+      case "nobleTitle": this.nobleTitle (result.discardedResources, this.player, context); break;
     } // switch
-    const turnPlayerIndex = (this.turnPlayer.index + 1) % context.getNumberOfPlayers ();
-    this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
-    const validActions = baronyRules.getValidActions (this.turnPlayer, context);
-    return new BaronyTurn ({ player: this.turnPlayer, validActions: validActions }, this);
+    const playerIndex = context.getPlayerIds ().indexOf (this.player);
+    const nextPlayerIndex = (playerIndex + 1) % context.getNumberOfPlayers ();
+    this.player = context.getPlayers ()[nextPlayerIndex].id;
+    return new BaronyTurn ({ player: this.player }, this);
   } // afterTurn
 
-  private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer, context: BaronyContext) {
+  private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandCoordinates, player: string, context: BaronyContext) {
     for (let i = 0; i < numberOfKnights; i++) {
       context.applyRecruitment (landTileCoordinates, player);
     } // for
   } // recruitment
 
-  private construction (constructions: BaronyConstruction[], player: BaronyPlayer, context: BaronyContext) {
+  private construction (constructions: BaronyConstruction[], player: string, context: BaronyContext) {
     constructions.forEach (construction => {
       context.applyConstruction (construction, player);
     });
   } // construction
 
-  private expedition (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer, context: BaronyContext) {
-    console.error ("TODO");
+  private expedition (land: BaronyLandCoordinates, player: string, context: BaronyContext) {
+    context.applyExpedition (land, player);
   } // expedition
 
-  private movement (movements: BaronyMovement[], gainedResources: (BaronyResourceType | null)[], player: BaronyPlayer, context: BaronyContext) {
-    movements.forEach ((movement, index) => {
-      context.applyMovement (movement, gainedResources[index], player);
+  private movement (movements: BaronyMovement[], player: string, context: BaronyContext) {
+    movements.forEach ((movement) => {
+      context.applyMovement (movement, player);
     });
   } // movement
 
-  private newCity (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer, context: BaronyContext) {
-    console.error ("TODO");
+  private newCity (land: BaronyLandCoordinates, player: string, context: BaronyContext) {
+    context.applyNewCity (land, player);
   } // newCity
 
-  private nobleTitle (discardedResources: BaronyLandType[], player: BaronyPlayer, context: BaronyContext) {
-    console.error ("TODO");
+  private nobleTitle (resources: BaronyResourceType[], player: string, context: BaronyContext) {
+    context.applyNobleTitle (resources, player);
   } // nobleTitle
 
 } // BaronyPlay
@@ -75,32 +75,28 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
 
   readonly type = "sub-process";
   next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterSetup (this, context); }
-  private placementPlayerIndexes: number[] = [];
-  private turnPlayer!: BaronyPlayer;
+  private placementPlayerIds: string[] = [];
+  private player!: string;
 
   start (context: BaronyContext): IBaronyProcessStep {
-    const numPlayers = context.getNumberOfPlayers ();
-    for (let i = 0; i < numPlayers; i++) {
-      this.placementPlayerIndexes.push (i);
+    const players = context.getPlayers ();
+    for (const p of players) {
+      this.placementPlayerIds.push (p.id);
     } // for
-    for (let i = numPlayers - 1; i >= 0; i--) {
-      this.placementPlayerIndexes.push (i);
-      this.placementPlayerIndexes.push (i);
+    for (let i = players.length - 1; i >= 0; i--) {
+      this.placementPlayerIds.push (players[i].id);
+      this.placementPlayerIds.push (players[i].id);
     } // for
-    const turnPlayerIndex = this.placementPlayerIndexes.shift () as number;
-    this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
-    const validLandTiles = baronyRules.getValidLandTilesForSetupPlacement (context);
-    return new BaronySetupPlacement ({ player: this.turnPlayer, validLandTiles }, this);
+    this.player = this.placementPlayerIds.shift () as string;
+    return new BaronySetupPlacement ({ player: this.player }, this);
   } // start
   
   afterPlacement (result: BaronySetupPlacementResult, context: BaronyContext): IBaronyProcessStep {
-    if (result.choosenLandTileCoordinates) {
-      context.applySetup (result.choosenLandTileCoordinates, this.turnPlayer);
-      if (this.placementPlayerIndexes.length) {
-        const turnPlayerIndex = this.placementPlayerIndexes.shift () as number;
-        this.turnPlayer = context.getPlayerByIndex (turnPlayerIndex);
-        const validLandTiles = baronyRules.getValidLandTilesForSetupPlacement (context);
-        return new BaronySetupPlacement ({ player: this.turnPlayer, validLandTiles }, this);
+    if (result.land) {
+      context.applySetup (result.land, this.player);
+      if (this.placementPlayerIds.length) {
+        this.player = this.placementPlayerIds.shift () as string;
+        return new BaronySetupPlacement ({ player: this.player }, this);
       } else {
         return BARONY_PROCESS_END_EVENT;
       } // if - else

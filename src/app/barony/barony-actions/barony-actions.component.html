@@ -1,5 +1,14 @@
 <div class="b-actions">
   <button
+    class="b-action b-cancel"
+    [ngClass]="{
+      'is-active': canCancel,
+      'is-disabled': !canCancel
+    }"
+    (click)="onCancelClick ()">
+    {{ labels.cancel }}
+  </button>
+  <button
     class="b-action b-pass"
     [ngClass]="{
       'is-active': canPass,

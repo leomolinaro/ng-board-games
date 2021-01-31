@@ -3,20 +3,23 @@
   [ngClass]="{ 'is-current': currentPlayer }"
   (click)="onCardClick ()">
   <span class="b-player-name">{{ player.name }}</span>
+  <span class="b-player-score">{{ player.score }}</span>
   <div class="b-player-content">
-    <div *ngFor="let pawnNode of pawnNodes"
+    <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
       class="b-player-pawn-image"
       [ngClass]="{ 'is-active': pawnNode.active }"
       (click)="onPawnClick (pawnNode)">
       <img [src]="pawnNode.source">
     </div>
-    <div *ngFor="let pawnNode of pawnNodes" class="b-player-pawn-quantity">
+    <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy" class="b-player-pawn-quantity">
       {{ $any (player.pawns)[pawnNode.type] }}
     </div>
-    <div *ngFor="let resourceNode of resourceNodes" class="b-player-resource-image">
+    <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="b-player-resource-image"
+      [ngClass]="{ 'is-active': resourceNode.active }"
+      (click)="onResourceClick (resourceNode)">
       <img [src]="resourceNode.source">
     </div>
-    <div *ngFor="let resourceNode of resourceNodes" class="b-player-resource-quantity">
+    <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="b-player-resource-quantity">
       {{ resourceNode.quantity }}
     </div>
   </div>

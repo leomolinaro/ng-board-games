@@ -1,28 +1,32 @@
 import { Directive, Input, OnInit, TemplateRef, ViewContainerRef } from "@angular/core";
 
-export class NgLetContext {
-  $implicit: any = null;
-  ngLet: any = null;
+export interface NgLetContext<T> {
+  $implicit: T | null;
+  ngLet: T | null;
 } // NgLetContext
 
 @Directive ({
   selector: "[ngLet]",
 })
-export class NgLetDirective implements OnInit {
-  private _context = new NgLetContext ();
-
-  @Input ()
-  set ngLet (value: any) {
-    this._context.$implicit = this._context.ngLet = value;
-  } // ngLet
-
+export class NgLetDirective<T> implements OnInit {
+  
   constructor (
-    private _vcr: ViewContainerRef,
-    private _templateRef: TemplateRef<NgLetContext>
+    private vcr: ViewContainerRef,
+    private templateRef: TemplateRef<NgLetContext<T>>
   ) { }
 
+  private context: NgLetContext<T> = {
+    $implicit: null,
+    ngLet: null
+  };
+
+  @Input ()
+  set ngLet (value: T) {
+    this.context.$implicit = this.context.ngLet = value;
+  } // ngLet
+
   ngOnInit () {
-    this._vcr.createEmbeddedView (this._templateRef, this._context);
+    this.vcr.createEmbeddedView (this.templateRef, this.context);
   } // ngOnInit
 
 } // NgLetDirective

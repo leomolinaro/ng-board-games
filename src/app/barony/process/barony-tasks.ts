@@ -1,12 +1,12 @@
-import { BaronyAction, BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyLandType, BaronyMovement, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyAction, BaronyConstruction, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyResourceType } from "../models";
 import { BaronyContext } from "../logic";
 import { IBaronyProcess, IBaronyProcessStep, IBaronyProcessTask, IBaronySubProcess } from "./barony-process.interfaces";
 
 export type BaronyProcessTask = BaronySetupPlacement | BaronyTurn;
 
 export interface IHasBaronySetupPlacement { afterPlacement (placement: BaronySetupPlacementResult, context: BaronyContext): IBaronyProcessStep; }
-export interface BaronySetupPlacementData { player: BaronyPlayer; validLandTiles: BaronyLandTile[]; }
-export interface BaronySetupPlacementResult { choosenLandTileCoordinates: BaronyLandTileCoordinates; }
+export interface BaronySetupPlacementData { player: string; }
+export interface BaronySetupPlacementResult { land: BaronyLandCoordinates; }
 export class BaronySetupPlacement implements IBaronyProcessTask<BaronySetupPlacementData, BaronySetupPlacementResult> {
   constructor (public readonly data: BaronySetupPlacementData, public readonly parent: IHasBaronySetupPlacement & IBaronySubProcess) { }
   readonly type = "task";
@@ -16,36 +16,34 @@ export class BaronySetupPlacement implements IBaronyProcessTask<BaronySetupPlace
 } // BaronySetupPlacement
 
 export interface IHasBaronyTurn { afterTurn (result: BaronyTurnResult, context: BaronyContext): IBaronyProcessStep; }
-export interface BaronyTurnData { player: BaronyPlayer; validActions: BaronyAction[]; }
-
+export interface BaronyTurnData { player: string; }
 interface ABaornyTurnResult {
-  readonly choosenAction: BaronyAction;
+  readonly action: BaronyAction;
 } // ABaornyTurnResult
 export interface BaronyTurnRectruitmentResult extends ABaornyTurnResult {
-  readonly choosenAction: "recruitment";
-  landTileCoordinates: BaronyLandTileCoordinates;
+  readonly action: "recruitment";
+  land: BaronyLandCoordinates;
   numberOfKnights: number;
 } // BaronyTurnRectruitmentResult
 export interface BaronyTurnMovementResult extends ABaornyTurnResult {
-  readonly choosenAction: "movement";
+  readonly action: "movement";
   movements: BaronyMovement[];
-  gainedResources: (BaronyResourceType | null)[];
 } // BaronyTurnRectruitmentResult
 export interface BaronyTurnConstructionResult extends ABaornyTurnResult {
-  readonly choosenAction: "construction";
+  readonly action: "construction";
   constructions: BaronyConstruction[];
 } // BaronyTurnConstructionResult
 export interface BaronyTurnNewCityResult extends ABaornyTurnResult {
-  readonly choosenAction: "newCity";
-  landTileCoordinates: BaronyLandTileCoordinates;
+  readonly action: "newCity";
+  land: BaronyLandCoordinates;
 } // BaronyTurnNewCityResult
 export interface BaronyTurnExpeditionResult extends ABaornyTurnResult {
-  readonly choosenAction: "expedition";
-  landTileCoordinates: BaronyLandTileCoordinates;
+  readonly action: "expedition";
+  land: BaronyLandCoordinates;
 } // BaronyTurnExpeditionResult
 export interface BaronyTurnNobleTiltleResult extends ABaornyTurnResult {
-  readonly choosenAction: "nobleTitle";
-  discardedResources: BaronyLandType[];
+  readonly action: "nobleTitle";
+  discardedResources: BaronyResourceType[];
 } // BaronyTurnNobleTiltleResult
 export type BaronyTurnResult = BaronyTurnRectruitmentResult
   | BaronyTurnMovementResult
@@ -53,7 +51,6 @@ export type BaronyTurnResult = BaronyTurnRectruitmentResult
   | BaronyTurnNewCityResult
   | BaronyTurnExpeditionResult
   | BaronyTurnNobleTiltleResult;
-
 export class BaronyTurn implements IBaronyProcessTask<BaronyTurnData> {
   constructor (public readonly data: BaronyTurnData, public readonly parent: IHasBaronyTurn & IBaronyProcess) { }
   readonly type = "task";

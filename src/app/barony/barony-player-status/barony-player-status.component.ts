@@ -13,6 +13,7 @@ interface BaronyResourceNode {
   source: string;
   type: BaronyResourceType;
   quantity: number;
+  active: boolean;
 } // BaronyResourceNode
 
 @Component ({
@@ -28,11 +29,16 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   @Input () player!: BaronyPlayer;
   @Input () @BooleanInput () currentPlayer: boolean = false;
   @Input () validBuildings: BaronyBuilding[] | null = null;
+  @Input () validResources: BaronyResourceType[] | null = null;
   @Output () selectPlayer = new EventEmitter<void> ();
   @Output () clickPawn = new EventEmitter<BaronyPawnType> ();
+  @Output () clickResource = new EventEmitter<BaronyResourceType> ();
 
   pawnNodes!: BaronyPawnNode[];
   resourceNodes!: BaronyResourceNode[];
+
+  pawnTrackBy = (pawnNode: BaronyPawnNode) => pawnNode.type;
+  resourceTrackBy = (resourceNode: BaronyResourceNode) => resourceNode.type;
   
   ngOnChanges (changes: SimpleChanges<BaronyPlayerStatusComponent>): void {
     let refreshPawns = false;
@@ -49,6 +55,9 @@ export class BaronyPlayerStatusComponent implements OnChanges {
     if (changes.validBuildings) {
       refreshPawns = true;
     } // if
+    if (changes.validResources) {
+      refreshResources = true;
+    } // if
 
     if (refreshPawns) {
       this.pawnNodes = baronyPawnTypes.map (pt => ({
@@ -63,7 +72,8 @@ export class BaronyPlayerStatusComponent implements OnChanges {
       this.resourceNodes = baronyResourceTypes.map (rt => ({
         source: `assets/barony/resources/${rt}.png`,
         type: rt,
-        quantity: this.player.resources[rt]
+        quantity: this.player.resources[rt],
+        active: (this.validResources ? this.validResources.includes (rt) : false)
       }));
     } // refreshResources
   } // ngOnChanges
@@ -79,5 +89,11 @@ export class BaronyPlayerStatusComponent implements OnChanges {
       this.clickPawn.emit (pawnNode.type);
     } // if
   } // onPawnClick
+
+  onResourceClick (resourceNode: BaronyResourceNode) {
+    if (resourceNode.active) {
+      this.clickResource.emit (resourceNode.type);
+    } // if
+  } // onResourceClick
 
 } // BaronyPlayerStatusComponent

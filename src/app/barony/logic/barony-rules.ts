@@ -1,8 +1,9 @@
-import { BaronyAction, BaronyColor, baronyColors, BaronyLandTile, BaronyPawnType, BaronyPlayer } from "../models";
-import { BaronyMovement, BaronyConstruction } from "../models";
+import { BaronyAction, BaronyColor, baronyColors, BaronyLand, BaronyLandCoordinates, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, baronyResourceTypes } from "../models";
+import { BaronyMovement } from "../models";
+import { BaronyPlay } from "../process";
 import { BaronyContext } from "./barony-context";
 
-export function getValidActions (player: BaronyPlayer, context: BaronyContext): BaronyAction[] {
+export function getValidActions (player: string, context: BaronyContext): BaronyAction[] {
   const validActions: BaronyAction[] = [];
   if (isRecruitmentValid (player, context)) { validActions.push ("recruitment"); }
   if (isMovementValid (player, context)) { validActions.push ("movement"); }
@@ -13,118 +14,208 @@ export function getValidActions (player: BaronyPlayer, context: BaronyContext): 
   return validActions;
 } // getValidActions
 
-export function getValidLandTilesForSetupPlacement (context: BaronyContext): BaronyLandTile[] {
-  const validLandTiles = context.getLandTiles ().filter (lt => {
+export function getValidLandsForSetupPlacement (context: BaronyContext): BaronyLand[] {
+  const validLandTiles = context.getLands ().filter (lt => {
     if (lt.type === "lake") { return false; }
     if (lt.type === "forest") { return false; }
     if (lt.pawns.length) { return false; }
-    const nearbyLandTiles = context.getNearbyLandTiles (lt.coordinates);
+    const nearbyLandTiles = getNearbyLands (lt.coordinates, context);
     if (nearbyLandTiles.some (nlt => nlt.pawns.length)) { return false; }
     return true;
   });
   return validLandTiles;
-} // getValidLandTilesForSetupPlacement
+} // getValidLandsForSetupPlacement
 
-export function getValidLandTilesForRecruitment (player: BaronyPlayer, context: BaronyContext): BaronyLandTile[] {
-  const validLandTiles = context.getLandTiles ().filter (lt => {
+function getNearbyLands (land: BaronyLandCoordinates, context: BaronyContext): BaronyLand[] {
+  const x = land.x;
+  const y = land.y;
+  const z = land.z;
+  const toReturn: BaronyLand[] = [];
+  let lt;
+  lt = context.getLandOrNull ({ x: x + 1, y: y - 1, z }); if (lt) { toReturn.push (lt); }
+  lt = context.getLandOrNull ({ x: x - 1, y: y + 1, z }); if (lt) { toReturn.push (lt); }
+  lt = context.getLandOrNull ({ x: x, y: y + 1 , z: z - 1 }); if (lt) { toReturn.push (lt); }
+  lt = context.getLandOrNull ({ x: x, y: y - 1, z: z + 1 }); if (lt) { toReturn.push (lt); }
+  lt = context.getLandOrNull ({ x: x - 1, y, z: z + 1 }); if (lt) { toReturn.push (lt); }
+  lt = context.getLandOrNull ({ x: x + 1, y, z: z - 1 }); if (lt) { toReturn.push (lt); }
+  return toReturn;
+} // getNearbyLands
+
+export function getValidLandsForRecruitment (playerId: string, context: BaronyContext): BaronyLand[] {
+  const player = context.getPlayer (playerId);
+  const validLandTiles = context.getLands ().filter (lt => {
     return lt.pawns.some (p => p.type === "city" && p.color === player.color);
   });
   return validLandTiles;
-} // getValidLandTileForRecruitment
+} // getValidLandsForRecruitment
 
-export function getValidSourceLandTilesForFirstMovement (player: BaronyPlayer, context: BaronyContext): BaronyLandTile[] {
-  return context.getLandTiles ().filter (lt => isValidFirstMovementSource (lt, player, context));
-} // getValidSourceLandTilesForFirstMovement
+export function getValidSourceLandsForFirstMovement (player: string, context: BaronyContext): BaronyLand[] {
+  return context.getLands ().filter (land => isValidFirstMovementSource (land, player, context));
+} // getValidSourceLandsForFirstMovement
 
-export function getValidSourceLandTilesForSecondMovement (player: BaronyPlayer, firstMovement: BaronyMovement, context: BaronyContext): BaronyLandTile[] {
-  return context.getLandTiles ().filter (lt => isValidSecondMovementSource (lt, player, firstMovement, context));
-} // getValidSourceLandTilesForSecondMovement
+export function getValidSourceLandsForSecondMovement (player: string, firstMovement: BaronyMovement, context: BaronyContext): BaronyLand[] {
+  return context.getLands ().filter (land => isValidSecondMovementSource (land, player, firstMovement, context));
+} // getValidSourceLandsForSecondMovement
 
-export function getValidTargetLandTilesForFirstMovement (movementSource: BaronyLandTile, player: BaronyPlayer, context: BaronyContext): BaronyLandTile[] {
-  return context.getNearbyLandTiles (movementSource.coordinates).filter (lt => isValidMovementTarget (lt, player));
-} // getValidTargetLandTilesForFirstMovement
+export function getValidTargetLandsForMovement (movementSource: BaronyLandCoordinates, player: string, context: BaronyContext): BaronyLand[] {
+  return getNearbyLands (movementSource, context).filter (lt => isValidMovementTarget (lt, player, context));
+} // getValidTargetLandsForMovement
 
-export function getValidLandTilesForConstruction (player: BaronyPlayer, context: BaronyContext) {
-  return context.getLandTiles ().filter (lt => isValidLandTileForConstruction (lt, player, context));
+export function getValidLandsForConstruction (player: string, context: BaronyContext) {
+  return context.getLands ().filter (lt => isValidLandTileForConstruction (lt, player, context));
 } // getValidLandTilesForConstruction
 
-export function getValidBuildingsForConstruction (player: BaronyPlayer, context: BaronyContext): ("stronghold" | "village")[] {
+export function getValidBuildingsForConstruction (playerId: string, context: BaronyContext): ("stronghold" | "village")[] {
+  const player = context.getPlayer (playerId);
   const toReturn: ("stronghold" | "village")[] = [];
   if (player.pawns.stronghold > 0) { toReturn.push ("stronghold"); }
   if (player.pawns.village > 0) { toReturn.push ("village"); }
   return toReturn;
 } // getValidBuildingsForConstruction
 
-export function getMaxKnightForRecruitment (landTile: BaronyLandTile, player: BaronyPlayer, context: BaronyContext): number {
+export function getMaxKnightForRecruitment (land: BaronyLandCoordinates, playerId: string, context: BaronyContext): number {
+  const player = context.getPlayer (playerId);
   const playerKnights = player.pawns.knight;
-  if (isLandTileAdiacentToLake (landTile, context)) {
+  if (isLandTileAdiacentToLake (land, context)) {
     return Math.min (playerKnights, 3);
   } else {
     return Math.min (playerKnights, 2);
   } // if - else
 } // getMaxKnightForRecruitment
 
-export function isRecruitmentValid (player: BaronyPlayer, context: BaronyContext): boolean {
+export function getValidLandsForNewCity (player: string, context: BaronyContext): BaronyLand[] {
+  return context.getLands ().filter (land => isValidLandForNewCity (land.coordinates, player, context));
+} // getValidLandsForNewCity
+
+export function getValidLandsForExpedition (player: string, context: BaronyContext): BaronyLand[] {
+  return context.getLands ().filter (land => isValidLandForExpedition (land.coordinates, player, context));
+} // getValidLandsForExpedition
+
+export function getValidResourcesForNobleTitle (playerId: string, context: BaronyContext): BaronyResourceType[] {
+  const player = context.getPlayer (playerId);
+  return baronyResourceTypes.filter (r => player.resources[r] > 0);
+} // getValidResourcesForNobleTitle
+
+export function getVillageDestroyedPlayer (landCoordinates: BaronyLandCoordinates, playerId: string, context: BaronyContext): BaronyPlayer {
+  const land = context.getLand (landCoordinates);
+  const player = context.getPlayer (playerId);
+  const villagePawn = land.pawns.find (p => p.type === "village" && p.color !== player.color) as BaronyPawn;
+  return context.getPlayers ().find (p => p.color === villagePawn.color) as BaronyPlayer;
+} // getVillageDestroyedPlayer
+
+export function getValidResourcesForVillageDestruction (playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return baronyResourceTypes.filter (r => player.resources[r]);
+} // getValidResourcesForVillageDestruction
+
+export function isRecruitmentValid (playerId: string, context: BaronyContext): boolean {
+  const player = context.getPlayer (playerId);
   if (!player.pawns.knight) { return false; }
-  const hasValidLandTiles = context.getLandTiles ().some (lt => lt.pawns.some (p => p.color === player.color && p.type === "city"));
+  const hasValidLandTiles = context.getLands ().some (lt => lt.pawns.some (p => p.color === player.color && p.type === "city"));
   return hasValidLandTiles;
 } // isRecruitmentValid
 
-export function isMovementValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return context.getLandTiles ().some (lt => isValidFirstMovementSource (lt, player, context));
+export function isMovementValid (player: string, context: BaronyContext): boolean {
+  return context.getLands ().some (land => isValidFirstMovementSource (land, player, context));
 } // isMovementValid
 
-export function isSecondMovementValid (player: BaronyPlayer, firstMovement: BaronyMovement, context: BaronyContext): boolean {
-  return context.getLandTiles ().some (lt => isValidSecondMovementSource (lt, player, firstMovement, context));
+export function isSecondMovementValid (player: string, firstMovement: BaronyMovement, context: BaronyContext): boolean {
+  return context.getLands ().some (land => isValidSecondMovementSource (land, player, firstMovement, context));
 } // isSecondMovementValid
 
-function isValidSecondMovementSource (landTile: BaronyLandTile, player: BaronyPlayer, firstMovement: BaronyMovement, context: BaronyContext) {
+function isValidSecondMovementSource (land: BaronyLand, player: string, firstMovement: BaronyMovement, context: BaronyContext) {
   return (
-    (landTile.coordinates !== firstMovement.toLandTileCoordinates && hasOneOrMoreOwnKnight (landTile, player)) ||
-    (landTile.coordinates === firstMovement.toLandTileCoordinates && hasTwoOrMoreOwnKigths (landTile, player))
+    (land.coordinates !== firstMovement.toLand && hasOneOrMoreOwnKnight (land.coordinates, player, context)) ||
+    (land.coordinates === firstMovement.toLand && hasTwoOrMoreOwnKigths (land.coordinates, player, context))
   ) &&
-  context.getNearbyLandTiles (landTile.coordinates).some (nlt => isValidMovementTarget (nlt, player));
+  getNearbyLands (land.coordinates, context).some (nlt => isValidMovementTarget (nlt, player, context));
 } // isValidSecondMovementSource
 
-function isValidFirstMovementSource (landTile: BaronyLandTile, player: BaronyPlayer, context: BaronyContext) {
-  return hasOneOrMoreOwnKnight (landTile, player) &&
-  context.getNearbyLandTiles (landTile.coordinates).some (nlt => isValidMovementTarget (nlt, player));
+function isValidFirstMovementSource (land: BaronyLand, player: string, context: BaronyContext) {
+  return hasOneOrMoreOwnKnight (land.coordinates, player, context) &&
+  getNearbyLands (land.coordinates, context).some (nlt => isValidMovementTarget (nlt, player, context));
 } // isValidFirstMovementSource
 
-function isValidMovementTarget (landTile: BaronyLandTile, player: BaronyPlayer) {
-  return landTile.type !== "lake" &&
-  !landTile.pawns.some (p => p.color !== player.color && (p.type === "city" || p.type === "stronghold")) &&
-  !hasTwoOrMorePawnsOfSameOpponent (landTile, player) &&
-  !(landTile.type === "mountain" && hasOneOrMoreOppoentKnight (landTile, player));
+function isValidMovementTarget (land: BaronyLand, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return land.type !== "lake" &&
+  !land.pawns.some (p => p.color !== player.color && (p.type === "city" || p.type === "stronghold")) &&
+  !hasTwoOrMorePawnsOfSameOpponent (land.coordinates, player.id, context) &&
+  !(land.type === "mountain" && hasOneOrMoreOpponentKnight (land.coordinates, player.id, context));
 } // isValidMovementTarget
 
-export function isConstructionValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return context.getLandTiles ().some (lt => isValidLandTileForConstruction (lt, player, context));
+export function isConstructionValid (player: string, context: BaronyContext): boolean {
+  return context.getLands ().some (land => isValidLandTileForConstruction (land, player, context));
 } // isConstructionValid
 
-function isValidLandTileForConstruction (landTile: BaronyLandTile, player: BaronyPlayer, context: BaronyContext) {
-  if (!hasOneOrMoreOwnKnight (landTile, player)) { return false; }
-  return landTile.pawns.every (p => p.type !== "city" && p.type !== "stronghold" && p.type !== "village" && p.color === player.color);
+function isValidLandTileForConstruction (land: BaronyLand, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  if (!hasOneOrMoreOwnKnight (land.coordinates, playerId, context)) { return false; }
+  return land.pawns.every (p => p.type !== "city" && p.type !== "stronghold" && p.type !== "village" && p.color === player.color);
 } // isValidLandTileForConstruction
 
-export function isNewCityValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return false;
+export function isNewCityValid (player: string, context: BaronyContext): boolean {
+  return hasPawnInReserve ("city", player, context) &&
+    context.getLandCoordinates ().some (land => isValidLandForNewCity (land, player, context))
 } // isNewCityValid
 
-export function isExpeditionValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return false;
+function isValidLandForNewCity (landCoordinates: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const land = context.getLand (landCoordinates);
+  const player = context.getPlayer (playerId);
+  return land.pawns.some (p => p.type === "village" && p.color === player.color) &&
+    land.type !== "forest" &&
+    !hasOneOrMoreOpponentKnight (landCoordinates, playerId, context) &&
+    !getNearbyLands (landCoordinates, context).some (nl => nl.pawns.some (p => p.type === "city"));
+} // isValidLandForNewCity
+
+function isValidLandForExpedition (landCoordinates: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const land = context.getLand (landCoordinates);
+  return land.type !== "lake" &&
+    !land.pawns.length &&
+    getNearbyLands (landCoordinates, context).length < 6;
+} // isValidLandForNewCity
+
+export function isExpeditionValid (player: string, context: BaronyContext): boolean {
+  return hasPawnsInReserve (2, "knight", player, context) &&
+    context.getLandCoordinates ().some (land => isValidLandForExpedition (land, player, context));
 } // isExpeditionValid
 
-export function isNobleTitleValid (player: BaronyPlayer, context: BaronyContext): boolean {
-  return false;
+export function isNobleTitleValid (playerId: string, context: BaronyContext): boolean {
+  return getPlayerResourcePoints (playerId, context) >= 15;
 } // isNobleTitleValid
 
-export function isDestroyingOpponentVillage (movementTarget: BaronyLandTile, player: BaronyPlayer): boolean {
-  return movementTarget.pawns.some (p => p.type === "village" && p.color !== player.color);
-} // isDestroyingOpponentVillage
+function getPlayerResourcePoints (playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  const sum = baronyResourceTypes.reduce (
+    (pSum, resource) => (pSum + player.resources[resource] * getResourcePoints (resource)),
+    0
+  );
+  return sum;
+} // getPlayerResourcePoints
 
-export function isLandTileAdiacentToLake (landTile: BaronyLandTile, context: BaronyContext): boolean {
-  const c = landTile.coordinates;
+export function getResourcePoints (resource: BaronyResourceType) {
+  switch (resource) {
+    case "fields": return 5;
+    case "plain": return 4;
+    case "forest": return 3;
+    case "mountain": return 2;
+  } // switch
+} // getResourcePoints
+
+export function isConflict (landCoordinates: BaronyLandCoordinates, playerId: string, context: BaronyContext): boolean {
+  const land = context.getLand (landCoordinates);
+  const player = context.getPlayer (playerId);
+  return land.pawns.some (p => p.color !== player.color)
+    && land.pawns.some (p => p.color === player.color);
+} // isConflict
+
+export function isVillageBeingDestroyed (landCoordinates: BaronyLandCoordinates, playerId: string, context: BaronyContext): boolean {
+  const land = context.getLand (landCoordinates);
+  const player = context.getPlayer (playerId);
+  return land.pawns.some (p => p.type === "village" && p.color !== player.color);
+} // isVillageBeingDestroyed
+
+export function isLandTileAdiacentToLake (land: BaronyLandCoordinates, context: BaronyContext): boolean {
   const offsets = [
     { x: 0, y: -1, z: 1 },
     { x: 1, y: -1, z: 0 },
@@ -134,38 +225,63 @@ export function isLandTileAdiacentToLake (landTile: BaronyLandTile, context: Bar
     { x: -1, y: 0, z: 1 }
   ];
   return offsets.some (o => {
-    const adiacentC = { x: c.x + o.x, y: c.y + o.y, z: c.z + o.z };
-    const adiacentLandTile = context.getLandTileByCoordinates (adiacentC);
-    if (adiacentLandTile) {
-      return adiacentLandTile.type === "lake";
+    const adiacentC = { x: land.x + o.x, y: land.y + o.y, z: land.z + o.z };
+    const adiacentLand = context.getLand (adiacentC);
+    if (adiacentLand) {
+      return adiacentLand.type === "lake";
     } else {
       return false;
     } // if - else
   });
 } // isLandTileNearLake
 
-function hasOneOrMoreOppoentKnight (landTile: BaronyLandTile, player: BaronyPlayer) {
-  return hasPawnsByColor (landTile, nPawns => nPawns >= 1, null, c => c !== player.color);
+function hasOneOrMoreOpponentKnight (land: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return hasPawnsByColor (land, nPawns => nPawns >= 1, null, c => c !== player.color, context);
 } // hasOneOrMoreOppoentKnight
 
-function hasOneOrMoreOwnKnight (landTile: BaronyLandTile, player: BaronyPlayer) {
-  return hasPawnsByColor (landTile, nPawns => nPawns >= 1, p => p === "knight", c => c === player.color);
+function hasOneOrMoreOwnKnight (land: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return hasPawnsByColor (land, nPawns => nPawns >= 1, p => p === "knight", c => c === player.color, context);
 } // hasOneOwnKnight
 
-function hasTwoOrMoreOwnKigths (landTile: BaronyLandTile, player: BaronyPlayer) {
-  return hasPawnsByColor (landTile, nPawns => nPawns >= 2, p => p === "knight", c => c === player.color);
+function hasTwoOrMoreOwnKigths (land: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return hasPawnsByColor (land, nPawns => nPawns >= 2, p => p === "knight", c => c === player.color, context);
 } // hasTwoOwnKigths
 
-function hasTwoOrMorePawnsOfSameOpponent (landTile: BaronyLandTile, player: BaronyPlayer) {
-  return hasPawnsByColor (landTile, nPawns => nPawns >= 2, null, c => c !== player.color);
+function hasTwoOrMorePawnsOfSameOpponent (land: BaronyLandCoordinates, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return hasPawnsByColor (land, nPawns => nPawns >= 2, null, c => c !== player.color, context);
 } // hasTwoPawnsOfSameOpponent
 
-function hasPawnsByColor (landTile: BaronyLandTile, some: (nPawns: number) => boolean, pawnFilter?: ((p: BaronyPawnType) => boolean) | null, colorFilter?: ((c: BaronyColor) => boolean) | null) {
+function hasPawnsByColor (
+  landCoordinates: BaronyLandCoordinates,
+  some: (nPawns: number) => boolean,
+  pawnFilter: ((p: BaronyPawnType) => boolean) | null,
+  colorFilter: ((c: BaronyColor) => boolean) | null,
+  context: BaronyContext
+) {
+  const land = context.getLand (landCoordinates);
   const pawns: Record<BaronyColor, number> = {
     yellow: 0, red: 0, green: 0, blue: 0
   };
-  const filteredPawns = pawnFilter ? landTile.pawns.filter (p => pawnFilter (p.type)) : landTile.pawns;
+  const filteredPawns = pawnFilter ? land.pawns.filter (p => pawnFilter (p.type)) : land.pawns;
   filteredPawns.forEach (p => pawns[p.color] += 1);
   const filteredColors = colorFilter ? baronyColors.filter (c => colorFilter (c)) : baronyColors;
   return filteredColors.some (c => some (pawns[c]));
 } // hasPawns
+
+function hasPawnInReserve (pawnType: BaronyPawnType, playerId: string, context: BaronyContext) {
+  return hasPawnsInReserve (1, pawnType, playerId, context);
+} // hasPawnInReserve
+
+function hasPawnsInReserve (quantity: number, pawnType: BaronyPawnType, playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return player.pawns[pawnType] >= quantity;
+} // hasPawnInReserve
+
+export function hasResourcesToTakeForVillageDestruction (playerId: string, context: BaronyContext) {
+  const player = context.getPlayer (playerId);
+  return baronyResourceTypes.some (r => player.resources[r]);
+} // hasResourcesToTakeForVillageDestruction

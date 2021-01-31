@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { arrayUtil } from "@bg-utils";
-import { BaronyLandTile, BaronyLandTileCoordinates, getLandTileCoordinateKey } from "../models";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { arrayUtil, SimpleChanges } from "@bg-utils";
+import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../models";
 
 @Component ({
   selector: "barony-map",
@@ -12,24 +12,24 @@ export class BaronyMapComponent implements OnChanges {
 
   constructor () { }
 
-  @Input () landTiles!: BaronyLandTile[];
-  @Input () validLandTiles: BaronyLandTileCoordinates[] | null = null;
-  @Output () landTileClick = new EventEmitter<BaronyLandTile> ();
+  @Input () lands!: BaronyLand[];
+  @Input () validLands: BaronyLandCoordinates[] | null = null;
+  @Output () landTileClick = new EventEmitter<BaronyLand> ();
 
   isValid: { [key: string]: boolean } | null = null;
 
-  ngOnChanges (changes: SimpleChanges): void {
-    if (changes.validLandTiles) {
-      if (this.validLandTiles) {
-        this.isValid = arrayUtil.toMap (this.validLandTiles, lt => getLandTileCoordinateKey (lt), () => true);
+  ngOnChanges (changes: SimpleChanges<BaronyMapComponent>): void {
+    if (changes.validLands) {
+      if (this.validLands) {
+        this.isValid = arrayUtil.toMap (this.validLands, lt => landCoordinatesToId (lt), () => true);
       } else {
         this.isValid = null;
       } // if - else
     } // if
   } // ngOnChanges
 
-  onLandTileClick (landTile: BaronyLandTile) {
-    if (this.isValid && this.isValid[landTile.key]) {
+  onLandTileClick (landTile: BaronyLand) {
+    if (this.isValid && this.isValid[landTile.id]) {
       this.landTileClick.next (landTile);
     } // if
   } // onLandTileClick

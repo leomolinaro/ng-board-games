@@ -1,32 +1,46 @@
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyColor, BaronyConstruction, BaronyLandTile, BaronyLandTileCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, getLandTileCoordinateKey } from "../models";
-import { createPlayer, getRandomLandTiles } from "./barony-initializer";
+import { moveMessagePortToContext } from "worker_threads";
+import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
+import { createPlayer, getRandomLands } from "./barony-initializer";
+
+interface BaronyGameBox {
+  removedPawns: BaronyPawn[];
+} // BaronyGameBox
 
 interface BaronyState {
-  players: BaronyPlayer[];
-  landTiles: {
-    map: { [key: string]: BaronyLandTile };
-    coordinates: BaronyLandTileCoordinates[];
+  players: {
+    map: { [id: string]: BaronyPlayer },
+    ids: string[]
   };
+  lands: {
+    map: { [id: string]: BaronyLand };
+    coordinates: BaronyLandCoordinates[];
+  };
+  gameBox: BaronyGameBox;
 } // BaronyState
 
 export class BaronyContext extends BgStore<BaronyState> {
 
   constructor () {
     super ({
-      players: [
-        createPlayer (0, "Leo", "blue"),
-        createPlayer (1, "Nico", "red"),
-        // { name: "Rob", color: "yellow" },
-        // { name: "Salvatore", color: "green" }
-      ],
-      landTiles: getRandomLandTiles (2)
+      players: {
+        map: {
+          leo: createPlayer ("leo", "Leo", "blue"),
+          nico: createPlayer ("nico", "Nico", "red")
+        },
+        ids: ["leo", "nico"]
+      },
+      lands: getRandomLands (2),
+      gameBox: {
+        removedPawns: []
+      }
     });
   } // constructor
 
   private notTemporaryState: BaronyState | null = null;
+  isTemporaryState () { return !!this.notTemporaryState; }
   startTemporaryState () {
     this.notTemporaryState = this.get ();
   } // startTemporaryState
@@ -40,148 +54,213 @@ export class BaronyContext extends BgStore<BaronyState> {
     } // if - else
   } // endTemporaryState
 
-  getPlayers (): BaronyPlayer[] { return this.get (s => s.players); }
-  getPlayerByIndex (index: number): BaronyPlayer { return this.getPlayers ()[index]; }
+  getPlayers (): BaronyPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
+  getPlayer (id: string): BaronyPlayer { return this.get (s => s.players.map[id]); }
+  getPlayerIds () { return this.get (s => s.players.ids); }
+  getPlayerMap () { return this.get (s => s.players.map); }
   getNumberOfPlayers (): number { return this.getPlayers ().length; }
-  getLandTiles (): BaronyLandTile[] {
-    const map = this.get (s => s.landTiles.map);
-    const coordinates = this.get (s => s.landTiles.coordinates);
-    return coordinates.map (coordinate => map[getLandTileCoordinateKey (coordinate)]);
+  getLandCoordinates (): BaronyLandCoordinates[] {
+    return this.get (s => s.lands.coordinates);
+  } // getLandCoordinates
+  getLand (land: BaronyLandCoordinates) { return this.get (s => s.lands.map[landCoordinatesToId (land)]); }
+  getLands (): BaronyLand[] {
+    const map = this.get (s => s.lands.map);
+    const coordinates = this.get (s => s.lands.coordinates);
+    return coordinates.map (coordinate => map[landCoordinatesToId (coordinate)]);
   } // getLandTiles
-  getLandTileByCoordinates (landTileCoordinates: BaronyLandTileCoordinates): BaronyLandTile | null {
-    const key = getLandTileCoordinateKey (landTileCoordinates);
-    const landTile = this.get (s => s.landTiles.map[key]);
-    return landTile || null;
-  } // getLandTileByCoordinates
-  getNearbyLandTiles (landTileCoordinates: BaronyLandTileCoordinates): BaronyLandTile[] {
-    const x = landTileCoordinates.x;
-    const y = landTileCoordinates.y;
-    const z = landTileCoordinates.z;
-    const toReturn: BaronyLandTile[] = [];
-    let lt;
-    lt = this.getLandTileByCoordinates ({ x: x + 1, y: y - 1, z }); if (lt) { toReturn.push (lt); }
-    lt = this.getLandTileByCoordinates ({ x: x - 1, y: y + 1, z }); if (lt) { toReturn.push (lt); }
-    lt = this.getLandTileByCoordinates ({ x: x, y: y + 1 , z: z - 1 }); if (lt) { toReturn.push (lt); }
-    lt = this.getLandTileByCoordinates ({ x: x, y: y - 1, z: z + 1 }); if (lt) { toReturn.push (lt); }
-    lt = this.getLandTileByCoordinates ({ x: x - 1, y, z: z + 1 }); if (lt) { toReturn.push (lt); }
-    lt = this.getLandTileByCoordinates ({ x: x + 1, y, z: z - 1 }); if (lt) { toReturn.push (lt); }
-    return toReturn;
-  } // getNearbyLandTiles
+  getLandOrNull (land: BaronyLandCoordinates): BaronyLand | null { return this.getLand (land) || null; }
 
-  private selectLandTileMap$ () { return this.select$ (s => s.landTiles.map); }
-  private selectLandTileKeys$ () { return this.select$ (s => s.landTiles.coordinates); }
-  selectLandTiles$ (): Observable<BaronyLandTile[]> {
+  private selectLandTileMap$ () { return this.select$ (s => s.lands.map); }
+  private selectLandTileKeys$ () { return this.select$ (s => s.lands.coordinates); }
+  selectLands$ (): Observable<BaronyLand[]> {
     return this.select$ (
       this.selectLandTileMap$ (),
       this.selectLandTileKeys$ (),
-      (map, keys) => keys.map (k => map[getLandTileCoordinateKey (k)])
+      (map, keys) => keys.map (k => map[landCoordinatesToId (k)])
     );
   } // selectLandTiles$
-  selectPlayers$ (): Observable<BaronyPlayer[]> { return this.select$ (s => s.players); }
+  selectPlayerIds$ () { return this.select$ (s => s.players.ids); }
+  selectPlayerMap$ () { return this.select$ (s => s.players.map); }
 
-  private addPawnToPlayer (pawnType: BaronyPawnType, playerIndex: number) {
+  private updatePlayer (playerId: string, updater: (p: BaronyPlayer) => BaronyPlayer) {
     this.update (s => ({
       ...s,
-      players: immutableUtil.listReplaceByIndex (playerIndex, {
-        ...s.players[playerIndex],
-        pawns: {
-          ...s.players[playerIndex].pawns,
-          [pawnType]: s.players[playerIndex].pawns[pawnType] + 1
+      players: {
+        ...s.players,
+        map: {
+          ...s.players.map,
+          [playerId]: updater (s.players.map[playerId])
         }
-      }, s.players)
+      }
+    }));
+  } // updatePlayer
+
+  private updateGameBox (updater: (gameBox: BaronyGameBox) => BaronyGameBox) {
+    this.update (s => ({
+      ...s,
+      gameBox: updater (s.gameBox)
+    }));
+  } // updateGameBox
+
+  private updateLand (land: BaronyLandCoordinates, updater: (lt: BaronyLand) => BaronyLand) {
+    const key = landCoordinatesToId (land);
+    this.update (s => ({
+      ...s,
+      lands: {
+        ...s.lands,
+        map: {
+          ...s.lands.map,
+          [key]: updater (s.lands.map[key])
+        }
+      }
+    }));
+  } // updatePlayer
+
+  private addPawnToPlayer (pawnType: BaronyPawnType, playerId: string) {
+    this.updatePlayer (playerId, p => ({
+      ...p,
+      pawns: {
+        ...p.pawns,
+        [pawnType]: p.pawns[pawnType] + 1
+      }
     }));
   } // addPawnToPlayer
 
-  private removePawnFromPlayer (pawnType: BaronyPawnType, playerIndex: number) {
-    this.update (s => ({
-      ...s,
-      players: immutableUtil.listReplaceByIndex (playerIndex, {
-        ...s.players[playerIndex],
-        pawns: {
-          ...s.players[playerIndex].pawns,
-          [pawnType]: s.players[playerIndex].pawns[pawnType] - 1
-        }
-      }, s.players)
+  private removePawnFromPlayer (pawnType: BaronyPawnType, playerId: string) {
+    this.updatePlayer (playerId, p => ({
+      ...p,
+      pawns: {
+        ...p.pawns,
+        [pawnType]: p.pawns[pawnType] - 1
+      }
     }));
   } // removePawnFromPlayer
 
-  private addPawnToLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
-    const key = getLandTileCoordinateKey (landTileCoordinates);
-    this.update (s => ({
-      ...s,
-      landTiles: {
-        ...s.landTiles,
-        map: {
-          ...s.landTiles.map,
-          [key]: {
-            ...s.landTiles.map[key],
-            pawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], s.landTiles.map[key].pawns)
-          }
-        }
-      }
+  private addPawnToLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, land: BaronyLandCoordinates) {
+    this.updateLand (land, lt => ({
+      ...lt,
+      pawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], lt.pawns)
     }));
   } // addPawnToLandTile
   
-  private removePawnFromLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, landTileCoordinates: BaronyLandTileCoordinates) {
-    const key = getLandTileCoordinateKey (landTileCoordinates);
-    this.update (s => ({
-      ...s,
-      landTiles: {
-        ...s.landTiles,
-        map: {
-          ...s.landTiles.map,
-          [key]: {
-            ...s.landTiles.map[key],
-            pawns: immutableUtil.listRemoveFirst (p => p.type === pawnType && p.color === pawnColor, s.landTiles.map[key].pawns)
-          }
-        }
-      }
+  private removePawnFromLandTile (pawnType: BaronyPawnType, pawnColor: BaronyColor, land: BaronyLandCoordinates) {
+    this.updateLand (land, lt => ({
+      ...lt,
+      pawns: immutableUtil.listRemoveFirst (p => p.type === pawnType && p.color === pawnColor, lt.pawns)
     }));
   } // removePawnFromLandTile
 
-  private addResourceToPlayer (landTileCoordinates: BaronyLandTileCoordinates, playerIndex: number) {
-    this.update (s => {
-      const key = getLandTileCoordinateKey (landTileCoordinates);
-      const resource: BaronyResourceType = s.landTiles.map[key].type as BaronyResourceType;
-      const player = s.players[playerIndex];
-      const resources = player.resources;
-      return {
-        ...s,
-        players: immutableUtil.listReplaceByIndex (playerIndex, {
-          ...player,
-          resources: {
-            ...resources,
-            [resource]: resources[resource] + 1
-          }
-        }, s.players)
-      };
-    });
+  private addResourceToPlayer (resource: BaronyResourceType, playerId: string) {
+    this.updatePlayer (playerId, p => ({
+      ...p,
+      resources: {
+        ...p.resources,
+        [resource]: p.resources[resource] + 1
+      }
+    }));
   } // addResourceToPlayer
 
-  applySetup (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer) {
-    this.removePawnFromPlayer ("knight", player.index);
-    this.addPawnToLandTile ("knight", player.color, landTileCoordinates);
-    this.removePawnFromPlayer ("city", player.index);
-    this.addPawnToLandTile ("city", player.color, landTileCoordinates);
+  private removeResourceFromPlayer (resource: BaronyResourceType, playerId: string) {
+    this.updatePlayer (playerId, p => ({
+      ...p,
+      resources: {
+        ...p.resources,
+        [resource]: p.resources[resource] - 1
+      }
+    }));
+  } // addResourceToPlayer
+
+  private getResourceFromLand (landCoordinates: BaronyLandCoordinates): BaronyResourceType {
+    const land = this.getLand (landCoordinates);
+    return land?.type as BaronyResourceType;
+  } // getResourceFromLand
+
+  private addVictoryPoints (victoryPoints: number, playerId: string) {
+    this.updatePlayer (playerId, p => ({
+      ...p,
+      score: p.score + victoryPoints
+    }));
+  } // addVictoryPoints
+
+  private addPawnToGameBox (pawnType: BaronyPawnType, pawnColor: BaronyColor) {
+    this.updateGameBox (gameBox => ({
+      ...gameBox,
+      removedPawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], gameBox.removedPawns)
+    }));
+  } // addPawnToGameBox
+
+  applySetup (land: BaronyLandCoordinates, player: string) {
+    const playerColor = this.getPlayer (player).color;
+    this.removePawnFromPlayer ("knight", player);
+    this.addPawnToLandTile ("knight", playerColor, land);
+    this.removePawnFromPlayer ("city", player);
+    this.addPawnToLandTile ("city", playerColor, land);
   } // applySetup
 
-  applyRecruitment (landTileCoordinates: BaronyLandTileCoordinates, player: BaronyPlayer) {
-    this.removePawnFromPlayer ("knight", player.index);
-    this.addPawnToLandTile ("knight", player.color, landTileCoordinates);
+  applyRecruitment (land: BaronyLandCoordinates, playerId: string) {
+    const player = this.getPlayer (playerId);
+    this.removePawnFromPlayer ("knight", player.id);
+    this.addPawnToLandTile ("knight", player.color, land);
   } // applyRecruitment
 
-  applyMovement (movement: BaronyMovement, gainedResource: BaronyResourceType | null, player: BaronyPlayer) {
-    this.removePawnFromLandTile ("knight", player.color, movement.fromLandTileCoordinates);
-    this.addPawnToLandTile ("knight", player.color, movement.toLandTileCoordinates);
-    // TODO firstGainedResource
+  applyMovement (movement: BaronyMovement, playerId: string) {
+    const player = this.getPlayer (playerId);
+    this.removePawnFromLandTile ("knight", player.color, movement.fromLand);
+    this.addPawnToLandTile ("knight", player.color, movement.toLand);
+    if (movement.conflict) {
+      const land = this.getLand (movement.toLand);
+      let villagePlayer: BaronyPlayer | null = null;
+      land.pawns
+      .filter (pawn => pawn.color !== player.color)
+      .forEach (pawn => {
+        const pawnPlayer = this.getPlayers ().find (p => p.color === pawn.color) as BaronyPlayer;
+        this.removePawnFromLandTile (pawn.type, pawn.color, land.coordinates);
+        this.addPawnToPlayer (pawn.type, pawnPlayer.id);
+        if (pawn.type === "village") {
+          villagePlayer = pawnPlayer;
+        } // if
+      });
+      if (villagePlayer && movement.gainedResource) {
+        this.removeResourceFromPlayer (movement.gainedResource, (villagePlayer as BaronyPlayer).id);
+        this.addResourceToPlayer (movement.gainedResource, playerId);
+      } // if
+    } // if
   } // applyMovement
 
-  applyConstruction (construction: BaronyConstruction, player: BaronyPlayer) {
-    this.removePawnFromLandTile ("knight", player.color, construction.landTileCoordinates);
-    this.removePawnFromPlayer (construction.building, player.index);
-    this.addPawnToLandTile (construction.building, player.color, construction.landTileCoordinates);
-    this.addPawnToPlayer ("knight", player.index);
-    this.addResourceToPlayer (construction.landTileCoordinates, player.index);
+  applyConstruction (construction: BaronyConstruction, playerId: string) {
+    const player = this.getPlayer (playerId);
+    this.removePawnFromLandTile ("knight", player.color, construction.land);
+    this.removePawnFromPlayer (construction.building, player.id);
+    this.addPawnToLandTile (construction.building, player.color, construction.land);
+    this.addPawnToPlayer ("knight", player.id);
+    const resource = this.getResourceFromLand (construction.land);
+    this.addResourceToPlayer (resource, player.id);
   } // applyConstruction
+  
+  applyNewCity (land: BaronyLandCoordinates, playerId: string) {
+    const player = this.getPlayer (playerId);
+    this.removePawnFromLandTile ("village", player.color, land);
+    this.addPawnToLandTile ("city", player.color, land);
+    this.addPawnToPlayer ("village", playerId);
+    this.removePawnFromPlayer ("city", playerId);
+    this.addVictoryPoints (10, playerId);
+  } // applyNewCity
+
+  applyExpedition (land: BaronyLandCoordinates, playerId: string) {
+    const player = this.getPlayer (playerId);
+    this.removePawnFromPlayer ("knight", playerId);
+    this.addPawnToLandTile ("knight", player.color, land);
+    this.removePawnFromPlayer ("knight", playerId);
+    this.addPawnToGameBox ("knight", player.color);
+  } // applyExpedition
+
+  discardResource (resource: BaronyResourceType, playerId: string) {
+    this.removeResourceFromPlayer (resource, playerId);
+  } // discardResource
+
+  applyNobleTitle (resources: BaronyResourceType[], playerId: string) {
+    resources.forEach (resource => this.discardResource (resource, playerId));
+    this.addVictoryPoints (15, playerId);
+  } // applyNobleTitle
 
 } // BaronyContext

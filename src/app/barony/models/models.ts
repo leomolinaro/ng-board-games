@@ -6,7 +6,7 @@ export type BaronyAction = "recruitment" | "movement" | "construction" | "newCit
 export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
 
 export interface BaronyPlayer {
-  index: number;
+  id: string;
   name: string;
   color: BaronyColor;
   score: number;
@@ -19,18 +19,18 @@ export interface BaronyPawn {
   type: BaronyPawnType;
 } // BaronyPawn
 
-export interface BaronyLandTileCoordinates {
+export interface BaronyLandCoordinates {
   x: number;
   y: number;
   z: number;
-} // BaronyLandTileCoordinates
+} // BaronyLandCoordinates
 
-export interface BaronyLandTile {
-  key: string;
-  coordinates: BaronyLandTileCoordinates;
+export interface BaronyLand {
+  id: string;
+  coordinates: BaronyLandCoordinates;
   type: BaronyLandType;
   pawns: BaronyPawn[];
-} // BaronyLandTile
+} // BaronyLand
 
 export interface BaronyLandPiece {
   1: BaronyLandType;
@@ -39,16 +39,18 @@ export interface BaronyLandPiece {
   quantity: number;
 } // BaronyLandPiece
 
-export function getLandTileCoordinateKey (c: BaronyLandTileCoordinates) {
+export function landCoordinatesToId (c: BaronyLandCoordinates) {
   return `${c.x}_${c.y}_${c.z}`;
-} // getLandTileCoordinateKey
+} // landCoordinatesToId
 
 export interface BaronyMovement {
-  fromLandTileCoordinates: BaronyLandTileCoordinates;
-  toLandTileCoordinates: BaronyLandTileCoordinates;
+  fromLand: BaronyLandCoordinates;
+  toLand: BaronyLandCoordinates;
+  conflict: boolean;
+  gainedResource: BaronyResourceType | null;
 } // BaronyMovement
 
 export interface BaronyConstruction {
-  landTileCoordinates: BaronyLandTileCoordinates;
+  land: BaronyLandCoordinates;
   building: BaronyBuilding;
 } // BaronyConstruction

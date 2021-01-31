@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { of, Subject, Subscription } from "rxjs";
-import { first, switchMap, tap } from "rxjs/operators";
-import { BaronyAction, BaronyBuilding, BaronyLandTile, BaronyPawnType, BaronyPlayer } from "../models";
+import { Subscription } from "rxjs";
+import { tap } from "rxjs/operators";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../models";
 import { BaronyBoardService } from "./barony-board.service";
 
 @Component ({
@@ -16,23 +16,27 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     private service: BaronyBoardService
   ) { }
 
-  landTiles$ = this.service.selectLandTiles$ ();
-  validLandTiles$ = this.service.selectValidLandTiles$ ();
+  lands$ = this.service.selectLands$ ();
+  currentPlayer$ = this.service.selectCurrentPlayer$ ();
+  otherPlayers$ = this.service.selectOtherPlayers$ ();
+  message$ = this.service.selectMessage$ ();
+  validLands$ = this.service.selectValidLands$ ();
   validActions$ = this.service.selectValidActions$ ();
   validBuildings$ = this.service.selectValidBuildings$ ();
+  validResources$ = this.service.selectValidResources$ ();
   canPass$ = this.service.selectCanPass$ ();
+  canCancel$ = this.service.selectCanCancel$ ();
   maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ().pipe (tap (max => this.numberOfKnights = max ? max : 0));
-  otherPlayers$ = this.service.selectOtherPlayers$ ();
-  currentPlayer$ = this.service.selectCurrentPlayer$ ();
-  message$ = this.service.selectMessage$ ();
 
   numberOfKnights = 1;
 
   resolveTasksSubscription!: Subscription;
 
+  playerTrackBy = (player: BaronyPlayer) => player.id;
+
   ngOnInit (): void {
-    this.service.setCurrentPlayer (0);
-    this.service.setAiPlayers ([1]);
+    this.service.setCurrentPlayer ("leo");
+    this.service.setAiPlayers (["nico"]);
     this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
   } // ngOnInit
 
@@ -40,29 +44,37 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     this.resolveTasksSubscription.unsubscribe ();
   } // ngOnDestroy
 
-  onSelectPlayerChange (player: BaronyPlayer) {
-    this.service.setCurrentPlayer (player.index);
-  } // onSelectPlayerChange
+  onPlayerSelect (player: BaronyPlayer) {
+    this.service.setCurrentPlayer (player.id);
+  } // onPlayerSelect
 
   onPlayerBuildingClick (pawnType: BaronyPawnType) {
-    this.service.selectBuilding (pawnType as BaronyBuilding);
+    this.service.buildingChange (pawnType as BaronyBuilding);
   } // onPlayerBuildingClick
 
-  onLandTileClick (landTile: BaronyLandTile) {
-    this.service.selectLandTile (landTile);
+  onLandTileClick (landTile: BaronyLand) {
+    this.service.landTileChange (landTile);
   } // onLandTileClick
 
   onActionClick (action: BaronyAction) {
-    this.service.selectAction (action);
+    this.service.actionChange (action);
   } // onActionClick
 
   onPassClick () {
-    this.service.selectPass ();
+    this.service.passChange ();
   } // onPassClick
 
+  onCancelClick () {
+    this.service.cancelChange ();
+  } // onCancelClick
+
   onKnightsConfirm () {
-    this.service.selectNumberOfKnights (this.numberOfKnights);
+    this.service.numberOfKnightsChange (this.numberOfKnights);
     this.numberOfKnights = 1;
   } // onKnightsConfirm
+
+  onPlayerResourceClick (resource: BaronyResourceType, player: BaronyPlayer) {
+    this.service.resourceChange (resource, player);
+  } // onPlayerResourceClick
 
 } // BaronyBoardComponent

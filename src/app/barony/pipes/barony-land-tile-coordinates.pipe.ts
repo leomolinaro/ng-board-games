@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { BaronyLandTileCoordinates } from "../models";
+import { BaronyLandCoordinates } from "../models";
 
 const sqrt3Half = Math.sqrt (3) / 2.0;
 const half = 0.5;
@@ -12,9 +12,9 @@ const scaleForGap = 1.02;
 @Pipe ({
   name: "baronyLandTileCoordinates"
 })
-export class BaronyLandTileCoordinatesPipe implements PipeTransform {
+export class BaronyLandCoordinatesPipe implements PipeTransform {
 
-  transform (c: BaronyLandTileCoordinates, to: "hexagon" | "center-x" | "center-y", translate?: number): string {
+  transform (c: BaronyLandCoordinates, to: "hexagon" | "center-x" | "center-y", translate?: number): string {
     switch (to) {
       case "hexagon": {
         const center = hexToCartesian (c);
@@ -52,7 +52,7 @@ export class BaronyLandTileCoordinatesPipe implements PipeTransform {
     } // switch
   } // transform
 
-} // BaronyLandTileCoordinatesPipe
+} // BaronyLandCoordinatesPipe
 
 export function hexToCartesian (hex: { x: number, y: number}): { x: number, y: number} {
   const radius = (Math.abs (hex.x) + Math.abs (hex.y) + Math.abs (hex.x + hex.y)) / 2;

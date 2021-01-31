@@ -3,6 +3,9 @@
 .b-player-card {
   padding: 2vmin;
   font-size: 3vmin;
+  .b-player-score {
+    margin-left: 5px;
+  }
   &.is-red {
     background-color: $red-light;
   }
@@ -17,6 +20,9 @@
   }
   &.is-current {
     .b-player-name {
+      font-weight: 800;
+    }
+    .b-player-score {
       font-weight: 800;
     }
   }

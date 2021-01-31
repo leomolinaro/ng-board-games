@@ -1,11 +1,8 @@
-<!-- <div *ngFor="let landTile of landTiles$ | async">
-  {{ landTile.coordinates.x }} {{ landTile.type }}
-</div> -->
 <div class="b-board">
   <div class="b-board-map">
     <barony-map
-      [landTiles]="(landTiles$ | async)!"
-      [validLandTiles]="(validLandTiles$ | async)!"
+      [lands]="(lands$ | async)!"
+      [validLands]="(validLands$ | async)!"
       (landTileClick)="onLandTileClick ($event)">
     </barony-map>
   </div>
@@ -23,18 +20,22 @@
         </barony-knights-selector>
       </div>
     </div>
-    <div class="b-board-bottom-left">
-      <div *ngFor="let otherPlayer of (otherPlayers$ | async)" class="b-board-player-widget">
+    <div class="b-board-bottom-left" *ngLet="validResources$ | async as validResources">
+      <div *ngFor="let otherPlayer of (otherPlayers$ | async); trackBy: playerTrackBy" class="b-board-player-widget">
         <barony-player-status
-          (selectPlayer)="onSelectPlayerChange (otherPlayer)"
-          [player]="otherPlayer">
+          (selectPlayer)="onPlayerSelect (otherPlayer)"
+          [player]="otherPlayer"
+          [validResources]="(validResources && validResources.player === otherPlayer.id) ? validResources.resources : null"
+          (clickResource)="onPlayerResourceClick ($event, otherPlayer)">
         </barony-player-status>
       </div>
       <div class="b-board-player-widget" *ngIf="currentPlayer">
         <barony-player-status
           [player]="currentPlayer"
           [validBuildings]="validBuildings$ | async"
+          [validResources]="(validResources && validResources.player === currentPlayer.id) ? validResources.resources : null"
           (clickPawn)="onPlayerBuildingClick ($event)"
+          (clickResource)="onPlayerResourceClick ($event, currentPlayer)"
           currentPlayer>
         </barony-player-status>
       </div>
@@ -42,13 +43,17 @@
     <div class="b-board-bottom-right">
       <ng-container *ngLet="validActions$ | async as validActions">
         <ng-container *ngLet="canPass$ | async as canPass">
-          <barony-actions
-            *ngIf="validActions || canPass"
-            [canPass]="canPass"
-            [validActions]="validActions"
-            (actionClick)="onActionClick ($event)"
-            (passClick)="onPassClick ()">
-          </barony-actions>
+          <ng-container *ngLet="canCancel$ | async as canCancel">
+            <barony-actions
+              *ngIf="validActions || canPass || canCancel"
+              [canPass]="canPass"
+              [canCancel]="canCancel"
+              [validActions]="validActions"
+              (actionClick)="onActionClick ($event)"
+              (passClick)="onPassClick ()"
+              (cancelClick)="onCancelClick ()">
+            </barony-actions>
+          </ng-container>
         </ng-container>
       </ng-container>
     </div>

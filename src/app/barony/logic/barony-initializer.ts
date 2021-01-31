@@ -1,9 +1,9 @@
 import { arrayUtil, randomUtil } from "@bg-utils";
-import { BaronyColor, BaronyLandTile, BaronyLandTileCoordinates, baronyLandTypes, BaronyPlayer, getLandTileCoordinateKey } from "../models";
+import { BaronyColor, BaronyLand, BaronyLandCoordinates, baronyLandTypes, BaronyPlayer, landCoordinatesToId } from "../models";
 
-export function createPlayer (index: number, name: string, color: BaronyColor): BaronyPlayer {
+export function createPlayer (id: string, name: string, color: BaronyColor): BaronyPlayer {
   return {
-    index: index,
+    id: id,
     name: name,
     color: color,
     score: 0,
@@ -22,16 +22,16 @@ export function createPlayer (index: number, name: string, color: BaronyColor): 
   };
 } // createPlayer
 
-export function getRandomLandTiles (nPlayers: number): {
-  map: { [key: string]: BaronyLandTile };
-  coordinates: BaronyLandTileCoordinates[];
+export function getRandomLands (nPlayers: number): {
+  map: { [id: string]: BaronyLand };
+  coordinates: BaronyLandCoordinates[];
 } {
   const nTiles = nPlayers * 27;
-  const coordinates = getLandTilesCoordinates (nTiles);
+  const coordinates = getLandCoordinates (nTiles);
   return {
     coordinates: coordinates,
-    map: arrayUtil.toMap (coordinates, c => getLandTileCoordinateKey (c), (c, k) => ({
-      key: k,
+    map: arrayUtil.toMap (coordinates, c => landCoordinatesToId (c), (c, id) => ({
+      id: id,
       coordinates: { ...c },
       type: randomUtil.getRandomElement (baronyLandTypes),
       pawns: []
@@ -39,8 +39,8 @@ export function getRandomLandTiles (nPlayers: number): {
   };
 } // getRandomLandTiles
 
-function getLandTilesCoordinates (nTiles: number): BaronyLandTileCoordinates[] {
-  const coordinates: BaronyLandTileCoordinates[] = [];
+function getLandCoordinates (nTiles: number): BaronyLandCoordinates[] {
+  const coordinates: BaronyLandCoordinates[] = [];
   const sideOffsets = [
     { x: 0, y: -1, z: 1 },
     { x: 1, y: -1, z: 0 },
@@ -77,4 +77,4 @@ function getLandTilesCoordinates (nTiles: number): BaronyLandTileCoordinates[] {
     counter++;
   } // while
   return coordinates;
-} // getLandTilesCoordinates
+} // getLandCoordinates

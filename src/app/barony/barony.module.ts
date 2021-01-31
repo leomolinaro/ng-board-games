@@ -5,8 +5,8 @@ import { BaronyHomeComponent } from "./barony-home/barony-home.component";
 import { BaronyBoardComponent } from "./barony-board/barony-board.component";
 import { RouterModule, Routes } from "@angular/router";
 import { BaronyMapComponent } from "./barony-map/barony-map.component";
-import { BaronyLandTileCoordinatesPipe } from "./pipes/barony-land-tile-coordinates.pipe";
-import { BaronyLandTileComponent } from "./barony-land-tile/barony-land-tile.component";
+import { BaronyLandCoordinatesPipe } from "./pipes/barony-land-tile-coordinates.pipe";
+import { BaronyLandComponent } from "./barony-land-tile/barony-land-tile.component";
 import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
 import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 import { BgUtilsModule } from "@bg-utils";
@@ -24,8 +24,8 @@ const routes: Routes = [
     BaronyHomeComponent,
     BaronyBoardComponent,
     BaronyMapComponent,
-    BaronyLandTileCoordinatesPipe,
-    BaronyLandTileComponent,
+    BaronyLandCoordinatesPipe,
+    BaronyLandComponent,
     BaronyPlayerStatusComponent,
     BaronyActionsComponent,
     BaronyKnightsSelectorComponent

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { BaronyColor, BaronyLandTileCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
 import { BooleanInput, immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";
 
@@ -20,12 +20,12 @@ interface BaronyPawnNode {
   styleUrls: ["./barony-land-tile.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyLandTileComponent implements OnChanges {
+export class BaronyLandComponent implements OnChanges {
 
   constructor () { }
 
   @Input () type!: BaronyLandType;
-  @Input () coordinates!: BaronyLandTileCoordinates;
+  @Input () coordinates!: BaronyLandCoordinates;
   @Input () pawns!: BaronyPawn[];
   @Input () @BooleanInput () active: boolean = false;
   @Input () @BooleanInput () disabled: boolean = false;
@@ -99,4 +99,4 @@ export class BaronyLandTileComponent implements OnChanges {
 
   onLandTileClick () { this.landTileClick.next (); }
 
-} // BaronyLandTileComponent
+} // BaronyLandComponent
