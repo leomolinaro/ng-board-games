@@ -17,7 +17,7 @@
     [attr.r]="activeCircleRadius" stroke="black" stroke-width="0.03" fill="transparent"/>
   
   <svg:image
-    *ngFor="let pawnNode of pawnNodes"
+    *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
     [attr.width]="pawnWidth"
     [attr.height]="pawnHeight"
     preserveAspectRatio="none"
@@ -26,7 +26,7 @@
     [attr.y]="pawnNode.y">
   </svg:image>
 
-  <ng-container *ngFor="let pawnNode of pawnNodes">
+  <ng-container *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy">
     <svg:text
       class="b-land-tile-pawn-quantity"
       *ngIf="pawnNode.quantity > 1"
@@ -36,22 +36,3 @@
     </svg:text>
   </ng-container>
 </svg:g>
-
-<!-- <svg:text
-  *ngIf="building"
-  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x'"
-  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y'"
-  [attr.fill]="building!.color"
-  font-size="0.3px"
-  text-anchor="middle">
-  {{ building!.type }}
-</svg:text>
-<svg:text
-  *ngFor="let knight of knights"
-  [attr.x]="landTile.coordinates | baronyLandTileCoordinates:'center-x'"
-  [attr.y]="landTile.coordinates | baronyLandTileCoordinates:'center-y'"
-  [attr.fill]="knight.color"
-  font-size="0.3px"
-  text-anchor="middle">
-  K: {{ knight.quantity }}
-</svg:text> -->

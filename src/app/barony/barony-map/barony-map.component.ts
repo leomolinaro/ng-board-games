@@ -18,6 +18,8 @@ export class BaronyMapComponent implements OnChanges {
 
   isValid: { [key: string]: boolean } | null = null;
 
+  landTrackBy = (land: BaronyLand) => land.id;
+
   ngOnChanges (changes: SimpleChanges<BaronyMapComponent>): void {
     if (changes.validLands) {
       if (this.validLands) {

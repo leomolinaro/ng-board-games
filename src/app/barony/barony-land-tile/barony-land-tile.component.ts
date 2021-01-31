@@ -42,6 +42,8 @@ export class BaronyLandComponent implements OnChanges {
 
   activeCircleRadius = Math.sqrt (3) / 2;
 
+  pawnTrackBy = (pawnNode: BaronyPawnNode) => pawnNode.color + "_" + pawnNode.type;
+
   ngOnChanges (changes: SimpleChanges): void {
     if (changes.coordinates) {
       this.hexCenter = hexToCartesian (this.coordinates);

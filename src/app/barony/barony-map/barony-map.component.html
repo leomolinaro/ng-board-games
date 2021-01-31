@@ -31,7 +31,7 @@
     class="b-map"
     [attr.transform]="'translate(600 300) scale(30 30)'">
     <svg:g
-      *ngFor="let land of lands"
+      *ngFor="let land of lands; trackBy: landTrackBy"
       baronyLandTile
       [type]="land.type"
       [coordinates]="land.coordinates"
