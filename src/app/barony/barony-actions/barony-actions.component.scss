@@ -5,6 +5,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   grid-gap: 2vmin;
+  font-size: $font-size-actions;
   .b-action {
     &.b-cancel {
       grid-column-start: 2;

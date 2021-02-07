@@ -1,7 +1,7 @@
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
+import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
 import { createPlayer, getRandomLands } from "./barony-initializer";
 
 interface BaronyGameBox {
@@ -18,6 +18,7 @@ interface BaronyState {
     coordinates: BaronyLandCoordinates[];
   };
   gameBox: BaronyGameBox;
+  logs: BaronyLog[];
 } // BaronyState
 
 export class BaronyContext extends BgStore<BaronyState> {
@@ -36,7 +37,8 @@ export class BaronyContext extends BgStore<BaronyState> {
       lands: getRandomLands (nPlayers),
       gameBox: {
         removedPawns: []
-      }
+      },
+      logs: []
     });
   } // constructor
 
@@ -82,6 +84,7 @@ export class BaronyContext extends BgStore<BaronyState> {
   } // selectLandTiles$
   selectPlayerIds$ () { return this.select$ (s => s.players.ids); }
   selectPlayerMap$ () { return this.select$ (s => s.players.map); }
+  selectLogs$ () { return this.select$ (s => s.logs); }
 
   private updatePlayer (playerId: string, updater: (p: BaronyPlayer) => BaronyPlayer) {
     this.update (s => ({
@@ -190,6 +193,13 @@ export class BaronyContext extends BgStore<BaronyState> {
     }));
   } // addPawnToGameBox
 
+  private addLog (log: BaronyLog) {
+    this.update (s => ({
+      ...s,
+      logs: [...s.logs, log]
+    }));
+  } // addLog
+
   applySetup (land: BaronyLandCoordinates, player: string) {
     const playerColor = this.getPlayer (player).color;
     this.removePawnFromPlayer ("knight", player);
@@ -263,5 +273,15 @@ export class BaronyContext extends BgStore<BaronyState> {
     resources.forEach (resource => this.discardResource (resource, playerId));
     this.addVictoryPoints (15, playerId);
   } // applyNobleTitle
+
+  logMovement (movement: BaronyMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }
+  logExpedition (land: BaronyLandCoordinates, player: string) { this.addLog ({ type: "expedition", land: land, player: player }); }
+  logNobleTitle (resources: BaronyResourceType[], player: string) { this.addLog ({ type: "nobleTitle", resources: resources, player: player }); }
+  logNewCity (land: BaronyLandCoordinates, player: string) { this.addLog ({ type: "newCity", land: land, player: player }); }
+  logConstruction (construction: BaronyConstruction, player: string) { this.addLog ({ type: "construction", construction: construction, player: player }); }
+  logRecuitment (land: BaronyLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
+  logTurn (player: string) { this.addLog ({ type: "turn", player: player }); }
+  logSetupPlacement (land: BaronyLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
+  logSetup () { this.addLog ({ type: "setup" }); }
 
 } // BaronyContext

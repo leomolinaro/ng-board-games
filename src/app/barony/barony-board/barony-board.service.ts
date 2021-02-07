@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, Observable, of, race, Subject } from "r
 import { BgStore, randomUtil } from "@bg-utils";
 import { BaronyAction, BaronyBuilding, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyPlayer, BaronyResourceType } from "../models";
 import { BaronyContext, baronyRules } from "../logic";
-import { BaronyPlay, BaronyProcessTask, BaronySetupPlacement, BaronyTurn, BaronyTurnConstructionResult, BaronyTurnExpeditionResult, BaronyTurnMovementResult, BaronyTurnNewCityResult, BaronyTurnNobleTiltleResult, BaronyTurnRectruitmentResult } from "../process";
+import { BaronyPlay, BaronyProcessTask, BaronySetupPlacementTask, BaronyTurnTask, BaronyTurnConstruction, BaronyTurnExpedition, BaronyTurnMovement, BaronyTurnNewCity, BaronyTurnNobleTiltle, BaronyTurnRectruitment } from "../process";
 import { debounceTime, first, map, mapTo, switchMap, tap } from "rxjs/operators";
 
 interface BaronyUiState {
@@ -33,7 +33,7 @@ export class BaronyBoardService {
     private bgProcessService: BgProcessService
   ) { }
 
-  private context = new BaronyContext (3);
+  private context = new BaronyContext (2);
   private ui = new BgStore<BaronyUiState> ({
     currentPlayer: null,
     aiPlayers: [],
@@ -69,6 +69,7 @@ export class BaronyBoardService {
     );
   } // selectOtherPlayers$
   selectLands$ () { return this.context.selectLands$ (); }
+  selectLogs$ () { return this.context.selectLogs$ (); }
   selectValidLands$ () { return this.ui.select$ (s => s.validLands); }
   selectValidResources$ () { return this.ui.select$ (s => s.validResources); }
   selectValidActions$ () { return this.ui.select$ (s => s.validActions); }
@@ -86,6 +87,9 @@ export class BaronyBoardService {
       (playerId, playersMap) => playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
+
+  getPlayer (playerId: string) { return this.context.getPlayer (playerId); }
+  getLand (landCoordinates: BaronyLandCoordinates) { return this.context.getLand (landCoordinates); }
 
   setCurrentPlayer (playerId: string | null) {
     this.updateUi (s => ({ ...s, currentPlayer: playerId }));
@@ -129,7 +133,7 @@ export class BaronyBoardService {
   numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
   landTileChange (landTile: BaronyLand) { this.$landTileChange.next (landTile); }
   buildingChange (building: BaronyBuilding) { this.$buildingChange.next (building); }
-  resourceChange (resource: BaronyResourceType, player: BaronyPlayer) { this.$resourceChange.next (resource); }
+  resourceChange (resource: BaronyResourceType) { this.$resourceChange.next (resource); }
   cancelChange () { this.$cancelChange.next (); }
   private $actionChange = new Subject<BaronyAction> ();
   private $landTileChange = new Subject<BaronyLand> ();
@@ -236,7 +240,7 @@ export class BaronyBoardService {
             const validLands = baronyRules.getValidLandsForRecruitment (player, this.context);
             const land = randomUtil.getRandomElement (validLands);
             const maxKnights = baronyRules.getMaxKnightForRecruitment (land.coordinates, player, this.context);
-            return of<BaronyTurnRectruitmentResult> ({ action: "recruitment", land: land.coordinates, numberOfKnights: maxKnights });
+            return of<BaronyTurnRectruitment> ({ action: "recruitment", land: land.coordinates, numberOfKnights: maxKnights });
           } // case
           case "movement": {
             const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (player, this.context);
@@ -247,12 +251,12 @@ export class BaronyBoardService {
               const validSourceLands2 = baronyRules.getValidSourceLandsForSecondMovement (player, firstMovement, this.context);
               const sourceLand2 = randomUtil.getRandomElement (validSourceLands2);
               const secondMovement = this.executeAiMovement (sourceLand2, player);
-              return of<BaronyTurnMovementResult> ({
+              return of<BaronyTurnMovement> ({
                 action: "movement",
                 movements: [firstMovement, secondMovement],
               });
             } else {
-              return of<BaronyTurnMovementResult> ({
+              return of<BaronyTurnMovement> ({
                 action: "movement",
                 movements: [firstMovement],
               });
@@ -273,7 +277,7 @@ export class BaronyBoardService {
               this.context.applyConstruction (construction, player);
               validConstruction = baronyRules.isConstructionValid (player, this.context);
             } while (validConstruction);
-            return of<BaronyTurnConstructionResult> ({
+            return of<BaronyTurnConstruction> ({
               action: "construction",
               constructions: constructions
             });
@@ -281,7 +285,7 @@ export class BaronyBoardService {
           case "newCity": {
             const validLands = baronyRules.getValidLandsForNewCity (player, this.context);
             const land = randomUtil.getRandomElement (validLands);
-            return of<BaronyTurnNewCityResult> ({
+            return of<BaronyTurnNewCity> ({
               action: "newCity",
               land: land.coordinates
             });
@@ -289,7 +293,7 @@ export class BaronyBoardService {
           case "expedition": {
             const validLands = baronyRules.getValidLandsForExpedition (player, this.context);
             const land = randomUtil.getRandomElement (validLands);
-            return of<BaronyTurnExpeditionResult> ({
+            return of<BaronyTurnExpedition> ({
               action: "expedition",
               land: land.coordinates
             });
@@ -359,7 +363,7 @@ export class BaronyBoardService {
             switch (action) {
               case "recruitment": {
                 return this.chooseRectruitment$ (player).pipe (
-                  map<{ land: BaronyLand, numberOfKnights: number }, BaronyTurnRectruitmentResult> (result => ({
+                  map<{ land: BaronyLand, numberOfKnights: number }, BaronyTurnRectruitment> (result => ({
                     action: "recruitment",
                     land: result.land.coordinates,
                     numberOfKnights: result.numberOfKnights
@@ -368,7 +372,7 @@ export class BaronyBoardService {
               } // case
               case "movement": {
                 return this.chooseMovements$ (player).pipe (
-                  map<BaronyMovement[], BaronyTurnMovementResult> (movements => ({
+                  map<BaronyMovement[], BaronyTurnMovement> (movements => ({
                     action: "movement",
                     movements: movements,
                   }))
@@ -376,7 +380,7 @@ export class BaronyBoardService {
               } // case
               case "construction": {
                 return this.chooseConstructions$ (player, null).pipe (
-                  map<BaronyConstruction[], BaronyTurnConstructionResult> (constructions => ({
+                  map<BaronyConstruction[], BaronyTurnConstruction> (constructions => ({
                     action: "construction",
                     constructions: constructions
                   }))
@@ -384,7 +388,7 @@ export class BaronyBoardService {
               } // case
               case "newCity": {
                 return this.chooseNewCity$ (player).pipe (
-                  map<BaronyLand, BaronyTurnNewCityResult> (land => ({
+                  map<BaronyLand, BaronyTurnNewCity> (land => ({
                     action: "newCity",
                     land: land.coordinates
                   }))
@@ -392,7 +396,7 @@ export class BaronyBoardService {
               } // case
               case "expedition": {
                 return this.chooseExpedition$ (player).pipe (
-                  map<BaronyLand, BaronyTurnExpeditionResult> (land => ({
+                  map<BaronyLand, BaronyTurnExpedition> (land => ({
                     action: "expedition",
                     land: land.coordinates
                   }))
@@ -400,7 +404,7 @@ export class BaronyBoardService {
               } // case
               case "nobleTitle": {
                 return this.chooseNobleTitle$ (player).pipe (
-                  map<BaronyResourceType[], BaronyTurnNobleTiltleResult> (resources => ({
+                  map<BaronyResourceType[], BaronyTurnNobleTiltle> (resources => ({
                     action: "nobleTitle",
                     discardedResources: resources
                   }))

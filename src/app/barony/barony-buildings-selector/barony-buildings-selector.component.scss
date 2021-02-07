@@ -1,0 +1,17 @@
+.b-buildings-selector-container {
+  height: 10vh;
+  display: flex;
+  justify-content: space-evenly;
+  .b-building-image {
+    height: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    & > img {
+      height: 100%;
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+    cursor: pointer;
+  }
+}

@@ -54,3 +54,16 @@ export interface BaronyConstruction {
   land: BaronyLandCoordinates;
   building: BaronyBuilding;
 } // BaronyConstruction
+
+export interface BaronyLogMovement { type: "movement"; movement: BaronyMovement; player: string; }
+export interface BaronyLogExpedition { type: "expedition"; land: BaronyLandCoordinates; player: string; }
+export interface BaronyLogNobleTitle { type: "nobleTitle"; resources: BaronyResourceType[]; player: string; }
+export interface BaronyLogNewCity { type: "newCity"; land: BaronyLandCoordinates; player: string; }
+export interface BaronyLogConstruction { type: "construction"; construction: BaronyConstruction; player: string; }
+export interface BaronyLogRecuitment { type: "recruitment"; land: BaronyLandCoordinates; player: string; }
+export interface BaronyLogTurn { type: "turn"; player: string; }
+export interface BaronyLogSetupPlacement { type: "setupPlacement"; land: BaronyLandCoordinates; player: string; }
+export interface BaronyLogSetup { type: "setup"; }
+
+export type BaronyLog = BaronyLogSetup | BaronyLogSetupPlacement | BaronyLogTurn | BaronyLogRecuitment | BaronyLogConstruction
+  | BaronyLogNewCity | BaronyLogNobleTitle | BaronyLogExpedition | BaronyLogMovement;

@@ -19,34 +19,31 @@
     display: flex;
     flex-direction: column;
     & > button {
-      border: 0;
-      background-color: white;
-      outline: none;
+      background: black;
+      color: white;
       font-size: 4vmin;
       width: 4vw;
       &.is-active {
         cursor: pointer;
         &:hover {
-          background-color: #eee;
+          background-color: #666666;
         }
       }
       &.is-disabled {
         cursor: no-drop;
-        color: #ccc
+        color: #999999
       }
     }
   }
   .b-knights-confirm {
+    background: black;
+    color: white;
     margin-left: auto;
     align-self: stretch;
-    border: 0;
-    background-color: white;
-    outline: none;
-    cursor: pointer;
     font-size: 3vmin;
     width: 4vw;
     &:hover {
-      background-color: #eee;
+      background-color: #666666;
     }
   }
 }

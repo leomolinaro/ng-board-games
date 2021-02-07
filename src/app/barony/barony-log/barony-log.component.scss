@@ -1,0 +1,22 @@
+@import "barony-variables";
+
+.b-log {
+  &.b-log-title {
+    font-size: 120%;
+  }
+  &:not(.b-log-title) {
+    margin-left: 1vw;
+  }
+
+  .is-red { color: $red; }
+  .is-blue { color: $blue; }
+  .is-yellow { color: $yellow; }
+  .is-green { color: $green; }
+
+  .is-mountain { color: $color-mountain; }
+  .is-lake { color: $color-lake; }
+  .is-forest { color: $color-forest; }
+  .is-plain { color: $color-plain; }
+  .is-fields { color: $color-fields; }
+
+}

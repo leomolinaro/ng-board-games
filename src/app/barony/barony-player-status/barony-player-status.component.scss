@@ -1,8 +1,8 @@
 @import "barony-variables";
 
 .b-player-card {
-  padding: 2vmin;
-  font-size: 3vmin;
+  padding: 1vmin;
+  font-size: $font-size-players;
   .b-player-score {
     margin-left: 5px;
   }
@@ -31,9 +31,9 @@
   }
 
   .b-player-content {
-    margin-top: 2vh;
+    margin-top: 1vh;
     display: grid;
-    grid-template-columns: 2vw 2vw 2vw 2vw;
+    grid-template-columns: 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw;
     column-gap: 1vmin;
 
     .b-player-pawn-image, .b-player-resource-image {
@@ -52,7 +52,7 @@
       }
     }
     .b-player-pawn-quantity, .b-player-resource-quantity {
-      color: white;
+      color: black;
       display: flex;
       justify-content: center;
       align-items: center;

@@ -17,6 +17,7 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
   ) { }
 
   lands$ = this.service.selectLands$ ();
+  logs$ = this.service.selectLogs$ ();
   currentPlayer$ = this.service.selectCurrentPlayer$ ();
   otherPlayers$ = this.service.selectOtherPlayers$ ();
   message$ = this.service.selectMessage$ ();
@@ -36,7 +37,7 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit (): void {
     this.service.setCurrentPlayer ("leo");
-    this.service.setAiPlayers (["nico", "rob", "salvatore"]);
+    this.service.setAiPlayers ([/* "nico", "rob", "salvatore" */]);
     this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
   } // ngOnInit
 
@@ -48,9 +49,9 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     this.service.setCurrentPlayer (player.id);
   } // onPlayerSelect
 
-  onPlayerBuildingClick (pawnType: BaronyPawnType) {
-    this.service.buildingChange (pawnType as BaronyBuilding);
-  } // onPlayerBuildingClick
+  onBuildingSelect (building: BaronyBuilding) {
+    this.service.buildingChange (building);
+  } // onBuildingSelect
 
   onLandTileClick (landTile: BaronyLand) {
     this.service.landTileChange (landTile);
@@ -73,8 +74,8 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
     this.numberOfKnights = 1;
   } // onKnightsConfirm
 
-  onPlayerResourceClick (resource: BaronyResourceType, player: BaronyPlayer) {
-    this.service.resourceChange (resource, player);
-  } // onPlayerResourceClick
+  onResourceSelect (resource: BaronyResourceType) {
+    this.service.resourceChange (resource);
+  } // onResourceSelect
 
 } // BaronyBoardComponent

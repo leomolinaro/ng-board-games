@@ -1,7 +1,7 @@
 import { BaronyContext } from "../logic";
 import { BaronyConstruction, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyResourceType } from "../models";
 import { IBaronySubProcess, IBaronyProcessStep, BARONY_PROCESS_END_EVENT, IBaronyProcess } from "./barony-process.interfaces";
-import { BaronyTurn, BaronySetupPlacement, BaronySetupPlacementResult, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurnResult } from "./barony-tasks";
+import { BaronyTurnTask, BaronySetupPlacementTask, BaronySetupPlacement, IHasBaronySetupPlacement, IHasBaronyTurn, BaronyTurn } from "./barony-tasks";
 
 export interface IHasBaronySetup { afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep; }
 
@@ -17,10 +17,11 @@ export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTu
   afterSetup (setup: BaronySetup, context: BaronyContext): IBaronyProcessStep {
     const player = context.getPlayers ()[0];
     this.player = player.id;
-    return new BaronyTurn ({ player: this.player }, this);
+    context.logTurn (this.player);
+    return new BaronyTurnTask ({ player: this.player }, this);
   } // afterSetup
 
-  afterTurn (result: BaronyTurnResult, context: BaronyContext): IBaronyProcessStep {
+  afterTurn (result: BaronyTurn, context: BaronyContext): IBaronyProcessStep {
     switch (result.action) {
       case "recruitment": this.recruitment (result.numberOfKnights, result.land, this.player, context); break;
       case "construction": this.construction (result.constructions, this.player, context); break;
@@ -32,37 +33,44 @@ export class BaronyPlay implements IBaronyProcess, IHasBaronySetup, IHasBaronyTu
     const playerIndex = context.getPlayerIds ().indexOf (this.player);
     const nextPlayerIndex = (playerIndex + 1) % context.getNumberOfPlayers ();
     this.player = context.getPlayers ()[nextPlayerIndex].id;
-    return new BaronyTurn ({ player: this.player }, this);
+    context.logTurn (this.player);
+    return new BaronyTurnTask ({ player: this.player }, this);
   } // afterTurn
 
   private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandCoordinates, player: string, context: BaronyContext) {
     for (let i = 0; i < numberOfKnights; i++) {
       context.applyRecruitment (landTileCoordinates, player);
+      context.logRecuitment (landTileCoordinates, player);
     } // for
   } // recruitment
 
   private construction (constructions: BaronyConstruction[], player: string, context: BaronyContext) {
     constructions.forEach (construction => {
       context.applyConstruction (construction, player);
+      context.logConstruction (construction, player);
     });
   } // construction
 
   private expedition (land: BaronyLandCoordinates, player: string, context: BaronyContext) {
     context.applyExpedition (land, player);
+    context.logExpedition (land, player);
   } // expedition
 
   private movement (movements: BaronyMovement[], player: string, context: BaronyContext) {
     movements.forEach ((movement) => {
       context.applyMovement (movement, player);
+      context.logMovement (movement, player);
     });
   } // movement
 
   private newCity (land: BaronyLandCoordinates, player: string, context: BaronyContext) {
     context.applyNewCity (land, player);
+    context.logNewCity (land, player);
   } // newCity
 
   private nobleTitle (resources: BaronyResourceType[], player: string, context: BaronyContext) {
     context.applyNobleTitle (resources, player);
+    context.logNobleTitle (resources, player);
   } // nobleTitle
 
 } // BaronyPlay
@@ -88,15 +96,17 @@ export class BaronySetup implements IBaronySubProcess, IHasBaronySetupPlacement 
       this.placementPlayerIds.push (players[i].id);
     } // for
     this.player = this.placementPlayerIds.shift () as string;
-    return new BaronySetupPlacement ({ player: this.player }, this);
+    context.logSetup ();
+    return new BaronySetupPlacementTask ({ player: this.player }, this);
   } // start
   
-  afterPlacement (result: BaronySetupPlacementResult, context: BaronyContext): IBaronyProcessStep {
+  afterPlacement (result: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep {
     if (result.land) {
       context.applySetup (result.land, this.player);
+      context.logSetupPlacement (result.land, this.player);
       if (this.placementPlayerIds.length) {
         this.player = this.placementPlayerIds.shift () as string;
-        return new BaronySetupPlacement ({ player: this.player }, this);
+        return new BaronySetupPlacementTask ({ player: this.player }, this);
       } else {
         return BARONY_PROCESS_END_EVENT;
       } // if - else

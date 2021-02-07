@@ -13,10 +13,21 @@
       <barony-knights-selector
         *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
         [(number)]="numberOfKnights"
-        [max]="maxNumberOfKnights"
         min=1
+        [max]="maxNumberOfKnights"
         (confirm)="onKnightsConfirm ()">
       </barony-knights-selector>
+      <barony-buildings-selector
+        *ngIf="validBuildings$ | async as buildings"
+        [buildings]="buildings"
+        [player]="currentPlayer"
+        (buildingClick)="onBuildingSelect ($event)">
+      </barony-buildings-selector>
+      <barony-resources-selector
+        *ngIf="validResources$ | async as resources"
+        [resources]="resources?.resources"
+        (resourceClick)="onResourceSelect ($event)">
+      </barony-resources-selector>
     </div>
     <ng-container *ngLet="validActions$ | async as validActions">
       <ng-container *ngLet="canPass$ | async as canPass">
@@ -34,25 +45,20 @@
         </ng-container>
       </ng-container>
     </ng-container>
-    <!-- <div class="b-board-bottom-left" *ngLet="validResources$ | async as validResources">
+    <div class="b-board-players-widget">
       <div *ngFor="let otherPlayer of (otherPlayers$ | async); trackBy: playerTrackBy" class="b-board-player-widget">
         <barony-player-status
           (selectPlayer)="onPlayerSelect (otherPlayer)"
-          [player]="otherPlayer"
-          [validResources]="(validResources && validResources.player === otherPlayer.id) ? validResources.resources : null"
-          (clickResource)="onPlayerResourceClick ($event, otherPlayer)">
+          [player]="otherPlayer">
         </barony-player-status>
       </div>
       <div class="b-board-player-widget" *ngIf="currentPlayer">
         <barony-player-status
           [player]="currentPlayer"
-          [validBuildings]="validBuildings$ | async"
-          [validResources]="(validResources && validResources.player === currentPlayer.id) ? validResources.resources : null"
-          (clickPawn)="onPlayerBuildingClick ($event)"
-          (clickResource)="onPlayerResourceClick ($event, currentPlayer)"
           currentPlayer>
         </barony-player-status>
       </div>
-    </div> -->
+    </div>
+    <barony-logs class="b-board-logs-widget" [logs]="logs$ | async"></barony-logs>
   </div>
 </div>

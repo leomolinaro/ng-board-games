@@ -27,10 +27,10 @@
     grid-template-rows: 1fr 1fr 1fr 1fr;
 
     grid-template-areas: 
-      ". . ."
-      ". . actions"
-      ". . actions"
-      ". instructions actions";
+      "players . logs"
+      "players . logs"
+      "players . actions"
+      "players instructions actions";
 
     .b-board-instructions-widget {
       grid-area: instructions;
@@ -39,9 +39,11 @@
       margin-right: auto;
       margin-top: auto;
       margin-bottom: 2vh;
-      padding: 3vh;
-      background-color: white;
+      padding: 2vh;
+      background: black;
+      color: white;
       box-shadow: $widget-shadow;
+      font-size: $font-size-instructions;
       &.is-red {
         border-bottom: 3px solid $red;
       }
@@ -55,9 +57,11 @@
         border-bottom: 3px solid $green;
       }
       .b-board-instructions {
-
+        
       }
-      barony-knights-selector {
+      barony-knights-selector,
+      barony-resources-selector,
+      barony-buildings-selector {
         display: block;
         margin-top: 2vh;
       }
@@ -68,8 +72,8 @@
       margin-top: auto;
       margin-bottom: 2vh;
     }
-
-    .b-board-bottom-left {
+    .b-board-players-widget {
+      grid-area: players;
       z-index: 1;
       margin-top: auto;
       margin-right: auto;
@@ -88,15 +92,16 @@
         }
       }
     }
-    .b-board-bottom-right {
-      z-index: 1;
-      margin-top: auto;
+    .b-board-logs-widget {
+      grid-area: logs;
+      pointer-events: auto;
       margin-left: auto;
-      margin-bottom: 1rem;
-      margin-right: 1rem;
-      barony-actions {
-        
-      }
+      margin-right: 2vh;
+      margin-top: 2vh;
+      margin-bottom: auto;
+      padding: 2vh;
+      box-shadow: $widget-shadow;
+      font-size: $font-size-logs;
     }
   }
 }

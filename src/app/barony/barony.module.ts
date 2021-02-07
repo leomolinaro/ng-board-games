@@ -12,6 +12,10 @@ import { BaronyActionsComponent } from "./barony-actions/barony-actions.componen
 import { BgUtilsModule } from "@bg-utils";
 import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
 import { BgComponentsModule } from "../bg-components/bg-components.module";
+import { BaronyLogComponent } from "./barony-log/barony-log.component";
+import { BaronyLogsComponent } from './barony-logs/barony-logs.component';
+import { BaronyResourcesSelectorComponent } from './barony-resources-selector/barony-resources-selector.component';
+import { BaronyBuildingsSelectorComponent } from './barony-buildings-selector/barony-buildings-selector.component';
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
@@ -29,7 +33,11 @@ const routes: Routes = [
     BaronyLandComponent,
     BaronyPlayerStatusComponent,
     BaronyActionsComponent,
-    BaronyKnightsSelectorComponent
+    BaronyKnightsSelectorComponent,
+    BaronyLogComponent,
+    BaronyLogsComponent,
+    BaronyResourcesSelectorComponent,
+    BaronyBuildingsSelectorComponent
   ],
   imports: [
     CommonModule,

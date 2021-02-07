@@ -1,0 +1,7 @@
+<div class="b-resources-selector-container">
+  <div *ngFor="let resource of resources"
+    class="b-resource-image"
+    (click)="onResourceClick (resource)">
+    <img [src]="'assets/barony/resources/' + resource + '.png'">
+  </div>
+</div>

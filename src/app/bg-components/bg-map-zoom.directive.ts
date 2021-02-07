@@ -42,7 +42,7 @@ export class BgMapZoomDirective implements OnInit {
   };
 
   @HostBinding ("attr.transform")
-  transform: string = "translate(600 300) scale(30 30)";
+  transform!: string;
 
   private scale!: number;
   private translateX!: number;
@@ -56,6 +56,7 @@ export class BgMapZoomDirective implements OnInit {
 
   ngOnInit () {
     this.parseConfig ();
+    this.transform = `matrix (${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`;
   } // ngOnInit
 
   private parseConfig () {
