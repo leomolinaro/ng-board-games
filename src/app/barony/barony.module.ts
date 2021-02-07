@@ -11,6 +11,7 @@ import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-playe
 import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 import { BgUtilsModule } from "@bg-utils";
 import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
+import { BgComponentsModule } from "../bg-components/bg-components.module";
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
@@ -33,7 +34,8 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
-    BgUtilsModule
+    BgUtilsModule,
+    BgComponentsModule
   ]
 })
 export class BaronyModule { }

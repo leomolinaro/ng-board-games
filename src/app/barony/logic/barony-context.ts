@@ -1,7 +1,6 @@
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { moveMessagePortToContext } from "worker_threads";
 import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
 import { createPlayer, getRandomLands } from "./barony-initializer";
 
@@ -23,16 +22,18 @@ interface BaronyState {
 
 export class BaronyContext extends BgStore<BaronyState> {
 
-  constructor () {
+  constructor (nPlayers: number) {
     super ({
       players: {
         map: {
           leo: createPlayer ("leo", "Leo", "blue"),
-          nico: createPlayer ("nico", "Nico", "red")
+          nico: createPlayer ("nico", "Nico", "red"),
+          rob: createPlayer ("rob", "Rob", "green"),
+          salvatore: createPlayer ("salvatore", "Salvatore", "yellow"),
         },
-        ids: ["leo", "nico"]
+        ids: ["leo", "nico", "rob", "salvatore"].filter ((v, index) => index < nPlayers)
       },
-      lands: getRandomLands (2),
+      lands: getRandomLands (nPlayers),
       gameBox: {
         removedPawns: []
       }

@@ -23,7 +23,8 @@
     "paths": {
       "@bg-services": ["src/app/bg-services"],
       "@bg-utils": ["src/app/bg-utils"],
-      "@bg-home": ["src/app/bg-home"]
+      "@bg-home": ["src/app/bg-home"],
+      "@bg-components": ["src/app/bg-components"]
     }
   },
   "angularCompilerOptions": {

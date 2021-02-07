@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostBinding, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
 import { BooleanInput, immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";

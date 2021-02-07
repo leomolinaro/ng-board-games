@@ -1,34 +1,44 @@
 @import "barony-variables";
 
 .b-board {
-  display: grid;
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   overflow: hidden;
-  background: #eee;
-  .b-board-map {
-    grid-area: 1 / 1;
+  background: black;
+  .b-board-map-layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .b-board-widgets-layer {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     pointer-events: none;
-  }
-  .b-board-top {
-    z-index: 1;
-    grid-column-start: 1;
-    grid-column-end: 3;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-    .b-board-instruction-widget {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+
+    grid-template-areas: 
+      ". . ."
+      ". . actions"
+      ". . actions"
+      ". instructions actions";
+
+    .b-board-instructions-widget {
+      grid-area: instructions;
       pointer-events: auto;
-      margin-top: 3vh;
-      margin-bottom: auto;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: auto;
+      margin-bottom: 2vh;
       padding: 3vh;
       background-color: white;
       box-shadow: $widget-shadow;
@@ -44,7 +54,7 @@
       &.is-green {
         border-bottom: 3px solid $green;
       }
-      .b-board-instruction {
+      .b-board-instructions {
 
       }
       barony-knights-selector {
@@ -52,36 +62,41 @@
         margin-top: 2vh;
       }
     }
-  }
-  .b-board-bottom-left {
-    z-index: 1;
-    margin-top: auto;
-    margin-right: auto;
-    margin-bottom: 2vh;
-    margin-left: 2vw;
-    display: grid;
-    grid-template-columns: auto;
-    grid-gap: 2vmin;
-    pointer-events: none;
-    .b-board-player-widget {
+    .b-board-actions-widget {
+      grid-area: actions;
       pointer-events: auto;
-      background-color: white;
-      box-shadow: $widget-shadow;
-      transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-      &:hover {
-        box-shadow: $widget-shadow-hover;
+      margin-top: auto;
+      margin-bottom: 2vh;
+    }
+
+    .b-board-bottom-left {
+      z-index: 1;
+      margin-top: auto;
+      margin-right: auto;
+      margin-bottom: 2vh;
+      margin-left: 2vw;
+      display: grid;
+      grid-template-columns: auto;
+      grid-gap: 2vmin;
+      .b-board-player-widget {
+        pointer-events: auto;
+        background-color: white;
+        box-shadow: $widget-shadow;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        &:hover {
+          box-shadow: $widget-shadow-hover;
+        }
       }
     }
-  }
-  .b-board-bottom-right {
-    z-index: 1;
-    margin-top: auto;
-    margin-left: auto;
-    margin-bottom: 1rem;
-    margin-right: 1rem;
-    pointer-events: none;
-    barony-actions {
-      pointer-events: auto;
+    .b-board-bottom-right {
+      z-index: 1;
+      margin-top: auto;
+      margin-left: auto;
+      margin-bottom: 1rem;
+      margin-right: 1rem;
+      barony-actions {
+        
+      }
     }
   }
 }

@@ -33,7 +33,7 @@ export class BaronyBoardService {
     private bgProcessService: BgProcessService
   ) { }
 
-  private context = new BaronyContext ();
+  private context = new BaronyContext (3);
   private ui = new BgStore<BaronyUiState> ({
     currentPlayer: null,
     aiPlayers: [],

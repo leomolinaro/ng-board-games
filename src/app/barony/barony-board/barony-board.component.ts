@@ -36,7 +36,7 @@ export class BaronyBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit (): void {
     this.service.setCurrentPlayer ("leo");
-    this.service.setAiPlayers (["nico"]);
+    this.service.setAiPlayers (["nico", "rob", "salvatore"]);
     this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
   } // ngOnInit
 
