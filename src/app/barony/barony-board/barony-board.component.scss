@@ -23,8 +23,9 @@
     right: 0;
     pointer-events: none;
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr;
+    padding: 2vmin;
 
     grid-template-areas: 
       "players . logs"
@@ -38,7 +39,6 @@
       margin-left: auto;
       margin-right: auto;
       margin-top: auto;
-      margin-bottom: 2vh;
       padding: 2vh;
       background: black;
       color: white;
@@ -70,15 +70,13 @@
       grid-area: actions;
       pointer-events: auto;
       margin-top: auto;
-      margin-bottom: 2vh;
+      margin-left: auto;
     }
     .b-board-players-widget {
       grid-area: players;
       z-index: 1;
       margin-top: auto;
       margin-right: auto;
-      margin-bottom: 2vh;
-      margin-left: 2vw;
       display: grid;
       grid-template-columns: auto;
       grid-gap: 2vmin;
@@ -96,10 +94,8 @@
       grid-area: logs;
       pointer-events: auto;
       margin-left: auto;
-      margin-right: 2vh;
-      margin-top: 2vh;
       margin-bottom: auto;
-      padding: 2vh;
+      padding: 2vmin;
       box-shadow: $widget-shadow;
       font-size: $font-size-logs;
     }

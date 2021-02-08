@@ -33,7 +33,7 @@ export class BaronyBoardService {
     private bgProcessService: BgProcessService
   ) { }
 
-  private context = new BaronyContext (2);
+  private context = new BaronyContext (4);
   private ui = new BgStore<BaronyUiState> ({
     currentPlayer: null,
     aiPlayers: [],
@@ -233,7 +233,7 @@ export class BaronyBoardService {
       } // case
       case "turn": {
         const validActions = baronyRules.getValidActions (task.data.player, this.context);
-        const action: any = randomUtil.getRandomElement (validActions);
+        const action = randomUtil.getRandomElement (validActions);
         const player = task.data.player;
         switch (action) {
           case "recruitment": {
@@ -274,6 +274,7 @@ export class BaronyBoardService {
                 building: building,
                 land: land.coordinates
               };
+              constructions.push (construction);
               this.context.applyConstruction (construction, player);
               validConstruction = baronyRules.isConstructionValid (player, this.context);
             } while (validConstruction);

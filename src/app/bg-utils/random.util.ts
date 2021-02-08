@@ -13,7 +13,7 @@ export function getRandomBoolean () {
 } // getRandomBoolean
 
 export function getRandomElement<T> (array: T[]): T {
-  return array[Math.floor (Math.random () * array.length)];
+  return array[getRandomInteger (0, array.length)];
 } // getRandomElement
 
 export function getRandomArrayLength<T> (min: number, max: number, pusher: (index: number) => T): T[] {
