@@ -9,7 +9,7 @@ interface BaronyGameBox {
   removedPawns: BaronyPawn[];
 } // BaronyGameBox
 
-interface BaronyState {
+interface BaronyGameState {
   players: {
     map: { [id: string]: BaronyPlayer },
     ids: string[]
@@ -20,12 +20,12 @@ interface BaronyState {
   };
   gameBox: BaronyGameBox;
   logs: BaronyLog[];
-} // BaronyState
+} // BaronyGameState
 
 const N_PLAYERS = 4;
 
 @Injectable ()
-export class BaronyContext extends BgStore<BaronyState> {
+export class BaronyGameStore extends BgStore<BaronyGameState> {
 
   constructor () {
     super ({
@@ -46,7 +46,7 @@ export class BaronyContext extends BgStore<BaronyState> {
     });
   } // constructor
 
-  private notTemporaryState: BaronyState | null = null;
+  private notTemporaryState: BaronyGameState | null = null;
   isTemporaryState () { return !!this.notTemporaryState; }
   startTemporaryState () {
     this.notTemporaryState = this.get ();

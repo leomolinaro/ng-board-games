@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgProcessService } from "@bg-services";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
 import { BaronyPlay, BaronyProcessTask } from "../process";
 import { debounceTime, map, mapTo, switchMap, tap } from "rxjs/operators";
 import { BaronyUiStore } from "./barony-ui.store";
@@ -15,7 +15,7 @@ export class BaronyGameService {
   constructor (
     private bgProcessService: BgProcessService,
     private ui: BaronyUiStore,
-    private context: BaronyContext,
+    private game: BaronyGameStore,
     private aiService: BaronyPlayerAiService,
     private localService: BaronyPlayerLocalService,
     private observerService: BaronyPlayerObserverService
@@ -33,8 +33,8 @@ export class BaronyGameService {
     ]).pipe (
       debounceTime (0),
       switchMap (([currentPlayerId, aiPlayersIndicies, task]) => {
-        if (this.context.isTemporaryState ()) {
-          this.context.endTemporaryState ();
+        if (this.game.isTemporaryState ()) {
+          this.game.endTemporaryState ();
         } // if
         return this.resolveTask$ (task, currentPlayerId, aiPlayersIndicies).pipe (
           tap (nextTask => {
@@ -57,13 +57,13 @@ export class BaronyGameService {
 
   private resolveTask$ (task: BaronyProcessTask | null, currentPlayer: string | null, aiPlayers: string[]): Observable<BaronyProcessTask | null> {
     if (task) {
-      this.context.startTemporaryState ();
+      this.game.startTemporaryState ();
       return this.executeTask$ (task, currentPlayer, aiPlayers).pipe (
         map (taskResult => {
-          this.context.endTemporaryState ();
+          this.game.endTemporaryState ();
           if (taskResult) {
             task.result = taskResult;
-            const nextTasks = this.bgProcessService.resolveTask (task, this.context) as BaronyProcessTask[];
+            const nextTasks = this.bgProcessService.resolveTask (task, this.game) as BaronyProcessTask[];
             return nextTasks[0];
           } else {
             return null;
@@ -72,7 +72,7 @@ export class BaronyGameService {
       );
     } else {
       const baronyPlay = new BaronyPlay ();
-      const startingTasks = this.bgProcessService.startProcess (baronyPlay, this.context) as BaronyProcessTask[];
+      const startingTasks = this.bgProcessService.startProcess (baronyPlay, this.game) as BaronyProcessTask[];
       const startingTask = startingTasks[0];
       return of (startingTask);
     } // if - else

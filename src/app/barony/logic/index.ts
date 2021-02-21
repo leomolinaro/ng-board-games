@@ -1,6 +1,6 @@
 import * as baronyRules from "./barony-rules";
 
-export * from "./barony-context";
+export * from "./barony-game.store";
 export {
   baronyRules
 };

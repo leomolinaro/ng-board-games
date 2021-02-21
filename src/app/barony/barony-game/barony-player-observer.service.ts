@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
 import { BaronyProcessTask } from "../process";
 import { BaronyUiStore } from "./barony-ui.store";
 
@@ -8,7 +8,7 @@ import { BaronyUiStore } from "./barony-ui.store";
 export class BaronyPlayerObserverService {
 
   constructor (
-    private context: BaronyContext,
+    private game: BaronyGameStore,
     private ui: BaronyUiStore
   ) { }
 
@@ -17,7 +17,7 @@ export class BaronyPlayerObserverService {
       ...s,
       turnPlayer: task.data.player,
       ...this.ui.resetUi (),
-      message: `${this.context.getPlayer (task.data.player).name} is thinking...`,
+      message: `${this.game.getPlayer (task.data.player).name} is thinking...`,
     }));
     return of (null);
   } // executeTask$

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Subject, BehaviorSubject } from "rxjs";
 import { first } from "rxjs/operators";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
 import { BaronyLandCoordinates, BaronyResourceType, BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer } from "../models";
 
 interface BaronyUiState {
@@ -26,7 +26,7 @@ interface BaronyUiState {
 export class BaronyUiStore extends BgStore<BaronyUiState> {
 
   constructor (
-    private context: BaronyContext
+    private game: BaronyGameStore
   ) {
     super ({
       currentPlayer: null,
@@ -78,18 +78,18 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   selectMessage$ () { return this.select$ (s => s.message); }
 
   selectCurrentPlayer$ () {
-    return this.context.select$ (
+    return this.game.select$ (
       this.selectCurrentPlayerId$ (),
-      this.context.selectPlayerMap$ (),
+      this.game.selectPlayerMap$ (),
       (playerId, playersMap) => playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
 
   selectOtherPlayers$ () {
-    return this.context.select$ (
+    return this.game.select$ (
       this.selectCurrentPlayerId$ (),
-      this.context.selectPlayerIds$ (),
-      this.context.selectPlayerMap$ (),
+      this.game.selectPlayerIds$ (),
+      this.game.selectPlayerMap$ (),
       (currentPlayerId, playerIds, playerMap) => {
         if (currentPlayerId) {
           const n = playerIds.length;

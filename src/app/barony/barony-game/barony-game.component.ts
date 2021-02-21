@@ -3,26 +3,35 @@ import { Subscription } from "rxjs";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayer, BaronyBuilding, BaronyLand, BaronyAction, BaronyResourceType } from "../models";
 import { BaronyUiStore } from "./barony-ui.store";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
+import { BaronyPlayerObserverService } from "./barony-player-observer.service";
+import { BaronyPlayerAiService } from "./barony-player-ai.service";
+import { BaronyPlayerLocalService } from "./barony-player-local.service";
 
 @Component ({
   selector: "barony-game",
   templateUrl: "./barony-game.component.html",
   styleUrls: ["./barony-game.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [BaronyContext, BaronyUiStore, BaronyGameService]
+  providers: [
+    BaronyGameStore,
+    BaronyUiStore,
+    BaronyPlayerAiService,
+    BaronyPlayerLocalService,
+    BaronyPlayerObserverService,
+    BaronyGameService
+  ]
 })
 export class BaronyGameComponent implements OnInit, OnDestroy {
 
   constructor (
-    private context: BaronyContext,
+    private game: BaronyGameStore,
     private ui: BaronyUiStore,
     private service: BaronyGameService
-  ) {
-  } // constructor
+  ) { }
 
-  lands$ = this.context.selectLands$ ();
-  logs$ = this.context.selectLogs$ ();
+  lands$ = this.game.selectLands$ ();
+  logs$ = this.game.selectLogs$ ();
   currentPlayer$ = this.ui.selectCurrentPlayer$ ();
   otherPlayers$ = this.ui.selectOtherPlayers$ ();
   message$ = this.ui.selectMessage$ ();

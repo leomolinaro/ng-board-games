@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, race } from "rxjs";
 import { map, switchMap, mapTo } from "rxjs/operators";
-import { BaronyContext, baronyRules } from "../logic";
+import { BaronyGameStore, baronyRules } from "../logic";
 import { BaronyLand, BaronyMovement, BaronyConstruction, BaronyResourceType, BaronyAction, BaronyLandCoordinates } from "../models";
 import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition, BaronyTurnNobleTiltle } from "../process";
 import { BaronyUiStore } from "./barony-ui.store";
@@ -10,7 +10,7 @@ import { BaronyUiStore } from "./barony-ui.store";
 export class BaronyPlayerLocalService {
 
   constructor (
-    private context: BaronyContext,
+    private game: BaronyGameStore,
     private ui: BaronyUiStore
   ) { }
 
@@ -84,7 +84,7 @@ export class BaronyPlayerLocalService {
   } // executeTaskByPlayer
 
   private chooseLandForSetupPlacement$ (player: string): Observable<BaronyLand> {
-    const validLands = baronyRules.getValidLandsForSetupPlacement (this.context);
+    const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -96,7 +96,7 @@ export class BaronyPlayerLocalService {
   } // chooseLandForSetupPlacement$
 
   private chooseAction$ (player: string): Observable<BaronyAction> {
-    const validActions = baronyRules.getValidActions (player, this.context);
+    const validActions = baronyRules.getValidActions (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -119,7 +119,7 @@ export class BaronyPlayerLocalService {
   } // chooseRectruitment$
 
   private chooseLandForRecruitment$ (player: string): Observable<BaronyLand> {
-    const validLands = baronyRules.getValidLandsForRecruitment (player, this.context);
+    const validLands = baronyRules.getValidLandsForRecruitment (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -130,7 +130,7 @@ export class BaronyPlayerLocalService {
   } // chooseLandForRecruitment$
 
   private chooseNumberOfKnightsForRecruitment$ (land: BaronyLandCoordinates, player: string): Observable<number> {
-    const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment (land, player, this.context);
+    const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment (land, player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -143,8 +143,8 @@ export class BaronyPlayerLocalService {
   private chooseMovements$ (player: string): Observable<BaronyMovement[]> {
     return this.chooseFirstMovement$ (player).pipe (
       switchMap (firstMovement => {
-        this.context.applyMovement (firstMovement, player);
-        if (baronyRules.isSecondMovementValid (player, firstMovement, this.context)) {
+        this.game.applyMovement (firstMovement, player);
+        if (baronyRules.isSecondMovementValid (player, firstMovement, this.game)) {
           return this.chooseSecondMovement$ (player, firstMovement).pipe (
             map (secondMovement => {
               if (secondMovement) {
@@ -182,10 +182,10 @@ export class BaronyPlayerLocalService {
   private chooseMovementTargetAndConflict$ (movementSource: BaronyLandCoordinates, player: string): Observable<BaronyMovement> {
     return this.chooseLandTargetForMovement$ (movementSource, player).pipe (
       switchMap (movementTarget => {
-        if (baronyRules.isConflict (movementTarget.coordinates, player, this.context)) {
-          if (baronyRules.isVillageBeingDestroyed (movementTarget.coordinates, player, this.context)) {
-            const villagePlayer = baronyRules.getVillageDestroyedPlayer (movementTarget.coordinates, player, this.context);
-            if (baronyRules.hasResourcesToTakeForVillageDestruction (villagePlayer.id, this.context)) {
+        if (baronyRules.isConflict (movementTarget.coordinates, player, this.game)) {
+          if (baronyRules.isVillageBeingDestroyed (movementTarget.coordinates, player, this.game)) {
+            const villagePlayer = baronyRules.getVillageDestroyedPlayer (movementTarget.coordinates, player, this.game);
+            if (baronyRules.hasResourcesToTakeForVillageDestruction (villagePlayer.id, this.game)) {
               return this.chooseResourceForVillageDestruction$ (player, villagePlayer.id).pipe (
                 map (resource => ({
                   fromLand: movementSource,
@@ -215,7 +215,7 @@ export class BaronyPlayerLocalService {
   } // chooseMovementTargetAndConflict$
 
   private chooseResourceForVillageDestruction$ (player: string, villagePlayer: string): Observable<BaronyResourceType> {
-    const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction (villagePlayer, this.context);
+    const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction (villagePlayer, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -229,7 +229,7 @@ export class BaronyPlayerLocalService {
   } // chooseResourceForVillageDestruction$
 
   private chooseLandSourceForFirstMovement$ (player: string): Observable<BaronyLand> {
-    const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (player, this.context);
+    const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -240,7 +240,7 @@ export class BaronyPlayerLocalService {
   } // chooseLandSourceForFirstMovement$
 
   private chooseLandSourceOrPassForSecondMovement$ (player: string, firstMovement: BaronyMovement): Observable<BaronyLand | null> {
-    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement (player, firstMovement, this.context);
+    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement (player, firstMovement, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -255,7 +255,7 @@ export class BaronyPlayerLocalService {
   } // chooseLandTileSourceOrPassForSecondMovement$
 
   private chooseLandTargetForMovement$ (movementSource: BaronyLandCoordinates, player: string): Observable<BaronyLand> {
-    const validSourceLands = baronyRules.getValidTargetLandsForMovement (movementSource, player, this.context);
+    const validSourceLands = baronyRules.getValidTargetLandsForMovement (movementSource, player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -270,9 +270,9 @@ export class BaronyPlayerLocalService {
       return this.chooseConstructionOrPass$ (player).pipe (
         switchMap (construction => {
           if (construction) {
-            this.context.applyConstruction (construction, player);
+            this.game.applyConstruction (construction, player);
             const constructions = [...prevConstructions, construction];
-            if (baronyRules.isConstructionValid (player, this.context)) {
+            if (baronyRules.isConstructionValid (player, this.game)) {
               return this.chooseConstructions$ (player, constructions);
             } else {
               return of (constructions);
@@ -286,8 +286,8 @@ export class BaronyPlayerLocalService {
       return this.chooseConstruction$ (player, false).pipe (
         switchMap (construction => {
           const constructions = [construction];
-          this.context.applyConstruction (construction, player);
-          if (baronyRules.isConstructionValid (player, this.context)) {
+          this.game.applyConstruction (construction, player);
+          if (baronyRules.isConstructionValid (player, this.game)) {
             return this.chooseConstructions$ (player, constructions);
           } else {
             return of (constructions);
@@ -316,7 +316,7 @@ export class BaronyPlayerLocalService {
   } // chooseConstruction$
 
   private chooseLandForConstruction$ (player: string, orPass: boolean): Observable<BaronyLand> {
-    const validLands = baronyRules.getValidLandsForConstruction (player, this.context);
+    const validLands = baronyRules.getValidLandsForConstruction (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -328,7 +328,7 @@ export class BaronyPlayerLocalService {
   } // chooseLandForConstruction$
 
   private chooseBuildingForConstruction$ (player: string, orPass: boolean): Observable<"stronghold" | "village"> {
-    const validBuildings = baronyRules.getValidBuildingsForConstruction (player, this.context);
+    const validBuildings = baronyRules.getValidBuildingsForConstruction (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -340,7 +340,7 @@ export class BaronyPlayerLocalService {
   } // chooseBuildingForConstruction$
 
   private chooseNewCity$ (player: string): Observable<BaronyLand> {
-    const validLandsForNewCity = baronyRules.getValidLandsForNewCity (player, this.context);
+    const validLandsForNewCity = baronyRules.getValidLandsForNewCity (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -351,7 +351,7 @@ export class BaronyPlayerLocalService {
   } // chooseNewCity$
 
   private chooseExpedition$ (player: string): Observable<BaronyLand> {
-    const validLandsForExpedition = baronyRules.getValidLandsForExpedition (player, this.context);
+    const validLandsForExpedition = baronyRules.getValidLandsForExpedition (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -371,7 +371,7 @@ export class BaronyPlayerLocalService {
         const resoucePoints = baronyRules.getResourcePoints (resource);
         sum += resoucePoints;
         resources.push (resource);
-        this.context.discardResource (resource, player);
+        this.game.discardResource (resource, player);
         if (sum < 15) {
           return this.chooseResourcesForNobleTitle$ (player, resources, sum);
         } else {
@@ -382,7 +382,7 @@ export class BaronyPlayerLocalService {
   } // chooseResourcesForNobleTitle$
 
   private chooseResourceForNobleTitle$ (player: string, sum: number): Observable<BaronyResourceType> {
-    const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle (player, this.context);
+    const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle (player, this.game);
     this.ui.updateUi (s => ({
       ...s,
       ...this.ui.resetUi (),

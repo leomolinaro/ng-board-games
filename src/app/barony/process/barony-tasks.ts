@@ -1,21 +1,21 @@
 import { BaronyAction, BaronyConstruction, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyResourceType } from "../models";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
 import { IBaronyProcess, IBaronyProcessStep, IBaronyProcessTask, IBaronySubProcess } from "./barony-process.interfaces";
 
 export type BaronyProcessTask = BaronySetupPlacementTask | BaronyTurnTask;
 
-export interface IHasBaronySetupPlacement { afterPlacement (placement: BaronySetupPlacement, context: BaronyContext): IBaronyProcessStep; }
+export interface IHasBaronySetupPlacement { afterPlacement (placement: BaronySetupPlacement, game: BaronyGameStore): IBaronyProcessStep; }
 export interface BaronySetupPlacementData { player: string; }
 export interface BaronySetupPlacement { land: BaronyLandCoordinates; }
 export class BaronySetupPlacementTask implements IBaronyProcessTask<BaronySetupPlacementData, BaronySetupPlacement> {
   constructor (public readonly data: BaronySetupPlacementData, public readonly parent: IHasBaronySetupPlacement & IBaronySubProcess) { }
   readonly type = "task";
   readonly taskName = "setupPlacement";
-  next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterPlacement (this.result as BaronySetupPlacement, context); }
+  next (game: BaronyGameStore): IBaronyProcessStep { return this.parent.afterPlacement (this.result as BaronySetupPlacement, game); }
   public result: BaronySetupPlacement | null = null;
 } // BaronySetupPlacementTask
 
-export interface IHasBaronyTurn { afterTurn (result: BaronyTurn, context: BaronyContext): IBaronyProcessStep; }
+export interface IHasBaronyTurn { afterTurn (result: BaronyTurn, game: BaronyGameStore): IBaronyProcessStep; }
 export interface BaronyTurnTaskData { player: string; }
 interface ABaronyTurn {
   readonly action: BaronyAction;
@@ -55,6 +55,6 @@ export class BaronyTurnTask implements IBaronyProcessTask<BaronyTurnTaskData> {
   constructor (public readonly data: BaronyTurnTaskData, public readonly parent: IHasBaronyTurn & IBaronyProcess) { }
   readonly type = "task";
   readonly taskName = "turn";
-  next (context: BaronyContext): IBaronyProcessStep { return this.parent.afterTurn (this.result as BaronyTurn, context); }
+  next (game: BaronyGameStore): IBaronyProcessStep { return this.parent.afterTurn (this.result as BaronyTurn, game); }
   public result: BaronyTurn | null = null;
 } // BaronyTurnTask

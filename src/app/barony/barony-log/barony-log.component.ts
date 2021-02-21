@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
 import { BaronyGameService } from "../barony-game/barony-game.service";
-import { BaronyContext } from "../logic";
+import { BaronyGameStore } from "../logic";
 import { BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPawnType, BaronyPlayer } from "../models";
 
 interface BaronyLogStringFragment {
@@ -38,7 +38,7 @@ type BaronyLogFragment = BaronyLogStringFragment | BaronyLogPlayerFragment | Bar
 export class BaronyLogComponent implements OnChanges {
 
   constructor (
-    private context: BaronyContext
+    private game: BaronyGameStore
   ) { }
 
   @Input () log!: BaronyLog;
@@ -70,7 +70,7 @@ export class BaronyLogComponent implements OnChanges {
   } // string
 
   private player (playerId: string): BaronyLogPlayerFragment {
-    const player = this.context.getPlayer (playerId);
+    const player = this.game.getPlayer (playerId);
     return {
       type: "player",
       label: player.name,
@@ -79,7 +79,7 @@ export class BaronyLogComponent implements OnChanges {
   } // player
 
   private land (landId: BaronyLandCoordinates): BaronyLogLandFragment {
-    const land = this.context.getLand (landId);
+    const land = this.game.getLand (landId);
     let label: string;
     switch (land.type) {
       case "fields": label = "fields"; break;
