@@ -1,8 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { Subscription } from "rxjs";
-import { tap } from "rxjs/operators";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../models";
-import { BaronyBoardService } from "./barony-board.service";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { SimpleChanges } from "@bg-utils";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../models";
 
 @Component ({
   selector: "barony-board",
@@ -10,72 +8,52 @@ import { BaronyBoardService } from "./barony-board.service";
   styleUrls: ["./barony-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyBoardComponent implements OnInit, OnDestroy {
+export class BaronyBoardComponent implements OnChanges {
 
-  constructor (
-    private service: BaronyBoardService
-  ) { }
+  constructor () { }
 
-  lands$ = this.service.selectLands$ ();
-  logs$ = this.service.selectLogs$ ();
-  currentPlayer$ = this.service.selectCurrentPlayer$ ();
-  otherPlayers$ = this.service.selectOtherPlayers$ ();
-  message$ = this.service.selectMessage$ ();
-  validLands$ = this.service.selectValidLands$ ();
-  validActions$ = this.service.selectValidActions$ ();
-  validBuildings$ = this.service.selectValidBuildings$ ();
-  validResources$ = this.service.selectValidResources$ ();
-  canPass$ = this.service.selectCanPass$ ();
-  canCancel$ = this.service.selectCanCancel$ ();
-  maxNumberOfKnights$ = this.service.selectMaxNumberOfKnights$ ().pipe (tap (max => this.numberOfKnights = max ? max : 0));
+  @Input () lands!: BaronyLand[];
+  @Input () logs!: BaronyLog[];
+  @Input () currentPlayer: BaronyPlayer | null = null;
+  @Input () otherPlayers!: BaronyPlayer[];
+  @Input () message: string | null = null;
+  @Input () validLands: BaronyLandCoordinates[] | null = null;
+  @Input () validActions: BaronyAction[] | null = null;
+  @Input () validBuildings: ("stronghold" | "village")[] | null = null;
+  @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
+  @Input () canPass: boolean = false;
+  @Input () canCancel: boolean = false;
+  @Input () maxNumberOfKnights: number | null = null;
+
+  @Output () playerSelect = new EventEmitter<BaronyPlayer> ();
+  @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
+  @Output () landTileClick = new EventEmitter<BaronyLand> ();
+  @Output () actionClick = new EventEmitter<BaronyAction> ();
+  @Output () passClick = new EventEmitter<void> ();
+  @Output () cancelClick = new EventEmitter<void> ();
+  @Output () knightsConfirm = new EventEmitter<number> ();
+  @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
   numberOfKnights = 1;
 
-  resolveTasksSubscription!: Subscription;
-
   playerTrackBy = (player: BaronyPlayer) => player.id;
 
-  ngOnInit (): void {
-    this.service.setCurrentPlayer ("leo");
-    this.service.setAiPlayers (["nico", "rob", "salvatore"]);
-    this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
+  ngOnChanges (changes: SimpleChanges<BaronyBoardComponent>): void {
+    if (changes.maxNumberOfKnights) {
+      this.numberOfKnights = this.maxNumberOfKnights || 0;
+    } // if
   } // ngOnInit
 
-  ngOnDestroy () {
-    this.resolveTasksSubscription.unsubscribe ();
-  } // ngOnDestroy
-
-  onPlayerSelect (player: BaronyPlayer) {
-    this.service.setCurrentPlayer (player.id);
-  } // onPlayerSelect
-
-  onBuildingSelect (building: BaronyBuilding) {
-    this.service.buildingChange (building);
-  } // onBuildingSelect
-
-  onLandTileClick (landTile: BaronyLand) {
-    this.service.landTileChange (landTile);
-  } // onLandTileClick
-
-  onActionClick (action: BaronyAction) {
-    this.service.actionChange (action);
-  } // onActionClick
-
-  onPassClick () {
-    this.service.passChange ();
-  } // onPassClick
-
-  onCancelClick () {
-    this.service.cancelChange ();
-  } // onCancelClick
-
+  onPlayerSelect (player: BaronyPlayer) { this.playerSelect.emit (player); }
+  onBuildingSelect (building: BaronyBuilding) { this.buildingSelect.emit (building); }
+  onLandTileClick (landTile: BaronyLand) { this.landTileClick.emit (landTile); }
+  onActionClick (action: BaronyAction) { this.actionClick.emit (action); }
+  onPassClick () { this.passClick.emit (); }
+  onCancelClick () { this.cancelClick.emit (); }
   onKnightsConfirm () {
-    this.service.numberOfKnightsChange (this.numberOfKnights);
+    this.knightsConfirm.emit (this.numberOfKnights);
     this.numberOfKnights = 1;
   } // onKnightsConfirm
-
-  onResourceSelect (resource: BaronyResourceType) {
-    this.service.resourceChange (resource);
-  } // onResourceSelect
+  onResourceSelect (resource: BaronyResourceType) { this.resourceSelect.emit (resource); }
 
 } // BaronyBoardComponent

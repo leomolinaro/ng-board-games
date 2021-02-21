@@ -35,7 +35,9 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "stylePreprocessorOptions": {
-              "includePaths": ["src/app/barony/styles"]
+              "includePaths": [
+                "src/app/barony/styles"
+              ]
             },
             "assets": [
               "src/favicon.ico",
@@ -134,6 +136,10 @@
               "devServerTarget": "ng-board-games:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {}
         }
       }
     }

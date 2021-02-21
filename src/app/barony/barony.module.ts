@@ -13,13 +13,14 @@ import { BgUtilsModule } from "@bg-utils";
 import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
 import { BgComponentsModule } from "../bg-components/bg-components.module";
 import { BaronyLogComponent } from "./barony-log/barony-log.component";
-import { BaronyLogsComponent } from './barony-logs/barony-logs.component';
-import { BaronyResourcesSelectorComponent } from './barony-resources-selector/barony-resources-selector.component';
-import { BaronyBuildingsSelectorComponent } from './barony-buildings-selector/barony-buildings-selector.component';
+import { BaronyLogsComponent } from "./barony-logs/barony-logs.component";
+import { BaronyResourcesSelectorComponent } from "./barony-resources-selector/barony-resources-selector.component";
+import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/barony-buildings-selector.component";
+import { BaronyGameComponent } from "./barony-game/barony-game.component";
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
-  { path: "board", component: BaronyBoardComponent },
+  { path: "game", component: BaronyGameComponent },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
@@ -37,7 +38,8 @@ const routes: Routes = [
     BaronyLogComponent,
     BaronyLogsComponent,
     BaronyResourcesSelectorComponent,
-    BaronyBuildingsSelectorComponent
+    BaronyBuildingsSelectorComponent,
+    BaronyGameComponent
   ],
   imports: [
     CommonModule,

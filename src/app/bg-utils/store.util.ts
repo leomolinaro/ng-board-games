@@ -2,6 +2,10 @@ import { asapScheduler, BehaviorSubject, combineLatest, MonoTypeOperatorFunction
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { bgReduxDevtools, BgReduxDevtoolsInstance } from "./redux-devtools";
 
+export type Exactly<S, T> = { [K in keyof S]: K extends keyof T ? T[K] : never };
+
+// S extends BaronyUiState & { [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never }
+
 export class BgStore<S extends object> {
 
   constructor (

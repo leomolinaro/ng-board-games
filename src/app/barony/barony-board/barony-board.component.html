@@ -1,52 +1,46 @@
 <div class="b-board">
   <div class="b-board-map-layer">
     <barony-map
-      [lands]="(lands$ | async)!"
-      [validLands]="(validLands$ | async)!"
+      [lands]="lands"
+      [validLands]="validLands"
       (landTileClick)="onLandTileClick ($event)">
     </barony-map>
   </div>
-  <div class="b-board-widgets-layer" *ngLet="currentPlayer$ | async as currentPlayer">
+  <div class="b-board-widgets-layer">
     <div
       [class]="'b-board-instructions-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
-      <div class="b-board-instructions">{{ message$ | async }}</div>
+      <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
-        *ngIf="maxNumberOfKnights$ | async as maxNumberOfKnights"
+        *ngIf="maxNumberOfKnights"
         [(number)]="numberOfKnights"
         min=1
         [max]="maxNumberOfKnights"
         (confirm)="onKnightsConfirm ()">
       </barony-knights-selector>
       <barony-buildings-selector
-        *ngIf="validBuildings$ | async as buildings"
-        [buildings]="buildings"
+        *ngIf="validBuildings"
+        [buildings]="validBuildings"
         [player]="currentPlayer"
         (buildingClick)="onBuildingSelect ($event)">
       </barony-buildings-selector>
       <barony-resources-selector
-        *ngIf="validResources$ | async as resources"
-        [resources]="resources?.resources"
+        *ngIf="validResources"
+        [resources]="validResources?.resources"
         (resourceClick)="onResourceSelect ($event)">
       </barony-resources-selector>
     </div>
-    <ng-container *ngLet="validActions$ | async as validActions">
-      <ng-container *ngLet="canPass$ | async as canPass">
-        <ng-container *ngLet="canCancel$ | async as canCancel">
-          <barony-actions
-            class="b-board-actions-widget"
-            *ngIf="validActions || canPass || canCancel"
-            [canPass]="canPass"
-            [canCancel]="canCancel"
-            [validActions]="validActions"
-            (actionClick)="onActionClick ($event)"
-            (passClick)="onPassClick ()"
-            (cancelClick)="onCancelClick ()">
-          </barony-actions>
-        </ng-container>
-      </ng-container>
-    </ng-container>
+    <barony-actions
+      class="b-board-actions-widget"
+      *ngIf="validActions || canPass || canCancel"
+      [canPass]="canPass"
+      [canCancel]="canCancel"
+      [validActions]="validActions"
+      (actionClick)="onActionClick ($event)"
+      (passClick)="onPassClick ()"
+      (cancelClick)="onCancelClick ()">
+    </barony-actions>
     <div class="b-board-players-widget">
-      <div *ngFor="let otherPlayer of (otherPlayers$ | async); trackBy: playerTrackBy" class="b-board-player-widget">
+      <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
         <barony-player-status
           (selectPlayer)="onPlayerSelect (otherPlayer)"
           [player]="otherPlayer">
@@ -59,6 +53,6 @@
         </barony-player-status>
       </div>
     </div>
-    <barony-logs class="b-board-logs-widget" [logs]="logs$ | async"></barony-logs>
+    <barony-logs class="b-board-logs-widget" [logs]="logs"></barony-logs>
   </div>
 </div>

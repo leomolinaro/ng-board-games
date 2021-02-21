@@ -1,0 +1,22 @@
+<barony-board
+  [lands]="lands$ | async"
+  [logs]="logs$ | async"
+  [currentPlayer]="currentPlayer$ | async"
+  [otherPlayers]="otherPlayers$ | async"
+  [message]="message$ | async"
+  [validLands]="validLands$ | async"
+  [validActions]="validActions$ | async"
+  [validBuildings]="validBuildings$ | async"
+  [validResources]="validResources$ | async"
+  [canPass]="canPass$ | async"
+  [canCancel]="canCancel$ | async"
+  [maxNumberOfKnights]="maxNumberOfKnights$ | async"
+  (playerSelect)="onPlayerSelect ($event)"
+  (buildingSelect)="onBuildingSelect ($event)"
+  (landTileClick)="onLandTileClick ($event)"
+  (actionClick)="onActionClick ($event)"
+  (passClick)="onPassClick ()"
+  (cancelClick)="onCancelClick ()"
+  (knightsConfirm)="onKnightsConfirm ($event)"
+  (resourceSelect)="onResourceSelect ($event)">
+</barony-board>

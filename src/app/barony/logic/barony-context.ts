@@ -1,3 +1,4 @@
+import { Injectable } from "@angular/core";
 import { immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
@@ -21,9 +22,12 @@ interface BaronyState {
   logs: BaronyLog[];
 } // BaronyState
 
+const N_PLAYERS = 4;
+
+@Injectable ()
 export class BaronyContext extends BgStore<BaronyState> {
 
-  constructor (nPlayers: number) {
+  constructor () {
     super ({
       players: {
         map: {
@@ -32,9 +36,9 @@ export class BaronyContext extends BgStore<BaronyState> {
           rob: createPlayer ("rob", "Rob", "green"),
           salvatore: createPlayer ("salvatore", "Salvatore", "yellow"),
         },
-        ids: ["leo", "nico", "rob", "salvatore"].filter ((v, index) => index < nPlayers)
+        ids: ["leo", "nico", "rob", "salvatore"].filter ((v, index) => index < N_PLAYERS)
       },
-      lands: getRandomLands (nPlayers),
+      lands: getRandomLands (N_PLAYERS),
       gameBox: {
         removedPawns: []
       },

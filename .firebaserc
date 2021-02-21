@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "board-games-5261e": {
+      "hosting": {
+        "ng-board-games": [
+          "board-games-5261e"
+        ]
+      }
+    }
+  }
+}
