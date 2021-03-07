@@ -46,8 +46,6 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   resolveTasksSubscription!: Subscription;
 
   ngOnInit (): void {
-    this.ui.setCurrentPlayer ("leo");
-    this.ui.setAiPlayers (["nico", "rob", "salvatore"]);
     this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
   } // ngOnInit
 

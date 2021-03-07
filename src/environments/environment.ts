@@ -7,10 +7,18 @@ export const environment = {
   firebase: {
     apiKey: "AIzaSyDDWx3uGSpGXYv0Z0d9_LRCmNC3_HOdQBo",
     authDomain: "board-games-5261e.firebaseapp.com",
+    databaseURL: "https://board-games-5261e-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "board-games-5261e",
     storageBucket: "board-games-5261e.appspot.com",
     messagingSenderId: "553029149363",
     appId: "1:553029149363:web:228bb7e4cb78e6d676c6c6"
+
+    // apiKey: "AIzaSyDDWx3uGSpGXYv0Z0d9_LRCmNC3_HOdQBo",
+    // authDomain: "board-games-5261e.firebaseapp.com",
+    // projectId: "board-games-5261e",
+    // storageBucket: "board-games-5261e.appspot.com",
+    // messagingSenderId: "553029149363",
+    // appId: "1:553029149363:web:228bb7e4cb78e6d676c6c6"
     // databaseURL: '<your-database-URL>',
     // measurementId: '<your-measurement-id>'
   }

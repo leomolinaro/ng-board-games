@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { BaronyRemoteService } from "../barony-remote.service";
 
 @Component ({
   selector: "app-barony-home",
@@ -8,9 +9,17 @@ import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 })
 export class BaronyHomeComponent implements OnInit {
 
-  constructor () { }
+  constructor (
+    private remote: BaronyRemoteService
+  ) { }
+
+  remoteGames$ = this.remote.selectGames$ ();
 
   ngOnInit (): void {
-  }
+  } // ngOnInit
 
-}
+  onTestDataClick () {
+    this.remote.generateExampleData$ ().subscribe ();
+  } // onTestDataClick
+
+} // BaronyHomeComponent

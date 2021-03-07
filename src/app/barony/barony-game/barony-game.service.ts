@@ -27,20 +27,19 @@ export class BaronyGameService {
   resolveTasks$ (): Observable<void> {
     return combineLatest ([
       this.ui.selectCurrentPlayerId$ (),
-      this.ui.selectAiPlayerIds$ (),
       this.selectPendingTask$ (),
       this.ui.cancelChange$ (),
     ]).pipe (
       debounceTime (0),
-      switchMap (([currentPlayerId, aiPlayersIndicies, task]) => {
+      switchMap (([currentPlayerId, task]) => {
         if (this.game.isTemporaryState ()) {
           this.game.endTemporaryState ();
         } // if
-        return this.resolveTask$ (task, currentPlayerId, aiPlayersIndicies).pipe (
+        return this.resolveTask$ (task, currentPlayerId).pipe (
           tap (nextTask => {
             if (nextTask) {
               this.$pendingTask.next (nextTask);
-              this.autoRefreshCurrentPlayer (currentPlayerId, aiPlayersIndicies, nextTask);
+              this.autoRefreshCurrentPlayer (currentPlayerId, nextTask);
             } // if
           })
         );
@@ -49,16 +48,16 @@ export class BaronyGameService {
     );
   } // resolveTasks$
 
-  private autoRefreshCurrentPlayer (currentPlayer: string | null, aiPlayers: string[], task: BaronyProcessTask) {
-    if (aiPlayers.every (aiPlayer => aiPlayer !== task.data.player)) {
+  private autoRefreshCurrentPlayer (currentPlayer: string | null, task: BaronyProcessTask) {
+    if (this.game.isLocalPlayer (task.data.player)) {
       this.ui.setCurrentPlayer (task.data.player);
     } // if - else
   } // autoRefreshCurrentPlayer
 
-  private resolveTask$ (task: BaronyProcessTask | null, currentPlayer: string | null, aiPlayers: string[]): Observable<BaronyProcessTask | null> {
+  private resolveTask$ (task: BaronyProcessTask | null, currentPlayer: string | null): Observable<BaronyProcessTask | null> {
     if (task) {
       this.game.startTemporaryState ();
-      return this.executeTask$ (task, currentPlayer, aiPlayers).pipe (
+      return this.executeTask$ (task, currentPlayer).pipe (
         map (taskResult => {
           this.game.endTemporaryState ();
           if (taskResult) {
@@ -78,10 +77,11 @@ export class BaronyGameService {
     } // if - else
   } // resolveTask$
 
-  private executeTask$<T extends BaronyProcessTask> (task: T, currentPlayer: string | null, aiPlayers: string[]): Observable<T["result"] | null> {
+  private executeTask$<T extends BaronyProcessTask> (task: T, currentPlayer: string | null): Observable<T["result"] | null> {
+    const turnPlayer = this.game.getPlayer (task.data.player);
     if (currentPlayer === task.data.player) {
       return this.localService.executeTask$ (task, currentPlayer);
-    } else if (aiPlayers.some (aiPlayer => aiPlayer === task.data.player)) {
+    } else if (turnPlayer.isAi) {
       return this.aiService.executeTask$ (task);
     } else {
       return this.observerService.executeTask$ (task);

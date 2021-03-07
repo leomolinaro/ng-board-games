@@ -8,7 +8,8 @@ export interface BgApp {
 
 const APPS: BgApp[] = [
   { name: "Barony", routerLink: "barony", imageSource: "assets/barony/game-image.jpg" },
-  { name: "Britannia", routerLink: "britannia", imageSource: "assets/britannia/game-image.jpg" }
+  { name: "Britannia", routerLink: "britannia", imageSource: "assets/britannia/game-image.jpg" },
+  { name: "Agot draft", routerLink: "agot-draft", imageSource: "assets/agot-draft/game-image.jpg" },
 ];
 
 @Injectable ({

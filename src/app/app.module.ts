@@ -6,6 +6,8 @@ import { BgHomeComponent } from "./bg-home/bg-home.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AngularFireModule } from "@angular/fire";
 import { environment } from "src/environments/environment";
+import { AngularFireDatabaseModule } from "@angular/fire/database";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule ({
   declarations: [
@@ -15,8 +17,10 @@ import { environment } from "src/environments/environment";
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     BrowserAnimationsModule,
-    AngularFireModule.initializeApp (environment.firebase)
+    AngularFireModule.initializeApp (environment.firebase),
+    AngularFireDatabaseModule
   ],
   providers: [],
   bootstrap: [AppComponent]

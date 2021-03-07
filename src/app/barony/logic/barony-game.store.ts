@@ -31,10 +31,10 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     super ({
       players: {
         map: {
-          leo: createPlayer ("leo", "Leo", "blue"),
-          nico: createPlayer ("nico", "Nico", "red"),
-          rob: createPlayer ("rob", "Rob", "green"),
-          salvatore: createPlayer ("salvatore", "Salvatore", "yellow"),
+          leo: createPlayer ("leo", "Leo", "blue", false),
+          nico: createPlayer ("nico", "Nico", "red", true),
+          rob: createPlayer ("rob", "Rob", "green", true),
+          salvatore: createPlayer ("salvatore", "Salvatore", "yellow", true),
         },
         ids: ["leo", "nico", "rob", "salvatore"].filter ((v, index) => index < N_PLAYERS)
       },
@@ -63,6 +63,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
 
   getPlayers (): BaronyPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
   getPlayer (id: string): BaronyPlayer { return this.get (s => s.players.map[id]); }
+  isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
   getPlayerIds () { return this.get (s => s.players.ids); }
   getPlayerMap () { return this.get (s => s.players.map); }
   getNumberOfPlayers (): number { return this.getPlayers ().length; }

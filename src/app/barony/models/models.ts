@@ -8,6 +8,8 @@ export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
 export interface BaronyPlayer {
   id: string;
   name: string;
+  isAi: boolean;
+  isRemote: boolean;
   color: BaronyColor;
   score: number;
   pawns: { [type in BaronyPawnType]: number };

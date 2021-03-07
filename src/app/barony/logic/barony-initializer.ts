@@ -1,10 +1,12 @@
 import { arrayUtil, randomUtil } from "@bg-utils";
 import { BaronyColor, BaronyLand, BaronyLandCoordinates, baronyLandTypes, BaronyPlayer, landCoordinatesToId } from "../models";
 
-export function createPlayer (id: string, name: string, color: BaronyColor): BaronyPlayer {
+export function createPlayer (id: string, name: string, color: BaronyColor, isAi: boolean): BaronyPlayer {
   return {
     id: id,
     name: name,
+    isAi: isAi,
+    isRemote: false,
     color: color,
     score: 0,
     pawns: {

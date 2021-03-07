@@ -1,1 +1,6 @@
 <a routerLink="game">Local game</a>
+
+<button (click)="onTestDataClick ()">Test data</button>
+
+<a *ngFor="let remoteGame of remoteGames$ | async" [routerLink]="'game' + remoteGame.id">{{remoteGame.name}}</a>
+

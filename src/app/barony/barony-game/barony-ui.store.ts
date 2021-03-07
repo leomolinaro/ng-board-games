@@ -7,7 +7,6 @@ import { BaronyLandCoordinates, BaronyResourceType, BaronyAction, BaronyBuilding
 
 interface BaronyUiState {
   currentPlayer: string | null;
-  aiPlayers: string[];
   turnPlayer: string;
   canCancel: boolean;
   message: string | null;
@@ -29,8 +28,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     private game: BaronyGameStore
   ) {
     super ({
-      currentPlayer: null,
-      aiPlayers: [],
+      currentPlayer: "leo",
       turnPlayer: "",
       canCancel: false,
       message: null,
@@ -73,7 +71,6 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   selectCanCancel$ () { return this.select$ (s => s.canCancel); }
   selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
-  selectAiPlayerIds$ () { return this.select$ (s => s.aiPlayers); }
   selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
   selectMessage$ () { return this.select$ (s => s.message); }
 
@@ -135,9 +132,5 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   setCurrentPlayer (playerId: string | null) {
     this.updateUi (s => ({ ...s, currentPlayer: playerId }));
   } // setCurrentPlayer
-
-  setAiPlayers (aiPlayers: string[]) {
-    this.updateUi (s => ({ ...s, aiPlayers: aiPlayers }));
-  } // setAiPlayers
 
 } // BaronyUiStore
