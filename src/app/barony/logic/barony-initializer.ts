@@ -1,44 +1,39 @@
-import { arrayUtil, randomUtil } from "@bg-utils";
-import { BaronyColor, BaronyLand, BaronyLandCoordinates, baronyLandTypes, BaronyPlayer, landCoordinatesToId } from "../models";
+import { randomUtil } from "@bg-utils";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType, baronyLandTypes, BaronyPlayer } from "../models";
 
-export function createPlayer (id: string, name: string, color: BaronyColor, isAi: boolean): BaronyPlayer {
-  return {
-    id: id,
-    name: name,
-    isAi: isAi,
-    isRemote: false,
-    color: color,
-    score: 0,
-    pawns: {
-      city: 5,
-      stronghold: 2,
-      knight: 7,
-      village: 14
-    },
-    resources: {
-      forest: 0,
-      mountain: 0,
-      plain: 0,
-      fields: 0
-    }
-  };
-} // createPlayer
+// export function createPlayer (id: string, name: string, color: BaronyColor, isAi: boolean): BaronyPlayer {
+//   return {
+//     id: id,
+//     name: name,
+//     isAi: isAi,
+//     isRemote: false,
+//     color: color,
+//     score: 0,
+//     pawns: {
+//       city: 5,
+//       stronghold: 2,
+//       knight: 7,
+//       village: 14
+//     },
+//     resources: {
+//       forest: 0,
+//       mountain: 0,
+//       plain: 0,
+//       fields: 0
+//     }
+//   };
+// } // createPlayer
 
 export function getRandomLands (nPlayers: number): {
-  map: { [id: string]: BaronyLand };
-  coordinates: BaronyLandCoordinates[];
-} {
+  coordinates: BaronyLandCoordinates;
+  type: BaronyLandType;
+}[] {
   const nTiles = nPlayers * 27;
-  const coordinates = getLandCoordinates (nTiles);
-  return {
+  const coordinatess = getLandCoordinates (nTiles);
+  return coordinatess.map (coordinates => ({
     coordinates: coordinates,
-    map: arrayUtil.toMap (coordinates, c => landCoordinatesToId (c), (c, id) => ({
-      id: id,
-      coordinates: { ...c },
-      type: randomUtil.getRandomElement (baronyLandTypes),
-      pawns: []
-    }))
-  };
+    type: randomUtil.getRandomElement (baronyLandTypes)
+  }));
 } // getRandomLandTiles
 
 function getLandCoordinates (nTiles: number): BaronyLandCoordinates[] {

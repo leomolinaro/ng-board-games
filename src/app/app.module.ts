@@ -8,6 +8,7 @@ import { AngularFireModule } from "@angular/fire";
 import { environment } from "src/environments/environment";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
 import { HttpClientModule } from "@angular/common/http";
+import { BgUtilsModule } from "@bg-utils";
 
 @NgModule ({
   declarations: [
@@ -20,7 +21,8 @@ import { HttpClientModule } from "@angular/common/http";
     HttpClientModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp (environment.firebase),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    BgUtilsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

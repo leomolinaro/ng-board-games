@@ -1,15 +1,17 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
+import { BaronyRemoteService } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
 import { BaronyProcessTask } from "../process";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()
-export class BaronyPlayerObserverService {
+export class BaronyPlayerRemoteService {
 
   constructor (
     private game: BaronyGameStore,
-    private ui: BaronyUiStore
+    private ui: BaronyUiStore,
+    private remote: BaronyRemoteService
   ) { }
 
   executeTask$ (task: BaronyProcessTask): Observable<null> {
@@ -22,4 +24,4 @@ export class BaronyPlayerObserverService {
     return of (null);
   } // executeTask$
 
-} // BaronyPlayerObserverService
+} // BaronyPlayerRemoteService

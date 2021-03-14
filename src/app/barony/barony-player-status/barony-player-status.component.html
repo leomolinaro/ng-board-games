@@ -1,9 +1,17 @@
 <div
   [class]="'b-player-card ' + 'is-' + player.color" 
-  [ngClass]="{ 'is-current': currentPlayer }"
+  [ngClass]="{
+    'is-current': currentPlayer,
+    'is-ai': player.isAi,
+    'is-remote': !player.isAi && player.isRemote,
+    'is-local': !player.isAi && !player.isRemote
+  }"
   (click)="onCardClick ()">
-  <span class="b-player-name">{{ player.name }}</span>
-  <span class="b-player-score">{{ player.score }}</span>
+  <div class="b-player-header">
+    <div class="b-player-name">{{ player.name }}</div>
+    <div class="b-player-score">{{ player.score }}</div>
+    <div class="b-player-type">{{ player.isAi ? "AI" : ( player.isRemote ? "remote" : "local" ) }}</div>
+  </div>
   <div class="b-player-content">
     <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
       class="b-player-pawn-image"

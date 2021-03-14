@@ -1,12 +1,17 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from "@angular/core";
-import { Subscription } from "rxjs";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayer, BaronyBuilding, BaronyLand, BaronyAction, BaronyResourceType } from "../models";
 import { BaronyUiStore } from "./barony-ui.store";
 import { BaronyGameStore } from "../logic";
-import { BaronyPlayerObserverService } from "./barony-player-observer.service";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
+import { subscribeTo, UntilDestroy } from "@bg-utils";
+import { BaronyRemoteService } from "../barony-remote.service";
+import { ActivatedRoute } from "@angular/router";
+import { tap } from "rxjs/operators";
+import { forkJoin } from "rxjs";
+import { BgAuthService } from "@bg-services";
+import { BaronyPlayerRemoteService } from "./barony-player-remote.service";
 
 @Component ({
   selector: "barony-game",
@@ -18,17 +23,23 @@ import { BaronyPlayerLocalService } from "./barony-player-local.service";
     BaronyUiStore,
     BaronyPlayerAiService,
     BaronyPlayerLocalService,
-    BaronyPlayerObserverService,
+    BaronyPlayerRemoteService,
     BaronyGameService
   ]
 })
+@UntilDestroy
 export class BaronyGameComponent implements OnInit, OnDestroy {
 
   constructor (
     private game: BaronyGameStore,
     private ui: BaronyUiStore,
-    private service: BaronyGameService
+    private service: BaronyGameService,
+    private remote: BaronyRemoteService,
+    private route: ActivatedRoute,
+    private authService: BgAuthService
   ) { }
+
+  private gameId = this.route.snapshot.paramMap.get ("gameId") as string;
 
   lands$ = this.game.selectLands$ ();
   logs$ = this.game.selectLogs$ ();
@@ -43,14 +54,48 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   canCancel$ = this.ui.selectCanCancel$ ();
   maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
-  resolveTasksSubscription!: Subscription;
-
   ngOnInit (): void {
-    this.resolveTasksSubscription = this.service.resolveTasks$ ().subscribe ();
+    subscribeTo (forkJoin ([
+      this.remote.getGame$ (this.gameId),
+      this.remote.getPlayers$ (this.gameId),
+      this.remote.getLands$ (this.gameId),
+    ]).pipe (
+      tap (([game, players, lands]) => {
+        this.game.setInitialState (
+          players.map (p => ({
+            id: p.id,
+            color: p.color,
+            isAi: p.isAi,
+            name: p.name,
+            isRemote: !this.authService.isLoggedUserId (p.userId),
+            score: 0,
+            pawns: {
+              city: 5,
+              stronghold: 2,
+              knight: 7,
+              village: 14
+            },
+            resources: {
+              forest: 0,
+              mountain: 0,
+              plain: 0,
+              fields: 0
+            }
+          })),
+          lands.map (l => ({
+            id: l.id,
+            coordinates: l.coordinates,
+            type: l.type,
+            pawns: []
+          }))
+        );
+
+        subscribeTo (this.service.resolveTasks$ (), this);
+      })
+    ), this);
   } // ngOnInit
 
   ngOnDestroy () {
-    this.resolveTasksSubscription.unsubscribe ();
   } // ngOnDestroy
 
   onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }

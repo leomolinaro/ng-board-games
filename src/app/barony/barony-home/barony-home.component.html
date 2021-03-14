@@ -1,6 +1,17 @@
-<a routerLink="game">Local game</a>
-
-<button (click)="onTestDataClick ()">Test data</button>
-
-<a *ngFor="let remoteGame of remoteGames$ | async" [routerLink]="'game' + remoteGame.id">{{remoteGame.name}}</a>
-
+<div class="b-home">
+  <!-- <barony-admin *ngIf="(remoteGames$ | async)?.length"></barony-admin> -->
+  <div class="b-home-buttons">
+    <button class="b-home-new-game" (click)="onNewGameClick (2)">New game (2)</button>
+    <button class="b-home-new-game" (click)="onNewGameClick (3)">New game (3)</button>
+    <button class="b-home-new-game" (click)="onNewGameClick (4)">New game (4)</button>
+    <div class="b-home-games">
+      <div class="b-home-game"
+        *ngFor="let remoteGame of remoteGames$ | async">
+        <span class="b-home-game-name">{{remoteGame.name}}</span>
+        <!-- <button class="b-home-game-watch" *ngIf="remoteGame.closed" (click)="onWatchClick (remoteGame.id)">Watch</button> -->
+        <button class="b-home-game-delete" (click)="onDeleteClick (remoteGame.id)">Delete</button>
+        <button class="b-home-game-enter" *ngIf="remoteGame.open" (click)="onEnterClick (remoteGame.id)">Enter</button>
+      </div>
+    </div>
+  </div>
+</div>

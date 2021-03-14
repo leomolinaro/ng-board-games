@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { immutableUtil } from "@bg-utils";
+import { arrayUtil, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
 import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
-import { createPlayer, getRandomLands } from "./barony-initializer";
 
 interface BaronyGameBox {
   removedPawns: BaronyPawn[];
@@ -22,29 +21,34 @@ interface BaronyGameState {
   logs: BaronyLog[];
 } // BaronyGameState
 
-const N_PLAYERS = 4;
-
 @Injectable ()
 export class BaronyGameStore extends BgStore<BaronyGameState> {
 
   constructor () {
     super ({
+      players: { map: { }, ids: [] },
+      lands: { map: { }, coordinates: [] },
+      gameBox: { removedPawns: [] },
+      logs: []
+    });
+  } // constructor
+
+  setInitialState (players: BaronyPlayer[], lands: BaronyLand[]) {
+    this.update (s => ({
       players: {
-        map: {
-          leo: createPlayer ("leo", "Leo", "blue", false),
-          nico: createPlayer ("nico", "Nico", "red", true),
-          rob: createPlayer ("rob", "Rob", "green", true),
-          salvatore: createPlayer ("salvatore", "Salvatore", "yellow", true),
-        },
-        ids: ["leo", "nico", "rob", "salvatore"].filter ((v, index) => index < N_PLAYERS)
+        map: arrayUtil.toMap (players, p => p.id),
+        ids: players.map (p => p.id)
       },
-      lands: getRandomLands (N_PLAYERS),
+      lands: {
+        map: arrayUtil.toMap (lands, l => l.id),
+        coordinates: lands.map (l => l.coordinates)
+      },
       gameBox: {
         removedPawns: []
       },
       logs: []
-    });
-  } // constructor
+    }));
+  } // setState
 
   private notTemporaryState: BaronyGameState | null = null;
   isTemporaryState () { return !!this.notTemporaryState; }

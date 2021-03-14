@@ -104,6 +104,7 @@ export function debounceSync<T> (): MonoTypeOperatorFunction<T> {
     let actionValue: T | undefined;
     const rootSubscription = new Subscription ();
     rootSubscription.add (
+      // tslint:disable-next-line: deprecation
       source.subscribe ({
         complete: () => {
           if (actionSubscription) {

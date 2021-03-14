@@ -21,3 +21,9 @@ $color-lake: #0E517E;
 $color-forest: #597736;
 $color-plain: #80A93F;
 $color-fields: #C8932E;
+
+$spacer: 2vmin;
+
+@mixin b-button {
+  padding: $spacer;
+}

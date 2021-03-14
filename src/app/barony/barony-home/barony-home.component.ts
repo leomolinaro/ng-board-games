@@ -1,5 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ExhaustingEvent, UntilDestroy } from "@bg-utils";
+import { forkJoin } from "rxjs";
+import { mapTo, switchMap } from "rxjs/operators";
+import { BgAuthService } from "src/app/bg-services/bg-auth.service";
 import { BaronyRemoteService } from "../barony-remote.service";
+import { getRandomLands } from "../logic/barony-initializer";
+import { BaronyColor } from "../models";
+
+interface BaronyNewGameConfig {
+  name: string;
+  userId: string;
+  players: {
+    userId: string;
+    name: string;
+    color: BaronyColor;
+    isAi: boolean;
+  }[];
+} // BaronyNewGameConfig
 
 @Component ({
   selector: "app-barony-home",
@@ -7,19 +25,66 @@ import { BaronyRemoteService } from "../barony-remote.service";
   styleUrls: ["./barony-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyHomeComponent implements OnInit {
+@UntilDestroy
+export class BaronyHomeComponent implements OnInit, OnDestroy {
 
   constructor (
-    private remote: BaronyRemoteService
+    private authService: BgAuthService,
+    private remote: BaronyRemoteService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) { }
 
-  remoteGames$ = this.remote.selectGames$ ();
+  remoteGames$ = this.remote.gamesChanges$ ();
 
   ngOnInit (): void {
   } // ngOnInit
 
-  onTestDataClick () {
-    this.remote.generateExampleData$ ().subscribe ();
-  } // onTestDataClick
+  ngOnDestroy () { }
+
+  @ExhaustingEvent ()
+  onNewGameClick (numPlayers: number) {
+    const leo = this.authService.getLoggedUser ();
+    return this.authService.loadUserByUsername$ ("nico").pipe (
+      switchMap (nico => {
+        const players: { name: string, isAi: boolean, color: BaronyColor, userId: string }[] = [];
+        if (nico) {
+          players.push ({ name: "Leo 1", color: "blue", isAi: false, userId: leo.id });
+          players.push ({ name: "Leo 2", color: "red", isAi: false, userId: leo.id });
+          if (numPlayers > 2) { players.push ({ name: "Nico", color: "green", isAi: false, userId: nico.id }); }
+          if (numPlayers > 3) { players.push ({ name: "Salvatore", color: "yellow", isAi: true, userId: leo.id }); }
+        } // if
+        const config: BaronyNewGameConfig = {
+          name: "Partita",
+          userId: leo.id,
+          players: players
+        };
+        return this.createNewGame$ (config);
+      })
+    );
+  } // onNewGameClick
+
+  private createNewGame$ (config: BaronyNewGameConfig) {
+    return this.remote.insertGame$ ("Partita", config.userId).pipe (
+      switchMap (game => forkJoin ([
+        ...config.players.map ((p, index) => this.remote.insertPlayer$ (p.name, p.color, p.isAi, index + 1, p.userId, game.id)),
+        ...getRandomLands (config.players.length).map (l => this.remote.insertLand$ (l.coordinates, l.type, game.id))
+      ])),
+      mapTo (void 0)
+    );
+  } // createNewGame$
+
+  @ExhaustingEvent ()
+  onDeleteClick (gameId: string) {
+    return this.remote.deleteGame$ (gameId);
+  } // onDeleteClick
+
+  onWatchClick (gameId: string) {
+
+  } // onWatchClick
+
+  onEnterClick (gameId: string) {
+    this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute });
+  } // onEnterClick
 
 } // BaronyHomeComponent

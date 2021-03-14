@@ -113,7 +113,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     return {
       message: null,
       canPass: false,
-      canCancel: true,
+      canCancel: false,
       maxNumberOfKnights: null,
       validActions: null,
       validBuildings: null,

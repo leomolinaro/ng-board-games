@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { BaronyComponent } from "../barony/barony.component";
 import { BaronyHomeComponent } from "./barony-home/barony-home.component";
 import { BaronyBoardComponent } from "./barony-board/barony-board.component";
 import { RouterModule, Routes } from "@angular/router";
@@ -18,24 +17,14 @@ import { BaronyResourcesSelectorComponent } from "./barony-resources-selector/ba
 import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/barony-buildings-selector.component";
 import { BaronyGameComponent } from "./barony-game/barony-game.component";
 
-// @Injectable ()
-// export class BaronyGameResolver implements Resolve<any> {
-//   constructor (private firestore: AngularFirestore, private db: AngularFireDatabase) { }
-//   resolve (route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
-//     return this.db.list ('barony').valueChanges ().pipe (tap (x => console.log ("x", x)));
-//     return this.firestore.collection ("barony").valueChanges ().pipe (tap (x => console.log ("x", x)));
-//   } // resolve
-// } // BaronyGameResolver
-
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
-  { path: "game", component: BaronyGameComponent/* , resolve: { game: BaronyGameResolver } */ },
+  { path: "game/:gameId", component: BaronyGameComponent },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
 @NgModule ({
   declarations: [
-    BaronyComponent,
     BaronyHomeComponent,
     BaronyBoardComponent,
     BaronyMapComponent,

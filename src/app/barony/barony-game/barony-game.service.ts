@@ -7,7 +7,7 @@ import { debounceTime, map, mapTo, switchMap, tap } from "rxjs/operators";
 import { BaronyUiStore } from "./barony-ui.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import { BaronyPlayerObserverService } from "./barony-player-observer.service";
+import { BaronyPlayerRemoteService } from "./barony-player-remote.service";
 
 @Injectable ()
 export class BaronyGameService {
@@ -18,7 +18,7 @@ export class BaronyGameService {
     private game: BaronyGameStore,
     private aiService: BaronyPlayerAiService,
     private localService: BaronyPlayerLocalService,
-    private observerService: BaronyPlayerObserverService
+    private remoteService: BaronyPlayerRemoteService
   ) { }
   
   private $pendingTask = new BehaviorSubject<BaronyProcessTask | null> (null);
@@ -81,10 +81,10 @@ export class BaronyGameService {
     const turnPlayer = this.game.getPlayer (task.data.player);
     if (currentPlayer === task.data.player) {
       return this.localService.executeTask$ (task, currentPlayer);
-    } else if (turnPlayer.isAi) {
-      return this.aiService.executeTask$ (task);
+    } else if (turnPlayer.isRemote) {
+      return this.remoteService.executeTask$ (task);
     } else {
-      return this.observerService.executeTask$ (task);
+      return this.aiService.executeTask$ (task);
     } // if - else
   } // executeTask$
 

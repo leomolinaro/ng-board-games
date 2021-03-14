@@ -3,8 +3,15 @@
 .b-player-card {
   padding: 1vmin;
   font-size: $font-size-players;
-  .b-player-score {
-    margin-left: 5px;
+  .b-player-header {
+    display: flex;
+    .b-player-score {
+      margin-left: 5px;
+    }
+    .b-player-type {
+      margin-left: auto;
+      font-size: 90%;
+    }
   }
   &.is-red {
     background-color: $red-light;
@@ -26,8 +33,11 @@
       font-weight: 800;
     }
   }
-  &:not(.is-current) {
+  &.is-local:not(.is-current) {
     cursor: pointer;
+  }
+  &.is-remote, &.is-ai {
+    cursor: no-drop
   }
 
   .b-player-content {

@@ -20,3 +20,11 @@
     }
   }
 }
+
+.bg-users {
+  .bg-user {
+    &.logged-user {
+      font-weight: 600;
+    }
+  }
+}

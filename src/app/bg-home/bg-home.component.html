@@ -8,4 +8,12 @@
     </a>
   </div>
 </div>
+<div class="bg-users" *ngLet="loggedUser$ | async as loggedUser">
+  <div
+    *ngFor="let user of users$ | async" class="bg-user"
+    [ngClass]="{ 'logged-user': user.id === loggedUser?.id }">
+    {{ user.username }}
+    <button (click)="onLoginClick (user)">Login</button>
+  </div>
+</div>
 

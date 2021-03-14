@@ -1,0 +1,58 @@
+@import "barony-variables";
+
+.b-home {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .b-home-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+    align-items: center;
+    gap: $spacer;
+
+    .b-home-local-game {
+      @include b-button;
+    }
+    .b-home-new-game {
+      @include b-button;
+    }
+    .b-home-games {
+      height: 70vh;
+      overflow: scroll;
+      padding: $spacer;
+      .b-home-game {
+        margin-bottom: $spacer;
+        padding: $spacer;
+        box-shadow: $widget-shadow;
+  
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $spacer;
+  
+        grid-template-areas: 
+          "name name"
+          "watch enter";
+  
+        .b-home-game-name {
+          grid-area: name;
+          text-align: center;
+        }
+        .b-home-game-watch {
+          grid-area: watch;
+          @include b-button;
+        }
+        .b-home-game-enter {
+          grid-area: enter;
+          @include b-button;
+        }
+      }
+    }
+
+  }
+}
