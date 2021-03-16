@@ -3,7 +3,7 @@ import { Observable, of, race } from "rxjs";
 import { map, switchMap, mapTo } from "rxjs/operators";
 import { BaronyGameStore, baronyRules } from "../logic";
 import { BaronyLand, BaronyMovement, BaronyConstruction, BaronyResourceType, BaronyAction, BaronyLandCoordinates } from "../models";
-import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition, BaronyTurnNobleTiltle } from "../process";
+import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition, BaronyTurnNobleTiltle, BaronyStory, BaronySetupPlacementTask, BaronySetupPlacement } from "../process";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()
@@ -14,11 +14,11 @@ export class BaronyPlayerLocalService {
     private ui: BaronyUiStore
   ) { }
 
-  executeTask$<T extends BaronyProcessTask> (task: T & BaronyProcessTask, player: string): Observable<T["result"]> {
+  executeTask$ (task: BaronyProcessTask, player: string): Observable<BaronyStory> {
     switch (task.taskName) {
       case "setupPlacement": {
         return this.chooseLandForSetupPlacement$ (player).pipe (
-          map (landTile => ({ land: landTile.coordinates }))
+          map<BaronyLand, BaronySetupPlacement> (landTile => ({ type: "setupPlacement", land: landTile.coordinates }))
         );
       } // case
       case "turn": {

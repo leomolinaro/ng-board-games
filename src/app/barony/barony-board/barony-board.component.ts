@@ -14,6 +14,7 @@ export class BaronyBoardComponent implements OnChanges {
 
   @Input () lands!: BaronyLand[];
   @Input () logs!: BaronyLog[];
+  @Input () turnPlayer: BaronyPlayer | null = null;
   @Input () currentPlayer: BaronyPlayer | null = null;
   @Input () otherPlayers!: BaronyPlayer[];
   @Input () message: string | null = null;

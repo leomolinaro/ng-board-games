@@ -1,12 +1,14 @@
-import { BaronyAction, BaronyConstruction, BaronyLandCoordinates, BaronyLandType, BaronyMovement, BaronyResourceType } from "../models";
+import { BaronyAction, BaronyConstruction, BaronyLandCoordinates, BaronyMovement, BaronyResourceType } from "../models";
 import { BaronyGameStore } from "../logic";
 import { IBaronyProcess, IBaronyProcessStep, IBaronyProcessTask, IBaronySubProcess } from "./barony-process.interfaces";
 
 export type BaronyProcessTask = BaronySetupPlacementTask | BaronyTurnTask;
 
+export type BaronyStory = BaronySetupPlacement | BaronyTurn;
+
 export interface IHasBaronySetupPlacement { afterPlacement (placement: BaronySetupPlacement, game: BaronyGameStore): IBaronyProcessStep; }
 export interface BaronySetupPlacementData { player: string; }
-export interface BaronySetupPlacement { land: BaronyLandCoordinates; }
+export interface BaronySetupPlacement { type: "setupPlacement"; land: BaronyLandCoordinates; }
 export class BaronySetupPlacementTask implements IBaronyProcessTask<BaronySetupPlacementData, BaronySetupPlacement> {
   constructor (public readonly data: BaronySetupPlacementData, public readonly parent: IHasBaronySetupPlacement & IBaronySubProcess) { }
   readonly type = "task";

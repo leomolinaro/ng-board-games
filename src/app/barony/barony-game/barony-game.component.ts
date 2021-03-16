@@ -11,7 +11,7 @@ import { ActivatedRoute } from "@angular/router";
 import { tap } from "rxjs/operators";
 import { forkJoin } from "rxjs";
 import { BgAuthService } from "@bg-services";
-import { BaronyPlayerRemoteService } from "./barony-player-remote.service";
+import { BaronyPlayerObserverService } from "./barony-player-observer.service";
 
 @Component ({
   selector: "barony-game",
@@ -23,7 +23,7 @@ import { BaronyPlayerRemoteService } from "./barony-player-remote.service";
     BaronyUiStore,
     BaronyPlayerAiService,
     BaronyPlayerLocalService,
-    BaronyPlayerRemoteService,
+    BaronyPlayerObserverService,
     BaronyGameService
   ]
 })
@@ -43,6 +43,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
 
   lands$ = this.game.selectLands$ ();
   logs$ = this.game.selectLogs$ ();
+  turnPlayer$ = this.ui.selectTurnPlayer$ ();
   currentPlayer$ = this.ui.selectCurrentPlayer$ ();
   otherPlayers$ = this.ui.selectOtherPlayers$ ();
   message$ = this.ui.selectMessage$ ();
@@ -59,38 +60,41 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
       this.remote.getGame$ (this.gameId),
       this.remote.getPlayers$ (this.gameId),
       this.remote.getLands$ (this.gameId),
+      this.remote.getStories$ (this.gameId)
     ]).pipe (
-      tap (([game, players, lands]) => {
-        this.game.setInitialState (
-          players.map (p => ({
-            id: p.id,
-            color: p.color,
-            isAi: p.isAi,
-            name: p.name,
-            isRemote: !this.authService.isLoggedUserId (p.userId),
-            score: 0,
-            pawns: {
-              city: 5,
-              stronghold: 2,
-              knight: 7,
-              village: 14
-            },
-            resources: {
-              forest: 0,
-              mountain: 0,
-              plain: 0,
-              fields: 0
-            }
-          })),
-          lands.map (l => ({
-            id: l.id,
-            coordinates: l.coordinates,
-            type: l.type,
-            pawns: []
-          }))
-        );
-
-        subscribeTo (this.service.resolveTasks$ (), this);
+      tap (([game, players, lands, stories]) => {
+        if (game) {
+          this.game.setInitialState (
+            players.map (p => ({
+              id: p.id,
+              color: p.color,
+              isAi: p.isAi,
+              name: p.name,
+              isRemote: !this.authService.isLoggedUserId (p.userId),
+              score: 0,
+              pawns: {
+                city: 5,
+                stronghold: 2,
+                knight: 7,
+                village: 14
+              },
+              resources: {
+                forest: 0,
+                mountain: 0,
+                plain: 0,
+                fields: 0
+              }
+            })),
+            lands.map (l => ({
+              id: l.id,
+              coordinates: l.coordinates,
+              type: l.type,
+              pawns: []
+            })),
+            this.gameId,
+          );
+          subscribeTo (this.service.resolveTasks$ (stories), this);
+        } // if
       })
     ), this);
   } // ngOnInit

@@ -3,7 +3,7 @@ import { randomUtil } from "@bg-utils";
 import { Observable, of } from "rxjs";
 import { BaronyGameStore, baronyRules } from "../logic";
 import { BaronyConstruction, BaronyLand, BaronyMovement, BaronyResourceType } from "../models";
-import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition } from "../process";
+import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition, BaronyStory, BaronySetupPlacement } from "../process";
 
 @Injectable ()
 export class BaronyPlayerAiService {
@@ -12,12 +12,12 @@ export class BaronyPlayerAiService {
     private game: BaronyGameStore
   ) { }
 
-  executeTask$<T extends BaronyProcessTask> (task: T & BaronyProcessTask): Observable<T["result"]> {
+  executeTask$ (task: BaronyProcessTask): Observable<BaronyStory> {
     switch (task.taskName) {
       case "setupPlacement": {
         const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
         const land = randomUtil.getRandomElement (validLands);
-        return of ({ land: land.coordinates });
+        return of<BaronySetupPlacement> ({ type: "setupPlacement", land: land.coordinates });
       } // case
       case "turn": {
         const validActions = baronyRules.getValidActions (task.data.player, this.game);

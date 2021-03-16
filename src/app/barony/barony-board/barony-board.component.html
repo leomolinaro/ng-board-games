@@ -8,7 +8,7 @@
   </div>
   <div class="b-board-widgets-layer">
     <div
-      [class]="'b-board-instructions-widget' + (currentPlayer ? (' is-' + currentPlayer.color) : '')">
+      [class]="'b-board-instructions-widget' + (turnPlayer ? (' is-' + turnPlayer.color) : '')">
       <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
         *ngIf="maxNumberOfKnights"

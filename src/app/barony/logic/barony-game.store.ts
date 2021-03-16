@@ -9,6 +9,7 @@ interface BaronyGameBox {
 } // BaronyGameBox
 
 interface BaronyGameState {
+  gameId: string;
   players: {
     map: { [id: string]: BaronyPlayer },
     ids: string[]
@@ -26,6 +27,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
 
   constructor () {
     super ({
+      gameId: "",
       players: { map: { }, ids: [] },
       lands: { map: { }, coordinates: [] },
       gameBox: { removedPawns: [] },
@@ -33,8 +35,9 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     });
   } // constructor
 
-  setInitialState (players: BaronyPlayer[], lands: BaronyLand[]) {
+  setInitialState (players: BaronyPlayer[], lands: BaronyLand[], gameId: string) {
     this.update (s => ({
+      gameId: gameId,
       players: {
         map: arrayUtil.toMap (players, p => p.id),
         ids: players.map (p => p.id)
@@ -65,6 +68,8 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     } // if - else
   } // endTemporaryState
 
+
+  getGameId (): string { return this.get (s => s.gameId); }
   getPlayers (): BaronyPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
   getPlayer (id: string): BaronyPlayer { return this.get (s => s.players.map[id]); }
   isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }

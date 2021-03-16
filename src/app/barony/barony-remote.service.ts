@@ -3,6 +3,7 @@ import { AngularFirestore, AngularFirestoreCollection, DocumentData, QueryFn } f
 import { from, Observable } from "rxjs";
 import { map, mapTo } from "rxjs/operators";
 import { BaronyColor, BaronyLandType, landCoordinatesToId } from "./models";
+import { BaronyStory } from "./process";
 
 interface BaronyGameDoc {
   id: string;
@@ -30,6 +31,8 @@ export interface BaronyLandDoc {
   type: BaronyLandType;
 } // BaronyLandDoc
 
+type BaronyStoryDoc = BaronyStory & { id: number };
+
 @Injectable ({
   providedIn: "root"
 })
@@ -40,6 +43,7 @@ export class BaronyRemoteService {
   private games = this.afs.collection<BaronyGameDoc> ("barony-games");
   private getPlayers (gameId: string, queryFn?: QueryFn<DocumentData> | undefined) { return this.afs.collection<BaronyPlayerDoc> (`barony-games/${gameId}/players`, queryFn); }
   private getLands (gameId: string) { return this.afs.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`); }
+  private getStories (gameId: string, queryFn?: QueryFn<DocumentData> | undefined) { return this.afs.collection<BaronyStoryDoc> (`barony-games/${gameId}/stories`, queryFn); }
 
   gamesChanges$ (): Observable<BaronyGameDoc[]> {
     return this.games.valueChanges ();
@@ -60,12 +64,30 @@ export class BaronyRemoteService {
     return this.getLands (gameId).get ().pipe (
       map (querySnapshot => querySnapshot.docs.map (queryDoc => queryDoc.data ()))
     );
+  } // getLands$
+
+  getStories$ (gameId: string): Observable<BaronyStoryDoc[]> {
+    return this.getStories (gameId, r => r.orderBy ("id")).get ().pipe (
+      map (querySnapshot => querySnapshot.docs.map (queryDoc => queryDoc.data ()))
+    );
   } // getPlayers$
 
   deleteGame$ (gameId: string): Observable<void> {
     const gameDoc = this.games.doc (gameId);
     return from (gameDoc.delete ());
   } // deleteGame$
+
+  getStory$ (storyId: number, gameId: string): Observable<BaronyStoryDoc | undefined> {
+    const storyDoc = this.getStories (gameId).doc (storyId + "");
+    return storyDoc.valueChanges ();
+  } // getStory$
+
+  insertStory$ (story: BaronyStory, storyId: number, gameId: string) {
+    return this.insert$<BaronyStoryDoc> (id => ({
+      id: storyId,
+      ...story
+    }), this.getStories (gameId), storyId + "");
+  } // insertAction$
 
   insertLand$ (coordinates: { x: number; y: number; z: number; }, type: BaronyLandType, gameId: string): Observable<BaronyLandDoc> {
     return this.insert$<BaronyLandDoc> (id => ({

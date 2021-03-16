@@ -82,6 +82,14 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     );
   } // selectCurrentPlayer$
 
+  selectTurnPlayer$ () {
+    return this.game.select$ (
+      this.selectTurnPlayerId$ (),
+      this.game.selectPlayerMap$ (),
+      (playerId, playersMap) => playerId ? playersMap[playerId] : null
+    );
+  } // selectCurrentPlayer$
+
   selectOtherPlayers$ () {
     return this.game.select$ (
       this.selectCurrentPlayerId$ (),
@@ -113,7 +121,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     return {
       message: null,
       canPass: false,
-      canCancel: false,
+      canCancel: true,
       maxNumberOfKnights: null,
       validActions: null,
       validBuildings: null,
