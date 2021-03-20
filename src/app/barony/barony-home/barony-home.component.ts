@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExhaustingEvent, UntilDestroy } from "@bg-utils";
-import { forkJoin } from "rxjs";
+import { forkJoin, of } from "rxjs";
 import { mapTo, switchMap } from "rxjs/operators";
 import { BgAuthService } from "src/app/bg-services/bg-auth.service";
 import { BaronyRemoteService } from "../barony-remote.service";
@@ -44,22 +44,28 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
 
   @ExhaustingEvent ()
   onNewGameClick (numPlayers: number) {
-    const leo = this.authService.getLoggedUser ();
-    return this.authService.loadUserByUsername$ ("nico").pipe (
-      switchMap (nico => {
+    return forkJoin ([
+      this.authService.loadUserByUsername$ ("leo"),
+      // this.authService.loadUserByUsername$ ("nico"),
+      // this.authService.loadUserByUsername$ ("rob"),
+      // this.authService.loadUserByUsername$ ("salvatore")
+    ]).pipe (
+      switchMap (([leo/* , nico, rob, salvatore */]) => {
         const players: { name: string, isAi: boolean, color: BaronyColor, userId: string }[] = [];
-        if (nico) {
-          players.push ({ name: "Leo 1", color: "blue", isAi: false, userId: leo.id });
-          players.push ({ name: "Leo 2", color: "red", isAi: false, userId: leo.id });
-          if (numPlayers > 2) { players.push ({ name: "Nico", color: "green", isAi: false, userId: nico.id }); }
-          if (numPlayers > 3) { players.push ({ name: "Salvatore", color: "yellow", isAi: true, userId: leo.id }); }
-        } // if
-        const config: BaronyNewGameConfig = {
-          name: "Partita",
-          userId: leo.id,
-          players: players
-        };
-        return this.createNewGame$ (config);
+        if (leo/*  && nico && rob && salvatore */) {
+          players.push ({ name: "Leo", color: "blue", isAi: false, userId: leo.id });
+          players.push ({ name: "Nico", color: "red", isAi: false, userId: leo.id });
+          if (numPlayers > 2) { players.push ({ name: "Rob", color: "green", isAi: false, userId: leo.id }); }
+          if (numPlayers > 3) { players.push ({ name: "Salvatore", color: "yellow", isAi: false, userId: leo.id }); }
+          const config: BaronyNewGameConfig = {
+            name: "Partita",
+            userId: leo.id,
+            players: players
+          };
+          return this.createNewGame$ (config);
+        } else {
+          return of (void 0);
+        } // if - else
       })
     );
   } // onNewGameClick
