@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { Card } from "./models/card";
@@ -33,7 +33,7 @@ export class AgotDraftComponent implements OnInit {
     this.draft.load ();
     this.draft.loaded$.subscribe (() => {
       this.selectedTypeIds = ["character", "location", "event", "attachment"];
-      this.selectedFactionIds = ["neutral"];
+      this.selectedFactionIds = ["neutral", "stark", "lannister", "greyjoy", "baratheon", "martell", "tyrell", "thenightswatch", "targaryen"];
       this.selectedPackIds = ["Core",
         "WotN", "LoCR", "WotW", "HoT", "SoD",  "KotI", "FotS", "DotE",
         "TtB", "TRtW", "TKP", "NMG", "CoW", "TS",
@@ -47,11 +47,6 @@ export class AgotDraftComponent implements OnInit {
   }
 
   generate () {
-    console.log (this.nCards);
-    console.log (this.selectedTypeIds);
-    console.log (this.selectedFactionIds);
-    console.log (this.selectedPackIds);
-    console.log (this.duplicates);
     this.draftCards = this.draft.generateDraft (
       this.nCards, this.selectedTypeIds, this.selectedFactionIds, this.selectedPackIds, this.duplicates
     );

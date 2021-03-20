@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { BgAuthService } from "@bg-services";
-import { subscribeTo, UntilDestroy } from "@bg-utils";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 @Component ({
   selector: "app-root",
@@ -8,17 +6,9 @@ import { subscribeTo, UntilDestroy } from "@bg-utils";
   styleUrls: ["./app.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-@UntilDestroy
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
 
   constructor (
-    private authService: BgAuthService
   ) { }
-
-  ngOnInit () {
-    subscribeTo (this.authService.login$ ("leo"), this);
-  } // ngOnInit
-
-  ngOnDestroy () { }
 
 } // AppComponent

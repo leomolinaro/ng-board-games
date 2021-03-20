@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
+import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore, DocumentData, QueryFn } from "@angular/fire/firestore";
-import { BehaviorSubject } from "rxjs";
+import firebase from "firebase/app";
+import { BehaviorSubject, from } from "rxjs";
 import { map, tap } from "rxjs/operators";
 
 export interface BgUser {
@@ -14,7 +16,8 @@ export interface BgUser {
 export class BgAuthService {
 
   constructor (
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    public afa: AngularFireAuth
   ) { }
 
   private $loggedUser = new BehaviorSubject<BgUser | null> (null);
@@ -34,12 +37,28 @@ export class BgAuthService {
     );
   } // loadUserByUsername$
 
-  login$ (username: string) {
-    return this.getUsers (ref => ref.where ("username", "==", username))
-    .get ().pipe (
-      map (snapshot => snapshot.size ? snapshot.docs[0].data () : null),
-      tap (user => this.$loggedUser.next (user))
+  getUser$ () {
+    return this.afa.user.pipe (
+      tap (x => console.log ("getUser", x))
     );
-  } // login
+  } // getUser$
+
+  signIn$ () {
+    return from (this.afa.signInWithPopup (new firebase.auth.GoogleAuthProvider ())).pipe (
+      tap (x => console.log ("x", x))
+    );
+  } // signIn$
+
+  signOut$ () {
+    return from (this.afa.signOut ());
+  } // signOut
+
+  // login$ (username: string) {
+  //   return this.getUsers (ref => ref.where ("username", "==", username))
+  //   .get ().pipe (
+  //     map (snapshot => snapshot.size ? snapshot.docs[0].data () : null),
+  //     tap (user => this.$loggedUser.next (user))
+  //   );
+  // } // login
 
 } // BgAuthServiceService

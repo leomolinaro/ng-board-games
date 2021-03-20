@@ -1,4 +1,4 @@
-
+<bg-toolbar></bg-toolbar>
 <div class="bg-apps">
   <div *ngFor="let app of apps" class="bg-app-wrapper">
     <a class="bg-app" [routerLink]="app.routerLink">
@@ -6,14 +6,6 @@
         [src]="app.imageSource"
         [alt]="app.name">
     </a>
-  </div>
-</div>
-<div class="bg-users" *ngLet="loggedUser$ | async as loggedUser">
-  <div
-    *ngFor="let user of users$ | async" class="bg-user"
-    [ngClass]="{ 'logged-user': user.id === loggedUser?.id }">
-    {{ user.username }}
-    <button (click)="onLoginClick (user)">Login</button>
   </div>
 </div>
 

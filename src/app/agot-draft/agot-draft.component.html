@@ -5,7 +5,6 @@
       [opened]="!(isHandset$ | async)">
     <mat-toolbar>Draft generator</mat-toolbar>
     <mat-progress-bar *ngIf="draft.loading$ | async" mode="indeterminate"></mat-progress-bar>
-    <!-- <ng-template #loaded> -->
       <mat-accordion displayMode="flat" multi="true">
         <mat-expansion-panel expanded="true" hideToggle="true" disabled="true">
           <mat-slider style="width: 100%" min="0" max="80" step="1" (input)="nCards = $event.value || 0" [value]="nCards"></mat-slider>
@@ -15,7 +14,7 @@
             <button mat-button color="primary" (click)="generate()">Generate</button>
           </mat-action-row>
         </mat-expansion-panel>
-        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel expanded="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Types</mat-panel-title>
           </mat-expansion-panel-header>
@@ -26,7 +25,7 @@
             <mat-list-option *ngFor="let type of draft.types$ | async" [value]="type.code">{{type.name}}</mat-list-option>
           </mat-selection-list>
         </mat-expansion-panel>
-        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel expanded="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Factions</mat-panel-title>
           </mat-expansion-panel-header>
@@ -37,7 +36,7 @@
             <mat-list-option *ngFor="let faction of draft.factions$ | async" [value]="faction.code">{{faction.name}}</mat-list-option>
           </mat-selection-list>
         </mat-expansion-panel>
-        <mat-expansion-panel expanded="true">
+        <mat-expansion-panel expanded="false">
           <mat-expansion-panel-header>
             <mat-panel-title>Packs</mat-panel-title>
           </mat-expansion-panel-header>
@@ -49,10 +48,9 @@
           </mat-selection-list>
         </mat-expansion-panel>
       </mat-accordion>
-    <!-- </ng-template> -->
   </mat-sidenav>
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
+    <mat-toolbar>
       <button
         type="button"
         aria-label="Toggle sidenav"

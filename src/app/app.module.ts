@@ -1,19 +1,17 @@
-import { BrowserModule } from "@angular/platform-browser";
+import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
+import { AngularFireModule } from "@angular/fire";
+import { AngularFireAuthModule } from "@angular/fire/auth";
+import { AngularFireDatabaseModule } from "@angular/fire/database";
+import { BrowserModule } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { environment } from "src/environments/environment";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { BgHomeComponent } from "./bg-home/bg-home.component";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { AngularFireModule } from "@angular/fire";
-import { environment } from "src/environments/environment";
-import { AngularFireDatabaseModule } from "@angular/fire/database";
-import { HttpClientModule } from "@angular/common/http";
-import { BgUtilsModule } from "@bg-utils";
 
 @NgModule ({
   declarations: [
-    AppComponent,
-    BgHomeComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -21,8 +19,8 @@ import { BgUtilsModule } from "@bg-utils";
     HttpClientModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp (environment.firebase),
+    AngularFireAuthModule,
     AngularFireDatabaseModule,
-    BgUtilsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

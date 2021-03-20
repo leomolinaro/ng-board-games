@@ -36,6 +36,7 @@
             "aot": true,
             "stylePreprocessorOptions": {
               "includePaths": [
+                "src/styles",
                 "src/app/barony/styles"
               ]
             },
