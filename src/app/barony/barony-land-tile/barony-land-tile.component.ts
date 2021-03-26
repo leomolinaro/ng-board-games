@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { BooleanInput, immutableUtil, Loading } from "@bg-utils";
+import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
-import { BooleanInput, immutableUtil } from "@bg-utils";
 import { hexToCartesian } from "../pipes";
 
 interface BaronyPawnNode {
@@ -30,6 +31,8 @@ export class BaronyLandComponent implements OnChanges {
   @Input () @BooleanInput () active: boolean = false;
   @Input () @BooleanInput () disabled: boolean = false;
   @Output () landTileClick = new EventEmitter<void> ();
+
+  @Loading () loading$!: Observable<boolean>;
 
   pawnNodes!: BaronyPawnNode[];
   private hexCenter!: { x: number; y: number; };

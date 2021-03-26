@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnDestroy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { ExhaustingEvent, UntilDestroy } from "@bg-utils";
 
 @Component ({
-  selector: "bg-toolbar",
-  templateUrl: "./bg-toolbar.component.html",
-  styleUrls: ["./bg-toolbar.component.scss"],
+  selector: "bg-account-button",
+  templateUrl: "./bg-account-button.component.html",
+  styleUrls: ["./bg-account-button.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
-export class BgToolbarComponent implements OnDestroy {
+export class BgAccountButtonComponent implements OnInit, OnDestroy {
 
   constructor (
     private authService: BgAuthService
@@ -17,6 +17,7 @@ export class BgToolbarComponent implements OnDestroy {
 
   user$ = this.authService.getUser$ ();
 
+  ngOnInit () { }
   ngOnDestroy () { }
 
   @ExhaustingEvent ()
@@ -29,4 +30,4 @@ export class BgToolbarComponent implements OnDestroy {
     return this.authService.signOut$ ();
   } // onSignOutClick
 
-} // BgToolbarComponent
+} // BgAccountButtonComponent

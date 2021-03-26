@@ -1,19 +1,20 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule, Routes } from "@angular/router";
-import { AgotDraftComponent } from "./agot-draft.component";
-import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
-import { FormsModule } from "@angular/forms";
-import { MatSidenavModule } from "@angular/material/sidenav";
-import { MatToolbarModule } from "@angular/material/toolbar";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { MatExpansionModule } from "@angular/material/expansion";
-import { MatSliderModule } from "@angular/material/slider";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatListModule } from "@angular/material/list";
-import { MatIconModule } from "@angular/material/icon";
-import { MatButtonModule } from "@angular/material/button";
 import { LayoutModule } from "@angular/cdk/layout";
+import { CommonModule } from "@angular/common";
+import { NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatExpansionModule } from "@angular/material/expansion";
+import { MatIconModule } from "@angular/material/icon";
+import { MatListModule } from "@angular/material/list";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatSliderModule } from "@angular/material/slider";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { RouterModule, Routes } from "@angular/router";
+import { BgUtilsModule } from "@bg-utils";
+import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
+import { AgotDraftComponent } from "./agot-draft.component";
 
 const routes: Routes = [
   { path: "", component: AgotDraftComponent },
@@ -38,7 +39,8 @@ const routes: Routes = [
     MatProgressBarModule,
     MatCheckboxModule,
     MatSliderModule,
-    FormsModule
+    FormsModule,
+    BgUtilsModule
   ]
 })
 export class AgotDraftModule { }

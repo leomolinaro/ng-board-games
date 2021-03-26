@@ -1,17 +1,17 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from "@angular/core";
-import { BaronyGameService } from "./barony-game.service";
-import { BaronyPlayer, BaronyBuilding, BaronyLand, BaronyAction, BaronyResourceType } from "../models";
-import { BaronyUiStore } from "./barony-ui.store";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { BgAuthService } from "@bg-services";
+import { subscribeTo, UntilDestroy } from "@bg-utils";
+import { forkJoin } from "rxjs";
+import { tap } from "rxjs/operators";
+import { BaronyRemoteService } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import { subscribeTo, UntilDestroy } from "@bg-utils";
-import { BaronyRemoteService } from "../barony-remote.service";
-import { ActivatedRoute } from "@angular/router";
-import { tap } from "rxjs/operators";
-import { forkJoin } from "rxjs";
-import { BgAuthService } from "@bg-services";
 import { BaronyPlayerObserverService } from "./barony-player-observer.service";
+import { BaronyUiStore } from "./barony-ui.store";
 
 @Component ({
   selector: "barony-game",
@@ -70,7 +70,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
               color: p.color,
               isAi: p.isAi,
               name: p.name,
-              isRemote: !this.authService.isLoggedUserId (p.userId),
+              isRemote: !!p.userId && !this.authService.isUserId (p.userId),
               score: 0,
               pawns: {
                 city: 5,
@@ -100,6 +100,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   } // ngOnInit
 
   ngOnDestroy () {
+    console.log ("ORIGINAL DESTROY")
   } // ngOnDestroy
 
   onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }

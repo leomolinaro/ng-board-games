@@ -4,25 +4,30 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
+import { BgAccountButtonComponent } from "./bg-account-button/bg-account-button.component";
+import { BgFormDirective, BgInputFieldDirective, BgRadioFieldDirective, BgSelectFieldDirective } from "./bg-form.directive";
 import { BgMapZoomDirective, BgSvgComponent } from "./bg-map-zoom.directive";
-import { BgToolbarComponent } from "./bg-toolbar/bg-toolbar.component";
 
 const components = [
   BgSvgComponent,
   BgMapZoomDirective,
-  BgToolbarComponent
+  BgAccountButtonComponent,
+  BgFormDirective,
+  BgInputFieldDirective,
+  BgSelectFieldDirective,
+  BgRadioFieldDirective
 ];
 
 @NgModule ({
   declarations: [
-    ...components
+    ...components,
   ],
   imports: [
     CommonModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
   ],
   exports: [
     ...components

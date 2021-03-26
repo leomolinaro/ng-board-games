@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore, AngularFirestoreCollection, DocumentData, QueryFn } from "@angular/fire/firestore";
 import { from, Observable } from "rxjs";
-import { map, mapTo } from "rxjs/operators";
+import { map } from "rxjs/operators";
+import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.service";
 import { BaronyColor, BaronyLandType, landCoordinatesToId } from "./models";
 import { BaronyStory } from "./process";
 
@@ -18,7 +18,7 @@ interface BaronyPlayerDoc {
   isAi: boolean;
   sort: number;
   color: BaronyColor;
-  userId: string;
+  userId: string | null;
 } // BaronyPlayerDoc
 
 export interface BaronyLandDoc {
@@ -38,12 +38,14 @@ type BaronyStoryDoc = BaronyStory & { id: number };
 })
 export class BaronyRemoteService {
 
-  constructor (private afs: AngularFirestore) { }
+  constructor (
+    private cloud: BgCloudService
+  ) { }
 
-  private games = this.afs.collection<BaronyGameDoc> ("barony-games");
-  private getPlayers (gameId: string, queryFn?: QueryFn<DocumentData> | undefined) { return this.afs.collection<BaronyPlayerDoc> (`barony-games/${gameId}/players`, queryFn); }
-  private getLands (gameId: string) { return this.afs.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`); }
-  private getStories (gameId: string, queryFn?: QueryFn<DocumentData> | undefined) { return this.afs.collection<BaronyStoryDoc> (`barony-games/${gameId}/stories`, queryFn); }
+  private games = this.cloud.collection<BaronyGameDoc> ("barony-games");
+  private getPlayers (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc> | undefined) { return this.cloud.collection<BaronyPlayerDoc> (`barony-games/${gameId}/players`, queryFn); }
+  private getLands (gameId: string) { return this.cloud.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`); }
+  private getStories (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.collection<BaronyStoryDoc> (`barony-games/${gameId}/stories`, queryFn); }
 
   gamesChanges$ (): Observable<BaronyGameDoc[]> {
     return this.games.valueChanges ();
@@ -83,22 +85,22 @@ export class BaronyRemoteService {
   } // getStory$
 
   insertStory$ (story: BaronyStory, storyId: number, gameId: string) {
-    return this.insert$<BaronyStoryDoc> (id => ({
+    return this.cloud.insert$<BaronyStoryDoc> (id => ({
       id: storyId,
       ...story
     }), this.getStories (gameId), storyId + "");
   } // insertAction$
 
   insertLand$ (coordinates: { x: number; y: number; z: number; }, type: BaronyLandType, gameId: string): Observable<BaronyLandDoc> {
-    return this.insert$<BaronyLandDoc> (id => ({
+    return this.cloud.insert$<BaronyLandDoc> (id => ({
       id: id,
       coordinates: coordinates,
       type: type
     }), this.getLands (gameId), landCoordinatesToId (coordinates));
   } // insertLand$
 
-  insertPlayer$ (name: string, color: BaronyColor, isAi: boolean, sort: number, userId: string, gameId: string): Observable<BaronyPlayerDoc> {
-    return this.insert$<BaronyPlayerDoc> (id => ({
+  insertPlayer$ (name: string, color: BaronyColor, isAi: boolean, sort: number, userId: string | null, gameId: string): Observable<BaronyPlayerDoc> {
+    return this.cloud.insert$<BaronyPlayerDoc> (id => ({
       id: id,
       userId: userId,
       name: name,
@@ -109,7 +111,7 @@ export class BaronyRemoteService {
   } // insertPlayer$
 
   insertGame$ (name: string, userId: string): Observable<BaronyGameDoc> {
-    return this.insert$<BaronyGameDoc> (id => ({
+    return this.cloud.insert$<BaronyGameDoc> (id => ({
       id: id,
       userId: userId,
       name: name,
@@ -117,13 +119,5 @@ export class BaronyRemoteService {
       closed: false
     }), this.games);
   } // insertGame$
-
-  private insert$<T> (construction: (id: string) => T, collection: AngularFirestoreCollection<T>, id?: string): Observable<T> {
-    if (!id) { id = this.afs.createId (); }
-    const doc = collection.doc (id);
-    const data = construction (id);
-    const p = doc.set (data);
-    return from (p).pipe (mapTo (data));
-  } // insert$
 
 } // BaronyRemoteService

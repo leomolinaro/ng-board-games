@@ -1,58 +1,88 @@
 @import "barony-variables";
 
-.b-home {
-  position: absolute;
+.barony-home-sidenav-container {
+  height: 100%;
+}
+
+.barony-home-sidenav {
+  width: 300px;
+}
+
+.barony-home-sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
   top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  z-index: 1;
+}
+
+.b-games {
   display: flex;
   justify-content: center;
-  align-items: center;
-  .b-home-buttons {
-    display: grid;
-    grid-template-columns: 1fr;
-    justify-content: stretch;
-    align-items: center;
-    gap: $spacer;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  .b-game-wrapper {
+    padding: 10px;
 
-    .b-home-local-game {
-      @include b-button;
-    }
-    .b-home-new-game {
-      @include b-button;
-    }
-    .b-home-games {
-      height: 70vh;
-      overflow: scroll;
+    .b-game {
+      margin-bottom: $spacer;
       padding: $spacer;
-      .b-home-game {
-        margin-bottom: $spacer;
-        padding: $spacer;
-        box-shadow: $widget-shadow;
-  
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: $spacer;
-  
-        grid-template-areas: 
-          "name name"
-          "watch enter";
-  
-        .b-home-game-name {
-          grid-area: name;
-          text-align: center;
-        }
-        .b-home-game-watch {
-          grid-area: watch;
-          @include b-button;
-        }
-        .b-home-game-enter {
-          grid-area: enter;
-          @include b-button;
-        }
+      box-shadow: $widget-shadow;
+
+      width: 200px;
+      height: 200px;
+
+      &:hover {
+        box-shadow: 0 4px 17px rgb(255 255 255 / 35%);
+      }
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: $spacer;
+
+      grid-template-areas: 
+        "name name"
+        "watch enter";
+
+      .b-home-game-name {
+        grid-area: name;
+        text-align: center;
+      }
+      .b-home-game-watch {
+        grid-area: watch;
+        @include b-button;
+      }
+      .b-home-game-enter {
+        grid-area: enter;
+        @include b-button;
       }
     }
 
+
+    // .bg-app {
+    //   display: block;
+    //   // cursor: pointer;
+      
+    //   
+    //   .bg-app-image {
+    //     width: 100%;
+    //     height: 100%;
+    //   }
+    // }
   }
+}
+
+.b-home-buttons {
+  display: flex;
+  flex-direction: column;
+  .b-home-new-game {
+    @include b-button;
+  }
+}
+
+.b-new-game-type-radio {
+  display: flex;
+  flex-direction: column;
 }
