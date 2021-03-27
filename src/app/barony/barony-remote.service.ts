@@ -5,14 +5,14 @@ import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.
 import { BaronyColor, BaronyLandType, landCoordinatesToId } from "./models";
 import { BaronyStory } from "./process";
 
-interface BaronyGameDoc {
+export interface BaronyGameDoc {
   id: string;
   name: string;
   open: boolean;
   closed: boolean;
 } // BaronyGameDoc
 
-interface BaronyPlayerDoc {
+export interface BaronyPlayerDoc {
   id: string;
   name: string;
   isAi: boolean;

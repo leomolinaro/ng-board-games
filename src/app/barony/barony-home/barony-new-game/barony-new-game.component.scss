@@ -1,0 +1,19 @@
+@import "barony-variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  > * {
+    margin-bottom: $spacer;
+  }
+  .b-new-game-type-radio {
+    display: flex;
+    flex-direction: column;
+    > * {
+      margin-bottom: $spacer;
+    }
+  }
+  .b-new-game-submit {
+    align-self: flex-end;
+  }
+}

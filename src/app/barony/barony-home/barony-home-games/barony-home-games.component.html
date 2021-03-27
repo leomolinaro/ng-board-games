@@ -1,0 +1,9 @@
+<div class="b-games">
+  <div class="b-game-wrapper" *ngFor="let game of games">
+    <div class="b-game">
+      <span class="b-home-game-name">{{game.name}}</span>
+      <button class="b-home-game-delete" (click)="deleteGame.emit (game)">Delete</button>
+      <button class="b-home-game-enter" *ngIf="game.open" (click)="enterGame.emit (game)">Enter</button>
+    </div>
+  </div>
+</div>

@@ -3,38 +3,15 @@
     [attr.role]="isHandset ? 'dialog' : 'navigation'"
     [mode]="isHandset ? 'over' : 'side'"
     [opened]="!isHandset">
-    <mat-toolbar>Create new game</mat-toolbar>
-    <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
-
-    <mat-vertical-stepper linear [selectedIndex]="selectedStepIndex">
-      <mat-step state="newGame" [bgForm]="newGame" (bgFormChange)="onNewGameChange ($event)" [completed]="newGameCompleted">
-        <ng-template matStepLabel>New game</ng-template>
-        <mat-form-field>
-          <mat-label>Game name</mat-label>
-          <input bgField="name" matInput required autocomplete="off">
-        </mat-form-field>
-        <mat-radio-group bgField="type" class="b-new-game-type-radio">
-          <mat-radio-button *ngFor="let type of gameTypeOptions"
-            [value]="type.id">{{ type.label }}</mat-radio-button>
-        </mat-radio-group>
-        <button mat-button (click)="onCreateNewGameClick ()" [disabled]="!newGameCompleted">Create game</button>
-      </mat-step>
-      <mat-step state="players" [(bgForm)]="newGame" [completed]="playersCompleted">
-        <ng-template matStepLabel>Players</ng-template>
-        <mat-form-field *ngFor="let player of newGame.players; index as i; trackBy: playerTrackBy"
-          [bgForm]="player" (bgFormChange)="onPlayerChange ($event, i)">
-          <mat-label>{{ player.name }}</mat-label>
-          <mat-select required bgField="type">
-            <mat-option *ngFor="let typeOption of playerTypeOptions" [value]="typeOption.id">
-              {{ typeOption.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-button (click)="onDeleteNewGameClick ()">Delete game</button>
-        <button mat-button [disabled]="!playersCompleted" (click)="onStartNewGameClick ()">Start game</button>
-      </mat-step>
-    </mat-vertical-stepper>
-
+    <mat-accordion>
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>New game</mat-panel-title>
+        </mat-expansion-panel-header>
+        <barony-new-game (createGame)="onCreateGame ($event)"></barony-new-game>
+      </mat-expansion-panel>
+      <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+    </mat-accordion>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar>
@@ -48,26 +25,14 @@
       <span>Barony</span>
       <bg-account-button></bg-account-button>
     </mat-toolbar>
-
-    <div class="b-games">
-      <div class="b-game-wrapper" *ngFor="let remoteGame of remoteGames$ | async">
-        <div class="b-game">
-          <span class="b-home-game-name">{{remoteGame.name}}</span>
-          <!-- <button class="b-home-game-watch" *ngIf="remoteGame.closed" (click)="onWatchClick (remoteGame.id)">Watch</button> -->
-          <button class="b-home-game-delete" (click)="onDeleteClick (remoteGame.id)">Delete</button>
-          <button class="b-home-game-enter" *ngIf="remoteGame.open" (click)="onEnterClick (remoteGame.id)">Enter</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- <agot-card-grid [cards]="draftCards"></agot-card-grid> -->
+    <barony-home-games
+      [games]="games$ | async"
+      (deleteGame)="onDeleteGame ($event)"
+      (enterGame)="onEnterGame ($event)">
+    </barony-home-games>
   </mat-sidenav-content>
 </mat-sidenav-container>
 
 
 
 
-<div class="b-home">
-  <!-- <barony-admin *ngIf="(remoteGames$ | async)?.length"></barony-admin> -->
-
-</div>
