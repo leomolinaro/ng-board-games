@@ -100,7 +100,6 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   } // ngOnInit
 
   ngOnDestroy () {
-    console.log ("ORIGINAL DESTROY")
   } // ngOnDestroy
 
   onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }

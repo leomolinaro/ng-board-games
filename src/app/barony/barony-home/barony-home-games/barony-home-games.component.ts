@@ -15,4 +15,6 @@ export class BaronyHomeGamesComponent {
   @Output () deleteGame = new EventEmitter<BaronyGameDoc> ();
   @Output () enterGame = new EventEmitter<BaronyGameDoc> ();
 
+  columns = ["run", "name", "state", "owner", "delete"];
+
 } // BaronyHomeGamesComponent

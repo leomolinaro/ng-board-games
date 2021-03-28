@@ -1,9 +1,36 @@
-<!-- <mat-form-field *ngFor="let player of newGame.players; index as i; trackBy: playerTrackBy"
+<ng-container *ngFor="let player of players; index as i; trackBy: playerTrackBy"
   [bgForm]="player" (bgFormChange)="onPlayerChange ($event, i)">
-  <mat-label>{{ player.name }}</mat-label>
-  <mat-select required bgField="type">
-    <mat-option *ngFor="let typeOption of playerTypeOptions" [value]="typeOption.id">
-      {{ typeOption.label }}
-    </mat-option>
-  </mat-select>
-</mat-form-field> -->
+
+  
+  <button class="s-new-players-color-button" 
+    [ngClass]="'is-' + player.color"
+    mat-fab (click)="onNextPlayerType (player.type, i)">
+    <ng-container [ngSwitch]="player.type">
+      <mat-icon *ngSwitchCase="'closed'">no_accounts</mat-icon>
+      <mat-icon *ngSwitchCase="'me'">person_pin</mat-icon>
+      <mat-icon *ngSwitchCase="'other'">cloud_cirle</mat-icon>
+      <mat-icon *ngSwitchCase="'ai'">monitor</mat-icon>
+      <mat-icon *ngSwitchCase="'open'">cloud</mat-icon>
+    </ng-container>
+  </button>
+
+  <!-- <mat-form-field>
+    <mat-label>Color</mat-label>
+    <mat-select bgField="color"
+      [required]="player.type !== 'closed'"
+      [disabled]="player.type === 'closed'">
+      <mat-option *ngFor="let colorOption of colorOptions" [value]="colorOption.id">
+        {{ colorOption.label }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+  <mat-form-field>
+    <mat-label>Player name</mat-label>
+    <input bgField="name" matInput 
+      [required]="player.type !== 'closed'"
+      [disabled]="player.type === 'closed'"
+      autocomplete="off">
+  </mat-form-field>
+
+  <mat-checkbox>Ready</mat-checkbox>
+</ng-container>

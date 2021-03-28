@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { BgUser } from "@bg-services";
 import { from, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.service";
@@ -8,8 +9,12 @@ import { BaronyStory } from "./process";
 export interface BaronyGameDoc {
   id: string;
   name: string;
-  open: boolean;
-  closed: boolean;
+  owner: {
+    id: string;
+    displayName: string;
+  };
+  local: boolean;
+  state: "open" | "closed";
 } // BaronyGameDoc
 
 export interface BaronyPlayerDoc {
@@ -110,13 +115,16 @@ export class BaronyRemoteService {
     }), this.getPlayers (gameId));
   } // insertPlayer$
 
-  insertGame$ (name: string, userId: string): Observable<BaronyGameDoc> {
+  insertGame$ (name: string, owner: BgUser, local: boolean): Observable<BaronyGameDoc> {
     return this.cloud.insert$<BaronyGameDoc> (id => ({
       id: id,
-      userId: userId,
+      owner: {
+        id: owner.id,
+        displayName: owner.displayName
+      },
       name: name,
-      open: true,
-      closed: false
+      local: local,
+      state: "open"
     }), this.games);
   } // insertGame$
 

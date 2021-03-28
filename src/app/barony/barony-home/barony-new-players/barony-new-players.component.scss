@@ -1,0 +1,20 @@
+@import "barony-variables";
+
+:host {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: $spacer;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+
+  .s-new-players-color-button {
+    &.is-red { background-color: $red-light; }
+    &.is-yellow { background-color: $yellow-light; }
+    &.is-green { background-color: $green-light; }
+    &.is-blue { background-color: $blue-light; }
+    .s-new-players-color-icon {
+      visibility: hidden;
+    }
+  }
+}

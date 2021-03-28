@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { BgAppService } from "@bg-services";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { BgAppService, BgAuthService } from "@bg-services";
+import { InitEvent, UntilDestroy } from "@bg-utils";
 
 @Component ({
   selector: "bg-home",
@@ -7,12 +8,21 @@ import { BgAppService } from "@bg-services";
   styleUrls: ["./bg-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BgHomeComponent {
+@UntilDestroy
+export class BgHomeComponent implements OnInit, OnDestroy {
 
   constructor (
-    private appService: BgAppService,
+    private authService: BgAuthService,
+    private appService: BgAppService
   ) { }
 
   apps = this.appService.getApps ();
+
+  @InitEvent ()
+  ngOnInit () {
+    return this.authService.autoSignIn$ ();
+  } // ngOnInit
+
+  ngOnDestroy () { }
 
 } // BgHomeComponent

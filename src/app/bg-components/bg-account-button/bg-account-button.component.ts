@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { BgAuthService } from "@bg-services";
 import { ExhaustingEvent, UntilDestroy } from "@bg-utils";
+import { switchMap } from "rxjs/operators";
 
 @Component ({
   selector: "bg-account-button",
@@ -12,7 +14,8 @@ import { ExhaustingEvent, UntilDestroy } from "@bg-utils";
 export class BgAccountButtonComponent implements OnInit, OnDestroy {
 
   constructor (
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    private router: Router
   ) { }
 
   user$ = this.authService.getUser$ ();
@@ -27,7 +30,9 @@ export class BgAccountButtonComponent implements OnInit, OnDestroy {
 
   @ExhaustingEvent ()
   onSignOutClick () {
-    return this.authService.signOut$ ();
+    return this.authService.signOut$ ().pipe (
+      switchMap (() => this.router.navigate ([""]))
+    );
   } // onSignOutClick
 
 } // BgAccountButtonComponent

@@ -1,13 +1,14 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
-import { forkJoin, Observable } from "rxjs";
-import { map, mapTo, switchMap, tap } from "rxjs/operators";
+import { from, Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import { BgAuthService } from "src/app/bg-services/bg-auth.service";
 import { BaronyGameDoc, BaronyRemoteService } from "../barony-remote.service";
-import { getRandomLands } from "../logic/barony-initializer";
 import { BaronyNewGame } from "./barony-home.models";
+import { BaronyRoomDialogComponent, BaronyRoomDialogInput, BaronyRoomDialogOutput } from "./barony-room-dialog/barony-room-dialog.component";
 
 @Component ({
   selector: "app-barony-home",
@@ -24,7 +25,7 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private breakpointObserver: BreakpointObserver,
-    private cd: ChangeDetectorRef
+    private matDialog: MatDialog
   ) { }
 
   games$ = this.remote.gamesChanges$ ();
@@ -40,48 +41,52 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
   @ExhaustingEvent ()
   onCreateGame (newGame: BaronyNewGame) {
     const user = this.authService.getUser ();
-    return this.remote.insertGame$ (newGame.name, user.id).pipe (
-      tap ((gameDoc) => {
-        newGame = {
-          ...newGame,
-          id: gameDoc.id,
-        };
-        this.cd.markForCheck ();
-      })
+    return this.remote.insertGame$ (newGame.name, user, newGame.type === "local").pipe (
+      switchMap (gameDoc => this.openNewPlayersDialog$ (gameDoc)),
+      switchMap (output => output?.startGame ? this.runGame$ (output.gameId) : of (void 0))
     );
   } // onCreateGameClick
 
-  private openNewPlayersDialog$ () {
-    // this.playerTypeOptions = this.newGame.type === "local" ?
-    //   playerTypeOptions :
-    //   playerTypeOptions.filter (o => !o.notOffline);
-
-    // players: [
-    //   { userId: user.id, name: this.authService.getUser ().displayName, color: "blue", type: "local" },
-    //   { userId: null, name: "", color: "red", type: "closed" },
-    //   { userId: null, name: "", color: "green", type: "closed" },
-    //   { userId: null, name: "", color: "yellow", type: "closed" },
-    // ]
+  private openNewPlayersDialog$ (game: BaronyGameDoc): Observable<BaronyRoomDialogOutput | undefined> {
+    const dialogRef = this.matDialog.open<BaronyRoomDialogComponent, BaronyRoomDialogInput, BaronyRoomDialogOutput> (
+      BaronyRoomDialogComponent,
+      {
+        width: "1000px",
+        data: { game }
+      }
+    );
+    return dialogRef.afterClosed ();
   } // openNewPlayersDialog$
 
-  private createNewGame$ (config: BaronyNewGame) {
-    return this.remote.insertGame$ ("Partita", config.userId).pipe (
-      switchMap (game => forkJoin ([
-        ...config.players.map ((p, index) => this.remote.insertPlayer$ (p.name, p.color, p.type === "ai", index + 1, p.userId, game.id)),
-        ...getRandomLands (config.players.length).map (l => this.remote.insertLand$ (l.coordinates, l.type, game.id))
-      ])),
-      mapTo (void 0)
-    );
-  } // createNewGame$
+  // private createNewGame$ (config: BaronyNewGame) {
+  //   return this.remote.insertGame$ ("Partita", config.userId).pipe (
+  //     switchMap (game => forkJoin ([
+  //       ...config.players.map ((p, index) => this.remote.insertPlayer$ (p.name, p.color, p.type === "ai", index + 1, p.userId, game.id)),
+  //       ...getRandomLands (config.players.length).map (l => this.remote.insertLand$ (l.coordinates, l.type, game.id))
+  //     ])),
+  //     mapTo (void 0)
+  //   );
+  // } // createNewGame$
 
   @ExhaustingEvent ()
   onDeleteGame (game: BaronyGameDoc) {
     return this.remote.deleteGame$ (game.id);
   } // onDeleteGame
 
-  onEnterGame (game: BaronyGameDoc) {
-    this.router.navigate (["game", game.id], { relativeTo: this.activatedRoute });
+  @ExhaustingEvent ()
+  onEnterGame (gameDoc: BaronyGameDoc) {
+    if (gameDoc.state === "open") {
+      return this.openNewPlayersDialog$ (gameDoc).pipe (
+        switchMap (output => output?.startGame ? this.runGame$ (output.gameId) : of (void 0))
+      );
+    } else {
+      return this.runGame$ (gameDoc.id);
+    } // if - else
   } // onEnterGame
+
+  private runGame$ (gameId: string) {
+    return from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute }));
+  } // runGame$
 
   // onPlayerChange (player: BaronyNewPlayer, index: number) {
   //   this.newGame = {

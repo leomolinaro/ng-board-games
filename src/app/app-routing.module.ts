@@ -1,13 +1,14 @@
 import { Injectable, NgModule } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, RouterModule, RouterStateSnapshot, Routes } from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterModule, RouterStateSnapshot, Routes } from "@angular/router";
 import { BgAuthService } from "@bg-services";
-import { Observable } from "rxjs";
-import { filter, first, map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { first, map, switchMap, tap } from "rxjs/operators";
 
 @Injectable ()
 class BgRootGuard implements CanActivate {
   constructor (
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    public router: Router
   ) { }
 
   canActivate (
@@ -15,9 +16,19 @@ class BgRootGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     return this.authService.getUser$ ().pipe (
-      map (user => !!user),
-      filter (hasUser => hasUser),
-      first ()
+      first (),
+      switchMap (user => {
+        if (user) {
+          return of (true);
+        } else {
+          return this.authService.autoSignIn$ ().pipe (map (autoUser => !!autoUser));
+        } // if - else
+      }),
+      tap (hasUser => {
+        if (!hasUser) {
+          this.router.navigate (["/"]);
+        } // if
+      })
     );
   } // canActivate
   

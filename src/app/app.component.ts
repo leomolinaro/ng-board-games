@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { BgAuthService } from "@bg-services";
-import { InitEvent } from "@bg-utils";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 
 @Component ({
   selector: "app-root",
@@ -8,17 +6,8 @@ import { InitEvent } from "@bg-utils";
   styleUrls: ["./app.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
 
-  constructor (
-    private authService: BgAuthService
-  ) { }
-
-  @InitEvent ()
-  ngOnInit () {
-    return this.authService.autoSignIn$ ();
-  } // ngOnInit
-
-  ngOnDestroy () { }
+  constructor () { }
 
 } // AppComponent

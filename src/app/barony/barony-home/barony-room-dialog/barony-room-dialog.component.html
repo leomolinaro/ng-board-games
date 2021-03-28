@@ -1,3 +1,14 @@
-        <!-- 
-        <button mat-button (click)="onDeleteNewGameClick ()">Delete game</button>
-        <button mat-button [disabled]="!playersCompleted" (click)="onStartNewGameClick ()">Start game</button> -->
+<h1 mat-dialog-title>Players</h1>
+<div mat-dialog-content>
+  <barony-new-players #newPlayers
+    [localGame]="localGame"
+    [(players)]="players"></barony-new-players>
+</div>
+<div mat-dialog-actions *bIfOwnerOf="game">
+  <button mat-button
+    color="warn"
+    (click)="onDeleteGameClick ()">Delete game</button>
+  <button class="b-room-start-game-button" mat-button
+    color="accent"
+    [disabled]="!newPlayers.valid" (click)="onStartGameClick ()">Start game</button>
+</div>

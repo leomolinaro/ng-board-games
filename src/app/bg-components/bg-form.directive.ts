@@ -101,7 +101,8 @@ export class BgInputFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldD
     } else {
       this.viewValue = "";
     } // if - else
-    this.cd.markForCheck ();
+    // N.B.: senza timeout non si vede la label se il campo è valorizzato all'inizio
+    setTimeout (() => this.cd.markForCheck ());
   } // setEntityValue
 
   private onValueChange (value: V) {
