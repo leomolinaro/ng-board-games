@@ -1,13 +1,35 @@
-<mat-toolbar>
-  <bg-account-button></bg-account-button>
-</mat-toolbar>
-<div class="bg-apps">
-  <div *ngFor="let app of apps" class="bg-app-wrapper">
-    <a class="bg-app" [routerLink]="app.routerLink">
-      <img class="bg-app-image"
-        [src]="app.imageSource"
-        [alt]="app.name">
-    </a>
-  </div>
-</div>
-
+<mat-sidenav-container class="barony-home-sidenav-container" *ngLet="isHandset$ | async as isHandset">
+  <mat-sidenav #drawer class="barony-home-sidenav" fixedInViewport="true"
+    [attr.role]="isHandset ? 'dialog' : 'navigation'"
+    [mode]="isHandset ? 'over' : 'side'"
+    [opened]="!isHandset">
+    <mat-accordion>
+      <mat-expansion-panel hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title>New game</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-container bgNewGameHost></ng-container>
+        <!-- <barony-new-game (createGame)="onCreateGame ($event)"></barony-new-game> -->
+      </mat-expansion-panel>
+      <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+    </mat-accordion>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle ()"
+        *ngIf="isHandset">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Barony</span>
+      <bg-account-button></bg-account-button>
+    </mat-toolbar>
+    <!-- <barony-home-games
+      [games]="games$ | async"
+      (deleteGame)="onDeleteGame ($event)"
+      (enterGame)="onEnterGame ($event)">
+    </barony-home-games> -->
+  </mat-sidenav-content>
+</mat-sidenav-container>

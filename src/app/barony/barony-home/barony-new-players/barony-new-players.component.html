@@ -1,8 +1,7 @@
 <ng-container *ngFor="let player of players; index as i; trackBy: playerTrackBy"
   [bgForm]="player" (bgFormChange)="onPlayerChange ($event, i)">
 
-  
-  <button class="s-new-players-color-button" 
+  <button class="b-new-players-type-button" 
     [ngClass]="'is-' + player.color"
     mat-fab (click)="onNextPlayerType (player.type, i)">
     <ng-container [ngSwitch]="player.type">
@@ -13,6 +12,13 @@
       <mat-icon *ngSwitchCase="'open'">cloud</mat-icon>
     </ng-container>
   </button>
+  <ng-container [ngSwitch]="player.type">
+    <span *ngSwitchCase="'closed'" class="mat-caption b-new-players-type-caption">closed</span>
+    <span *ngSwitchCase="'me'" class="mat-caption b-new-players-type-caption">me</span>
+    <span *ngSwitchCase="'other'" class="mat-caption b-new-players-type-caption">TODO</span>
+    <span *ngSwitchCase="'ai'" class="mat-caption b-new-players-type-caption">AI</span>
+    <span *ngSwitchCase="'open'" class="mat-caption b-new-players-type-caption">open</span>
+  </ng-container>
 
   <!-- <mat-form-field>
     <mat-label>Color</mat-label>

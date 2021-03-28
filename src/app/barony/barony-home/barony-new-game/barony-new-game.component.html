@@ -7,5 +7,5 @@
     <mat-radio-button *ngFor="let type of gameTypeOptions"
       [value]="type.id">{{ type.label }}</mat-radio-button>
   </mat-radio-group>
-  <button class="b-new-game-submit" mat-button (click)="onCreateGame ()" [disabled]="!newGameValid">Create game</button>
+  <button class="b-new-game-submit" color="accent" mat-button (click)="onCreateGame ()" [disabled]="!newGameValid">Create game</button>
 </ng-container>

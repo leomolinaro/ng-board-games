@@ -1,3 +1,5 @@
+import { BgUser } from "@bg-services";
+
 export type BaronyColor = "blue" | "yellow" | "red" | "green";
 export type BaronyLandType = "mountain" | "forest" | "plain" | "fields" | "lake";
 export type BaronyPawnType = "city" | "knight" | "village" | "stronghold";
@@ -5,16 +7,29 @@ export type BaronyBuilding = Extract<BaronyPawnType, "village" | "stronghold">;
 export type BaronyAction = "recruitment" | "movement" | "construction" | "newCity" | "expedition" | "nobleTitle";
 export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
 
-export interface BaronyPlayer {
+export interface ABaronyPlayer {
   id: string;
   name: string;
-  isAi: boolean;
-  isRemote: boolean;
   color: BaronyColor;
   score: number;
   pawns: { [type in BaronyPawnType]: number };
   resources: { [type in BaronyResourceType]: number };
-} // BaronyPlayer
+} // ABaronyPlayer
+
+interface BaronyAiPlayer extends ABaronyPlayer {
+  isAi: true;
+  isRemote: false;
+  isLocal: false;
+} // BaronyAiPlayer
+
+interface BaronyRealPlayer extends ABaronyPlayer {
+  isAi: false;
+  isRemote: boolean;
+  isLocal: boolean;
+  controller: BgUser;
+} // BaronyAiPlayer
+
+export type BaronyPlayer = BaronyAiPlayer | BaronyRealPlayer;
 
 export interface BaronyPawn {
   color: BaronyColor;

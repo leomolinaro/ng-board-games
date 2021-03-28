@@ -1,11 +1,8 @@
 import { BaronyColor } from "../models";
 
 export interface BaronyNewGame {
-  id: string | null;
   name: string;
   type: BaronyNewGameType;
-  userId: string;
-  players: BaronyNewPlayer[];
 } // BaronyNewGame
 
 export interface BaronyNewPlayer {

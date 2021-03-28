@@ -1,6 +1,19 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { BgAppService, BgAuthService } from "@bg-services";
-import { InitEvent, UntilDestroy } from "@bg-utils";
+import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { ChangeDetectionStrategy, Component, Directive, OnInit, ViewContainerRef } from "@angular/core";
+import { Loading } from "@bg-utils";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+
+@Directive ({
+  selector: "[bgNewGameHost]"
+})
+export class BgNewGameHostDirective {
+
+  constructor (
+    public viewContainerRef: ViewContainerRef
+  ) { }
+
+} // BgNewGameHostDirective
 
 @Component ({
   selector: "bg-home",
@@ -8,21 +21,17 @@ import { InitEvent, UntilDestroy } from "@bg-utils";
   styleUrls: ["./bg-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-@UntilDestroy
-export class BgHomeComponent implements OnInit, OnDestroy {
+export class BgHomeComponent implements OnInit {
 
   constructor (
-    private authService: BgAuthService,
-    private appService: BgAppService
+    private breakpointObserver: BreakpointObserver
   ) { }
 
-  apps = this.appService.getApps ();
+  @Loading () loading$!: Observable<boolean>;
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe (Breakpoints.Handset)
+  .pipe (map (result => result.matches));
 
-  @InitEvent ()
-  ngOnInit () {
-    return this.authService.autoSignIn$ ();
+  ngOnInit (): void {
   } // ngOnInit
-
-  ngOnDestroy () { }
 
 } // BgHomeComponent

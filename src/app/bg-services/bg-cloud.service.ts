@@ -27,4 +27,10 @@ export class BgCloudService {
     return from (p).pipe (mapTo (data));
   } // insert$
 
+  update$<T> (patch: Partial<T>, id: string, collection: BgCloudCollection<T>): Observable<void> {
+    const doc = collection.doc (id);
+    const p = doc.update (patch);
+    return from (p);
+  } // insert$
+
 } // BgCloudService

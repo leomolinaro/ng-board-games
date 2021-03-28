@@ -9,6 +9,7 @@ export interface BaronyRoomDialogInput {
 } // BaronyRoomDialogInput
 
 export interface BaronyRoomDialogOutput {
+  nPlayers?: number;
   deleteGame?: boolean;
   startGame?: boolean;
   gameId: string;
@@ -43,7 +44,8 @@ export class BaronyRoomDialogComponent implements OnInit {
   onStartGameClick () {
     this.dialogRef.close ({
       gameId: this.data.game.id,
-      startGame: true
+      startGame: true,
+      nPlayers: 4
     });
   } // onStartGameClick
 

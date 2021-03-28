@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from "@angular/core";
-import { BgAuthService } from "@bg-services";
 import { BaronyNewGame, gameTypeOptions } from "../barony-home.models";
 
 @Component ({
@@ -10,17 +9,12 @@ import { BaronyNewGame, gameTypeOptions } from "../barony-home.models";
 })
 export class BaronyNewGameComponent {
 
-  constructor (
-    private authService: BgAuthService
-  ) { }
+  constructor () { }
 
   newGameValid = false;
   newGame: BaronyNewGame = {
-    id: null,
     name: "",
-    userId: this.authService.getUser ().id,
     type: "local",
-    players: []
   };
 
   gameTypeOptions = gameTypeOptions;

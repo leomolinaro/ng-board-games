@@ -1,14 +1,14 @@
 import { Injectable } from "@angular/core";
-import { BgProcessService } from "@bg-services";
+import { BgAuthService, BgProcessService } from "@bg-services";
 import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
+import { debounceTime, filter, first, map, mapTo, switchMap, tap } from "rxjs/operators";
+import { BaronyRemoteService } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
 import { BaronyPlay, BaronyProcessTask, BaronyStory } from "../process";
-import { debounceTime, filter, first, map, mapTo, switchMap, tap } from "rxjs/operators";
-import { BaronyUiStore } from "./barony-ui.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
 import { BaronyPlayerObserverService } from "./barony-player-observer.service";
-import { BaronyRemoteService } from "../barony-remote.service";
+import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()
 export class BaronyGameService {
@@ -20,13 +20,36 @@ export class BaronyGameService {
     private aiService: BaronyPlayerAiService,
     private localService: BaronyPlayerLocalService,
     private observerService: BaronyPlayerObserverService,
-    private remoteService: BaronyRemoteService
+    private remoteService: BaronyRemoteService,
+    private authService: BgAuthService
   ) { }
   
   private $pendingTask = new BehaviorSubject<BaronyProcessTask | null> (null);
   selectPendingTask$ () { return this.$pendingTask.asObservable (); }
 
   private lastStoryId: number = 0;
+
+  private isLocalPlayer (playerId: string) {
+    const user = this.authService.getUser ();
+    const player = this.game.getPlayer (playerId);
+    return player.isAi ? false : player.controller.id === user.id;
+  } // isLocalPlayer
+
+  private isOwnerUser () {
+    const user = this.authService.getUser ();
+    const gameOwner = this.game.getGameOwner ();
+    return user.id === gameOwner.id;
+  } // isOwnerUser
+
+  private isCurrentPlayer (playerId: string) {
+    const currentPlayerId = this.ui.getCurrentPlayerId ();
+    return currentPlayerId === playerId;
+  } // isCurrentPlayer
+
+  private isAiPlayer (playerId: string) {
+    const player = this.game.getPlayer (playerId);
+    return player.isAi;
+  } // isAiPlayer
 
   resolveTasks$ (stories: BaronyStory[]): Observable<void> {
     return combineLatest ([
@@ -53,7 +76,7 @@ export class BaronyGameService {
   } // resolveTasks$
 
   private autoRefreshCurrentPlayer (currentPlayer: string | null, task: BaronyProcessTask) {
-    if (this.game.isLocalPlayer (task.data.player)) {
+    if (this.isLocalPlayer (task.data.player)) {
       this.ui.setCurrentPlayer (task.data.player);
     } // if - else
   } // autoRefreshCurrentPlayer
@@ -84,22 +107,22 @@ export class BaronyGameService {
   } // resolveTask$
 
   private executeTask$ (task: BaronyProcessTask, currentPlayer: string | null): Observable<BaronyStory> {
-    const turnPlayer = this.game.getPlayer (task.data.player);
+    const turnPlayerId = task.data.player;
     const nextStoryId = ++this.lastStoryId;
-    if (currentPlayer === task.data.player) {
-      return this.localService.executeTask$ (task, currentPlayer).pipe (
+    if (this.isLocalPlayer (turnPlayerId) && this.isCurrentPlayer (turnPlayerId)) {
+      return this.localService.executeTask$ (task, turnPlayerId).pipe (
         switchMap (result => this.remoteService.insertStory$ (result, nextStoryId, this.game.getGameId ()))
       );
-    } else if (turnPlayer.isRemote) {
+    } else if (this.isAiPlayer (turnPlayerId) && this.isOwnerUser ()) {
+      return this.aiService.executeTask$ (task).pipe (
+        switchMap (result => this.remoteService.insertStory$ (result, nextStoryId, this.game.getGameId ()))
+      );
+    } else {
       return this.observerService.executeTask$ (task).pipe (
         switchMap (() => this.remoteService.getStory$ (nextStoryId, this.game.getGameId ())),
         filter (story => !!story),
         map (story => story as BaronyStory),
         first<BaronyStory> ()
-      );
-    } else {
-      return this.aiService.executeTask$ (task).pipe (
-        switchMap (result => this.remoteService.insertStory$ (result, nextStoryId, this.game.getGameId ()))
       );
     } // if - else
   } // executeTask$

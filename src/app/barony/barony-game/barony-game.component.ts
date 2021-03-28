@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { BgAuthService } from "@bg-services";
+import { BgAuthService, BgUser } from "@bg-services";
 import { subscribeTo, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
-import { BaronyRemoteService } from "../barony-remote.service";
+import { BaronyPlayerDoc, BaronyRemoteService } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer, BaronyResourceType } from "../models";
+import { ABaronyPlayer, BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer, BaronyResourceType } from "../models";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
@@ -64,27 +64,9 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
     ]).pipe (
       tap (([game, players, lands, stories]) => {
         if (game) {
+          const user = this.authService.getUser ();
           this.game.setInitialState (
-            players.map (p => ({
-              id: p.id,
-              color: p.color,
-              isAi: p.isAi,
-              name: p.name,
-              isRemote: !!p.userId && !this.authService.isUserId (p.userId),
-              score: 0,
-              pawns: {
-                city: 5,
-                stronghold: 2,
-                knight: 7,
-                village: 14
-              },
-              resources: {
-                forest: 0,
-                mountain: 0,
-                plain: 0,
-                fields: 0
-              }
-            })),
+            players.map (p => this.playerDocToPlayerInit (p, user)),
             lands.map (l => ({
               id: l.id,
               coordinates: l.coordinates,
@@ -92,12 +74,53 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
               pawns: []
             })),
             this.gameId,
+            game.owner
           );
           subscribeTo (this.service.resolveTasks$ (stories), this);
         } // if
       })
     ), this);
   } // ngOnInit
+
+  private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
+    if (playerDoc.isAi) {
+      return {
+        ...this.playerDocToAPlayerInit (playerDoc),
+        isAi: true,
+        isLocal: false,
+        isRemote: false
+      };
+    } else {
+      return {
+        ...this.playerDocToAPlayerInit (playerDoc),
+        isAi: false,
+        controller: playerDoc.controller,
+        isLocal: user.id === playerDoc.controller.id,
+        isRemote: user.id !== playerDoc.controller.id
+      };
+    } // if - else
+  } // playerDocToPlayerInit
+
+  private playerDocToAPlayerInit (playerDoc: BaronyPlayerDoc): ABaronyPlayer {
+    return {
+      id: playerDoc.id,
+      color: playerDoc.color,
+      name: playerDoc.name,
+      score: 0,
+      pawns: {
+        city: 5,
+        stronghold: 2,
+        knight: 7,
+        village: 14
+      },
+      resources: {
+        forest: 0,
+        mountain: 0,
+        plain: 0,
+        fields: 0
+      }
+    };
+  } // playerDocToAPlayerInit
 
   ngOnDestroy () {
   } // ngOnDestroy

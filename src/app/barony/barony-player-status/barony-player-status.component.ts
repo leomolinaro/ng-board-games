@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, Output, EventEmitter, ChangeDetectionStrategy } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
 import { BaronyBuilding, BaronyPawnType, baronyPawnTypes, BaronyPlayer, BaronyResourceType, baronyResourceTypes } from "../models";
 
@@ -24,7 +25,9 @@ interface BaronyResourceNode {
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
 
-  constructor () { }
+  constructor (
+    private authService: BgAuthService
+  ) { }
 
   @Input () player!: BaronyPlayer;
   @Input () @BooleanInput () currentPlayer: boolean = false;
@@ -79,7 +82,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   } // ngOnChanges
   
   onCardClick () {
-    if (!this.player.isAi && !this.player.isRemote && !this.currentPlayer) {
+    if (!this.player.isAi && !this.authService.isUserId (this.player.controller.id) && !this.currentPlayer) {
       this.selectPlayer.emit ();
     } // if
   } // onCardClick

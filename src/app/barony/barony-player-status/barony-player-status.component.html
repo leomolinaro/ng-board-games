@@ -3,8 +3,8 @@
   [ngClass]="{
     'is-current': currentPlayer,
     'is-ai': player.isAi,
-    'is-remote': !player.isAi && player.isRemote,
-    'is-local': !player.isAi && !player.isRemote
+    'is-remote': player.isRemote,
+    'is-local': player.isLocal
   }"
   (click)="onCardClick ()">
   <div class="b-player-header">

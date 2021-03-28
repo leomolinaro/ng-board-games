@@ -9,22 +9,28 @@ import { BaronyStory } from "./process";
 export interface BaronyGameDoc {
   id: string;
   name: string;
-  owner: {
-    id: string;
-    displayName: string;
-  };
+  owner: BgUser;
   local: boolean;
   state: "open" | "closed";
 } // BaronyGameDoc
 
-export interface BaronyPlayerDoc {
+export interface ABaronyPlayerDoc {
   id: string;
   name: string;
-  isAi: boolean;
   sort: number;
   color: BaronyColor;
-  userId: string | null;
-} // BaronyPlayerDoc
+} // ABaronyPlayerDoc
+
+export interface BaronyAiPlayerDoc extends ABaronyPlayerDoc {
+  isAi: true;
+} // BaronyAiPlayerDoc
+
+export interface BaronyReadPlayerDoc extends ABaronyPlayerDoc {
+  isAi: false;
+  controller: BgUser;
+} // BaronyReadPlayerDoc
+
+export type BaronyPlayerDoc = BaronyAiPlayerDoc | BaronyReadPlayerDoc;
 
 export interface BaronyLandDoc {
   id: string;
@@ -104,28 +110,44 @@ export class BaronyRemoteService {
     }), this.getLands (gameId), landCoordinatesToId (coordinates));
   } // insertLand$
 
-  insertPlayer$ (name: string, color: BaronyColor, isAi: boolean, sort: number, userId: string | null, gameId: string): Observable<BaronyPlayerDoc> {
-    return this.cloud.insert$<BaronyPlayerDoc> (id => ({
+  insertAiPlayer$ (name: string, color: BaronyColor, sort: number, gameId: string): Observable<BaronyPlayerDoc> {
+    return this.cloud.insert$ (id => ({
+      ...this.aPlayerDoc (id, name, color, sort),
+      isAi: true
+    }), this.getPlayers (gameId));
+  } // insertRealPlayer$
+
+  insertRealPlayer$ (name: string, color: BaronyColor, sort: number, controller: BgUser, gameId: string): Observable<BaronyPlayerDoc> {
+    return this.cloud.insert$ (id => ({
+      ...this.aPlayerDoc (id, name, color, sort),
+      isAi: false,
+      controller: controller
+    }), this.getPlayers (gameId));
+  } // insertRealPlayer$
+
+  private aPlayerDoc (id: string, name: string, color: BaronyColor, sort: number): ABaronyPlayerDoc {
+    return {
       id: id,
-      userId: userId,
       name: name,
-      isAi: isAi,
       color: color,
       sort: sort
-    }), this.getPlayers (gameId));
-  } // insertPlayer$
+    };
+  } // aPlayerDoc
 
   insertGame$ (name: string, owner: BgUser, local: boolean): Observable<BaronyGameDoc> {
     return this.cloud.insert$<BaronyGameDoc> (id => ({
       id: id,
-      owner: {
-        id: owner.id,
-        displayName: owner.displayName
-      },
+      owner: owner,
       name: name,
       local: local,
       state: "open"
     }), this.games);
   } // insertGame$
+
+  closeGame$ (gameId: string): Observable<void> {
+    return this.cloud.update$<BaronyGameDoc> ({
+      state: "closed"
+    }, gameId, this.games);
+  } // closeGame$
 
 } // BaronyRemoteService

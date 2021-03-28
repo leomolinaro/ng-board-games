@@ -2,13 +2,14 @@
 
 :host {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 2fr 2fr;
   gap: $spacer;
   justify-content: center;
   justify-items: center;
   align-items: center;
 
-  .s-new-players-color-button {
+  .b-new-players-type-button {
+    justify-self: end;
     &.is-red { background-color: $red-light; }
     &.is-yellow { background-color: $yellow-light; }
     &.is-green { background-color: $green-light; }
@@ -17,4 +18,10 @@
       visibility: hidden;
     }
   }
+  .b-new-players-type-caption {
+    margin-left: 5px;
+    font-style: italic;
+    justify-self: start;
+  }
+
 }

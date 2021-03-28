@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
-import { Subject, BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 import { first } from "rxjs/operators";
 import { BaronyGameStore } from "../logic";
-import { BaronyLandCoordinates, BaronyResourceType, BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer } from "../models";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../models";
 
 interface BaronyUiState {
   currentPlayer: string | null;
@@ -71,6 +71,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   selectCanCancel$ () { return this.select$ (s => s.canCancel); }
   selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
+  getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
   selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
   selectMessage$ () { return this.select$ (s => s.message); }
 

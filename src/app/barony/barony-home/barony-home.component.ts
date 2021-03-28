@@ -3,10 +3,11 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
-import { from, Observable, of } from "rxjs";
+import { forkJoin, from, Observable, of } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
 import { BgAuthService } from "src/app/bg-services/bg-auth.service";
 import { BaronyGameDoc, BaronyRemoteService } from "../barony-remote.service";
+import { getRandomLands } from "../logic/barony-initializer";
 import { BaronyNewGame } from "./barony-home.models";
 import { BaronyRoomDialogComponent, BaronyRoomDialogInput, BaronyRoomDialogOutput } from "./barony-room-dialog/barony-room-dialog.component";
 
@@ -42,12 +43,15 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
   onCreateGame (newGame: BaronyNewGame) {
     const user = this.authService.getUser ();
     return this.remote.insertGame$ (newGame.name, user, newGame.type === "local").pipe (
-      switchMap (gameDoc => this.openNewPlayersDialog$ (gameDoc)),
-      switchMap (output => output?.startGame ? this.runGame$ (output.gameId) : of (void 0))
+      // switchMap (() => forkJoin ([
+      //   this.remote.insertPlayer$ ("", "red", p.type === "ai", index + 1, p.userId, game.id)),
+
+      // ]))
+      switchMap (gameDoc => this.playersRoom$ (gameDoc))
     );
   } // onCreateGameClick
 
-  private openNewPlayersDialog$ (game: BaronyGameDoc): Observable<BaronyRoomDialogOutput | undefined> {
+  private playersRoom$ (game: BaronyGameDoc) {
     const dialogRef = this.matDialog.open<BaronyRoomDialogComponent, BaronyRoomDialogInput, BaronyRoomDialogOutput> (
       BaronyRoomDialogComponent,
       {
@@ -55,18 +59,24 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
         data: { game }
       }
     );
-    return dialogRef.afterClosed ();
+    return dialogRef.afterClosed ().pipe (
+      switchMap (output => {
+        if (output) {
+          if (output.startGame && output.nPlayers) {
+            return forkJoin ([
+              this.remote.closeGame$ (output.gameId),
+              ...getRandomLands (output.nPlayers).map (l => this.remote.insertLand$ (l.coordinates, l.type, game.id))
+            ]).pipe (
+              switchMap (() => this.runGame$ (output.gameId))
+            );
+          } else if (output.deleteGame) {
+            return this.remote.deleteGame$ (output.gameId);
+          } // if - else
+        } // if
+        return of (void 0);
+      })
+    );
   } // openNewPlayersDialog$
-
-  // private createNewGame$ (config: BaronyNewGame) {
-  //   return this.remote.insertGame$ ("Partita", config.userId).pipe (
-  //     switchMap (game => forkJoin ([
-  //       ...config.players.map ((p, index) => this.remote.insertPlayer$ (p.name, p.color, p.type === "ai", index + 1, p.userId, game.id)),
-  //       ...getRandomLands (config.players.length).map (l => this.remote.insertLand$ (l.coordinates, l.type, game.id))
-  //     ])),
-  //     mapTo (void 0)
-  //   );
-  // } // createNewGame$
 
   @ExhaustingEvent ()
   onDeleteGame (game: BaronyGameDoc) {
@@ -76,9 +86,7 @@ export class BaronyHomeComponent implements OnInit, OnDestroy {
   @ExhaustingEvent ()
   onEnterGame (gameDoc: BaronyGameDoc) {
     if (gameDoc.state === "open") {
-      return this.openNewPlayersDialog$ (gameDoc).pipe (
-        switchMap (output => output?.startGame ? this.runGame$ (output.gameId) : of (void 0))
-      );
+      return this.playersRoom$ (gameDoc);
     } else {
       return this.runGame$ (gameDoc.id);
     } // if - else
