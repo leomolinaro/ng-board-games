@@ -10,7 +10,6 @@ const loadingUsedSymbol = Symbol ("__loadingUsed");
 const loadingObsSymbol = Symbol ("__loading$");
 const loadingSubjectSymbol = Symbol ("__$loading");
 const asyncEventSubjectSymbol = Symbol ("__$ascynEvent");
-const changeListenersSymbol = Symbol ("__changeListeners");
 function asyncEventSubscribedSymbol (methodName: string) { return Symbol (`__$${methodName}Subscribed`); }
 function rawBooleanSymbol (propName: string) { return Symbol (`__${propName}Raw`); }
 function rawNumberSymbol (propName: string) { return Symbol (`__${propName}Raw`); }
@@ -80,23 +79,12 @@ export function NumberInput () {
 } // NumberInput
 
 export function UntilDestroy (
-  constructor: new (...args: any[]) => OnInit & OnDestroy
+  constructor: new (...args: any[]) => OnDestroy
 ): void {
   const prot = constructor.prototype;
   const originalDestroy = prot.ngOnDestroy;
-  const originalInit = prot.ngOnInit;
   if (!prot[destroyUsedSymbol]) {
     prot[destroyUsedSymbol] = true;
-    prot.ngOnInit = function (): void {
-      originalInit.apply (this);
-      const changeListeners = this[changeListenersSymbol];
-      if (changeListeners) {
-        changeListeners.forEach ((cl: () => Observable<any>) => {
-          // tslint:disable-next-line: deprecation
-          cl.apply (this).pipe (untilDestroy (this)).subscribe ();
-        });
-      } // if
-    };
     prot.ngOnDestroy = function (): void {
       if (this[destorySubjectSymbol]) {
         this[destorySubjectSymbol].next ();
@@ -138,17 +126,18 @@ export function subscribeTo (asyncEffect$: Observable<any>, component: OnDestroy
 
 export function ChangeListener () {
   return <V, O extends Observable<V>>(
-    targetProt: OnInit & OnDestroy,
+    targetProt: OnDestroy,
     methodName: string,
-    methodDescriptor: TypedPropertyDescriptor<(() => O)>
+    methodDescriptor: TypedPropertyDescriptor<((...args: any) => O)>
   ) => {
-    const changeListener: (() => Observable<O>) = methodDescriptor.value as any;
-    let changeListeners: (() => Observable<O>)[] = (targetProt as any)[changeListenersSymbol];
-    if (!changeListeners) {
-      changeListeners = [];
-      (targetProt as any)[changeListenersSymbol] = changeListeners;
+    const originalMethod = methodDescriptor.value;
+    if (originalMethod) {
+      methodDescriptor.value = function (...args: any) {
+        const obs$ = originalMethod.apply (this, args);
+        obs$.pipe (untilDestroy (this)).subscribe ();
+        return obs$;
+      };
     } // if
-    changeListeners.push (changeListener);
   };
 } // ChangeListener
 

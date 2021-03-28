@@ -37,6 +37,7 @@ class BgRootGuard implements CanActivate {
 const routes: Routes = [
   { path: "", loadChildren: () => import ("./bg-main-page/bg-main-page.module").then (m => m.BgMainPageModule) },
   { path: "barony", canActivate: [BgRootGuard], loadChildren: () => import ("./barony/barony.module").then (m => m.BaronyModule) },
+  { path: "britannia", canActivate: [BgRootGuard], loadChildren: () => import ("./britannia/brit.module").then (m => m.BritModule) },
   { path: "agot-draft", canActivate: [BgRootGuard], loadChildren: () => import ("./agot-draft/agot-draft.module").then (m => m.AgotDraftModule) },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];

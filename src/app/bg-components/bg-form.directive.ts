@@ -4,10 +4,16 @@ import { MatSelect } from "@angular/material/select";
 import { ChangeListener, SimpleChanges, UntilDestroy } from "@bg-utils";
 import { tap } from "rxjs/operators";
 
-interface IBgFieldDirective<V, E> {
+interface BgFieldDirective<V, E> {
   setValue (value: V | null): void;
-  field: keyof E;
+  field: keyof E | "";
+  config: BgFieldConfig<V, E> | null;
 } // ABgFieldDirective
+
+export interface BgFieldConfig<V, E> {
+  valueGetter?: (entity: E) => V;
+  valueSetter?: (value: V, entity: E) => Partial<E>;
+} // BgFieldConfig
 
 @Directive ({
   selector: "[bgForm]"
@@ -19,7 +25,7 @@ export class BgFormDirective<E> implements OnChanges {
   @Input () bgForm: E | null = null;
   @Output () bgFormChange = new EventEmitter<E> ();
 
-  private fields: IBgFieldDirective<any, E>[] = [];
+  private fields: BgFieldDirective<any, E>[] = [];
 
   ngOnChanges (changes: SimpleChanges<BgFormDirective<E>>) {
     if (changes.bgForm) {
@@ -29,7 +35,7 @@ export class BgFormDirective<E> implements OnChanges {
 
   private setEntityValues (entity: E | null) {
     if (entity) {
-      this.fields.forEach (<V> (field: IBgFieldDirective<V, E>) => {
+      this.fields.forEach (<V> (field: BgFieldDirective<V, E>) => {
         const value = this.getFieldValue (entity, field);
         field.setValue (value);
       });
@@ -38,7 +44,7 @@ export class BgFormDirective<E> implements OnChanges {
     } // if - else
   } // setEntityValues
 
-  private setFieldValue<V> (entity: E | null, field: IBgFieldDirective<V, E>) {
+  private setFieldValue<V> (entity: E | null, field: BgFieldDirective<V, E>) {
     if (entity) {
       const value = this.getFieldValue (entity, field);
       field.setValue (value);
@@ -47,25 +53,38 @@ export class BgFormDirective<E> implements OnChanges {
     } // if - else
   } // setFieldValue
 
-  private getFieldValue<V> (entity: E, field: IBgFieldDirective<V, E>): V {
-    return entity[field.field] as any;
+  private getFieldValue<V> (entity: E, field: BgFieldDirective<V, E>): V | null {
+    if (field.config?.valueGetter) {
+      return field.config.valueGetter (entity);
+    } else if (field.field) {
+      return entity[field.field] as any as V;
+    } // if - else
+    return null;
   } // getFieldValue
 
-  onValueChange<V> (value: V, field: IBgFieldDirective<V, E>) {
+  onValueChange<V> (value: V, field: BgFieldDirective<V, E>) {
     if (this.bgForm) {
-      this.bgFormChange.next ({
-        ...this.bgForm,
-        [field.field]: value
-      });
+      if (field.config?.valueSetter) {
+        const patch = field.config.valueSetter (value, this.bgForm);
+        this.bgFormChange.next ({
+          ...this.bgForm,
+          ...patch
+        });
+      } else if (field.field) {
+        this.bgFormChange.next ({
+          ...this.bgForm,
+          [field.field]: value
+        });
+      } // if - else
     } // if
   } // onEntityChange
 
-  registerField<V> (field: IBgFieldDirective<V, E>) {
+  registerField<V> (field: BgFieldDirective<V, E>) {
     this.fields.push (field);
     this.setFieldValue (this.bgForm, field);
   } // registerField
 
-  unregisterField<V> (field: IBgFieldDirective<V, E>) {
+  unregisterField<V> (field: BgFieldDirective<V, E>) {
     const index = this.fields.indexOf (field);
     if (index >= 0) { this.fields.splice (index, 1); }
   } // unregisterField
@@ -75,14 +94,15 @@ export class BgFormDirective<E> implements OnChanges {
 @Directive ({
   selector: "input[bgField]"
 })
-export class BgInputFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldDirective<V, E> {
+export class BgInputFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDirective<V, E> {
 
   constructor (
     private form: BgFormDirective<E>,
     private cd: ChangeDetectorRef
   ) { }
 
-  @Input ("bgField") field!: keyof E;
+  @Input ("bgField") field: keyof E | "" = "";
+  @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
 
   @HostBinding ("value")
   viewValue: any = "";
@@ -125,17 +145,18 @@ export class BgInputFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldD
   selector: "mat-select[bgField]"
 })
 @UntilDestroy
-export class BgSelectFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldDirective<V, E> {
+export class BgSelectFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDirective<V, E> {
 
   constructor (
     private form: BgFormDirective<E>,
     @Host () private matSelect: MatSelect
   ) { }
 
-  @Input ("bgField") field!: keyof E;
+  @Input ("bgField") field: keyof E | "" = "";
+  @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
 
   @ChangeListener ()
-  onSelectionChange () {
+  private listenToSelectionChange () {
     return this.matSelect.selectionChange.pipe (
       tap (change => this.form.onValueChange (change.value, this))
     );
@@ -143,6 +164,7 @@ export class BgSelectFieldDirective<V, E> implements OnInit, OnDestroy, IBgField
 
   ngOnInit () {
     this.form.registerField (this);
+    this.listenToSelectionChange ();
   } // ngOnInit
 
   ngOnDestroy () {
@@ -159,17 +181,18 @@ export class BgSelectFieldDirective<V, E> implements OnInit, OnDestroy, IBgField
   selector: "mat-radio-group[bgField]"
 })
 @UntilDestroy
-export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldDirective<V, E> {
+export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDirective<V, E> {
 
   constructor (
     private form: BgFormDirective<E>,
     @Host () private matRadioGroup: MatRadioGroup
   ) { }
 
-  @Input ("bgField") field!: keyof E;
+  @Input ("bgField") field: keyof E | "" = "";
+  @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
 
   @ChangeListener ()
-  onSelectionChange () {
+  private listenToSelectionChange () {
     return this.matRadioGroup.change.pipe (
       tap (change => this.form.onValueChange (change.value, this))
     );
@@ -177,6 +200,7 @@ export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, IBgFieldD
 
   ngOnInit () {
     this.form.registerField (this);
+    this.listenToSelectionChange ();
   } // ngOnInit
 
   ngOnDestroy () {

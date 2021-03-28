@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  > * {
+    margin-bottom: 1rem;
+  }
+  .brit-archeo-game-type-radio {
+    display: flex;
+    flex-direction: column;
+    > * {
+      margin-bottom: 1rem;
+    }
+  }
+}

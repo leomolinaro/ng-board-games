@@ -1,0 +1,16 @@
+.bg-archeo-game {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  .bg-archeo-game-create {
+    align-self: flex-end;
+  }
+}
+
+.bg-home-games {
+  display: block;
+  padding: 25px;
+  table {
+    width: 100%;
+  }
+}

@@ -37,7 +37,8 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 "src/styles",
-                "src/app/barony/styles"
+                "src/app/barony/styles",
+                "src/app/britannia/styles"
               ]
             },
             "assets": [

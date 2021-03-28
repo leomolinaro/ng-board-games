@@ -15,16 +15,16 @@ import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { BgComponentsModule } from "@bg-components";
 import { BgUtilsModule } from "@bg-utils";
-import { BgHomeComponent, BgNewGameHostDirective } from "./bg-home.component";
+import { BgArcheoGameFormHostDirective, BgHomeComponent } from "./bg-home.component";
 
 const components = [
-  BgHomeComponent,
-  BgNewGameHostDirective
+  BgHomeComponent
 ];
 
 @NgModule ({
   declarations: [
-    ...components
+    ...components,
+    BgArcheoGameFormHostDirective
   ],
   exports: [
     ...components
