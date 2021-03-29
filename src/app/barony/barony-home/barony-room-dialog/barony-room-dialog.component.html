@@ -1,14 +1,42 @@
 <h1 mat-dialog-title>Players</h1>
-<div mat-dialog-content>
-  <barony-new-players #newPlayers
-    [localGame]="localGame"
-    [(players)]="players"></barony-new-players>
+<div mat-dialog-content class="brit-new-players">
+  <ng-container *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
+    [bgForm]="player" (bgFormChange)="onPlayerChange ($event, player.id)">
+
+    <button class="brit-new-players-type-button" 
+      [ngClass]="'is-' + player.color"
+      mat-fab (click)="onNextPlayerType (player.type, player.id)">
+      <ng-container [ngSwitch]="player.type">
+        <mat-icon *ngSwitchCase="'closed'">no_accounts</mat-icon>
+        <mat-icon *ngSwitchCase="'me'">person_pin</mat-icon>
+        <mat-icon *ngSwitchCase="'other'">cloud_cirle</mat-icon>
+        <mat-icon *ngSwitchCase="'ai'">monitor</mat-icon>
+        <mat-icon *ngSwitchCase="'open'">cloud</mat-icon>
+      </ng-container>
+    </button>
+    <ng-container [ngSwitch]="player.type">
+      <span *ngSwitchCase="'closed'" class="mat-caption b-new-players-type-caption">closed</span>
+      <span *ngSwitchCase="'me'" class="mat-caption b-new-players-type-caption">me</span>
+      <span *ngSwitchCase="'other'" class="mat-caption b-new-players-type-caption">TODO</span>
+      <span *ngSwitchCase="'ai'" class="mat-caption b-new-players-type-caption">AI</span>
+      <span *ngSwitchCase="'open'" class="mat-caption b-new-players-type-caption">open</span>
+    </ng-container>
+    <mat-form-field>
+      <mat-label>Player name</mat-label>
+      <input bgField="name" matInput 
+        [required]="player.type !== 'closed'"
+        [disabled]="player.type === 'closed'"
+        autocomplete="off">
+    </mat-form-field>
+    <mat-checkbox>Ready</mat-checkbox>
+
+  </ng-container>
 </div>
-<div mat-dialog-actions *bIfOwnerOf="game">
+<div mat-dialog-actions *bgIfUser="game.owner">
   <button mat-button
     color="warn"
     (click)="onDeleteGameClick ()">Delete game</button>
-  <button class="b-room-start-game-button" mat-button
+  <button class="brit-room-start-button" mat-button
     color="accent"
-    [disabled]="!newPlayers.valid" (click)="onStartGameClick ()">Start game</button>
+    [disabled]="!(validPlayers$ | async)" (click)="onStartGameClick ()">Start game</button>
 </div>

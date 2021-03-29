@@ -1,19 +1,13 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { BgAuthService } from "@bg-services";
-import { BaronyGameDoc } from "../../barony-remote.service";
-import { BaronyNewPlayer } from "../barony-home.models";
-
-export interface BaronyRoomDialogInput {
-  game: BaronyGameDoc;
-} // BaronyRoomDialogInput
-
-export interface BaronyRoomDialogOutput {
-  nPlayers?: number;
-  deleteGame?: boolean;
-  startGame?: boolean;
-  gameId: string;
-} // BaronyRoomDialogOutput
+import { ABgRoomDialogInput, ABgRoomDialogOutput } from "@bg-home";
+import { BgAuthService, BgUser } from "@bg-services";
+import { ConcatingEvent, InitEvent, UntilDestroy } from "@bg-utils";
+import { forkJoin, of } from "rxjs";
+import { first, map, switchMap } from "rxjs/operators";
+import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
+import { BaronyColor } from "../../models";
+import { BaronyProtoPlayer } from "../barony-home.models";
 
 @Component ({
   selector: "barony-room-dialog",
@@ -21,37 +15,108 @@ export interface BaronyRoomDialogOutput {
   styleUrls: ["./barony-room-dialog.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyRoomDialogComponent implements OnInit {
+@UntilDestroy
+export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
 
   constructor (
-    private dialogRef: MatDialogRef<BaronyRoomDialogComponent, BaronyRoomDialogOutput>,
-    @Inject (MAT_DIALOG_DATA) private data: BaronyRoomDialogInput,
+    private dialogRef: MatDialogRef<BaronyRoomDialogComponent, ABgRoomDialogOutput>,
+    @Inject (MAT_DIALOG_DATA) private data: ABgRoomDialogInput,
+    private protoGameService: BgProtoGameService,
     private authService: BgAuthService
   ) { }
 
-  localGame = this.data.game.local;
-  game = this.data.game;
-  players: BaronyNewPlayer[] = [
-    { userId: null, name: "", color: "blue", type: "closed" },
-    { userId: null, name: "", color: "red", type: "closed" },
-    { userId: null, name: "", color: "green", type: "closed" },
-    { userId: null, name: "", color: "yellow", type: "closed" },
-  ];
+  onlineGame = this.data.protoGame.online;
+  game = this.data.protoGame;
+  playerTrackBy = (index: number, player: BaronyProtoPlayer) => index;
 
-  ngOnInit (): void {
+  players$ = this.protoGameService.seletProtoPlayers$<BaronyProtoPlayer> (this.game.id);
+  validPlayers$ = this.players$.pipe (map (players => {
+    
+  }));
+
+  @InitEvent ()
+  ngOnInit () {
+    return this.players$.pipe (
+      first (),
+      switchMap (players => {
+        if (players && players.length) {
+          return of (void 0);
+        } else {
+          return forkJoin ([
+            this.insertProtoPlayer$ ("1", "yellow"),
+            this.insertProtoPlayer$ ("2", "blue"),
+            this.insertProtoPlayer$ ("3", "red"),
+            this.insertProtoPlayer$ ("4", "green")
+          ]);
+        } // if - else
+      })
+    );
   } // ngOnInit
+
+  private insertProtoPlayer$ (id: string, color: BaronyColor) {
+    const player: BaronyProtoPlayer = {
+      id: id,
+      color: color,
+      name: "",
+      controller: null,
+      type: "closed"
+    };
+    return this.protoGameService.insertProtoPlayer$ (player, this.game.id);
+  } // insertProtoPlayer$
+
+  ngOnDestroy () { }
+
+  @ConcatingEvent ()
+  onPlayerChange (player: BaronyProtoPlayer, playerId: string) {
+    return this.protoGameService.updateProtoPlayer$ (player, playerId, this.game.id);
+  } // onPlayerChange
+
+  @ConcatingEvent ()
+  onNextPlayerType (currentType: ABgProtoPlayerType, playerId: string) {
+    const nextPlayerType = this.getNextPlayerType (currentType);
+    const controllerPatch: { controller?: BgUser | null } = { };
+    if (nextPlayerType === "me") {
+      controllerPatch.controller = this.authService.getUser ();
+    } else if (nextPlayerType !== "other") {
+      controllerPatch.controller = null;
+    } // if - else
+    const namePatch: { name?: string | "" } = { };
+    if (nextPlayerType === "me") {
+      namePatch.name = this.authService.getUser ().displayName;
+    } else if (nextPlayerType === "closed") {
+      namePatch.name = "";
+    } else if (nextPlayerType === "ai") {
+      namePatch.name = "AI";
+    } // if - else
+    return this.protoGameService.updateProtoPlayer$ ({
+      type: nextPlayerType,
+      ...controllerPatch,
+      ...namePatch
+    }, playerId, this.game.id);
+  } // onNextPlayerType
+
+  private getNextPlayerType (currentType: ABgProtoPlayerType): ABgProtoPlayerType {
+    switch (currentType) {
+      case "closed": return "me";
+      case "me": return this.onlineGame ? "open" : "ai";
+      case "open": return "ai";
+      case "ai": return "closed";
+      case "other": return "closed";
+    } // switch
+  } // getNextPlayerType
 
   onStartGameClick () {
     this.dialogRef.close ({
-      gameId: this.data.game.id,
       startGame: true,
-      nPlayers: 4
+      gameId: this.game.id,
+      deleteGame: false
     });
   } // onStartGameClick
 
   onDeleteGameClick () {
     this.dialogRef.close ({
-      gameId: this.data.game.id,
+      startGame: false,
+      gameId: this.game.id,
       deleteGame: true
     });
   } // onDeleteGameClick

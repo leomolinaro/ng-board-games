@@ -1,26 +1,18 @@
+import { ABgArcheoGame, ABgProtoGame, ABgProtoGameState, ABgProtoPlayer, ABgProtoPlayerType } from "src/app/bg-services/bg-proto-game.service";
 import { BaronyColor } from "../models";
 
-export interface BaronyNewGame {
-  name: string;
-  type: BaronyNewGameType;
-} // BaronyNewGame
+export interface BaronyArcheoGame extends ABgArcheoGame {
+} // BaronyArcheoGame
 
-export interface BaronyNewPlayer {
-  userId: string | null;
+export interface BaronyProtoGame extends ABgProtoGame {
+  state: BaronyProtoGameState;
+} // BaronyanniaOpenGame
+
+export interface BaronyProtoPlayer extends ABgProtoPlayer {
   name: string;
   color: BaronyColor;
-  type: BaronyNewPlayerType;
-} // BaronyNewPlayer
+  type: BaronyProtoPlayerType;
+} // BaronyProtoPlayer
 
-export type BaronyNewGameType = "local" | "online";
-export type BaronyNewPlayerType = "me" | "other" | "open" | "closed" | "ai";
-
-export interface BaronyNewGameTypeOption {
-  id: BaronyNewGameType;
-  label: string;
-} // BaronyNewGameTypeOption
-
-export const gameTypeOptions: BaronyNewGameTypeOption[] = [
-  { id: "local", label: "Local" },
-  { id: "online", label: "Online" }
-];
+export type BaronyProtoGameState = ABgProtoGameState;
+export type BaronyProtoPlayerType = ABgProtoPlayerType;

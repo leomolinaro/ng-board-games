@@ -141,6 +141,7 @@ export class BgHomeComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.protoGameService.deleteProtoGame$ (game.id);
   } // onDeleteGame
 
+  @ExhaustingEvent ()
   onEnterGame (game: ABgProtoGame) {
     if (game.state === "closed") {
       return this.config.startGame$ (game.id);
