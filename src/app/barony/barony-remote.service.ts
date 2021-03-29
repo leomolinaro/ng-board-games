@@ -10,7 +10,7 @@ export interface BaronyGameDoc {
   id: string;
   name: string;
   owner: BgUser;
-  local: boolean;
+  online: boolean;
   state: "open" | "closed";
 } // BaronyGameDoc
 
@@ -134,14 +134,14 @@ export class BaronyRemoteService {
     };
   } // aPlayerDoc
 
-  insertGame$ (name: string, owner: BgUser, local: boolean): Observable<BaronyGameDoc> {
-    return this.cloud.insert$<BaronyGameDoc> (id => ({
+  insertGame$ (id: string, name: string, owner: BgUser, online: boolean): Observable<BaronyGameDoc> {
+    return this.cloud.insert$<BaronyGameDoc> (i => ({
       id: id,
       owner: owner,
       name: name,
-      local: local,
+      online: online,
       state: "open"
-    }), this.games);
+    }), this.games, id);
   } // insertGame$
 
   closeGame$ (gameId: string): Observable<void> {

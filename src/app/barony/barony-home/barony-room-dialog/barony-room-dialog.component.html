@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>Players</h1>
-<div mat-dialog-content class="brit-new-players">
+<div mat-dialog-content class="brit-new-players" [ngClass]="{ 'is-online-game': onlineGame }">
   <ng-container *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
     [bgForm]="player" (bgFormChange)="onPlayerChange ($event, player.id)">
 
@@ -28,7 +28,10 @@
         [disabled]="player.type === 'closed'"
         autocomplete="off">
     </mat-form-field>
-    <mat-checkbox>Ready</mat-checkbox>
+    <div *ngIf="onlineGame">
+      <mat-checkbox *ngIf="player.type === 'me' || player.type === 'other'"
+        bgField="ready">Ready</mat-checkbox>
+    </div>
 
   </ng-container>
 </div>

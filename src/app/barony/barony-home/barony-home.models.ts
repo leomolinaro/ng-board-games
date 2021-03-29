@@ -12,6 +12,7 @@ export interface BaronyProtoPlayer extends ABgProtoPlayer {
   name: string;
   color: BaronyColor;
   type: BaronyProtoPlayerType;
+  ready: boolean;
 } // BaronyProtoPlayer
 
 export type BaronyProtoGameState = ABgProtoGameState;

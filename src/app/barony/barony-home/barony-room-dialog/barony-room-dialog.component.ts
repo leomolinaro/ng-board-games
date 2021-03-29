@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { BgAuthService, BgUser } from "@bg-services";
-import { ConcatingEvent, InitEvent, UntilDestroy } from "@bg-utils";
-import { forkJoin, of } from "rxjs";
-import { first, map, switchMap } from "rxjs/operators";
+import { ChangeListener, ConcatingEvent, ExhaustingEvent, InitEvent, UntilDestroy } from "@bg-utils";
+import { BehaviorSubject, forkJoin, of } from "rxjs";
+import { map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
+import { BaronyRemoteService } from "../../barony-remote.service";
+import { getRandomLands } from "../../logic/barony-initializer";
 import { BaronyColor } from "../../models";
-import { BaronyProtoPlayer } from "../barony-home.models";
+import { BaronyProtoGame, BaronyProtoPlayer } from "../barony-home.models";
 
 @Component ({
   selector: "barony-room-dialog",
@@ -22,25 +24,40 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<BaronyRoomDialogComponent, ABgRoomDialogOutput>,
     @Inject (MAT_DIALOG_DATA) private data: ABgRoomDialogInput,
     private protoGameService: BgProtoGameService,
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    private gameService: BaronyRemoteService
   ) { }
 
   onlineGame = this.data.protoGame.online;
   game = this.data.protoGame;
   playerTrackBy = (index: number, player: BaronyProtoPlayer) => index;
+  private $players = new BehaviorSubject<BaronyProtoPlayer[]> ([]);
+  players$ = this.$players.asObservable ();
 
-  players$ = this.protoGameService.seletProtoPlayers$<BaronyProtoPlayer> (this.game.id);
   validPlayers$ = this.players$.pipe (map (players => {
     let nPlayers = 0;
-    players.forEach (p => {
-
-    });
+    for (const player of players) {
+      switch (player.type) {
+        case "me":
+        case "other": if (!player.name || !player.ready) { return false; } nPlayers++; break;
+        case "ai": if (!player.name) { return false; } nPlayers++; break;
+        case "open": return false;
+      } // switch
+    } // while
+    if (nPlayers < 2) { return false; }
+    return true;
   }));
 
+  @ChangeListener ()
+  private listenToPlayersChange () {
+    return this.protoGameService.selectProtoPlayers$<BaronyProtoPlayer> (this.game.id).pipe (
+      tap (p => this.$players.next (p))
+    );
+  } // listenToPlayersChange
+  
   @InitEvent ()
   ngOnInit () {
-    return this.players$.pipe (
-      first (),
+    return this.protoGameService.getProtoPlayers$ (this.game.id).pipe (
       switchMap (players => {
         if (players && players.length) {
           return of (void 0);
@@ -52,6 +69,9 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
             this.insertProtoPlayer$ ("4", "green")
           ]);
         } // if - else
+      }),
+      tap (() => {
+        this.listenToPlayersChange ();
       })
     );
   } // ngOnInit
@@ -62,7 +82,8 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
       color: color,
       name: "",
       controller: null,
-      type: "closed"
+      type: "closed",
+      ready: false
     };
     return this.protoGameService.insertProtoPlayer$ (player, this.game.id);
   } // insertProtoPlayer$
@@ -76,25 +97,41 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
 
   @ConcatingEvent ()
   onNextPlayerType (currentType: ABgProtoPlayerType, playerId: string) {
-    const nextPlayerType = this.getNextPlayerType (currentType);
     const controllerPatch: { controller?: BgUser | null } = { };
-    if (nextPlayerType === "me") {
-      controllerPatch.controller = this.authService.getUser ();
-    } else if (nextPlayerType !== "other") {
-      controllerPatch.controller = null;
-    } // if - else
     const namePatch: { name?: string | "" } = { };
-    if (nextPlayerType === "me") {
-      namePatch.name = this.authService.getUser ().displayName;
-    } else if (nextPlayerType === "closed") {
-      namePatch.name = "";
-    } else if (nextPlayerType === "ai") {
-      namePatch.name = "AI";
-    } // if - else
+    const readyPatch: { ready?: boolean } = { };
+    const nextPlayerType = this.getNextPlayerType (currentType);
+    switch (nextPlayerType) {
+      case "me": {
+        controllerPatch.controller = this.authService.getUser ();
+        namePatch.name = this.authService.getUser ().displayName;
+        if (!this.onlineGame) { readyPatch.ready = true; }
+        break;
+      } // case
+      case "closed": {
+        controllerPatch.controller = null;
+        namePatch.name = "";
+        readyPatch.ready = false;
+        break;
+      } // case
+      case "open": {
+        controllerPatch.controller = null;
+        namePatch.name = "";
+        readyPatch.ready = false;
+        break;
+      } // case
+      case "ai": {
+        controllerPatch.controller = null;
+        namePatch.name = "AI";
+        readyPatch.ready = true;
+        break;
+      } // case
+    } // switch
     return this.protoGameService.updateProtoPlayer$ ({
       type: nextPlayerType,
       ...controllerPatch,
-      ...namePatch
+      ...namePatch,
+      ...readyPatch
     }, playerId, this.game.id);
   } // onNextPlayerType
 
@@ -108,20 +145,63 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
     } // switch
   } // getNextPlayerType
 
+  @ExhaustingEvent ()
   onStartGameClick () {
-    this.dialogRef.close ({
-      startGame: true,
-      gameId: this.game.id,
-      deleteGame: false
-    });
+    return this.gameService.getGame$ (this.game.id).pipe (
+      switchMap (game => {
+        if (game) {
+          return of (game);
+        } else {
+          return this.createGame$ (this.game, this.$players.getValue ());
+        } // if - else
+      }),
+      tap (() => {
+        this.dialogRef.close ({
+          startGame: true,
+          gameId: this.game.id,
+          deleteGame: false
+        });
+      })
+    );
   } // onStartGameClick
 
+  private createGame$ (protoGame: BaronyProtoGame, protoPlayers: BaronyProtoPlayer[]) {
+    const activeProtoPlayers = protoPlayers
+    .filter (p => p.type === "me" || p.type === "other" || p.type === "ai");
+    return forkJoin ([
+      this.protoGameService.updateProtoGame$ ({ state: "closed" }, protoGame.id),
+      this.gameService.insertGame$ (protoGame.id, protoGame.name, protoGame.owner, protoGame.online).pipe (
+        switchMap (game => forkJoin ([
+          ...activeProtoPlayers
+          .map ((p, index) => {
+            if (p.type === "ai") {
+              return this.gameService.insertAiPlayer$ (p.name, p.color, index + 1, game.id);
+            } else {
+              return this.gameService.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
+            } // if - else
+          }),
+          ...getRandomLands (activeProtoPlayers.length).map (l => this.gameService.insertLand$ (l.coordinates, l.type, game.id))
+        ]))
+      )
+    ]);
+  } // createGame$
+
+  @ExhaustingEvent ()
   onDeleteGameClick () {
-    this.dialogRef.close ({
-      startGame: false,
-      gameId: this.game.id,
-      deleteGame: true
-    });
+    return forkJoin ([
+      this.protoGameService.deleteProtoPlayer$ ("1", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("2", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("3", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("4", this.game.id)
+    ]).pipe (
+      tap (() => {
+        this.dialogRef.close ({
+          startGame: false,
+          gameId: this.game.id,
+          deleteGame: true
+        });
+      })
+    );
   } // onDeleteGameClick
 
 } // BaronyRoomDialogComponent

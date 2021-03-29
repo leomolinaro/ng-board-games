@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ConcatingEvent, InitEvent, UntilDestroy } from "@bg-utils";
+import { ConcatingEvent, ExhaustingEvent, InitEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin, of } from "rxjs";
-import { first, map, switchMap } from "rxjs/operators";
+import { first, map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
 import { BritColor } from "../../brit.models";
@@ -27,7 +27,7 @@ export class BritRoomDialogComponent implements OnInit, OnDestroy {
   game = this.data.protoGame;
   playerTrackBy = (index: number, player: BritProtoPlayer) => index;
 
-  players$ = this.protoGameService.seletProtoPlayers$<BritProtoPlayer> (this.game.id);
+  players$ = this.protoGameService.selectProtoPlayers$<BritProtoPlayer> (this.game.id);
   validPlayers$ = this.players$.pipe (map (players => false));
 
   @InitEvent ()
@@ -91,12 +91,22 @@ export class BritRoomDialogComponent implements OnInit, OnDestroy {
     });
   } // onStartGameClick
 
+  @ExhaustingEvent ()
   onDeleteGameClick () {
-    this.dialogRef.close ({
-      startGame: false,
-      gameId: this.game.id,
-      deleteGame: true
-    });
+    return forkJoin ([
+      this.protoGameService.deleteProtoPlayer$ ("1", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("2", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("3", this.game.id),
+      this.protoGameService.deleteProtoPlayer$ ("4", this.game.id)
+    ]).pipe (
+      tap (() => {
+        this.dialogRef.close ({
+          startGame: false,
+          gameId: this.game.id,
+          deleteGame: true
+        });
+      })
+    );
   } // onDeleteGameClick
 
 } // BritRoomDialogComponent
