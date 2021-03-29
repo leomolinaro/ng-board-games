@@ -24,8 +24,11 @@
     "paths": {
       "@bg-services": ["src/app/bg-services"],
       "@bg-utils": ["src/app/bg-utils"],
-      "@bg-home": ["src/app/bg-home"],
-      "@bg-components": ["src/app/bg-components"]
+      "@bg-components/auth": ["src/app/bg-components/bg-auth"],
+      "@bg-components/form": ["src/app/bg-components/bg-form"],
+      "@bg-components/game-layout": ["src/app/bg-components/bg-game-layout"],
+      "@bg-components/home": ["src/app/bg-components/bg-home"],
+      "@bg-components/svg": ["src/app/bg-components/bg-svg"]
     }
   },
   "angularCompilerOptions": {

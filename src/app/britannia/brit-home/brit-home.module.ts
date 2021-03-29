@@ -7,8 +7,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
-import { BgComponentsModule } from "@bg-components";
-import { BgHomeModule } from "src/app/bg-home/bg-home.module";
+import { BgFormModule } from "@bg-components/form";
+import { BgHomeModule } from "@bg-components/home";
 import { BritArcheoGameFormComponent } from "./brit-archeo-game-form/brit-archeo-game-form.component";
 import { BritHomeComponent } from "./brit-home.component";
 import { BritRoomDialogComponent } from "./brit-room-dialog/brit-room-dialog.component";
@@ -22,7 +22,7 @@ import { BritRoomDialogComponent } from "./brit-room-dialog/brit-room-dialog.com
   imports: [
     CommonModule,
     BgHomeModule,
-    BgComponentsModule,
+    BgFormModule,
     MatFormFieldModule,
     MatRadioModule,
     MatInputModule,

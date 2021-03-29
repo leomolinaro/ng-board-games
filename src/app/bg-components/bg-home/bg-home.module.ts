@@ -13,7 +13,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
-import { BgComponentsModule } from "@bg-components";
+import { BgAuthModule } from "@bg-components/auth";
 import { BgUtilsModule } from "@bg-utils";
 import { BgArcheoGameFormHostDirective, BgHomeComponent } from "./bg-home.component";
 
@@ -31,12 +31,12 @@ const components = [
   ],
   imports: [
     CommonModule,
+    BgAuthModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     BgUtilsModule,
-    BgComponentsModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter } from "@angular/core";
-import { ABgArcheoGameForm } from "@bg-home";
-import { BgFieldConfig } from "src/app/bg-components/bg-form.directive";
+import { BgFieldConfig } from "@bg-components/form";
+import { ABgArcheoGameForm } from "@bg-components/home";
 import { BritArcheoGame } from "../brit-home.models";
 
 @Component ({

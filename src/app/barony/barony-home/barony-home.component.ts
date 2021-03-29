@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { BgHomeConfig } from "@bg-components/home";
 import { from } from "rxjs";
-import { BgHomeConfig } from "src/app/bg-home/bg-home.component";
 import { BaronyArcheoGameFormComponent } from "./barony-archeo-game-form/barony-archeo-game-form.component";
 import { BaronyArcheoGame } from "./barony-home.models";
 import { BaronyRoomDialogComponent } from "./barony-room-dialog/barony-room-dialog.component";

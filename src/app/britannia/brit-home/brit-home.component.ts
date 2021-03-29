@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { from } from "rxjs";
-import { BgHomeConfig } from "src/app/bg-home/bg-home.component";
+import { BgHomeConfig } from "src/app/bg-components/bg-home/bg-home.component";
 import { BritArcheoGameFormComponent } from "./brit-archeo-game-form/brit-archeo-game-form.component";
 import { BritArcheoGame } from "./brit-home.models";
 import { BritRoomDialogComponent } from "./brit-room-dialog/brit-room-dialog.component";

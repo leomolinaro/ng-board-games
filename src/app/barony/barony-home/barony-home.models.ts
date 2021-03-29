@@ -1,4 +1,4 @@
-import { ABgArcheoGame, ABgProtoGame, ABgProtoGameState, ABgProtoPlayer, ABgProtoPlayerType } from "src/app/bg-services/bg-proto-game.service";
+import { ABgArcheoGame, ABgProtoGame, ABgProtoGameState, ABgProtoPlayer, ABgProtoPlayerType } from "@bg-services";
 import { BaronyColor } from "../models";
 
 export interface BaronyArcheoGame extends ABgArcheoGame {

@@ -1,8 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { BgSvgModule } from "@bg-components/svg";
 import { BgUtilsModule } from "@bg-utils";
-import { BgComponentsModule } from "../bg-components/bg-components.module";
 import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 import { BaronyBoardComponent } from "./barony-board/barony-board.component";
 import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/barony-buildings-selector.component";
@@ -43,7 +43,7 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild (routes),
     BgUtilsModule,
-    BgComponentsModule,
+    BgSvgModule,
     BaronyHomeModule
   ],
   providers: [

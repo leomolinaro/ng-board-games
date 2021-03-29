@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ABgRoomDialogInput, ABgRoomDialogOutput } from "@bg-home";
 import { ConcatingEvent, InitEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin, of } from "rxjs";
 import { first, map, switchMap } from "rxjs/operators";
+import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
 import { BritColor } from "../../brit.models";
 import { BritProtoPlayer } from "../brit-home.models";

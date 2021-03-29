@@ -2,8 +2,8 @@ import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterModule, Routes } from "@angular/router";
+import { BgAuthModule } from "@bg-components/auth";
 import { BgUtilsModule } from "@bg-utils";
-import { BgComponentsModule } from "../bg-components/bg-components.module";
 import { BgMainPageComponent } from "./bg-main-page.component";
 
 const routes: Routes = [
@@ -18,7 +18,7 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild (routes),
     BgUtilsModule,
-    BgComponentsModule,
+    BgAuthModule,
     MatToolbarModule
   ]
 })

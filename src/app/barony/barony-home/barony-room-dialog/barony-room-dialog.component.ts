@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ABgRoomDialogInput, ABgRoomDialogOutput } from "@bg-home";
 import { BgAuthService, BgUser } from "@bg-services";
 import { ConcatingEvent, InitEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin, of } from "rxjs";
 import { first, map, switchMap } from "rxjs/operators";
+import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
 import { BaronyColor } from "../../models";
 import { BaronyProtoPlayer } from "../barony-home.models";
@@ -31,7 +31,10 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
 
   players$ = this.protoGameService.seletProtoPlayers$<BaronyProtoPlayer> (this.game.id);
   validPlayers$ = this.players$.pipe (map (players => {
-    
+    let nPlayers = 0;
+    players.forEach (p => {
+
+    });
   }));
 
   @InitEvent ()

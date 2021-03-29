@@ -6,7 +6,7 @@ import { BgAuthService } from "@bg-services";
 import { ChangeListener, ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
-import { ABgArcheoGame, ABgProtoGame, BgBoardGame, BgProtoGameService } from "../bg-services/bg-proto-game.service";
+import { ABgArcheoGame, ABgProtoGame, BgBoardGame, BgProtoGameService } from "../../bg-services/bg-proto-game.service";
 
 export interface ABgRoomDialog {
 } // ABgRoomDialog

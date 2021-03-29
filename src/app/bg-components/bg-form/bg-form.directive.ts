@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Directive, EventEmitter, Host, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, Output } from "@angular/core";
+import { MatCheckbox } from "@angular/material/checkbox";
 import { MatRadioGroup } from "@angular/material/radio";
 import { MatSelect } from "@angular/material/select";
 import { ChangeListener, SimpleChanges, UntilDestroy } from "@bg-utils";
@@ -212,3 +213,39 @@ export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDi
   } // setValue
 
 } // BgRadioFieldDirective
+
+@Directive ({
+  selector: "mat-checkbox[bgField]"
+})
+@UntilDestroy
+export class BgCheckboxFieldDirective<E> implements OnInit, OnDestroy, BgFieldDirective<boolean, E> {
+
+  constructor (
+    private form: BgFormDirective<E>,
+    @Host () private matCheckbox: MatCheckbox
+  ) { }
+
+  @Input ("bgField") field: keyof E | "" = "";
+  @Input ("bgFieldConfig") config: BgFieldConfig<boolean, E> | null = null;
+
+  @ChangeListener ()
+  private listenToSelectionChange () {
+    return this.matCheckbox.change.pipe (
+      tap (change => this.form.onValueChange (change.checked, this))
+    );
+  } // onSelectionChange
+
+  ngOnInit () {
+    this.form.registerField (this);
+    this.listenToSelectionChange ();
+  } // ngOnInit
+
+  ngOnDestroy () {
+    this.form.unregisterField (this);
+  } // ngOnDestroy
+
+  setValue (value: boolean | null) {
+    this.matCheckbox.writeValue (value);
+  } // setValue
+
+} // BgCheckboxFieldDirective

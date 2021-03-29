@@ -7,8 +7,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
-import { BgComponentsModule } from "@bg-components";
-import { BgHomeModule } from "src/app/bg-home/bg-home.module";
+import { BgAuthModule } from "@bg-components/auth";
+import { BgFormModule } from "@bg-components/form";
+import { BgHomeModule } from "@bg-components/home";
 import { BaronyArcheoGameFormComponent } from "./barony-archeo-game-form/barony-archeo-game-form.component";
 import { BaronyHomeComponent } from "./barony-home.component";
 import { BaronyRoomDialogComponent } from "./barony-room-dialog/barony-room-dialog.component";
@@ -22,7 +23,8 @@ import { BaronyRoomDialogComponent } from "./barony-room-dialog/barony-room-dial
   imports: [
     CommonModule,
     BgHomeModule,
-    BgComponentsModule,
+    BgFormModule,
+    BgAuthModule,
     MatFormFieldModule,
     MatRadioModule,
     MatInputModule,
