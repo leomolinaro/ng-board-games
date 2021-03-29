@@ -54,5 +54,9 @@
       </div>
     </div>
     <barony-logs class="b-board-logs-widget" [logs]="logs"></barony-logs>
+    <div class="b-board-summary-widget">
+      <mat-icon class="b-board-summary-icon" (click)="summaryFixed = !summaryFixed">menu_book</mat-icon>
+      <img class="b-board-summary-image" [ngClass]="{ 'is-fixed': summaryFixed }" src="assets/barony/summary.jpg" width="600">
+    </div>
   </div>
 </div>

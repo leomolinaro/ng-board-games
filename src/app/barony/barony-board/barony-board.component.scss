@@ -28,7 +28,7 @@
     padding: 2vmin;
 
     grid-template-areas: 
-      "players . logs"
+      "summary . logs"
       "players . logs"
       "players . actions"
       "players instructions actions";
@@ -98,6 +98,24 @@
       padding: 2vmin;
       box-shadow: $widget-shadow;
       font-size: $font-size-logs;
+    }
+    .b-board-summary-widget {
+      pointer-events: auto;
+      grid-area: summary;
+      .b-board-summary-icon {
+        cursor: pointer;
+      }
+      .b-board-summary-image {
+        display: none;
+        position: absolute;
+        z-index: 10;
+        &.is-fixed {
+          display: block;
+        }
+      }
+      .b-board-summary-icon:hover + .b-board-summary-image {
+        display: block;
+      }
     }
   }
 }

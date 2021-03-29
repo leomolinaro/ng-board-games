@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
+import { MatIconModule } from "@angular/material/icon";
 import { RouterModule, Routes } from "@angular/router";
 import { BgSvgModule } from "@bg-components/svg";
 import { BgUtilsModule } from "@bg-utils";
@@ -44,7 +45,8 @@ const routes: Routes = [
     RouterModule.forChild (routes),
     BgUtilsModule,
     BgSvgModule,
-    BaronyHomeModule
+    BaronyHomeModule,
+    MatIconModule
   ],
   providers: [
     // BaronyGameResolver
