@@ -4,7 +4,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { BgAuthService } from "@bg-services";
 import { ChangeListener, ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgArcheoGame, ABgProtoGame, BgBoardGame, BgProtoGameService } from "../../bg-services/bg-proto-game.service";
 
@@ -34,6 +34,7 @@ export interface BgHomeConfig {
   isGameValid: (archeoGame: ABgArcheoGame) => boolean;
   getDefaultGame: () => ABgArcheoGame;
   startGame$: (gameId: string) => Observable<any>;
+  deleteGame$: (gameId: string) => Observable<any>;
 } // BgHomeConfig
 
 @Directive ({
@@ -138,7 +139,7 @@ export class BgHomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ExhaustingEvent ()
   onDeleteGame (game: ABgProtoGame) {
-    return this.protoGameService.deleteProtoGame$ (game.id);
+    return this.deleteGame$ (game.id);
   } // onDeleteGame
 
   @ExhaustingEvent ()
@@ -151,6 +152,7 @@ export class BgHomeComponent implements OnInit, OnDestroy, AfterViewInit {
   } // onEnterGame
 
   private playersRoom$ (game: ABgProtoGame) {
+    console.log ("playersRoom")
     const dialogRef = this.matDialog.open<ABgRoomDialog, ABgRoomDialogInput, ABgRoomDialogOutput> (
       this.config.roomDialog,
       {
@@ -164,12 +166,20 @@ export class BgHomeComponent implements OnInit, OnDestroy, AfterViewInit {
           if (output.startGame) {
             return this.config.startGame$ (output.gameId);
           } else if (output.deleteGame) {
-            return this.protoGameService.deleteProtoGame$ (game.id);
+            return this.deleteGame$ (game.id);
           } // if - else
         } // if
         return of (void 0);
       })
     );
   } // playersRoom$
+
+  private deleteGame$ (gameId: string) {
+    return forkJoin ([
+      this.protoGameService.deleteProtoPlayers$ (gameId),
+      this.protoGameService.deleteProtoGame$ (gameId),
+      this.config.deleteGame$ (gameId),
+    ]);
+  } // deleteGame$
 
 } // BgHomeComponent

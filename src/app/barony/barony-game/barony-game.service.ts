@@ -111,11 +111,11 @@ export class BaronyGameService {
     const nextStoryId = ++this.lastStoryId;
     if (this.isLocalPlayer (turnPlayerId) && this.isCurrentPlayer (turnPlayerId)) {
       return this.localService.executeTask$ (task, turnPlayerId).pipe (
-        switchMap (result => this.remoteService.insertStory$ (result, nextStoryId, this.game.getGameId ()))
+        switchMap (result => this.insertStory$ (result, nextStoryId, this.game.getGameId ()))
       );
     } else if (this.isAiPlayer (turnPlayerId) && this.isOwnerUser ()) {
       return this.aiService.executeTask$ (task).pipe (
-        switchMap (result => this.remoteService.insertStory$ (result, nextStoryId, this.game.getGameId ()))
+        switchMap (result => this.insertStory$ (result, nextStoryId, this.game.getGameId ()))
       );
     } else {
       return this.observerService.executeTask$ (task).pipe (
@@ -126,5 +126,12 @@ export class BaronyGameService {
       );
     } // if - else
   } // executeTask$
+
+  private insertStory$ (story: BaronyStory, storyId: number, gameId: string) {
+    return this.remoteService.insertStory$ ({
+      id: storyId,
+      ...story
+    }, gameId);
+  } // insertAction$
 
 } // BaronyBoardService

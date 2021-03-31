@@ -73,7 +73,7 @@ export class BgAuthService {
 
   private upsertUser$ (user: BgUser) {
     const users = this.getUsers ();
-    return this.cloud.insert$<BgUser> (id => user, users, user.id);
+    return this.cloud.insert$<BgUser> (user, user.id, users);
   } // checkUser$
 
 } // BgAuthServiceService

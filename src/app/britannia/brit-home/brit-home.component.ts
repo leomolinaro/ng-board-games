@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { from } from "rxjs";
+import { from, throwError } from "rxjs";
 import { BgHomeConfig } from "src/app/bg-components/bg-home/bg-home.component";
 import { BritArcheoGameFormComponent } from "./brit-archeo-game-form/brit-archeo-game-form.component";
 import { BritArcheoGame } from "./brit-home.models";
@@ -29,7 +29,8 @@ export class BritHomeComponent implements OnInit {
       name: "",
       online: false
     }),
-    startGame$: (gameId: string) => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute }))
+    startGame$: (gameId: string) => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute })),
+    deleteGame$: (gameId: string) => throwError ("TODO")
   };
 
   ngOnInit (): void {

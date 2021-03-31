@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from "@
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { BgAuthService, BgUser } from "@bg-services";
 import { ChangeListener, ConcatingEvent, ExhaustingEvent, InitEvent, UntilDestroy } from "@bg-utils";
-import { BehaviorSubject, forkJoin, of } from "rxjs";
+import { BehaviorSubject, forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
-import { BaronyRemoteService } from "../../barony-remote.service";
+import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyLandDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../../barony-remote.service";
 import { getRandomLands } from "../../logic/barony-initializer";
-import { BaronyColor } from "../../models";
+import { BaronyColor, BaronyLandType, landCoordinatesToId } from "../../models";
 import { BaronyProtoGame, BaronyProtoPlayer } from "../barony-home.models";
 
 @Component ({
@@ -50,8 +50,8 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
 
   @ChangeListener ()
   private listenToPlayersChange () {
-    return this.protoGameService.selectProtoPlayers$<BaronyProtoPlayer> (this.game.id).pipe (
-      tap (p => this.$players.next (p))
+    return this.protoGameService.selectProtoPlayers$ (this.game.id).pipe (
+      tap (p => this.$players.next (p as BaronyProtoPlayer[]))
     );
   } // listenToPlayersChange
   
@@ -170,30 +170,64 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
     .filter (p => p.type === "me" || p.type === "other" || p.type === "ai");
     return forkJoin ([
       this.protoGameService.updateProtoGame$ ({ state: "closed" }, protoGame.id),
-      this.gameService.insertGame$ (protoGame.id, protoGame.name, protoGame.owner, protoGame.online).pipe (
+      this.gameService.insertGame$ ({
+        id: protoGame.id,
+        owner: protoGame.owner,
+        name: protoGame.name,
+        online: protoGame.online,
+        state: "open"
+      }).pipe (
         switchMap (game => forkJoin ([
           ...activeProtoPlayers
           .map ((p, index) => {
             if (p.type === "ai") {
-              return this.gameService.insertAiPlayer$ (p.name, p.color, index + 1, game.id);
+              return this.insertAiPlayer$ (p.name, p.color, index + 1, game.id);
             } else {
-              return this.gameService.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
+              return this.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
             } // if - else
           }),
-          ...getRandomLands (activeProtoPlayers.length).map (l => this.gameService.insertLand$ (l.coordinates, l.type, game.id))
+          ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
         ]))
       )
     ]);
   } // createGame$
 
+  private insertLand$ (coordinates: { x: number; y: number; z: number; }, type: BaronyLandType, gameId: string): Observable<BaronyLandDoc> {
+    return this.gameService.insertLand$ ({
+      id: landCoordinatesToId (coordinates),
+      coordinates: coordinates,
+      type: type
+    }, gameId);
+  } // insertLand$
+
+  private insertAiPlayer$ (name: string, color: BaronyColor, sort: number, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: Omit<BaronyAiPlayerDoc, "id"> = {
+      ...this.aPlayerDoc (name, color, sort),
+      isAi: true
+    };
+    return this.gameService.insertPlayer$ (player, gameId);
+  } // insertAiPlayer$
+
+  private insertRealPlayer$ (name: string, color: BaronyColor, sort: number, controller: BgUser, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: Omit<BaronyReadPlayerDoc, "id"> = {
+      ...this.aPlayerDoc (name, color, sort),
+      isAi: false,
+      controller: controller
+    };
+    return this.gameService.insertPlayer$ (player, gameId);
+  } // insertRealPlayer$
+
+  private aPlayerDoc (name: string, color: BaronyColor, sort: number): Omit<ABaronyPlayerDoc, "id"> {
+    return {
+      name: name,
+      color: color,
+      sort: sort
+    };
+  } // aPlayerDoc
+
   @ExhaustingEvent ()
   onDeleteGameClick () {
-    return forkJoin ([
-      this.protoGameService.deleteProtoPlayer$ ("1", this.game.id),
-      this.protoGameService.deleteProtoPlayer$ ("2", this.game.id),
-      this.protoGameService.deleteProtoPlayer$ ("3", this.game.id),
-      this.protoGameService.deleteProtoPlayer$ ("4", this.game.id)
-    ]).pipe (
+    return this.protoGameService.deleteProtoPlayers$ (this.game.id).pipe (
       tap (() => {
         this.dialogRef.close ({
           startGame: false,

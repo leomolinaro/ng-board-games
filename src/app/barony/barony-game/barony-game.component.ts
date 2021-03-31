@@ -58,9 +58,9 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   ngOnInit (): void {
     subscribeTo (forkJoin ([
       this.remote.getGame$ (this.gameId),
-      this.remote.getPlayers$ (this.gameId),
+      this.remote.getPlayers$ (this.gameId, ref => ref.orderBy ("sort")),
       this.remote.getLands$ (this.gameId),
-      this.remote.getStories$ (this.gameId)
+      this.remote.getStories$ (this.gameId, ref => ref.orderBy ("id"))
     ]).pipe (
       tap (([game, players, lands, stories]) => {
         if (game) {

@@ -27,7 +27,7 @@ export class BritRoomDialogComponent implements OnInit, OnDestroy {
   game = this.data.protoGame;
   playerTrackBy = (index: number, player: BritProtoPlayer) => index;
 
-  players$ = this.protoGameService.selectProtoPlayers$<BritProtoPlayer> (this.game.id);
+  players$ = this.protoGameService.selectProtoPlayers$ (this.game.id);
   validPlayers$ = this.players$.pipe (map (players => false));
 
   @InitEvent ()
