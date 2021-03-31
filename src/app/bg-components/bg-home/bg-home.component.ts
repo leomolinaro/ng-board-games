@@ -152,7 +152,6 @@ export class BgHomeComponent implements OnInit, OnDestroy, AfterViewInit {
   } // onEnterGame
 
   private playersRoom$ (game: ABgProtoGame) {
-    console.log ("playersRoom")
     const dialogRef = this.matDialog.open<ABgRoomDialog, ABgRoomDialogInput, ABgRoomDialogOutput> (
       this.config.roomDialog,
       {

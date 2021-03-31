@@ -28,7 +28,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     private game: BaronyGameStore
   ) {
     super ({
-      currentPlayer: "leo",
+      currentPlayer: null,
       turnPlayer: "",
       canCancel: false,
       message: null,

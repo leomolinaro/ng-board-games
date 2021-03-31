@@ -1,6 +1,6 @@
 @import "brit-variables";
 
-.brit-new-players {
+.b-new-players {
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
   &.is-online-game {
@@ -11,7 +11,7 @@
   justify-content: center;
   justify-items: center;
   align-items: center;
-  .brit-new-players-type-button {
+  .b-new-players-type-button {
     justify-self: end;
     &.is-red { background-color: $red-light; }
     &.is-yellow { background-color: $yellow-light; }
@@ -21,13 +21,13 @@
       visibility: hidden;
     }
   }
-  .brit-new-players-type-caption {
+  .b-new-players-type-caption {
     margin-left: 5px;
     font-style: italic;
     justify-self: start;
   }
 }
 
-.brit-room-start-button {
+.b-room-start-button {
   margin-left: auto !important;
 }

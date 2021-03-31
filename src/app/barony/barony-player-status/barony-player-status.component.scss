@@ -3,14 +3,16 @@
 .b-player-card {
   padding: 1vmin;
   font-size: $font-size-players;
+  color: black;
   .b-player-header {
     display: flex;
-    .b-player-score {
-      margin-left: 5px;
-    }
     .b-player-type {
+      font-style: italic;
+      margin-left: 5px;
+      font-size: 80%;
+    }
+    .b-player-score {
       margin-left: auto;
-      font-size: 90%;
     }
   }
   &.is-red {
@@ -62,7 +64,6 @@
       }
     }
     .b-player-pawn-quantity, .b-player-resource-quantity {
-      color: black;
       display: flex;
       justify-content: center;
       align-items: center;

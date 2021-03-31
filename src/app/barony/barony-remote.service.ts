@@ -81,7 +81,7 @@ export class BaronyRemoteService {
   getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId, queryFn)); }
   getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
   selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId, queryFn)); }
-  selectStory$ (storyId: string, gameId: string) { return this.cloud.select$ (storyId, this.stories (gameId)); }
+  selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
   insertStory$ (story: BaronyStoryDoc, gameId: string): Observable<BaronyStoryDoc> { return this.cloud.insert$ (story, story.id + "", this.stories (gameId)); } 
   updateStory$ (patch: Partial<BaronyStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }

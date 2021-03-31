@@ -119,7 +119,7 @@ export class BaronyGameService {
       );
     } else {
       return this.observerService.executeTask$ (task).pipe (
-        switchMap (() => this.remoteService.getStory$ (nextStoryId, this.game.getGameId ())),
+        switchMap (() => this.remoteService.selectStory$ (nextStoryId, this.game.getGameId ())),
         filter (story => !!story),
         map (story => story as BaronyStory),
         first<BaronyStory> ()

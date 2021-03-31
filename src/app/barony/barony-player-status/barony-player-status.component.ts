@@ -82,7 +82,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   } // ngOnChanges
   
   onCardClick () {
-    if (!this.player.isAi && !this.authService.isUserId (this.player.controller.id) && !this.currentPlayer) {
+    if (!this.player.isAi && this.authService.isUserId (this.player.controller.id) && !this.currentPlayer) {
       this.selectPlayer.emit ();
     } // if
   } // onCardClick

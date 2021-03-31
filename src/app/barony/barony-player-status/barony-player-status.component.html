@@ -9,8 +9,8 @@
   (click)="onCardClick ()">
   <div class="b-player-header">
     <div class="b-player-name">{{ player.name }}</div>
-    <div class="b-player-score">{{ player.score }}</div>
     <div class="b-player-type">{{ player.isAi ? "AI" : ( player.isRemote ? "remote" : "local" ) }}</div>
+    <div class="b-player-score">{{ player.score }}</div>
   </div>
   <div class="b-player-content">
     <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
