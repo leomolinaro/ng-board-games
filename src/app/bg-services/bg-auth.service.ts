@@ -35,6 +35,7 @@ export class BgAuthService {
   ) { }
 
   private $user = new BehaviorSubject<BgUser | null> (null);
+  private setUser (user: BgUser | null) { this.$user.next (user); }
 
   private users (queryFn?: BgCloudCollectionQuery<BgUser>) { return this.cloud.collection<BgUser> ("users", queryFn); }
 
@@ -58,7 +59,7 @@ export class BgAuthService {
     return this.provider (type).signIn$ ().pipe (
       switchMap (user => this.login$ (user)),
       catchError (e => {
-        this.$user.next (null);
+        this.setUser (null);
         return throwError (e);
       })
     );
@@ -67,7 +68,7 @@ export class BgAuthService {
   signOut$ () {
     const user = this.$user.getValue ();
     if (user) {
-      this.$user.next (null);
+      this.setUser (null);
       localStorage.removeItem (LOCALSTORAGE_BG_LOGIN_TYPE_KEY);
       return this.provider (user.loginType).signOut$ ();
     } else {
@@ -96,11 +97,11 @@ export class BgAuthService {
 
   private login$ (user: BgUser | null) {
     if (user) {
-      this.$user.next (user);
+      this.setUser (user);
       localStorage.setItem (LOCALSTORAGE_BG_LOGIN_TYPE_KEY, user.loginType);
       return this.upsertUser$ (user);
     } else {
-      this.$user.next (null);
+      this.setUser (null);
       return of (null);
     } // if - else
   } // login$
@@ -183,6 +184,6 @@ class GuestAuthProvider implements IBgAuthProvider {
       id: guestKey,
       loginType: "guest",
     } : null;
-  } // googleUserToBgUser
+  } // guestKeyToBgUser
 
 } // GuestAuthProvider
