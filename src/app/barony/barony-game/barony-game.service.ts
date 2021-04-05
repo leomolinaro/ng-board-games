@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgAuthService, BgProcessService } from "@bg-services";
-import { BehaviorSubject, combineLatest, Observable, of } from "rxjs";
-import { debounceTime, filter, first, map, mapTo, switchMap, tap } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from "rxjs";
+import { debounceTime, expand, filter, first, map, mapTo, switchMap, tap } from "rxjs/operators";
 import { BaronyRemoteService } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
 import { BaronyPlay, BaronyProcessTask, BaronyStory } from "../process";
@@ -51,7 +51,30 @@ export class BaronyGameService {
     return player.isAi;
   } // isAiPlayer
 
-  resolveTasks$ (stories: BaronyStory[]): Observable<void> {
+  game$ (stories: BaronyStory[]): Observable<void> {
+    return this.start$ (stories).pipe (
+      expand (task => {
+        if (this.game.isTemporaryState ()) {
+          this.game.endTemporaryState ();
+        } // if
+        if (task) {
+          this.autoRefreshCurrentPlayer (task);
+          return combineLatest ([
+            this.ui.selectCurrentPlayerId$ (),
+            this.ui.cancelChange$ ()
+          ]).pipe (
+            switchMap (() => this.next$ (task)),
+            first ()
+          );
+        } else {
+          return EMPTY;
+        } // if - else
+      }),
+      mapTo (void 0)
+    );
+  } // game$
+
+  private resolveTasks$ (stories: BaronyStory[]): Observable<void> {
     return combineLatest ([
       this.ui.selectCurrentPlayerId$ (),
       this.selectPendingTask$ (),
@@ -62,11 +85,12 @@ export class BaronyGameService {
         if (this.game.isTemporaryState ()) {
           this.game.endTemporaryState ();
         } // if
-        return this.resolveTask$ (task, currentPlayerId, stories).pipe (
+        const nextTask$ = task ? this.next$ (task) : this.start$ (stories);
+        return nextTask$.pipe (
           tap (nextTask => {
             if (nextTask) {
               this.$pendingTask.next (nextTask);
-              this.autoRefreshCurrentPlayer (currentPlayerId, nextTask);
+              this.autoRefreshCurrentPlayer (nextTask);
             } // if
           })
         );
@@ -75,38 +99,39 @@ export class BaronyGameService {
     );
   } // resolveTasks$
 
-  private autoRefreshCurrentPlayer (currentPlayer: string | null, task: BaronyProcessTask) {
+  private autoRefreshCurrentPlayer (task: BaronyProcessTask) {
     if (this.isLocalPlayer (task.data.player)) {
       this.ui.setCurrentPlayer (task.data.player);
     } // if - else
   } // autoRefreshCurrentPlayer
 
-  private resolveTask$ (task: BaronyProcessTask | null, currentPlayer: string | null, stories: BaronyStory[]): Observable<BaronyProcessTask | null> {
-    if (task) {
-      this.game.startTemporaryState ();
-      return this.executeTask$ (task, currentPlayer).pipe (
-        map (taskResult => {
-          this.game.endTemporaryState ();
-          task.result = taskResult;
-          const nextTasks = this.bgProcessService.resolveTask (task, this.game) as BaronyProcessTask[];
-          return nextTasks[0];
-        })
-      );
-    } else {
-      const baronyPlay = new BaronyPlay ();
-      let startingTasks = this.bgProcessService.startProcess (baronyPlay, this.game) as BaronyProcessTask[];
-      let startingTask = startingTasks[0];
-      for (const story of stories) {
-        startingTask.result = story;
-        startingTasks = this.bgProcessService.resolveTask (startingTask, this.game) as BaronyProcessTask[];
-        startingTask = startingTasks[0];
-        this.lastStoryId++;
-      } // for
-      return of (startingTask);
-    } // if - else
-  } // resolveTask$
+  private start$ (stories: BaronyStory[]): Observable<BaronyProcessTask> {
+    const baronyPlay = new BaronyPlay ();
+    let startingTasks = this.bgProcessService.startProcess (baronyPlay, this.game) as BaronyProcessTask[];
+    let startingTask = startingTasks[0];
+    for (const story of stories) {
+      console.log ("story", story);
+      startingTask.result = story;
+      startingTasks = this.bgProcessService.resolveTask (startingTask, this.game) as BaronyProcessTask[];
+      startingTask = startingTasks[0];
+      this.lastStoryId++;
+    } // for
+    return of (startingTask);
+  } // start$
 
-  private executeTask$ (task: BaronyProcessTask, currentPlayer: string | null): Observable<BaronyStory> {
+  private next$ (task: BaronyProcessTask): Observable<BaronyProcessTask> {
+    this.game.startTemporaryState ();
+    return this.executeTask$ (task).pipe (
+      map (taskResult => {
+        this.game.endTemporaryState ();
+        task.result = taskResult;
+        const nextTasks = this.bgProcessService.resolveTask (task, this.game) as BaronyProcessTask[];
+        return nextTasks[0];
+      })
+    );
+  } // next$
+
+  private executeTask$ (task: BaronyProcessTask): Observable<BaronyStory> {
     const turnPlayerId = task.data.player;
     const nextStoryId = ++this.lastStoryId;
     if (this.isLocalPlayer (turnPlayerId) && this.isCurrentPlayer (turnPlayerId)) {

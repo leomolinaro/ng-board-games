@@ -119,11 +119,6 @@ export function Loading () {
   };
 } // Loading
 
-export function subscribeTo (asyncEffect$: Observable<any>, component: OnDestroy) {
-  // tslint:disable-next-line: deprecation
-  asyncEffect$.pipe (untilDestroy (component)).subscribe ();
-} // subscribeTo
-
 export function ChangeListener () {
   return <V, O extends Observable<V>>(
     targetProt: OnDestroy,
@@ -134,6 +129,7 @@ export function ChangeListener () {
     if (originalMethod) {
       methodDescriptor.value = function (...args: any) {
         const obs$ = originalMethod.apply (this, args);
+        // tslint:disable-next-line: deprecation
         obs$.pipe (untilDestroy (this)).subscribe ();
         return obs$;
       };

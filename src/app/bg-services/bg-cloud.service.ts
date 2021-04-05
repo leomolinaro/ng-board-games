@@ -16,7 +16,7 @@ export class BgCloudService {
   ) { }
 
   collection<T> (path: string, queryFn?: BgCloudCollectionQuery<T> | undefined): BgCloudCollection<T> {
-    return this.afs.collection (path, queryFn); 
+    return this.afs.collection (path, queryFn);
   } // collection
 
   selectAll$<T> (collection: BgCloudCollection<T>): Observable<T[]> {

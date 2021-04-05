@@ -5,6 +5,13 @@ export const baronyResourceTypes: BaronyResourceType[] = ["fields", "forest", "m
 export const baronyColors: BaronyColor[] = ["blue", "green", "red", "yellow"];
 export const baronyPawnTypes: BaronyPawnType[] = ["city", "knight", "stronghold", "village"];
 export const baronyActions: BaronyAction[] = ["recruitment", "movement", "construction", "newCity", "expedition", "nobleTitle"];
+export const baronyNumberOfLandTiles = {
+  fields: 22,
+  forest: 25,
+  lake: 14,
+  mountain: 22,
+  plain: 25
+};
 export const baronyLandPieces: BaronyLandPiece[] = [
   { 1: "mountain", 2: "mountain", 3: "mountain", quantity: 1 },
   { 1: "mountain", 2: "mountain", 3: "forest", quantity: 1 },

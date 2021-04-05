@@ -6,9 +6,9 @@ import { BehaviorSubject, forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
-import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyLandDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../../barony-remote.service";
+import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyMapDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../../barony-remote.service";
 import { getRandomLands } from "../../logic/barony-initializer";
-import { BaronyColor, BaronyLandType, landCoordinatesToId } from "../../models";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType } from "../../models";
 import { BaronyProtoGame, BaronyProtoPlayer } from "../barony-home.models";
 
 @Component ({
@@ -186,19 +186,31 @@ export class BaronyRoomDialogComponent implements OnInit, OnDestroy {
               return this.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
             } // if - else
           }),
-          ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
+          this.insertMap$ (getRandomLands (activeProtoPlayers.length), game.id)
+          // ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
         ]))
       )
     ]);
   } // createGame$
 
-  private insertLand$ (coordinates: { x: number; y: number; z: number; }, type: BaronyLandType, gameId: string): Observable<BaronyLandDoc> {
-    return this.gameService.insertLand$ ({
-      id: landCoordinatesToId (coordinates),
-      coordinates: coordinates,
-      type: type
-    }, gameId);
-  } // insertLand$
+  private insertMap$ (lands: { coordinates: BaronyLandCoordinates; type: BaronyLandType; }[], gameId: string): Observable<BaronyMapDoc> {
+    const baronyMap: BaronyMapDoc = {
+      lands: lands.map (l => ({
+        x: l.coordinates.x,
+        y: l.coordinates.y,
+        type: l.type
+      }))
+    };
+    return this.gameService.insertMap$ (baronyMap, gameId);
+  } // insertMap$
+
+  // private insertLand$ (coordinates: { x: number; y: number; z: number; }, type: BaronyLandType, gameId: string): Observable<BaronyLandDoc> {
+  //   return this.gameService.insertLand$ ({
+  //     id: landCoordinatesToId (coordinates),
+  //     coordinates: coordinates,
+  //     type: type
+  //   }, gameId);
+  // } // insertLand$
 
   private insertAiPlayer$ (name: string, color: BaronyColor, sort: number, gameId: string): Observable<BaronyPlayerDoc> {
     const player: Omit<BaronyAiPlayerDoc, "id"> = {

@@ -34,7 +34,7 @@ export class BaronyHomeComponent implements OnInit {
     startGame$: (gameId: string) => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute })),
     deleteGame$: (gameId: string) => forkJoin ([
       this.gameService.deleteStories$ (gameId),
-      this.gameService.deleteLands$ (gameId),
+      this.gameService.deleteMap$ (gameId),
       this.gameService.deletePlayers$ (gameId),
       this.gameService.deleteGame$ (gameId)
     ])

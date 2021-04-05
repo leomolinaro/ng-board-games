@@ -1,5 +1,5 @@
 import { randomUtil } from "@bg-utils";
-import { BaronyColor, BaronyLandCoordinates, BaronyLandType, baronyLandTypes, BaronyPlayer } from "../models";
+import { BaronyLandCoordinates, BaronyLandPiece, baronyLandPieces, BaronyLandType, baronyLandTypes, baronyNumberOfLandTiles } from "../models";
 
 // export function createPlayer (id: string, name: string, color: BaronyColor, isAi: boolean): BaronyPlayer {
 //   return {
@@ -28,15 +28,29 @@ export function getRandomLands (nPlayers: number): {
   coordinates: BaronyLandCoordinates;
   type: BaronyLandType;
 }[] {
+
   const nTiles = nPlayers * 27;
-  const coordinatess = getLandCoordinates (nTiles);
-  return coordinatess.map (coordinates => ({
-    coordinates: coordinates,
-    type: randomUtil.getRandomElement (baronyLandTypes)
-  }));
+  const coordinatess = generateExhagonalMap (nTiles);
+  const typesPool: BaronyLandType[] = [];
+  for (const type of baronyLandTypes) {
+    for (let i = 0; i < baronyNumberOfLandTiles[type]; i++) {
+      typesPool.push (type);
+    } // for
+  } // for
+  const landTypes = randomUtil.getRandomDraws (nTiles, typesPool);
+  return coordinatess.map ((coordinates, index) => {
+    return {
+      coordinates: coordinates,
+      type: landTypes[index]
+    };
+  });
+
+  // const nPieces = nPlayers * 9;
+  // const lands = generateRectangularMap (nPieces);
+  // return lands;
 } // getRandomLandTiles
 
-function getLandCoordinates (nTiles: number): BaronyLandCoordinates[] {
+function generateExhagonalMap (nTiles: number): BaronyLandCoordinates[] {
   const coordinates: BaronyLandCoordinates[] = [];
   const sideOffsets = [
     { x: 0, y: -1, z: 1 },
@@ -74,4 +88,65 @@ function getLandCoordinates (nTiles: number): BaronyLandCoordinates[] {
     counter++;
   } // while
   return coordinates;
-} // getLandCoordinates
+} // generateExhagonalMap
+
+function generateRectangularMap (nPieces: number): {
+  coordinates: BaronyLandCoordinates;
+  type: BaronyLandType;
+}[] {
+  const piecesPool: BaronyLandPiece[] = [];
+  const map: { [key in BaronyLandType]: number } = { fields: 0, mountain: 0, forest: 0, lake: 0, plain: 0 };
+  for (const piece of baronyLandPieces) {
+    for (let i = 0; i < piece.quantity; i++) {
+      map[piece[1]]++;
+      map[piece[2]]++;
+      map[piece[3]]++;
+      piecesPool.push (piece);
+    } // for
+  } // for
+  console.log ("map", map)
+
+  const choosenPieces = [];
+  for (let i = 0; i < nPieces; i++) {
+    const pieceIndex = randomUtil.getRandomInteger (0, piecesPool.length);
+    const piece = piecesPool.splice (pieceIndex, 1)[0];
+    choosenPieces.push (piece);
+  } // for
+  
+  const toReturn: {
+    coordinates: BaronyLandCoordinates;
+    type: BaronyLandType;
+  }[] = [];
+  let pIndex = 0;
+  let rowIndex = 0;
+  let up = true;
+  for (const piece of choosenPieces) {
+    let x = -1 * rowIndex;
+    const y = 2 * rowIndex;
+    let z = -1 * rowIndex;
+    if (up) {
+      x += pIndex / 2 * 3;
+      z += pIndex / 2 * -3;
+      toReturn.push ({ coordinates: { x, y, z }, type: piece[1] });
+      toReturn.push ({ coordinates: { x: x , y: y + 1, z: z - 1 }, type: piece[2] });
+      toReturn.push ({ coordinates: { x: x - 1, y: y + 1, z: z }, type: piece[3] });
+    } else {
+      x += (pIndex - 1) / 2 * 3 + 1;
+      z += (pIndex - 1) / 2 * -3 - 1;
+      toReturn.push ({ coordinates: { x, y, z }, type: piece[1] });
+      toReturn.push ({ coordinates: { x: x + 1, y: y, z: z - 1 }, type: piece[2] });
+      toReturn.push ({ coordinates: { x: x, y: y + 1, z: z - 1 }, type: piece[3] });
+    } // if - else
+
+    pIndex++;
+    if (pIndex > 6) {
+      pIndex = 0;
+      rowIndex++;
+      up = true;
+    } else {
+      up = !up;
+    } // if - else
+
+  } // for
+  return toReturn;
+} // generateRectangularMap

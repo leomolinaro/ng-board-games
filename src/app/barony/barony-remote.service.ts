@@ -31,17 +31,15 @@ export interface BaronyReadPlayerDoc extends ABaronyPlayerDoc {
 
 export type BaronyPlayerDoc = BaronyAiPlayerDoc | BaronyReadPlayerDoc;
 
-export interface BaronyLandDoc {
-  id: string;
-  coordinates: {
+export interface BaronyMapDoc {
+  lands: {
     x: number;
     y: number;
-    z: number;
-  };
-  type: BaronyLandType;
+    type: BaronyLandType;
+  }[];
 } // BaronyLandDoc
 
-type BaronyStoryDoc = BaronyStory & { id: number };
+export type BaronyStoryDoc = BaronyStory & { id: number };
 
 @Injectable ({
   providedIn: "root"
@@ -68,14 +66,19 @@ export class BaronyRemoteService {
   deletePlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.players (gameId)); }
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }
   
-  private lands (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`, queryFn); }
-  getLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.getAll$ (this.lands (gameId, queryFn)); }
-  selectLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.selectAll$ (this.lands (gameId, queryFn)); }
-  selectLand$ (landId: string, gameId: string) { return this.cloud.select$ (landId, this.lands (gameId)); }
-  insertLand$ (land: BaronyLandDoc, gameId: string): Observable<BaronyLandDoc> { return this.cloud.insert$ (land, land.id, this.lands (gameId)); } 
-  updateLand$ (patch: Partial<BaronyLandDoc>, landId: string, gameId: string) { return this.cloud.update$ (patch, landId, this.lands (gameId)); }
-  deleteLand$ (landId: string, gameId: string) { return this.cloud.delete$ (landId, this.lands (gameId)); }
-  deleteLands$ (gameId: string) { return this.cloud.deleteAll$ (this.lands (gameId)); }
+  // private lands (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`, queryFn); }
+  // getLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.getAll$ (this.lands (gameId, queryFn)); }
+  // selectLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.selectAll$ (this.lands (gameId, queryFn)); }
+  // selectLand$ (landId: string, gameId: string) { return this.cloud.select$ (landId, this.lands (gameId)); }
+  // insertLand$ (land: BaronyLandDoc, gameId: string): Observable<BaronyLandDoc> { return this.cloud.insert$ (land, land.id, this.lands (gameId)); }
+  // updateLand$ (patch: Partial<BaronyLandDoc>, landId: string, gameId: string) { return this.cloud.update$ (patch, landId, this.lands (gameId)); }
+  // deleteLand$ (landId: string, gameId: string) { return this.cloud.delete$ (landId, this.lands (gameId)); }
+  // deleteLands$ (gameId: string) { return this.cloud.deleteAll$ (this.lands (gameId)); }
+  
+  private maps (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyMapDoc> | undefined) { return this.cloud.collection<BaronyMapDoc> (`barony-games/${gameId}/maps`, queryFn); }
+  getMap$ (gameId: string) { return this.cloud.get$ ("map", this.maps (gameId)); }
+  insertMap$ (map: BaronyMapDoc, gameId: string): Observable<BaronyMapDoc> { return this.cloud.insert$ (map, "map", this.maps (gameId)); }
+  deleteMap$ (gameId: string) { return this.cloud.delete$ ("map", this.maps (gameId)); }
   
   private stories (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.collection<BaronyStoryDoc> (`barony-games/${gameId}/stories`, queryFn); }
   getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId, queryFn)); }

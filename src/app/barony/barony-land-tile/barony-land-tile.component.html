@@ -6,6 +6,7 @@
   }"
   (click)="onLandTileClick ()">
   <svg:polygon
+    [attr.id]="coordinates.x + ' ' + coordinates.y + ' ' + coordinates.z"
     [attr.points]="coordinates | baronyLandTileCoordinates:'hexagon'"
     [attr.fill]="'url(\'#' + type + '\')'">
   </svg:polygon>

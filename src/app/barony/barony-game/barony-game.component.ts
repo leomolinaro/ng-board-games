@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@bg-services";
-import { subscribeTo, UntilDestroy } from "@bg-utils";
+import { ChangeListener, InitEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
-import { BaronyPlayerDoc, BaronyRemoteService } from "../barony-remote.service";
+import { BaronyPlayerDoc, BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
-import { ABaronyPlayer, BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer, BaronyResourceType } from "../models";
+import { ABaronyPlayer, BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
@@ -55,32 +55,48 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   canCancel$ = this.ui.selectCanCancel$ ();
   maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
-  ngOnInit (): void {
-    subscribeTo (forkJoin ([
+  // lands: BaronyLand[] = generateRectangularMap (4).map (l => ({ ...l, pawns: [], id: "" }));
+  // lands: BaronyLand[] = getRandomLands (4).map (l => ({ ...l, pawns: [], id: "" }));
+
+  @InitEvent ()
+  ngOnInit () {
+    return forkJoin ([
       this.remote.getGame$ (this.gameId),
       this.remote.getPlayers$ (this.gameId, ref => ref.orderBy ("sort")),
-      this.remote.getLands$ (this.gameId),
+      this.remote.getMap$ (this.gameId),
+      // this.remote.getLands$ (this.gameId),
       this.remote.getStories$ (this.gameId, ref => ref.orderBy ("id"))
     ]).pipe (
-      tap (([game, players, lands, stories]) => {
-        if (game) {
+      tap (([game, players, baronyMap, stories]) => {
+        if (game && baronyMap) {
           const user = this.authService.getUser ();
           this.game.setInitialState (
             players.map (p => this.playerDocToPlayerInit (p, user)),
-            lands.map (l => ({
-              id: l.id,
-              coordinates: l.coordinates,
-              type: l.type,
-              pawns: []
-            })),
+            baronyMap.lands.map (l => {
+              const x = l.x;
+              const y = l.y;
+              const z = -1 * (x + y);
+              const coordinates: BaronyLandCoordinates = { x, y, z };
+              return {
+                id: landCoordinatesToId (coordinates),
+                coordinates: coordinates,
+                type: l.type,
+                pawns: []
+              };
+            }),
             this.gameId,
             game.owner
           );
-          subscribeTo (this.service.resolveTasks$ (stories), this);
+          this.listenToTasks (stories);
         } // if
       })
-    ), this);
+    );
   } // ngOnInit
+
+  @ChangeListener ()
+  private listenToTasks (stories: BaronyStoryDoc[]) {
+    return this.service.game$ (stories);
+  } // listenToTasks
 
   private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
     if (playerDoc.isAi) {
