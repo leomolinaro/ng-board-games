@@ -39,6 +39,7 @@ export const BG_PROCESS_PARALLEL_JOIN: IBgProcessParallelJoin = { type: "paralle
 @Injectable ({
   providedIn: "root"
 })
+/** @deprecated */
 export class BgProcessService {
 
   constructor () { }

@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { randomUtil } from "@bg-utils";
 import { Observable, of } from "rxjs";
-import { BaronyGameStore, baronyRules } from "../logic";
 import { BaronyConstruction, BaronyLand, BaronyMovement, BaronyResourceType, BaronySetupPlacement, BaronyTurn, BaronyTurnConstruction, BaronyTurnExpedition, BaronyTurnMovement, BaronyTurnNewCity, BaronyTurnNobleTitle, BaronyTurnRectruitment } from "../models";
+import { BaronyGameStore } from "./barony-game.store";
+import * as baronyRules from "./barony-rules";
 
 @Injectable ()
 export class BaronyPlayerAiService {

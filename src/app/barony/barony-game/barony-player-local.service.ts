@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, race } from "rxjs";
 import { map, mapTo, switchMap } from "rxjs/operators";
-import { BaronyGameStore, baronyRules } from "../logic";
 import { BaronyAction, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyResourceType, BaronySetupPlacement, BaronyTurn, BaronyTurnConstruction, BaronyTurnExpedition, BaronyTurnMovement, BaronyTurnNewCity, BaronyTurnNobleTitle, BaronyTurnRectruitment } from "../models";
+import { BaronyGameStore } from "./barony-game.store";
+import * as baronyRules from "./barony-rules";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()

@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BaronyGameStore } from "../logic";
 import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyGameStore } from "./barony-game.store";
 
 interface BaronyUiState {
   currentPlayer: string | null;
