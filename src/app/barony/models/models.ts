@@ -84,3 +84,43 @@ export interface BaronyLogSetup { type: "setup"; }
 
 export type BaronyLog = BaronyLogSetup | BaronyLogSetupPlacement | BaronyLogTurn | BaronyLogRecuitment | BaronyLogConstruction
   | BaronyLogNewCity | BaronyLogNobleTitle | BaronyLogExpedition | BaronyLogMovement;
+
+export type BaronyStory = BaronySetupPlacement | BaronyTurn;
+
+export interface BaronySetupPlacement { type: "setupPlacement"; land: BaronyLandCoordinates; }
+
+export interface BaronyTurnTaskData { player: string; }
+interface ABaronyTurn {
+  readonly action: BaronyAction;
+} // ABaronyTurn
+export interface BaronyTurnRectruitment extends ABaronyTurn {
+  readonly action: "recruitment";
+  land: BaronyLandCoordinates;
+  numberOfKnights: number;
+} // BaronyTurnRectruitmentResult
+export interface BaronyTurnMovement extends ABaronyTurn {
+  readonly action: "movement";
+  movements: BaronyMovement[];
+} // BaronyTurnRectruitmentResult
+export interface BaronyTurnConstruction extends ABaronyTurn {
+  readonly action: "construction";
+  constructions: BaronyConstruction[];
+} // BaronyTurnConstructionResult
+export interface BaronyTurnNewCity extends ABaronyTurn {
+  readonly action: "newCity";
+  land: BaronyLandCoordinates;
+} // BaronyTurnNewCityResult
+export interface BaronyTurnExpedition extends ABaronyTurn {
+  readonly action: "expedition";
+  land: BaronyLandCoordinates;
+} // BaronyTurnExpeditionResult
+export interface BaronyTurnNobleTitle extends ABaronyTurn {
+  readonly action: "nobleTitle";
+  discardedResources: BaronyResourceType[];
+} // BaronyTurnNobleTiltleResult
+export type BaronyTurn = BaronyTurnRectruitment
+  | BaronyTurnMovement
+  | BaronyTurnConstruction
+  | BaronyTurnNewCity
+  | BaronyTurnExpedition
+  | BaronyTurnNobleTitle;

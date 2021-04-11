@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable, of, race } from "rxjs";
-import { map, switchMap, mapTo } from "rxjs/operators";
+import { map, mapTo, switchMap } from "rxjs/operators";
 import { BaronyGameStore, baronyRules } from "../logic";
-import { BaronyLand, BaronyMovement, BaronyConstruction, BaronyResourceType, BaronyAction, BaronyLandCoordinates } from "../models";
-import { BaronyProcessTask, BaronyTurnRectruitment, BaronyTurnMovement, BaronyTurnConstruction, BaronyTurnNewCity, BaronyTurnExpedition, BaronyTurnNobleTiltle, BaronyStory, BaronySetupPlacementTask, BaronySetupPlacement } from "../process";
+import { BaronyAction, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyResourceType, BaronySetupPlacement, BaronyTurn, BaronyTurnConstruction, BaronyTurnExpedition, BaronyTurnMovement, BaronyTurnNewCity, BaronyTurnNobleTitle, BaronyTurnRectruitment } from "../models";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()
@@ -14,74 +13,70 @@ export class BaronyPlayerLocalService {
     private ui: BaronyUiStore
   ) { }
 
-  executeTask$ (task: BaronyProcessTask, player: string): Observable<BaronyStory> {
-    switch (task.taskName) {
-      case "setupPlacement": {
-        return this.chooseLandForSetupPlacement$ (player).pipe (
-          map<BaronyLand, BaronySetupPlacement> (landTile => ({ type: "setupPlacement", land: landTile.coordinates }))
-        );
-      } // case
-      case "turn": {
-        return this.chooseAction$ (player).pipe (
-          switchMap (action => {
-            switch (action) {
-              case "recruitment": {
-                return this.chooseRectruitment$ (player).pipe (
-                  map<{ land: BaronyLand, numberOfKnights: number }, BaronyTurnRectruitment> (result => ({
-                    action: "recruitment",
-                    land: result.land.coordinates,
-                    numberOfKnights: result.numberOfKnights
-                  }))
-                );
-              } // case
-              case "movement": {
-                return this.chooseMovements$ (player).pipe (
-                  map<BaronyMovement[], BaronyTurnMovement> (movements => ({
-                    action: "movement",
-                    movements: movements,
-                  }))
-                );
-              } // case
-              case "construction": {
-                return this.chooseConstructions$ (player, null).pipe (
-                  map<BaronyConstruction[], BaronyTurnConstruction> (constructions => ({
-                    action: "construction",
-                    constructions: constructions
-                  }))
-                );
-              } // case
-              case "newCity": {
-                return this.chooseNewCity$ (player).pipe (
-                  map<BaronyLand, BaronyTurnNewCity> (land => ({
-                    action: "newCity",
-                    land: land.coordinates
-                  }))
-                );
-              } // case
-              case "expedition": {
-                return this.chooseExpedition$ (player).pipe (
-                  map<BaronyLand, BaronyTurnExpedition> (land => ({
-                    action: "expedition",
-                    land: land.coordinates
-                  }))
-                );
-              } // case
-              case "nobleTitle": {
-                return this.chooseNobleTitle$ (player).pipe (
-                  map<BaronyResourceType[], BaronyTurnNobleTiltle> (resources => ({
-                    action: "nobleTitle",
-                    discardedResources: resources
-                  }))
-                );
-              } // case
-              default: throw new Error ("TODO");
-            } // switch
-          })
-        );
-      } // case
-      default: throw new Error (`Task ${(task as BaronyProcessTask).taskName} non gestito.`);
-    } // switch
-  } // executeTaskByPlayer
+  setupPlacement$ (player: string): Observable<BaronySetupPlacement> {
+    return this.chooseLandForSetupPlacement$ (player).pipe (
+      map<BaronyLand, BaronySetupPlacement> (landTile => ({ type: "setupPlacement", land: landTile.coordinates }))
+    );
+  } // setupPlacement$
+
+  turn$ (player: string): Observable<BaronyTurn> {
+    return this.chooseAction$ (player).pipe (
+      switchMap (action => {
+        switch (action) {
+          case "recruitment": {
+            return this.chooseRectruitment$ (player).pipe (
+              map<{ land: BaronyLand, numberOfKnights: number }, BaronyTurnRectruitment> (result => ({
+                action: "recruitment",
+                land: result.land.coordinates,
+                numberOfKnights: result.numberOfKnights
+              }))
+            );
+          } // case
+          case "movement": {
+            return this.chooseMovements$ (player).pipe (
+              map<BaronyMovement[], BaronyTurnMovement> (movements => ({
+                action: "movement",
+                movements: movements,
+              }))
+            );
+          } // case
+          case "construction": {
+            return this.chooseConstructions$ (player, null).pipe (
+              map<BaronyConstruction[], BaronyTurnConstruction> (constructions => ({
+                action: "construction",
+                constructions: constructions
+              }))
+            );
+          } // case
+          case "newCity": {
+            return this.chooseNewCity$ (player).pipe (
+              map<BaronyLand, BaronyTurnNewCity> (land => ({
+                action: "newCity",
+                land: land.coordinates
+              }))
+            );
+          } // case
+          case "expedition": {
+            return this.chooseExpedition$ (player).pipe (
+              map<BaronyLand, BaronyTurnExpedition> (land => ({
+                action: "expedition",
+                land: land.coordinates
+              }))
+            );
+          } // case
+          case "nobleTitle": {
+            return this.chooseNobleTitle$ (player).pipe (
+              map<BaronyResourceType[], BaronyTurnNobleTitle> (resources => ({
+                action: "nobleTitle",
+                discardedResources: resources
+              }))
+            );
+          } // case
+          default: throw new Error ("TODO");
+        } // switch
+      })
+    );
+  } // turn$
 
   private chooseLandForSetupPlacement$ (player: string): Observable<BaronyLand> {
     const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { BooleanInput, immutableUtil, Loading } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../models";
-import { hexToCartesian } from "../pipes";
+import { hexToCartesian } from "./barony-land-tile-coordinates.pipe";
 
 interface BaronyPawnNode {
   type: BaronyPawnType;

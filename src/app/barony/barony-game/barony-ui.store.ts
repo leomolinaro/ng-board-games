@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
-import { BehaviorSubject, Subject } from "rxjs";
-import { first } from "rxjs/operators";
+import { Subject } from "rxjs";
+import { first, skip } from "rxjs/operators";
 import { BaronyGameStore } from "../logic";
 import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../models";
 
@@ -47,21 +47,22 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   landTileChange (landTile: BaronyLand) { this.$landTileChange.next (landTile); }
   buildingChange (building: BaronyBuilding) { this.$buildingChange.next (building); }
   resourceChange (resource: BaronyResourceType) { this.$resourceChange.next (resource); }
-  cancelChange () { this.$cancelChange.next (); }
+  cancelChange () { this.$cancelChange.next (void 0); }
   private $actionChange = new Subject<BaronyAction> ();
   private $landTileChange = new Subject<BaronyLand> ();
   private $numberOfKnightsChange = new Subject<number> ();
   private $passChange = new Subject<void> ();
   private $buildingChange = new Subject<"village" | "stronghold"> ();
   private $resourceChange = new Subject<BaronyResourceType> ();
-  private $cancelChange = new BehaviorSubject<void> (void 0);
+  private $cancelChange = new Subject<void> ();
   actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
   landChange$ () { return this.$landTileChange.asObservable ().pipe (first ()); }
   numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
   passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
   buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
   resourceChange$ () { return this.$resourceChange.asObservable ().pipe (first ()); }
-  cancelChange$ () { return this.$cancelChange.asObservable (); }
+  cancelChange$ () { return this.$cancelChange.asObservable ().pipe (first ()); }
+  currentPlayerChange$ () { return this.selectCurrentPlayerId$ ().pipe (skip (1), first ()); }
 
   selectValidLands$ () { return this.select$ (s => s.validLands); }
   selectValidResources$ () { return this.select$ (s => s.validResources); }

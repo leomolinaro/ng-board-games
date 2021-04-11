@@ -1,6 +1,5 @@
-import { Component, ChangeDetectionStrategy, Input, OnChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BaronyGameService } from "../barony-game/barony-game.service";
 import { BaronyGameStore } from "../logic";
 import { BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPawnType, BaronyPlayer } from "../models";
 

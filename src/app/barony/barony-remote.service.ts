@@ -2,8 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { Observable } from "rxjs";
 import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.service";
-import { BaronyColor, BaronyLandType } from "./models";
-import { BaronyStory } from "./process";
+import { BaronyColor, BaronyLandType, BaronyStory } from "./models";
 
 export interface BaronyGameDoc {
   id: string;

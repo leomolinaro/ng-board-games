@@ -1,33 +1,134 @@
 import { Injectable } from "@angular/core";
-import { BgAuthService, BgProcessService } from "@bg-services";
-import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from "rxjs";
-import { debounceTime, expand, filter, first, map, mapTo, switchMap, tap } from "rxjs/operators";
-import { BaronyRemoteService } from "../barony-remote.service";
+import { BgAuthService } from "@bg-services";
+import { EMPTY, Observable, of, race } from "rxjs";
+import { expand, filter, first, last, map, mapTo, switchMap } from "rxjs/operators";
+import { BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
 import { BaronyGameStore } from "../logic";
-import { BaronyPlay, BaronyProcessTask, BaronyStory } from "../process";
+import { BaronyConstruction, BaronyLandCoordinates, BaronyMovement, BaronyResourceType, BaronySetupPlacement, BaronyStory, BaronyTurn } from "../models";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import { BaronyPlayerObserverService } from "./barony-player-observer.service";
 import { BaronyUiStore } from "./barony-ui.store";
+
+interface APlayerService {
+  setupPlacement$ (playerId: string): Observable<BaronySetupPlacement>;
+  turn$ (playerId: string): Observable<BaronyTurn>;
+} // APlayerService
 
 @Injectable ()
 export class BaronyGameService {
 
   constructor (
-    private bgProcessService: BgProcessService,
-    private ui: BaronyUiStore,
     private game: BaronyGameStore,
     private aiService: BaronyPlayerAiService,
     private localService: BaronyPlayerLocalService,
-    private observerService: BaronyPlayerObserverService,
-    private remoteService: BaronyRemoteService,
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    private ui: BaronyUiStore,
+    private remoteService: BaronyRemoteService
   ) { }
-  
-  private $pendingTask = new BehaviorSubject<BaronyProcessTask | null> (null);
-  selectPendingTask$ () { return this.$pendingTask.asObservable (); }
 
   private lastStoryId: number = 0;
+  private stories: BaronyStoryDoc[] | null = null;
+
+  game$ (stories: BaronyStoryDoc[]): Observable<void> {
+    this.stories = stories;
+    return this.setup$ ().pipe (
+      mapTo (0),
+      expand (prevRoundNumber => {
+        const roundNumber = prevRoundNumber + 1;
+        return this.round$ (roundNumber).pipe (
+          mapTo (roundNumber)
+        );
+      }),
+      mapTo (void 0),
+      last ()
+    );
+  } // game$
+
+  private setup$ (): Observable<void> {
+    this.game.logSetup ();
+    const playerIds = this.game.getPlayerIds ();
+    const turns: string[] = [...playerIds];
+    for (let i = playerIds.length - 1; i >= 0; i--) {
+      turns.push (playerIds[i]);
+      turns.push (playerIds[i]);
+    } // for
+    return this.setupPlacement$ (turns.shift ()!).pipe (
+      expand (() => turns.length ? this.setupPlacement$ (turns.shift ()!) : EMPTY),
+      last ()
+    );
+  } // setup$
+
+  private round$ (roundNumber: number): Observable<void> {
+    const playerIds = this.game.getPlayerIds ();
+    const turns = [...playerIds];
+    return this.turn$ (turns.shift ()!).pipe (
+      expand (() => turns.length ? this.turn$ (turns.shift ()!) : EMPTY),
+      last ()
+    );
+  } // round$
+
+  setupPlacement$ (player: string): Observable<void> {
+    return this.executeTask$ (player, p => p.setupPlacement$ (player)).pipe (
+      map (result => {
+        this.game.applySetup (result.land, player);
+        this.game.logSetupPlacement (result.land, player);
+        return void 0;
+      })
+    );
+  } // setupPlacement$
+
+  private turn$ (player: string): Observable<void> {
+    this.game.logTurn (player);
+    return this.executeTask$ (player, p => p.turn$ (player)).pipe (
+      map (result => {
+        switch (result.action) {
+          case "recruitment": this.recruitment (result.numberOfKnights, result.land, player); break;
+          case "construction": this.construction (result.constructions, player); break;
+          case "expedition": this.expedition (result.land, player); break;
+          case "movement": this.movement (result.movements, player); break;
+          case "newCity": this.newCity (result.land, player); break;
+          case "nobleTitle": this.nobleTitle (result.discardedResources, player); break;
+        } // switch
+        return void 0;
+      })
+    );
+  } // turn$
+
+  private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandCoordinates, player: string) {
+    for (let i = 0; i < numberOfKnights; i++) {
+      this.game.applyRecruitment (landTileCoordinates, player);
+      this.game.logRecuitment (landTileCoordinates, player);
+    } // for
+  } // recruitment
+
+  private construction (constructions: BaronyConstruction[], player: string) {
+    constructions.forEach (construction => {
+      this.game.applyConstruction (construction, player);
+      this.game.logConstruction (construction, player);
+    });
+  } // construction
+
+  private expedition (land: BaronyLandCoordinates, player: string) {
+    this.game.applyExpedition (land, player);
+    this.game.logExpedition (land, player);
+  } // expedition
+
+  private movement (movements: BaronyMovement[], player: string) {
+    movements.forEach ((movement) => {
+      this.game.applyMovement (movement, player);
+      this.game.logMovement (movement, player);
+    });
+  } // movement
+
+  private newCity (land: BaronyLandCoordinates, player: string) {
+    this.game.applyNewCity (land, player);
+    this.game.logNewCity (land, player);
+  } // newCity
+
+  private nobleTitle (resources: BaronyResourceType[], player: string) {
+    this.game.applyNobleTitle (resources, player);
+    this.game.logNobleTitle (resources, player);
+  } // nobleTitle
 
   private isLocalPlayer (playerId: string) {
     const user = this.authService.getUser ();
@@ -51,112 +152,78 @@ export class BaronyGameService {
     return player.isAi;
   } // isAiPlayer
 
-  game$ (stories: BaronyStory[]): Observable<void> {
-    return this.start$ (stories).pipe (
-      expand (task => {
-        if (this.game.isTemporaryState ()) {
-          this.game.endTemporaryState ();
-        } // if
-        if (task) {
-          this.autoRefreshCurrentPlayer (task);
-          return combineLatest ([
-            this.ui.selectCurrentPlayerId$ (),
-            this.ui.cancelChange$ ()
-          ]).pipe (
-            switchMap (() => this.next$ (task)),
-            first ()
-          );
-        } else {
-          return EMPTY;
-        } // if - else
-      }),
-      mapTo (void 0)
-    );
-  } // game$
-
-  private resolveTasks$ (stories: BaronyStory[]): Observable<void> {
-    return combineLatest ([
-      this.ui.selectCurrentPlayerId$ (),
-      this.selectPendingTask$ (),
-      this.ui.cancelChange$ (),
-    ]).pipe (
-      debounceTime (0),
-      switchMap (([currentPlayerId, task]) => {
-        if (this.game.isTemporaryState ()) {
-          this.game.endTemporaryState ();
-        } // if
-        const nextTask$ = task ? this.next$ (task) : this.start$ (stories);
-        return nextTask$.pipe (
-          tap (nextTask => {
-            if (nextTask) {
-              this.$pendingTask.next (nextTask);
-              this.autoRefreshCurrentPlayer (nextTask);
-            } // if
-          })
-        );
-      }),
-      mapTo (void 0)
-    );
-  } // resolveTasks$
-
-  private autoRefreshCurrentPlayer (task: BaronyProcessTask) {
-    if (this.isLocalPlayer (task.data.player)) {
-      this.ui.setCurrentPlayer (task.data.player);
+  private autoRefreshCurrentPlayer (player: string) {
+    if (this.isLocalPlayer (player)) {
+      this.ui.setCurrentPlayer (player);
     } // if - else
   } // autoRefreshCurrentPlayer
 
-  private start$ (stories: BaronyStory[]): Observable<BaronyProcessTask> {
-    const baronyPlay = new BaronyPlay ();
-    let startingTasks = this.bgProcessService.startProcess (baronyPlay, this.game) as BaronyProcessTask[];
-    let startingTask = startingTasks[0];
-    for (const story of stories) {
-      console.log ("story", story);
-      startingTask.result = story;
-      startingTasks = this.bgProcessService.resolveTask (startingTask, this.game) as BaronyProcessTask[];
-      startingTask = startingTasks[0];
-      this.lastStoryId++;
-    } // for
-    return of (startingTask);
-  } // start$
-
-  private next$ (task: BaronyProcessTask): Observable<BaronyProcessTask> {
-    this.game.startTemporaryState ();
-    return this.executeTask$ (task).pipe (
-      map (taskResult => {
-        this.game.endTemporaryState ();
-        task.result = taskResult;
-        const nextTasks = this.bgProcessService.resolveTask (task, this.game) as BaronyProcessTask[];
-        return nextTasks[0];
-      })
-    );
-  } // next$
-
-  private executeTask$ (task: BaronyProcessTask): Observable<BaronyStory> {
-    const turnPlayerId = task.data.player;
-    const nextStoryId = ++this.lastStoryId;
-    if (this.isLocalPlayer (turnPlayerId) && this.isCurrentPlayer (turnPlayerId)) {
-      return this.localService.executeTask$ (task, turnPlayerId).pipe (
-        switchMap (result => this.insertStory$ (result, nextStoryId, this.game.getGameId ()))
+  private executeTaskOnFixedPlayer$<R extends BaronyStory> (playerId: string, task$: (playerService: APlayerService) => Observable<R>): Observable<R> {
+    if (this.isLocalPlayer (playerId) && this.isCurrentPlayer (playerId)) {
+      return task$ (this.localService).pipe (
+        switchMap (result => this.insertStory$ (result, ++this.lastStoryId, this.game.getGameId ()))
       );
-    } else if (this.isAiPlayer (turnPlayerId) && this.isOwnerUser ()) {
-      return this.aiService.executeTask$ (task).pipe (
-        switchMap (result => this.insertStory$ (result, nextStoryId, this.game.getGameId ()))
+    } else if (this.isAiPlayer (playerId) && this.isOwnerUser ()) {
+      return task$ (this.aiService).pipe (
+        switchMap (result => this.insertStory$ (result, ++this.lastStoryId, this.game.getGameId ()))
       );
     } else {
-      return this.observerService.executeTask$ (task).pipe (
-        switchMap (() => this.remoteService.selectStory$ (nextStoryId, this.game.getGameId ())),
+      this.resetUi (playerId);
+      return this.remoteService.selectStory$ (this.lastStoryId + 1, this.game.getGameId ()).pipe (
         filter (story => !!story),
-        map (story => story as BaronyStory),
-        first<BaronyStory> ()
+        map (story => story as any as R),
+        first<R> ()
+      );
+    } // if - else
+  } // executeTaskOnFixedPlayer$
+
+  private executeTaskOnChangingPlayer$<R extends BaronyStory> (playerId: string, task$: (playerService: APlayerService) => Observable<R>): Observable<R | null> {
+    return race (
+      this.executeTaskOnFixedPlayer$ (playerId, task$),
+      this.ui.currentPlayerChange$ ().pipe (mapTo (null)),
+      this.ui.cancelChange$ ().pipe (mapTo (null))
+    );
+  } // executeTaskOnChangingPlayer$
+
+  private executeTask$<R extends BaronyStory> (playerId: string, task$: (playerService: APlayerService) => Observable<R>): Observable<R> {
+    if (this.stories && this.stories.length) {
+      const nextStory = this.stories.shift ()!;
+      this.lastStoryId = nextStory.id;
+      return of (nextStory as BaronyStory as R);
+    } else {
+      this.autoRefreshCurrentPlayer (playerId);
+      this.game.startTemporaryState ();
+      return this.executeTaskOnChangingPlayer$ (playerId, task$).pipe (
+        expand (result => {
+          this.game.endTemporaryState ();
+          if (result) {
+            return EMPTY;
+          } else {
+            this.game.startTemporaryState ();
+            return this.executeTaskOnChangingPlayer$ (playerId, task$);
+          } // if - else
+        }),
+        last (),
+        map (story => story as any as R),
       );
     } // if - else
   } // executeTask$
 
-  private insertStory$ (story: BaronyStory, storyId: number, gameId: string) {
+  private insertStory$<S extends BaronyStory> (story: S, storyId: number, gameId: string): Observable<S> {
     return this.remoteService.insertStory$ ({
       id: storyId,
-      ...story
-    }, gameId);
+      ...(story as BaronyStory)
+    }, gameId) as any as Observable<S>;
   } // insertAction$
 
-} // BaronyBoardService
+  private resetUi (player: string) {
+    this.ui.updateUi (s => ({
+      ...s,
+      turnPlayer: player,
+      ...this.ui.resetUi (),
+      canCancel: false,
+      message: `${this.game.getPlayer (player).name} is thinking...`,
+    }));
+  } // resetUi
+
+} // BaronyGameService

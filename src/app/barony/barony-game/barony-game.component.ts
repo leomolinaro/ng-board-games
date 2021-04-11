@@ -10,7 +10,6 @@ import { ABaronyPlayer, BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoor
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import { BaronyPlayerObserverService } from "./barony-player-observer.service";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Component ({
@@ -23,7 +22,6 @@ import { BaronyUiStore } from "./barony-ui.store";
     BaronyUiStore,
     BaronyPlayerAiService,
     BaronyPlayerLocalService,
-    BaronyPlayerObserverService,
     BaronyGameService
   ]
 })
@@ -33,10 +31,10 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   constructor (
     private game: BaronyGameStore,
     private ui: BaronyUiStore,
-    private service: BaronyGameService,
     private remote: BaronyRemoteService,
     private route: ActivatedRoute,
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    private game2Service: BaronyGameService
   ) { }
 
   private gameId = this.route.snapshot.paramMap.get ("gameId") as string;
@@ -54,9 +52,6 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   canPass$ = this.ui.selectCanPass$ ();
   canCancel$ = this.ui.selectCanCancel$ ();
   maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
-
-  // lands: BaronyLand[] = generateRectangularMap (4).map (l => ({ ...l, pawns: [], id: "" }));
-  // lands: BaronyLand[] = getRandomLands (4).map (l => ({ ...l, pawns: [], id: "" }));
 
   @InitEvent ()
   ngOnInit () {
@@ -95,7 +90,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
 
   @ChangeListener ()
   private listenToTasks (stories: BaronyStoryDoc[]) {
-    return this.service.game$ (stories);
+    return this.game2Service.game$ (stories);
   } // listenToTasks
 
   private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
