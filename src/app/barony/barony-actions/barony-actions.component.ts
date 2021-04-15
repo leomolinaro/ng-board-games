@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
 import { arrayUtil } from "@bg-utils";
-import { BaronyAction, baronyActions } from "../models";
+import { BARONY_ACTIONS } from "../barony-constants";
+import { BaronyAction } from "../barony-models";
 
 @Component ({
   selector: "barony-actions",
@@ -19,7 +20,7 @@ export class BaronyActionsComponent implements OnChanges {
   @Output () passClick = new EventEmitter<void> ();
   @Output () cancelClick = new EventEmitter<void> ();
 
-  actions = baronyActions;
+  actions = BARONY_ACTIONS;
 
   labels: { [action: string]: string } = {
     recruitment: "Recruitment",

@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { Observable } from "rxjs";
 import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.service";
-import { BaronyColor, BaronyLandType, BaronyStory } from "./models";
+import { BaronyColor, BaronyLandType, BaronyStory } from "./barony-models";
 
 export interface BaronyGameDoc {
   id: string;
@@ -64,15 +64,6 @@ export class BaronyRemoteService {
   updatePlayer$ (patch: Partial<BaronyPlayerDoc>, playerId: string, gameId: string) { return this.cloud.update$ (patch, playerId, this.players (gameId)); }
   deletePlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.players (gameId)); }
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }
-  
-  // private lands (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.collection<BaronyLandDoc> (`barony-games/${gameId}/lands`, queryFn); }
-  // getLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.getAll$ (this.lands (gameId, queryFn)); }
-  // selectLands$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyLandDoc> | undefined) { return this.cloud.selectAll$ (this.lands (gameId, queryFn)); }
-  // selectLand$ (landId: string, gameId: string) { return this.cloud.select$ (landId, this.lands (gameId)); }
-  // insertLand$ (land: BaronyLandDoc, gameId: string): Observable<BaronyLandDoc> { return this.cloud.insert$ (land, land.id, this.lands (gameId)); }
-  // updateLand$ (patch: Partial<BaronyLandDoc>, landId: string, gameId: string) { return this.cloud.update$ (patch, landId, this.lands (gameId)); }
-  // deleteLand$ (landId: string, gameId: string) { return this.cloud.delete$ (landId, this.lands (gameId)); }
-  // deleteLands$ (gameId: string) { return this.cloud.deleteAll$ (this.lands (gameId)); }
   
   private maps (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyMapDoc> | undefined) { return this.cloud.collection<BaronyMapDoc> (`barony-games/${gameId}/maps`, queryFn); }
   getMap$ (gameId: string) { return this.cloud.get$ ("map", this.maps (gameId)); }

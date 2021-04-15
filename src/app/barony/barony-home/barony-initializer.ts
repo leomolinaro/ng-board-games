@@ -1,28 +1,6 @@
 import { randomUtil } from "@bg-utils";
-import { BaronyLandCoordinates, BaronyLandPiece, baronyLandPieces, BaronyLandType, baronyLandTypes, baronyNumberOfLandTiles } from "../models";
-
-// export function createPlayer (id: string, name: string, color: BaronyColor, isAi: boolean): BaronyPlayer {
-//   return {
-//     id: id,
-//     name: name,
-//     isAi: isAi,
-//     isRemote: false,
-//     color: color,
-//     score: 0,
-//     pawns: {
-//       city: 5,
-//       stronghold: 2,
-//       knight: 7,
-//       village: 14
-//     },
-//     resources: {
-//       forest: 0,
-//       mountain: 0,
-//       plain: 0,
-//       fields: 0
-//     }
-//   };
-// } // createPlayer
+import { BARONY_LAND_PIECES, BARONY_LAND_TYPES, BARONY_NUMBER_OF_LAND_TILES } from "../barony-constants";
+import { BaronyLandCoordinates, BaronyLandPiece, BaronyLandType } from "../barony-models";
 
 export function getRandomLands (nPlayers: number): {
   coordinates: BaronyLandCoordinates;
@@ -32,8 +10,8 @@ export function getRandomLands (nPlayers: number): {
   const nTiles = nPlayers * 27;
   const coordinatess = generateExhagonalMap (nTiles);
   const typesPool: BaronyLandType[] = [];
-  for (const type of baronyLandTypes) {
-    for (let i = 0; i < baronyNumberOfLandTiles[type]; i++) {
+  for (const type of BARONY_LAND_TYPES) {
+    for (let i = 0; i < BARONY_NUMBER_OF_LAND_TILES[type]; i++) {
       typesPool.push (type);
     } // for
   } // for
@@ -96,7 +74,7 @@ function generateRectangularMap (nPieces: number): {
 }[] {
   const piecesPool: BaronyLandPiece[] = [];
   const map: { [key in BaronyLandType]: number } = { fields: 0, mountain: 0, forest: 0, lake: 0, plain: 0 };
-  for (const piece of baronyLandPieces) {
+  for (const piece of BARONY_LAND_PIECES) {
     for (let i = 0; i < piece.quantity; i++) {
       map[piece[1]]++;
       map[piece[2]]++;

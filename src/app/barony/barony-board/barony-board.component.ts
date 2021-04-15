@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
 
 @Component ({
   selector: "barony-board",

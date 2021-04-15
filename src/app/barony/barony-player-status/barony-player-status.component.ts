@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
-import { BaronyBuilding, BaronyPawnType, baronyPawnTypes, BaronyPlayer, BaronyResourceType, baronyResourceTypes } from "../models";
+import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../barony-constants";
+import { BaronyBuilding, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../barony-models";
 
 interface BaronyPawnNode {
   source: string;
@@ -63,7 +64,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
     } // if
 
     if (refreshPawns) {
-      this.pawnNodes = baronyPawnTypes.map (pt => ({
+      this.pawnNodes = BARONY_PAWN_TYPES.map (pt => ({
         source: `assets/barony/pawns/${this.player.color}-${pt}.png`,
         type: pt,
         quantity: this.player.pawns[pt],
@@ -72,7 +73,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
     } // if
 
     if (refreshResources) {
-      this.resourceNodes = baronyResourceTypes.map (rt => ({
+      this.resourceNodes = BARONY_RESOURCE_TYPES.map (rt => ({
         source: `assets/barony/resources/${rt}.png`,
         type: rt,
         quantity: this.player.resources[rt],

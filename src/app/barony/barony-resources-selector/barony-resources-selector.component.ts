@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, OnChanges, Input, Output, EventEmitter } from "@angular/core";
-import { BaronyResourceType } from "../models";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { BaronyResourceType } from "../barony-models";
 
 @Component ({
   selector: "barony-resources-selector",

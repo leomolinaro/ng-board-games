@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../models";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 interface BaronyUiState {

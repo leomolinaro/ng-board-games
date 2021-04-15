@@ -1,4 +1,5 @@
-import { BaronyAction, BaronyColor, baronyColors, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, baronyResourceTypes } from "../models";
+import { BARONY_COLORS, BARONY_RESOURCE_TYPES } from "../barony-constants";
+import { BaronyAction, BaronyColor, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 export function getValidActions (player: string, game: BaronyGameStore): BaronyAction[] {
@@ -91,7 +92,7 @@ export function getValidLandsForExpedition (player: string, game: BaronyGameStor
 
 export function getValidResourcesForNobleTitle (playerId: string, game: BaronyGameStore): BaronyResourceType[] {
   const player = game.getPlayer (playerId);
-  return baronyResourceTypes.filter (r => player.resources[r] > 0);
+  return BARONY_RESOURCE_TYPES.filter (r => player.resources[r] > 0);
 } // getValidResourcesForNobleTitle
 
 export function getVillageDestroyedPlayer (landCoordinates: BaronyLandCoordinates, playerId: string, game: BaronyGameStore): BaronyPlayer {
@@ -103,7 +104,7 @@ export function getVillageDestroyedPlayer (landCoordinates: BaronyLandCoordinate
 
 export function getValidResourcesForVillageDestruction (playerId: string, game: BaronyGameStore) {
   const player = game.getPlayer (playerId);
-  return baronyResourceTypes.filter (r => player.resources[r]);
+  return BARONY_RESOURCE_TYPES.filter (r => player.resources[r]);
 } // getValidResourcesForVillageDestruction
 
 export function isRecruitmentValid (playerId: string, game: BaronyGameStore): boolean {
@@ -184,7 +185,7 @@ export function isNobleTitleValid (playerId: string, game: BaronyGameStore): boo
 
 function getPlayerResourcePoints (playerId: string, game: BaronyGameStore) {
   const player = game.getPlayer (playerId);
-  const sum = baronyResourceTypes.reduce (
+  const sum = BARONY_RESOURCE_TYPES.reduce (
     (pSum, resource) => (pSum + player.resources[resource] * getResourcePoints (resource)),
     0
   );
@@ -266,7 +267,7 @@ function hasPawnsByColor (
   };
   const filteredPawns = pawnFilter ? land.pawns.filter (p => pawnFilter (p.type)) : land.pawns;
   filteredPawns.forEach (p => pawns[p.color] += 1);
-  const filteredColors = colorFilter ? baronyColors.filter (c => colorFilter (c)) : baronyColors;
+  const filteredColors = colorFilter ? BARONY_COLORS.filter (c => colorFilter (c)) : BARONY_COLORS;
   return filteredColors.some (c => some (pawns[c]));
 } // hasPawns
 
@@ -281,5 +282,5 @@ function hasPawnsInReserve (quantity: number, pawnType: BaronyPawnType, playerId
 
 export function hasResourcesToTakeForVillageDestruction (playerId: string, game: BaronyGameStore) {
   const player = game.getPlayer (playerId);
-  return baronyResourceTypes.some (r => player.resources[r]);
+  return BARONY_RESOURCE_TYPES.some (r => player.resources[r]);
 } // hasResourcesToTakeForVillageDestruction

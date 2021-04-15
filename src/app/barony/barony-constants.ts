@@ -1,18 +1,18 @@
-import { BaronyAction, BaronyColor, BaronyLandPiece, BaronyLandType, BaronyPawnType, BaronyResourceType } from "./models";
+import { BaronyAction, BaronyColor, BaronyLandPiece, BaronyLandType, BaronyPawnType, BaronyResourceType } from "./barony-models";
 
-export const baronyLandTypes: BaronyLandType[] = ["fields", "forest", "lake", "mountain", "plain"];
-export const baronyResourceTypes: BaronyResourceType[] = ["fields", "forest", "mountain", "plain"];
-export const baronyColors: BaronyColor[] = ["blue", "green", "red", "yellow"];
-export const baronyPawnTypes: BaronyPawnType[] = ["city", "knight", "stronghold", "village"];
-export const baronyActions: BaronyAction[] = ["recruitment", "movement", "construction", "newCity", "expedition", "nobleTitle"];
-export const baronyNumberOfLandTiles = {
+export const BARONY_LAND_TYPES: BaronyLandType[] = ["fields", "forest", "lake", "mountain", "plain"];
+export const BARONY_RESOURCE_TYPES: BaronyResourceType[] = ["fields", "forest", "mountain", "plain"];
+export const BARONY_COLORS: BaronyColor[] = ["blue", "green", "red", "yellow"];
+export const BARONY_PAWN_TYPES: BaronyPawnType[] = ["city", "knight", "stronghold", "village"];
+export const BARONY_ACTIONS: BaronyAction[] = ["recruitment", "movement", "construction", "newCity", "expedition", "nobleTitle"];
+export const BARONY_NUMBER_OF_LAND_TILES = {
   fields: 22,
   forest: 25,
   lake: 14,
   mountain: 22,
   plain: 25
 };
-export const baronyLandPieces: BaronyLandPiece[] = [
+export const BARONY_LAND_PIECES: BaronyLandPiece[] = [
   { 1: "mountain", 2: "mountain", 3: "mountain", quantity: 1 },
   { 1: "mountain", 2: "mountain", 3: "forest", quantity: 1 },
   { 1: "mountain", 2: "mountain", 3: "plain", quantity: 1 },

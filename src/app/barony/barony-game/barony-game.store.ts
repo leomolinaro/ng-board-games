@@ -3,7 +3,7 @@ import { BgUser } from "@bg-services";
 import { arrayUtil, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../models";
+import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../barony-models";
 
 interface BaronyGameBox {
   removedPawns: BaronyPawn[];

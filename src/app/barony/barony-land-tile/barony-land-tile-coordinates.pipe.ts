@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { BaronyLandCoordinates } from "../models";
+import { BaronyLandCoordinates } from "../barony-models";
 
 const sqrt3Half = Math.sqrt (3) / 2.0;
 const half = 0.5;

@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnChanges, Input, ElementRef } from "@angular/core";
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BaronyLog } from "../models";
+import { BaronyLog } from "../barony-models";
 
 @Component ({
   selector: "barony-logs",

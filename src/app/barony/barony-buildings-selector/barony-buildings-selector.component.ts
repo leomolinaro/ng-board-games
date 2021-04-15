@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, OnChanges, Input, Output, EventEmitter } from "@angular/core";
-import { BaronyBuilding, BaronyPlayer } from "../models";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { BaronyBuilding, BaronyPlayer } from "../barony-models";
 
 @Component ({
   selector: "barony-buildings-selector",

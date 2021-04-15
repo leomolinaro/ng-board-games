@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { arrayUtil, SimpleChanges } from "@bg-utils";
-import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../models";
+import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../barony-models";
 
 @Component ({
   selector: "barony-map",

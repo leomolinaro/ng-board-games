@@ -1,5 +1,5 @@
 import { ABgArcheoGame, ABgProtoGame, ABgProtoGameState, ABgProtoPlayer, ABgProtoPlayerType } from "@bg-services";
-import { BaronyColor } from "../models";
+import { BaronyColor } from "../barony-models";
 
 export interface BaronyArcheoGame extends ABgArcheoGame {
 } // BaronyArcheoGame

@@ -6,8 +6,8 @@ import { BehaviorSubject, forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
 import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType } from "../../barony-models";
 import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyMapDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../../barony-remote.service";
-import { BaronyColor, BaronyLandCoordinates, BaronyLandType } from "../../models";
 import { BaronyProtoGame, BaronyProtoPlayer } from "../barony-home.models";
 import { getRandomLands } from "../barony-initializer";
 
