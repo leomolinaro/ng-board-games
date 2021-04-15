@@ -34,7 +34,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
     private remote: BaronyRemoteService,
     private route: ActivatedRoute,
     private authService: BgAuthService,
-    private game2Service: BaronyGameService
+    private gameService: BaronyGameService
   ) { }
 
   private gameId = this.route.snapshot.paramMap.get ("gameId") as string;
@@ -59,10 +59,14 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
       this.remote.getGame$ (this.gameId),
       this.remote.getPlayers$ (this.gameId, ref => ref.orderBy ("sort")),
       this.remote.getMap$ (this.gameId),
-      // this.remote.getLands$ (this.gameId),
       this.remote.getStories$ (this.gameId, ref => ref.orderBy ("id"))
     ]).pipe (
-      tap (([game, players, baronyMap, stories]) => {
+      tap (([
+        game,
+        players,
+        baronyMap,
+        stories
+      ]) => {
         if (game && baronyMap) {
           const user = this.authService.getUser ();
           this.game.setInitialState (
@@ -90,7 +94,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
 
   @ChangeListener ()
   private listenToTasks (stories: BaronyStoryDoc[]) {
-    return this.game2Service.game$ (stories);
+    return this.gameService.game$ (stories);
   } // listenToTasks
 
   private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
