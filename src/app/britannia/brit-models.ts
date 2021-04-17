@@ -1,16 +1,22 @@
 import { BgUser } from "@bg-services";
 
 interface ABritUnit {
-  id: string;
+  id: BritUnitId;
   nation: BritNationId;
 } // ABritUnit
 
 export interface BritArmy extends ABritUnit { }
-export interface BritInfantry extends ABritUnit { }
-export interface BritCavalry extends ABritUnit { }
-export interface BritLeader extends ABritUnit { }
+export interface BritInfantry extends ABritUnit { type: "infantry"; }
+export interface BritCavalry extends ABritUnit { type: "cavalry"; }
+export interface BritLeader extends ABritUnit {
+  type: "leader";
+  name: string;
+} // BritLeader
 export interface BritBuilding extends ABritUnit { }
-export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritBuilding;
+export interface BritRomanFort extends BritBuilding { type: "roman-fort"; }
+export interface BritSaxonBuhr extends BritBuilding { type: "saxon-buhr"; }
+export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritRomanFort | BritSaxonBuhr;
+export type BritUnitId = string;
 
 export type BritRegionId = "wales" | "england" | "scotland";
 
@@ -28,8 +34,11 @@ export type BritSeaAreaId = "icelandic-sea" | "north-sea" | "frisian-sea" | "eng
 
 export type BritAreaId = BritLandAreaId | BritSeaAreaId;
 
+export type BritNeighbor = BritAreaId | { id: BritAreaId, strait: true };
+
 interface ABritArea {
   name: string;
+  neighbors: BritNeighbor[];
 } // ABritArea
 
 export interface BritLandArea extends ABritArea {
@@ -37,7 +46,7 @@ export interface BritLandArea extends ABritArea {
   region: BritRegionId;
   type: "land";
   difficultTerrain: boolean;
-  garrisons: string[];
+  units: string[];
 } // BritLandArea
 
 export interface BritSeaArea extends ABritArea {
@@ -54,7 +63,10 @@ export type BritNationId = "romans" | "romano-british" | "normans" | "saxons" | 
 export interface BritNation {
   id: BritNationId;
   name: string;
-  reinforcements: string[];
+  infantries: string[];
+  cavalries: string[];
+  buildings: string[];
+  leaders: string[];
 } // BritNation
 
 export interface ABritPlayer {

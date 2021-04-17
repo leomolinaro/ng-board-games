@@ -1,5 +1,14 @@
 import { Key } from "./types.util";
 
+export function range<T = number> (length: number, supplier?: (index: number) => T): T[] {
+  if (!supplier) { supplier = index => (index as unknown as T); }
+  const array: T[] = [];
+  for (let i = 0; i < length; i++) {
+    array.push (supplier (i));
+  } // for
+  return array;
+} // range
+
 export function isEmpty<T> (array: T[]): boolean {
   return !isNotEmpty (array);
 } // isEmpty

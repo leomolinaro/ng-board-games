@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { arrayUtil } from "@bg-utils";
 import { BritPlayer } from "../brit-models";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
+import * as britRules from "./brit-rules";
 
 @Component ({
   selector: "brit-game",
@@ -30,10 +32,16 @@ export class BritGameComponent implements OnInit {
   ngOnInit (): void {
 
     const players: BritPlayer[] = [];
-    // this.game.setInitialState (
-    //   players,
-    //   nations
-    // );
+    const nations = britRules.createNationsAndUnits ();
+    const areas = britRules.createAreas ();
+    this.game.setInitialState (
+      players,
+      nations.map (n => n.nation),
+      areas,
+      arrayUtil.flattify (nations.map (n => n.units)),
+      "",
+      null as any
+    );
 
   } // ngOnInit
 
