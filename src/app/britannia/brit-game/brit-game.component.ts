@@ -29,6 +29,8 @@ export class BritGameComponent implements OnInit {
     private gameService: BritGameService
   ) { }
 
+  areas$ = this.game.selectAreas$ ();
+
   ngOnInit (): void {
 
     const players: BritPlayer[] = [];

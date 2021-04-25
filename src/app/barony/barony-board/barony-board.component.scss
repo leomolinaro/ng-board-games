@@ -28,8 +28,8 @@
     padding: 2vmin;
 
     grid-template-areas: 
-      "summary . logs"
-      "players . logs"
+      "summary zoom zoomAndLogs"
+      "players . zoomAndLogs"
       "players . actions"
       "players instructions actions";
 
@@ -90,14 +90,24 @@
         }
       }
     }
-    .b-board-logs-widget {
-      grid-area: logs;
-      pointer-events: auto;
-      margin-left: auto;
+    .b-board-zoom-and-logs {
+      grid-area: zoomAndLogs;
+      display: flex;
+      margin-left: 0;
       margin-bottom: auto;
-      padding: 2vmin;
-      box-shadow: $widget-shadow;
-      font-size: $font-size-logs;
+      max-height: 100%;
+      .b-board-logs-widget {
+        pointer-events: auto;
+        padding: 2vmin;
+        box-shadow: $widget-shadow;
+        font-size: $font-size-logs;
+        line-height: $line-height-logs;
+      }
+      .b-board-zoom-buttons-widget {
+        pointer-events: auto;
+        align-self: flex-start;
+        margin-right: auto;
+      }
     }
     .b-board-summary-widget {
       pointer-events: auto;

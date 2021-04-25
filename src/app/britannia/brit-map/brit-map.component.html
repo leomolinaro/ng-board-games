@@ -2,8 +2,8 @@
   bgSvg
   xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
   width="100%" height="100%"
-  viewBox="0 0 1000 500" preserveAspectratio="xMinYMin">
-  <defs>
+  [attr.viewBox]="viewBox" preserveAspectratio="xMinYMin">
+  <!-- <defs>
     <pattern id="mountain" height="100%" width="100%" patternContentUnits="objectBoundingBox">
       <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/mountain.png"></image>
     </pattern>
@@ -19,23 +19,25 @@
     <pattern id="forest" height="100%" width="100%" patternContentUnits="objectBoundingBox">
       <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/forest.png"></image>
     </pattern>
-  </defs>
+  </defs> -->
   <svg:g
     class="b-map"
     [bgMapZoom]="{
-      translateX: 500,
-      translateY: 200,
-      scale: 20
+      translateX: 0,
+      translateY: 50,
+      scale: 1
     }">
+    <image width="800" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
     <svg:g
-      *ngFor="let land of lands; trackBy: landTrackBy"
-      baronyLandTile
+      *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
+      <svg:path [attr.d]="areaNode.path"></svg:path>
+    </svg:g>
+      <!-- baronyLandTile
       [type]="land.type"
       [coordinates]="land.coordinates"
       [pawns]="land.pawns"
       [active]="isValid ? isValid[land.id] : false"
       [disabled]="isValid ? !isValid[land.id] : false"
-      (landTileClick)="onLandTileClick (land)">
-    </svg:g>
+      (landTileClick)="onLandTileClick (land)"> -->
   </svg:g>
 </svg>

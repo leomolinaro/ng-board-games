@@ -1,8 +1,7 @@
 <h1 mat-dialog-title>Players</h1>
-<div mat-dialog-content class="brit-new-players">
+<div mat-dialog-content class="brit-new-players" [ngClass]="{ 'is-online-game': onlineGame }">
   <ng-container *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
     [bgForm]="player" (bgFormChange)="onPlayerChange ($event, player.id)">
-
     <button class="brit-new-players-type-button" 
       [ngClass]="'is-' + player.color"
       mat-fab (click)="onNextPlayerType (player.type, player.id)">
@@ -15,11 +14,11 @@
       </ng-container>
     </button>
     <ng-container [ngSwitch]="player.type">
-      <span *ngSwitchCase="'closed'" class="mat-caption b-new-players-type-caption">closed</span>
-      <span *ngSwitchCase="'me'" class="mat-caption b-new-players-type-caption">me</span>
-      <span *ngSwitchCase="'other'" class="mat-caption b-new-players-type-caption">TODO</span>
-      <span *ngSwitchCase="'ai'" class="mat-caption b-new-players-type-caption">AI</span>
-      <span *ngSwitchCase="'open'" class="mat-caption b-new-players-type-caption">open</span>
+      <span *ngSwitchCase="'closed'" class="mat-caption brit-new-players-type-caption">closed</span>
+      <span *ngSwitchCase="'me'" class="mat-caption brit-new-players-type-caption">me</span>
+      <span *ngSwitchCase="'other'" class="mat-caption brit-new-players-type-caption">TODO</span>
+      <span *ngSwitchCase="'ai'" class="mat-caption brit-new-players-type-caption">AI</span>
+      <span *ngSwitchCase="'open'" class="mat-caption brit-new-players-type-caption">open</span>
     </ng-container>
     <mat-form-field>
       <mat-label>Player name</mat-label>
@@ -28,8 +27,10 @@
         [disabled]="player.type === 'closed'"
         autocomplete="off">
     </mat-form-field>
-    <mat-checkbox>Ready</mat-checkbox>
-
+    <div *ngIf="onlineGame">
+      <mat-checkbox *ngIf="player.type === 'me' || player.type === 'other'"
+        bgField="ready">Ready</mat-checkbox>
+    </div>
   </ng-container>
 </div>
 <div mat-dialog-actions *bgIfUser="game.owner">

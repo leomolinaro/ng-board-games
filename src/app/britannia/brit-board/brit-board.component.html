@@ -1,14 +1,11 @@
-<div class="b-board">
-  <div class="b-board-map-layer">
-    <barony-map
-      #baronyMap
-      [lands]="lands"
-      [validLands]="validLands"
-      (landTileClick)="onLandTileClick ($event)">
-    </barony-map>
+<div class="brit-board">
+  <div class="brit-board-map-layer">
+    <brit-map
+      [areas]="areas">
+    </brit-map>
   </div>
-  <div class="b-board-widgets-layer">
-    <div
+  <div class="brit-board-widgets-layer">
+    <!-- <div
       [class]="'b-board-instructions-widget' + (turnPlayer ? (' is-' + turnPlayer.color) : '')">
       <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
@@ -61,6 +58,6 @@
     <div class="b-board-summary-widget">
       <mat-icon class="b-board-summary-icon" (click)="summaryFixed = !summaryFixed">menu_book</mat-icon>
       <img class="b-board-summary-image" [ngClass]="{ 'is-fixed': summaryFixed }" src="assets/barony/summary.jpg">
-    </div>
+    </div> -->
   </div>
 </div>

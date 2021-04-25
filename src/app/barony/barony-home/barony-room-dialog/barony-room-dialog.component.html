@@ -2,7 +2,6 @@
 <div mat-dialog-content class="b-new-players" [ngClass]="{ 'is-online-game': onlineGame }">
   <ng-container *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
     [bgForm]="player" (bgFormChange)="onPlayerChange ($event, player.id)">
-
     <button class="b-new-players-type-button" 
       [ngClass]="'is-' + player.color"
       mat-fab (click)="onNextPlayerType (player.type, player.id)">
@@ -32,7 +31,6 @@
       <mat-checkbox *ngIf="player.type === 'me' || player.type === 'other'"
         bgField="ready">Ready</mat-checkbox>
     </div>
-
   </ng-container>
 </div>
 <div mat-dialog-actions *bgIfUser="game.owner">

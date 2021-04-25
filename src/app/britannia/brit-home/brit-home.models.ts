@@ -12,6 +12,7 @@ export interface BritProtoPlayer extends ABgProtoPlayer {
   name: string;
   color: BritColor;
   type: BritProtoPlayerType;
+  ready: boolean;
 } // BritProtoPlayer
 
 export type BritProtoGameState = ABgProtoGameState;

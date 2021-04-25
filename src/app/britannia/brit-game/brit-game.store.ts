@@ -86,6 +86,12 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   } // if - else
   // } // endTemporaryState
 
+  selectAreas$ () {
+    return this.select$ (this.select$ (s => s.areas), areas => {
+      return areas.ids.map (id => areas.map[id]);
+    });
+  } // selectAreas$
+
   // getGameId (): string { return this.get (s => s.gameId); }
   // getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
   // getPlayers (): BritPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }

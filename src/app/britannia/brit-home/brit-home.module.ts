@@ -7,6 +7,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatRadioModule } from "@angular/material/radio";
+import { BgAuthModule } from "@bg-components/auth";
 import { BgFormModule } from "@bg-components/form";
 import { BgHomeModule } from "@bg-components/home";
 import { BritArcheoGameFormComponent } from "./brit-archeo-game-form/brit-archeo-game-form.component";
@@ -23,6 +24,7 @@ import { BritRoomDialogComponent } from "./brit-room-dialog/brit-room-dialog.com
     CommonModule,
     BgHomeModule,
     BgFormModule,
+    BgAuthModule,
     MatFormFieldModule,
     MatRadioModule,
     MatInputModule,

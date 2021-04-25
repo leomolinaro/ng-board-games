@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from "@angular/core";
+import { BgMapZoomDirective } from "@bg-components/svg";
 import { arrayUtil, SimpleChanges } from "@bg-utils";
 import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../barony-models";
 
@@ -15,6 +16,8 @@ export class BaronyMapComponent implements OnChanges {
   @Input () lands!: BaronyLand[];
   @Input () validLands: BaronyLandCoordinates[] | null = null;
   @Output () landTileClick = new EventEmitter<BaronyLand> ();
+
+  @ViewChild (BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
 
   isValid: { [key: string]: boolean } | null = null;
 

@@ -1,4 +1,4 @@
-import { Component, Directive, ElementRef, Host, HostBinding, HostListener, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, Input, OnInit } from "@angular/core";
 
 interface BgMapZoomRefreshParams {
   zoom: number;
@@ -31,6 +31,7 @@ export class BgMapZoomDirective implements OnInit {
 
   constructor (
     private bgSvg: BgSvgComponent,
+    private cd: ChangeDetectorRef
   ) { }
 
   @Input ("bgMapZoom") config!: {
@@ -95,6 +96,33 @@ export class BgMapZoomDirective implements OnInit {
   onMouseLeave (event: MouseEvent) {
     this.endGrabbing ();
   } // onMouseLeave
+
+  public moveUp () { this.move (0, -10); }
+  public moveDown () { this.move (0, 10); }
+  public moveLeft () { this.move (-10, 0); }
+  public moveRight () { this.move (10, 0); }
+  public zoomIn () { this.zoom (1.1); }
+  public zoomOut () { this.zoom (0.9); }
+
+  private move (xt: number, yt: number) {
+    this.refreshTransform ({
+      zoom: 1,
+      x0: 0, y0: 0,
+      xt: xt, yt: yt,
+      reset: false
+    });
+    this.cd.markForCheck ();
+  } // move
+
+  private zoom (zoom: number) {
+    this.refreshTransform ({
+      zoom: zoom,
+      x0: 0, y0: 0,
+      xt: 0, yt: 0,
+      reset: false
+    });
+    this.cd.markForCheck ();
+  } // move
 
   @HostListener ("mousemove", ["$event"])
   onMouseMove (event: MouseEvent) {

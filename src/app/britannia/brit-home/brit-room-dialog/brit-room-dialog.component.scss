@@ -2,7 +2,11 @@
 
 .brit-new-players {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 2fr;
+  grid-template-columns: 1fr 1fr 2fr;
+  &.is-online-game {
+    grid-template-columns: 1fr 1fr 2fr 2fr;
+  }
+
   gap: 1rem;
   justify-content: center;
   justify-items: center;

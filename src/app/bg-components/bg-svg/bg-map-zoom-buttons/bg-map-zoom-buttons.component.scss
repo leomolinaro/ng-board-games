@@ -1,0 +1,32 @@
+:host {
+  display: grid;
+  grid-template-rows: 2fr 1fr 1fr 2fr;
+  align-items: center;
+  grid-template-areas:
+    ". moveUp ."
+    "moveLeft zoomIn moveRight"
+    "moveLeft zoomOut moveRight"
+    ". moveDown .";
+  .move-up {
+    grid-area: moveUp;
+  }
+  .move-down {
+    grid-area: moveDown;
+  }
+  .move-left {
+    grid-area: moveLeft;
+  }
+  .move-right {
+    grid-area: moveRight;
+  }
+  .zoom-in {
+    grid-area: zoomIn;
+    height: 50%;
+    line-height: 50%;
+  }
+  .zoom-out {
+    grid-area: zoomOut;
+    height: 50%;
+    line-height: 50%;
+  }
+}

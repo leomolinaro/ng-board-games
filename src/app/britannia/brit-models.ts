@@ -1,5 +1,7 @@
 import { BgUser } from "@bg-services";
 
+export type BritColor = "blue" | "yellow" | "red" | "green";
+
 interface ABritUnit {
   id: BritUnitId;
   nation: BritNationId;
@@ -102,3 +104,5 @@ export type BritPlayer = BritAiPlayer | BritRealPlayer;
 
 export type BritLog = never/* BritLogSetup | BritLogSetupPlacement | BritLogTurn | BritLogRecuitment | BritLogConstruction
   | BritLogNewCity | BritLogNobleTitle | BritLogExpedition | BritLogMovement */;
+
+export type BritStory = any;
