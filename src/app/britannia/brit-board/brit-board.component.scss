@@ -72,24 +72,24 @@
     //   margin-top: auto;
     //   margin-left: auto;
     // }
-    // .b-board-players-widget {
-    //   grid-area: players;
-    //   z-index: 1;
-    //   margin-top: auto;
-    //   margin-right: auto;
-    //   display: grid;
-    //   grid-template-columns: auto;
-    //   grid-gap: 2vmin;
-    //   .b-board-player-widget {
-    //     pointer-events: auto;
-    //     background-color: white;
-    //     box-shadow: $widget-shadow;
-    //     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-    //     &:hover {
-    //       box-shadow: $widget-shadow-hover;
-    //     }
-    //   }
-    // }
+    .b-board-players-widget {
+      grid-area: players;
+      z-index: 1;
+      margin-top: auto;
+      margin-right: auto;
+      display: grid;
+      grid-template-columns: auto;
+      grid-gap: 2vmin;
+      .b-board-player-widget {
+        pointer-events: auto;
+        background-color: white;
+        box-shadow: $widget-shadow;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        &:hover {
+          box-shadow: $widget-shadow-hover;
+        }
+      }
+    }
     // .b-board-zoom-and-logs {
     //   grid-area: zoomAndLogs;
     //   display: flex;

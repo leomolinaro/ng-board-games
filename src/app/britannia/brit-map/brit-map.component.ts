@@ -24,6 +24,7 @@ export class BritMapComponent implements OnChanges {
 
   areaNodes!: BritAreaNode[];
   viewBox = this.mapService.getViewBox ();
+  mapWidth = this.mapService.getWidth ();
 
   areaTrackBy = (index: number, areaNode: BritAreaNode) => areaNode.area.id;
 

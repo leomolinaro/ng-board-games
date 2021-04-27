@@ -36,22 +36,11 @@
       (actionClick)="onActionClick ($event)"
       (passClick)="onPassClick ()"
       (cancelClick)="onCancelClick ()">
-    </barony-actions>
+    </barony-actions>-->
     <div class="b-board-players-widget">
-      <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
-        <barony-player-status
-          (selectPlayer)="onPlayerSelect (otherPlayer)"
-          [player]="otherPlayer">
-        </barony-player-status>
-      </div>
-      <div class="b-board-player-widget" *ngIf="currentPlayer">
-        <barony-player-status
-          [player]="currentPlayer"
-          currentPlayer>
-        </barony-player-status>
-      </div>
+      <brit-players [players]="players"></brit-players>
     </div>
-    <div class="b-board-zoom-and-logs">
+    <!--<div class="b-board-zoom-and-logs">
       <bg-map-zoom-buttons class="b-board-zoom-buttons-widget" [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
       <barony-logs class="b-board-logs-widget" [logs]="logs"></barony-logs>
     </div>

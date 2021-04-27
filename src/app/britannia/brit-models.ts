@@ -75,15 +75,16 @@ export interface ABritPlayer {
   id: string;
   name: string;
   nations: string[];
+  color: BritColor;
 } // ABritPlayer
 
-interface BritAiPlayer extends ABritPlayer {
+export interface BritAiPlayer extends ABritPlayer {
   isAi: true;
   isRemote: false;
   isLocal: false;
 } // BritAiPlayer
 
-interface BritRealPlayer extends ABritPlayer {
+export interface BritRealPlayer extends ABritPlayer {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;
@@ -105,4 +106,4 @@ export type BritPlayer = BritAiPlayer | BritRealPlayer;
 export type BritLog = never/* BritLogSetup | BritLogSetupPlacement | BritLogTurn | BritLogRecuitment | BritLogConstruction
   | BritLogNewCity | BritLogNobleTitle | BritLogExpedition | BritLogMovement */;
 
-export type BritStory = any;
+export type BritStory =  { };

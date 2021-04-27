@@ -1,5 +1,5 @@
 import { arrayUtil, stringUtil } from "@bg-utils";
-import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritInfantry, BritLandArea, BritLandAreaId, BritLeader, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRomanFort, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritUnit } from "../brit-models";
+import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritInfantry, BritLandArea, BritLandAreaId, BritLeader, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRomanFort, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritUnit } from "../brit-models";
 
 export function createAreas (): BritArea[] {
   return [
@@ -72,27 +72,27 @@ function createSeaArea (id: BritSeaAreaId, name: string, neighbors: BritAreaId[]
 
 export function createNationsAndUnits (): { nation: BritNation; units: BritUnit[] }[] {
   return [
-    createNation ("romans", "Romans", 16, 0, 24, []),
-    createNation ("romano-british", "Romano-British", 8, 0, 0, ["Arthur"]),
-    createNation ("normans", "Normans", 8, 0, 0, ["William"]),
-    createNation ("saxons", "Saxons", 20, 0, 8, ["Aelle", "Egbert", "Alfred", "Edgar", "Harold"]),
-    createNation ("danes", "Danes", 18, 0, 0, ["Ivar and Halfdan", "Cnut", "Svein Estrithson"]),
-    createNation ("norwegians", "Norwegians", 12, 0, 0, ["Harald Hardrada"]),
-    createNation ("jutes", "Jutes", 6, 0, 0, []),
-    createNation ("angles", "Angles", 17, 0, 0, ["Ida", "Oswiu", "Offa"]),
-    createNation ("belgae", "Belgae", 10, 0, 0, ["Boudicca"]),
-    createNation ("welsh", "Welsh", 13, 0, 0, []),
-    createNation ("brigantes", "Brigantes", 11, 0, 0, ["Urien"]),
-    createNation ("caledonians", "Caledonians", 7, 0, 0, []),
-    createNation ("picts", "Picts", 10, 0, 0, []),
-    createNation ("irish", "Irish", 8, 0, 0, []),
-    createNation ("scots", "Scots", 11, 0, 0, ["Fergus Mor Mac Erc"]),
-    createNation ("norsemen", "Norsemen", 10, 0, 0, ["Ketil Flatnose"]),
-    createNation ("dubliners", "Dubliners", 9, 0, 0, ["Olaf Guthfrithsson"])
+    createNation ("romans", "Romans", "yellow", 16, 0, 24, []),
+    createNation ("romano-british", "Romano-British", "yellow", 8, 0, 0, ["Arthur"]),
+    createNation ("normans", "Normans", "blue", 8, 0, 0, ["William"]),
+    createNation ("saxons", "Saxons", "red", 20, 0, 8, ["Aelle", "Egbert", "Alfred", "Edgar", "Harold"]),
+    createNation ("danes", "Danes", "green", 18, 0, 0, ["Ivar and Halfdan", "Cnut", "Svein Estrithson"]),
+    createNation ("norwegians", "Norwegians", "yellow", 12, 0, 0, ["Harald Hardrada"]),
+    createNation ("jutes", "Jutes", "green", 6, 0, 0, []),
+    createNation ("angles", "Angles", "blue", 17, 0, 0, ["Ida", "Oswiu", "Offa"]),
+    createNation ("belgae", "Belgae", "blue", 10, 0, 0, ["Boudicca"]),
+    createNation ("welsh", "Welsh", "green", 13, 0, 0, []),
+    createNation ("brigantes", "Brigantes", "red", 11, 0, 0, ["Urien"]),
+    createNation ("caledonians", "Caledonians", "green", 7, 0, 0, []),
+    createNation ("picts", "Picts", "blue", 10, 0, 0, []),
+    createNation ("irish", "Irish", "red", 8, 0, 0, []),
+    createNation ("scots", "Scots", "yellow", 11, 0, 0, ["Fergus Mor Mac Erc"]),
+    createNation ("norsemen", "Norsemen", "red", 10, 0, 0, ["Ketil Flatnose"]),
+    createNation ("dubliners", "Dubliners", "yellow", 9, 0, 0, ["Olaf Guthfrithsson"])
   ];
 } // createNationsAndUnits
 
-function createNation (id: BritNationId, name: string, nInfantries: number, nCavalries: number, nBuildings: number, leaderNames: string[]): { nation: BritNation; units: BritUnit[] } {
+function createNation (id: BritNationId, name: string, color: BritColor, nInfantries: number, nCavalries: number, nBuildings: number, leaderNames: string[]): { nation: BritNation; units: BritUnit[] } {
   const infantries = arrayUtil.range (nInfantries, index => createInfantry (id, index));
   const cavalries = arrayUtil.range (nCavalries, index => createCavalry (id, index));
   const buildings = nBuildings
@@ -162,3 +162,12 @@ function createLeader (nationId: BritNationId, leaderName: string): BritLeader {
     name: leaderName
   };
 } // createSaxonBuhr
+
+export function getNationIdsOfColor (color: BritColor): BritNationId[] {
+  switch (color) {
+    case "yellow": return ["romans", "romano-british", "norwegians", "scots", "dubliners"];
+    case "red": return ["saxons", "brigantes", "irish", "norsemen"];
+    case "blue": return ["normans", "angles", "belgae", "picts"];
+    case "green": return ["danes", "jutes", "welsh", "caledonians"];
+  } // switch
+} // getNationIdsOfColor

@@ -27,10 +27,10 @@
       translateY: 50,
       scale: 1
     }">
-    <image width="800" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
+    <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
     <svg:g
       *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
-      <svg:path [attr.d]="areaNode.path"></svg:path>
+      <svg:path class="brit-area-path" [attr.d]="areaNode.path"></svg:path>
     </svg:g>
       <!-- baronyLandTile
       [type]="land.type"

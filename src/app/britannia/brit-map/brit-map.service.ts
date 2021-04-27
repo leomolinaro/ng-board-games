@@ -15,12 +15,15 @@ export class BritMapService {
 
   private areaPaths!: { [id in BritAreaId]: string };
   private viewBox!: string;
+  private width!: number;
 
   getPath (areaId: BritAreaId) {
     return this.areaPaths[areaId];
   } // getPath
 
   getViewBox () { return this.viewBox; }
+
+  getWidth () { return this.width; }
 
   loadAreaPaths$ () {
     if (this.areaPaths) {
@@ -32,6 +35,7 @@ export class BritMapService {
           const dom = parser.parseFromString (response, "application/xml");
           const svg = dom.getElementsByTagName ("svg").item (0)!;
           this.viewBox = svg.getAttribute ("viewBox")!;
+          this.width = +this.viewBox.split (" ")[2];
           const britAreas = dom.getElementById ("brit-areas");
           this.areaPaths = { } as any;
           britAreas?.childNodes.forEach (childNode => {
