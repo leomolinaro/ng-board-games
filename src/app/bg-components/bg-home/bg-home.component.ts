@@ -4,17 +4,19 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatExpansionPanel } from "@angular/material/expansion";
 import { BgAuthService } from "@bg-services";
 import { concatJoin, ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
-import { forkJoin, Observable, of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map, mapTo, switchMap } from "rxjs/operators";
 import { BgArcheoGame, BgBoardGame, BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../../bg-services/bg-proto-game.service";
 import { BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-home-room-dialog/bg-home-room-dialog.component";
 
-export interface BgHomeConfig {
+export interface BgHomeConfig<R extends string = string> {
   boardGame: BgBoardGame;
   boardGameName: string;
   startGame$: (gameId: string) => Observable<any>;
   deleteGame$: (gameId: string) => Observable<any>;
-  createGame$: (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) => Observable<any>;
+  createGame$: (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<R>[]) => Observable<any>;
+  playerRoles: () => R[];
+  playerRoleCssClass: (playerRole: R) => string;
 } // BgHomeConfig
 
 @Component ({
@@ -24,7 +26,7 @@ export interface BgHomeConfig {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
-export class BgHomeComponent implements OnInit, OnDestroy {
+export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
 
   constructor (
     private breakpointObserver: BreakpointObserver,
@@ -73,12 +75,13 @@ export class BgHomeComponent implements OnInit, OnDestroy {
       this.archeoFormPanel.close ();
       this.archeoGame = this.getDefaultArcheoGame ();
       return this.protoGameService.insertProtoGame$ (protoGame).pipe (
-        switchMap (protoGame => forkJoin ([
-          this.insertProtoPlayer$ ("1", "yellow", protoGame.id),
-          this.insertProtoPlayer$ ("2", "blue", protoGame.id),
-          this.insertProtoPlayer$ ("3", "red", protoGame.id),
-          this.insertProtoPlayer$ ("4", "green", protoGame.id)
-        ]).pipe (mapTo (protoGame))),
+        switchMap (protoGame => {
+          const inserts: Observable<BgProtoPlayer<string>>[] = this.config.playerRoles ()
+          .map ((role, index) => this.insertProtoPlayer$ (index + 1 + "", role, protoGame.id));
+          return concatJoin (
+            inserts
+          ).pipe (mapTo (protoGame));
+        }),
         switchMap (pg => this.playersRoom$ (pg))
       );
     } // if
@@ -92,10 +95,10 @@ export class BgHomeComponent implements OnInit, OnDestroy {
     };
   } // getDefaultArcheoGame
 
-  private insertProtoPlayer$ (id: string, color: any/*TODO*/, gameId: string) {
-    const player: BgProtoPlayer = {
+  private insertProtoPlayer$<R extends string> (id: string, role: R, gameId: string) {
+    const player: BgProtoPlayer<R> = {
       id: id,
-      color: color,
+      role: role,
       name: "",
       controller: null,
       type: "closed",
@@ -111,7 +114,7 @@ export class BgHomeComponent implements OnInit, OnDestroy {
 
   @ExhaustingEvent ()
   onEnterGame (game: BgProtoGame) {
-    if (game.state === "closed") {
+    if (game.state === "running") {
       return this.config.startGame$ (game.id);
     } else {
       return this.playersRoom$ (game);
@@ -119,14 +122,15 @@ export class BgHomeComponent implements OnInit, OnDestroy {
   } // onEnterGame
 
   private playersRoom$ (game: BgProtoGame) {
-    const dialogRef = this.matDialog.open<BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput> (
+    const dialogRef = this.matDialog.open<BgHomeRoomDialogComponent<R>, BgRoomDialogInput<R>, BgRoomDialogOutput> (
       BgHomeRoomDialogComponent,
       {
         width: "1000px",
         data: {
           protoGame: game,
           createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-          deleteGame$: gameId => this.deleteGame$ (gameId)
+          deleteGame$: gameId => this.deleteGame$ (gameId),
+          roleToCssClass: role => this.config.playerRoleCssClass (role)
         }
       }
     );
@@ -142,9 +146,9 @@ export class BgHomeComponent implements OnInit, OnDestroy {
 
   private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) {
     const activeProtoPlayers = protoPlayers
-      .filter (p => p.type === "me" || p.type === "other" || p.type === "ai");
-      return this.protoGameService.updateProtoGame$ ({ state: "closed" }, protoGame.id).pipe (
-        switchMap (() => this.config.createGame$ (protoGame, activeProtoPlayers))
+      .filter (p => p.type === "user" || p.type === "ai");
+      return this.config.createGame$ (protoGame, activeProtoPlayers).pipe (
+        switchMap (() => this.protoGameService.updateProtoGame$ ({ state: "running" }, protoGame.id))
       );
   } // createGame$
 

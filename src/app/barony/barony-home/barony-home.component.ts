@@ -5,6 +5,7 @@ import { BgProtoGame, BgProtoPlayer, BgUser } from "@bg-services";
 import { concatJoin } from "@bg-utils";
 import { forkJoin, from, Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
+import { BARONY_COLORS } from "../barony-constants";
 import { BaronyColor, BaronyLandCoordinates, BaronyLandType } from "../barony-models";
 import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyMapDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../barony-remote.service";
 import { getRandomLands } from "./barony-initializer";
@@ -23,7 +24,7 @@ export class BaronyHomeComponent implements OnInit {
     private gameService: BaronyRemoteService
   ) { }
 
-  config: BgHomeConfig = {
+  config: BgHomeConfig<BaronyColor> = {
     boardGame: "barony",
     boardGameName: "Barony",
     startGame$: (gameId: string) => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute })),
@@ -33,13 +34,22 @@ export class BaronyHomeComponent implements OnInit {
       this.gameService.deletePlayers$ (gameId),
       this.gameService.deleteGame$ (gameId)
     ]),
-    createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers)
+    createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
+    playerRoles: () => BARONY_COLORS,
+    playerRoleCssClass: (color: BaronyColor) => {
+      switch (color) {
+        case "blue": return "barony-player-blue";
+        case "green": return "barony-player-green";
+        case "red": return "barony-player-red";
+        case "yellow": return "barony-player-yellow";
+      } // switch
+    } // playerRoleCssClass
   };
 
   ngOnInit (): void {
   } // ngOnInit
 
-  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) {
+  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<BaronyColor>[]) {
     return this.gameService.insertGame$ ({
       id: protoGame.id,
       owner: protoGame.owner,
@@ -51,9 +61,9 @@ export class BaronyHomeComponent implements OnInit {
         ...protoPlayers
         .map ((p, index) => {
           if (p.type === "ai") {
-            return this.insertAiPlayer$ (p.name, p.color, index + 1, game.id);
+            return this.insertAiPlayer$ (p.name, p.role, index + 1, game.id);
           } else {
-            return this.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
+            return this.insertRealPlayer$ (p.name, p.role, index + 1, p.controller!, game.id);
           } // if - else
         }),
         this.insertMap$ (getRandomLands (protoPlayers.length), game.id)

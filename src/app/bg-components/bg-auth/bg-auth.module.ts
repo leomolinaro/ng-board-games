@@ -6,11 +6,13 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from "@angular/material/menu";
 import { BgAccountButtonComponent } from "./bg-account-button/bg-account-button.component";
 import { BgIfUserDirective } from "./bg-if-user-of.directive";
+import { BgIfUserPipe } from './bg-if-user.pipe';
 
 @NgModule ({
   declarations: [
     BgAccountButtonComponent,
-    BgIfUserDirective
+    BgIfUserDirective,
+    BgIfUserPipe
   ],
   imports: [
     CommonModule,
@@ -21,7 +23,8 @@ import { BgIfUserDirective } from "./bg-if-user-of.directive";
   ],
   exports: [
     BgAccountButtonComponent,
-    BgIfUserDirective
+    BgIfUserDirective,
+    BgIfUserPipe
   ]
 })
 export class BgAuthModule { }

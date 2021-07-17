@@ -1,6 +1,5 @@
-@import "brit-variables";
-
 :host {
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -14,12 +13,11 @@
       text-align: end;
       .bg-player-type-button {
         // justify-self: end;
-        &.is-red { background-color: $red-light; }
-        &.is-yellow { background-color: $yellow-light; }
-        &.is-green { background-color: $green-light; }
-        &.is-blue { background-color: $blue-light; }
         .s-new-players-color-icon {
           visibility: hidden;
+        }
+        &.mat-button-disabled {
+          color: grey;
         }
       }
     }

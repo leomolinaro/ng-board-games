@@ -2,7 +2,10 @@
 <div mat-dialog-content class="bg-players">
   <bg-home-player-form *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
     [onlineGame]="onlineGame"
-    [player]="player" (playerChange)="onPlayerChange ($event, player.id)">
+    [player]="player" (playerChange)="onPlayerChange ($event, player.id)"
+    [isOwner]="game.owner | bgIfUser"
+    [isPlayer]="player.controller && (player.controller | bgIfUser)"
+    [ngClass]="player.role | bgTransform:roleToCssClass">
   </bg-home-player-form>
 </div>
 <div mat-dialog-actions *bgIfUser="game.owner">

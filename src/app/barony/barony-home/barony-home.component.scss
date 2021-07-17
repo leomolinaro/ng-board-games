@@ -1,0 +1,8 @@
+@import "barony-variables";
+
+::ng-deep {
+  .barony-player-blue { .bg-player-type-button { background-color: $blue; } }
+  .barony-player-red { .bg-player-type-button { background-color: $red; } }
+  .barony-player-green { .bg-player-type-button { background-color: $green; } }
+  .barony-player-yellow { .bg-player-type-button { background-color: $yellow; } }
+}

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { BgAuthService, BgProtoPlayer, BgProtoPlayerType, BgUser } from "@bg-services";
+import { BooleanInput } from "@bg-utils";
 
 @Component({
   selector: 'bg-home-player-form',
@@ -15,10 +16,13 @@ export class BgHomePlayerFormComponent {
 
   @Input () onlineGame!: boolean;
   @Input () player!: BgProtoPlayer;
+  @Input () @BooleanInput () isOwner!: boolean;
+  @Input () @BooleanInput () isPlayer!: boolean;
+
   @Output () playerChange = new EventEmitter<BgProtoPlayer> ();
 
   playerNameActive = (player: BgProtoPlayer) => {
-    return player.type === "ai" || player.type === "me";
+    return (player.type === "ai" && this.isOwner) || this.isPlayer;
   } // playerNameActive
 
   onPlayerChange (player: BgProtoPlayer) {
@@ -31,7 +35,7 @@ export class BgHomePlayerFormComponent {
     const readyPatch: { ready?: boolean } = { };
     const nextPlayerType = this.getNextPlayerType (this.player.type);
     switch (nextPlayerType) {
-      case "me": {
+      case "user": {
         controllerPatch.controller = this.authService.getUser ();
         namePatch.name = this.authService.getUser ().displayName;
         if (!this.onlineGame) { readyPatch.ready = true; }
@@ -66,13 +70,21 @@ export class BgHomePlayerFormComponent {
   } // onNextPlayerType
 
   private getNextPlayerType (currentType: BgProtoPlayerType): BgProtoPlayerType {
-    switch (currentType) {
-      case "closed": return "me";
-      case "me": return this.onlineGame ? "open" : "ai";
-      case "open": return "ai";
-      case "ai": return "closed";
-      case "other": return "closed";
-    } // switch
+    if (this.isOwner) {
+      switch (currentType) {
+        case "closed": return "user";
+        case "user": return this.onlineGame ? "open" : "ai";
+        case "open": return "ai";
+        case "ai": return "closed";
+      } // switch
+    } else {
+      switch (currentType) {
+        case "closed": return "closed";
+        case "user": return "open";
+        case "open": return "user";
+        case "ai": return "ai";
+      } // switch
+    } // if - else
   } // getNextPlayerType
   
 } // BgHomePlayerFormComponent

@@ -19,17 +19,17 @@ export interface BgProtoGame {
   state: BgProtoGameState;
 } // BgProtoGame
 
-export interface BgProtoPlayer {
+export interface BgProtoPlayer<R extends string = string> {
   id: string;
   controller: BgUser | null;
   type: BgProtoPlayerType;
   name: string;
   ready: boolean;
-  color: any; // TODO
+  role: R;
 } // BgProtoPlayer
 
-export type BgProtoGameState = "open" | "closed";
-export type BgProtoPlayerType = "me" | "other" | "open" | "closed" | "ai";
+export type BgProtoGameState = "open" | "running" | "ended";
+export type BgProtoPlayerType = "user" | "open" | "closed" | "ai";
 
 @Injectable ({
   providedIn: "root"
@@ -43,6 +43,7 @@ export class BgProtoGameService {
   private protoGames (queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) { return this.cloud.collection<BgProtoGame> (`proto-games`, queryFn); }
   getProtoGame$ (gameId: string) { this.cloud.get$ (gameId, this.protoGames ()); }
   selectProtoGames$ (queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) { return this.cloud.selectAll$ (this.protoGames (queryFn)); }
+  selectProtoGame$ (gameId: string) { return this.cloud.select$ (gameId, this.protoGames ()); }
   insertProtoGame$ (protoGame: Omit<BgProtoGame, "id">): Observable<BgProtoGame> { return this.cloud.insert$<BgProtoGame> (id => ({ id: id, ...protoGame }), this.protoGames ()); }
   updateProtoGame$ (patch: Partial<BgProtoGame>, gameId: string) { return this.cloud.update$ (patch, gameId, this.protoGames ()); }
   deleteProtoGame$ (gameId: string) { return this.cloud.delete$ (gameId, this.protoGames ()); }

@@ -3,12 +3,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "@bg-services";
 import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@bg-utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { filter, map, tap } from "rxjs/operators";
 
-export interface BgRoomDialogInput {
+export interface BgRoomDialogInput<R extends string> {
   protoGame: BgProtoGame;
   createGame$: (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) => Observable<void>;
   deleteGame$: (gameId: string) => Observable<void>;
+  roleToCssClass: (role: R) => string;
 } // BgRoomDialogInput
 
 export interface BgRoomDialogOutput {
@@ -23,11 +24,11 @@ export interface BgRoomDialogOutput {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
-export class BgHomeRoomDialogComponent implements OnInit, OnDestroy {
+export class BgHomeRoomDialogComponent<R extends string> implements OnInit, OnDestroy {
 
   constructor (
-    private dialogRef: MatDialogRef<BgHomeRoomDialogComponent, BgRoomDialogOutput>,
-    @Inject (MAT_DIALOG_DATA) private input: BgRoomDialogInput,
+    private dialogRef: MatDialogRef<BgHomeRoomDialogComponent<R>, BgRoomDialogOutput>,
+    @Inject (MAT_DIALOG_DATA) private input: BgRoomDialogInput<R>,
     private protoGameService: BgProtoGameService
   ) { }
 
@@ -37,12 +38,13 @@ export class BgHomeRoomDialogComponent implements OnInit, OnDestroy {
   private $players = new BehaviorSubject<BgProtoPlayer[]> ([]);
   players$ = this.$players.asObservable ();
 
+  roleToCssClass = (role: R) => this.input.roleToCssClass (role);
+
   validPlayers$ = this.players$.pipe (map (players => {
     let nPlayers = 0;
     for (const player of players) {
       switch (player.type) {
-        case "me":
-        case "other": if (!player.name || !player.ready) { return false; } nPlayers++; break;
+        case "user": if (!player.name || !player.ready) { return false; } nPlayers++; break;
         case "ai": if (!player.name) { return false; } nPlayers++; break;
         case "open": return false;
       } // switch
@@ -57,9 +59,18 @@ export class BgHomeRoomDialogComponent implements OnInit, OnDestroy {
       tap (protoPlayers => this.$players.next (protoPlayers))
     );
   } // listenToPlayersChange
+
+  @ChangeListener ()
+  private listenToGameStart () {
+    return this.protoGameService.selectProtoGame$ (this.game.id).pipe (
+      filter (game => game?.state === "running"),
+      tap (() => this.closeDialog (true))
+    );
+  } // listenToGameStart
   
   ngOnInit () {
     this.listenToPlayersChange ();
+    this.listenToGameStart ();
   } // ngOnInit
 
   ngOnDestroy () { }
