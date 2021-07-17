@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { BgAppService, BgAuthService } from "@bg-services";
-import { InitEvent, UntilDestroy } from "@bg-utils";
+import { SingleEvent, UntilDestroy } from "@bg-utils";
 
 @Component ({
   selector: "bg-main-page",
@@ -18,7 +18,7 @@ export class BgMainPageComponent implements OnInit, OnDestroy {
 
   apps = this.appService.getApps ();
 
-  @InitEvent ()
+  @SingleEvent ()
   ngOnInit () {
     return this.authService.autoSignIn$ ();
   } // ngOnInit

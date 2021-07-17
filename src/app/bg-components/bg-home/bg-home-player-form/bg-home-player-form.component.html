@@ -1,0 +1,35 @@
+<ng-container [bgForm]="player" (bgFormChange)="onPlayerChange ($event)">
+  <div class="bg-player-type">
+    <div class="bg-player-type-button-container">
+      <button class="bg-player-type-button" 
+        [ngClass]="'is-' + player.color"
+        mat-fab (click)="onNextPlayerType ()">
+        <ng-container [ngSwitch]="player.type">
+          <mat-icon *ngSwitchCase="'closed'">no_accounts</mat-icon>
+          <mat-icon *ngSwitchCase="'me'">person_pin</mat-icon>
+          <mat-icon *ngSwitchCase="'other'">cloud_cirle</mat-icon>
+          <mat-icon *ngSwitchCase="'ai'">monitor</mat-icon>
+          <mat-icon *ngSwitchCase="'open'">cloud</mat-icon>
+        </ng-container>
+      </button>
+    </div>
+    <div [ngSwitch]="player.type" class="bg-player-type-caption-container">
+      <span *ngSwitchCase="'closed'" class="mat-caption bg-player-type-caption">closed</span>
+      <span *ngSwitchCase="'me'" class="mat-caption bg-player-type-caption">me</span>
+      <span *ngSwitchCase="'other'" class="mat-caption bg-player-type-caption">TODO</span>
+      <span *ngSwitchCase="'ai'" class="mat-caption bg-player-type-caption">AI</span>
+      <span *ngSwitchCase="'open'" class="mat-caption bg-player-type-caption">open</span>
+    </div>
+  </div>
+  <mat-form-field class="bg-player-name">
+    <mat-label>Player name</mat-label>
+    <input bgField="name" matInput 
+      [required]="player | bgTransform:playerNameActive"
+      [disabled]="!(player | bgTransform:playerNameActive)"
+      autocomplete="off">
+  </mat-form-field>
+  <div *ngIf="onlineGame" class="bg-player-ready">
+    <mat-checkbox *ngIf="player.type === 'me' || player.type === 'other'"
+      bgField="ready">Ready</mat-checkbox>
+  </div>
+</ng-container>

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@bg-services";
-import { ChangeListener, InitEvent, UntilDestroy } from "@bg-utils";
+import { ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ABaronyPlayer, BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../barony-models";
@@ -53,7 +53,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   canCancel$ = this.ui.selectCanCancel$ ();
   maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
-  @InitEvent ()
+  @SingleEvent ()
   ngOnInit () {
     return forkJoin ([
       this.remote.getGame$ (this.gameId),

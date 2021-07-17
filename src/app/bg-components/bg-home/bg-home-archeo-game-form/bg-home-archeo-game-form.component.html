@@ -1,9 +1,9 @@
 <ng-container [bgForm]="game" (bgFormChange)="onGameChange ($event)">
-  <mat-form-field class="b-game-name-field">
+  <mat-form-field class="bg-game-name-field">
     <mat-label>Game name</mat-label>
     <input bgField="name" matInput required autocomplete="off">
   </mat-form-field>
-  <mat-radio-group class="b-archeo-game-type-radio" bgField [bgFieldConfig]="typeConfig">
+  <mat-radio-group class="bg-archeo-game-type-radio" bgField [bgFieldConfig]="typeConfig">
     <mat-radio-button value="local">Local</mat-radio-button>
     <mat-radio-button value="online">Online</mat-radio-button>
   </mat-radio-group>

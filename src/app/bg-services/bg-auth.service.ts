@@ -156,8 +156,8 @@ class GoogleAuthProvider implements IBgAuthProvider {
 class GuestAuthProvider implements IBgAuthProvider {
 
   signIn$ (): Observable<BgUser | null> {
-    const guestKey = new Date ().getTime () + "";
-    localStorage.setItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, `guestKey${guestKey}`);
+    const guestKey = `guestKey${new Date ().getTime ()}`;
+    localStorage.setItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, guestKey);
     const user = this.guestKeyToBgUser (guestKey);
     return of (user);
   } // signIn$
@@ -180,7 +180,7 @@ class GuestAuthProvider implements IBgAuthProvider {
   private guestKeyToBgUser (guestKey: string): BgUser | null {
     return guestKey ? {
       displayName: "Guest " + guestKey,
-      email: guestKey,
+      email: "",
       id: guestKey,
       loginType: "guest",
     } : null;

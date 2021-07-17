@@ -8,6 +8,7 @@ import * as stringUtil from "./string.util";
 import * as typesUtil from "./types.util";
 
 export * from "./ng.util";
+export * from "./rxjs.util";
 export {
   typesUtil,
   arrayUtil,

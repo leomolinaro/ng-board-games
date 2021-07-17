@@ -5,7 +5,7 @@ import { ChangeListener, ConcatingEvent, ExhaustingEvent, InitEvent, UntilDestro
 import { BehaviorSubject, forkJoin, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgRoomDialogInput, ABgRoomDialogOutput } from "src/app/bg-components/bg-home";
-import { ABgProtoPlayerType, BgProtoGameService } from "src/app/bg-services/bg-proto-game.service";
+import { BgProtoGameService, BgProtoPlayerType } from "src/app/bg-services/bg-proto-game.service";
 import { BritColor } from "../../brit-models";
 import { ABritPlayerDoc, BritAiPlayerDoc, BritPlayerDoc, BritReadPlayerDoc, BritRemoteService } from "../../brit-remote.service";
 import { BritProtoGame, BritProtoPlayer } from "../brit-home.models";
@@ -95,7 +95,7 @@ export class BritRoomDialogComponent implements OnInit, OnDestroy {
   } // onPlayerChange
 
   @ConcatingEvent ()
-  onNextPlayerType (currentType: ABgProtoPlayerType, playerId: string) {
+  onNextPlayerType (currentType: BgProtoPlayerType, playerId: string) {
     const controllerPatch: { controller?: BgUser | null } = { };
     const namePatch: { name?: string | "" } = { };
     const readyPatch: { ready?: boolean } = { };
@@ -134,7 +134,7 @@ export class BritRoomDialogComponent implements OnInit, OnDestroy {
     }, playerId, this.game.id);
   } // onNextPlayerType
 
-  private getNextPlayerType (currentType: ABgProtoPlayerType): ABgProtoPlayerType {
+  private getNextPlayerType (currentType: BgProtoPlayerType): BgProtoPlayerType {
     switch (currentType) {
       case "closed": return "me";
       case "me": return this.onlineGame ? "open" : "ai";

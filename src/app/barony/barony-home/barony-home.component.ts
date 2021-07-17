@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgHomeConfig } from "@bg-components/home";
-import { forkJoin, from } from "rxjs";
-import { BaronyRemoteService } from "../barony-remote.service";
-import { BaronyArcheoGameFormComponent } from "./barony-archeo-game-form/barony-archeo-game-form.component";
-import { BaronyArcheoGame } from "./barony-home.models";
-import { BaronyRoomDialogComponent } from "./barony-room-dialog/barony-room-dialog.component";
+import { BgProtoGame, BgProtoPlayer, BgUser } from "@bg-services";
+import { concatJoin } from "@bg-utils";
+import { forkJoin, from, Observable } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType } from "../barony-models";
+import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyMapDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../barony-remote.service";
+import { getRandomLands } from "./barony-initializer";
 
 @Component ({
   selector: "barony-home",
@@ -24,23 +26,76 @@ export class BaronyHomeComponent implements OnInit {
   config: BgHomeConfig = {
     boardGame: "barony",
     boardGameName: "Barony",
-    archeoGameForm: BaronyArcheoGameFormComponent,
-    roomDialog: BaronyRoomDialogComponent,
-    isGameValid: (game: BaronyArcheoGame) => !!game.name,
-    getDefaultGame: () => ({
-      name: "",
-      online: false
-    }),
     startGame$: (gameId: string) => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute })),
-    deleteGame$: (gameId: string) => forkJoin ([
+    deleteGame$: (gameId: string) => concatJoin ([
       this.gameService.deleteStories$ (gameId),
       this.gameService.deleteMap$ (gameId),
       this.gameService.deletePlayers$ (gameId),
       this.gameService.deleteGame$ (gameId)
-    ])
+    ]),
+    createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers)
   };
 
   ngOnInit (): void {
   } // ngOnInit
+
+  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) {
+    return this.gameService.insertGame$ ({
+      id: protoGame.id,
+      owner: protoGame.owner,
+      name: protoGame.name,
+      online: protoGame.online,
+      state: "open"
+    }).pipe (
+      switchMap (game => forkJoin ([
+        ...protoPlayers
+        .map ((p, index) => {
+          if (p.type === "ai") {
+            return this.insertAiPlayer$ (p.name, p.color, index + 1, game.id);
+          } else {
+            return this.insertRealPlayer$ (p.name, p.color, index + 1, p.controller!, game.id);
+          } // if - else
+        }),
+        this.insertMap$ (getRandomLands (protoPlayers.length), game.id)
+        // ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
+      ]))
+    );
+  } // createGame$
+
+  private insertMap$ (lands: { coordinates: BaronyLandCoordinates; type: BaronyLandType; }[], gameId: string): Observable<BaronyMapDoc> {
+    const baronyMap: BaronyMapDoc = {
+      lands: lands.map (l => ({
+        x: l.coordinates.x,
+        y: l.coordinates.y,
+        type: l.type
+      }))
+    };
+    return this.gameService.insertMap$ (baronyMap, gameId);
+  } // insertMap$
+
+  private insertAiPlayer$ (name: string, color: BaronyColor, sort: number, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: Omit<BaronyAiPlayerDoc, "id"> = {
+      ...this.aPlayerDoc (name, color, sort),
+      isAi: true
+    };
+    return this.gameService.insertPlayer$ (player, gameId);
+  } // insertAiPlayer$
+
+  private insertRealPlayer$ (name: string, color: BaronyColor, sort: number, controller: BgUser, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: Omit<BaronyReadPlayerDoc, "id"> = {
+      ...this.aPlayerDoc (name, color, sort),
+      isAi: false,
+      controller: controller
+    };
+    return this.gameService.insertPlayer$ (player, gameId);
+  } // insertRealPlayer$
+
+  private aPlayerDoc (name: string, color: BaronyColor, sort: number): Omit<ABaronyPlayerDoc, "id"> {
+    return {
+      name: name,
+      color: color,
+      sort: sort
+    };
+  } // aPlayerDoc
 
 } // BaronyHomeComponent

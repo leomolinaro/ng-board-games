@@ -6,6 +6,10 @@
   width: 300px;
 }
 
+mat-sidenav-content {
+  overflow: visible; // altrimenti compare una doppia scrollbar
+}
+
 .sidenav .mat-toolbar {
   background: inherit;
 }

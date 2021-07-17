@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Players</h1>
+<div mat-dialog-content class="bg-players">
+  <bg-home-player-form *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
+    [onlineGame]="onlineGame"
+    [player]="player" (playerChange)="onPlayerChange ($event, player.id)">
+  </bg-home-player-form>
+</div>
+<div mat-dialog-actions *bgIfUser="game.owner">
+  <button mat-button
+    color="warn"
+    (click)="onDeleteGameClick ()">Delete game</button>
+  <button class="bg-game-start-button" mat-button
+    color="accent"
+    [disabled]="!(validPlayers$ | async)" (click)="onStartGameClick ()">Start game</button>
+</div>

@@ -9,9 +9,12 @@
           <mat-panel-title>New game</mat-panel-title>
         </mat-expansion-panel-header>
         <div class="bg-archeo-game">
-          <ng-container bgArcheoGameFormHost></ng-container>
+          <bg-home-archeo-game-form
+            [game]="archeoGame"
+            (gameChange)="onArcheoGameChange ($event)">
+          </bg-home-archeo-game-form>
           <button class="bg-archeo-game-create" mat-button
-            color="accent" [disabled]="!(archeoGameValid$ | async)"
+            color="accent" [disabled]="!archeoGameValid"
             (click)="onCreateGame ()">Create game</button>
         </div>
       </mat-expansion-panel>

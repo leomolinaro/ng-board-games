@@ -14,8 +14,12 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { BgAuthModule } from "@bg-components/auth";
+import { BgFormModule } from "@bg-components/form";
 import { BgUtilsModule } from "@bg-utils";
-import { BgArcheoGameFormHostDirective, BgHomeComponent } from "./bg-home.component";
+import { BgHomeArcheoGameFormComponent } from './bg-home-archeo-game-form/bg-home-archeo-game-form.component';
+import { BgHomePlayerFormComponent } from './bg-home-player-form/bg-home-player-form.component';
+import { BgHomeRoomDialogComponent } from './bg-home-room-dialog/bg-home-room-dialog.component';
+import { BgHomeComponent } from "./bg-home.component";
 
 const components = [
   BgHomeComponent
@@ -24,10 +28,13 @@ const components = [
 @NgModule ({
   declarations: [
     ...components,
-    BgArcheoGameFormHostDirective
+    BgHomeRoomDialogComponent,
+    BgHomePlayerFormComponent,
+    BgHomeArcheoGameFormComponent
   ],
   exports: [
-    ...components
+    ...components,
+    BgHomePlayerFormComponent // TODO rimuovere
   ],
   imports: [
     CommonModule,
@@ -37,6 +44,7 @@ const components = [
     MatIconModule,
     MatButtonModule,
     BgUtilsModule,
+    BgFormModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,

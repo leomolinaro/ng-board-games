@@ -10,21 +10,19 @@ import { MatRadioModule } from "@angular/material/radio";
 import { BgAuthModule } from "@bg-components/auth";
 import { BgFormModule } from "@bg-components/form";
 import { BgHomeModule } from "@bg-components/home";
-import { BaronyArcheoGameFormComponent } from "./barony-archeo-game-form/barony-archeo-game-form.component";
+import { BgUtilsModule } from "@bg-utils";
 import { BaronyHomeComponent } from "./barony-home.component";
-import { BaronyRoomDialogComponent } from "./barony-room-dialog/barony-room-dialog.component";
 
 @NgModule ({
   declarations: [
-    BaronyHomeComponent,
-    BaronyArcheoGameFormComponent,
-    BaronyRoomDialogComponent
+    BaronyHomeComponent
   ],
   imports: [
     CommonModule,
     BgHomeModule,
     BgFormModule,
     BgAuthModule,
+    BgUtilsModule,
     MatFormFieldModule,
     MatRadioModule,
     MatInputModule,
