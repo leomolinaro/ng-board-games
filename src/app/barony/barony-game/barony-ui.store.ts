@@ -38,7 +38,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
       validResources: null,
       canPass: false,
       maxNumberOfKnights: null
-    });
+    }, "Barony UI");
   } // constructor
 
   actionChange (action: BaronyAction) { this.$actionChange.next (action); }
@@ -114,9 +114,10 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   } // selectOtherPlayers$
 
   updateUi<S extends BaronyUiState & { [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never }> (
+    actionName: string,
     updater: (state: BaronyUiState) => S
   ) {
-    this.update (updater);
+    this.update (actionName, updater);
   } // updateUi
 
   resetUi (): Partial<BaronyUiState> {
@@ -140,7 +141,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
   } // setFirstActionUi
 
   setCurrentPlayer (playerId: string | null) {
-    this.updateUi (s => ({ ...s, currentPlayer: playerId }));
+    this.updateUi ("Set current player", s => ({ ...s, currentPlayer: playerId }));
   } // setCurrentPlayer
 
 } // BaronyUiStore

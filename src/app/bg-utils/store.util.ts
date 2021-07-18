@@ -9,9 +9,10 @@ export type Exactly<S, T> = { [K in keyof S]: K extends keyof T ? T[K] : never }
 export class BgStore<S extends object> {
 
   constructor (
-    private defaultState: S
+    private defaultState: S,
+    private name: string
   ) {
-    this.devtoolsInstance = bgReduxDevtools.connect ("Bg");
+    this.devtoolsInstance = bgReduxDevtools.connect (name);
     if (this.devtoolsInstance) { this.devtoolsInstance.init (defaultState); }
   } // constructor
 
@@ -82,7 +83,7 @@ export class BgStore<S extends object> {
   //   return (this.componentStore as any).select (...args);
   // } // selectSync$
 
-  update (updaterFnOrPatch: ((state: S) => S) | Partial<S>): void {
+  update (actionName: string, updaterFnOrPatch: ((state: S) => S) | Partial<S>): void {
     const state = this.$state.getValue ();
     let newState: S;
     if (typeof updaterFnOrPatch === "function") {
@@ -92,7 +93,7 @@ export class BgStore<S extends object> {
     } // if - else
     this.$state.next (newState);
     if (this.devtoolsInstance) {
-      this.devtoolsInstance.send ("Action", newState);
+      this.devtoolsInstance.send (actionName, newState);
     } // if
   } // update
 

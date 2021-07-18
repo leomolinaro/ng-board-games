@@ -169,7 +169,7 @@ export class BaronyGameService {
       );
     } else {
       this.resetUi (playerId);
-      return this.remoteService.selectStory$ (this.lastStoryId + 1, this.game.getGameId ()).pipe (
+      return this.remoteService.selectStory$ (++this.lastStoryId, this.game.getGameId ()).pipe (
         filter (story => !!story),
         map (story => story as any as R),
         first<R> ()
@@ -217,7 +217,7 @@ export class BaronyGameService {
   } // insertAction$
 
   private resetUi (player: string) {
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Reset UI", s => ({
       ...s,
       turnPlayer: player,
       ...this.ui.resetUi (),

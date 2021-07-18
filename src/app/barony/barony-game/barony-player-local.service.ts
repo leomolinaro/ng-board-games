@@ -81,7 +81,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandForSetupPlacement$ (player: string): Observable<BaronyLand> {
     const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land for setup placement", s => ({
       ...s,
       ...this.ui.resetUi (),
       ...this.ui.setFirstActionUi (player),
@@ -93,7 +93,7 @@ export class BaronyPlayerLocalService {
 
   private chooseAction$ (player: string): Observable<BaronyAction> {
     const validActions = baronyRules.getValidActions (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose action", s => ({
       ...s,
       ...this.ui.resetUi (),
       ...this.ui.setFirstActionUi (player),
@@ -116,7 +116,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandForRecruitment$ (player: string): Observable<BaronyLand> {
     const validLands = baronyRules.getValidLandsForRecruitment (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land for recruitment", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to recruit on.`,
@@ -127,7 +127,7 @@ export class BaronyPlayerLocalService {
 
   private chooseNumberOfKnightsForRecruitment$ (land: BaronyLandCoordinates, player: string): Observable<number> {
     const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment (land, player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose number of knights for recruitment", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose the number of knights to recruit.`,
@@ -212,7 +212,7 @@ export class BaronyPlayerLocalService {
 
   private chooseResourceForVillageDestruction$ (player: string, villagePlayer: string): Observable<BaronyResourceType> {
     const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction (villagePlayer, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose resource for village destruction", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a resource to take for the village destruction.`,
@@ -226,7 +226,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandSourceForFirstMovement$ (player: string): Observable<BaronyLand> {
     const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land source for first movement", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to move a knight from.`,
@@ -237,7 +237,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandSourceOrPassForSecondMovement$ (player: string, firstMovement: BaronyMovement): Observable<BaronyLand | null> {
     const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement (player, firstMovement, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land source or pass for second movement", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to move a knight from, or pass.`,
@@ -252,7 +252,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandTargetForMovement$ (movementSource: BaronyLandCoordinates, player: string): Observable<BaronyLand> {
     const validSourceLands = baronyRules.getValidTargetLandsForMovement (movementSource, player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land target for movement", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to move a knight to.`,
@@ -313,7 +313,7 @@ export class BaronyPlayerLocalService {
 
   private chooseLandForConstruction$ (player: string, orPass: boolean): Observable<BaronyLand> {
     const validLands = baronyRules.getValidLandsForConstruction (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose land for construction", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to construct on${ orPass ? `, or pass` : ``}.`,
@@ -325,7 +325,7 @@ export class BaronyPlayerLocalService {
 
   private chooseBuildingForConstruction$ (player: string, orPass: boolean): Observable<"stronghold" | "village"> {
     const validBuildings = baronyRules.getValidBuildingsForConstruction (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose building for construction", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a building to construct on the tile${ orPass ? `, or pass` : ``}.`,
@@ -337,7 +337,7 @@ export class BaronyPlayerLocalService {
 
   private chooseNewCity$ (player: string): Observable<BaronyLand> {
     const validLandsForNewCity = baronyRules.getValidLandsForNewCity (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose new city", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile to build a new city.`,
@@ -348,7 +348,7 @@ export class BaronyPlayerLocalService {
 
   private chooseExpedition$ (player: string): Observable<BaronyLand> {
     const validLandsForExpedition = baronyRules.getValidLandsForExpedition (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose expedition", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a land tile for the expedition.`,
@@ -379,7 +379,7 @@ export class BaronyPlayerLocalService {
 
   private chooseResourceForNobleTitle$ (player: string, sum: number): Observable<BaronyResourceType> {
     const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle (player, this.game);
-    this.ui.updateUi (s => ({
+    this.ui.updateUi ("Choose resource for noble title", s => ({
       ...s,
       ...this.ui.resetUi (),
       message: `Choose a resource to discard for the noble title (${sum} / 15).`,
