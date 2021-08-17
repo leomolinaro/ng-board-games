@@ -32,9 +32,7 @@ export type BritPlayerDoc = BritAiPlayerDoc | BritReadPlayerDoc;
 
 export type BritStoryDoc = BritStory & { id: number };
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class BritRemoteService {
 
   constructor (

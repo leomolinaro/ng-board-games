@@ -1,27 +1,19 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
-import { arrayUtil, BgStore } from "@bg-utils";
-import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritUnit } from "../brit-models";
+import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
+import { BRIT_AREAS } from "../brit-constants";
+import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritUnit, BritUnitId } from "../brit-models";
 
 interface BritGameState {
   gameId: string;
   gameOwner: BgUser;
   players: {
-    map: { [id: string]: BritPlayer },
+    map: Record<string, BritPlayer>,
     ids: string[]
   };
-  areas: {
-    map: { [id: string]: BritArea };
-    ids: BritAreaId[];
-  };
-  nations: {
-    map: { [id: string]: BritNation };
-    ids: BritNationId[];
-  };
-  units: {
-    map: { [id: string]: BritUnit };
-    ids: string[];
-  };
+  areas: Record<BritAreaId, BritArea>;
+  nations: Record<BritNationId, BritNation>;
+  units: Record<BritUnitId, BritUnit>;
   logs: BritLog[];
 } // BritGameState
 
@@ -32,12 +24,12 @@ export class BritGameStore extends BgStore<BritGameState> {
     super ({
       gameId: "",
       gameOwner: null as any,
-      players: { map: { }, ids: [] },
-      areas: { map: { }, ids: [] },
-      nations: { map: { }, ids: [] },
-      units: { map: { }, ids: [] },
+      players: null as any,
+      areas: null as any,
+      nations: null as any,
+      units: null as any,
       logs: []
-    });
+    }, "Britannia Game");
   } // constructor
 
   setInitialState (
@@ -48,67 +40,57 @@ export class BritGameStore extends BgStore<BritGameState> {
     gameId: string,
     gameOwner: BgUser
   ) {
-    this.update (s => ({
+    this.update ("Initial state", s => ({
+      ...s,
       gameId: gameId,
       gameOwner: gameOwner,
       players: {
         map: arrayUtil.toMap (players, p => p.id),
         ids: players.map (p => p.id)
       },
-      areas: {
-        map: arrayUtil.toMap (areas, a => a.id),
-        ids: areas.map (a => a.id)
-      },
-      nations: {
-        map: arrayUtil.toMap (nations, n => n.id),
-        ids: nations.map (n => n.id)
-      },
-      units: {
-        map: arrayUtil.toMap (units, u => u.id),
-        ids: units.map (u => u.id)
-      },
-      logs: []
+      areas: arrayUtil.toMap (areas, a => a.id) as Record<BritAreaId, BritArea>,
+      nations: arrayUtil.toMap (nations, n => n.id) as Record<BritNationId, BritNation>,
+      units: arrayUtil.toMap (units, u => u.id)
     }));
   } // setInitialState
 
-  // private notTemporaryState: BritGameState | null = null;
-  // isTemporaryState () { return !!this.notTemporaryState; }
-  // startTemporaryState () {
-  //   this.notTemporaryState = this.get ();
-  // } // startTemporaryState
-  // endTemporaryState () {
-  //   if (this.notTemporaryState) {
-  //     const state = this.notTemporaryState;
-  //     this.update (s => ({ ...state }));
-  //     this.notTemporaryState = null;
-  //   } else {
-  //     throw new Error ("endTemporaryState without startTemporaryState");
-  //   } // if - else
-  // } // endTemporaryState
+  private notTemporaryState: BritGameState | null = null;
+  isTemporaryState () { return !!this.notTemporaryState; }
+  startTemporaryState () {
+    this.notTemporaryState = this.get ();
+  } // startTemporaryState
+  endTemporaryState () {
+    if (this.notTemporaryState) {
+      const state = this.notTemporaryState;
+      this.update ("End temporary state", s => ({ ...state }));
+      this.notTemporaryState = null;
+    } else {
+      throw new Error ("endTemporaryState without startTemporaryState");
+    } // if - else
+  } // endTemporaryState
 
   selectAreas$ () {
     return this.select$ (this.select$ (s => s.areas), areas => {
-      return areas.ids.map (id => areas.map[id]);
+      return areas ? BRIT_AREAS.map (id => areas[id]) : [];
     });
   } // selectAreas$
 
+  selectUnitsMap$ () { return this.select$ (s => s.units); }
+
   selectPlayers$ () {
     return this.select$ (this.select$ (s => s.players), players => {
-      return players.ids.map (id => players.map[id]);
+      return players ? players.ids.map (id => players.map[id]) : [];
     });
   } // selectPlayers$
 
-  // getGameId (): string { return this.get (s => s.gameId); }
-  // getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
-  // getPlayers (): BritPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
-  // getPlayer (id: string): BritPlayer { return this.get (s => s.players.map[id]); }
+  getGameId (): string { return this.get (s => s.gameId); }
+  getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
+  getPlayers (): BritPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
+  getPlayer (id: string): BritPlayer { return this.get (s => s.players.map[id]); }
   // // isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
   // getPlayerIds () { return this.get (s => s.players.ids); }
   // getPlayerMap () { return this.get (s => s.players.map); }
   // getNumberOfPlayers (): number { return this.getPlayers ().length; }
-  // getLandCoordinates (): BritLandCoordinates[] {
-  //   return this.get (s => s.lands.coordinates);
-  // } // getLandCoordinates
   // getLand (land: BritLandCoordinates) { return this.get (s => s.lands.map[landCoordinatesToId (land)]); }
   // getLands (): BritLand[] {
   //   const map = this.get (s => s.lands.map);
@@ -130,39 +112,38 @@ export class BritGameStore extends BgStore<BritGameState> {
   // selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   // selectLogs$ () { return this.select$ (s => s.logs); }
 
-  // private updatePlayer (playerId: string, updater: (p: BritPlayer) => BritPlayer) {
-  //   this.update (s => ({
-  //     ...s,
-  //     players: {
-  //       ...s.players,
-  //       map: {
-  //         ...s.players.map,
-  //         [playerId]: updater (s.players.map[playerId])
-  //       }
-  //     }
-  //   }));
-  // } // updatePlayer
+  private updatePlayer (playerId: string, updater: (p: BritPlayer) => BritPlayer, s: BritGameState) {
+    return {
+      ...s,
+      players: {
+        ...s.players,
+        map: {
+          ...s.players.map,
+          [playerId]: updater (s.players.map[playerId])
+        }
+      }
+    };
+  } // updatePlayer
 
-  // private updateGameBox (updater: (gameBox: BritGameBox) => BritGameBox) {
-  //   this.update (s => ({
-  //     ...s,
-  //     gameBox: updater (s.gameBox)
-  //   }));
-  // } // updateGameBox
+  private updateArea (areaId: BritAreaId, updater: (a: BritArea) => BritArea, s: BritGameState) {
+    return {
+      ...s,
+      areas: {
+        ...s.areas,
+        [areaId]: updater (s.areas[areaId])
+      }
+    };
+  } // updateArea
 
-  // private updateLand (land: BritLandCoordinates, updater: (lt: BritLand) => BritLand) {
-  //   const key = landCoordinatesToId (land);
-  //   this.update (s => ({
-  //     ...s,
-  //     lands: {
-  //       ...s.lands,
-  //       map: {
-  //         ...s.lands.map,
-  //         [key]: updater (s.lands.map[key])
-  //       }
-  //     }
-  //   }));
-  // } // updatePlayer
+  private updateNation (nationId: BritNationId, updater: (a: BritNation) => BritNation, s: BritGameState) {
+    return {
+      ...s,
+      nations: {
+        ...s.nations,
+        [nationId]: updater (s.nations[nationId])
+      }
+    };
+  } // updateNation
 
   // private addPawnToPlayer (pawnType: BritPawnType, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
@@ -243,14 +224,41 @@ export class BritGameStore extends BgStore<BritGameState> {
   //     logs: [...s.logs, log]
   //   }));
   // } // addLog
+  
+  addUnitToArea (unitId: BritUnitId, areaId: BritAreaId, s: BritGameState): BritGameState {
+    return this.updateArea (areaId, area => ({
+      ...area,
+      units: immutableUtil.listPush ([unitId], area.units)
+    }), s);
+  } // addUnitToArea
 
-  // applySetup (land: BritLandCoordinates, player: string) {
-  //   const playerColor = this.getPlayer (player).color;
-  //   this.removePawnFromPlayer ("knight", player);
-  //   this.addPawnToLandTile ("knight", playerColor, land);
-  //   this.removePawnFromPlayer ("city", player);
-  //   this.addPawnToLandTile ("city", playerColor, land);
-  // } // applySetup
+  private removeInfantryFromNation (nationId: BritNationId, s: BritGameState): [BritUnitId, BritGameState, ] {
+    const unitId = s.nations[nationId].infantries[0];
+    return [
+      unitId,
+      this.updateNation (nationId, n => ({
+        ...n,
+        infantries: immutableUtil.listRemoveByIndex (0, n.infantries)
+      }), s)
+    ];
+  } // removeInfantryFromNation
+
+  applySetup (setup: Record<BritAreaId, [BritNationId, number] | BritNationId | null | null>) {
+    this.update ("Setup", s =>
+      BRIT_AREAS.reduce ((state, areaId) => {
+        const areaSetup = setup[areaId];
+        if (areaSetup) {
+          const [nationId, nInfantries] = typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];
+          for (let i = 0; i < nInfantries; i++) {
+            let [infantryId, newState] = this.removeInfantryFromNation (nationId, state);
+            state = this.addUnitToArea (infantryId, areaId, newState);
+          } // for
+        } // if
+        return state;
+      }, s)
+    );
+  } // applySetup
+
 
   // applyRecruitment (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);

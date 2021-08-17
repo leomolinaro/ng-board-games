@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@bg-services";
-import { arrayUtil, InitEvent, UntilDestroy } from "@bg-utils";
+import { arrayUtil, ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ABritPlayer, BritPlayer } from "../brit-models";
-import { BritPlayerDoc, BritRemoteService } from "../brit-remote.service";
+import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
+import { BritPlayerAiService } from "./brit-player-ai.service";
+import { BritPlayerLocalService } from "./brit-player-local.service";
 import * as britRules from "./brit-rules";
+import { BritUiStore } from "./brit-ui.store";
 
 @Component ({
   selector: "brit-game",
@@ -17,9 +20,9 @@ import * as britRules from "./brit-rules";
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     BritGameStore,
-    // BritUiStore,
-    // BritPlayerAiService,
-    // BritPlayerLocalService,
+    BritUiStore,
+    BritPlayerAiService,
+    BritPlayerLocalService,
     BritGameService
   ]
 })
@@ -38,9 +41,10 @@ export class BritGameComponent implements OnInit, OnDestroy {
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
   areas$ = this.game.selectAreas$ ();
+  unitsMap$ = this.game.selectUnitsMap$ ();
   players$ = this.game.selectPlayers$ ();
 
-  @InitEvent ()
+  @SingleEvent ()
   ngOnInit () {
     return forkJoin ([
       this.remote.getGame$ (this.gameId),
@@ -52,20 +56,28 @@ export class BritGameComponent implements OnInit, OnDestroy {
         players,
         stories
       ]) => {
-        const user = this.authService.getUser ();
-        const nations = britRules.createNationsAndUnits ();
-        const areas = britRules.createAreas ();
-        this.game.setInitialState (
-          players.map (p => this.playerDocToPlayer (p, user)),
-          nations.map (n => n.nation),
-          areas,
-          arrayUtil.flattify (nations.map (n => n.units)),
-          "",
-          null as any
-        );
+        if (game) {
+          const user = this.authService.getUser ();
+          const nations = britRules.createNationsAndUnits ();
+          const areas = britRules.createAreas ();
+          this.game.setInitialState (
+            players.map (p => this.playerDocToPlayer (p, user)),
+            nations.map (n => n.nation),
+            areas,
+            arrayUtil.flattify (nations.map (n => n.units)),
+            this.gameId,
+            game.owner
+          );
+          this.listenToGame (stories);
+        } // if
       })
     );
   } // ngOnInit
+
+  @ChangeListener ()
+  private listenToGame (stories: BritStoryDoc[]) {
+    return this.gameService.game$ (stories);
+  } // listenToGame
 
   private playerDocToPlayer (playerDoc: BritPlayerDoc, user: BgUser): BritPlayer {
     if (playerDoc.isAi) {

@@ -4,7 +4,7 @@
       [mode]="isHandset ? 'over' : 'side'"
       [opened]="!isHandset">
     <mat-toolbar>Draft generator</mat-toolbar>
-    <mat-progress-bar *ngIf="draft.loading$ | async" mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
       <mat-accordion displayMode="flat" multi="true">
         <mat-expansion-panel expanded="true" hideToggle="true" disabled="true">
           <mat-slider style="width: 100%" min="0" max="80" step="1" (input)="nCards = $event.value || 0" [value]="nCards"></mat-slider>
@@ -29,9 +29,9 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Factions</mat-panel-title>
           </mat-expansion-panel-header>
-          <button mat-button (click)="factionList.selectAll()"><mat-icon>done_all</mat-icon>&nbsp;All</button>
+          <button mat-button (click)="factionList.selectAll ()"><mat-icon>done_all</mat-icon>&nbsp;All</button>
           /
-          <button mat-button (click)="factionList.deselectAll()"><mat-icon>close</mat-icon>&nbsp;None</button>
+          <button mat-button (click)="factionList.deselectAll ()"><mat-icon>close</mat-icon>&nbsp;None</button>
           <mat-selection-list dense #factionList [(ngModel)]="selectedFactionIds">
             <mat-list-option *ngFor="let faction of draft.factions$ | async" [value]="faction.code">{{faction.name}}</mat-list-option>
           </mat-selection-list>
@@ -40,9 +40,9 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Packs</mat-panel-title>
           </mat-expansion-panel-header>
-          <button mat-button (click)="packList.selectAll()"><mat-icon>done_all</mat-icon>&nbsp;All</button>
+          <button mat-button (click)="packList.selectAll ()"><mat-icon>done_all</mat-icon>&nbsp;All</button>
           /
-          <button mat-button (click)="packList.deselectAll()"><mat-icon>close</mat-icon>&nbsp;None</button>
+          <button mat-button (click)="packList.deselectAll ()"><mat-icon>close</mat-icon>&nbsp;None</button>
           <mat-selection-list dense #packList [(ngModel)]="selectedPackIds">
             <mat-list-option *ngFor="let pack of draft.packs$ | async" [value]="pack.code">{{pack.name}}</mat-list-option>
           </mat-selection-list>

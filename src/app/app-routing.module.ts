@@ -1,6 +1,6 @@
 import { Injectable, NgModule } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterModule, RouterStateSnapshot, Routes } from "@angular/router";
-import { BgAuthService } from "@bg-services";
+import { BgAuthService, BG_PATHS } from "@bg-services";
 import { Observable, of } from "rxjs";
 import { first, map, switchMap, tap } from "rxjs/operators";
 
@@ -36,9 +36,9 @@ export class BgRootGuard implements CanActivate {
 
 const routes: Routes = [
   { path: "", loadChildren: () => import ("./bg-main-page/bg-main-page.module").then (m => m.BgMainPageModule) },
-  { path: "barony", canActivate: [BgRootGuard], loadChildren: () => import ("./barony/barony.module").then (m => m.BaronyModule) },
-  // { path: "britannia", canActivate: [BgRootGuard], loadChildren: () => import ("./britannia/brit.module").then (m => m.BritModule) },
-  // { path: "agot-draft", canActivate: [BgRootGuard], loadChildren: () => import ("./agot-draft/agot-draft.module").then (m => m.AgotDraftModule) },
+  { path: BG_PATHS.barony, canActivate: [BgRootGuard], loadChildren: () => import ("./barony/barony.module").then (m => m.BaronyModule) },
+  // { path: BG_PATHS.britannia, canActivate: [BgRootGuard], loadChildren: () => import ("./britannia/brit.module").then (m => m.BritModule) },
+  { path: BG_PATHS.agotLcg2, loadChildren: () => import ("./agot/agot.module").then (m => m.AgotModule) },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 

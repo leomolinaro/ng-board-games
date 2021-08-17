@@ -7,10 +7,15 @@ interface ABritUnit {
   nation: BritNationId;
 } // ABritUnit
 
+export type BritLeaderId = "arthur" | "william" | "aelle" | "egbert" | "alfred" | "edgar" | "harold" |
+"ivar-and-halfdan" | "cnut" | "svein-estrithson" | "harald-hardrada" | "ida" | "oswiu" | "offa" |
+"boudicca" | "urien" | "fergus-mor-mac-erc" | "ketil-flatnose" | "olaf-guthfrithsson";
+
 export interface BritArmy extends ABritUnit { }
 export interface BritInfantry extends ABritUnit { type: "infantry"; }
 export interface BritCavalry extends ABritUnit { type: "cavalry"; }
 export interface BritLeader extends ABritUnit {
+  id: BritLeaderId;
   type: "leader";
   name: string;
 } // BritLeader
@@ -41,6 +46,7 @@ export type BritNeighbor = BritAreaId | { id: BritAreaId, strait: true };
 interface ABritArea {
   name: string;
   neighbors: BritNeighbor[];
+  units: string[];
 } // ABritArea
 
 export interface BritLandArea extends ABritArea {
@@ -48,7 +54,6 @@ export interface BritLandArea extends ABritArea {
   region: BritRegionId;
   type: "land";
   difficultTerrain: boolean;
-  units: string[];
 } // BritLandArea
 
 export interface BritSeaArea extends ABritArea {

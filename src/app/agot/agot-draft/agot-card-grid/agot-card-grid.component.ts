@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, Input } from "@angular/core";
-import { Card } from "../models/card";
+import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { AgotCard } from "../agot.models";
 
 @Component ({
   selector: "agot-card-grid",
@@ -11,6 +11,6 @@ export class AgotCardGridComponent {
 
   constructor () { }
 
-  @Input () cards!: Card[];
+  @Input () cards!: AgotCard[];
 
 } // AgotCardGridComponent

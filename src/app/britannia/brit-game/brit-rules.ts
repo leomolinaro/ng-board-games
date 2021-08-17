@@ -1,5 +1,5 @@
-import { arrayUtil, stringUtil } from "@bg-utils";
-import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritInfantry, BritLandArea, BritLandAreaId, BritLeader, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRomanFort, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritUnit } from "../brit-models";
+import { arrayUtil } from "@bg-utils";
+import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritInfantry, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRomanFort, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritUnit } from "../brit-models";
 
 export function createAreas (): BritArea[] {
   return [
@@ -66,46 +66,47 @@ function createSeaArea (id: BritSeaAreaId, name: string, neighbors: BritAreaId[]
     id: id,
     name: name,
     type: "sea",
-    neighbors: neighbors
+    neighbors: neighbors,
+    units: []
   };
 } // createLandArea
 
 export function createNationsAndUnits (): { nation: BritNation; units: BritUnit[] }[] {
   return [
     createNation ("romans", "Romans", "yellow", 16, 0, 24, []),
-    createNation ("romano-british", "Romano-British", "yellow", 8, 0, 0, ["Arthur"]),
-    createNation ("normans", "Normans", "blue", 8, 0, 0, ["William"]),
-    createNation ("saxons", "Saxons", "red", 20, 0, 8, ["Aelle", "Egbert", "Alfred", "Edgar", "Harold"]),
-    createNation ("danes", "Danes", "green", 18, 0, 0, ["Ivar and Halfdan", "Cnut", "Svein Estrithson"]),
-    createNation ("norwegians", "Norwegians", "yellow", 12, 0, 0, ["Harald Hardrada"]),
+    createNation ("romano-british", "Romano-British", "yellow", 8, 0, 0, [["arthur", "Arthur"]]),
+    createNation ("normans", "Normans", "blue", 8, 0, 0, [["william", "William"]]),
+    createNation ("saxons", "Saxons", "red", 20, 0, 8, [["aelle", "Aelle"], ["egbert", "Egbert"], ["alfred", "Alfred"], ["edgar", "Edgar"], ["harold", "Harold"]]),
+    createNation ("danes", "Danes", "green", 18, 0, 0, [["ivar-and-halfdan", "Ivar and Halfdan"], ["cnut", "Cnut"], ["svein-estrithson", "Svein Estrithson"]]),
+    createNation ("norwegians", "Norwegians", "yellow", 12, 0, 0, [["harald-hardrada", "Harald Hardrada"]]),
     createNation ("jutes", "Jutes", "green", 6, 0, 0, []),
-    createNation ("angles", "Angles", "blue", 17, 0, 0, ["Ida", "Oswiu", "Offa"]),
-    createNation ("belgae", "Belgae", "blue", 10, 0, 0, ["Boudicca"]),
+    createNation ("angles", "Angles", "blue", 17, 0, 0, [["ida", "Ida"], ["oswiu", "Oswiu"], ["offa", "Offa"]]),
+    createNation ("belgae", "Belgae", "blue", 10, 0, 0, [["boudicca", "Boudicca"]]),
     createNation ("welsh", "Welsh", "green", 13, 0, 0, []),
-    createNation ("brigantes", "Brigantes", "red", 11, 0, 0, ["Urien"]),
+    createNation ("brigantes", "Brigantes", "red", 11, 0, 0, [["urien", "Urien"]]),
     createNation ("caledonians", "Caledonians", "green", 7, 0, 0, []),
     createNation ("picts", "Picts", "blue", 10, 0, 0, []),
     createNation ("irish", "Irish", "red", 8, 0, 0, []),
-    createNation ("scots", "Scots", "yellow", 11, 0, 0, ["Fergus Mor Mac Erc"]),
-    createNation ("norsemen", "Norsemen", "red", 10, 0, 0, ["Ketil Flatnose"]),
-    createNation ("dubliners", "Dubliners", "yellow", 9, 0, 0, ["Olaf Guthfrithsson"])
+    createNation ("scots", "Scots", "yellow", 11, 0, 0, [["fergus-mor-mac-erc", "Fergus Mor Mac Erc"]]),
+    createNation ("norsemen", "Norsemen", "red", 10, 0, 0, [["ketil-flatnose", "Ketil Flatnose"]]),
+    createNation ("dubliners", "Dubliners", "yellow", 9, 0, 0, [["olaf-guthfrithsson", "Olaf Guthfrithsson"]])
   ];
 } // createNationsAndUnits
 
-function createNation (id: BritNationId, name: string, color: BritColor, nInfantries: number, nCavalries: number, nBuildings: number, leaderNames: string[]): { nation: BritNation; units: BritUnit[] } {
-  const infantries = arrayUtil.range (nInfantries, index => createInfantry (id, index));
-  const cavalries = arrayUtil.range (nCavalries, index => createCavalry (id, index));
+function createNation (nationId: BritNationId, name: string, color: BritColor, nInfantries: number, nCavalries: number, nBuildings: number, leaderIdAndNames: [BritLeaderId, string][]): { nation: BritNation; units: BritUnit[] } {
+  const infantries = arrayUtil.range (nInfantries, index => createInfantry (nationId, index));
+  const cavalries = arrayUtil.range (nCavalries, index => createCavalry (nationId, index));
   const buildings = nBuildings
-    ? (id === "romans"
-      ? arrayUtil.range (nBuildings, index => createRomanFort (id, index))
-      : (id === "saxons"
-        ? arrayUtil.range (nBuildings, index => createSaxonBuhr (id, index))
+    ? (nationId === "romans"
+      ? arrayUtil.range (nBuildings, index => createRomanFort (nationId, index))
+      : (nationId === "saxons"
+        ? arrayUtil.range (nBuildings, index => createSaxonBuhr (nationId, index))
         : []))
     : [];
-  const leaders = leaderNames.map (l => createLeader (id, l));
+  const leaders = leaderIdAndNames.map (l => createLeader (l[0], l[1], nationId));
   return {
     nation: {
-      id: id,
+      id: nationId,
       name: name,
       infantries: infantries.map (u => u.id),
       cavalries: cavalries.map (u => u.id),
@@ -153,10 +154,9 @@ function createSaxonBuhr (nationId: BritNationId & "saxons", fortIndex: number):
   };
 } // createSaxonBuhr
 
-function createLeader (nationId: BritNationId, leaderName: string): BritLeader {
-  const leaderId = stringUtil.toLowerCase (stringUtil.toDashCase (leaderName));
+function createLeader (leaderId: BritLeaderId, leaderName: string, nationId: BritNationId): BritLeader {
   return {
-    id: `${nationId}-${leaderId}`,
+    id: leaderId,
     type: "leader",
     nation: nationId,
     name: leaderName
@@ -171,3 +171,52 @@ export function getNationIdsOfColor (color: BritColor): BritNationId[] {
     case "green": return ["danes", "jutes", "welsh", "caledonians"];
   } // switch
 } // getNationIdsOfColor
+
+export function getGameSetup (): Record<BritAreaId, [BritNationId, number] | BritNationId | null> {
+  return {
+    "avalon": "welsh",
+    "downlands": "belgae",
+    "wessex": "belgae",
+    "sussex": "belgae",
+    "kent": "belgae",
+    "essex": "belgae",
+    "lindsey": "belgae",
+    "suffolk": "belgae",
+    "norfolk": "belgae",
+    "south-mercia": "belgae",
+    "north-mercia": "belgae",
+    "hwicce": "welsh",
+    "devon": "welsh",
+    "cornwall": "welsh",
+    "gwent": "welsh",
+    "dyfed": "welsh",
+    "powys": "welsh",
+    "gwynedd": "welsh",
+    "clwyd": "welsh",
+    "march": "brigantes",
+    "cheshire": "brigantes",
+    "york": "brigantes",
+    "bernicia": "brigantes",
+    "pennines": "brigantes",
+    "cumbria": "brigantes",
+    "lothian": "brigantes",
+    "galloway": "brigantes",
+    "dunedin": "picts",
+    "strathclyde": "brigantes",
+    "dalriada": "picts",
+    "alban": "picts",
+    "mar": "picts",
+    "moray": "picts",
+    "skye": "picts",
+    "caithness": "caledonians",
+    "orkneys": "caledonians",
+    "hebrides": "caledonians",
+    "icelandic-sea": null,
+    "north-sea": null,
+    "frisian-sea": null,
+    "english-channel": ["romans", 16],
+    "irish-sea": null,
+    "atlantic-ocean": null,
+  };
+} // getGameSetup
+

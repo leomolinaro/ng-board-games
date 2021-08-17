@@ -1,4 +1,5 @@
-<svg
+<!-- <button (click)="printSlots ()">CLICK</button> -->
+<svg:svg
   bgSvg
   xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
   width="100%" height="100%"
@@ -21,7 +22,7 @@
     </pattern>
   </defs> -->
   <svg:g
-    class="b-map"
+    #britMapMap
     [bgMapZoom]="{
       translateX: 0,
       translateY: 50,
@@ -30,7 +31,37 @@
     <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
     <svg:g
       *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
-      <svg:path class="brit-area-path" [attr.d]="areaNode.path"></svg:path>
+      <svg:path class="brit-area-path" [attr.d]="areaNode.path" (click)="onAreaClick (areaNode, $event)"></svg:path>
+      <svg:g
+        *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
+        <svg:image
+          [attr.x]="unitNode.x - 15"
+          [attr.y]="unitNode.y - 15"
+          width="30"
+          [attr.xlink:href]="unitNode.imageSource"/>
+      </svg:g>
+
+
+      <!-- <svg:g
+        *ngFor="let slot of (areaNode.id | bgTransform:getSlotByArea:slotsByArea); let i = index">
+        <svg:rect
+          (click)="onSlotRectClick (i, areaNode)"
+          [attr.x]="slot.x - 15 - 3"
+          [attr.y]="slot.y - 15 - 3"
+          width="30" height="30" rx="5"
+          style="fill: transparent; stroke: black; stroke-width: 3px;"></svg:rect>
+          <svg:text
+          [attr.x]="slot.x"
+          [attr.y]="slot.y">
+            {{i}}
+          </svg:text> -->
+        <!-- <svg:image
+          [attr.x]="slot.x - 15"
+          [attr.y]="slot.y - 15"
+          width="30"
+          xlink:href="assets/britannia/infantries/romans.png"/> -->
+      <!-- </svg:g> -->
+
     </svg:g>
       <!-- baronyLandTile
       [type]="land.type"
@@ -40,4 +71,4 @@
       [disabled]="isValid ? !isValid[land.id] : false"
       (landTileClick)="onLandTileClick (land)"> -->
   </svg:g>
-</svg>
+</svg:svg>

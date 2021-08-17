@@ -1,4 +1,5 @@
 import { BgUser } from "@bg-services";
+import { BgAiPlayer, BgRealPlayer } from "../bg-services/a-bg-game.service";
 
 export type BaronyColor = "blue" | "yellow" | "red" | "green";
 export type BaronyLandType = "mountain" | "forest" | "plain" | "fields" | "lake";
@@ -16,13 +17,13 @@ export interface ABaronyPlayer {
   resources: { [type in BaronyResourceType]: number };
 } // ABaronyPlayer
 
-interface BaronyAiPlayer extends ABaronyPlayer {
+interface BaronyAiPlayer extends ABaronyPlayer, BgAiPlayer {
   isAi: true;
   isRemote: false;
   isLocal: false;
 } // BaronyAiPlayer
 
-interface BaronyRealPlayer extends ABaronyPlayer {
+interface BaronyRealPlayer extends ABaronyPlayer, BgRealPlayer {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;

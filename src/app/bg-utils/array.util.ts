@@ -70,3 +70,31 @@ export function mapToDistinct<T, V extends string | number> (array: T[], valueGe
 export function flattify<T> (arrays: T[][]): T[] {
   return ([] as T[]).concat.apply ([] as T[], arrays);
 } // flattify
+
+export function entitiesToNodes<E, N> (
+  entities: E[],
+  oldMap: Record<string | number, N>,
+  getEntityId: (entity: E) => string | number,
+  isEntityChanged: (entity: E, node: N) => boolean,
+  entityToNode: (entity: E, index: number, oldNode: N | null) => N,
+): ({ nodes: N[]; map: Record<string | number, N> }) {
+  const map: Record<string | number, N> = { };
+  const nodes: N[] = [];
+  entities.forEach ((entity, index) => {
+    const id = getEntityId (entity);
+    let node!: N;
+    const oldNode = oldMap[id];
+    if (oldNode) {
+      if (isEntityChanged (entity, oldNode)) {
+        node = oldNode;
+      } else {
+        node = entityToNode (entity, index, oldNode);
+      } // if - else
+    } else {
+      node = entityToNode (entity, index, null);
+    } // if - else
+    map[id] = node;
+    nodes.push (node);
+  });
+  return { map, nodes };
+} // entitiesToNodes

@@ -86,16 +86,16 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
             this.gameId,
             game.owner
           );
-          this.listenToTasks (stories);
+          this.listenToGame (stories);
         } // if
       })
     );
   } // ngOnInit
 
   @ChangeListener ()
-  private listenToTasks (stories: BaronyStoryDoc[]) {
+  private listenToGame (stories: BaronyStoryDoc[]) {
     return this.gameService.game$ (stories);
-  } // listenToTasks
+  } // listenToGame
 
   private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
     if (playerDoc.isAi) {

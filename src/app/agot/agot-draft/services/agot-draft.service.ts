@@ -1,11 +1,8 @@
-import { Type } from "./../models/type";
-import { Observable, forkJoin, Subject, ReplaySubject } from "rxjs";
-import { Pack } from "./../models/pack";
-import { Card } from "./../models/card";
-import { AgotHttpService } from "./agot-http.service";
 import { Injectable } from "@angular/core";
-import { Faction } from "../models/faction";
-import { tap, map } from "rxjs/operators";
+import { forkJoin, Observable, ReplaySubject } from "rxjs";
+import { mapTo, tap } from "rxjs/operators";
+import { AgotCard, AgotFaction, AgotPack, AgotType } from "../agot.models";
+import { AgotHttpService } from "./agot-http.service";
 
 @Injectable ({
   providedIn: "root"
@@ -14,55 +11,45 @@ export class AgotDraftService {
   
   constructor (private http: AgotHttpService) { }
   
-  private cards: Card[] | null = null;
+  private cards: AgotCard[] | null = null;
 
-  private loaded = new Subject<boolean> ();
-  private loading = new ReplaySubject<boolean> ();
-  private factions = new ReplaySubject<Faction[]> ();
-  private packs = new ReplaySubject<Pack[]> ();
-  private types = new ReplaySubject<Type[]> ();
+  private factions = new ReplaySubject<AgotFaction[]> ();
+  private packs = new ReplaySubject<AgotPack[]> ();
+  private types = new ReplaySubject<AgotType[]> ();
 
-  loaded$ = this.loaded.asObservable ();
-  loading$ = this.loading.asObservable ();
   factions$ = this.factions.asObservable ();
   packs$ = this.packs.asObservable ();
   types$ = this.types.asObservable ();
 
-  load (): any {
-    this.loading.next (true);
-    this.http.getPacks ().pipe (
-      map (packs => packs.sort ((a, b) => {
-        let comparison = a.cycle_position - b.cycle_position;
-        if (comparison !== 0) { return comparison; }
-        comparison = a.position - b.position;
-        if (comparison !== 0) { return comparison; }
-        return 0;
-      }))
-    ).subscribe (this.packs);
-    this.http.getCards ()
-    .subscribe (cards => {
-      this.cards = cards;
-      this.loaded.next (true);
-      this.loading.next (false);
-      const factions: Faction[] = [];
-      const factionIds: { [code: string]: boolean} = { };
-      const types: Type[] = [];
-      const typeIds: { [code: string]: boolean } = { };
-      this.cards.forEach (card => {
-        const factionCode = card.faction_code;
-        if (!factionIds[factionCode]) {
-          factionIds[factionCode] = true;
-          factions.push ({ code: factionCode, name: card.faction_name });
-        } // if
-        const typeCode = card.type_code;
-        if (!typeIds[typeCode]) {
-          typeIds[typeCode] = true;
-          types.push ({ code: typeCode, name: card.type_name });
-        } // if
-      });
-      this.factions.next (factions);
-      this.types.next (types);
-    });
+  load$ (): Observable<void> {
+    return forkJoin ([
+      this.http.getPacks ().pipe (
+        tap (packs => this.packs.next (packs))
+      ),
+      this.http.getCards ().pipe (
+        tap (cards => {
+          this.cards = cards;
+          const factions: AgotFaction[] = [];
+          const factionIds: { [code: string]: boolean} = { };
+          const types: AgotType[] = [];
+          const typeIds: { [code: string]: boolean } = { };
+          this.cards.forEach (card => {
+            const factionCode = card.faction_code;
+            if (!factionIds[factionCode]) {
+              factionIds[factionCode] = true;
+              factions.push ({ code: factionCode, name: card.faction_name });
+            } // if
+            const typeCode = card.type_code;
+            if (!typeIds[typeCode]) {
+              typeIds[typeCode] = true;
+              types.push ({ code: typeCode, name: card.type_name });
+            } // if
+          });
+          this.factions.next (factions);
+          this.types.next (types);
+        })
+      )
+    ]).pipe (mapTo (void 0));
   } // load
 
   private getTypeSort (type: string) {
@@ -103,7 +90,7 @@ export class AgotDraftService {
     types.forEach (id => typeIds[id] = true);
     factions.forEach (id => factionIds[id] = true);
     packs.forEach (id => packIds[id] = true);
-    const poolCards: Card[] = [];
+    const poolCards: AgotCard[] = [];
     if (this.cards) {
       for (const card of this.cards) {
         if (typeIds[card.type_code] && packIds[card.pack_code] && factionIds[card.faction_code]) {
