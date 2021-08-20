@@ -1,5 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 
+export type BgTransformFn<I, O, P = any> = (value: I, params: P) => O
+
 @Pipe ({
   name: "bgTransform"
 })

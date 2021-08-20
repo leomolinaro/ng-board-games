@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 
 export const AGOT_UTILITY_PATHS = {
   draft: "draft", 
-  fcPacks: "full-collection-packs" 
+  fcDecks: "full-collection-decks" 
 } // AGOT_UTILITY_PATHS
 
 export interface AgotUtility {
@@ -12,7 +12,7 @@ export interface AgotUtility {
 
 const AGOT_UTILITIES: AgotUtility[] = [
   { name: "Draft", routerLink: AGOT_UTILITY_PATHS.draft },
-  { name: "Full collection packs", routerLink: AGOT_UTILITY_PATHS.fcPacks }
+  { name: "Full collection decks", routerLink: AGOT_UTILITY_PATHS.fcDecks }
 ];
 
 @Injectable ({

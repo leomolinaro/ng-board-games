@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { AgotCard } from "../agot.models";
+import { AgotCard } from "../../agot.models";
 
 @Component ({
   selector: "agot-card-grid",

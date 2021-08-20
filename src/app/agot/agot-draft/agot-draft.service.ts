@@ -1,57 +1,14 @@
 import { Injectable } from "@angular/core";
-import { forkJoin, Observable, ReplaySubject } from "rxjs";
-import { mapTo, tap } from "rxjs/operators";
-import { AgotCard, AgotFaction, AgotPack, AgotType } from "../agot.models";
-import { AgotHttpService } from "./agot-http.service";
+import { AgotDataService } from "../agot-services/agot-data.service";
+import { AgotCard } from "../agot.models";
 
 @Injectable ({
   providedIn: "root"
 })
 export class AgotDraftService {
   
-  constructor (private http: AgotHttpService) { }
+  constructor (private dataService: AgotDataService) { }
   
-  private cards: AgotCard[] | null = null;
-
-  private factions = new ReplaySubject<AgotFaction[]> ();
-  private packs = new ReplaySubject<AgotPack[]> ();
-  private types = new ReplaySubject<AgotType[]> ();
-
-  factions$ = this.factions.asObservable ();
-  packs$ = this.packs.asObservable ();
-  types$ = this.types.asObservable ();
-
-  load$ (): Observable<void> {
-    return forkJoin ([
-      this.http.getPacks ().pipe (
-        tap (packs => this.packs.next (packs))
-      ),
-      this.http.getCards ().pipe (
-        tap (cards => {
-          this.cards = cards;
-          const factions: AgotFaction[] = [];
-          const factionIds: { [code: string]: boolean} = { };
-          const types: AgotType[] = [];
-          const typeIds: { [code: string]: boolean } = { };
-          this.cards.forEach (card => {
-            const factionCode = card.faction_code;
-            if (!factionIds[factionCode]) {
-              factionIds[factionCode] = true;
-              factions.push ({ code: factionCode, name: card.faction_name });
-            } // if
-            const typeCode = card.type_code;
-            if (!typeIds[typeCode]) {
-              typeIds[typeCode] = true;
-              types.push ({ code: typeCode, name: card.type_name });
-            } // if
-          });
-          this.factions.next (factions);
-          this.types.next (types);
-        })
-      )
-    ]).pipe (mapTo (void 0));
-  } // load
-
   private getTypeSort (type: string) {
     switch (type) {
       case "agenda": return 1;
@@ -91,8 +48,9 @@ export class AgotDraftService {
     factions.forEach (id => factionIds[id] = true);
     packs.forEach (id => packIds[id] = true);
     const poolCards: AgotCard[] = [];
-    if (this.cards) {
-      for (const card of this.cards) {
+    const cards = this.dataService.getCards ();
+    if (cards) {
+      for (const card of cards) {
         if (typeIds[card.type_code] && packIds[card.pack_code] && factionIds[card.faction_code]) {
           poolCards.push (card);
         } // if

@@ -22,7 +22,7 @@
           /
           <button mat-button (click)="typeList.deselectAll()"><mat-icon>close</mat-icon>&nbsp;None</button>
           <mat-selection-list dense #typeList [(ngModel)]="selectedTypeIds">
-            <mat-list-option *ngFor="let type of draft.types$ | async" [value]="type.code">{{type.name}}</mat-list-option>
+            <mat-list-option *ngFor="let type of types$ | async" [value]="type.code">{{type.name}}</mat-list-option>
           </mat-selection-list>
         </mat-expansion-panel>
         <mat-expansion-panel expanded="false">
@@ -33,7 +33,7 @@
           /
           <button mat-button (click)="factionList.deselectAll ()"><mat-icon>close</mat-icon>&nbsp;None</button>
           <mat-selection-list dense #factionList [(ngModel)]="selectedFactionIds">
-            <mat-list-option *ngFor="let faction of draft.factions$ | async" [value]="faction.code">{{faction.name}}</mat-list-option>
+            <mat-list-option *ngFor="let faction of factions$ | async" [value]="faction.code">{{faction.name}}</mat-list-option>
           </mat-selection-list>
         </mat-expansion-panel>
         <mat-expansion-panel expanded="false">
@@ -44,7 +44,7 @@
           /
           <button mat-button (click)="packList.deselectAll ()"><mat-icon>close</mat-icon>&nbsp;None</button>
           <mat-selection-list dense #packList [(ngModel)]="selectedPackIds">
-            <mat-list-option *ngFor="let pack of draft.packs$ | async" [value]="pack.code">{{pack.name}}</mat-list-option>
+            <mat-list-option *ngFor="let pack of packs$ | async" [value]="pack.code">{{pack.name}}</mat-list-option>
           </mat-selection-list>
         </mat-expansion-panel>
       </mat-accordion>

@@ -15,7 +15,7 @@ export interface BgApp {
 const APPS: BgApp[] = [
   { name: "Barony", routerLink: BG_PATHS.barony, imageSource: "assets/barony/game-image.jpg" },
   { name: "Britannia", routerLink: BG_PATHS.britannia, imageSource: "assets/britannia/game-image.jpg" },
-  { name: "A Game of Thrones LCG 2.0", routerLink: BG_PATHS.agotLcg2, imageSource: "assets/agot-draft/game-image.jpg" },
+  { name: "A Game of Thrones LCG 2.0", routerLink: BG_PATHS.agotLcg2, imageSource: "assets/agot/game-image.jpg" },
 ];
 
 @Injectable ({

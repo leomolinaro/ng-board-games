@@ -3,8 +3,9 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/
 import { Loading, SingleEvent, UntilDestroy } from "@bg-utils";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
-import { AgotCard } from "./agot.models";
-import { AgotDraftService } from "./services/agot-draft.service";
+import { AgotDataService } from "../agot-services/agot-data.service";
+import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
+import { AgotDraftService } from "./agot-draft.service";
 
 @Component ({
   selector: "agot-draft",
@@ -17,14 +18,18 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
   
   constructor (
     private breakpointObserver: BreakpointObserver,
+    public data: AgotDataService,
     public draft: AgotDraftService
   ) { }
 
   nCards = 30;
   duplicates = false;
   selectedTypeIds: string[] = [];
-  selectedFactionIds: string[] = [];
-  selectedPackIds: string[] = [];
+  selectedFactionIds: AgotFactionCode[] = [];
+  selectedPackIds: AgotPackCode[] = [];
+  types$ = this.data.getTypes$ ();
+  factions$ = this.data.getFactions$ ();
+  packs$ = this.data.getPacks$ ();
 
   draftCards: AgotCard[] | null = null;
 
@@ -35,7 +40,7 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
 
   @SingleEvent ()
   ngOnInit () {
-    return this.draft.load$ ().pipe (
+    return this.data.load$ ().pipe (
       tap (() => {
         this.selectedTypeIds = ["character", "location", "event", "attachment"];
         this.selectedFactionIds = ["neutral", "stark", "lannister", "greyjoy", "baratheon", "martell", "tyrell", "thenightswatch", "targaryen"];
