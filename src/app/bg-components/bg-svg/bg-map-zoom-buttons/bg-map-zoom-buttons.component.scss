@@ -1,32 +1,51 @@
 :host {
   display: grid;
-  grid-template-rows: 2fr 1fr 1fr 2fr;
-  align-items: center;
+  grid-template-rows: 40px 20px 20px 40px;
+  grid-template-columns: 40px 40px 40px;
+  // align-items: center;
   grid-template-areas:
     ". moveUp ."
     "moveLeft zoomIn moveRight"
     "moveLeft zoomOut moveRight"
     ". moveDown .";
-  .move-up {
-    grid-area: moveUp;
+  .move {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: auto;
+    &.move-up {
+      grid-area: moveUp;
+    }
+    &.move-down {
+      grid-area: moveDown;
+    }
+    &.move-left {
+      grid-area: moveLeft;
+    }
+    &.move-right {
+      grid-area: moveRight;
+    }
+    i.fa {
+      font-size: 50px;
+      line-height: 50px;
+    }
   }
-  .move-down {
-    grid-area: moveDown;
-  }
-  .move-left {
-    grid-area: moveLeft;
-  }
-  .move-right {
-    grid-area: moveRight;
-  }
-  .zoom-in {
-    grid-area: zoomIn;
-    height: 50%;
-    line-height: 50%;
-  }
-  .zoom-out {
-    grid-area: zoomOut;
-    height: 50%;
-    line-height: 50%;
+  .zoom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: auto;
+    &.zoom-in {
+      grid-area: zoomIn;
+    }
+    &.zoom-out {
+      grid-area: zoomOut;
+    }
+    i.fa {
+      font-size: 20px;
+      line-height: 20px;
+    }
   }
 }
