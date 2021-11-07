@@ -94,8 +94,46 @@ export class BgMapZoomDirective implements OnInit {
 
   @HostListener ("mouseleave", ["$event"])
   onMouseLeave (event: MouseEvent) {
-    this.endGrabbing ();
+    // this.endGrabbing ();
   } // onMouseLeave
+
+  @HostListener ("mousemove", ["$event"])
+  onMouseMove (event: MouseEvent) {
+    if (this.grabbing) {
+      const speed = 1;
+      const xt = speed * (event.clientX - (this.grabbingX as number));
+      const yt = speed * (event.clientY - (this.grabbingY as number));
+      this.grabbingX = event.clientX;
+      this.grabbingY = event.clientY;
+      this.refreshTransform ({
+        zoom: 1,
+        x0: 0, y0: 0,
+        xt: xt, yt: yt,
+        reset: false
+      });
+    } // if
+  } // onMouseMove
+
+  @HostListener ("touchmove", ["$event"])
+  onTouchMove (event: TouchEvent) {
+    if (this.grabbing) {
+      const speed = 1;
+      const xt = speed * (event.touches[0].clientX - (this.grabbingX as number));
+      const yt = speed * (event.touches[0].clientY - (this.grabbingY as number));
+      this.grabbingX = event.touches[0].clientX;
+      this.grabbingY = event.touches[0].clientY;
+      this.refreshTransform ({
+        zoom: 1,
+        x0: 0, y0: 0,
+        xt: xt, yt: yt,
+        reset: false
+      });
+    } else {
+      this.grabbing = true;
+      this.grabbingX = event.touches[0].clientX;
+      this.grabbingY = event.touches[0].clientY;
+    } // onTouchMove
+  } // onTouchMove
 
   public moveUp () { this.move (0, -10); }
   public moveDown () { this.move (0, 10); }
@@ -123,23 +161,6 @@ export class BgMapZoomDirective implements OnInit {
     });
     this.cd.markForCheck ();
   } // move
-
-  @HostListener ("mousemove", ["$event"])
-  onMouseMove (event: MouseEvent) {
-    if (this.grabbing) {
-      const speed = 1;
-      const xt = speed * (event.clientX - (this.grabbingX as number));
-      const yt = speed * (event.clientY - (this.grabbingY as number));
-      this.grabbingX = event.clientX;
-      this.grabbingY = event.clientY;
-      this.refreshTransform ({
-        zoom: 1,
-        x0: 0, y0: 0,
-        xt: xt, yt: yt,
-        reset: false
-      });
-    } // if
-  } // onMouseMove
 
   private endGrabbing () {
     this.grabbing = false;
