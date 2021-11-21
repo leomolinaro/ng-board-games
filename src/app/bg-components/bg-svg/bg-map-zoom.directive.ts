@@ -68,7 +68,7 @@ export class BgMapZoomDirective implements OnInit {
     this.translateStep = this.config.translateStep || 15;
   } // parseConfig
 
-  @HostListener ("mousedown", ["$event"])
+  // @HostListener ("mousedown", ["$event"]) TODO
   onMouseDown (event: MouseEvent) {
     if (event.button === 0) {
       this.grabbing = true;
@@ -85,19 +85,19 @@ export class BgMapZoomDirective implements OnInit {
     } // if - else
   } // onMouseDown
 
-  @HostListener ("mouseup", ["$event"])
+  // @HostListener ("mouseup", ["$event"]) TODO
   onMouseUp (event: MouseEvent) {
     if (event.button === 0) {
       this.endGrabbing ();
     } // if
   } // onMouseUp
 
-  @HostListener ("mouseleave", ["$event"])
+  // @HostListener ("mouseleave", ["$event"]) TODO
   onMouseLeave (event: MouseEvent) {
     // this.endGrabbing ();
   } // onMouseLeave
 
-  @HostListener ("mousemove", ["$event"])
+  // @HostListener ("mousemove", ["$event"]) TODO
   onMouseMove (event: MouseEvent) {
     if (this.grabbing) {
       const speed = 1;
@@ -114,7 +114,7 @@ export class BgMapZoomDirective implements OnInit {
     } // if
   } // onMouseMove
 
-  @HostListener ("touchmove", ["$event"])
+  // @HostListener ("touchmove", ["$event"]) TODO
   onTouchMove (event: TouchEvent) {
     if (this.grabbing) {
       const speed = 1;
@@ -204,7 +204,7 @@ export class BgMapZoomDirective implements OnInit {
     } // if - else
   } // onMouseWheel
 
-  @HostListener ("keydown", ["$event"])
+  // @HostListener ("keydown", ["$event"]) TODO
   onKeyDown (event: KeyboardEvent) {
     // N.B.: onKeyDown non viene lanciato!!!
     const refreshParams: BgMapZoomRefreshParams = {

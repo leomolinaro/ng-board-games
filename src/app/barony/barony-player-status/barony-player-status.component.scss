@@ -9,7 +9,7 @@
     display: flex;
     .b-player-icon {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
     }
     .b-player-name {
       margin-left: 5px;
@@ -21,12 +21,12 @@
     }
     .b-player-type-icon {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       margin-left: 5px;
     }
     .b-player-score-icon {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       margin-left: auto;
     }
     .b-player-score {

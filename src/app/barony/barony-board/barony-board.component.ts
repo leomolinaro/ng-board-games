@@ -36,6 +36,9 @@ export class BaronyBoardComponent implements OnChanges {
   @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
   summaryFixed = false;
+  logsFixed = false;
+  zoomFixed = false;
+  
   numberOfKnights = 1;
 
   playerTrackBy = (player: BaronyPlayer) => player.id;

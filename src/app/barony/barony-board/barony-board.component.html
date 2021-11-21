@@ -54,13 +54,27 @@
         </barony-player-status>
       </div>
     </div>
-    <div class="b-board-zoom-and-logs">
-      <bg-map-zoom-buttons class="b-board-zoom-buttons-widget" [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
-      <barony-logs class="b-board-logs-widget" [logs]="logs"></barony-logs>
+    <div class="b-board-extras">
+      <bg-map-zoom-buttons *ngIf="zoomFixed" class="b-board-zoom-buttons-widget" [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
+      <img *ngIf="summaryFixed" class="b-board-summary-image" src="assets/barony/summary.jpg">
+      <barony-logs *ngIf="logsFixed" class="b-board-logs-widget" [logs]="logs"></barony-logs>
+      <div class="b-board-buttons">
+        <button class="b-board-button" [ngClass]="{ 'is-active': summaryFixed }" (click)="summaryFixed = !summaryFixed">
+          <i class="b-board-summary-icon fa fa-book"></i>
+        </button>
+        <button class="b-board-button" [ngClass]="{ 'is-active': logsFixed }" (click)="logsFixed = !logsFixed">
+          <i class="b-board-logs-icon fa fa-file-text"></i>
+        </button>
+        <button class="b-board-button" [ngClass]="{ 'is-active': zoomFixed }" (click)="zoomFixed = !zoomFixed">
+          <i class="b-board-logs-icon fa fa-search-plus"></i>
+        </button>
+      </div>
     </div>
-    <div class="b-board-summary-widget">
-      <mat-icon class="b-board-summary-icon" (click)="summaryFixed = !summaryFixed">menu_book</mat-icon>
-      <img class="b-board-summary-image" [ngClass]="{ 'is-fixed': summaryFixed }" src="assets/barony/summary.jpg">
-    </div>
+    <!-- <div class="b-board-zoom-and-logs"> -->
+      <!--  -->
+    <!-- </div>
+    <div class="b-board-summary-widget"> -->
+      <!--  -->
+    <!-- </div> -->
   </div>
 </div>
