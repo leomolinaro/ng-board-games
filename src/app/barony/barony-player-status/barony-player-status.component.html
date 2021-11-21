@@ -8,8 +8,10 @@
   }"
   (click)="onCardClick ()">
   <div class="b-player-header">
+    <i class="b-player-icon fa" [ngClass]="currentPlayer ? 'fa-circle' : 'fa-circle-o'"></i>
     <div class="b-player-name">{{ player.name }}</div>
-    <div class="b-player-type">{{ player.isAi ? "AI" : ( player.isRemote ? "remote" : "local" ) }}</div>
+    <i class="b-player-type-icon fa" [ngClass]="player.isAi ? 'fa-desktop' : (player.isRemote ? 'fa-globe' : 'fa-user')"></i>
+    <i class="b-player-score-icon fa fa-star-o"></i>
     <div class="b-player-score">{{ player.score }}</div>
   </div>
   <div class="b-player-content">

@@ -40,22 +40,13 @@
       margin-right: auto;
       margin-top: auto;
       padding: 2vh;
-      background: black;
+      background: $surface;
       color: white;
-      box-shadow: $widget-shadow;
       font-size: $font-size-instructions;
-      &.is-red {
-        border-bottom: 3px solid $red;
-      }
-      &.is-blue {
-        border-bottom: 3px solid $blue;
-      }
-      &.is-yellow {
-        border-bottom: 3px solid $yellow;
-      }
-      &.is-green {
-        border-bottom: 3px solid $green;
-      }
+      &.is-red { box-shadow: widget-shadow($red-light); }
+      &.is-blue { box-shadow: widget-shadow($blue-light); }
+      &.is-yellow { box-shadow: widget-shadow($yellow-light); }
+      &.is-green { box-shadow: widget-shadow($green-light); }
       .b-board-instructions {
         
       }
@@ -82,12 +73,6 @@
       grid-gap: 2vmin;
       .b-board-player-widget {
         pointer-events: auto;
-        background-color: white;
-        box-shadow: $widget-shadow;
-        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-        &:hover {
-          box-shadow: $widget-shadow-hover;
-        }
       }
     }
     .b-board-zoom-and-logs {
@@ -98,15 +83,22 @@
       max-height: 100%;
       .b-board-logs-widget {
         pointer-events: auto;
-        padding: 2vmin;
+        @include golden-padding(2vmin);
+        // padding: 2vmin;
         box-shadow: $widget-shadow;
         font-size: $font-size-logs;
         line-height: $line-height-logs;
+        color: white;
+        background-color: $surface;
       }
       .b-board-zoom-buttons-widget {
         pointer-events: auto;
         align-self: flex-start;
         margin-right: auto;
+        box-shadow: $widget-shadow;
+        color: white;
+        background-color: $surface;
+        border-radius: 50%;
       }
     }
     .b-board-summary-widget {

@@ -12,9 +12,9 @@
     }
     padding: 2vmin;
     box-shadow: $widget-shadow;
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    color: white;
+    background-color: $surface;
     border: 0;
-    background-color: white;
     outline: none;
     &.is-active {
       cursor: pointer;

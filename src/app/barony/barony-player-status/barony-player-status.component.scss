@@ -1,39 +1,61 @@
 @import "barony-variables";
 
 .b-player-card {
-  padding: 1vmin;
+  @include golden-padding(2vmin);
   font-size: $font-size-players;
-  color: black;
+  color: white;
+  background-color: $surface;
   .b-player-header {
     display: flex;
+    .b-player-icon {
+      display: flex;
+      align-items: flex-end;
+    }
+    .b-player-name {
+      margin-left: 5px;
+    }
     .b-player-type {
       font-style: italic;
       margin-left: 5px;
       font-size: 80%;
     }
-    .b-player-score {
+    .b-player-type-icon {
+      display: flex;
+      align-items: flex-end;
+      margin-left: 5px;
+    }
+    .b-player-score-icon {
+      display: flex;
+      align-items: flex-end;
       margin-left: auto;
+    }
+    .b-player-score {
+      margin-left: 5px;
     }
   }
   &.is-red {
-    background-color: $red-light;
+    box-shadow: widget-shadow($red-light);
+    .b-player-icon, .b-player-score-icon, .b-player-type-icon { color: $red; }
+    &.is-local:not(.is-current):hover { box-shadow: widget-shadow-hover($red-light); }
+    // background-color: $red-light;
   }
   &.is-yellow {
-    background-color: $yellow-light;
+    box-shadow: widget-shadow($yellow-light);
+    .b-player-icon, .b-player-score-icon, .b-player-type-icon { color: $yellow; }
+    &.is-local:not(.is-current):hover { box-shadow: widget-shadow-hover($yellow-light); }
+    // background-color: $yellow-light;
   }
   &.is-green {
-    background-color: $green-light;
+    box-shadow: widget-shadow($green-light);
+    .b-player-icon, .b-player-score-icon, .b-player-type-icon { color: $green; }
+    &.is-local:not(.is-current):hover { box-shadow: widget-shadow-hover($green-light); }
+    // background-color: $green-light;
   }
   &.is-blue {
-    background-color: $blue-light;
-  }
-  &.is-current {
-    .b-player-name {
-      font-weight: 800;
-    }
-    .b-player-score {
-      font-weight: 800;
-    }
+    box-shadow: widget-shadow($blue-light);
+    .b-player-icon, .b-player-score-icon, .b-player-type-icon { color: $blue; }
+    &.is-local:not(.is-current):hover { box-shadow: widget-shadow-hover($blue-light); }
+    // background-color: $blue-light;
   }
   &.is-local:not(.is-current) {
     cursor: pointer;
