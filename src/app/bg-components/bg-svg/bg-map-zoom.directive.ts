@@ -117,7 +117,6 @@ export class BgMapZoomDirective implements OnInit {
   @HostListener ("touchmove", ["$event"])
   onTouchMove (event: TouchEvent) {
     if (this.grabbing) {
-      console.log ("onTouchMove")
       const speed = 1;
       const xt = speed * (event.touches[0].clientX - (this.grabbingX as number));
       const yt = speed * (event.touches[0].clientY - (this.grabbingY as number));
