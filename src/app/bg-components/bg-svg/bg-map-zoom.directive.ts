@@ -1,5 +1,8 @@
 import { ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, Input, OnInit } from "@angular/core";
 
+const MOVE_STEP = 30;
+const ZOOM_STEP = 0.2;
+
 interface BgMapZoomRefreshParams {
   zoom: number;
   x0: number;
@@ -137,12 +140,12 @@ export class BgMapZoomDirective implements OnInit {
     } // onTouchMove
   } // onTouchMove
 
-  public moveUp () { this.move (0, -10); }
-  public moveDown () { this.move (0, 10); }
-  public moveLeft () { this.move (-10, 0); }
-  public moveRight () { this.move (10, 0); }
-  public zoomIn () { this.zoom (1.1); }
-  public zoomOut () { this.zoom (0.9); }
+  public moveUp () { this.move (0, -MOVE_STEP); }
+  public moveDown () { this.move (0, MOVE_STEP); }
+  public moveLeft () { this.move (-MOVE_STEP, 0); }
+  public moveRight () { this.move (MOVE_STEP, 0); }
+  public zoomIn () { this.zoom (1 + ZOOM_STEP); }
+  public zoomOut () { this.zoom (1 - ZOOM_STEP); }
 
   private move (xt: number, yt: number) {
     this.refreshTransform ({
