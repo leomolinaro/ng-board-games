@@ -31,15 +31,35 @@
     <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
     <svg:g
       *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
-      <svg:path class="brit-area-path" [attr.d]="areaNode.path" (click)="onAreaClick (areaNode, $event)"></svg:path>
-      <svg:g
-        *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
-        <svg:image
-          [attr.x]="unitNode.x - 15"
-          [attr.y]="unitNode.y - 15"
-          width="30"
-          [attr.xlink:href]="unitNode.imageSource"/>
-      </svg:g>
+      <svg:path [attr.id]="'brit-area-' + areaNode.id" class="brit-area-path" [attr.d]="areaNode.path" (click)="onAreaClick (areaNode, $event)"></svg:path>
+      
+      <svg:circle *ngFor="let point of testGridPoints"
+        [attr.cx]="point.x"
+        [attr.cy]="point.y"
+        [attr.r]="3"
+        [attr.style]="'fill: ' + point.color"></svg:circle>
+      
+      <ng-container *ngIf="slotsReady">
+        <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
+          <svg:g *ngLet="{
+            x: unitNode | bgTransform:getUnitNodeX:areaNode,
+            y: unitNode | bgTransform:getUnitNodeY:areaNode
+          } as c">
+            <svg:rect
+              class="brit-unit-rect"
+              [attr.x]="c.x"
+              [attr.y]="c.y"
+              width="30"
+              height="30">
+            </svg:rect>
+            <svg:image
+              [attr.x]="c.x"
+              [attr.y]="c.y"
+              width="30"
+              [attr.xlink:href]="unitNode.imageSource"/>
+          </svg:g>
+        </ng-container>
+      </ng-container>
 
 
       <!-- <svg:g

@@ -216,7 +216,7 @@ export function getGameSetup (): Record<BritAreaId, [BritNationId, number] | Bri
     "frisian-sea": null,
     "english-channel": ["romans", 16],
     "irish-sea": null,
-    "atlantic-ocean": null,
+    "atlantic-ocean": null
   };
 } // getGameSetup
 

@@ -19,7 +19,7 @@ interface BgMapZoomRefreshParams {
 export class BgSvgComponent {
 
   constructor (
-    private elementRef: ElementRef<SVGSVGElement>,
+    public elementRef: ElementRef<SVGSVGElement>,
   ) { }
 
   createSVGPoint () { return this.elementRef.nativeElement.createSVGPoint (); }

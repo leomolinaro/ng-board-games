@@ -232,7 +232,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     }), s);
   } // addUnitToArea
 
-  private removeInfantryFromNation (nationId: BritNationId, s: BritGameState): [BritUnitId, BritGameState, ] {
+  private removeInfantryFromNation (nationId: BritNationId, s: BritGameState): [BritUnitId, BritGameState] {
     const unitId = s.nations[nationId].infantries[0];
     return [
       unitId,

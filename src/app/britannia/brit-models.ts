@@ -41,6 +41,22 @@ export type BritSeaAreaId = "icelandic-sea" | "north-sea" | "frisian-sea" | "eng
 
 export type BritAreaId = BritLandAreaId | BritSeaAreaId;
 
+export function isBritLandAreaId (areaId: BritAreaId): areaId is BritLandAreaId {
+  return !isBritSeaAreaId (areaId);
+} // isBritLandAreaId
+
+export function isBritSeaAreaId (areaId: BritAreaId): areaId is BritSeaAreaId {
+  switch (areaId) {
+    case "icelandic-sea":
+    case "north-sea":
+    case "frisian-sea":
+    case "english-channel":
+    case "irish-sea":
+    case "atlantic-ocean": return true;
+    default: return false;
+  } // switch
+} // isBritSeaAreaId
+
 export type BritNeighbor = BritAreaId | { id: BritAreaId, strait: true };
 
 interface ABritArea {
