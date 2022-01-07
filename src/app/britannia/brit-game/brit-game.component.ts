@@ -41,6 +41,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
   areas$ = this.game.selectAreas$ ();
+  nations$ = this.game.selectNations$ ();
+  rounds$ = this.game.selectRounds$ ();
   unitsMap$ = this.game.selectUnitsMap$ ();
   players$ = this.game.selectPlayers$ ();
 
@@ -60,11 +62,13 @@ export class BritGameComponent implements OnInit, OnDestroy {
           const user = this.authService.getUser ();
           const nations = britRules.createNationsAndUnits ();
           const areas = britRules.createAreas ();
+          const rounds = britRules.createRounds ();
           this.game.setInitialState (
             players.map (p => this.playerDocToPlayer (p, user)),
             nations.map (n => n.nation),
             areas,
             arrayUtil.flattify (nations.map (n => n.units)),
+            rounds,
             this.gameId,
             game.owner
           );

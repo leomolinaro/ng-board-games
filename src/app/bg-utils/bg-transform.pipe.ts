@@ -5,10 +5,10 @@ export type BgTransformFn<I, O, P = any> = (value: I, params: P) => O
 @Pipe ({
   name: "bgTransform"
 })
-export class BgTransformPipe<I, O, P> implements PipeTransform {
+export class BgTransformPipe<I, O> implements PipeTransform {
 
-  transform (value: I, transformFn: (value: I, params: P) => O, params: P): O {
-    return transformFn (value, params);
+  transform (value: I, transformFn: (value: I, ...params: any[]) => O, ...params: any[]): O {
+    return transformFn (value, ...params);
   } // transform
 
 } // BgTransformPipe

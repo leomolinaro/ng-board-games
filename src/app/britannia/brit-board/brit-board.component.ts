@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { BritArea, BritPlayer, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritNation, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
 
 @Component ({
   selector: "brit-board",
@@ -12,6 +12,8 @@ export class BritBoardComponent {
   constructor () { }
 
   @Input () areas!: BritArea[];
+  @Input () nations!: BritNation[];
+  @Input () rounds!: BritRound[];
   @Input () unitsMap!: Record<BritUnitId, BritUnit>;
   @Input () players!: BritPlayer[];
 

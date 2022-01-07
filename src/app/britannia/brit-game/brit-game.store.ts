@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
-import { BRIT_AREAS } from "../brit-constants";
-import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritUnit, BritUnitId } from "../brit-models";
+import { BRIT_AREAS, BRIT_NATIONS } from "../brit-constants";
+import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
 
 interface BritGameState {
   gameId: string;
@@ -14,6 +14,7 @@ interface BritGameState {
   areas: Record<BritAreaId, BritArea>;
   nations: Record<BritNationId, BritNation>;
   units: Record<BritUnitId, BritUnit>;
+  rounds: BritRound[],
   logs: BritLog[];
 } // BritGameState
 
@@ -28,6 +29,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       areas: null as any,
       nations: null as any,
       units: null as any,
+      rounds: null as any,
       logs: []
     }, "Britannia Game");
   } // constructor
@@ -37,6 +39,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     nations: BritNation[],
     areas: BritArea[],
     units: BritUnit[],
+    rounds: BritRound[],
     gameId: string,
     gameOwner: BgUser
   ) {
@@ -49,6 +52,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         ids: players.map (p => p.id)
       },
       areas: arrayUtil.toMap (areas, a => a.id) as Record<BritAreaId, BritArea>,
+      rounds: rounds,
       nations: arrayUtil.toMap (nations, n => n.id) as Record<BritNationId, BritNation>,
       units: arrayUtil.toMap (units, u => u.id)
     }));
@@ -74,6 +78,16 @@ export class BritGameStore extends BgStore<BritGameState> {
       return areas ? BRIT_AREAS.map (id => areas[id]) : [];
     });
   } // selectAreas$
+
+  selectNations$ () {
+    return this.select$ (this.select$ (s => s.nations), nations => {
+      return nations ? BRIT_NATIONS.map (id => nations[id]) : [];
+    });
+  } // selectNations$
+
+  selectRounds$ () {
+    return this.select$ (s => s.rounds || []);
+  } // selectRounds$
 
   selectUnitsMap$ () { return this.select$ (s => s.units); }
 
@@ -225,6 +239,13 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   }));
   // } // addLog
   
+  setNationPopulation (population: BritPopulation, nationId: BritNationId, s: BritGameState): BritGameState {
+    return this.updateNation (nationId, nation => ({
+      ...nation,
+      population: population
+    }), s);
+  } // setNationPopulation
+
   addUnitToArea (unitId: BritUnitId, areaId: BritAreaId, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => ({
       ...area,
@@ -243,10 +264,10 @@ export class BritGameStore extends BgStore<BritGameState> {
     ];
   } // removeInfantryFromNation
 
-  applySetup (setup: Record<BritAreaId, [BritNationId, number] | BritNationId | null | null>) {
-    this.update ("Setup", s =>
-      BRIT_AREAS.reduce ((state, areaId) => {
-        const areaSetup = setup[areaId];
+  applySetup (setup: BritSetup) {
+    this.update ("Setup", s => {
+      return BRIT_AREAS.reduce ((state, areaId) => {
+        const areaSetup = setup.areas[areaId];
         if (areaSetup) {
           const [nationId, nInfantries] = typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];
           for (let i = 0; i < nInfantries; i++) {
@@ -254,9 +275,12 @@ export class BritGameStore extends BgStore<BritGameState> {
             state = this.addUnitToArea (infantryId, areaId, newState);
           } // for
         } // if
+        setup.populationMarkers.forEach (nationId => {
+          state = this.setNationPopulation (0, nationId, state);
+        });
         return state;
       }, s)
-    );
+    });
   } // applySetup
 
 

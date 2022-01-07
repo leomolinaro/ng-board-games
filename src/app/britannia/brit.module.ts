@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Injectable, NgModule } from "@angular/core";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { Resolve, RouterModule, Routes } from "@angular/router";
 import { BgSvgModule } from "@bg-components/svg";
 import { BgUtilsModule } from "@bg-utils";
@@ -50,7 +51,8 @@ const routes: Routes = [
     RouterModule.forChild (routes),
     BritHomeModule,
     BgSvgModule,
-    BgUtilsModule
+    BgUtilsModule,
+    MatTooltipModule
   ],
   providers: [
     BritAreaPathResolver,

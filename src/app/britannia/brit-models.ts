@@ -5,6 +5,10 @@ export type BritColor = "blue" | "yellow" | "red" | "green";
 interface ABritUnit {
   id: BritUnitId;
   nation: BritNationId;
+  nationLabel: string;
+  type: string;
+  typeLabel: string;
+  nationColor: BritColor;
 } // ABritUnit
 
 export type BritLeaderId = "arthur" | "william" | "aelle" | "egbert" | "alfred" | "edgar" | "harold" |
@@ -26,6 +30,8 @@ export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritRomanFort |
 export type BritUnitId = string;
 
 export type BritRegionId = "wales" | "england" | "scotland";
+
+export type BritPopulation = 0 | 1 | 2 | 3 | 4 | 5;
 
 export interface BritRegion {
   id: BritRegionId;
@@ -85,12 +91,54 @@ export type BritNationId = "romans" | "romano-british" | "normans" | "saxons" | 
 
 export interface BritNation {
   id: BritNationId;
-  name: string;
+  label: string;
+  color: BritColor;
   infantries: string[];
   cavalries: string[];
   buildings: string[];
   leaders: string[];
+  population: BritPopulation | null;
 } // BritNation
+
+export type BritRoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+
+export interface BritRound {
+  id: BritRoundId;
+  fromYear: number;
+  toYear: number;
+  events: BritEvent[];
+  scoring: boolean;
+  bretwaldaElection: boolean;
+  kingElection: boolean;
+} // BritRound
+
+export interface BritEvent {
+  nation: BritNationId;
+  invasions: BritInvasion[] | null;
+  revolt: BritRevolt | null;
+  majorInvasion: boolean;
+  raiding: boolean;
+  boats: boolean;
+  special: BritSpecialEvent | null;
+  leader: BritLeaderId | null;
+} // BritEvent
+
+export type BritSpecialEvent =
+  "romans-invasion" | "boudicca-revolt" | "romans-withdrawal" | "romans-replacement" |
+  "oswiu-invasion" | "offa-invasion" |
+  "danes-first-invasion" | "cnut-invasion" |
+  "norwegians-reinforcements" | "saxons-reinforcements" | "normans-reinforcements";
+
+export interface BritInvasion {
+  infantries: number;
+  cavalries: number;
+  area: BritSeaAreaId;
+} // BritInvasion
+
+export interface BritRevolt {
+  infantries: number;
+  cavalries: number;
+} // BritRevolt
 
 export interface ABritPlayer {
   id: string;
@@ -128,3 +176,8 @@ export type BritLog = never/* BritLogSetup | BritLogSetupPlacement | BritLogTurn
   | BritLogNewCity | BritLogNobleTitle | BritLogExpedition | BritLogMovement */;
 
 export type BritStory =  { };
+
+export interface BritSetup {
+  areas: Record<BritAreaId, [BritNationId, number] | BritNationId | null>;
+  populationMarkers: BritNationId[];
+} // BritSetup

@@ -75,7 +75,7 @@ export function entitiesToNodes<E, N> (
   entities: E[],
   oldMap: Record<string | number, N>,
   getEntityId: (entity: E) => string | number,
-  isEntityChanged: (entity: E, node: N) => boolean,
+  isEntityUnchanged: (entity: E, node: N) => boolean,
   entityToNode: (entity: E, index: number, oldNode: N | null) => N,
 ): ({ nodes: N[]; map: Record<string | number, N> }) {
   const map: Record<string | number, N> = { };
@@ -85,7 +85,7 @@ export function entitiesToNodes<E, N> (
     let node!: N;
     const oldNode = oldMap[id];
     if (oldNode) {
-      if (isEntityChanged (entity, oldNode)) {
+      if (isEntityUnchanged (entity, oldNode)) {
         node = oldNode;
       } else {
         node = entityToNode (entity, index, oldNode);

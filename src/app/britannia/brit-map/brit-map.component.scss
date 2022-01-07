@@ -1,11 +1,34 @@
-.brit-area-path {
+@mixin brit-path {
   opacity: 0;
   &:hover {
     opacity: 0.3;
   }
 }
+.brit-area-path {
+  @include brit-path;
+}
+.brit-population-track-path {
+  @include brit-path;
+}
+.brit-nation-turn-path {
+  @include brit-path;
+}
+.brit-round-path {
+  @include brit-path;
+}
+.brit-event-path {
+  @include brit-path;
+}
+.brit-scoring-path {
+  @include brit-path;
+}
 .brit-unit-rect {
-  stroke: white;
+  stroke: black;
   stroke-width: 6px;
   stroke-linejoin: round;
+}
+.brit-population-circle {
+  stroke: black;
+  stroke-width: 6px;
+  // stroke-linejoin: round;
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from "@bg-utils";
 import { BgSimulatedAnnealing } from "src/app/bg-utils/random.util";
 import { BRIT_LAND_AREAS } from "../brit-constants";
-import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-models";
+import { BritAreaId, BritLandAreaId, BritPopulation, BritSeaAreaId, isBritLandAreaId } from "../brit-models";
 
 interface BritLandAreaProp {
   id: BritLandAreaId;
@@ -29,6 +29,21 @@ interface BritMapLandPoint extends BritMapPoint {
 } // BritMapLandPoint
 
 export type BritMapSeaPoint = BritMapPoint;
+
+const BRIT_SEA_GRID: Record<BritSeaAreaId, { startX: number; startY: number; width: number }> = {
+  "atlantic-ocean": { startX: 5, startY: 41, width: 6 },
+  "english-channel": { startX: 23, startY: 57, width: 8 },
+  "frisian-sea": { startX: 30, startY: 37, width: 6 },
+  "icelandic-sea": { startX: 22, startY: 5, width: 5 },
+  "irish-sea": { startX: 1, startY: 23, width: 5 },
+  "north-sea": { startX: 25, startY: 20, width: 6 }
+} // BRIT_SEA_GRID
+
+const BRIT_POPULATION_START_Y = 61;
+const BRIT_POPULATION_START_WIDTH = 3;
+const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
+  0: 11.8, 1: 15.04, 2: 18.28, 3: 21.52, 4: 24.79, 5: 28
+};
 
 @Injectable({
   providedIn: 'root'
@@ -185,28 +200,27 @@ export class BritMapSlotsService {
       const seaProp = this.seaPropById[areaId];
       let slots = seaProp.slotsByN[n];
       if (!slots) {
-        let startX: number;
-        let startY: number;
-        let width: number;
-        switch (areaId) {
-          case "atlantic-ocean": startX = 5; startY = 41; width = 6; break;
-          case "english-channel": startX = 23; startY = 57; width = 8; break;
-          case "frisian-sea": startX = 30; startY = 37; width = 6; break;
-          case "icelandic-sea": startX = 22; startY = 5; width = 5; break;
-          case "irish-sea": startX = 1; startY = 23; width = 5; break;
-          case "north-sea": startX = 25; startY = 20; width = 6; break;
-        } // switch
+        const seaGrid = BRIT_SEA_GRID[areaId];
         slots = [];
         for (let i = 0; i < n; i++) {
-          const x = startX + (i % width)/*  * 2 */;
-          const y = startY + Math.floor (i / width)/*  * 2 */;
+          const x = seaGrid.startX + (i % seaGrid.width);
+          const y = seaGrid.startY + Math.floor (i / seaGrid.width);
           slots.push ({ x, y })
         } // for
         seaProp.slotsByN[n] = slots;
       } // if
       return slots;
     } // if - else
-  } // getLandSlots
+  } // getAreaSlots
+
+  getPopulationX (population: BritPopulation, index: number): number {
+    const startX = BRIT_POPULATION_START_X[population];
+    return startX + (index % BRIT_POPULATION_START_WIDTH);
+  } // getPopulationX
+
+  getPopulationY (population: BritPopulation, index: number): number {
+    return BRIT_POPULATION_START_Y + Math.floor (index / BRIT_POPULATION_START_WIDTH);
+  } // getPopulationY
 
   private energy (points: BritMapLandPoint[]) {
     let totEnergy = 0;
