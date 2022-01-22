@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, TrackByFunction, ViewChild } from "@angular/core";
-import { BgSvgComponent } from "@bg-components/svg";
+import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
 import { arrayUtil, SimpleChanges } from "@bg-utils";
 import { BRIT_POPULATIONS } from "../brit-constants";
-import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId, isBritLandAreaId } from "../brit-models";
+import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-models";
 import { BritMapPoint, BritMapSlotsService } from "./brit-map-slots.service";
 import { BritMapService } from "./brit-map.service";
 
@@ -93,7 +93,8 @@ export class BritMapComponent implements OnChanges {
   testGridPoints: { x: number; y: number; color: string }[] | undefined = [];
 
   @ViewChild (BgSvgComponent) bgSvg!: BgSvgComponent;
-  @ViewChild ("britMapMap") mapElementRef!: ElementRef<SVGGElement>;
+  @ViewChild ("britMap") mapElementRef!: ElementRef<SVGGElement>;
+  @ViewChild (BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
 
   slotsReady = false;
 
@@ -108,6 +109,13 @@ export class BritMapComponent implements OnChanges {
   ngOnChanges (changes: SimpleChanges<BritMapComponent>) {
     if (changes.areas) {
       this.refreshAreaNodes ();
+      if (!this.slotsReady && this.areas?.length) {
+        setTimeout (() => {
+          this.generateSlots ();
+          this.slotsReady = true;
+          this.cd.markForCheck ();
+        });
+      } // if
     } // if
     if (changes.nations) {
       this.refreshPopulationNodes ();
@@ -117,14 +125,6 @@ export class BritMapComponent implements OnChanges {
       this.refreshRoundNodes ();
     } // if
   } // ngOnChanges
-
-  ngAfterViewInit () {
-    setTimeout (() => {
-      this.generateSlots ();
-      this.slotsReady = true;
-      this.cd.markForCheck ();
-    }, 1500);
-  } // ngAfterViewInit
 
   private refreshAreaNodes () {
     const { nodes, map } = arrayUtil.entitiesToNodes (
@@ -293,15 +293,15 @@ export class BritMapComponent implements OnChanges {
   } // getUnitImageSource
 
   onAreaClick (areaNode: BritAreaNode, event: MouseEvent) {
-    if (isBritLandAreaId (areaNode.id)) {
-      this.testGridPoints = [
-        ...this.slotsService.getLandInnerPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "blue" })),
-        ...this.slotsService.getLandBorderPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "red" })),
-        ...this.slotsService.getAreaSlots (1, areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "black" }))
-      ];
-    } else {
-      this.testGridPoints = [];
-    } // if - else
+    // if (isBritLandAreaId (areaNode.id)) {
+    //   this.testGridPoints = [
+    //     ...this.slotsService.getLandInnerPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "blue" })),
+    //     ...this.slotsService.getLandBorderPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "red" })),
+    //     ...this.slotsService.getAreaSlots (1, areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "black" }))
+    //   ];
+    // } else {
+    //   this.testGridPoints = [];
+    // } // if - else
   } // onAreaClick
 
   getUnitNodeX = (unitNode: BritUnitNode, areaNode: BritAreaNode) => {

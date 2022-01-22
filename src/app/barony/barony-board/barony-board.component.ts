@@ -47,7 +47,7 @@ export class BaronyBoardComponent implements OnChanges {
     if (changes.maxNumberOfKnights) {
       this.numberOfKnights = this.maxNumberOfKnights || 0;
     } // if
-  } // ngOnInit
+  } // ngOnChanges
 
   onPlayerSelect (player: BaronyPlayer) { this.playerSelect.emit (player); }
   onBuildingSelect (building: BaronyBuilding) { this.buildingSelect.emit (building); }

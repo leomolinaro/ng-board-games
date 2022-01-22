@@ -1,1 +1,1 @@
-<brit-player *ngFor="let player of players" [player]="player"></brit-player>
+<brit-player *ngFor="let player of players; trackBy: playerTrackBy" [player]="player"></brit-player>

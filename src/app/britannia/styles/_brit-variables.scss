@@ -1,5 +1,10 @@
-// $widget-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-// $widget-shadow-hover: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+@import "bg-variables";
+
+@function widget-shadow($color) { @return inset 0 0 6px 0px $color; }
+@function widget-shadow-hover($color) { @return inset 0 0 6px 2px $color; }
+
+$widget-shadow: widget-shadow(#fff);
+$widget-shadow-hover: widget-shadow-hover(#fff);
 
 $red-light: #ffa4a2;
 $green-light: #98ee99;
@@ -11,10 +16,13 @@ $blue: #42a5f5;
 $green: #66bb6a;
 $yellow: #ffee58;
 
+$surface: rgb(34 34 34 / 80%);
+
 // $font-size-players: 2.5vmin;
-// $font-size-instructions: 2.5vmin;
+$font-size-instructions: 2.5vmin;
 // $font-size-actions: 2vmin;
-// $font-size-logs: 1.5vmin;
+$font-size-logs: 1.5vmin;
+$line-height-logs: 2.5vmin;
 
 // $color-mountain: #94887C;
 // $color-lake: #0E517E;

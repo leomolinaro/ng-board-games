@@ -1,4 +1,4 @@
-@import "barony-variables";
+@import "brit-variables";
 
 .brit-board {
   position: absolute;
@@ -28,51 +28,36 @@
     padding: 2vmin;
 
     grid-template-areas: 
-      "summary zoom zoomAndLogs"
-      "players . zoomAndLogs"
+      "players extras extras"
+      "players extras extras"
       "players . actions"
       "players instructions actions";
 
-    // .b-board-instructions-widget {
-    //   grid-area: instructions;
-    //   pointer-events: auto;
-    //   margin-left: auto;
-    //   margin-right: auto;
-    //   margin-top: auto;
-    //   padding: 2vh;
-    //   background: black;
-    //   color: white;
-    //   box-shadow: $widget-shadow;
-    //   font-size: $font-size-instructions;
-    //   &.is-red {
-    //     border-bottom: 3px solid $red;
-    //   }
-    //   &.is-blue {
-    //     border-bottom: 3px solid $blue;
-    //   }
-    //   &.is-yellow {
-    //     border-bottom: 3px solid $yellow;
-    //   }
-    //   &.is-green {
-    //     border-bottom: 3px solid $green;
-    //   }
-    //   .b-board-instructions {
+    .brit-board-instructions-widget {
+      grid-area: instructions;
+      pointer-events: auto;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: auto;
+      padding: 2vh;
+      background: $surface;
+      color: white;
+      font-size: $font-size-instructions;
+      &.is-red { box-shadow: widget-shadow($red-light); }
+      &.is-blue { box-shadow: widget-shadow($blue-light); }
+      &.is-yellow { box-shadow: widget-shadow($yellow-light); }
+      &.is-green { box-shadow: widget-shadow($green-light); }
+      .brit-board-instructions {
         
-    //   }
-    //   barony-knights-selector,
-    //   barony-resources-selector,
-    //   barony-buildings-selector {
-    //     display: block;
-    //     margin-top: 2vh;
-    //   }
-    // }
-    // .b-board-actions-widget {
-    //   grid-area: actions;
-    //   pointer-events: auto;
-    //   margin-top: auto;
-    //   margin-left: auto;
-    // }
-    .b-board-players-widget {
+      }
+    }
+    .brit-board-actions-widget {
+      grid-area: actions;
+      pointer-events: auto;
+      margin-top: auto;
+      margin-left: auto;
+    }
+    .brit-board-players-widget {
       grid-area: players;
       z-index: 1;
       margin-top: auto;
@@ -80,54 +65,193 @@
       display: grid;
       grid-template-columns: auto;
       grid-gap: 2vmin;
-      .b-board-player-widget {
+      overflow: auto;
+      max-height: 100%;
+      pointer-events: auto;
+    }
+    .brit-board-extras {
+      grid-area: extras;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 4vmin;
+      .brit-board-buttons {
         pointer-events: auto;
-        background-color: white;
-        box-shadow: $widget-shadow;
-        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-        &:hover {
-          box-shadow: $widget-shadow-hover;
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-columns: 1fr;
+        grid-gap: 2vmin;
+        margin-bottom: auto;
+        margin-left: 2vmin;
+        .brit-board-button {
+          color: white;
+          background-color: transparent;
+          cursor: pointer;
+          opacity: 0.5;
+          &.is-active {
+            opacity: 1;
+          }
         }
       }
+      .brit-board-logs-widget {
+        pointer-events: auto;
+        @include golden-padding(2vmin);
+        // padding: 2vmin;
+        box-shadow: $widget-shadow;
+        font-size: $font-size-logs;
+        line-height: $line-height-logs;
+        color: white;
+        background-color: $surface;
+        margin-left: 2vmin;
+      }
+      .brit-board-zoom-buttons-widget {
+        @include golden-padding(2vmin);
+        pointer-events: auto;
+        align-self: flex-start;
+        box-shadow: $widget-shadow;
+        color: white;
+        background-color: $surface;
+        margin-left: 2vmin;
+      }
     }
-    // .b-board-zoom-and-logs {
-    //   grid-area: zoomAndLogs;
-    //   display: flex;
-    //   margin-left: 0;
-    //   margin-bottom: auto;
-    //   max-height: 100%;
-    //   .b-board-logs-widget {
-    //     pointer-events: auto;
-    //     padding: 2vmin;
-    //     box-shadow: $widget-shadow;
-    //     font-size: $font-size-logs;
-    //     line-height: $line-height-logs;
-    //   }
-    //   .b-board-zoom-buttons-widget {
-    //     pointer-events: auto;
-    //     align-self: flex-start;
-    //     margin-right: auto;
-    //   }
-    // }
-    // .b-board-summary-widget {
-    //   pointer-events: auto;
-    //   grid-area: summary;
-    //   .b-board-summary-icon {
-    //     cursor: pointer;
-    //   }
-    //   .b-board-summary-image {
-    //     display: none;
-    //     position: absolute;
-    //     z-index: 10;
-    //     width: 70vmin;
-    //     &.is-fixed {
-    //       display: block;
-    //     }
-    //   }
-    //   .b-board-summary-icon:hover + .b-board-summary-image {
-    //     display: block;
-    //   }
-    // }
   }
 }
+
+
+
+
+
+
+
+// @import "barony-variables";
+
+// .brit-board {
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   bottom: 0;
+//   right: 0;
+//   overflow: hidden;
+//   background: black;
+//   .brit-board-map-layer {
+//     position: absolute;
+//     top: 0;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//   }
+//   .brit-board-widgets-layer {
+//     position: absolute;
+//     top: 0;
+//     bottom: 0;
+//     left: 0;
+//     right: 0;
+//     pointer-events: none;
+//     display: grid;
+//     grid-template-columns: 1fr 1fr 1fr;
+//     grid-template-rows: 1fr 1fr 1fr 1fr;
+//     padding: 2vmin;
+
+//     grid-template-areas: 
+//       "summary zoom zoomAndLogs"
+//       "players . zoomAndLogs"
+//       "players . actions"
+//       "players instructions actions";
+
+//     // .b-board-instructions-widget {
+//     //   grid-area: instructions;
+//     //   pointer-events: auto;
+//     //   margin-left: auto;
+//     //   margin-right: auto;
+//     //   margin-top: auto;
+//     //   padding: 2vh;
+//     //   background: black;
+//     //   color: white;
+//     //   box-shadow: $widget-shadow;
+//     //   font-size: $font-size-instructions;
+//     //   &.is-red {
+//     //     border-bottom: 3px solid $red;
+//     //   }
+//     //   &.is-blue {
+//     //     border-bottom: 3px solid $blue;
+//     //   }
+//     //   &.is-yellow {
+//     //     border-bottom: 3px solid $yellow;
+//     //   }
+//     //   &.is-green {
+//     //     border-bottom: 3px solid $green;
+//     //   }
+//     //   .b-board-instructions {
+        
+//     //   }
+//     //   barony-knights-selector,
+//     //   barony-resources-selector,
+//     //   barony-buildings-selector {
+//     //     display: block;
+//     //     margin-top: 2vh;
+//     //   }
+//     // }
+//     // .b-board-actions-widget {
+//     //   grid-area: actions;
+//     //   pointer-events: auto;
+//     //   margin-top: auto;
+//     //   margin-left: auto;
+//     // }
+//     .b-board-players-widget {
+//       grid-area: players;
+//       z-index: 1;
+//       margin-top: auto;
+//       margin-right: auto;
+//       display: grid;
+//       grid-template-columns: auto;
+//       grid-gap: 2vmin;
+//       .b-board-player-widget {
+//         pointer-events: auto;
+//         background-color: white;
+//         box-shadow: $widget-shadow;
+//         transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+//         &:hover {
+//           box-shadow: $widget-shadow-hover;
+//         }
+//       }
+//     }
+//     // .b-board-zoom-and-logs {
+//     //   grid-area: zoomAndLogs;
+//     //   display: flex;
+//     //   margin-left: 0;
+//     //   margin-bottom: auto;
+//     //   max-height: 100%;
+//     //   .b-board-logs-widget {
+//     //     pointer-events: auto;
+//     //     padding: 2vmin;
+//     //     box-shadow: $widget-shadow;
+//     //     font-size: $font-size-logs;
+//     //     line-height: $line-height-logs;
+//     //   }
+//     //   .b-board-zoom-buttons-widget {
+//     //     pointer-events: auto;
+//     //     align-self: flex-start;
+//     //     margin-right: auto;
+//     //   }
+//     // }
+//     // .b-board-summary-widget {
+//     //   pointer-events: auto;
+//     //   grid-area: summary;
+//     //   .b-board-summary-icon {
+//     //     cursor: pointer;
+//     //   }
+//     //   .b-board-summary-image {
+//     //     display: none;
+//     //     position: absolute;
+//     //     z-index: 10;
+//     //     width: 70vmin;
+//     //     &.is-fixed {
+//     //       display: block;
+//     //     }
+//     //   }
+//     //   .b-board-summary-icon:hover + .b-board-summary-image {
+//     //     display: block;
+//     //   }
+//     // }
+//   }
+// }
 

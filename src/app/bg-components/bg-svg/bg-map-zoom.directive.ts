@@ -34,7 +34,8 @@ export class BgMapZoomDirective implements OnInit {
 
   constructor (
     private bgSvg: BgSvgComponent,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private elementRef: ElementRef<SVGGElement>
   ) { }
 
   @Input ("bgMapZoom") config!: {
@@ -71,7 +72,7 @@ export class BgMapZoomDirective implements OnInit {
     this.translateStep = this.config.translateStep || 15;
   } // parseConfig
 
-  // @HostListener ("mousedown", ["$event"]) TODO
+  @HostListener ("mousedown", ["$event"])
   onMouseDown (event: MouseEvent) {
     if (event.button === 0) {
       this.grabbing = true;
@@ -79,33 +80,29 @@ export class BgMapZoomDirective implements OnInit {
       this.grabbingY = event.clientY;
     } else if (event.button === 1) {
       event.preventDefault ();
-      this.refreshTransform ({
-        zoom: 1,
-        x0: 0, y0: 0,
-        xt: 0, yt: 0,
-        reset: true
-      });
+      this.reset ();
     } // if - else
   } // onMouseDown
 
-  // @HostListener ("mouseup", ["$event"]) TODO
+  @HostListener ("mouseup", ["$event"])
   onMouseUp (event: MouseEvent) {
     if (event.button === 0) {
       this.endGrabbing ();
     } // if
   } // onMouseUp
 
-  // @HostListener ("mouseleave", ["$event"]) TODO
+  @HostListener ("mouseleave", ["$event"])
   onMouseLeave (event: MouseEvent) {
-    // this.endGrabbing ();
+    if (this.grabbing) {
+      this.endGrabbing ();
+    } // if
   } // onMouseLeave
 
-  // @HostListener ("mousemove", ["$event"]) TODO
+  @HostListener ("mousemove", ["$event"])
   onMouseMove (event: MouseEvent) {
     if (this.grabbing) {
-      const speed = 1;
-      const xt = speed * (event.clientX - (this.grabbingX as number));
-      const yt = speed * (event.clientY - (this.grabbingY as number));
+      const xt = event.clientX - this.grabbingX!;
+      const yt = event.clientY - this.grabbingY!;
       this.grabbingX = event.clientX;
       this.grabbingY = event.clientY;
       this.refreshTransform ({
@@ -117,12 +114,11 @@ export class BgMapZoomDirective implements OnInit {
     } // if
   } // onMouseMove
 
-  // @HostListener ("touchmove", ["$event"]) TODO
+  @HostListener ("touchmove", ["$event"])
   onTouchMove (event: TouchEvent) {
     if (this.grabbing) {
-      const speed = 1;
-      const xt = speed * (event.touches[0].clientX - (this.grabbingX as number));
-      const yt = speed * (event.touches[0].clientY - (this.grabbingY as number));
+      const xt = event.touches[0].clientX - this.grabbingX!;
+      const yt = event.touches[0].clientY - this.grabbingY!;
       this.grabbingX = event.touches[0].clientX;
       this.grabbingY = event.touches[0].clientY;
       this.refreshTransform ({
@@ -146,6 +142,42 @@ export class BgMapZoomDirective implements OnInit {
   public moveRight () { this.move (MOVE_STEP, 0); }
   public zoomIn () { this.zoom (1 + ZOOM_STEP); }
   public zoomOut () { this.zoom (1 - ZOOM_STEP); }
+  public reset () {
+    this.refreshTransform ({
+      zoom: 1,
+      x0: 0, y0: 0,
+      xt: 0, yt: 0,
+      reset: true
+    });
+    if (this.grabbing) {
+      this.endGrabbing ();
+    } // if
+    this.cd.markForCheck ();
+  } // reset
+
+  public autoSize () {
+    // const containerEl = this.bgSvg.elementRef.nativeElement;
+    // const childEl = this.elementRef.nativeElement.getBoundingClientRect ();
+    
+    // const scaleX = containerEl.clientWidth / childEl.width;
+    // const scaleY = containerEl.clientHeight / childEl.height;
+    // const scale = Math.min (scaleX, scaleY);
+
+    // const xt = (containerEl.clientWidth - childEl.width * scale) / 2 - childEl.x * scale;
+    // const yt = (containerEl.clientHeight - childEl.height * scale) / 2 - childEl.y * scale;
+
+    // console.log ("scale", scale);
+    // console.log ("xt", xt + childEl.x);
+    // console.log ("yt", yt + childEl.y);
+
+    // this.refreshTransform ({
+    //   zoom: scale,
+    //   x0: 0, y0: 0,
+    //   xt: xt, yt: yt,
+    //   reset: false
+    // });
+    // this.cd.markForCheck ();
+  } // autoSize
 
   private move (xt: number, yt: number) {
     this.refreshTransform ({
@@ -231,9 +263,9 @@ export class BgMapZoomDirective implements OnInit {
       this.parseConfig ();
     } else {
       const newScale = refreshParams.zoom;
+      this.scale = newScale * this.scale;
       const newXt = refreshParams.x0 * (1 - newScale) + refreshParams.xt;
       const newYt = refreshParams.y0 * (1 - newScale) + refreshParams.yt;
-      this.scale = newScale * this.scale;
       this.translateX = newXt + newScale * this.translateX;
       this.translateY = newYt + newScale * this.translateY;
     } // if - else

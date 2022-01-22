@@ -7,3 +7,10 @@ $on-secondary: #000000;
 $on-background: #ffffff;
 $on-surface: #ffffff;
 
+@mixin golden-padding($horizontal-padding) {
+  padding-right: $horizontal-padding;
+  padding-left: $horizontal-padding;
+  padding-top: $horizontal-padding / 1.618;
+  padding-bottom: $horizontal-padding / 1.618;
+}
+

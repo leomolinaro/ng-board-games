@@ -118,12 +118,12 @@
         margin-left: 2vmin;
       }
       .b-board-zoom-buttons-widget {
+        @include golden-padding(2vmin);
         pointer-events: auto;
         align-self: flex-start;
         box-shadow: $widget-shadow;
         color: white;
         background-color: $surface;
-        border-radius: 50%;
         margin-left: 2vmin;
       }
     }

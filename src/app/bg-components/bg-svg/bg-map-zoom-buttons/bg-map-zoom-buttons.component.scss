@@ -1,51 +1,56 @@
+@mixin icon-size ($size) {
+  i.fa {
+    font-size: $size;
+    line-height: $size;
+  }
+}
+
 :host {
   display: grid;
-  grid-template-rows: 6vmin 3vmin 3vmin 6vmin;
+  grid-template-rows: 6vmin 6vmin 6vmin 6vmin;
   grid-template-columns: 6vmin 6vmin 6vmin;
   // align-items: center;
   grid-template-areas:
     ". moveUp ."
-    "moveLeft zoomIn moveRight"
-    "moveLeft zoomOut moveRight"
-    ". moveDown .";
-  .move {
+    "moveLeft autoSize moveRight"
+    ". moveDown ."
+    "zoomIn resetButton zoomOut";
+  button {
     display: flex;
     align-items: center;
     justify-content: center;
     height: auto;
     width: auto;
-    &.move-up {
-      grid-area: moveUp;
-    }
-    &.move-down {
-      grid-area: moveDown;
-    }
-    &.move-left {
-      grid-area: moveLeft;
-    }
-    &.move-right {
-      grid-area: moveRight;
-    }
-    i.fa {
-      font-size: 8vmin;
-      line-height: 8vmin;
-    }
   }
-  .zoom {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    width: auto;
-    &.zoom-in {
-      grid-area: zoomIn;
-    }
-    &.zoom-out {
-      grid-area: zoomOut;
-    }
-    i.fa {
-      font-size: 20px;
-      line-height: 20px;
-    }
+  .move-up {
+    grid-area: moveUp;
+    @include icon-size(8vmin);
+  }
+  .move-down {
+    grid-area: moveDown;
+    @include icon-size(8vmin);
+  }
+  .move-left {
+    grid-area: moveLeft;
+    @include icon-size(8vmin);
+  }
+  .move-right {
+    grid-area: moveRight;
+    @include icon-size(8vmin);
+  }
+  .auto-size {
+    grid-area: autoSize;
+    @include icon-size(4vmin);
+  }
+  .zoom-in {
+    grid-area: zoomIn;
+    @include icon-size(20px);
+  }
+  .zoom-out {
+    grid-area: zoomOut;
+    @include icon-size(20px);
+  }
+  .reset {
+    grid-area: resetButton;
   }
 }

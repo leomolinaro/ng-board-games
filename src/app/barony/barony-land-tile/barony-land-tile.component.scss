@@ -1,10 +1,16 @@
 
+@import "bg-variables";
+
 .b-land-tile {
   &.is-active {
     cursor: pointer;
   }
   &.is-disabled {
     fill-opacity: 0.8;
+  }
+  .b-land-tile-polygon {
+    stroke-width: 0.035px;
+    stroke: $background;
   }
   .b-land-tile-active-signal {
     cursor: pointer;

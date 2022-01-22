@@ -22,5 +22,7 @@ export class BgMapZoomButtonsComponent implements OnInit {
   onMoveRight () { this.controls.moveRight (); }
   onZoomIn () { this.controls.zoomIn (); }
   onZoomOut () { this.controls.zoomOut (); }
+  onReset () { this.controls.reset (); }
+  onAutoSize () { this.controls.autoSize (); }
 
 } // BgMapZoomButtonsComponent

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnInit, TrackByFunction } from "@angular/core";
 import { BritPlayer } from "../brit-models";
 
 @Component ({
@@ -12,6 +12,8 @@ export class BritPlayersComponent implements OnInit {
   constructor () { }
 
   @Input () players!: BritPlayer[];
+
+  playerTrackBy: TrackByFunction<BritPlayer> = (index, player) => player.id;
 
   ngOnInit (): void {
   } // ngOnInit
