@@ -3,7 +3,7 @@ import { BgUser } from "@bg-services";
 import { arrayUtil, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BgStore } from "src/app/bg-utils/store.util";
-import { BaronyColor, BaronyConstruction, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../barony-models";
+import { BaronyColor, BaronyConstruction, BaronyFinalScores, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../barony-models";
 
 interface BaronyGameBox {
   removedPawns: BaronyPawn[];
@@ -22,6 +22,7 @@ interface BaronyGameState {
   };
   gameBox: BaronyGameBox;
   logs: BaronyLog[];
+  endGame: boolean;
 } // BaronyGameState
 
 @Injectable ()
@@ -34,7 +35,8 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
       players: { map: { }, ids: [] },
       lands: { map: { }, coordinates: [] },
       gameBox: { removedPawns: [] },
-      logs: []
+      logs: [],
+      endGame: false
     }, "Barony Game");
   } // constructor
 
@@ -53,7 +55,8 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
       gameBox: {
         removedPawns: []
       },
-      logs: []
+      logs: [],
+      endGame: false
     }));
   } // setState
 
@@ -103,6 +106,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
   selectPlayerIds$ () { return this.select$ (s => s.players.ids); }
   selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   selectLogs$ () { return this.select$ (s => s.logs); }
+  selectEndGame$ () { return this.select$ (s => s.endGame); }
 
   private updatePlayer (actionName: string, playerId: string, updater: (p: BaronyPlayer) => BaronyPlayer) {
     this.update (actionName, s => ({
@@ -282,6 +286,22 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     this.removePawnFromPlayer ("knight", playerId);
     this.addPawnToGameBox ("knight", player.color);
   } // applyExpedition
+
+  applyEndGame (finalScores: BaronyFinalScores) {
+    finalScores.winnerPlayer
+    this.update ("Set end game", s => ({
+      ...s,
+      players: {
+        ...s.players,
+        map: arrayUtil.toMap (s.players.ids, id => id, id => ({
+          ...s.players.map[id],
+          victoryPoints: finalScores.victoryPointsByPlayer[id],
+          winner: finalScores.winnerPlayer === id
+        }))
+      },
+      endGame: true
+    }));
+  } // applyEndGame
 
   discardResource (resource: BaronyResourceType, playerId: string) {
     this.removeResourceFromPlayer (resource, playerId);

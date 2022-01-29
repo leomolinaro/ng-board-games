@@ -15,6 +15,8 @@ export interface ABaronyPlayer {
   score: number;
   pawns: { [type in BaronyPawnType]: number };
   resources: { [type in BaronyResourceType]: number };
+  victoryPoints: number;
+  winner: boolean;
 } // ABaronyPlayer
 
 interface BaronyAiPlayer extends ABaronyPlayer, BgAiPlayer {
@@ -125,3 +127,8 @@ export type BaronyTurn = BaronyTurnRectruitment
   | BaronyTurnNewCity
   | BaronyTurnExpedition
   | BaronyTurnNobleTitle;
+
+export interface BaronyFinalScores {
+  victoryPointsByPlayer: Record<string, number>;
+  winnerPlayer: string
+} // BaronyFinalScores

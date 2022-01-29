@@ -1,5 +1,6 @@
 import { BaronyAction, BaronyColor, BaronyLandPiece, BaronyLandType, BaronyPawnType, BaronyResourceType } from "./barony-models";
 
+export const BARONY_WINNING_POINTS: number[] = [60, 70, 80];
 export const BARONY_LAND_TYPES: BaronyLandType[] = ["fields", "forest", "lake", "mountain", "plain"];
 export const BARONY_RESOURCE_TYPES: BaronyResourceType[] = ["fields", "forest", "mountain", "plain"];
 export const BARONY_COLORS: BaronyColor[] = ["blue", "green", "red", "yellow"];

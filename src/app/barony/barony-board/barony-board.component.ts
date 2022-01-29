@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
-import { SimpleChanges } from "@bg-utils";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@bg-utils";
+import { of } from "rxjs";
+import { switchMap } from "rxjs/operators";
 import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
 
 @Component ({
@@ -8,15 +11,18 @@ import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, Barony
   styleUrls: ["./barony-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyBoardComponent implements OnChanges {
+@UntilDestroy
+export class BaronyBoardComponent implements OnChanges, OnDestroy {
 
-  constructor () { }
+  constructor (
+    private matDialog: MatDialog
+  ) { }
 
   @Input () lands!: BaronyLand[];
   @Input () logs!: BaronyLog[];
   @Input () turnPlayer: BaronyPlayer | null = null;
   @Input () currentPlayer: BaronyPlayer | null = null;
-  @Input () otherPlayers!: BaronyPlayer[];
+  @Input () players!: BaronyPlayer[];
   @Input () message: string | null = null;
   @Input () validLands: BaronyLandCoordinates[] | null = null;
   @Input () validActions: BaronyAction[] | null = null;
@@ -25,6 +31,7 @@ export class BaronyBoardComponent implements OnChanges {
   @Input () canPass: boolean = false;
   @Input () canCancel: boolean = false;
   @Input () maxNumberOfKnights: number | null = null;
+  @Input () endGame: boolean = false;
 
   @Output () playerSelect = new EventEmitter<BaronyPlayer> ();
   @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
@@ -35,9 +42,12 @@ export class BaronyBoardComponent implements OnChanges {
   @Output () knightsConfirm = new EventEmitter<number> ();
   @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
+  @ViewChild ("endGameDialog") endGameDialog!: TemplateRef<void>;
+
   summaryFixed = false;
   logsFixed = false;
   zoomFixed = false;
+  scoreboardFixed = false;
   
   numberOfKnights = 1;
 
@@ -47,7 +57,12 @@ export class BaronyBoardComponent implements OnChanges {
     if (changes.maxNumberOfKnights) {
       this.numberOfKnights = this.maxNumberOfKnights || 0;
     } // if
+    if (changes.endGame && this.endGame) {
+      this.openEndGameDialog ();
+    } // if
   } // ngOnChanges
+
+  ngOnDestroy () { }
 
   onPlayerSelect (player: BaronyPlayer) { this.playerSelect.emit (player); }
   onBuildingSelect (building: BaronyBuilding) { this.buildingSelect.emit (building); }
@@ -60,5 +75,34 @@ export class BaronyBoardComponent implements OnChanges {
     this.numberOfKnights = 1;
   } // onKnightsConfirm
   onResourceSelect (resource: BaronyResourceType) { this.resourceSelect.emit (resource); }
+
+  @ExhaustingEvent ()
+  private openEndGameDialog () {
+    return of (void 0).pipe (
+      switchMap (() => {
+        const dialogRef = this.matDialog.open (
+          this.endGameDialog,
+          {
+            width: "80vw",
+            maxWidth: "80vw"
+            // data: {
+            //   protoGame: game,
+            //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
+            //   deleteGame$: gameId => this.deleteGame$ (gameId),
+            //   roleToCssClass: role => this.config.playerRoleCssClass (role)
+            // }
+          }
+        );
+        return dialogRef.afterClosed ().pipe (
+          // switchMap (output => {
+          //   if (output?.startGame) {
+          //     return this.config.startGame$ (output.gameId);
+          //   } // if
+          //   return of (void 0);
+          // })
+        );
+      })
+    );
+  } // openEndGameDialog
 
 } // BaronyBoardComponent

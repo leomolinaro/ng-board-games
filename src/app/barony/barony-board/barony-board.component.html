@@ -9,6 +9,7 @@
   </div>
   <div class="b-board-widgets-layer">
     <div
+      *ngIf="message"
       [class]="'b-board-instructions-widget' + (turnPlayer ? (' is-' + turnPlayer.color) : '')">
       <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
@@ -41,7 +42,14 @@
       (cancelClick)="onCancelClick ()">
     </barony-actions>
     <div class="b-board-players-widget">
-      <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
+      <div *ngFor="let player of players; trackBy: playerTrackBy" class="b-board-player-widget">
+        <barony-player-status
+          (selectPlayer)="onPlayerSelect (player)"
+          [player]="player"
+          [currentPlayer]="player === currentPlayer">
+        </barony-player-status>
+      </div>
+      <!-- <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
         <barony-player-status
           (selectPlayer)="onPlayerSelect (otherPlayer)"
           [player]="otherPlayer">
@@ -52,23 +60,34 @@
           [player]="currentPlayer"
           currentPlayer>
         </barony-player-status>
-      </div>
+      </div> -->
     </div>
     <div class="b-board-extras">
       <bg-map-zoom-buttons *ngIf="zoomFixed" class="b-board-zoom-buttons-widget" [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
       <img *ngIf="summaryFixed" class="b-board-summary-image" src="assets/barony/summary.jpg">
+      <barony-scoreboard *ngIf="scoreboardFixed" class="b-board-scoreboard-widget" [players]="players"></barony-scoreboard>
       <barony-logs *ngIf="logsFixed" class="b-board-logs-widget" [logs]="logs"></barony-logs>
       <div class="b-board-buttons">
+        <button class="b-board-button" [ngClass]="{ 'is-active': zoomFixed }" (click)="zoomFixed = !zoomFixed">
+          <i class="fa fa-search-plus"></i>
+        </button>
         <button class="b-board-button" [ngClass]="{ 'is-active': summaryFixed }" (click)="summaryFixed = !summaryFixed">
-          <i class="b-board-summary-icon fa fa-book"></i>
+          <i class="fa fa-book"></i>
+        </button>
+        <button class="b-board-button" [ngClass]="{ 'is-active': scoreboardFixed }" (click)="scoreboardFixed = !scoreboardFixed">
+          <i class="fa fa-star"></i>
         </button>
         <button class="b-board-button" [ngClass]="{ 'is-active': logsFixed }" (click)="logsFixed = !logsFixed">
-          <i class="b-board-logs-icon fa fa-file-text"></i>
-        </button>
-        <button class="b-board-button" [ngClass]="{ 'is-active': zoomFixed }" (click)="zoomFixed = !zoomFixed">
-          <i class="b-board-logs-icon fa fa-search-plus"></i>
+          <i class="fa fa-file-text"></i>
         </button>
       </div>
     </div>
   </div>
 </div>
+
+<ng-template #endGameDialog>
+  <h1 mat-dialog-title class="mat-typography">End game</h1>
+  <barony-end-game mat-dialog-content
+    [players]="players">
+  </barony-end-game>
+</ng-template>

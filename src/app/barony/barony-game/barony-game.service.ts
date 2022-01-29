@@ -1,19 +1,29 @@
 import { Injectable } from "@angular/core";
-import { BgAuthService } from "@bg-services";
-import { EMPTY, Observable } from "rxjs";
+import { BgAuthService, BgUser } from "@bg-services";
+import { EMPTY, forkJoin, Observable } from "rxjs";
 import { expand, last, map, mapTo } from "rxjs/operators";
 import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
-import { BaronyConstruction, BaronyLandCoordinates, BaronyMovement, BaronyPlayer, BaronyResourceType, BaronySetupPlacement, BaronyStory, BaronyTurn } from "../barony-models";
-import { BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
+import { ABaronyPlayer, BaronyConstruction, BaronyLandCoordinates, BaronyMovement, BaronyPlayer, BaronyResourceType, BaronySetupPlacement, BaronyStory, BaronyTurn, landCoordinatesToId } from "../barony-models";
+import { BaronyPlayerDoc, BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
 import { BaronyGameStore } from "./barony-game.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
+import * as baronyRules from "./barony-rules";
 import { BaronyUiStore } from "./barony-ui.store";
 
 interface ABaronyPlayerService {
   setupPlacement$ (playerId: string): Observable<BaronySetupPlacement>;
   turn$ (playerId: string): Observable<BaronyTurn>;
 } // ABaronyPlayerService
+
+interface BaronyRoundOutput {
+  endGame: boolean;
+  roundNumber: number;
+} // BaronyRoundOutput
+
+interface BaronyTurnOutput {
+  lastRound: boolean;
+} // BaronyTurnOutput
 
 @Injectable ()
 export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory, ABaronyPlayerService> {
@@ -32,12 +42,20 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
   game$ (stories: BaronyStoryDoc[]): Observable<void> {
     this.stories = stories;
     return this.setup$ ().pipe (
-      mapTo (0),
-      expand (prevRoundNumber => {
-        const roundNumber = prevRoundNumber + 1;
-        return this.round$ (roundNumber).pipe (
-          mapTo (roundNumber)
-        );
+      mapTo<void, BaronyRoundOutput> ({ endGame: false, roundNumber: 0 }),
+      expand (prevRoundOutput => {
+        if (prevRoundOutput.endGame) {
+          this.ui.updateUi ("End game", s => ({
+            ...s,
+            ...this.ui.resetUi (),
+            canCancel: false
+          }));
+          this.gameEnd ();
+          return EMPTY;
+        } else {
+          const roundNumber = prevRoundOutput.roundNumber + 1;
+          return this.round$ (roundNumber);
+        } // if - else
       }),
       last (),
       mapTo (void 0)
@@ -58,12 +76,13 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
     );
   } // setup$
 
-  private round$ (roundNumber: number): Observable<void> {
+  private round$ (roundNumber: number): Observable<BaronyRoundOutput> {
     const playerIds = this.game.getPlayerIds ();
     const turns = [...playerIds];
-    return this.turn$ (turns.shift ()!).pipe (
-      expand (() => turns.length ? this.turn$ (turns.shift ()!) : EMPTY),
-      last ()
+    return this.turn$ (turns.shift ()!, false).pipe (
+      expand (turnOutput => turns.length ? this.turn$ (turns.shift ()!, turnOutput.lastRound) : EMPTY),
+      last (),
+      map (turnOutput => ({ endGame: turnOutput.lastRound, roundNumber }))
     );
   } // round$
 
@@ -77,7 +96,7 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
     );
   } // setupPlacement$
 
-  private turn$ (player: string): Observable<void> {
+  private turn$ (player: string, lastRound: boolean): Observable<BaronyTurnOutput> {
     this.game.logTurn (player);
     return this.executeTask$ (player, p => p.turn$ (player)).pipe (
       map (result => {
@@ -89,7 +108,11 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
           case "newCity": this.newCity (result.land, player); break;
           case "nobleTitle": this.nobleTitle (result.discardedResources, player); break;
         } // switch
-        return void 0;
+        if (!lastRound) {
+          const playerWinning = baronyRules.isPlayerWinning (player, this.game);
+          if (playerWinning) { lastRound = true; }
+        } // if
+        return { lastRound: lastRound };
       })
     );
   } // turn$
@@ -130,6 +153,11 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
     this.game.logNobleTitle (resources, player);
   } // nobleTitle
 
+  private gameEnd () {
+    const finalScores = baronyRules.getFinalScores (this.game);
+    this.game.applyEndGame (finalScores);
+  } // gameEnd
+
   protected getGameId () { return this.game.getGameId (); }
   protected getPlayer (playerId: string) { return this.game.getPlayer (playerId); }
   protected getGameOwner () { return this.game.getGameOwner (); }
@@ -159,5 +187,80 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
       message: `${this.game.getPlayer (player).name} is thinking...`,
     }));
   } // resetUi
+
+  loadGame$ (gameId: string) {
+    return forkJoin ([
+      this.remoteService.getGame$ (gameId),
+      this.remoteService.getPlayers$ (gameId, ref => ref.orderBy ("sort")),
+      this.remoteService.getMap$ (gameId),
+      this.remoteService.getStories$ (gameId, ref => ref.orderBy ("id"))
+    ]).pipe (
+      map (([game, players, baronyMap, stories]) => {
+        if (game && baronyMap) {
+          const user = this.authService.getUser ();
+          this.game.setInitialState (
+            players.map (p => this.playerDocToPlayerInit (p, user)),
+            baronyMap.lands.map (l => {
+              const x = l.x;
+              const y = l.y;
+              const z = -1 * (x + y);
+              const coordinates: BaronyLandCoordinates = { x, y, z };
+              return {
+                id: landCoordinatesToId (coordinates),
+                coordinates: coordinates,
+                type: l.type,
+                pawns: []
+              };
+            }),
+            gameId,
+            game.owner
+          );
+        } // if
+        return stories;
+      })
+    );
+  } // loadGame$
+
+  private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser): BaronyPlayer {
+    if (playerDoc.isAi) {
+      return {
+        ...this.playerDocToAPlayerInit (playerDoc),
+        isAi: true,
+        isLocal: false,
+        isRemote: false
+      };
+    } else {
+      return {
+        ...this.playerDocToAPlayerInit (playerDoc),
+        isAi: false,
+        controller: playerDoc.controller,
+        isLocal: user.id === playerDoc.controller.id,
+        isRemote: user.id !== playerDoc.controller.id
+      };
+    } // if - else
+  } // playerDocToPlayerInit
+
+  private playerDocToAPlayerInit (playerDoc: BaronyPlayerDoc): ABaronyPlayer {
+    return {
+      id: playerDoc.id,
+      color: playerDoc.color,
+      name: playerDoc.name,
+      score: 0,
+      pawns: {
+        city: 5,
+        stronghold: 2,
+        knight: 7,
+        village: 14
+      },
+      resources: {
+        forest: 0,
+        mountain: 0,
+        plain: 0,
+        fields: 0
+      },
+      victoryPoints: 0,
+      winner: false
+    };
+  } // playerDocToAPlayerInit
 
 } // BaronyGameService

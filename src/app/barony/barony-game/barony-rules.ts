@@ -1,5 +1,5 @@
-import { BARONY_COLORS, BARONY_RESOURCE_TYPES } from "../barony-constants";
-import { BaronyAction, BaronyColor, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../barony-models";
+import { BARONY_COLORS, BARONY_RESOURCE_TYPES, BARONY_WINNING_POINTS } from "../barony-constants";
+import { BaronyAction, BaronyColor, BaronyFinalScores, BaronyLand, BaronyLandCoordinates, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 export function getValidActions (player: string, game: BaronyGameStore): BaronyAction[] {
@@ -107,6 +107,33 @@ export function getValidResourcesForVillageDestruction (playerId: string, game: 
   return BARONY_RESOURCE_TYPES.filter (r => player.resources[r]);
 } // getValidResourcesForVillageDestruction
 
+export function getFinalScores (game: BaronyGameStore): BaronyFinalScores {
+  const players = game.getPlayers ();
+  const victoryPointsByPlayer: Record<string, number> = { };
+  let winner = players[0];
+  let winnerVictoryPoints = getPlayerVictoryPoints (winner);
+  victoryPointsByPlayer[winner.id] = winnerVictoryPoints;
+  for (let i = 1; i < players.length; i++) {
+    const player = players[i];
+    const playerVictoryPoints = getPlayerVictoryPoints (player);
+    victoryPointsByPlayer[player.id] = playerVictoryPoints;
+    if (playerVictoryPoints >= winnerVictoryPoints) { // in caso di parità, vince il giocatore più lontano dal primo
+      winnerVictoryPoints = playerVictoryPoints;
+      winner = player;
+    } // if
+  } // for
+  return { victoryPointsByPlayer, winnerPlayer: winner.id };
+} // getFinalScores
+
+function getPlayerVictoryPoints (player: BaronyPlayer) {
+  let victoryPoints = player.score;
+  for (const resource of BARONY_RESOURCE_TYPES) {
+    const n = player.resources[resource];
+    victoryPoints += n * getResourceVicotryPoints (resource);
+  } // for
+  return victoryPoints;
+} // getPlayerVictoryPoints
+
 export function isRecruitmentValid (playerId: string, game: BaronyGameStore): boolean {
   const player = game.getPlayer (playerId);
   if (!player.pawns.knight) { return false; }
@@ -192,6 +219,11 @@ function getPlayerResourcePoints (playerId: string, game: BaronyGameStore) {
   return sum;
 } // getPlayerResourcePoints
 
+export function isPlayerWinning (playerId: string, game: BaronyGameStore): boolean {
+  const player = game.getPlayer (playerId);
+  return BARONY_WINNING_POINTS.includes (player.score);
+} // isPlayerWinning
+
 export function getResourcePoints (resource: BaronyResourceType) {
   switch (resource) {
     case "fields": return 5;
@@ -200,6 +232,15 @@ export function getResourcePoints (resource: BaronyResourceType) {
     case "mountain": return 2;
   } // switch
 } // getResourcePoints
+
+export function getResourceVicotryPoints (resource: BaronyResourceType) {
+  switch (resource) {
+    case "fields": return 3;
+    case "plain": return 2;
+    case "forest": return 1;
+    case "mountain": return 0;
+  } // switch
+} // getResourceVicotryPoints
 
 export function isConflict (landCoordinates: BaronyLandCoordinates, playerId: string, game: BaronyGameStore): boolean {
   const land = game.getLand (landCoordinates);

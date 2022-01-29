@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyPlayer, BaronyResourceType } from "../barony-models";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyResourceType } from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 interface BaronyUiState {
@@ -92,26 +92,13 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     );
   } // selectCurrentPlayer$
 
-  selectOtherPlayers$ () {
+  selectPlayers$ () {
     return this.game.select$ (
-      this.selectCurrentPlayerId$ (),
       this.game.selectPlayerIds$ (),
       this.game.selectPlayerMap$ (),
-      (currentPlayerId, playerIds, playerMap) => {
-        if (currentPlayerId) {
-          const n = playerIds.length;
-          const toReturn: BaronyPlayer[] = [];
-          const offset = playerIds.indexOf (currentPlayerId);
-          for (let i = 1; i < n; i++) {
-            toReturn.push (playerMap[playerIds[(offset + i) % n]]);
-          } // for
-          return toReturn;
-        } else {
-          return playerIds.map (id => playerMap[id]);
-        } // if - else
-      }
+      (playerIds, playerMap) => playerIds.map (id => playerMap[id])
     );
-  } // selectOtherPlayers$
+  } // selectPlayers$
 
   updateUi<S extends BaronyUiState & { [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never }> (
     actionName: string,
