@@ -114,7 +114,7 @@ export class BgMapZoomDirective implements OnInit {
     } // if
   } // onMouseMove
 
-  @HostListener ("touchmove", ["$event"])
+  // @HostListener ("touchmove", ["$event"]) TODO
   onTouchMove (event: TouchEvent) {
     if (this.grabbing) {
       const xt = event.touches[0].clientX - this.grabbingX!;
