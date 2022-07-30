@@ -19,6 +19,7 @@ interface BritUnitNode {
   unit: BritUnit;
   imageSource: string;
   index: number;
+  areaNode: BritAreaNode;
 } // BritUnitNode
 
 interface BritPopulationNode {
@@ -77,6 +78,7 @@ export class BritMapComponent implements OnChanges {
 
   areaNodes!: BritAreaNode[];
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
+  unitNodes!: BritUnitNode[];
   viewBox = this.mapService.getViewBox ();
   mapWidth = this.mapService.getWidth ();
   populationNodes: BritPopulationNode[] = BRIT_POPULATIONS.map (populationId => ({
@@ -108,7 +110,7 @@ export class BritMapComponent implements OnChanges {
 
   ngOnChanges (changes: SimpleChanges<BritMapComponent>) {
     if (changes.areas) {
-      this.refreshAreaNodes ();
+      const refreshedUnits = this.refreshAreaNodes ();
       if (!this.slotsReady && this.areas?.length) {
         setTimeout (() => {
           this.generateSlots ();
@@ -116,6 +118,7 @@ export class BritMapComponent implements OnChanges {
           this.cd.markForCheck ();
         });
       } // if
+      if (refreshedUnits) { this.refreshUnitNodes (); }
     } // if
     if (changes.nations) {
       this.refreshPopulationNodes ();
@@ -126,16 +129,31 @@ export class BritMapComponent implements OnChanges {
     } // if
   } // ngOnChanges
 
-  private refreshAreaNodes () {
+  private refreshAreaNodes (): boolean {
+    let refreshedUnits = false;
     const { nodes, map } = arrayUtil.entitiesToNodes (
       this.areas, this.areaNodeMap || { },
       area => area.id,
       (area, node) => area === node.area,
-      (area, index, oldNode) => this.areaToNode (area, oldNode)
+      (area, index, oldNode) => {
+        const [node, refreshedAreaUnits] = this.areaToNode (area, oldNode);
+        if (refreshedAreaUnits) { refreshedUnits = true; }
+        return node;
+      }
     );
     this.areaNodes = nodes;
     this.areaNodeMap = map;
+    return refreshedUnits;
   } // refreshAreaNodes
+
+  private refreshUnitNodes () {
+    this.unitNodes = [];
+    this.areaNodes.forEach (areaNode =>
+      areaNode.unitNodes.forEach (unitNode =>
+        this.unitNodes.push (unitNode)
+      )
+    );
+  } // refreshUnitNodes
 
   private refreshPopulationNodes () {
     const { nodes, map } = arrayUtil.entitiesToNodes (
@@ -202,40 +220,42 @@ export class BritMapComponent implements OnChanges {
     this.slotsService.generateSlots (xMax, yMax, coordinatesToAreaId);
   } // generateSlots
 
-  private areaToNode (area: BritArea, oldNode: BritAreaNode | null): BritAreaNode {
+  private areaToNode (area: BritArea, oldNode: BritAreaNode | null): [BritAreaNode, boolean] {
+    let refreshAreaUnits = false;
     const path = this.mapService.getAreaPath (area.id);
-    let unitNodes: BritUnitNode[];
-    let unitNodeMap: Record<BritUnitId, BritUnitNode>;
+    const node: BritAreaNode = {
+      id: area.id,
+      area,
+      path,
+      unitNodes: null!,
+      unitNodeMap: null!
+    };
     if (area.units === oldNode?.area.units) {
-      unitNodes = oldNode.unitNodes;
-      unitNodeMap = oldNode.unitNodeMap;
+      node.unitNodes = oldNode.unitNodes;
+      node.unitNodeMap = oldNode.unitNodeMap;
     } else {
       const { nodes, map } = arrayUtil.entitiesToNodes<string, BritUnitNode> (
         area.units, oldNode?.unitNodeMap || { },
         unitId => unitId,
         (unitId, node) => this.unitsMap[unitId] === node.unit,
-        (unitId, index, oldNode) => this.unitToNode (unitId, index, oldNode, area)
+        (unitId, index, oldNode) => this.unitToNode (unitId, index, oldNode, node)
       );
-      unitNodes = nodes;
-      unitNodeMap = map;
+      node.unitNodes = nodes;
+      node.unitNodeMap = map;
+      refreshAreaUnits = true;
     } // if - else
-    return {
-      id: area.id,
-      area,
-      path,
-      unitNodes,
-      unitNodeMap
-    };
+    return [node, refreshAreaUnits];
   } // areaToNode
 
-  private unitToNode (unitId: BritUnitId, index: number, oldNode: BritUnitNode | null, area: BritArea): BritUnitNode {
+  private unitToNode (unitId: BritUnitId, index: number, oldNode: BritUnitNode | null, areaNode: BritAreaNode): BritUnitNode {
     const unit = this.unitsMap[unitId]
     const imageSource = this.getUnitImageSource (unit);
     return {
       id: unitId,
       unit,
       imageSource,
-      index
+      index,
+      areaNode
     };
   } // unitToNode
 
@@ -304,21 +324,21 @@ export class BritMapComponent implements OnChanges {
     // } // if - else
   } // onAreaClick
 
-  getUnitNodeX = (unitNode: BritUnitNode, areaNode: BritAreaNode) => {
-    const point = this.getUnitNodePoint (unitNode, areaNode);
+  getUnitNodeX = (unitNode: BritUnitNode) => {
+    const point = this.getUnitNodePoint (unitNode);
     if (!point) { return 0; }
     return point.x * GRID_STEP - 15;
   }; // getUnitNodeX
 
-  getUnitNodeY = (unitNode: BritUnitNode, areaNode: BritAreaNode) => {
-    const point = this.getUnitNodePoint (unitNode, areaNode);
+  getUnitNodeY = (unitNode: BritUnitNode) => {
+    const point = this.getUnitNodePoint (unitNode);
     if (!point) { return 0; }
     return point.y * GRID_STEP - 15;
   }; // getUnitNodeY
 
-  private getUnitNodePoint (unitNode: BritUnitNode, areaNode: BritAreaNode): BritMapPoint | null {
+  private getUnitNodePoint (unitNode: BritUnitNode): BritMapPoint | null {
     if (!this.slotsReady) { return null; }
-    const slots = this.slotsService.getAreaSlots (areaNode.unitNodes.length, areaNode.id);
+    const slots = this.slotsService.getAreaSlots (unitNode.areaNode.unitNodes.length, unitNode.areaNode.id);
     return slots[unitNode.index];
   } // getUnitNodePoint
 
