@@ -12,7 +12,6 @@ import { BritHomeModule } from "./brit-home/brit-home.module";
 import { BritMapComponent } from "./brit-map/brit-map.component";
 import { BritMapService } from "./brit-map/brit-map.service";
 import { BritPlayerComponent } from './brit-player/brit-player.component';
-import { BritPlayersComponent } from './brit-players/brit-players.component';
 import { BritRemoteService } from "./brit-remote.service";
 
 @Injectable ()
@@ -43,7 +42,6 @@ const routes: Routes = [
     BritGameComponent,
     BritBoardComponent,
     BritMapComponent,
-    BritPlayersComponent,
     BritPlayerComponent
   ],
   imports: [

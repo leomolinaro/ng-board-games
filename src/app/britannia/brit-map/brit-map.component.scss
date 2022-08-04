@@ -23,12 +23,13 @@
   @include brit-path;
 }
 .brit-unit-rect {
-  stroke: black;
-  stroke-width: 6px;
-  stroke-linejoin: round;
+  fill: white;
+  stroke: white;
+  stroke-width: 2px;
+  stroke-linejoin: bevel;
 }
 .brit-population-circle {
-  stroke: black;
-  stroke-width: 6px;
-  // stroke-linejoin: round;
+  fill: white;
+  stroke: white;
+  stroke-width: 2px;
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
 import { BritArea, BritLog, BritNation, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
 
@@ -29,7 +29,7 @@ export class BritBoardComponent {
   @Input () canPass: boolean = false;
   @Input () canCancel: boolean = false;
 
-  // @Output () playerSelect = new EventEmitter<BaronyPlayer> ();
+  @Output () playerSelect = new EventEmitter<BritPlayer> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
   // @Output () landTileClick = new EventEmitter<BaronyLand> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
@@ -38,25 +38,25 @@ export class BritBoardComponent {
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
+  playerTrackBy: TrackByFunction<BritPlayer> = (index, player) => player.id;
+
   summaryFixed = false;
   logsFixed = false;
   zoomFixed = false;
-  
-  numberOfKnights = 1;
 
   ngOnChanges (changes: SimpleChanges<BritBoardComponent>): void {
   } // ngOnChanges
 
-  // onPlayerSelect (player: BaronyPlayer) { this.playerSelect.emit (player); }
-  // onBuildingSelect (building: BaronyBuilding) { this.buildingSelect.emit (building); }
-  // onLandTileClick (landTile: BaronyLand) { this.landTileClick.emit (landTile); }
-  // onActionClick (action: BaronyAction) { this.actionClick.emit (action); }
+  onPlayerSelect (player: BritPlayer) { this.playerSelect.emit (player); }
+  // onBuildingSelect (building: BritBuilding) { this.buildingSelect.emit (building); }
+  // onLandTileClick (landTile: BritLand) { this.landTileClick.emit (landTile); }
+  // onActionClick (action: BritAction) { this.actionClick.emit (action); }
   // onPassClick () { this.passClick.emit (); }
   // onCancelClick () { this.cancelClick.emit (); }
   // onKnightsConfirm () {
   //   this.knightsConfirm.emit (this.numberOfKnights);
   //   this.numberOfKnights = 1;
   // } // onKnightsConfirm
-  // onResourceSelect (resource: BaronyResourceType) { this.resourceSelect.emit (resource); }
+  // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
 
 } // BritBoardComponent

@@ -145,6 +145,7 @@ export interface ABritPlayer {
   name: string;
   nations: string[];
   color: BritColor;
+  score: number;
 } // ABritPlayer
 
 export interface BritAiPlayer extends ABritPlayer {

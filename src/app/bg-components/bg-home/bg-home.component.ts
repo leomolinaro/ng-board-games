@@ -1,11 +1,10 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { MatExpansionPanel } from "@angular/material/expansion";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { BgAuthService } from "@bg-services";
 import { concatJoin, ExhaustingEvent, Loading, UntilDestroy } from "@bg-utils";
 import { Observable, of } from "rxjs";
-import { map, mapTo, switchMap } from "rxjs/operators";
+import { map, mapTo, switchMap, tap } from "rxjs/operators";
 import { BgArcheoGame, BgBoardGame, BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../../bg-services/bg-proto-game.service";
 import { BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-home-room-dialog/bg-home-room-dialog.component";
 
@@ -36,7 +35,7 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
   ) { }
 
   @Input () config!: BgHomeConfig;
-  @ViewChild ("archeoFormPanel") archeoFormPanel!: MatExpansionPanel;
+  @ViewChild ("newGameDialog") newGameDialog!: TemplateRef<void>;
 
   @Loading () loading$!: Observable<boolean>;
   isHandset$: Observable<boolean> = this.breakpointObserver.observe (Breakpoints.Handset)
@@ -48,6 +47,8 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
   protoGames$!: Observable<BgProtoGame[]>;
   gameColumns = ["run", "name", "state", "owner", "delete"];
 
+  private newGameDialogRef: MatDialogRef<void, any> | null = null;
+
   ngOnInit (): void {
     this.protoGames$ = this.protoGameService.selectProtoGames$ (
       ref => ref.where ("boardGame", "==", this.config.boardGame)
@@ -56,12 +57,42 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
 
   ngOnDestroy () { }
 
+  @ExhaustingEvent ({ suppressLoading: true })
+  openNewGameDialog () {
+    return of (void 0).pipe (
+      switchMap (() => {
+        this.newGameDialogRef = this.matDialog.open (
+          this.newGameDialog,
+          {
+            width: "250px",
+            maxWidth: "80vw"
+            // data: {
+            //   protoGame: game,
+            //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
+            //   deleteGame$: gameId => this.deleteGame$ (gameId),
+            //   roleToCssClass: role => this.config.playerRoleCssClass (role)
+            // }
+          }
+        );
+        return this.newGameDialogRef.afterClosed ().pipe (
+          tap (() => this.archeoGameValid = false)
+          // switchMap (output => {
+          //   if (output?.startGame) {
+          //     return this.config.startGame$ (output.gameId);
+          //   } // if
+          //   return of (void 0);
+          // })
+        );
+      })
+    );
+  } // openNewGameDialog
+
   onArcheoGameChange (archeoGame: BgArcheoGame) {
     this.archeoGame = archeoGame;
     this.archeoGameValid = !!archeoGame.name;
   } // onArcheoGameChange
 
-  @ExhaustingEvent ()
+  @ExhaustingEvent ({ suppressLoading: true })
   onCreateGame () {
     const archeoGame = this.archeoGame;
     if (archeoGame) {
@@ -72,7 +103,7 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
         owner: user,
         state: "open"
       };
-      this.archeoFormPanel.close ();
+      this.newGameDialogRef?.close ();
       this.archeoGame = this.getDefaultArcheoGame ();
       return this.protoGameService.insertProtoGame$ (protoGame).pipe (
         switchMap (protoGame => {

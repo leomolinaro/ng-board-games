@@ -1,3 +1,9 @@
+@import "bg-variables";
+
+:host {
+  display: contents;
+}
+
 .bg-archeo-game {
   display: flex;
   flex-direction: column;
@@ -7,10 +13,16 @@
   }
 }
 
-.bg-home-games {
-  display: block;
-  padding: 25px;
-  table {
-    width: 100%;
+.bg-home-games-table {
+  width: 100%;
+  .bg-home-game-row:hover {
+    border-right: 5px solid $primary;
+    z-index: 2;
   }
+}
+
+.bg-home-add-button {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
 }

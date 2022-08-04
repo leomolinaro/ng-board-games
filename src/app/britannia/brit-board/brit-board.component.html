@@ -10,7 +10,7 @@
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">
-    <div
+    <div *ngIf="message"
       [class]="'brit-board-instructions-widget' + (turnPlayer ? (' is-' + turnPlayer.color) : '')">
       <div class="brit-board-instructions">{{ message }}</div>
     </div>
@@ -25,20 +25,11 @@
       (cancelClick)="onCancelClick ()">
     </barony-actions> -->
     <div class="brit-board-players-widget">
-      <brit-players [players]="players"></brit-players>
-      <!-- <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
-        <barony-player-status
-          (selectPlayer)="onPlayerSelect (otherPlayer)"
-          [player]="otherPlayer">
-        </barony-player-status>
-      </div>
-      <div class="b-board-player-widget" *ngIf="currentPlayer">
-        <barony-player-status
-          [player]="currentPlayer"
-          currentPlayer>
-        </barony-player-status>
-      </div>
-    </div> -->
+      <brit-player *ngFor="let player of players; trackBy: playerTrackBy" class="brit-board-player-widget"
+        (selectPlayer)="onPlayerSelect (player)"
+        [player]="player"
+        [currentPlayer]="player === currentPlayer">
+      </brit-player>
     </div>
     <div class="brit-board-extras">
       <bg-map-zoom-buttons *ngIf="zoomFixed" class="brit-board-zoom-buttons-widget" [controls]="britMap.bgMapZoom"></bg-map-zoom-buttons>

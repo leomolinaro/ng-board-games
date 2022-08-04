@@ -42,25 +42,11 @@
       (cancelClick)="onCancelClick ()">
     </barony-actions>
     <div class="b-board-players-widget">
-      <div *ngFor="let player of players; trackBy: playerTrackBy" class="b-board-player-widget">
-        <barony-player-status
-          (selectPlayer)="onPlayerSelect (player)"
-          [player]="player"
-          [currentPlayer]="player === currentPlayer">
-        </barony-player-status>
-      </div>
-      <!-- <div *ngFor="let otherPlayer of (otherPlayers); trackBy: playerTrackBy" class="b-board-player-widget">
-        <barony-player-status
-          (selectPlayer)="onPlayerSelect (otherPlayer)"
-          [player]="otherPlayer">
-        </barony-player-status>
-      </div>
-      <div class="b-board-player-widget" *ngIf="currentPlayer">
-        <barony-player-status
-          [player]="currentPlayer"
-          currentPlayer>
-        </barony-player-status>
-      </div> -->
+      <barony-player-status *ngFor="let player of players; trackBy: playerTrackBy" class="b-board-player-widget"
+        (selectPlayer)="onPlayerSelect (player)"
+        [player]="player"
+        [currentPlayer]="player === currentPlayer">
+      </barony-player-status>
     </div>
     <div class="b-board-extras">
       <bg-map-zoom-buttons *ngIf="zoomFixed" class="b-board-zoom-buttons-widget" [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>

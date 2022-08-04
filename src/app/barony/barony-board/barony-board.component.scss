@@ -27,7 +27,7 @@
     grid-template-rows: auto auto auto;
     padding: 2vmin;
     gap: 2vmin;
-    grid-template-areas: 
+    grid-template-areas:
       "players extras extras"
       "players extras extras"
       "players instructions actions";
@@ -46,7 +46,7 @@
       &.is-yellow { box-shadow: widget-shadow($yellow-light); }
       &.is-green { box-shadow: widget-shadow($green-light); }
       .b-board-instructions {
-        
+
       }
       barony-knights-selector,
       barony-resources-selector,
@@ -69,10 +69,10 @@
       display: grid;
       grid-template-columns: auto;
       grid-gap: 2vmin;
-      pointer-events: auto;
-      // .b-board-player-widget {
-      //   pointer-events: auto;
-      // }
+      // pointer-events: auto;
+      .b-board-player-widget {
+        pointer-events: auto;
+      }
     }
     .b-board-extras {
       grid-area: extras;
