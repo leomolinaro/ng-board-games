@@ -17,6 +17,7 @@ src/environments/environment.prod.ts
 # dependencies
 /node_modules
 .angular/**/*
+package-lock.json
 
 # profiling files
 chrome-profiler-events*.json
