@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AngularFirestore, AngularFirestoreCollection, DocumentData, QueryFn } from "@angular/fire/firestore";
+import { AngularFirestore, AngularFirestoreCollection, DocumentData, QueryFn } from "@angular/fire/compat/firestore";
 import { forkJoin, from, Observable } from "rxjs";
 import { map, mapTo, switchMap } from "rxjs/operators";
 
@@ -10,7 +10,7 @@ export type BgCloudCollectionQuery<T> = QueryFn<DocumentData>;
   providedIn: "root"
 })
 export class BgCloudService {
-  
+
   constructor (
     private afs: AngularFirestore
   ) { }

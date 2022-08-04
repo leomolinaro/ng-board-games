@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { AngularFireAuth } from "@angular/fire/auth";
-import firebase from "firebase/app";
+import { AngularFireAuth } from "@angular/fire/compat/auth";
+import firebase from "firebase/compat/app";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, first, map, switchMap } from "rxjs/operators";
 import { BgCloudCollectionQuery, BgCloudService } from "./bg-cloud.service";

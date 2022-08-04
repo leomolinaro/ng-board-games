@@ -31,7 +31,7 @@ export class BgRootGuard implements CanActivate {
       })
     );
   } // canActivate
-  
+
 } // BgRootGuard
 
 const routes: Routes = [

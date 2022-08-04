@@ -27,7 +27,7 @@
       </barony-buildings-selector>
       <barony-resources-selector
         *ngIf="validResources"
-        [resources]="validResources?.resources"
+        [resources]="validResources.resources"
         (resourceClick)="onResourceSelect ($event)">
       </barony-resources-selector>
     </div>
