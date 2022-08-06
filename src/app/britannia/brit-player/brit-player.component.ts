@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
-import { BritPlayer } from "../brit-models";
+import { BritNation, BritNationId, BritPlayer } from "../brit-models";
 
 // interface BritPawnNode {
 //   source: string;
@@ -17,6 +17,13 @@ import { BritPlayer } from "../brit-models";
 //   active: boolean;
 // } // BritResourceNode
 
+interface BritNationNode {
+  id: BritNationId;
+  nation: BritNation;
+  iconSource: string;
+  cardSource: string;
+} // BritNationNode
+
 @Component ({
   selector: "brit-player",
   templateUrl: "./brit-player.component.html",
@@ -30,6 +37,7 @@ export class BritPlayerComponent implements OnChanges {
   ) { }
 
   @Input () player!: BritPlayer;
+  @Input () nationsMap!: Record<BritNationId, BritNation>;
   @Input () @BooleanInput () currentPlayer: boolean = false;
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
@@ -40,45 +48,40 @@ export class BritPlayerComponent implements OnChanges {
   // pawnNodes!: BritPawnNode[];
   // resourceNodes!: BritResourceNode[];
 
-  // pawnTrackBy = (pawnNode: BritPawnNode) => pawnNode.type;
+  nationNodes!: BritNationNode[];
+  private nationNodesMap: Partial<Record<BritNationId, BritNationNode>> = { };
+
+  selectedNationNode: BritNationNode | null = null;
+
+  nationTrackBy: TrackByFunction<BritNationNode> = (index, nationNode: BritNationNode) => nationNode.id;
   // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
   ngOnChanges (changes: SimpleChanges<this>): void {
-    let refreshPawns = false;
-    let refreshResources = false;
+    let changedNationIds: BritNationId[] | null = null;
 
-    // if (changes.player) {
-    //   if (!changes.player.previousValue || changes.player.previousValue.pawns !== changes.player.currentValue.pawns) {
-    //     refreshPawns = true;
-    //   } // if
-    //   if (!changes.player.previousValue || changes.player.previousValue.resources !== changes.player.currentValue.resources) {
-    //     refreshResources = true;
-    //   } // if
-    // } // if
-    // if (changes.validBuildings) {
-    //   refreshPawns = true;
-    // } // if
-    // if (changes.validResources) {
-    //   refreshResources = true;
-    // } // if
+    if (changes.player && changes.player.previousValue?.nations !== this.player.nations) {
+      changedNationIds = this.player.nations;
+    } // if
+    if (!changedNationIds && changes.nationsMap) {
+      if (changes.nationsMap.previousValue) {
+        changedNationIds = this.player.nations?.filter (nationId => changes.nationsMap.previousValue[nationId] !== this.nationsMap[nationId]);
+      } else {
+        changedNationIds = this.player.nations;
+      } // if - else
+    } // if
+    if (changedNationIds?.length) {
+      for (const changedNationId of changedNationIds) {
+        this.nationNodesMap[changedNationId] = {
+          id: changedNationId,
+          nation: this.nationsMap[changedNationId],
+          iconSource: `assets/britannia/population-markers/${changedNationId}.png`,
+          cardSource: `assets/britannia/nation-cards/${changedNationId}.png`
+        };
+      } // for
+      this.nationNodes = this.player.nations.map (nationId => this.nationNodesMap[nationId]!);
+      if (this.selectedNationNode) { this.selectedNationNode = this.nationNodesMap[this.selectedNationNode.id]!; }
+    } // if
 
-    // if (refreshPawns) {
-    //   this.pawnNodes = Brit_PAWN_TYPES.map (pt => ({
-    //     source: `assets/Brit/pawns/${this.player.color}-${pt}.png`,
-    //     type: pt,
-    //     quantity: this.player.pawns[pt],
-    //     active: (this.validBuildings && (pt === "stronghold" || pt === "village")) ? this.validBuildings.includes (pt) : false
-    //   }));
-    // } // if
-
-    // if (refreshResources) {
-    //   this.resourceNodes = Brit_RESOURCE_TYPES.map (rt => ({
-    //     source: `assets/Brit/resources/${rt}.png`,
-    //     type: rt,
-    //     quantity: this.player.resources[rt],
-    //     active: (this.validResources ? this.validResources.includes (rt) : false)
-    //   }));
-    // } // refreshResources
   } // ngOnChanges
 
   onCardClick () {
@@ -87,8 +90,12 @@ export class BritPlayerComponent implements OnChanges {
     } // if
   } // onCardClick
 
-  onNationClick (nation: string) {
-
+  onNationClick (nationNode: BritNationNode) {
+    if (nationNode === this.selectedNationNode) {
+      this.selectedNationNode = null;
+    } else {
+      this.selectedNationNode = nationNode;
+    } // if - else
   } // onNationClick
 
   // onPawnClick (pawnNode: BritPawnNode) {

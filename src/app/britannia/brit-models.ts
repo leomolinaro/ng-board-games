@@ -143,7 +143,7 @@ export interface BritRevolt {
 export interface ABritPlayer {
   id: string;
   name: string;
-  nations: string[];
+  nations: BritNationId[];
   color: BritColor;
   score: number;
 } // ABritPlayer

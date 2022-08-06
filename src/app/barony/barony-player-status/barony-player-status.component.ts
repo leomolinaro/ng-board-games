@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../barony-constants";
@@ -41,9 +41,9 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   pawnNodes!: BaronyPawnNode[];
   resourceNodes!: BaronyResourceNode[];
 
-  pawnTrackBy = (pawnNode: BaronyPawnNode) => pawnNode.type;
-  resourceTrackBy = (resourceNode: BaronyResourceNode) => resourceNode.type;
-  
+  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (index, pawnNode: BaronyPawnNode) => pawnNode.type;
+  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (index, resourceNode: BaronyResourceNode) => resourceNode.type;
+
   ngOnChanges (changes: SimpleChanges<BaronyPlayerStatusComponent>): void {
     let refreshPawns = false;
     let refreshResources = false;
@@ -81,7 +81,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
       }));
     } // refreshResources
   } // ngOnChanges
-  
+
   onCardClick () {
     if (!this.player.isAi && this.authService.isUserId (this.player.controller.id) && !this.currentPlayer) {
       this.selectPlayer.emit ();

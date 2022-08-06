@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritLog, BritNation, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritLog, BritNation, BritNationId, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
 
 @Component ({
   selector: "brit-board",
@@ -16,6 +16,7 @@ export class BritBoardComponent {
   @Input () nations!: BritNation[];
   @Input () rounds!: BritRound[];
   @Input () unitsMap!: Record<BritUnitId, BritUnit>;
+  @Input () nationsMap!: Record<BritNationId, BritNation>;
   @Input () players!: BritPlayer[];
   @Input () logs!: BritLog[];
   @Input () turnPlayer: BritPlayer | null = null;

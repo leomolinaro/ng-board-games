@@ -28,6 +28,7 @@
       <brit-player *ngFor="let player of players; trackBy: playerTrackBy" class="brit-board-player-widget"
         (selectPlayer)="onPlayerSelect (player)"
         [player]="player"
+        [nationsMap]="nationsMap"
         [currentPlayer]="player === currentPlayer">
       </brit-player>
     </div>

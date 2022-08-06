@@ -89,6 +89,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     return this.select$ (s => s.rounds || []);
   } // selectRounds$
 
+  selectNationsMap$ () { return this.select$ (s => s.nations); }
   selectUnitsMap$ () { return this.select$ (s => s.units); }
 
   selectPlayers$ () {
@@ -185,7 +186,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //     pawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], lt.pawns)
   //   }));
   // } // addPawnToLandTile
-  
+
   // private removePawnFromLandTile (pawnType: BritPawnType, pawnColor: BritColor, land: BritLandCoordinates) {
   //   this.updateLand (land, lt => ({
   //     ...lt,
@@ -238,7 +239,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //     logs: [...s.logs, log]
   //   }));
   // } // addLog
-  
+
   setNationPopulation (population: BritPopulation, nationId: BritNationId, s: BritGameState): BritGameState {
     return this.updateNation (nationId, nation => ({
       ...nation,
@@ -323,7 +324,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   const resource = this.getResourceFromLand (construction.land);
   //   this.addResourceToPlayer (resource, player.id);
   // } // applyConstruction
-  
+
   // applyNewCity (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);
   //   this.removePawnFromLandTile ("village", player.color, land);

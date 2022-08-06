@@ -42,6 +42,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
 
   areas$ = this.game.selectAreas$ ();
   nations$ = this.game.selectNations$ ();
+  nationsMap$ = this.game.selectNationsMap$ ();
   rounds$ = this.game.selectRounds$ ();
   unitsMap$ = this.game.selectUnitsMap$ ();
   players$ = this.game.selectPlayers$ ();

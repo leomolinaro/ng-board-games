@@ -67,8 +67,9 @@
       grid-gap: 2vmin;
       overflow: auto;
       max-height: 100%;
+      pointer-events: auto;
       .brit-board-player-widget {
-        pointer-events: auto;
+        // pointer-events: auto; // N.B.: fuori e non dentro per permettere lo scroll nel caso ci fosse
       }
     }
     .brit-board-extras {

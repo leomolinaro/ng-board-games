@@ -14,12 +14,15 @@
     <div class="brit-player-score">{{ player.score }}</div>
   </div>
   <div class="brit-player-content">
-    <div *ngFor="let nation of player.nations"
+    <div *ngFor="let nationNode of nationNodes; trackBy: nationTrackBy"
       class="brit-player-nation"
-      (click)="onNationClick (nation)">
-      <span>{{ nation }}</span>
-      <!-- <img [src]="pawnNode.source"> -->
+      (click)="onNationClick (nationNode)">
+      <!-- <span>{{ nationNode.nation.label }}</span> -->
+      <img class="brit-player-nation-icon"
+        [src]="nationNode.iconSource"
+        [matTooltip]="nationNode.nation.label">
     </div>
+
     <!-- <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
       class="brit-player-pawn-image"
       [ngClass]="{ 'is-active': pawnNode.active }"
@@ -38,4 +41,6 @@
       {{ resourceNode.quantity }}
     </div> -->
   </div>
+  <img *ngIf="selectedNationNode" class="brit-player-nation-card"
+    [src]="selectedNationNode.cardSource">
 </div>
