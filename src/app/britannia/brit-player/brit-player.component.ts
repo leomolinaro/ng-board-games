@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
+import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId, BritPlayer } from "../brit-models";
 
 // interface BritPawnNode {
@@ -33,7 +34,8 @@ interface BritNationNode {
 export class BritPlayerComponent implements OnChanges {
 
   constructor (
-    private authService: BgAuthService
+    private authService: BgAuthService,
+    private assetsService: BritAssetsService
   ) { }
 
   @Input () player!: BritPlayer;
@@ -42,6 +44,7 @@ export class BritPlayerComponent implements OnChanges {
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
   @Output () selectPlayer = new EventEmitter<void> ();
+  @Output () nationClick = new EventEmitter<BritNation> ();
   // @Output () clickPawn = new EventEmitter<BritPawnType> ();
   // @Output () clickResource = new EventEmitter<BritResourceType> ();
 
@@ -74,8 +77,8 @@ export class BritPlayerComponent implements OnChanges {
         this.nationNodesMap[changedNationId] = {
           id: changedNationId,
           nation: this.nationsMap[changedNationId],
-          iconSource: `assets/britannia/population-markers/${changedNationId}.png`,
-          cardSource: `assets/britannia/nation-cards/${changedNationId}.png`
+          iconSource: this.assetsService.getNationIconImageSource (changedNationId),
+          cardSource: this.assetsService.getNationCardImageSource (changedNationId)
         };
       } // for
       this.nationNodes = this.player.nations.map (nationId => this.nationNodesMap[nationId]!);
@@ -90,12 +93,9 @@ export class BritPlayerComponent implements OnChanges {
     } // if
   } // onCardClick
 
-  onNationClick (nationNode: BritNationNode) {
-    if (nationNode === this.selectedNationNode) {
-      this.selectedNationNode = null;
-    } else {
-      this.selectedNationNode = nationNode;
-    } // if - else
+  onNationClick (nationNode: BritNationNode, event: MouseEvent) {
+    this.nationClick.next (nationNode.nation);
+    event.stopPropagation ();
   } // onNationClick
 
   // onPawnClick (pawnNode: BritPawnNode) {

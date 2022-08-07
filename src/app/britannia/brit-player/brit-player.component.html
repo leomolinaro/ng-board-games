@@ -16,8 +16,7 @@
   <div class="brit-player-content">
     <div *ngFor="let nationNode of nationNodes; trackBy: nationTrackBy"
       class="brit-player-nation"
-      (click)="onNationClick (nationNode)">
-      <!-- <span>{{ nationNode.nation.label }}</span> -->
+      (click)="onNationClick (nationNode, $event)">
       <img class="brit-player-nation-icon"
         [src]="nationNode.iconSource"
         [matTooltip]="nationNode.nation.label">
@@ -41,6 +40,4 @@
       {{ resourceNode.quantity }}
     </div> -->
   </div>
-  <img *ngIf="selectedNationNode" class="brit-player-nation-card"
-    [src]="selectedNationNode.cardSource">
 </div>

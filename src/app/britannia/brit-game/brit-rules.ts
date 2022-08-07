@@ -1,5 +1,6 @@
 import { arrayUtil } from "@bg-utils";
-import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritEvent, BritInfantry, BritInvasion, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRevolt, BritRomanFort, BritRound, BritRoundId, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritSetup, BritSpecialEvent, BritUnit } from "../brit-models";
+import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritEvent, BritInfantry, BritInvasion, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRevolt, BritRomanFort, BritRound, BritRoundId, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritSetup, BritSpecialEvent, BritUnit, isBritLandAreaId } from "../brit-models";
+import { BritGameStore } from "./brit-game.store";
 
 export function createAreas (): BritArea[] {
   return [
@@ -113,7 +114,8 @@ function createNation (nationId: BritNationId, label: string, color: BritColor, 
       cavalries: cavalries.map (u => u.id),
       buildings: (buildings as BritBuilding[]).map (u => u.id),
       leaders: leaders.map (u => u.id),
-      population: null
+      population: null,
+      active: false
     },
     units: [
       ...infantries,
@@ -295,7 +297,7 @@ function createRound (roundId: BritRoundId, fromYear: number, toYear: number, ty
 } // createRound
 
 class BritEventBuilder {
-  
+
   constructor (
     private nation: BritNationId
   ) { }
@@ -401,7 +403,23 @@ export function getGameSetup (): BritSetup {
       "irish-sea": null,
       "atlantic-ocean": null
     },
-    populationMarkers: ["welsh", "belgae", "brigantes", "picts", "caledonians"]
+    populationMarkers: ["welsh", "belgae", "brigantes", "picts", "caledonians"],
+    activeNations: ["romans", "welsh", "belgae", "brigantes", "picts", "caledonians"]
   };
 } // getGameSetup
+
+export function isNationActive (nationId: BritNationId, game: BritGameStore): boolean {
+  return game.getNation (nationId).active;
+} // isNationActive
+
+
+export function getValidLandsForPlacement (nationId: string, playerId: string, game: BritGameStore): BritLandAreaId[] {
+  const validLands: BritLandAreaId[] = [];
+  for (const areaId of game.getAreaIds ()) {
+    if (isBritLandAreaId (areaId)) {
+      validLands.push (areaId);
+    } // if
+  } // for
+  return validLands;
+} // getValidLandsForPlacement
 

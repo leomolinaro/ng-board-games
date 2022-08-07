@@ -15,7 +15,7 @@ import { BaronyHomeModule } from "./barony-home/barony-home.module";
 import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
 import { BaronyLandCoordinatesPipe } from "./barony-land-tile/barony-land-tile-coordinates.pipe";
 import { BaronyLandComponent } from "./barony-land-tile/barony-land-tile.component";
-import { BaronyLogComponent } from "./barony-log/barony-log.component";
+import { BaronyLogComponent } from "./barony-logs/barony-log.component";
 import { BaronyLogsComponent } from "./barony-logs/barony-logs.component";
 import { BaronyMapComponent } from "./barony-map/barony-map.component";
 import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";

@@ -1,5 +1,5 @@
-import { concat, Observable, ObservableInput, ObservedValuesFromArray } from "rxjs";
-import { toArray } from "rxjs/operators";
+import { concat, EMPTY, Observable, ObservableInput, ObservedValuesFromArray, of } from "rxjs";
+import { expand, last, toArray } from "rxjs/operators";
 
 export function concatJoin<A>(sources: [ObservableInput<A>]): Observable<[A]>;
 export function concatJoin<A, B>(sources: [ObservableInput<A>, ObservableInput<B>]): Observable<[A, B]>;
@@ -12,3 +12,35 @@ export function concatJoin (sources: ObservableInput<any>[]): Observable<any[]>;
 export function concatJoin<A extends ObservableInput<any>[]> (sources: A): Observable<ObservedValuesFromArray<A>[]> {
   return concat (...sources).pipe (toArray ());
 } // concatJoin
+
+export function forN (n: number, forFn: (index: number) => Observable<void>): Observable<void> {
+  if (n <= 0) { return of (void 0); }
+  let index = 0;
+  return forFn (index).pipe (
+    expand (() => {
+      index++;
+      if (index < n) {
+        return forFn (index);
+      } else {
+        return EMPTY;
+      } // if - else
+    }),
+    last ()
+  );
+} // forN
+
+export function forEach<T> (array: T[], forEachFn: (value: T) => Observable<void>): Observable<void> {
+  if (!array.length) { return of (void 0); }
+  let index = 0;
+  return forEachFn (array[index]).pipe (
+    expand (() => {
+      index++;
+      if (index < array.length) {
+        return forEachFn (array[index]);
+      } else {
+        return EMPTY;
+      } // if - else
+    }),
+    last ()
+  );
+} // forEach

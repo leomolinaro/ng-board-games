@@ -4,7 +4,7 @@ import { BgAuthService, BgUser } from "@bg-services";
 import { arrayUtil, ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
-import { ABritPlayer, BritPlayer } from "../brit-models";
+import { ABritPlayer, BritAreaId, BritPlayer, BritUnitId } from "../brit-models";
 import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
@@ -31,7 +31,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
 
   constructor (
     private game: BritGameStore,
-    // private ui: BritUiStore,
+    private ui: BritUiStore,
     private remote: BritRemoteService,
     private route: ActivatedRoute,
     private authService: BgAuthService,
@@ -46,6 +46,21 @@ export class BritGameComponent implements OnInit, OnDestroy {
   rounds$ = this.game.selectRounds$ ();
   unitsMap$ = this.game.selectUnitsMap$ ();
   players$ = this.game.selectPlayers$ ();
+  logs$ = this.game.selectLogs$ ();
+  // endGame$ = this.game.selectEndGame$ ();
+
+  turnPlayer$ = this.ui.selectTurnPlayer$ ();
+  currentPlayer$ = this.ui.selectCurrentPlayer$ ();
+  // players$ = this.ui.selectPlayers$ ();
+  message$ = this.ui.selectMessage$ ();
+  validAreas$ = this.ui.selectValidAreas$ ();
+  validUnits$ = this.ui.selectValidUnits$ ();
+  // validActions$ = this.ui.selectValidActions$ ();
+  // validBuildings$ = this.ui.selectValidBuildings$ ();
+  // validResources$ = this.ui.selectValidResources$ ();
+  // canPass$ = this.ui.selectCanPass$ ();
+  // canCancel$ = this.ui.selectCanCancel$ ();
+  // maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
   @SingleEvent ()
   ngOnInit () {
@@ -114,5 +129,15 @@ export class BritGameComponent implements OnInit, OnDestroy {
   } // playerDocToAPlayerInit
 
   ngOnDestroy () { }
+
+  // onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
+  // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
+  onAreaClick (areaId: BritAreaId) { this.ui.areaChange (areaId); }
+  onUnitClick (unitId: BritUnitId) { this.ui.unitChange (unitId); }
+  // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
+  // onPassClick () { this.ui.passChange (); }
+  // onCancelClick () { this.ui.cancelChange (); }
+  // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
+  // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
 
 } // BritGameComponent

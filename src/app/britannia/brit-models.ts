@@ -98,6 +98,7 @@ export interface BritNation {
   buildings: string[];
   leaders: string[];
   population: BritPopulation | null;
+  active: boolean;
 } // BritNation
 
 export type BritRoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
@@ -111,6 +112,8 @@ export interface BritRound {
   bretwaldaElection: boolean;
   kingElection: boolean;
 } // BritRound
+
+export type BritPhase = "populationIncrease" | "movement" | "battlesRetreats" | "raiderWithdrawal" | "overpopulation";
 
 export interface BritEvent {
   nation: BritNationId;
@@ -140,8 +143,10 @@ export interface BritRevolt {
   cavalries: number;
 } // BritRevolt
 
+export type BritPlayerId = string;
+
 export interface ABritPlayer {
-  id: string;
+  id: BritPlayerId;
   name: string;
   nations: BritNationId[];
   color: BritColor;
@@ -171,14 +176,22 @@ export type BritPlayer = BritAiPlayer | BritRealPlayer;
 // export interface BritLogRecuitment { type: "recruitment"; land: BritLandCoordinates; player: string; }
 // export interface BritLogTurn { type: "turn"; player: string; }
 // export interface BritLogSetupPlacement { type: "setupPlacement"; land: BritLandCoordinates; player: string; }
-// export interface BritLogSetup { type: "setup"; }
+export interface BritLogSetup { type: "setup"; }
+export interface BritLogRound { type: "round"; roundNumber: number; }
+export interface BritLogNationTurn { type: "nation-turn"; nationId: BritNationId; }
+export interface BritLogPhase { type: "phase"; phase: BritPhase; }
 
-export type BritLog = never/* BritLogSetup | BritLogSetupPlacement | BritLogTurn | BritLogRecuitment | BritLogConstruction
+export type BritLog = BritLogSetup | BritLogRound | BritLogNationTurn | BritLogPhase /*| BritLogRecuitment | BritLogConstruction
   | BritLogNewCity | BritLogNobleTitle | BritLogExpedition | BritLogMovement */;
-
-export type BritStory =  { };
 
 export interface BritSetup {
   areas: Record<BritAreaId, [BritNationId, number] | BritNationId | null>;
   populationMarkers: BritNationId[];
+  activeNations: BritNationId[];
 } // BritSetup
+
+export type BritStory = BritArmiesPlacement;
+
+export interface BritArmiesPlacement {
+  infantriesPlacement: BritLandAreaId[];
+} // BritArmiesPlacement

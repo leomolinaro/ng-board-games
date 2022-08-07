@@ -118,3 +118,11 @@
     }
   }
 }
+
+::ng-deep .brit-nation-card-sheet {
+  mat-bottom-sheet-container {
+    min-width: auto;
+    padding: 0;
+    box-shadow: 0 0 6px 0px white;
+  }
+}

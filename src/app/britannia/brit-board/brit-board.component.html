@@ -6,7 +6,11 @@
       [areas]="areas"
       [nations]="nations"
       [rounds]="rounds"
-      [unitsMap]="unitsMap">
+      [unitsMap]="unitsMap"
+      [validAreas]="validAreas"
+      [validUnits]="validUnits"
+      (areaClick)="areaClick.emit ($event)"
+      (unitClick)="unitClick.emit ($event)">
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">
@@ -26,15 +30,16 @@
     </barony-actions> -->
     <div class="brit-board-players-widget">
       <brit-player *ngFor="let player of players; trackBy: playerTrackBy" class="brit-board-player-widget"
-        (selectPlayer)="onPlayerSelect (player)"
         [player]="player"
         [nationsMap]="nationsMap"
-        [currentPlayer]="player === currentPlayer">
+        [currentPlayer]="player === currentPlayer"
+        (selectPlayer)="onPlayerSelect (player)"
+        (nationClick)="onPlayerNationClick ($event)">
       </brit-player>
     </div>
     <div class="brit-board-extras">
       <bg-map-zoom-buttons *ngIf="zoomFixed" class="brit-board-zoom-buttons-widget" [controls]="britMap.bgMapZoom"></bg-map-zoom-buttons>
-      <!-- <brit-logs *ngIf="logsFixed" class="brit-board-logs-widget" [logs]="logs"></brit-logs> -->
+      <brit-logs *ngIf="logsFixed" class="brit-board-logs-widget" [logs]="logs"></brit-logs>
       <div class="brit-board-buttons">
         <button class="brit-board-button" [ngClass]="{ 'is-active': logsFixed }" (click)="logsFixed = !logsFixed">
           <i class="brit-board-logs-icon fa fa-file-text"></i>

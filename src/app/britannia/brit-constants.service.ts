@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BritArea, BritAreaId, BritColor, BritLandArea, BritLandAreaId, BritNeighbor, BritRegionId, BritSeaArea, BritSeaAreaId } from "./brit-models";
+import { BritArea, BritAreaId, BritColor, BritLandArea, BritLandAreaId, BritNationId, BritNeighbor, BritRegionId, BritSeaArea, BritSeaAreaId } from "./brit-models";
 
 @Injectable ({
   providedIn: 'root'
@@ -11,6 +11,7 @@ export class BritConstantsService {
   private britColors: BritColor[] | null = null;
   private britAreaIds: BritAreaId[] | null = null;
   private britAreaMap: Record<BritAreaId, BritArea> | null = null;
+  private britNationIds: BritNationId[] | null = null;
 
   getBritColors () {
     if (!this.britColors) {
@@ -29,6 +30,15 @@ export class BritConstantsService {
     } // if
     return this.britAreaIds;
   } // getBritAreaIds
+
+  getBritNationIds () {
+    if (!this.britNationIds) {
+      this.britNationIds = ["romans", "romano-british", "belgae", "welsh", "brigantes",
+      "caledonians", "picts", "irish", "scots", "norsemen", "dubliners", "danes", "norwegians",
+      "saxons", "jutes", "angles", "normans"];
+    } // if
+    return this.britNationIds;
+  } // getBritNationIds
 
   getBritArea (britAreaId: BritAreaId): BritArea {
     if (!this.britAreaMap) {
@@ -84,7 +94,7 @@ export class BritConstantsService {
       "atlantic-ocean": this.createSeaArea ("atlantic-ocean", "Atlantic Ocean", ["irish-sea", "cheshire", "clwyd", "gwynedd", "powys", "dyfed", "gwent", "hwicce", "avalon", "devon", "cornwall", "english-channel"]),
     };
   } // createBritAreaMap
-  
+
   private createLandArea (id: BritLandAreaId, name: string, region: BritRegionId, difficultTerrain: boolean, neighbors: BritNeighbor[]): BritLandArea {
     return {
       id: id,
@@ -96,7 +106,7 @@ export class BritConstantsService {
       neighbors: neighbors
     };
   } // createLandArea
-  
+
   private createSeaArea (id: BritSeaAreaId, name: string, neighbors: BritAreaId[]): BritSeaArea {
     return {
       id: id,
@@ -106,6 +116,5 @@ export class BritConstantsService {
       units: []
     };
   } // createLandArea
-
 
 } // BritConstantsService

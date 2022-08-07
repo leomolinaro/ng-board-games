@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, TrackByFunction, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, TrackByFunction, ViewChild } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
 import { arrayUtil, SimpleChanges } from "@bg-utils";
+import { BritAssetsService } from "../brit-assets.service";
 import { BRIT_POPULATIONS } from "../brit-constants";
 import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-models";
 import { BritMapPoint, BritMapSlotsService } from "./brit-map-slots.service";
@@ -67,6 +68,7 @@ export class BritMapComponent implements OnChanges {
   constructor (
     private mapService: BritMapService,
     private slotsService: BritMapSlotsService,
+    private assetsService: BritAssetsService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -74,7 +76,12 @@ export class BritMapComponent implements OnChanges {
   @Input () unitsMap!: Record<BritUnitId, BritUnit>;
   @Input () nations!: BritNation[];
   @Input () rounds!: BritRound[];
+  @Input () validAreas: BritAreaId[] | null = null;
+  @Input () validUnits: BritUnitId[] | null = null;
   // in caso di update dell'unità in un'area, bisogna cambiare il riferimento delle BritArea.units
+
+  @Output () areaClick = new EventEmitter<BritAreaId> ();
+  @Output () unitClick = new EventEmitter<BritUnitId> ();
 
   areaNodes!: BritAreaNode[];
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
@@ -93,6 +100,9 @@ export class BritMapComponent implements OnChanges {
   private roundNodeMap!: Record<BritRoundId, BritRoundNode>;
 
   testGridPoints: { x: number; y: number; color: string }[] | undefined = [];
+
+  isValidArea: Record<string, boolean> | null = null;
+  isValidUnit: Record<string, boolean> | null = null;
 
   @ViewChild (BgSvgComponent) bgSvg!: BgSvgComponent;
   @ViewChild ("britMap") mapElementRef!: ElementRef<SVGGElement>;
@@ -126,6 +136,12 @@ export class BritMapComponent implements OnChanges {
     } // if
     if (changes.rounds) {
       this.refreshRoundNodes ();
+    } // if
+    if (changes.validAreas) {
+      this.isValidArea = this.validAreas ? arrayUtil.toMap (this.validAreas, id => id, () => true) : null;
+    } // if
+    if (changes.validUnits) {
+      this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
     } // if
   } // ngOnChanges
 
@@ -249,7 +265,7 @@ export class BritMapComponent implements OnChanges {
 
   private unitToNode (unitId: BritUnitId, index: number, oldNode: BritUnitNode | null, areaNode: BritAreaNode): BritUnitNode {
     const unit = this.unitsMap[unitId]
-    const imageSource = this.getUnitImageSource (unit);
+    const imageSource = this.assetsService.getUnitImageSource (unit);
     return {
       id: unitId,
       unit,
@@ -294,25 +310,12 @@ export class BritMapComponent implements OnChanges {
     return {
       id: nation.id,
       nation: nation,
-      imageSource: this.getNationPopulationImageSource (nation)
+      imageSource: this.assetsService.getNationPopulationMarkerImageSource (nation.id)
     };
   } // nationToPopulationNode
 
-  private getNationPopulationImageSource (nation: BritNation) {
-    return `assets/britannia/population-markers/${nation.id}.png`;
-  } // getNationPopulationImageSource
-
-  private getUnitImageSource (unit: BritUnit) {
-    switch (unit.type) {
-      case "infantry": return `assets/britannia/infantries/${unit.nation}.png`;
-      case "cavalry": return `assets/britannia/cavalries/${unit.nation}.png`;
-      case "roman-fort": return `assets/britannia/buildings/roman-fort.png`;
-      case "saxon-buhr": return `assets/britannia/buildings/saxon-buhr.png`;
-      case "leader": return `assets/britannia/leaders/${unit.id}.png`;
-    } // switch
-  } // getUnitImageSource
-
   onAreaClick (areaNode: BritAreaNode, event: MouseEvent) {
+    this.areaClick.emit (areaNode.id);
     // if (isBritLandAreaId (areaNode.id)) {
     //   this.testGridPoints = [
     //     ...this.slotsService.getLandInnerPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "blue" })),
@@ -345,7 +348,7 @@ export class BritMapComponent implements OnChanges {
   getNationPopulationNodeX = (nationNode: BritNationPopulationNode, index: number, populationNode: BritPopulationNode) => {
     return this.slotsService.getPopulationX (populationNode.id, index) * GRID_STEP;
   }; // getNationPopulationNodeX
-  
+
   getNationPopulationNodeY = (nationNode: BritNationPopulationNode, index: number, populationNode: BritPopulationNode) => {
     return this.slotsService.getPopulationY (populationNode.id, index) * GRID_STEP;
   }; // getNationPopulationNodeY
@@ -378,7 +381,7 @@ export class BritMapComponent implements OnChanges {
     const event = eventNode.event;
     return this.nationTurnNodeMap[event.nation]?.nation.label;
   }; // getEventTooltip
-  
+
   getAreaTooltip = (areaNode: BritAreaNode) => {
     const area = areaNode.area;
     return area.name;

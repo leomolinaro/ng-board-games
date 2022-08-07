@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BaronyLog } from "../barony-models";
+import { BritLog } from "../brit-models";
 
 @Component ({
-  selector: "barony-logs",
-  template: `<barony-log *ngFor="let log of logs" [log]="log"></barony-log>`,
+  selector: "brit-logs",
+  template: `<brit-log *ngFor="let log of logs" [log]="log"></brit-log>`,
   styles: [`
     :host {
       display: block;
@@ -16,18 +16,18 @@ import { BaronyLog } from "../barony-models";
   `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BaronyLogsComponent implements OnChanges {
+export class BritLogsComponent implements OnChanges {
 
   constructor (
     private elementRef: ElementRef
   ) { }
 
-  @Input () logs!: BaronyLog[];
+  @Input () logs!: BritLog[];
 
-  ngOnChanges (changes: SimpleChanges<BaronyLogsComponent>) {
+  ngOnChanges (changes: SimpleChanges<BritLogsComponent>) {
     if (changes.logs) {
       setTimeout (() => this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight);
     } // if
   } // ngOnChanges
 
-} // BaronyLogsComponent
+} // BritLogsComponent

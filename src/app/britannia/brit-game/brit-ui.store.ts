@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
+import { BritAreaId, BritUnitId } from "../brit-models";
 // import { BritAction, BritBuilding, BritLand, BritLandCoordinates, BritPlayer, BritResourceType } from "../brit-models";
 import { BritGameStore } from "./brit-game.store";
 
@@ -10,7 +11,8 @@ interface BritUiState {
   turnPlayer: string;
   canCancel: boolean;
   message: string | null;
-  // validLands: BritLandCoordinates[] | null;
+  validAreas: BritAreaId[] | null;
+  validUnits: BritUnitId[] | null;
   // validResources: {
   //   player: string;
   //   resources: BritResourceType[]
@@ -32,7 +34,8 @@ export class BritUiStore extends BgStore<BritUiState> {
       turnPlayer: "",
       canCancel: false,
       message: null,
-      // validLands: null,
+      validAreas: null,
+      validUnits: null,
       // validActions: null,
       // validBuildings: null,
       // validResources: null,
@@ -44,19 +47,22 @@ export class BritUiStore extends BgStore<BritUiState> {
   // actionChange (action: BritAction) { this.$actionChange.next (action); }
   // passChange () { this.$passChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
-  // landTileChange (landTile: BritLand) { this.$landTileChange.next (landTile); }
+  areaChange (areaId: BritAreaId) { this.$areaChange.next (areaId); }
+  unitChange (unitId: BritUnitId) { this.$unitChange.next (unitId); }
   // buildingChange (building: BritBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: BritResourceType) { this.$resourceChange.next (resource); }
   cancelChange () { this.$cancelChange.next (void 0); }
   // private $actionChange = new Subject<BritAction> ();
-  // private $landTileChange = new Subject<BritLand> ();
+  private $areaChange = new Subject<BritAreaId> ();
+  private $unitChange = new Subject<BritUnitId> ();
   // private $numberOfKnightsChange = new Subject<number> ();
   // private $passChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<BritResourceType> ();
   private $cancelChange = new Subject<void> ();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
-  // landChange$ () { return this.$landTileChange.asObservable ().pipe (first ()); }
+  areaChange$<T extends BritAreaId = BritAreaId> (): Observable<T> { return (this.$areaChange as unknown as Subject<T>).asObservable ().pipe (first ()); }
+  unitChange$<T extends BritUnitId = BritUnitId> (): Observable<T> { return (this.$unitChange as unknown as Subject<T>).asObservable ().pipe (first ()); }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
   // passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
   // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
@@ -64,7 +70,8 @@ export class BritUiStore extends BgStore<BritUiState> {
   cancelChange$ () { return this.$cancelChange.asObservable ().pipe (first ()); }
   currentPlayerChange$ () { return this.selectCurrentPlayerId$ ().pipe (skip (1), first ()); }
 
-  // selectValidLands$ () { return this.select$ (s => s.validLands); }
+  selectValidAreas$ () { return this.select$ (s => s.validAreas); }
+  selectValidUnits$ () { return this.select$ (s => s.validUnits); }
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
@@ -73,24 +80,24 @@ export class BritUiStore extends BgStore<BritUiState> {
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
   getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
-  // selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
-  // selectMessage$ () { return this.select$ (s => s.message); }
+  selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
+  selectMessage$ () { return this.select$ (s => s.message); }
 
-  // selectCurrentPlayer$ () {
-  //   return this.game.select$ (
-  //     this.selectCurrentPlayerId$ (),
-  //     this.game.selectPlayerMap$ (),
-  //     (playerId, playersMap) => playerId ? playersMap[playerId] : null
-  //   );
-  // } // selectCurrentPlayer$
+  selectCurrentPlayer$ () {
+    return this.game.select$ (
+      this.selectCurrentPlayerId$ (),
+      this.game.selectPlayerMap$ (),
+      (playerId, playersMap) => playerId ? playersMap[playerId] : null
+    );
+  } // selectCurrentPlayer$
 
-  // selectTurnPlayer$ () {
-  //   return this.game.select$ (
-  //     this.selectTurnPlayerId$ (),
-  //     this.game.selectPlayerMap$ (),
-  //     (playerId, playersMap) => playerId ? playersMap[playerId] : null
-  //   );
-  // } // selectCurrentPlayer$
+  selectTurnPlayer$ () {
+    return this.game.select$ (
+      this.selectTurnPlayerId$ (),
+      this.game.selectPlayerMap$ (),
+      (playerId, playersMap) => playerId ? playersMap[playerId] : null
+    );
+  } // selectCurrentPlayer$
 
   // selectOtherPlayers$ () {
   //   return this.game.select$ (

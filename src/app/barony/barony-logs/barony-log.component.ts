@@ -30,8 +30,44 @@ type BaronyLogFragment = BaronyLogStringFragment | BaronyLogPlayerFragment | Bar
 
 @Component ({
   selector: "barony-log",
-  templateUrl: "./barony-log.component.html",
-  styleUrls: ["./barony-log.component.scss"],
+  template: `
+    <div
+      class="b-log"
+      [ngClass]="{
+        'b-log-title': log.type === 'setup' || log.type === 'turn'
+      }">
+      <ng-container *ngFor="let fragment of fragments" [ngSwitch]="fragment.type">
+        <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
+        <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
+        <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
+        <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a>
+      </ng-container>
+    </div>
+  `,
+  styles: [`
+    @import "barony-variables";
+
+    .b-log {
+      &.b-log-title {
+        font-size: 120%;
+      }
+      &:not(.b-log-title) {
+        margin-left: 1vw;
+      }
+
+      .is-red { color: $red; }
+      .is-blue { color: $blue; }
+      .is-yellow { color: $yellow; }
+      .is-green { color: $green; }
+
+      .is-mountain { color: $color-mountain; }
+      .is-lake { color: $color-lake; }
+      .is-forest { color: $color-forest; }
+      .is-plain { color: $color-plain; }
+      .is-fields { color: $color-fields; }
+
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaronyLogComponent implements OnChanges {

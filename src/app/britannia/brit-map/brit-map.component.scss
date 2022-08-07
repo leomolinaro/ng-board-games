@@ -1,11 +1,29 @@
 @mixin brit-path {
-  opacity: 0;
-  &:hover {
+  fill: transparent;
+  &:hover:not(.is-disabled) {
     opacity: 0.3;
+    fill: black;
   }
 }
 .brit-area-path {
   @include brit-path;
+  &.is-active {
+    cursor: pointer;
+    stroke: white;
+    // stroke-dasharray: 0.05,0.05;
+    stroke-width: 3;
+    // animation: dash 10s linear;
+    stroke-dasharray: 3;
+
+    animation-duration: 10s;
+    animation-name: activeSignal;
+    animation-iteration-count: infinite;
+    animation-direction: normal;
+  }
+  &.is-disabled {
+    fill: black;
+    fill-opacity: 0.8;
+  }
 }
 .brit-population-track-path {
   @include brit-path;

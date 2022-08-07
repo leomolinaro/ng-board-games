@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
 import { BRIT_AREAS, BRIT_NATIONS } from "../brit-constants";
-import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
+import { BritConstantsService } from "../brit-constants.service";
+import { BritArea, BritAreaId, BritArmiesPlacement, BritLog, BritNation, BritNationId, BritPhase, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
 
 interface BritGameState {
   gameId: string;
@@ -21,11 +22,13 @@ interface BritGameState {
 @Injectable ()
 export class BritGameStore extends BgStore<BritGameState> {
 
-  constructor () {
+  constructor (
+    private constants: BritConstantsService
+  ) {
     super ({
       gameId: "",
       gameOwner: null as any,
-      players: null as any,
+      players: { map: { }, ids: [] },
       areas: null as any,
       nations: null as any,
       units: null as any,
@@ -89,6 +92,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     return this.select$ (s => s.rounds || []);
   } // selectRounds$
 
+  selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   selectNationsMap$ () { return this.select$ (s => s.nations); }
   selectUnitsMap$ () { return this.select$ (s => s.units); }
 
@@ -98,10 +102,19 @@ export class BritGameStore extends BgStore<BritGameState> {
     });
   } // selectPlayers$
 
+  selectLogs$ () { return this.select$ (s => s.logs); }
+
   getGameId (): string { return this.get (s => s.gameId); }
   getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
   getPlayers (): BritPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
   getPlayer (id: string): BritPlayer { return this.get (s => s.players.map[id]); }
+  getNation (id: BritNationId): BritNation { return this.get (s => s.nations[id]); }
+  getAreaIds () { return this.constants.getBritAreaIds (); }
+
+  getPlayerByNation (nationId: BritNationId) {
+    return this.getPlayers ().find (p => p.nations.some (n => n === nationId));
+  } // getPlayerByNation
+
   // // isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
   // getPlayerIds () { return this.get (s => s.players.ids); }
   // getPlayerMap () { return this.get (s => s.players.map); }
@@ -127,7 +140,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   // selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   // selectLogs$ () { return this.select$ (s => s.logs); }
 
-  private updatePlayer (playerId: string, updater: (p: BritPlayer) => BritPlayer, s: BritGameState) {
+  private updatePlayer (playerId: string, updater: (p: BritPlayer) => BritPlayer, s: BritGameState): BritGameState {
     return {
       ...s,
       players: {
@@ -140,7 +153,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     };
   } // updatePlayer
 
-  private updateArea (areaId: BritAreaId, updater: (a: BritArea) => BritArea, s: BritGameState) {
+  private updateArea (areaId: BritAreaId, updater: (a: BritArea) => BritArea, s: BritGameState): BritGameState {
     return {
       ...s,
       areas: {
@@ -150,7 +163,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     };
   } // updateArea
 
-  private updateNation (nationId: BritNationId, updater: (a: BritNation) => BritNation, s: BritGameState) {
+  private updateNation (nationId: BritNationId, updater: (a: BritNation) => BritNation, s: BritGameState): BritGameState {
     return {
       ...s,
       nations: {
@@ -233,21 +246,28 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   }));
   // } // addPawnToGameBox
 
-  // private addLog (log: BritLog) {
-  //   this.update (s => ({
-  //     ...s,
-  //     logs: [...s.logs, log]
-  //   }));
-  // } // addLog
+  private addLog (log: BritLog) {
+    this.update ("Add log", s => ({
+      ...s,
+      logs: [...s.logs, log]
+    }));
+  } // addLog
 
-  setNationPopulation (population: BritPopulation, nationId: BritNationId, s: BritGameState): BritGameState {
+  private setNationPopulation (population: BritPopulation, nationId: BritNationId, s: BritGameState): BritGameState {
     return this.updateNation (nationId, nation => ({
       ...nation,
       population: population
     }), s);
   } // setNationPopulation
 
-  addUnitToArea (unitId: BritUnitId, areaId: BritAreaId, s: BritGameState): BritGameState {
+  private setNationActive (active: boolean, nationId: BritNationId, s: BritGameState): BritGameState {
+    return this.updateNation (nationId, nation => ({
+      ...nation,
+      active: active
+    }), s);
+  } // setNationActive
+
+  private addUnitToArea (unitId: BritUnitId, areaId: BritAreaId, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => ({
       ...area,
       units: immutableUtil.listPush ([unitId], area.units)
@@ -279,11 +299,19 @@ export class BritGameStore extends BgStore<BritGameState> {
         setup.populationMarkers.forEach (nationId => {
           state = this.setNationPopulation (0, nationId, state);
         });
+        setup.activeNations.forEach (nationId => {
+          state = this.setNationActive (true, nationId, state);
+        });
         return state;
       }, s)
     });
   } // applySetup
 
+  applyPopulationIncrease (population: BritPopulation, armiesPlacement: BritArmiesPlacement, nationId: BritNationId) {
+    this.update ("Apply population increase", s => {
+      return this.setNationPopulation (population, nationId, s);
+    });
+  } // applyPopulationIncrease
 
   // applyRecruitment (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);
@@ -351,14 +379,17 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   this.addVictoryPoints (15, playerId);
   // } // applyNobleTitle
 
+  logSetup () { this.addLog ({ type: "setup" }); }
+  logRound (roundNumber: number) { this.addLog ({ type: "round", roundNumber: roundNumber }); }
+  logNationTurn (nationId: BritNationId) { this.addLog ({ type: "nation-turn", nationId: nationId }); }
+  logPhase (phase: BritPhase) { this.addLog ({ type: "phase", phase: phase }); }
   // logMovement (movement: BritMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }
   // logExpedition (land: BritLandCoordinates, player: string) { this.addLog ({ type: "expedition", land: land, player: player }); }
   // logNobleTitle (resources: BritResourceType[], player: string) { this.addLog ({ type: "nobleTitle", resources: resources, player: player }); }
   // logNewCity (land: BritLandCoordinates, player: string) { this.addLog ({ type: "newCity", land: land, player: player }); }
   // logConstruction (construction: BritConstruction, player: string) { this.addLog ({ type: "construction", construction: construction, player: player }); }
   // logRecuitment (land: BritLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
-  // logTurn (player: string) { this.addLog ({ type: "turn", player: player }); }
   // logSetupPlacement (land: BritLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
-  // logSetup () { this.addLog ({ type: "setup" }); }
+
 
 } // BritGameStore

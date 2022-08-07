@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
+import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritLog, BritNation, BritNationId, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
+import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 
 @Component ({
   selector: "brit-board",
@@ -10,7 +12,9 @@ import { BritArea, BritLog, BritNation, BritNationId, BritPlayer, BritRound, Bri
 })
 export class BritBoardComponent {
 
-  constructor () { }
+  constructor (
+    private bottomSheet: MatBottomSheet
+  ) { }
 
   @Input () areas!: BritArea[];
   @Input () nations!: BritNation[];
@@ -23,7 +27,8 @@ export class BritBoardComponent {
   @Input () currentPlayer: BritPlayer | null = null;
   // @Input () otherPlayers!: BaronyPlayer[];
   @Input () message: string | null = null;
-  // @Input () validLands: BaronyLandCoordinates[] | null = null;
+  @Input () validAreas: BritAreaId[] | null = null;
+  @Input () validUnits: BritUnitId[] | null = null;
   // @Input () validActions: BaronyAction[] | null = null;
   // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
@@ -32,7 +37,8 @@ export class BritBoardComponent {
 
   @Output () playerSelect = new EventEmitter<BritPlayer> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
-  // @Output () landTileClick = new EventEmitter<BaronyLand> ();
+  @Output () areaClick = new EventEmitter<BritAreaId> ();
+  @Output () unitClick = new EventEmitter<BritUnitId> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
   // @Output () passClick = new EventEmitter<void> ();
   // @Output () cancelClick = new EventEmitter<void> ();
@@ -46,6 +52,7 @@ export class BritBoardComponent {
   zoomFixed = false;
 
   ngOnChanges (changes: SimpleChanges<BritBoardComponent>): void {
+    console.log ("this.turnPlayer", this.turnPlayer);
   } // ngOnChanges
 
   onPlayerSelect (player: BritPlayer) { this.playerSelect.emit (player); }
@@ -59,5 +66,18 @@ export class BritBoardComponent {
   //   this.numberOfKnights = 1;
   // } // onKnightsConfirm
   // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
+
+  onPlayerNationClick (nation: BritNation) {
+    const openedRef: MatBottomSheetRef<BritNationCardSheetComponent, BritNation> | null = this.bottomSheet._openedBottomSheetRef;
+    if (openedRef) {
+      openedRef.instance.setNation (nation.id);
+    } else {
+      this.bottomSheet.open (BritNationCardSheetComponent, {
+        data: nation,
+        panelClass: "brit-nation-card-sheet",
+        hasBackdrop: false
+      });
+    } // if - else
+  } // onPlayerNationClick
 
 } // BritBoardComponent

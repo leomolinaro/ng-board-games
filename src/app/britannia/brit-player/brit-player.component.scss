@@ -91,6 +91,10 @@
       .brit-player-nation-icon {
         max-width: 100%;
         max-height: 100%;
+        &:hover {
+          border-radius: 50%;
+          box-shadow: 0 0 6px 0px white;
+        }
       }
 
       // &:nth-child(odd) {

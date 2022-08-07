@@ -4,23 +4,6 @@
   xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
   width="100%" height="100%"
   [attr.viewBox]="viewBox" preserveAspectratio="xMinYMin">
-  <!-- <defs>
-    <pattern id="mountain" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-      <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/mountain.png"></image>
-    </pattern>
-    <pattern id="lake" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-      <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/lake.png"></image>
-    </pattern>
-    <pattern id="plain" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-      <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/plain.png"></image>
-    </pattern>
-    <pattern id="fields" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-      <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/fields.png"></image>
-    </pattern>
-    <pattern id="forest" height="100%" width="100%" patternContentUnits="objectBoundingBox">
-      <image width="1" height="1" preserveAspectRatio="none" xlink:href="assets/barony/land-tiles/forest.png"></image>
-    </pattern>
-  </defs> -->
   <svg:g
     #britMap
     [bgMapZoom]="{
@@ -31,16 +14,19 @@
     <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin" xlink:href="assets/britannia/britannia-map.png"></image>
     <svg:g *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
       <svg:path
+        [ngClass]="{
+          'is-active': isValidArea ? isValidArea[areaNode.id] : false,
+          'is-disabled': isValidArea ? !isValidArea[areaNode.id] : false
+        }"
         [attr.id]="'brit-area-' + areaNode.id" class="brit-area-path" [attr.d]="areaNode.path"
         [matTooltip]="areaNode | bgTransform:getAreaTooltip"
         (click)="onAreaClick (areaNode, $event)"></svg:path>
-      
+
       <svg:circle *ngFor="let point of testGridPoints"
         [attr.cx]="point.x"
         [attr.cy]="point.y"
         [attr.r]="3"
         [attr.style]="'fill: ' + point.color"></svg:circle>
-      
     </svg:g>
 
     <ng-container *ngIf="slotsReady">
@@ -98,7 +84,7 @@
         [attr.id]="'brit-nation-turn-' + nationTurnNode.id" class="brit-nation-turn-path" [attr.d]="nationTurnNode.path"
         [matTooltip]="nationTurnNode | bgTransform:getNationTurnTooltip"></svg:path>
     </svg:g>
-    
+
     <svg:g
       *ngFor="let roundNode of roundNodes; trackBy: roundTrackBy">
       <svg:path
@@ -114,14 +100,5 @@
         [attr.id]="'brit-scoring-' + roundNode.id" class="brit-scoring-path" [attr.d]="roundNode.scoringPath"
         matTooltip="Scoring Round"></svg:path>
     </svg:g>
-
-
-      <!-- baronyLandTile
-      [type]="land.type"
-      [coordinates]="land.coordinates"
-      [pawns]="land.pawns"
-      [active]="isValid ? isValid[land.id] : false"
-      [disabled]="isValid ? !isValid[land.id] : false"
-      (landTileClick)="onLandTileClick (land)"> -->
   </svg:g>
 </svg:svg>
