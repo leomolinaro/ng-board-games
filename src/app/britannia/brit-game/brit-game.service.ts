@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { forEach, forN } from "@bg-utils";
 import { Observable, of } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import { map, switchMap } from "rxjs/operators";
 import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
 import { BritConstantsService } from "../brit-constants.service";
 import { BritNationId, BritPlayer, BritPlayerId, BritStory } from "../brit-models";
@@ -91,13 +91,21 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     } // if - else
   } // nationTurn$
 
-  private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId) {
+  private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId): Observable<void> {
     this.game.logPhase ("populationIncrease");
-    const nInfantries = 1;
+    const nInfantries = this.game.getNation (nationId).infantries?.length ? 1 : 0;
     const populationMarker = 3;
-    return this.executeTask$ (playerId, p => p.armiesPlacement$ (nInfantries, nationId, playerId)).pipe (
-      tap (armiesPlacement => this.game.applyPopulationIncrease (populationMarker, armiesPlacement, nationId))
-    );
+    if (nInfantries) {
+      return this.executeTask$ (playerId, p => p.armiesPlacement$ (nInfantries, nationId, playerId)).pipe (
+        map (armiesPlacement => {
+          this.game.applyPopulationIncrease (populationMarker, armiesPlacement, nationId);
+          return void 0;
+        })
+      );
+    } else {
+      this.game.applyPopulationIncrease (populationMarker, { infantriesPlacement: [] }, nationId);
+      return of (void 0);
+    } // if - else
   } // populationIncreasePhase$
 
   private movementPhase$ (nationId: BritNationId, playerId: BritPlayerId) {

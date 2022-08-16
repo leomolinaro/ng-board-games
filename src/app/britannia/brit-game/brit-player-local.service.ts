@@ -22,6 +22,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     return forN (nInfantries, index => {
       return this.chooseLandForPlacement$ (index + 1, nInfantries, nationId, playerId).pipe (
         map (landAreaId => {
+          this.game.applyInfantryPlacement (landAreaId, nationId);
           placement.infantriesPlacement.push (landAreaId);
           return void 0;
         })
@@ -30,6 +31,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       mapTo (placement)
     );
   } // armiesPlacement$
+
 
   private chooseLandForPlacement$ (iInfantry: number, nTotInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritLandAreaId> {
     const validLands = britRules.getValidLandsForPlacement (nationId, playerId, this.game);

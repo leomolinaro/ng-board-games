@@ -19,7 +19,8 @@
           'is-disabled': isValidArea ? !isValidArea[areaNode.id] : false
         }"
         [attr.id]="'brit-area-' + areaNode.id" class="brit-area-path" [attr.d]="areaNode.path"
-        [matTooltip]="areaNode | bgTransform:getAreaTooltip"
+        [matTooltip]="areaNode.tooltip"
+        matTooltipClass="brit-map-tooltip"
         (click)="onAreaClick (areaNode, $event)"></svg:path>
 
       <svg:circle *ngFor="let point of testGridPoints"
@@ -30,25 +31,32 @@
     </svg:g>
 
     <ng-container *ngIf="slotsReady">
-      <ng-container *ngFor="let unitNode of unitNodes; trackBy: unitTrackBy">
-        <svg:g *ngLet="{
-          x: unitNode | bgTransform:getUnitNodeX,
-          y: unitNode | bgTransform:getUnitNodeY
-        } as c">
-          <svg:rect
-            class="brit-unit-rect"
-            [attr.x]="c.x"
-            [attr.y]="c.y"
-            width="30"
-            height="30">
-          </svg:rect>
-          <svg:image
-            [matTooltip]="unitNode | bgTransform:getUnitTooltip"
-            [attr.x]="c.x"
-            [attr.y]="c.y"
-            width="30"
-            [attr.xlink:href]="unitNode.imageSource"/>
-        </svg:g>
+      <ng-container *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
+        <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
+          <svg:g>
+            <svg:rect
+              class="brit-unit-rect"
+              [attr.x]="unitNode.svgX"
+              [attr.y]="unitNode.svgY"
+              width="30"
+              height="30">
+            </svg:rect>
+            <svg:image
+              [matTooltip]="unitNode.tooltip"
+              matTooltipClass="brit-map-tooltip"
+              [attr.x]="unitNode.svgX"
+              [attr.y]="unitNode.svgY"
+              width="30"
+              [attr.xlink:href]="unitNode.imageSource"/>
+              <!-- *ngIf="pawnNode.quantity > 1" -->
+            <svg:text
+              class="brit-unit-quantity"
+              [attr.x]="unitNode.svgX + 12"
+              [attr.y]="unitNode.svgY + 27">
+              {{ unitNode.quantity }}
+            </svg:text>
+          </svg:g>
+        </ng-container>
       </ng-container>
     </ng-container>
 
@@ -56,7 +64,8 @@
       *ngFor="let populationNode of populationNodes; trackBy: populationTrackBy">
       <svg:path
         [attr.id]="'brit-population-track-' + populationNode.id" class="brit-population-track-path" [attr.d]="populationNode.path"
-        [matTooltip]="populationNode | bgTransform:getPopulationTrackTooltip"></svg:path>
+        [matTooltip]="populationNode.tooltip"
+        matTooltipClass="brit-map-tooltip"></svg:path>
       <ng-container *ngFor="let nationNode of populationNode.nationNodes; trackBy: nationPopulationTrackBy; let i = index">
         <svg:g *ngLet="{
           x: nationNode | bgTransform:getNationPopulationNodeX:i:populationNode,
@@ -69,7 +78,8 @@
             r="10">
           </svg:circle>
           <svg:image
-            [matTooltip]="nationNode | bgTransform:getNationPopulationTooltip"
+            [matTooltip]="nationNode.tooltip"
+            matTooltipClass="brit-map-tooltip"
             [attr.x]="c.x"
             [attr.y]="c.y"
             width="20"
@@ -82,23 +92,27 @@
       *ngFor="let nationTurnNode of nationTurnNodes; trackBy: nationTurnTrackBy">
       <svg:path
         [attr.id]="'brit-nation-turn-' + nationTurnNode.id" class="brit-nation-turn-path" [attr.d]="nationTurnNode.path"
-        [matTooltip]="nationTurnNode | bgTransform:getNationTurnTooltip"></svg:path>
+        [matTooltip]="nationTurnNode.tooltip"
+        matTooltipClass="brit-map-tooltip"></svg:path>
     </svg:g>
 
     <svg:g
       *ngFor="let roundNode of roundNodes; trackBy: roundTrackBy">
       <svg:path
         [attr.id]="'brit-round-' + roundNode.id" class="brit-round-path" [attr.d]="roundNode.path"
-        [matTooltip]="roundNode | bgTransform:getRoundTooltip"></svg:path>
+        [matTooltip]="roundNode.tooltip"
+        matTooltipClass="brit-map-tooltip"></svg:path>
       <svg:g
         *ngFor="let eventNode of roundNode.eventNodes; trackBy: eventTrackBy">
         <svg:path
           [attr.id]="'brit-event-' + roundNode.id + '-' + eventNode.id" class="brit-event-path" [attr.d]="eventNode.path"
-          [matTooltip]="eventNode | bgTransform:getEventTooltip"></svg:path>
+          [matTooltip]="eventNode.tooltip"
+          matTooltipClass="brit-map-tooltip"></svg:path>
       </svg:g>
       <svg:path *ngIf="roundNode.scoringPath"
         [attr.id]="'brit-scoring-' + roundNode.id" class="brit-scoring-path" [attr.d]="roundNode.scoringPath"
-        matTooltip="Scoring Round"></svg:path>
+        matTooltip="Scoring Round"
+        matTooltipClass="brit-map-tooltip"></svg:path>
     </svg:g>
   </svg:g>
 </svg:svg>

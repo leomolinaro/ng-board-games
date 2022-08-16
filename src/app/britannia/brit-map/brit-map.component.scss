@@ -14,11 +14,10 @@
     stroke-width: 3;
     // animation: dash 10s linear;
     stroke-dasharray: 3;
-
-    animation-duration: 10s;
-    animation-name: activeSignal;
-    animation-iteration-count: infinite;
-    animation-direction: normal;
+    // animation-duration: 10s;
+    // animation-name: activeSignal;
+    // animation-iteration-count: infinite;
+    // animation-direction: normal;
   }
   &.is-disabled {
     fill: black;
@@ -46,8 +45,16 @@
   stroke-width: 2px;
   stroke-linejoin: bevel;
 }
+.brit-unit-quantity {
+  // font-size: 0.5px;
+  fill: white;
+  font-weight: 600;
+}
 .brit-population-circle {
   fill: white;
   stroke: white;
   stroke-width: 2px;
+}
+::ng-deep .brit-map-tooltip {
+  pointer-events: none; // non funziona (servirebbe ad evitare che il ctrl+rotella faccia zoom sulla pagina e non sulla mappa)
 }

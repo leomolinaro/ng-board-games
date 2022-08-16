@@ -307,9 +307,30 @@ export class BritGameStore extends BgStore<BritGameState> {
     });
   } // applySetup
 
+  private placeInfantry (areaId: BritAreaId, nationId: BritNationId, s: BritGameState): BritGameState {
+    const unitId = s.nations[nationId].infantries[0];
+    s = this.updateNation (nationId, n => ({
+      ...n,
+      infantries: immutableUtil.listRemoveByIndex (0, n.infantries)
+    }), s);
+    s = this.updateArea (areaId, a => ({
+      ...a,
+      units: immutableUtil.listPush ([unitId], a.units)
+    }), s);
+    return s;
+  } // placeInfantry
+
+  applyInfantryPlacement (areaId: BritAreaId, nationId: BritNationId) {
+    this.update ("Apply infantry placement", s => this.placeInfantry (areaId, nationId, s));
+  } // applyInfantryPlacement
+
   applyPopulationIncrease (population: BritPopulation, armiesPlacement: BritArmiesPlacement, nationId: BritNationId) {
     this.update ("Apply population increase", s => {
-      return this.setNationPopulation (population, nationId, s);
+      s = this.setNationPopulation (population, nationId, s);
+      for (const areaId of armiesPlacement.infantriesPlacement) {
+        s = this.placeInfantry (areaId, nationId, s);
+      } // for
+      return s;
     });
   } // applyPopulationIncrease
 

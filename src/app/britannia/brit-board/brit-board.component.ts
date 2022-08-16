@@ -52,7 +52,6 @@ export class BritBoardComponent {
   zoomFixed = false;
 
   ngOnChanges (changes: SimpleChanges<BritBoardComponent>): void {
-    console.log ("this.turnPlayer", this.turnPlayer);
   } // ngOnChanges
 
   onPlayerSelect (player: BritPlayer) { this.playerSelect.emit (player); }
