@@ -1,26 +1,16 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from "@bg-utils";
 import { BgSimulatedAnnealing } from "src/app/bg-utils/random.util";
-import { BRIT_LAND_AREAS } from "../brit-constants";
-import { BritAreaId, BritLandAreaId, BritPopulation, BritSeaAreaId, isBritLandAreaId } from "../brit-models";
+import { BRIT_LAND_AREAS, BRIT_SEA_AREAS } from "../brit-constants";
+import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-models";
+import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
 
-interface BritLandAreaProp {
-  id: BritLandAreaId;
+interface BritLandPoints {
   innerPoints: BritMapLandPoint[];
   outerBorderPoints: BritMapPoint[];
-  slotsByN: Record<number, BritMapLandPoint[]>;
-} // BritLandAreaProp
+} // BritLandPoints
 
-interface BritSeaAreaProp {
-  slotsByN: Record<number, BritMapSeaPoint[]>;
-} // BritSeaAreaProp
-
-export interface BritMapPoint {
-  x: number;
-  y: number;
-} // BritMapPoint
-
-interface BritMapLandPoint extends BritMapPoint {
+interface BritMapLandPoint {
   x: number;
   y: number;
   centralEnergy: number;
@@ -39,29 +29,12 @@ const BRIT_SEA_GRID: Record<BritSeaAreaId, { startX: number; startY: number; wid
   "north-sea": { startX: 25, startY: 20, width: 6 }
 } // BRIT_SEA_GRID
 
-const BRIT_POPULATION_START_Y = 61;
-const BRIT_POPULATION_START_WIDTH = 3;
-const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
-  0: 11.8, 1: 15.04, 2: 18.28, 3: 21.52, 4: 24.79, 5: 28
-};
-
 @Injectable({
   providedIn: 'root'
 })
-export class BritMapSlotsService {
+export class BritMapSlotsGeneratorService {
 
-  constructor() { }
-
-  private landPropById: Record<BritLandAreaId, BritLandAreaProp> = { } as any;
-  private seaPropById: Record<BritSeaAreaId, BritSeaAreaProp> = {
-    "atlantic-ocean": { slotsByN: { } as any },
-    "english-channel": { slotsByN: { } as any },
-    "frisian-sea": { slotsByN: { } as any },
-    "icelandic-sea": { slotsByN: { } as any },
-    "irish-sea": { slotsByN: { } as any },
-    "north-sea": { slotsByN: { } as any },
-  };
-  private landPointByYByX: Record<number, Record<number, BritMapLandPoint>> = { };
+  constructor () { }
 
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },
@@ -74,7 +47,36 @@ export class BritMapSlotsService {
     { x: 0, y: -1 },
   ];
 
-  generateSlots (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => BritAreaId | null) {
+  generateSlots (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => BritAreaId | null): BritAreaSlots {
+    const areaSlots: Record<BritAreaId, Record<number, BritMapPoint[]>> = { } as any;
+    const landPointsById = this.generateLandPoints (xMax, yMax, coordinatesToAreaId);
+
+    for (const landId of BRIT_LAND_AREAS) {
+      const landPoints = landPointsById[landId];
+      const landSlots: Record<number, BritMapPoint[]> = { };
+      for (let i = 1; i <= 8; i++) {
+        const slots = this.generateLandSlots (i, landPoints, landId);
+        landSlots[i] = slots;
+      } // for
+      areaSlots[landId] = landSlots;
+    } // for
+
+    for (const seaId of BRIT_SEA_AREAS) {
+      const seaSlots: Record<number, BritMapPoint[]> = { };
+      for (let i = 1; i <= 30; i++) {
+        const slots = this.generateSeaSlots (i, seaId);
+        seaSlots[i] = slots;
+      } // for
+      areaSlots[seaId] = seaSlots;
+    } // for
+
+    return areaSlots;
+  } // generateSlots
+
+  private generateLandPoints (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => BritAreaId | null) {
+    const landPointsById: Record<BritLandAreaId, BritLandPoints> = { } as any;
+    const landPointByYByX: Record<number, Record<number, BritMapLandPoint>> = { };
+
     // Calcolo i punti interni e la mappa dei punti by coordinates.
     for (let x = 0; x < xMax; x++) {
       for (let y = 0; y < yMax; y++) {
@@ -87,28 +89,26 @@ export class BritMapSlotsService {
             x: x,
             y: y
           };
-          let landPointByY = this.landPointByYByX[x];
-          if (!landPointByY) { landPointByY = { }; this.landPointByYByX[x] = landPointByY; }
+          let landPointByY = landPointByYByX[x];
+          if (!landPointByY) { landPointByY = { }; landPointByYByX[x] = landPointByY; }
           landPointByY[y] = landPoint;
-          let landProp = this.landPropById[areaId];
-          if (!landProp) {
-            landProp = {
-              id: areaId,
+          let landPoints = landPointsById[areaId];
+          if (!landPoints) {
+            landPoints = {
               innerPoints: [],
               outerBorderPoints: [],
-              slotsByN: { } as any
             };
-            this.landPropById[areaId] = landProp;
+            landPointsById[areaId] = landPoints;
           } // if
-          landProp.innerPoints.push (landPoint);
+          landPoints.innerPoints.push (landPoint);
         } // if
       } // for
     } // for
 
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
     for (const landId of BRIT_LAND_AREAS) {
-      const landProp = this.landPropById[landId];
-      const points = landProp.innerPoints;
+      const landPoints = landPointsById[landId];
+      const points = landPoints.innerPoints;
       const outerPoints: BritMapPoint[] = [];
       const foundOuterPoints: Record<string, boolean> = { };
       for (const point of points) {
@@ -117,7 +117,7 @@ export class BritMapSlotsService {
         for (const neighbourDirection of this.neighbourDirections) {
           const nX = x + neighbourDirection.x;
           const nY = y + neighbourDirection.y;
-          const landPoint = this.getLandPointByCoordinates (nX, nY);
+          const landPoint = this.getLandPointByCoordinates (nX, nY, landPointByYByX);
           let outerPoint: BritMapPoint | null = null;
           if (landPoint) {
             if (landPoint.landId === landId) {
@@ -137,25 +137,26 @@ export class BritMapSlotsService {
           } // if
         } // for
       } // for
-      landProp.outerBorderPoints = outerPoints;
+      landPoints.outerBorderPoints = outerPoints;
     } // for
 
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
     for (const landId of BRIT_LAND_AREAS) {
-      const landProp = this.landPropById[landId];
-      for (const innerPoint of landProp.innerPoints) {
+      const landPoints = landPointsById[landId];
+      for (const innerPoint of landPoints.innerPoints) {
         let cenralEnergy = 0;
-        for (const outerBorderPoint of landProp.outerBorderPoints) {
+        for (const outerBorderPoint of landPoints.outerBorderPoints) {
           cenralEnergy += this.centralEnergy (innerPoint, outerBorderPoint);
         } // for
         innerPoint.centralEnergy = cenralEnergy;
       } // for
     } // for
 
-  } // generateSlots
+    return landPointsById;
+  } // generateLandPoints
 
-  private getLandPointByCoordinates (x: number, y: number): BritMapLandPoint | null {
-    const landPointByY = this.landPointByYByX[x];
+  private getLandPointByCoordinates (x: number, y: number, landPointByYByX: Record<number, Record<number, BritMapLandPoint>>): BritMapLandPoint | null {
+    const landPointByY = landPointByYByX[x];
     if (!landPointByY) { return null; }
     const landPoint = landPointByY[y];
     if (!landPoint) { return null; }
@@ -174,53 +175,26 @@ export class BritMapSlotsService {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   } // quadDistance
 
-  getLandInnerPoints (landId: BritLandAreaId): BritMapLandPoint[] {
-    return this.landPropById[landId].innerPoints;
-  } // getLandInnerPoints
+  private generateSeaSlots (n: number, seaAreaId: BritSeaAreaId): BritMapPoint[] {
+    const seaGrid = BRIT_SEA_GRID[seaAreaId];
+    const slots: BritMapPoint[] = [];
+    for (let i = 0; i < n; i++) {
+      const x = seaGrid.startX + (i % seaGrid.width);
+      const y = seaGrid.startY + Math.floor (i / seaGrid.width);
+      slots.push ({ x, y })
+    } // for
+    return slots;
+  } // generateSeaSlots
 
-  getLandBorderPoints (landId: BritLandAreaId): BritMapPoint[] {
-    return this.landPropById[landId].outerBorderPoints;
-  } // getLandBorderPoints
-
-  getAreaSlots (n: number, areaId: BritAreaId) {
-    if (isBritLandAreaId (areaId)) {
-      const landProp = this.landPropById[areaId];
-      let slots = landProp.slotsByN[n];
-      if (!slots) {
-        const simulation = new BgSimulatedAnnealing<BritMapLandPoint[]> (
-          state => this.energy (state),
-          state => this.randomNeighbor (state, landProp)
-        );
-        slots = randomUtil.getRandomElements (n, n + 1, landProp.innerPoints);
-        slots = simulation.run (slots, 0.1, 100);
-        landProp.slotsByN[n] = slots;
-      } // if
-      return slots;
-    } else {
-      const seaProp = this.seaPropById[areaId];
-      let slots = seaProp.slotsByN[n];
-      if (!slots) {
-        const seaGrid = BRIT_SEA_GRID[areaId];
-        slots = [];
-        for (let i = 0; i < n; i++) {
-          const x = seaGrid.startX + (i % seaGrid.width);
-          const y = seaGrid.startY + Math.floor (i / seaGrid.width);
-          slots.push ({ x, y })
-        } // for
-        seaProp.slotsByN[n] = slots;
-      } // if
-      return slots;
-    } // if - else
-  } // getAreaSlots
-
-  getPopulationX (population: BritPopulation, index: number): number {
-    const startX = BRIT_POPULATION_START_X[population];
-    return startX + (index % BRIT_POPULATION_START_WIDTH);
-  } // getPopulationX
-
-  getPopulationY (population: BritPopulation, index: number): number {
-    return BRIT_POPULATION_START_Y + Math.floor (index / BRIT_POPULATION_START_WIDTH);
-  } // getPopulationY
+  private generateLandSlots (n: number, landPoints: BritLandPoints, landId: BritLandAreaId): BritMapPoint[] {
+    const simulation = new BgSimulatedAnnealing<BritMapLandPoint[]> (
+      state => this.energy (state),
+      state => this.randomNeighbor (state, landPoints, landId)
+    );
+    let slots = randomUtil.getRandomElements (n, n + 1, landPoints.innerPoints);
+    slots = simulation.run (slots, 0.1, 100);
+    return slots.map (s => ({ x: s.x, y: s.y }));
+  } // generateLandSlots
 
   private energy (points: BritMapLandPoint[]) {
     let totEnergy = 0;
@@ -237,7 +211,8 @@ export class BritMapSlotsService {
 
   private randomNeighbor (
     points: BritMapLandPoint[],
-    landProp: BritLandAreaProp,
+    landPoints: BritLandPoints,
+    landId: BritLandAreaId
   ): BritMapLandPoint[] {
     const index = randomUtil.getRandomInteger (0, points.length);
     const oldPoint = points[index];
@@ -249,13 +224,13 @@ export class BritMapSlotsService {
         i++;
       } while (points.includes (newPoint) && i < 100);
       if (i >= 100) {
-        console.error ("Loop!");
+        console.error ("Loop!", landId);
         newPoint = oldPoint;
       } // if
     } else {
-      newPoint = randomUtil.getRandomElement (landProp.innerPoints);
+      newPoint = randomUtil.getRandomElement (landPoints.innerPoints);
     } // if - else
     return immutableUtil.listReplaceByIndex (index, newPoint, points);
   } // randomNeighbor
 
-} // BritMapSlotsService
+} // BritMapSlotsGeneratorService

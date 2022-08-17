@@ -98,3 +98,18 @@ export function entitiesToNodes<E, N> (
   });
   return { map, nodes };
 } // entitiesToNodes
+
+export function group<T, K extends number | string, V = T> (array: T[], getKey: (e: T) => K, getValue?: (e: T) => V): Record<K, V[]> {
+  if (!getValue) { getValue = e => (e as unknown as V); }
+  const map = { } as Record<K, V[]>;
+  array?.forEach (e => {
+    const key = getKey (e);
+    let groupList = map[key];
+    if (!groupList) {
+      groupList = [];
+      map[key] = groupList;
+    } // if
+    groupList.push (getValue! (e));
+  });
+  return map;
+} // group

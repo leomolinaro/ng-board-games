@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, TrackByFunction, ViewChild } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
-import { arrayUtil, SimpleChanges } from "@bg-utils";
+import { arrayUtil, downloadUtil, objectUtil, SimpleChanges } from "@bg-utils";
+import { environment } from "src/environments/environment";
 import { BritAssetsService } from "../brit-assets.service";
 import { BRIT_POPULATIONS } from "../brit-constants";
 import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-models";
-import { BritMapPoint, BritMapSlotsService } from "./brit-map-slots.service";
-import { BritMapService } from "./brit-map.service";
+import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
+import { BritMapPoint, BritMapService } from "./brit-map.service";
 
 interface BritAreaNode {
   id: BritAreaId;
   area: BritArea;
   path: string;
   unitNodes: BritUnitNode[];
-  unitNodeMap: Record<BritUnitId, BritUnitNode>;
   tooltip: string;
 } // BritAreaNode
 
@@ -71,13 +71,13 @@ const GRID_STEP = 20;
   selector: "brit-map",
   templateUrl: "./brit-map.component.html",
   styleUrls: ["./brit-map.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BritMapComponent implements OnChanges {
 
   constructor (
     private mapService: BritMapService,
-    private slotsService: BritMapSlotsService,
+    private slotsGeneratorService: BritMapSlotsGeneratorService,
     private assetsService: BritAssetsService,
     private cd: ChangeDetectorRef
   ) { }
@@ -118,7 +118,7 @@ export class BritMapComponent implements OnChanges {
   @ViewChild ("britMap") mapElementRef!: ElementRef<SVGGElement>;
   @ViewChild (BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
 
-  slotsReady = false;
+  production = environment.production;
 
   areaTrackBy: TrackByFunction<BritAreaNode> = (index: number, areaNode: BritAreaNode) => areaNode.id;
   unitTrackBy: TrackByFunction<BritUnitNode> = (index: number, unitNode: BritUnitNode) => unitNode.id;
@@ -131,14 +131,6 @@ export class BritMapComponent implements OnChanges {
   ngOnChanges (changes: SimpleChanges<BritMapComponent>) {
     if (changes.areas && this.areas?.length) {
       this.refreshAreaNodes (false);
-      if (!this.slotsReady) {
-        setTimeout (() => {
-          this.generateSlots ();
-          this.slotsReady = true;
-          this.refreshAreaNodes (true);
-          this.cd.markForCheck ();
-        });
-      } // if
     } // if
     if (changes.nations) {
       this.refreshPopulationNodes ();
@@ -212,28 +204,6 @@ export class BritMapComponent implements OnChanges {
     this.roundNodeMap = map;
   } // refreshRoundNodes
 
-  private generateSlots () {
-    const splittedViewBox = this.viewBox.split (" ");
-    const width = +splittedViewBox[2];
-    const height = +splittedViewBox[3];
-    const screenCTM = this.mapElementRef.nativeElement.getScreenCTM ()!
-    const pt = this.bgSvg.createSVGPoint ();
-    const coordinatesToAreaId = (x: number, y: number) => {
-      pt.x = x * GRID_STEP;
-      pt.y = y * GRID_STEP;
-      const clientP = pt.matrixTransform (screenCTM);
-      const elementId: string | undefined = document.elementFromPoint (clientP.x, clientP.y)?.id;
-      if (elementId && elementId.startsWith ("brit-area-")) {
-        return elementId.slice (10) as BritAreaId;
-      } else {
-        return null;
-      } // if - else
-    };
-    const xMax = width / GRID_STEP;
-    const yMax = height / GRID_STEP;
-    this.slotsService.generateSlots (xMax, yMax, coordinatesToAreaId);
-  } // generateSlots
-
   private areaToNode (area: BritArea, oldNode: BritAreaNode | null, force: boolean): BritAreaNode {
     const path = this.mapService.getAreaPath (area.id);
     const node: BritAreaNode = {
@@ -241,46 +211,44 @@ export class BritMapComponent implements OnChanges {
       area,
       path,
       unitNodes: null!,
-      unitNodeMap: null!,
       tooltip: area.name
     };
     if (!force && area.units === oldNode?.area.units) {
       node.unitNodes = oldNode.unitNodes;
-      node.unitNodeMap = oldNode.unitNodeMap;
     } else {
-      const nAreaUnits = area.units.length;
-      const { nodes, map } = arrayUtil.entitiesToNodes<string, BritUnitNode> (
-        area.units, oldNode?.unitNodeMap || { },
-        unitId => unitId,
-        (unitId, node) => false/* this.unitsMap[unitId] === node.unit */,
-        (unitId, index, oldNode) => this.unitToNode (unitId, index, oldNode, node, nAreaUnits)
-      );
-      node.unitNodes = nodes;
-      node.unitNodeMap = map;
+      const unitsByKey = arrayUtil.group (
+        area.units.map (unitId => this.unitsMap[unitId]),
+        u => u.type === "leader" ? u.id : `${u.nation}-${u.type}`);
+      const unitGroups: BritUnit[][] = [];
+      objectUtil.forEachProp (unitsByKey, (key, units) => { unitGroups.push (units); });
+      node.unitNodes = [];
+      let index = 0;
+      unitGroups.forEach (unitGroup => {
+        node.unitNodes.push (this.unitToNode (unitGroup, index++, node, unitGroups.length));
+      });
     } // if - else
     return node;
   } // areaToNode
 
-  private unitToNode (unitId: BritUnitId, index: number, oldNode: BritUnitNode | null, areaNode: BritAreaNode, nAreaUnits: number): BritUnitNode {
-    const unit = this.unitsMap[unitId];
+  private unitToNode (unitGroup: BritUnit[], index: number, areaNode: BritAreaNode, nAreaUnits: number): BritUnitNode {
+    const unit = unitGroup[0];
     const imageSource = this.assetsService.getUnitImageSource (unit);
     const point = this.getUnitNodePoint (index, nAreaUnits, areaNode.id);
     return {
-      id: unitId,
+      id: unit.type === "leader" ? unit.id : `${unit.nation}-${unit.type}`,
       unit,
       imageSource,
       index,
       areaNode,
       svgX: point ? (point.x * GRID_STEP - 15) : 0,
       svgY: point ? (point.y * GRID_STEP - 15) : 0,
-      quantity: 1,
+      quantity: unitGroup.length,
       tooltip: unit.type === "leader" ? unit.name : (unit.nationLabel + " " + unit.typeLabel)
     };
   } // unitToNode
 
   private getUnitNodePoint (unitIndex: number, nAreaUnits: number, areaId: BritAreaId): BritMapPoint | null {
-    if (!this.slotsReady) { return null; }
-    const slots = this.slotsService.getAreaSlots (nAreaUnits, areaId);
+    const slots = this.mapService.getAreaSlots (nAreaUnits, areaId);
     return slots[unitIndex];
   } // getUnitNodePoint
 
@@ -328,24 +296,40 @@ export class BritMapComponent implements OnChanges {
   } // nationToPopulationNode
 
   onAreaClick (areaNode: BritAreaNode, event: MouseEvent) {
-    this.areaClick.emit (areaNode.id);
-    // if (isBritLandAreaId (areaNode.id)) {
-    //   this.testGridPoints = [
-    //     ...this.slotsService.getLandInnerPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "blue" })),
-    //     ...this.slotsService.getLandBorderPoints (areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "red" })),
-    //     ...this.slotsService.getAreaSlots (1, areaNode.id).map (s => ({ x: s.x * GRID_STEP, y: s.y * GRID_STEP, color: "black" }))
-    //   ];
-    // } else {
-    //   this.testGridPoints = [];
-    // } // if - else
+    if (this.validAreas?.includes (areaNode.id)) {
+      this.areaClick.emit (areaNode.id);
+    } // if
   } // onAreaClick
 
   getNationPopulationNodeX = (nationNode: BritNationPopulationNode, index: number, populationNode: BritPopulationNode) => {
-    return this.slotsService.getPopulationX (populationNode.id, index) * GRID_STEP;
+    return this.mapService.getPopulationX (populationNode.id, index) * GRID_STEP;
   }; // getNationPopulationNodeX
 
   getNationPopulationNodeY = (nationNode: BritNationPopulationNode, index: number, populationNode: BritPopulationNode) => {
-    return this.slotsService.getPopulationY (populationNode.id, index) * GRID_STEP;
+    return this.mapService.getPopulationY (populationNode.id, index) * GRID_STEP;
   }; // getNationPopulationNodeY
+
+  calculateSlots () {
+    const splittedViewBox = this.viewBox.split (" ");
+    const width = +splittedViewBox[2];
+    const height = +splittedViewBox[3];
+    const screenCTM = this.mapElementRef.nativeElement.getScreenCTM ()!
+    const pt = this.bgSvg.createSVGPoint ();
+    const coordinatesToAreaId = (x: number, y: number) => {
+      pt.x = x * GRID_STEP;
+      pt.y = y * GRID_STEP;
+      const clientP = pt.matrixTransform (screenCTM);
+      const elementId: string | undefined = document.elementFromPoint (clientP.x, clientP.y)?.id;
+      if (elementId && elementId.startsWith ("brit-area-")) {
+        return elementId.slice (10) as BritAreaId;
+      } else {
+        return null;
+      } // if - else
+    };
+    const xMax = width / GRID_STEP;
+    const yMax = height / GRID_STEP;
+    const slots = this.slotsGeneratorService.generateSlots (xMax, yMax, coordinatesToAreaId);
+    downloadUtil.downloadJson (slots, "britannia-map-slots.json");
+  } // calculateSlots
 
 } // BritMapComponent

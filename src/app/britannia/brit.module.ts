@@ -7,7 +7,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { Resolve, RouterModule, Routes } from "@angular/router";
 import { BgSvgModule } from "@bg-components/svg";
 import { BgUtilsModule } from "@bg-utils";
-import { Observable } from "rxjs";
+import { forkJoin, Observable } from "rxjs";
 import { BritBoardComponent } from "./brit-board/brit-board.component";
 import { BritNationCardSheetComponent } from './brit-board/brit-nation-card-sheet.component';
 import { BritGameComponent } from "./brit-game/brit-game.component";
@@ -28,7 +28,10 @@ export class BritAreaPathResolver implements Resolve<any> {
   ) { }
 
   resolve (): Observable<any> {
-    return this.mapService.loadAreaPaths$ ();
+    return forkJoin ([
+      this.mapService.loadAreaPaths$ (),
+      this.mapService.loadAreaSlots$ ()
+    ]);
   } // resolve
 
 } // BritAreaPathResolver

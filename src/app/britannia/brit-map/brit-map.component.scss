@@ -39,16 +39,23 @@
 .brit-scoring-path {
   @include brit-path;
 }
-.brit-unit-rect {
-  fill: white;
-  stroke: white;
-  stroke-width: 2px;
-  stroke-linejoin: bevel;
-}
-.brit-unit-quantity {
-  // font-size: 0.5px;
-  fill: white;
-  font-weight: 600;
+.brit-unit {
+  // & > * {
+  //   transition: 1s ease-in-out;
+  // }
+  .brit-unit-rect {
+    fill: white;
+    stroke: white;
+    stroke-width: 2px;
+    stroke-linejoin: bevel;
+  }
+  .brit-unit-quantity {
+    // font-size: 0.5px;
+    fill: white;
+    font-weight: 600;
+    alignment-baseline: after-edge;
+    text-anchor: end;
+  }
 }
 .brit-population-circle {
   fill: white;

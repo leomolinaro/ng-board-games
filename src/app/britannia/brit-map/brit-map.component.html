@@ -1,4 +1,4 @@
-<!-- <button (click)="printSlots ()">CLICK</button> -->
+<button *ngIf="!production" style="position: absolute" (click)="calculateSlots ()">Calculate slots</button>
 <svg:svg
   bgSvg
   xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -30,33 +30,31 @@
         [attr.style]="'fill: ' + point.color"></svg:circle>
     </svg:g>
 
-    <ng-container *ngIf="slotsReady">
-      <ng-container *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
-        <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
-          <svg:g>
-            <svg:rect
-              class="brit-unit-rect"
-              [attr.x]="unitNode.svgX"
-              [attr.y]="unitNode.svgY"
-              width="30"
-              height="30">
-            </svg:rect>
-            <svg:image
-              [matTooltip]="unitNode.tooltip"
-              matTooltipClass="brit-map-tooltip"
-              [attr.x]="unitNode.svgX"
-              [attr.y]="unitNode.svgY"
-              width="30"
-              [attr.xlink:href]="unitNode.imageSource"/>
-              <!-- *ngIf="pawnNode.quantity > 1" -->
-            <svg:text
-              class="brit-unit-quantity"
-              [attr.x]="unitNode.svgX + 12"
-              [attr.y]="unitNode.svgY + 27">
-              {{ unitNode.quantity }}
-            </svg:text>
-          </svg:g>
-        </ng-container>
+    <ng-container *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
+      <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
+        <svg:svg class="brit-unit" width="34" height="34" [attr.x]="unitNode.svgX" [attr.y]="unitNode.svgY">
+          <svg:rect
+            class="brit-unit-rect"
+            x="2"
+            y="2"
+            width="30"
+            height="30">
+          </svg:rect>
+          <svg:image
+            [matTooltip]="unitNode.tooltip"
+            matTooltipClass="brit-map-tooltip"
+            x="2"
+            y="2"
+            width="30"
+            [attr.xlink:href]="unitNode.imageSource"/>
+          <svg:text
+            *ngIf="unitNode.quantity > 1"
+            class="brit-unit-quantity"
+            x="92%"
+            y="100%">
+            {{ unitNode.quantity }}
+          </svg:text>
+        </svg:svg>
       </ng-container>
     </ng-container>
 

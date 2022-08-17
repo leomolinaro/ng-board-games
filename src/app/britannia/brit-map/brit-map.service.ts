@@ -1,9 +1,22 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { of } from "rxjs";
+import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { BRIT_ROUND_IDS } from "../brit-constants";
 import { BritAreaId, BritNationId, BritPopulation, BritRoundId } from "../brit-models";
+
+export type BritAreaSlots = Record<BritAreaId, Record<number, BritMapPoint[]>>;
+
+export interface BritMapPoint {
+  x: number;
+  y: number;
+} // BritMapPoint
+
+const BRIT_POPULATION_START_Y = 61;
+const BRIT_POPULATION_START_WIDTH = 3;
+const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
+  0: 11.8, 1: 15.04, 2: 18.28, 3: 21.52, 4: 24.79, 5: 28
+};
 
 @Injectable ({
   providedIn: "root"
@@ -23,6 +36,7 @@ export class BritMapService {
   private scoringRoundPaths!: { [id in BritRoundId]: string };
   private viewBox!: string;
   private width!: number;
+  private areaSlots!: BritAreaSlots;
 
   getAreaPath (areaId: BritAreaId) { return this.areaPaths[areaId]; }
   getPopulationTrackPath (populationId: BritPopulation) { return this.populationTrackPaths[populationId]; }
@@ -77,5 +91,27 @@ export class BritMapService {
     });
     return paths;
   } // getGroupPaths
+
+  loadAreaSlots$ (): Observable<boolean> {
+    return this.http.get ("assets/britannia/britannia-map-slots.json", { responseType: "text" }).pipe (
+      map (response => {
+        this.areaSlots = JSON.parse (response);
+        return true;
+      })
+    );
+  } // loadAreaSlots$
+
+  getAreaSlots (n: number, areaId: BritAreaId): BritMapPoint[] {
+    return this.areaSlots[areaId][n];
+  } // getAreaSlots
+
+  getPopulationX (population: BritPopulation, index: number): number {
+    const startX = BRIT_POPULATION_START_X[population];
+    return startX + (index % BRIT_POPULATION_START_WIDTH);
+  } // getPopulationX
+
+  getPopulationY (population: BritPopulation, index: number): number {
+    return BRIT_POPULATION_START_Y + Math.floor (index / BRIT_POPULATION_START_WIDTH);
+  } // getPopulationY
 
 } // BritMapService

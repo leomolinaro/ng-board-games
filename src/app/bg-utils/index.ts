@@ -1,5 +1,6 @@
 import * as arrayUtil from "./array.util";
 import { BgUtilsModule } from "./bg-utils.module";
+import * as downloadUtil from "./download.util";
 import * as immutableUtil from "./immutable.util";
 import * as objectUtil from "./object.util";
 import * as randomUtil from "./random.util";
@@ -11,12 +12,13 @@ import * as typesUtil from "./types.util";
 export * from "./ng.util";
 export * from "./rxjs.util";
 export {
-  typesUtil,
   arrayUtil,
-  randomUtil,
+  downloadUtil,
   immutableUtil,
-  stringUtil,
   objectUtil,
+  randomUtil,
+  stringUtil,
+  typesUtil,
   BgUtilsModule,
   BgReduxDevtools,
   BgStore,
