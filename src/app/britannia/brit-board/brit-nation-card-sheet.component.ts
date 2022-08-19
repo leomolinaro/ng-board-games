@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritNation } from "../brit-models";
+import { BritNation } from "../brit-components.models";
 
 interface BritUnitNode {
   imageSource: string;

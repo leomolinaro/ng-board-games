@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from "@bg-utils";
 import { BgSimulatedAnnealing } from "src/app/bg-utils/random.util";
-import { BRIT_LAND_AREAS, BRIT_SEA_AREAS } from "../brit-constants";
-import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-models";
+import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
 
 interface BritLandPoints {
@@ -34,7 +34,9 @@ const BRIT_SEA_GRID: Record<BritSeaAreaId, { startX: number; startY: number; wid
 })
 export class BritMapSlotsGeneratorService {
 
-  constructor () { }
+  constructor (
+    private components: BritComponentsService
+  ) { }
 
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },
@@ -51,7 +53,7 @@ export class BritMapSlotsGeneratorService {
     const areaSlots: Record<BritAreaId, Record<number, BritMapPoint[]>> = { } as any;
     const landPointsById = this.generateLandPoints (xMax, yMax, coordinatesToAreaId);
 
-    for (const landId of BRIT_LAND_AREAS) {
+    for (const landId of this.components.LAND_AREA_IDS) {
       const landPoints = landPointsById[landId];
       const landSlots: Record<number, BritMapPoint[]> = { };
       for (let i = 1; i <= 8; i++) {
@@ -61,7 +63,7 @@ export class BritMapSlotsGeneratorService {
       areaSlots[landId] = landSlots;
     } // for
 
-    for (const seaId of BRIT_SEA_AREAS) {
+    for (const seaId of this.components.SEA_AREA_IDS) {
       const seaSlots: Record<number, BritMapPoint[]> = { };
       for (let i = 1; i <= 30; i++) {
         const slots = this.generateSeaSlots (i, seaId);
@@ -106,7 +108,7 @@ export class BritMapSlotsGeneratorService {
     } // for
 
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
-    for (const landId of BRIT_LAND_AREAS) {
+    for (const landId of this.components.LAND_AREA_IDS) {
       const landPoints = landPointsById[landId];
       const points = landPoints.innerPoints;
       const outerPoints: BritMapPoint[] = [];
@@ -141,7 +143,7 @@ export class BritMapSlotsGeneratorService {
     } // for
 
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
-    for (const landId of BRIT_LAND_AREAS) {
+    for (const landId of this.components.LAND_AREA_IDS) {
       const landPoints = landPointsById[landId];
       for (const innerPoint of landPoints.innerPoints) {
         let cenralEnergy = 0;

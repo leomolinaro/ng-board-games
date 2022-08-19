@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { BritArmiesPlacement, BritNationId } from "../brit-models";
+import { BritNationId } from "../brit-components.models";
+import { BritArmiesPlacement } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 

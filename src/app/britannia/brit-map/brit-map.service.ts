@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
-import { BRIT_ROUND_IDS } from "../brit-constants";
-import { BritAreaId, BritNationId, BritPopulation, BritRoundId } from "../brit-models";
+import { BritAreaId, BritNationId, BritPopulation, BritRoundId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 
 export type BritAreaSlots = Record<BritAreaId, Record<number, BritMapPoint[]>>;
 
@@ -24,7 +24,8 @@ const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
 export class BritMapService {
 
   constructor (
-    private http: HttpClient
+    private http: HttpClient,
+    private components: BritComponentsService
   ) { }
 
   private svgLoaded = false;
@@ -66,7 +67,7 @@ export class BritMapService {
           this.roundPaths = this.getGroupPaths<BritRoundId> ("brit-rounds", dom, pId => +pId.substring ("round-".length) as BritRoundId);
           this.scoringRoundPaths = this.getGroupPaths<BritRoundId> ("brit-scoring-rounds", dom, pId => +(pId.substring ("round-".length).replace ("-scoring", "")) as BritRoundId);
           this.eventPaths = { } as any;
-          for (const roundId of BRIT_ROUND_IDS) {
+          for (const roundId of this.components.ROUND_IDS) {
             const roundEventPaths = this.getGroupPaths<BritNationId> (`brit-round-${roundId}`, dom, pId => pId.substring (`round-${roundId}-`.length) as BritNationId);
             this.eventPaths[roundId] = roundEventPaths;
           } // for

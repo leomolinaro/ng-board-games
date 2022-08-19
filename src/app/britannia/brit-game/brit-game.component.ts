@@ -4,9 +4,10 @@ import { BgAuthService, BgUser } from "@bg-services";
 import { arrayUtil, ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
-import { ABritPlayer, BritAreaId, BritPlayer, BritUnitId } from "../brit-models";
+import { BritAreaId, BritUnitId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
+import { ABritPlayer, BritPlayer } from "../brit-game-state.models";
 import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
-import { britRulesComponents } from "../brit-rules";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
@@ -15,8 +16,41 @@ import { BritUiStore } from "./brit-ui.store";
 
 @Component ({
   selector: "brit-game",
-  templateUrl: "./brit-game.component.html",
-  styleUrls: ["./brit-game.component.scss"],
+  template: `
+    <brit-board
+      [areas]="areas$ | async"
+      [nations]="nations$ | async"
+      [rounds]="rounds$ | async"
+      [nationsMap]="nationsMap$ | async"
+      [unitsMap]="unitsMap$ | async"
+      [players]="players$ | async"
+      [logs]="logs$ | async"
+      [message]="message$ | async"
+      [turnPlayer]="turnPlayer$ | async"
+      [currentPlayer]="currentPlayer$ | async"
+      [validAreas]="validAreas$ | async"
+      [validUnits]="validUnits$ | async"
+      [canPass]="canPass$ | async"
+      [canCancel]="canCancel$ | async"
+      (passClick)="onPassClick ()"
+      (cancelClick)="onCancelClick ()"
+      (areaClick)="onAreaClick ($event)"
+      (unitClick)="onUnitClick ($event)">
+    </brit-board>
+    <!-- [validLands]="validLands$ | async"
+    [validActions]="validActions$ | async"
+    [validBuildings]="validBuildings$ | async"
+    [validResources]="validResources$ | async"
+    [maxNumberOfKnights]="maxNumberOfKnights$ | async"
+    [endGame]="endGame$ | async"
+    (playerSelect)="onPlayerSelect ($event)"
+    (buildingSelect)="onBuildingSelect ($event)"
+    (landTileClick)="onLandTileClick ($event)"
+    (actionClick)="onActionClick ($event)"
+    (knightsConfirm)="onKnightsConfirm ($event)"
+    (resourceSelect)="onResourceSelect ($event)" -->
+  `,
+  styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     BritGameStore,
@@ -30,6 +64,7 @@ import { BritUiStore } from "./brit-ui.store";
 export class BritGameComponent implements OnInit, OnDestroy {
 
   constructor (
+    private components: BritComponentsService,
     private game: BritGameStore,
     private ui: BritUiStore,
     private remote: BritRemoteService,
@@ -76,9 +111,9 @@ export class BritGameComponent implements OnInit, OnDestroy {
       ]) => {
         if (game) {
           const user = this.authService.getUser ();
-          const nations = britRulesComponents.createNationsAndUnits ();
-          const areas = britRulesComponents.createAreas ();
-          const rounds = britRulesComponents.createRounds ();
+          const nations = this.components.createNationsAndUnits ();
+          const areas = this.components.createAreas ();
+          const rounds = this.components.createRounds ();
           this.game.setInitialState (
             players.map (p => this.playerDocToPlayer (p, user)),
             nations.map (n => n.nation),
@@ -123,7 +158,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
       id: playerDoc.id,
       color: playerDoc.color,
       name: playerDoc.name,
-      nations: britRulesComponents.getNationIdsOfColor (playerDoc.color),
+      nations: this.components.getNationIdsOfColor (playerDoc.color),
       score: 0
     };
   } // playerDocToAPlayerInit

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BritLeaderId, BritNationId, BritUnit } from "./brit-models";
+import { BritLeaderId, BritNationId, BritUnit } from "./brit-components.models";
 
 @Injectable ({
   providedIn: 'root'

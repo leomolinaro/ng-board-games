@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
 import { forN } from "@bg-utils";
 import { map, mapTo, Observable } from "rxjs";
-import { BritArmiesPlacement, BritLandAreaId, BritNationId, BritPlayerId } from "../brit-models";
-import * as britRules from "../brit-rules/brit-rules-population-increase";
+import { BritLandAreaId, BritNationId } from "../brit-components.models";
+import { BritPlayerId } from "../brit-game-state.models";
+import { BritRulesService } from "../brit-rules/brit-rules.service";
+import { BritArmiesPlacement } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -12,7 +14,8 @@ export class BritPlayerLocalService implements BritPlayerService {
 
   constructor (
     private game: BritGameStore,
-    private ui: BritUiStore
+    private ui: BritUiStore,
+    private rules: BritRulesService
   ) { }
 
   armiesPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmiesPlacement> {
@@ -32,9 +35,8 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // armiesPlacement$
 
-
   private chooseLandForPlacement$ (iInfantry: number, nTotInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritLandAreaId> {
-    const validLands = britRules.getValidLandsForPlacement (nationId, playerId, this.game);
+    const validLands = this.rules.populationIncrease.getValidLandsForPlacement (nationId, playerId, this.game.get ());
     this.ui.updateUi ("Choose land for placement", s => ({
       ...s,
       ...this.ui.resetUi (),

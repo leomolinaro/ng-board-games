@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritAreaId, BritLog, BritNation, BritNationId, BritPlayer, BritRound, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritAreaId, BritNation, BritNationId, BritRound, BritUnit, BritUnitId } from "../brit-components.models";
+import { BritLog, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 
 @Component ({

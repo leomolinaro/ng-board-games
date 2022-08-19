@@ -1,29 +1,16 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
-import { BRIT_AREAS, BRIT_NATIONS } from "../brit-constants";
-import { BritConstantsService } from "../brit-constants.service";
-import { BritArea, BritAreaId, BritArmiesPlacement, BritLandArea, BritLandAreaId, BritLog, BritNation, BritNationId, BritPhase, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
-
-interface BritGameState {
-  gameId: string;
-  gameOwner: BgUser;
-  players: {
-    map: Record<string, BritPlayer>,
-    ids: string[]
-  };
-  areas: Record<BritAreaId, BritArea>;
-  nations: Record<BritNationId, BritNation>;
-  units: Record<BritUnitId, BritUnit>;
-  rounds: BritRound[],
-  logs: BritLog[];
-} // BritGameState
+import { BritArea, BritAreaId, BritLandArea, BritLandAreaId, BritNation, BritNationId, BritPhase, BritPopulation, BritRound, BritUnit, BritUnitId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
+import { BritGameState, BritLog, BritPlayer, BritSetup } from "../brit-game-state.models";
+import { BritArmiesPlacement } from "../brit-story.models";
 
 @Injectable ()
 export class BritGameStore extends BgStore<BritGameState> {
 
   constructor (
-    private constants: BritConstantsService
+    private components: BritComponentsService
   ) {
     super ({
       gameId: "",
@@ -78,13 +65,13 @@ export class BritGameStore extends BgStore<BritGameState> {
 
   selectAreas$ () {
     return this.select$ (this.select$ (s => s.areas), areas => {
-      return areas ? BRIT_AREAS.map (id => areas[id]) : [];
+      return areas ? this.components.AREA_IDS.map (id => areas[id]) : [];
     });
   } // selectAreas$
 
   selectNations$ () {
     return this.select$ (this.select$ (s => s.nations), nations => {
-      return nations ? BRIT_NATIONS.map (id => nations[id]) : [];
+      return nations ? this.components.britNations.map (id => nations[id]) : [];
     });
   } // selectNations$
 
@@ -110,7 +97,6 @@ export class BritGameStore extends BgStore<BritGameState> {
   getPlayer (id: string): BritPlayer { return this.get (s => s.players.map[id]); }
   getNation (id: BritNationId): BritNation { return this.get (s => s.nations[id]); }
   getUnit (id: BritUnitId): BritUnit { return this.get (s => s.units[id]); }
-  getAreaIds () { return this.constants.getBritAreaIds (); }
   getLandArea (landId: BritLandAreaId) { return this.get (s => s.areas[landId] as BritLandArea); }
 
   getPlayerByNation (nationId: BritNationId) {
@@ -289,7 +275,7 @@ export class BritGameStore extends BgStore<BritGameState> {
 
   applySetup (setup: BritSetup) {
     this.update ("Setup", s => {
-      return BRIT_AREAS.reduce ((state, areaId) => {
+      return this.components.AREA_IDS.reduce ((state, areaId) => {
         const areaSetup = setup.areas[areaId];
         if (areaSetup) {
           const [nationId, nInfantries] = typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];

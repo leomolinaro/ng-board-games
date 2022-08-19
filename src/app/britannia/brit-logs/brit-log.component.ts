@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
+import { BritPhase } from "../brit-components.models";
+import { BritLog, BritPlayer } from "../brit-game-state.models";
 import { BritGameStore } from "../brit-game/brit-game.store";
-import { BritLog, BritPhase, BritPlayer } from "../brit-models";
 
 interface BritLogStringFragment {
   type: "string";

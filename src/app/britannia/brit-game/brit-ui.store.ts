@@ -2,8 +2,7 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BritAreaId, BritUnitId } from "../brit-models";
-// import { BritAction, BritBuilding, BritLand, BritLandCoordinates, BritPlayer, BritResourceType } from "../brit-models";
+import { BritAreaId, BritUnitId } from "../brit-components.models";
 import { BritGameStore } from "./brit-game.store";
 
 interface BritUiState {

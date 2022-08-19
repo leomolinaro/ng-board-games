@@ -3,8 +3,8 @@ import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
 import { arrayUtil, downloadUtil, objectUtil, SimpleChanges } from "@bg-utils";
 import { environment } from "src/environments/environment";
 import { BritAssetsService } from "../brit-assets.service";
-import { BRIT_POPULATIONS } from "../brit-constants";
-import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
 
@@ -79,6 +79,7 @@ export class BritMapComponent implements OnChanges {
     private mapService: BritMapService,
     private slotsGeneratorService: BritMapSlotsGeneratorService,
     private assetsService: BritAssetsService,
+    private components: BritComponentsService,
     private cd: ChangeDetectorRef
   ) { }
 
@@ -97,7 +98,7 @@ export class BritMapComponent implements OnChanges {
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
   viewBox = this.mapService.getViewBox ();
   mapWidth = this.mapService.getWidth ();
-  populationNodes: BritPopulationNode[] = BRIT_POPULATIONS.map (populationId => ({
+  populationNodes: BritPopulationNode[] = this.components.POPULATIONS.map (populationId => ({
     id: populationId,
     nationNodes: [],
     path: this.mapService.getPopulationTrackPath (populationId),

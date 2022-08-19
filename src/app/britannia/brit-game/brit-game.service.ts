@@ -4,11 +4,12 @@ import { forEach, forN } from "@bg-utils";
 import { Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
-import { BritConstantsService } from "../brit-constants.service";
-import { BritNationId, BritPlayer, BritPlayerId, BritStory } from "../brit-models";
+import { BritNationId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
+import { BritPlayer, BritPlayerId } from "../brit-game-state.models";
 import { BritRemoteService, BritStoryDoc } from "../brit-remote.service";
-import { britRulesSetup } from "../brit-rules";
-import * as britRules from "../brit-rules/brit-rules-population-increase";
+import { BritRulesService } from "../brit-rules/brit-rules.service";
+import { BritStory } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
@@ -19,13 +20,14 @@ import { BritUiStore } from "./brit-ui.store";
 export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritPlayerService> {
 
   constructor (
+    private rules: BritRulesService,
     private game: BritGameStore,
     private ui: BritUiStore,
-    private constants: BritConstantsService,
     protected authService: BgAuthService,
     private remoteService: BritRemoteService,
     protected aiService: BritPlayerAiService,
-    protected localService: BritPlayerLocalService
+    protected localService: BritPlayerLocalService,
+    private components: BritComponentsService
   ) { super (); }
 
   protected stories: BritStoryDoc[] | null = null;
@@ -75,17 +77,17 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   setup () {
     this.game.logSetup ();
-    const gameSetup = britRulesSetup.getGameSetup ();
+    const gameSetup = this.rules.setup.getGameSetup ();
     this.game.applySetup (gameSetup);
   } // setup
 
   round$ (roundNumber: number): Observable<void> {
     this.game.logRound (roundNumber);
-    return forEach (this.constants.getBritNationIds (), nationId => this.nationTurn$ (nationId));
+    return forEach (this.components.britNations, nationId => this.nationTurn$ (nationId));
   } // round$
 
   nationTurn$ (nationId: BritNationId): Observable<void> {
-    if (britRules.isNationActive (nationId, this.game)) {
+    if (this.rules.populationIncrease.isNationActive (nationId, this.game.get ())) {
       this.game.logNationTurn (nationId);
       const player = this.game.getPlayerByNation (nationId)!;
       return this.populationIncreasePhase$ (nationId, player.id).pipe (
@@ -101,7 +103,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId): Observable<void> {
     this.game.logPhase ("populationIncrease");
-    const data = britRules.calculatePopulationIncreaseData (nationId, this.game);
+    const data = this.rules.populationIncrease.calculatePopulationIncreaseData (nationId, this.game.get ());
     if (data.nInfantries) {
       return this.executeTask$ (playerId, p => p.armiesPlacement$ (data.nInfantries, nationId, playerId)).pipe (
         map (armiesPlacement => {

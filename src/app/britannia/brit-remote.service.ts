@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { Observable } from "rxjs";
 import { BgCloudCollectionQuery, BgCloudService } from "../bg-services/bg-cloud.service";
-import { BritColor, BritStory } from "./brit-models";
+import { BritColor } from "./brit-components.models";
+import { BritStory } from "./brit-story.models";
 
 export interface BritGameDoc {
   id: string;

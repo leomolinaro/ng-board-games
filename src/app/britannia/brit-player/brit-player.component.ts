@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Out
 import { BgAuthService } from "@bg-services";
 import { BooleanInput, SimpleChanges } from "@bg-utils";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritNation, BritNationId, BritPlayer } from "../brit-models";
+import { BritNation, BritNationId } from "../brit-components.models";
+import { BritPlayer } from "../brit-game-state.models";
 
 // interface BritPawnNode {
 //   source: string;

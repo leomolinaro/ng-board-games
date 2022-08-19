@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BritLog } from "../brit-models";
+import { BritLog } from "../brit-game-state.models";
 
 @Component ({
   selector: "brit-logs",

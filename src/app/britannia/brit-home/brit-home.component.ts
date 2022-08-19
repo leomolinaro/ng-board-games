@@ -5,14 +5,23 @@ import { BgProtoGame, BgProtoPlayer, BgUser } from "@bg-services";
 import { concatJoin } from "@bg-utils";
 import { forkJoin, from, Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { BRIT_COLORS } from "../brit-constants";
-import { BritColor } from "../brit-models";
+import { BritColor } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { ABritPlayerDoc, BritAiPlayerDoc, BritPlayerDoc, BritReadPlayerDoc, BritRemoteService } from "../brit-remote.service";
 
 @Component ({
   selector: "brit-home",
-  templateUrl: "./brit-home.component.html",
-  styleUrls: ["./brit-home.component.scss"],
+  template: `<bg-home [config]="config"></bg-home>`,
+  styles: [`
+    @import "brit-variables";
+
+    ::ng-deep {
+      .brit-player-blue { .bg-player-type-button { background-color: $blue; } }
+      .brit-player-red { .bg-player-type-button { background-color: $red; } }
+      .brit-player-green { .bg-player-type-button { background-color: $green; } }
+      .brit-player-yellow { .bg-player-type-button { background-color: $yellow; } }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BritHomeComponent implements OnInit {
@@ -20,7 +29,8 @@ export class BritHomeComponent implements OnInit {
   constructor (
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private gameService: BritRemoteService
+    private gameService: BritRemoteService,
+    private components: BritComponentsService
   ) { }
 
   config: BgHomeConfig<BritColor> = {
@@ -33,7 +43,7 @@ export class BritHomeComponent implements OnInit {
       this.gameService.deleteGame$ (gameId)
     ]),
     createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-    playerRoles: () => BRIT_COLORS,
+    playerRoles: () => this.components.COLORS,
     playerRoleCssClass: (color: BritColor) => {
       switch (color) {
         case "blue": return "brit-player-blue";
