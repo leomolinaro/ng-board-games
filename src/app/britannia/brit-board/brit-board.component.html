@@ -18,16 +18,16 @@
       [class]="'brit-board-instructions-widget' + (turnPlayer ? (' is-' + turnPlayer.color) : '')">
       <div class="brit-board-instructions">{{ message }}</div>
     </div>
-    <!-- <barony-actions
-      class="b-board-actions-widget"
-      *ngIf="validActions || canPass || canCancel"
+    <!-- *ngIf="validActions || canPass || canCancel" -->
+    <!-- [validActions]="validActions" -->
+    <!-- (actionClick)="onActionClick ($event)" -->
+    <brit-actions
+      class="brit-board-actions-widget"
       [canPass]="canPass"
       [canCancel]="canCancel"
-      [validActions]="validActions"
-      (actionClick)="onActionClick ($event)"
       (passClick)="onPassClick ()"
       (cancelClick)="onCancelClick ()">
-    </barony-actions> -->
+    </brit-actions>
     <div class="brit-board-players-widget">
       <brit-player *ngFor="let player of players; trackBy: playerTrackBy" class="brit-board-player-widget"
         [player]="player"

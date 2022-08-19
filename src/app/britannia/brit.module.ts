@@ -8,6 +8,7 @@ import { Resolve, RouterModule, Routes } from "@angular/router";
 import { BgSvgModule } from "@bg-components/svg";
 import { BgUtilsModule } from "@bg-utils";
 import { forkJoin, Observable } from "rxjs";
+import { BritActionsComponent } from "./brit-actions/brit-actions.component";
 import { BritBoardComponent } from "./brit-board/brit-board.component";
 import { BritNationCardSheetComponent } from './brit-board/brit-nation-card-sheet.component';
 import { BritGameComponent } from "./brit-game/brit-game.component";
@@ -54,7 +55,8 @@ const routes: Routes = [
     BritPlayerComponent,
     BritNationCardSheetComponent,
     BritLogsComponent,
-    BritLogComponent
+    BritLogComponent,
+    BritActionsComponent
   ],
   imports: [
     CommonModule,

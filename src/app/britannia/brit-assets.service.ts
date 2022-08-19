@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BritNationId, BritUnit } from "./brit-models";
+import { BritLeaderId, BritNationId, BritUnit } from "./brit-models";
 
 @Injectable ({
   providedIn: 'root'
@@ -19,6 +19,16 @@ export class BritAssetsService {
       case "roman-fort": return `assets/britannia/buildings/roman-fort.png`;
       case "saxon-buhr": return `assets/britannia/buildings/saxon-buhr.png`;
       case "leader": return `assets/britannia/leaders/${unit.id}.png`;
+    } // switch
+  } // getUnitImageSource
+
+  getUnitImageSourceByType (unitType: BritUnit["type"], nationId: BritNationId, leaderId?: BritLeaderId) {
+    switch (unitType) {
+      case "infantry": return `assets/britannia/infantries/${nationId}.png`;
+      case "cavalry": return `assets/britannia/cavalries/${nationId}.png`;
+      case "roman-fort": return `assets/britannia/buildings/roman-fort.png`;
+      case "saxon-buhr": return `assets/britannia/buildings/saxon-buhr.png`;
+      case "leader": return `assets/britannia/leaders/${leaderId}.png`;
     } // switch
   } // getUnitImageSource
 

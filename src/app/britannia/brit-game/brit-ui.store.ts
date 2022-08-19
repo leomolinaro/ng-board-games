@@ -19,7 +19,7 @@ interface BritUiState {
   // } | null;
   // validActions: BritAction[] | null;
   // validBuildings: ("stronghold" | "village")[] | null;
-  // canPass: boolean;
+  canPass: boolean;
   // maxNumberOfKnights: number | null;
 } // BritUiState
 
@@ -39,13 +39,13 @@ export class BritUiStore extends BgStore<BritUiState> {
       // validActions: null,
       // validBuildings: null,
       // validResources: null,
-      // canPass: false,
+      canPass: false,
       // maxNumberOfKnights: null
     }, "Brit UI");
   } // constructor
 
   // actionChange (action: BritAction) { this.$actionChange.next (action); }
-  // passChange () { this.$passChange.next (); }
+  passChange () { this.$passChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
   areaChange (areaId: BritAreaId) { this.$areaChange.next (areaId); }
   unitChange (unitId: BritUnitId) { this.$unitChange.next (unitId); }
@@ -56,7 +56,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   private $areaChange = new Subject<BritAreaId> ();
   private $unitChange = new Subject<BritUnitId> ();
   // private $numberOfKnightsChange = new Subject<number> ();
-  // private $passChange = new Subject<void> ();
+  private $passChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<BritResourceType> ();
   private $cancelChange = new Subject<void> ();
@@ -75,8 +75,8 @@ export class BritUiStore extends BgStore<BritUiState> {
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
-  // selectCanPass$ () { return this.select$ (s => s.canPass); }
-  // selectCanCancel$ () { return this.select$ (s => s.canCancel); }
+  selectCanPass$ () { return this.select$ (s => s.canPass); }
+  selectCanCancel$ () { return this.select$ (s => s.canCancel); }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
   getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
@@ -129,7 +129,9 @@ export class BritUiStore extends BgStore<BritUiState> {
 
   resetUi (): Partial<BritUiState> {
     return {
-      // message: null,
+      message: null,
+      validAreas: null,
+      validUnits: null
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,

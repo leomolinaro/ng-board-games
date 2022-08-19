@@ -1,0 +1,30 @@
+<div class="brit-actions">
+  <button
+    class="brit-action brit-cancel"
+    [ngClass]="{
+      'is-active': canCancel,
+      'is-disabled': !canCancel
+    }"
+    (click)="onCancelClick ()">
+    {{ labels.cancel }}
+  </button>
+  <button
+    class="brit-action brit-pass"
+    [ngClass]="{
+      'is-active': canPass,
+      'is-disabled': !canPass
+    }"
+    (click)="onPassClick ()">
+    {{ labels.pass }}
+  </button>
+  <!-- <button
+    *ngFor="let action of actions"
+    class="brit-action"
+    [ngClass]="{
+      'is-active': isValid ? isValid[action] : false,
+      'is-disabled': isValid ? !isValid[action] : true
+    }"
+    (click)="onActionClick (action)">
+    {{ labels[action] }}
+  </button> -->
+</div>

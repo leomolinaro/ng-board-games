@@ -96,7 +96,7 @@ export interface BritNation {
   infantries: string[];
   cavalries: string[];
   buildings: string[];
-  leaders: string[];
+  leaders: BritLeaderId[];
   population: BritPopulation | null;
   active: boolean;
 } // BritNation

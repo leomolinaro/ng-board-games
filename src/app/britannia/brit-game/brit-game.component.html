@@ -11,6 +11,10 @@
   [currentPlayer]="currentPlayer$ | async"
   [validAreas]="validAreas$ | async"
   [validUnits]="validUnits$ | async"
+  [canPass]="canPass$ | async"
+  [canCancel]="canCancel$ | async"
+  (passClick)="onPassClick ()"
+  (cancelClick)="onCancelClick ()"
   (areaClick)="onAreaClick ($event)"
   (unitClick)="onUnitClick ($event)">
 </brit-board>
@@ -18,15 +22,11 @@
   [validActions]="validActions$ | async"
   [validBuildings]="validBuildings$ | async"
   [validResources]="validResources$ | async"
-  [canPass]="canPass$ | async"
-  [canCancel]="canCancel$ | async"
   [maxNumberOfKnights]="maxNumberOfKnights$ | async"
   [endGame]="endGame$ | async"
   (playerSelect)="onPlayerSelect ($event)"
   (buildingSelect)="onBuildingSelect ($event)"
   (landTileClick)="onLandTileClick ($event)"
   (actionClick)="onActionClick ($event)"
-  (passClick)="onPassClick ()"
-  (cancelClick)="onCancelClick ()"
   (knightsConfirm)="onKnightsConfirm ($event)"
   (resourceSelect)="onResourceSelect ($event)" -->

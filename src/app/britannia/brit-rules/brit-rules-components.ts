@@ -1,46 +1,45 @@
 import { arrayUtil } from "@bg-utils";
-import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritEvent, BritInfantry, BritInvasion, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRevolt, BritRomanFort, BritRound, BritRoundId, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritSetup, BritSpecialEvent, BritUnit, isBritLandAreaId } from "../brit-models";
-import { BritGameStore } from "./brit-game.store";
+import { BritArea, BritAreaId, BritBuilding, BritCavalry, BritColor, BritEvent, BritInfantry, BritInvasion, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritRegionId, BritRevolt, BritRomanFort, BritRound, BritRoundId, BritSaxonBuhr, BritSeaArea, BritSeaAreaId, BritSpecialEvent, BritUnit } from "../brit-models";
 
 export function createAreas (): BritArea[] {
   return [
     createLandArea ("avalon", "Avalon", "england", false, ["devon", "wessex", "downlands", "hwicce", "atlantic-ocean"]),
-    createLandArea ("downlands", "Downlands", "england", false, ["avalon", "wessex", "sussex", "essex", "south-mercia", "hwicce"]),
+    createLandArea ("downlands", "Downlands", "england", true, ["avalon", "wessex", "sussex", "essex", "south-mercia", "hwicce"]),
     createLandArea ("wessex", "Wessex", "england", false, ["devon", "english-channel", "sussex", "downlands", "avalon"]),
     createLandArea ("sussex", "Sussex", "england", false, ["wessex", "english-channel", "kent", "essex", "downlands"]),
     createLandArea ("kent", "Kent", "england", false, ["sussex", "english-channel", "frisian-sea", "essex"]),
     createLandArea ("essex", "Essex", "england", false, ["downlands", "sussex", "kent", "frisian-sea", "suffolk", "south-mercia"]),
-    createLandArea ("lindsey", "Lindsey", "england", false, ["north-mercia", "suffolk", "norfolk", "frisian-sea", "york"]),
+    createLandArea ("lindsey", "Lindsey", "england", true, ["north-mercia", "suffolk", "norfolk", "frisian-sea", "york"]),
     createLandArea ("suffolk", "Suffolk", "england", false, ["south-mercia", "essex", "frisian-sea", "norfolk", "lindsey", "north-mercia"]),
     createLandArea ("norfolk", "Norfolk", "england", false, ["suffolk", "frisian-sea", "lindsey"]),
     createLandArea ("south-mercia", "South Mercia", "england", false, ["hwicce", "downlands", "essex", "suffolk", "north-mercia"]),
     createLandArea ("north-mercia", "North Mercia", "england", false, ["march", "hwicce", "south-mercia", "suffolk", "lindsey", "york"]),
     createLandArea ("hwicce", "Hwicce", "england", false, ["powys", "gwent", "atlantic-ocean", "avalon", "downlands", "south-mercia", "north-mercia", "march"]),
-    createLandArea ("devon", "Devon", "england", false, ["cornwall", "english-channel", "wessex", "avalon", "atlantic-ocean", { id: "dyfed", strait: true }, { id: "gwent", strait: true }]),
-    createLandArea ("cornwall", "Cornwall", "england", false, ["atlantic-ocean", "english-channel", "devon"]),
-    createLandArea ("gwent", "Gwent", "wales", false, ["dyfed", "atlantic-ocean", "hwicce", "powys", { id: "devon", strait: true }]),
+    createLandArea ("devon", "Devon", "england", true, ["cornwall", "english-channel", "wessex", "avalon", "atlantic-ocean", { id: "dyfed", strait: true }, { id: "gwent", strait: true }]),
+    createLandArea ("cornwall", "Cornwall", "england", true, ["atlantic-ocean", "english-channel", "devon"]),
+    createLandArea ("gwent", "Gwent", "wales", true, ["dyfed", "atlantic-ocean", "hwicce", "powys", { id: "devon", strait: true }]),
     createLandArea ("dyfed", "Dyfed", "wales", false, ["atlantic-ocean", "gwent", "powys", { id: "devon", strait: true }]),
-    createLandArea ("powys", "Powys", "wales", false, ["atlantic-ocean", "dyfed", "gwent", "hwicce", "march", "clwyd", "gwynedd"]),
+    createLandArea ("powys", "Powys", "wales", true, ["atlantic-ocean", "dyfed", "gwent", "hwicce", "march", "clwyd", "gwynedd"]),
     createLandArea ("gwynedd", "Gwynedd", "wales", false, ["atlantic-ocean", "powys", "clwyd"]),
-    createLandArea ("clwyd", "Clwyd", "wales", false, ["gwynedd", "powys", "march", "cheshire", "atlantic-ocean"]),
+    createLandArea ("clwyd", "Clwyd", "wales", true, ["gwynedd", "powys", "march", "cheshire", "atlantic-ocean"]),
     createLandArea ("march", "March", "england", false, ["powys", "hwicce", "north-mercia", "york", "cheshire", "clwyd"]),
     createLandArea ("cheshire", "Cheshire", "england", false, ["clwyd", "march", "york", "pennines", "cumbria", "irish-sea", "atlantic-ocean"]),
     createLandArea ("york", "York", "england", false, ["pennines", "cheshire", "march", "north-mercia", "lindsey", "frisian-sea", "north-sea", "bernicia"]),
     createLandArea ("bernicia", "Bernicia", "england", false, ["pennines", "york", "north-sea", "lothian"]),
-    createLandArea ("pennines", "Pennines", "england", false, ["cumbria", "cheshire", "york", "bernicia", "lothian"]),
+    createLandArea ("pennines", "Pennines", "england", true, ["cumbria", "cheshire", "york", "bernicia", "lothian"]),
     createLandArea ("cumbria", "Cumbria", "england", false, ["irish-sea", "cheshire", "pennines", "lothian", "galloway"]),
     createLandArea ("lothian", "Lothian", "england", false, ["galloway", "cumbria", "pennines", "bernicia", "north-sea", "dunedin", "strathclyde"]),
-    createLandArea ("galloway", "Galloway", "england", false, ["irish-sea", "cumbria", "lothian", "strathclyde"]),
+    createLandArea ("galloway", "Galloway", "england", true, ["irish-sea", "cumbria", "lothian", "strathclyde"]),
     createLandArea ("dunedin", "Dunedin", "scotland", false, ["dalriada", "strathclyde", "lothian", "north-sea", "mar", "alban"]),
     createLandArea ("strathclyde", "Strathclyde", "scotland", false, ["irish-sea", "galloway", "lothian", "dunedin", "dalriada"]),
-    createLandArea ("dalriada", "Dalriada", "scotland", false, ["irish-sea", "strathclyde", "dunedin", "alban", "skye"]),
-    createLandArea ("alban", "Alban", "scotland", false, ["skye", "dalriada", "dunedin", "mar", "moray"]),
-    createLandArea ("mar", "Mar", "scotland", false, ["alban", "dunedin", "north-sea", "icelandic-sea", "moray"]),
-    createLandArea ("moray", "Moray", "scotland", false, ["skye", "alban", "mar", "icelandic-sea", "caithness"]),
-    createLandArea ("skye", "Skye", "scotland", false, [{ id: "hebrides", strait: true }, "icelandic-sea", "irish-sea", "dalriada", "alban", "moray", "caithness"]),
-    createLandArea ("caithness", "Caithness", "scotland", false, ["skye", "moray", "icelandic-sea", { id: "orkneys", strait: true }]),
-    createLandArea ("orkneys", "Orkneys", "scotland", false, ["icelandic-sea", { id: "caithness", strait: true }]),
-    createLandArea ("hebrides", "Hebrides", "scotland", false, ["icelandic-sea", { id: "skye", strait: true }]),
+    createLandArea ("dalriada", "Dalriada", "scotland", true, ["irish-sea", "strathclyde", "dunedin", "alban", "skye"]),
+    createLandArea ("alban", "Alban", "scotland", true, ["skye", "dalriada", "dunedin", "mar", "moray"]),
+    createLandArea ("mar", "Mar", "scotland", true, ["alban", "dunedin", "north-sea", "icelandic-sea", "moray"]),
+    createLandArea ("moray", "Moray", "scotland", true, ["skye", "alban", "mar", "icelandic-sea", "caithness"]),
+    createLandArea ("skye", "Skye", "scotland", true, [{ id: "hebrides", strait: true }, "icelandic-sea", "irish-sea", "dalriada", "alban", "moray", "caithness"]),
+    createLandArea ("caithness", "Caithness", "scotland", true, ["skye", "moray", "icelandic-sea", { id: "orkneys", strait: true }]),
+    createLandArea ("orkneys", "Orkneys", "scotland", true, ["icelandic-sea", { id: "caithness", strait: true }]),
+    createLandArea ("hebrides", "Hebrides", "scotland", true, ["icelandic-sea", { id: "skye", strait: true }]),
     createSeaArea ("icelandic-sea", "Icelandic Sea", ["orkneys", "hebrides", "caithness", "skye", "moray", "mar", "irish-sea", "north-sea"]),
     createSeaArea ("north-sea", "North Sea", ["icelandic-sea", "mar", "dunedin", "lothian", "bernicia", "york", "frisian-sea"]),
     createSeaArea ("frisian-sea", "Frisian Sea", ["north-sea", "york", "lindsey", "norfolk", "suffolk", "essex", "kent", "english-channel"]),
@@ -355,71 +354,3 @@ export function getNationIdsOfColor (color: BritColor): BritNationId[] {
     case "green": return ["danes", "jutes", "welsh", "caledonians"];
   } // switch
 } // getNationIdsOfColor
-
-export function getGameSetup (): BritSetup {
-  return {
-    areas: {
-      "avalon": "welsh",
-      "downlands": "belgae",
-      "wessex": "belgae",
-      "sussex": "belgae",
-      "kent": "belgae",
-      "essex": "belgae",
-      "lindsey": "belgae",
-      "suffolk": "belgae",
-      "norfolk": "belgae",
-      "south-mercia": "belgae",
-      "north-mercia": "belgae",
-      "hwicce": "welsh",
-      "devon": "welsh",
-      "cornwall": "welsh",
-      "gwent": "welsh",
-      "dyfed": "welsh",
-      "powys": "welsh",
-      "gwynedd": "welsh",
-      "clwyd": "welsh",
-      "march": "brigantes",
-      "cheshire": "brigantes",
-      "york": "brigantes",
-      "bernicia": "brigantes",
-      "pennines": "brigantes",
-      "cumbria": "brigantes",
-      "lothian": "brigantes",
-      "galloway": "brigantes",
-      "dunedin": "picts",
-      "strathclyde": "brigantes",
-      "dalriada": "picts",
-      "alban": "picts",
-      "mar": "picts",
-      "moray": "picts",
-      "skye": "picts",
-      "caithness": "caledonians",
-      "orkneys": "caledonians",
-      "hebrides": "caledonians",
-      "icelandic-sea": null,
-      "north-sea": null,
-      "frisian-sea": null,
-      "english-channel": ["romans", 16],
-      "irish-sea": null,
-      "atlantic-ocean": null
-    },
-    populationMarkers: ["welsh", "belgae", "brigantes", "picts", "caledonians"],
-    activeNations: ["romans", "welsh", "belgae", "brigantes", "picts", "caledonians"]
-  };
-} // getGameSetup
-
-export function isNationActive (nationId: BritNationId, game: BritGameStore): boolean {
-  return game.getNation (nationId).active;
-} // isNationActive
-
-
-export function getValidLandsForPlacement (nationId: string, playerId: string, game: BritGameStore): BritLandAreaId[] {
-  const validLands: BritLandAreaId[] = [];
-  for (const areaId of game.getAreaIds ()) {
-    if (isBritLandAreaId (areaId)) {
-      validLands.push (areaId);
-    } // if
-  } // for
-  return validLands;
-} // getValidLandsForPlacement
-

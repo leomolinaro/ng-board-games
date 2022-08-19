@@ -2,16 +2,17 @@ import { Injectable } from "@angular/core";
 import { BgAuthService } from "@bg-services";
 import { forEach, forN } from "@bg-utils";
 import { Observable, of } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { map, switchMap, tap } from "rxjs/operators";
 import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
 import { BritConstantsService } from "../brit-constants.service";
 import { BritNationId, BritPlayer, BritPlayerId, BritStory } from "../brit-models";
 import { BritRemoteService, BritStoryDoc } from "../brit-remote.service";
+import { britRulesSetup } from "../brit-rules";
+import * as britRules from "../brit-rules/brit-rules-population-increase";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
 import { BritPlayerService } from "./brit-player.service";
-import * as britRules from "./brit-rules";
 import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
@@ -62,12 +63,19 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
   game$ (stories: BritStoryDoc[]): Observable<void> {
     this.stories = stories;
     this.setup ();
-    return forN (16, index => this.round$ (index + 1))
+    return forN (16, index => this.round$ (index + 1)).pipe (
+      tap (() => {
+        this.ui.updateUi ("End game", s => ({
+          ...s,
+          ...this.ui.resetUi ()
+        }));
+      })
+    );
   } // game$
 
   setup () {
     this.game.logSetup ();
-    const gameSetup = britRules.getGameSetup ();
+    const gameSetup = britRulesSetup.getGameSetup ();
     this.game.applySetup (gameSetup);
   } // setup
 
@@ -93,17 +101,16 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId): Observable<void> {
     this.game.logPhase ("populationIncrease");
-    const nInfantries = this.game.getNation (nationId).infantries?.length ? 1 : 0;
-    const populationMarker = 3;
-    if (nInfantries) {
-      return this.executeTask$ (playerId, p => p.armiesPlacement$ (nInfantries, nationId, playerId)).pipe (
+    const data = britRules.calculatePopulationIncreaseData (nationId, this.game);
+    if (data.nInfantries) {
+      return this.executeTask$ (playerId, p => p.armiesPlacement$ (data.nInfantries, nationId, playerId)).pipe (
         map (armiesPlacement => {
-          this.game.applyPopulationIncrease (populationMarker, armiesPlacement, nationId);
+          this.game.applyPopulationIncrease (data.populationMarker, armiesPlacement, nationId);
           return void 0;
         })
       );
     } else {
-      this.game.applyPopulationIncrease (populationMarker, { infantriesPlacement: [] }, nationId);
+      this.game.applyPopulationIncrease (data.populationMarker, { infantriesPlacement: [] }, nationId);
       return of (void 0);
     } // if - else
   } // populationIncreasePhase$

@@ -3,7 +3,7 @@ import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
 import { BRIT_AREAS, BRIT_NATIONS } from "../brit-constants";
 import { BritConstantsService } from "../brit-constants.service";
-import { BritArea, BritAreaId, BritArmiesPlacement, BritLog, BritNation, BritNationId, BritPhase, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
+import { BritArea, BritAreaId, BritArmiesPlacement, BritLandArea, BritLandAreaId, BritLog, BritNation, BritNationId, BritPhase, BritPlayer, BritPopulation, BritRound, BritSetup, BritUnit, BritUnitId } from "../brit-models";
 
 interface BritGameState {
   gameId: string;
@@ -109,7 +109,9 @@ export class BritGameStore extends BgStore<BritGameState> {
   getPlayers (): BritPlayer[] { return this.get (s => s.players.ids.map (id => s.players.map[id])); }
   getPlayer (id: string): BritPlayer { return this.get (s => s.players.map[id]); }
   getNation (id: BritNationId): BritNation { return this.get (s => s.nations[id]); }
+  getUnit (id: BritUnitId): BritUnit { return this.get (s => s.units[id]); }
   getAreaIds () { return this.constants.getBritAreaIds (); }
+  getLandArea (landId: BritLandAreaId) { return this.get (s => s.areas[landId] as BritLandArea); }
 
   getPlayerByNation (nationId: BritNationId) {
     return this.getPlayers ().find (p => p.nations.some (n => n === nationId));
@@ -253,7 +255,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     }));
   } // addLog
 
-  private setNationPopulation (population: BritPopulation, nationId: BritNationId, s: BritGameState): BritGameState {
+  private setNationPopulation (population: BritPopulation | null, nationId: BritNationId, s: BritGameState): BritGameState {
     return this.updateNation (nationId, nation => ({
       ...nation,
       population: population
@@ -324,7 +326,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     this.update ("Apply infantry placement", s => this.placeInfantry (areaId, nationId, s));
   } // applyInfantryPlacement
 
-  applyPopulationIncrease (population: BritPopulation, armiesPlacement: BritArmiesPlacement, nationId: BritNationId) {
+  applyPopulationIncrease (population: BritPopulation | null, armiesPlacement: BritArmiesPlacement, nationId: BritNationId) {
     this.update ("Apply population increase", s => {
       s = this.setNationPopulation (population, nationId, s);
       for (const areaId of armiesPlacement.infantriesPlacement) {

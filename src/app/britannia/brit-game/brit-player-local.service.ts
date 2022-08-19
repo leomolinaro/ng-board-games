@@ -2,9 +2,9 @@ import { Injectable } from "@angular/core";
 import { forN } from "@bg-utils";
 import { map, mapTo, Observable } from "rxjs";
 import { BritArmiesPlacement, BritLandAreaId, BritNationId, BritPlayerId } from "../brit-models";
+import * as britRules from "../brit-rules/brit-rules-population-increase";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
-import * as britRules from "./brit-rules";
 import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
@@ -41,6 +41,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       turnPlayer: playerId,
       message: `Choose a land area to place an infantry on (${iInfantry} / ${nTotInfantries}).`,
       validAreas: validLands,
+      canCancel: iInfantry !== 1
     }));
     return this.ui.areaChange$<BritLandAreaId> ();
   } // chooseLandForRecruitment$

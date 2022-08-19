@@ -40,8 +40,8 @@ export class BritBoardComponent {
   @Output () areaClick = new EventEmitter<BritAreaId> ();
   @Output () unitClick = new EventEmitter<BritUnitId> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
-  // @Output () passClick = new EventEmitter<void> ();
-  // @Output () cancelClick = new EventEmitter<void> ();
+  @Output () passClick = new EventEmitter<void> ();
+  @Output () cancelClick = new EventEmitter<void> ();
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
@@ -58,8 +58,8 @@ export class BritBoardComponent {
   // onBuildingSelect (building: BritBuilding) { this.buildingSelect.emit (building); }
   // onLandTileClick (landTile: BritLand) { this.landTileClick.emit (landTile); }
   // onActionClick (action: BritAction) { this.actionClick.emit (action); }
-  // onPassClick () { this.passClick.emit (); }
-  // onCancelClick () { this.cancelClick.emit (); }
+  onPassClick () { this.passClick.emit (); }
+  onCancelClick () { this.cancelClick.emit (); }
   // onKnightsConfirm () {
   //   this.knightsConfirm.emit (this.numberOfKnights);
   //   this.numberOfKnights = 1;
@@ -69,7 +69,7 @@ export class BritBoardComponent {
   onPlayerNationClick (nation: BritNation) {
     const openedRef: MatBottomSheetRef<BritNationCardSheetComponent, BritNation> | null = this.bottomSheet._openedBottomSheetRef;
     if (openedRef) {
-      openedRef.instance.setNation (nation.id);
+      openedRef.instance.setNation (nation);
     } else {
       this.bottomSheet.open (BritNationCardSheetComponent, {
         data: nation,

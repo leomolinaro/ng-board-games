@@ -6,11 +6,11 @@ import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ABritPlayer, BritAreaId, BritPlayer, BritUnitId } from "../brit-models";
 import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
+import { britRulesComponents } from "../brit-rules";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
-import * as britRules from "./brit-rules";
 import { BritUiStore } from "./brit-ui.store";
 
 @Component ({
@@ -58,8 +58,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   // validActions$ = this.ui.selectValidActions$ ();
   // validBuildings$ = this.ui.selectValidBuildings$ ();
   // validResources$ = this.ui.selectValidResources$ ();
-  // canPass$ = this.ui.selectCanPass$ ();
-  // canCancel$ = this.ui.selectCanCancel$ ();
+  canPass$ = this.ui.selectCanPass$ ();
+  canCancel$ = this.ui.selectCanCancel$ ();
   // maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
   @SingleEvent ()
@@ -76,9 +76,9 @@ export class BritGameComponent implements OnInit, OnDestroy {
       ]) => {
         if (game) {
           const user = this.authService.getUser ();
-          const nations = britRules.createNationsAndUnits ();
-          const areas = britRules.createAreas ();
-          const rounds = britRules.createRounds ();
+          const nations = britRulesComponents.createNationsAndUnits ();
+          const areas = britRulesComponents.createAreas ();
+          const rounds = britRulesComponents.createRounds ();
           this.game.setInitialState (
             players.map (p => this.playerDocToPlayer (p, user)),
             nations.map (n => n.nation),
@@ -123,7 +123,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
       id: playerDoc.id,
       color: playerDoc.color,
       name: playerDoc.name,
-      nations: britRules.getNationIdsOfColor (playerDoc.color),
+      nations: britRulesComponents.getNationIdsOfColor (playerDoc.color),
       score: 0
     };
   } // playerDocToAPlayerInit
@@ -135,8 +135,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   onAreaClick (areaId: BritAreaId) { this.ui.areaChange (areaId); }
   onUnitClick (unitId: BritUnitId) { this.ui.unitChange (unitId); }
   // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
-  // onPassClick () { this.ui.passChange (); }
-  // onCancelClick () { this.ui.cancelChange (); }
+  onPassClick () { this.ui.passChange (); }
+  onCancelClick () { this.ui.cancelChange (); }
   // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
 
