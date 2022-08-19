@@ -46,7 +46,7 @@ export class BritPlayerComponent implements OnInit {
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
   @Output () selectPlayer = new EventEmitter<void> ();
-  @Output () nationClick = new EventEmitter<BritNation> ();
+  @Output () nationClick = new EventEmitter<BritNationId> ();
   // @Output () clickPawn = new EventEmitter<BritPawnType> ();
   // @Output () clickResource = new EventEmitter<BritResourceType> ();
 
@@ -78,7 +78,7 @@ export class BritPlayerComponent implements OnInit {
   } // onCardClick
 
   onNationClick (nationNode: BritNationNode, event: MouseEvent) {
-    this.nationClick.next (nationNode.nation);
+    this.nationClick.next (nationNode.id);
     event.stopPropagation ();
   } // onNationClick
 

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritAreaId, BritNation, BritUnitId } from "../brit-components.models";
-import { BritLog, BritPlayer } from "../brit-game-state.models";
+import { BritAreaId, BritNationId, BritUnitId } from "../brit-components.models";
+import { BritAreaState, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 
 @Component ({
@@ -17,8 +17,8 @@ export class BritBoardComponent {
     private bottomSheet: MatBottomSheet
   ) { }
 
-  @Input () areaStates!: Record<BritAreaId, BritArea>;
-  @Input () nationStates!: BritNation[];
+  @Input () areaStates!: Record<BritAreaId, BritAreaState>;
+  @Input () nationStates!: Record<BritNationId, BritNationState>;
   @Input () players!: BritPlayer[];
   @Input () logs!: BritLog[];
   @Input () turnPlayer: BritPlayer | null = null;
@@ -64,13 +64,14 @@ export class BritBoardComponent {
   // } // onKnightsConfirm
   // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
 
-  onPlayerNationClick (nation: BritNation) {
-    const openedRef: MatBottomSheetRef<BritNationCardSheetComponent, BritNation> | null = this.bottomSheet._openedBottomSheetRef;
+  onPlayerNationClick (nationId: BritNationId) {
+    const openedRef: MatBottomSheetRef<BritNationCardSheetComponent, [BritNationId, BritNationState]> | null = this.bottomSheet._openedBottomSheetRef;
+    const nationState = this.nationStates[nationId];
     if (openedRef) {
-      openedRef.instance.setNation (nation);
+      openedRef.instance.setNation (nationId, nationState);
     } else {
-      this.bottomSheet.open (BritNationCardSheetComponent, {
-        data: nation,
+      this.bottomSheet.open<BritNationCardSheetComponent, [BritNationId, BritNationState]> (BritNationCardSheetComponent, {
+        data: [nationId, nationState],
         panelClass: "brit-nation-card-sheet",
         hasBackdrop: false
       });

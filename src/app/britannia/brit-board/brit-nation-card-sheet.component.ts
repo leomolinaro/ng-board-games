@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritNation } from "../brit-components.models";
+import { BritNation, BritNationId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
+import { BritNationState } from "../brit-game-state.models";
 
 interface BritUnitNode {
   imageSource: string;
-  quantity: number;
+  available: number;
+  total: number;
 } // BritUnitNode
 
 @Component({
@@ -18,7 +21,7 @@ interface BritUnitNode {
     <div class="brit-nation-units">
       <div *ngFor="let unitNode of unitNodes" class="brit-nation-unit">
         <img class="brit-nation-unit-image" [src]="unitNode.imageSource">
-        <span class="brit-nation-unit-quantity">{{unitNode.quantity}}</span>
+        <span class="brit-nation-unit-quantity">{{unitNode.available}} / {{unitNode.total}}</span>
       </div>
     </div>
   `,
@@ -63,8 +66,9 @@ export class BritNationCardSheetComponent implements OnInit {
 
   constructor (
     private bottomSheetRef: MatBottomSheetRef<BritNationCardSheetComponent, BritNation>,
-    @Inject (MAT_BOTTOM_SHEET_DATA) public data: BritNation,
+    @Inject (MAT_BOTTOM_SHEET_DATA) public data: [BritNationId, BritNationState],
     private assetsService: BritAssetsService,
+    private components: BritComponentsService,
     private cd: ChangeDetectorRef,
   ) { }
 
@@ -72,39 +76,44 @@ export class BritNationCardSheetComponent implements OnInit {
   unitNodes!: BritUnitNode[];
 
   ngOnInit() {
-    this.refresh (this.data);
+    this.refresh (this.data[0], this.data[1]);
   } // ngOnInit
 
-  setNation (nation: BritNation) {
-    this.refresh (nation);
+  setNation (nationId: BritNationId, nationState: BritNationState) {
+    this.refresh (nationId, nationState);
     this.cd.markForCheck ();
   } // setNation
 
-  private refresh (nation: BritNation) {
+  private refresh (nationId: BritNationId, nationState: BritNationState) {
+    const nation = this.components.NATION[nationId];
     this.nationCardImageSource = this.assetsService.getNationCardImageSource (nation.id);
     this.unitNodes = [];
     if (nation.infantryIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("infantry", nation.id),
-        quantity: nation.infantryIds.length
+        total: nation.infantryIds.length,
+        available: nationState.infantryIds.length
       });
     } // if
     if (nation.cavalryIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("cavalry", nation.id),
-        quantity: nation.cavalryIds.length
+        total: nation.cavalryIds.length,
+        available: nationState.cavalryIds.length
       });
     } // if
     if (nation.buildingIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType (nation.id === "romans" ? "roman-fort" : "saxon-buhr", nation.id),
-        quantity: nation.buildingIds.length
+        total: nation.buildingIds.length,
+        available: nationState.buildingIds.length
       });
     } // if
     for (const leader of nation.leaderIds) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("leader", nation.id, leader),
-        quantity: 1
+        total: 1,
+        available: 1
       });
     } // if
   } // refresh
