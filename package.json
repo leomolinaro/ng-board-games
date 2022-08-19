@@ -9,6 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "deploy": "ng build --configuration=production & firebase deploy",
+    "firebase:login": "firebase login",
     "cypress": "cypress open"
   },
   "private": true,
