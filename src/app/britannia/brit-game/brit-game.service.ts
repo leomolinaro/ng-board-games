@@ -83,7 +83,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   round$ (roundNumber: number): Observable<void> {
     this.game.logRound (roundNumber);
-    return forEach (this.components.britNations, nationId => this.nationTurn$ (nationId));
+    return forEach (this.components.NATION_IDS, nationId => this.nationTurn$ (nationId));
   } // round$
 
   nationTurn$ (nationId: BritNationId): Observable<void> {

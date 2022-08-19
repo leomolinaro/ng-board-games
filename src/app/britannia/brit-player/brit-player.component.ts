@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TrackByFunction } from "@angular/core";
 import { BgAuthService } from "@bg-services";
-import { BooleanInput, SimpleChanges } from "@bg-utils";
+import { BooleanInput } from "@bg-utils";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { BritPlayer } from "../brit-game-state.models";
 
 // interface BritPawnNode {
@@ -32,15 +33,15 @@ interface BritNationNode {
   styleUrls: ["./brit-player.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BritPlayerComponent implements OnChanges {
+export class BritPlayerComponent implements OnInit {
 
   constructor (
     private authService: BgAuthService,
-    private assetsService: BritAssetsService
+    private assetsService: BritAssetsService,
+    private components: BritComponentsService
   ) { }
 
   @Input () player!: BritPlayer;
-  @Input () nationsMap!: Record<BritNationId, BritNation>;
   @Input () @BooleanInput () currentPlayer: boolean = false;
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
@@ -52,40 +53,22 @@ export class BritPlayerComponent implements OnChanges {
   // pawnNodes!: BritPawnNode[];
   // resourceNodes!: BritResourceNode[];
 
-  nationNodes!: BritNationNode[];
-  private nationNodesMap: Partial<Record<BritNationId, BritNationNode>> = { };
+  nationNodes: BritNationNode[] = [];
 
   selectedNationNode: BritNationNode | null = null;
 
   nationTrackBy: TrackByFunction<BritNationNode> = (index, nationNode: BritNationNode) => nationNode.id;
   // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
-  ngOnChanges (changes: SimpleChanges<this>): void {
-    let changedNationIds: BritNationId[] | null = null;
-
-    if (changes.player && changes.player.previousValue?.nations !== this.player.nations) {
-      changedNationIds = this.player.nations;
-    } // if
-    if (!changedNationIds && changes.nationsMap) {
-      if (changes.nationsMap.previousValue) {
-        changedNationIds = this.player.nations?.filter (nationId => changes.nationsMap.previousValue[nationId] !== this.nationsMap[nationId]);
-      } else {
-        changedNationIds = this.player.nations;
-      } // if - else
-    } // if
-    if (changedNationIds?.length) {
-      for (const changedNationId of changedNationIds) {
-        this.nationNodesMap[changedNationId] = {
-          id: changedNationId,
-          nation: this.nationsMap[changedNationId],
-          iconSource: this.assetsService.getNationIconImageSource (changedNationId),
-          cardSource: this.assetsService.getNationCardImageSource (changedNationId)
-        };
-      } // for
-      this.nationNodes = this.player.nations.map (nationId => this.nationNodesMap[nationId]!);
-      if (this.selectedNationNode) { this.selectedNationNode = this.nationNodesMap[this.selectedNationNode.id]!; }
-    } // if
-
+  ngOnInit (): void {
+    for (const nationId of this.player.nationIds) {
+      this.nationNodes.push ({
+        id: nationId,
+        nation: this.components.NATION[nationId],
+        iconSource: this.assetsService.getNationIconImageSource (nationId),
+        cardSource: this.assetsService.getNationCardImageSource (nationId)
+      });
+    } // for
   } // ngOnChanges
 
   onCardClick () {

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
 import { BritPhase } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { BritLog, BritPlayer } from "../brit-game-state.models";
-import { BritGameStore } from "../brit-game/brit-game.store";
 
 interface BritLogStringFragment {
   type: "string";
@@ -73,7 +73,7 @@ type BritLogFragment = BritLogStringFragment | BritLogPlayerFragment/*  | BritLo
 export class BritLogComponent implements OnChanges {
 
   constructor (
-    private game: BritGameStore
+    private components: BritComponentsService
   ) { }
 
   @Input () log!: BritLog;
@@ -86,7 +86,7 @@ export class BritLogComponent implements OnChanges {
       switch (l.type) {
         case "setup": this.fragments = [this.string ("Setup")]; break;
         case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
-        case "nation-turn": this.fragments = [this.string (this.game.getNation (l.nationId).label)]; break;
+        case "nation-turn": this.fragments = [this.string (this.components.NATION[l.nationId].label)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
         // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
         // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
@@ -107,14 +107,14 @@ export class BritLogComponent implements OnChanges {
     };
   } // string
 
-  private player (playerId: string): BritLogPlayerFragment {
-    const player = this.game.getPlayer (playerId);
-    return {
-      type: "player",
-      label: player.name,
-      player: player
-    };
-  } // player
+  // private player (playerId: string): BritLogPlayerFragment {
+  //   const player = this.game.getPlayer (playerId);
+  //   return {
+  //     type: "player",
+  //     label: player.name,
+  //     player: player
+  //   };
+  // } // player
 
   // private land (landId: BritLandCoordinates): BritLogLandFragment {
   //   const land = this.game.getLand (landId);

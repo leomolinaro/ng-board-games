@@ -1,5 +1,5 @@
 import { BgUser } from "@bg-services";
-import { BritArea, BritAreaId, BritColor, BritNation, BritNationId, BritPhase, BritRound, BritUnit, BritUnitId } from "./brit-components.models";
+import { BritAreaId, BritColor, BritLeaderId, BritNationId, BritPhase, BritPopulation } from "./brit-components.models";
 
 export interface BritGameState {
   gameId: string;
@@ -8,19 +8,30 @@ export interface BritGameState {
     map: Record<string, BritPlayer>,
     ids: string[]
   };
-  areas: Record<BritAreaId, BritArea>;
-  nations: Record<BritNationId, BritNation>;
-  units: Record<BritUnitId, BritUnit>;
-  rounds: BritRound[],
+  areas: Record<BritAreaId, BritAreaState>;
+  nations: Record<BritNationId, BritNationState>;
   logs: BritLog[];
 } // BritGameState
+
+export interface BritAreaState {
+  unitIds: string[];
+} // BritAreaState
+
+export interface BritNationState {
+  infantryIds: string[];
+  cavalryIds: string[];
+  buildingIds: string[];
+  leaderIds: BritLeaderId[];
+  population: BritPopulation | null;
+  active: boolean;
+} // BritNationState
 
 export type BritPlayerId = string;
 
 export interface ABritPlayer {
   id: BritPlayerId;
   name: string;
-  nations: BritNationId[];
+  nationIds: BritNationId[];
   color: BritColor;
   score: number;
 } // ABritPlayer

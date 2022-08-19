@@ -5,12 +5,14 @@ import { environment } from "src/environments/environment";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
+import { BritAreaState, BritNationState } from "../brit-game-state.models";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
 
 interface BritAreaNode {
   id: BritAreaId;
   area: BritArea;
+  state: BritAreaState;
   path: string;
   unitNodes: BritUnitNode[];
   tooltip: string;
@@ -38,6 +40,7 @@ interface BritPopulationNode {
 interface BritNationPopulationNode {
   id: BritNationId;
   nation: BritNation;
+  state: BritNationState;
   imageSource: string;
   tooltip: string;
 } // BritNationPopulationNode
@@ -45,6 +48,7 @@ interface BritNationPopulationNode {
 interface BritNationTurnNode {
   id: BritNationId;
   nation: BritNation;
+  state: BritNationState;
   path: string;
   tooltip: string;
 } // BritNationTurnNode
@@ -83,10 +87,8 @@ export class BritMapComponent implements OnChanges {
     private cd: ChangeDetectorRef
   ) { }
 
-  @Input () areas!: BritArea[];
-  @Input () unitsMap!: Record<BritUnitId, BritUnit>;
-  @Input () nations!: BritNation[];
-  @Input () rounds!: BritRound[];
+  @Input () areaStates!: Record<BritAreaId, BritAreaState>;
+  @Input () nationStates!: Record<BritNationId, BritNationState>;
   @Input () validAreas: BritAreaId[] | null = null;
   @Input () validUnits: BritUnitId[] | null = null;
   // in caso di update dell'unità in un'area, bisogna cambiare il riferimento delle BritArea.units
@@ -130,15 +132,12 @@ export class BritMapComponent implements OnChanges {
   nationPopulationTrackBy: TrackByFunction<BritNationPopulationNode> = (index: number, nationPopulationNode: BritNationPopulationNode) => nationPopulationNode.id;
 
   ngOnChanges (changes: SimpleChanges<BritMapComponent>) {
-    if (changes.areas && this.areas?.length) {
+    if (changes.areaStates) {
       this.refreshAreaNodes (false);
     } // if
-    if (changes.nations) {
+    if (changes.nationStates) {
       this.refreshPopulationNodes ();
       this.refreshNationTurnNodes ();
-    } // if
-    if (changes.rounds) {
-      this.refreshRoundNodes ();
     } // if
     if (changes.validAreas) {
       this.isValidArea = this.validAreas ? arrayUtil.toMap (this.validAreas, id => id, () => true) : null;
@@ -148,13 +147,17 @@ export class BritMapComponent implements OnChanges {
     } // if
   } // ngOnChanges
 
+  ngOnInit () {
+    this.refreshRoundNodes ();
+  } // ngOnInit
+
   private refreshAreaNodes (force: boolean): boolean {
     let refreshedUnits = false;
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.areas, this.areaNodeMap || { },
-      area => area.id,
-      (area, node) => !force && area === node.area,
-      (area, index, oldNode) => this.areaToNode (area, oldNode, force)
+      this.components.AREA_IDS, this.areaNodeMap || { },
+      areaId => areaId,
+      (areaId, node) => !force && this.areaStates[areaId] === node.state,
+      (areaId, index, oldNode) => this.areaToNode (areaId, oldNode, force)
     );
     this.areaNodes = nodes;
     this.areaNodeMap = map;
@@ -163,10 +166,10 @@ export class BritMapComponent implements OnChanges {
 
   private refreshPopulationNodes () {
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.nations, this.nationPopulationNodeMap || { },
-      nation => nation.id,
-      (nation, node) => nation === node.nation,
-      (nation, index, oldNode) => this.nationToPopulationNode (nation, oldNode)
+      this.components.NATION_IDS, this.nationPopulationNodeMap || { },
+      nationId => nationId,
+      (nationId, node) => this.nationStates[nationId] === node.state,
+      (nationId, index, oldNode) => this.nationToPopulationNode (nationId, oldNode)
     );
     this.nationPopulationNodeMap = map;
     this.populationNodes.map (pn => ({
@@ -175,7 +178,7 @@ export class BritMapComponent implements OnChanges {
     }));
     this.populationNodes.forEach (pn => pn.nationNodes = []);
     nodes.forEach (nationNode => {
-      const population = nationNode.nation.population;
+      const population = nationNode.state.population;
       if (population != null) {
         const populationNode = this.populationNodes[population];
         populationNode.nationNodes.push (nationNode);
@@ -185,10 +188,10 @@ export class BritMapComponent implements OnChanges {
 
   private refreshNationTurnNodes () {
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.nations, this.nationTurnNodeMap || { },
-      nation => nation.id,
-      (nation, node) => nation === node.nation,
-      (nation, index, oldNode) => this.nationToTurnNode (nation, oldNode)
+      this.components.NATION_IDS, this.nationTurnNodeMap || { },
+      nationId => nationId,
+      (nationId, node) => this.nationStates[nationId] === node.state,
+      (nationId, index, oldNode) => this.nationToTurnNode (nationId, oldNode)
     );
     this.nationTurnNodes = nodes;
     this.nationTurnNodeMap = map;
@@ -196,30 +199,33 @@ export class BritMapComponent implements OnChanges {
 
   private refreshRoundNodes () {
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.rounds, this.roundNodeMap || { },
-      round => round.id,
-      (round, node) => round === node.round,
-      (round, index, oldNode) => this.roundToNode (round, oldNode)
+      this.components.ROUND_IDS, this.roundNodeMap || { },
+      roundId => roundId,
+      (round, node) => true,
+      (roundId, index, oldNode) => this.roundToNode (roundId, oldNode)
     );
     this.roundNodes = nodes;
     this.roundNodeMap = map;
   } // refreshRoundNodes
 
-  private areaToNode (area: BritArea, oldNode: BritAreaNode | null, force: boolean): BritAreaNode {
-    const path = this.mapService.getAreaPath (area.id);
+  private areaToNode (areaId: BritAreaId, oldNode: BritAreaNode | null, force: boolean): BritAreaNode {
+    const path = this.mapService.getAreaPath (areaId);
+    const area = this.components.AREA[areaId];
+    const state = this.areaStates[areaId];
     const node: BritAreaNode = {
-      id: area.id,
+      id: areaId,
       area,
+      state,
       path,
       unitNodes: null!,
       tooltip: area.name
     };
-    if (!force && area.units === oldNode?.area.units) {
+    if (!force && state.unitIds === oldNode?.state.unitIds) {
       node.unitNodes = oldNode.unitNodes;
     } else {
       const unitsByKey = arrayUtil.group (
-        area.units.map (unitId => this.unitsMap[unitId]),
-        u => u.type === "leader" ? u.id : `${u.nation}-${u.type}`);
+        state.unitIds.map (unitId => this.components.UNIT[unitId]),
+        u => u.type === "leader" ? u.id : `${u.nationId}-${u.type}`);
       const unitGroups: BritUnit[][] = [];
       objectUtil.forEachProp (unitsByKey, (key, units) => { unitGroups.push (units); });
       node.unitNodes = [];
@@ -236,7 +242,7 @@ export class BritMapComponent implements OnChanges {
     const imageSource = this.assetsService.getUnitImageSource (unit);
     const point = this.getUnitNodePoint (index, nAreaUnits, areaNode.id);
     return {
-      id: unit.type === "leader" ? unit.id : `${unit.nation}-${unit.type}`,
+      id: unit.type === "leader" ? unit.id : `${unit.nationId}-${unit.type}`,
       unit,
       imageSource,
       index,
@@ -253,23 +259,26 @@ export class BritMapComponent implements OnChanges {
     return slots[unitIndex];
   } // getUnitNodePoint
 
-  private nationToTurnNode (nation: BritNation, oldNode: BritNationTurnNode | null): BritNationTurnNode {
+  private nationToTurnNode (nationId: BritNationId, oldNode: BritNationTurnNode | null): BritNationTurnNode {
     if (oldNode) {
       return oldNode;
     } else {
+      const nation = this.components.NATION[nationId];
       return {
-        id: nation.id,
-        nation: nation,
+        id: nationId,
+        nation,
+        state: this.nationStates[nationId],
         path: this.mapService.getNationTurnPath (nation.id),
         tooltip: nation.label
       };
     } // if - else
   } // nationToTurnNode
 
-  private roundToNode (round: BritRound, oldNode: BritRoundNode | null): BritRoundNode {
+  private roundToNode (roundId: BritRoundId, oldNode: BritRoundNode | null): BritRoundNode {
     if (oldNode) {
       return oldNode;
     } else {
+      const round = this.components.ROUND[roundId];
       const eventNodes: BritEventNode[] = round.events.map (event => ({
         event,
         id: event.nation,
@@ -277,7 +286,7 @@ export class BritMapComponent implements OnChanges {
         tooltip: this.nationTurnNodeMap[event.nation]?.nation.label
       }));
       return {
-        id: round.id,
+        id: roundId,
         round: round,
         path: this.mapService.getRoundPath (round.id),
         scoringPath: this.mapService.getScoringRoundPath (round.id) || null,
@@ -287,10 +296,12 @@ export class BritMapComponent implements OnChanges {
     } // if - else
   } // roundToNode
 
-  private nationToPopulationNode (nation: BritNation, oldNode: BritNationPopulationNode | null): BritNationPopulationNode {
+  private nationToPopulationNode (nationId: BritNationId, oldNode: BritNationPopulationNode | null): BritNationPopulationNode {
+    const nation = this.components.NATION[nationId];
     return {
       id: nation.id,
       nation: nation,
+      state: this.nationStates[nationId],
       imageSource: this.assetsService.getNationPopulationMarkerImageSource (nation.id),
       tooltip: nation.label
     };

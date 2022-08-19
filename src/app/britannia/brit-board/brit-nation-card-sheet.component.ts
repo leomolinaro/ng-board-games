@@ -83,25 +83,25 @@ export class BritNationCardSheetComponent implements OnInit {
   private refresh (nation: BritNation) {
     this.nationCardImageSource = this.assetsService.getNationCardImageSource (nation.id);
     this.unitNodes = [];
-    if (nation.infantries.length) {
+    if (nation.infantryIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("infantry", nation.id),
-        quantity: nation.infantries.length
+        quantity: nation.infantryIds.length
       });
     } // if
-    if (nation.cavalries.length) {
+    if (nation.cavalryIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("cavalry", nation.id),
-        quantity: nation.cavalries.length
+        quantity: nation.cavalryIds.length
       });
     } // if
-    if (nation.buildings.length) {
+    if (nation.buildingIds.length) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType (nation.id === "romans" ? "roman-fort" : "saxon-buhr", nation.id),
-        quantity: nation.buildings.length
+        quantity: nation.buildingIds.length
       });
     } // if
-    for (const leader of nation.leaders) {
+    for (const leader of nation.leaderIds) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("leader", nation.id, leader),
         quantity: 1

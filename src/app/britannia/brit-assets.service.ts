@@ -14,8 +14,8 @@ export class BritAssetsService {
 
   getUnitImageSource (unit: BritUnit) {
     switch (unit.type) {
-      case "infantry": return `assets/britannia/infantries/${unit.nation}.png`;
-      case "cavalry": return `assets/britannia/cavalries/${unit.nation}.png`;
+      case "infantry": return `assets/britannia/infantries/${unit.nationId}.png`;
+      case "cavalry": return `assets/britannia/cavalries/${unit.nationId}.png`;
       case "roman-fort": return `assets/britannia/buildings/roman-fort.png`;
       case "saxon-buhr": return `assets/britannia/buildings/saxon-buhr.png`;
       case "leader": return `assets/britannia/leaders/${unit.id}.png`;

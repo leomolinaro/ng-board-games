@@ -86,8 +86,8 @@ export class BritRulesPopulationIncreaseService {
       let nInfantries = Math.floor (populationPoints / 6);
       let populationMarker = populationPoints % 6 as BritPopulation;
       // Check armies limit.
-      if (nInfantries > nation.infantries.length) {
-        nInfantries = nation.infantries.length;
+      if (nInfantries > nation.infantryIds.length) {
+        nInfantries = nation.infantryIds.length;
         populationMarker = 5;
       } // if
       // Check the stacking limits. The only limiting case is when there are only difficult terrains.
@@ -121,8 +121,8 @@ export class BritRulesPopulationIncreaseService {
   } // isArmyUnit
   
   private getNArmiesByLand (land: BritLandArea, state: BritGameState) {
-    return land.units.reduce ((armiesCount, unitId) => {
-      const unit = state.units[unitId];
+    return state.areas[land.id].unitIds.reduce ((armiesCount, unitId) => {
+      const unit = this.components.UNIT[unitId];
       if (this.isArmyUnit (unit)) { armiesCount++; }
       return armiesCount;
     }, 0);
@@ -131,9 +131,9 @@ export class BritRulesPopulationIncreaseService {
   private getOccupiedLandsByNation (nationId: BritNationId, state: BritGameState) {
     const lands: BritLandArea[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
-      const land = state.areas[landId] as BritLandArea;
-      if (land.units.some (u => state.units[u].nation === nationId)) {
-        lands.push (land);
+      const landState = state.areas[landId];
+      if (landState.unitIds.some (u => this.components.UNIT[u].nationId === nationId)) {
+        lands.push (this.components.getLandArea (landId));
       } // if
     } // for
     return lands;

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritAreaId, BritNation, BritNationId, BritRound, BritUnit, BritUnitId } from "../brit-components.models";
+import { BritArea, BritAreaId, BritNation, BritUnitId } from "../brit-components.models";
 import { BritLog, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 
@@ -17,11 +17,8 @@ export class BritBoardComponent {
     private bottomSheet: MatBottomSheet
   ) { }
 
-  @Input () areas!: BritArea[];
-  @Input () nations!: BritNation[];
-  @Input () rounds!: BritRound[];
-  @Input () unitsMap!: Record<BritUnitId, BritUnit>;
-  @Input () nationsMap!: Record<BritNationId, BritNation>;
+  @Input () areaStates!: Record<BritAreaId, BritArea>;
+  @Input () nationStates!: BritNation[];
   @Input () players!: BritPlayer[];
   @Input () logs!: BritLog[];
   @Input () turnPlayer: BritPlayer | null = null;

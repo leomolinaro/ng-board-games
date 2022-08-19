@@ -2,7 +2,7 @@ export type BritColor = "blue" | "yellow" | "red" | "green";
 
 interface ABritUnit {
   id: BritUnitId;
-  nation: BritNationId;
+  nationId: BritNationId;
   nationLabel: string;
   type: string;
   typeLabel: string;
@@ -66,7 +66,6 @@ export type BritNeighbor = BritAreaId | { id: BritAreaId, strait: true };
 interface ABritArea {
   name: string;
   neighbors: BritNeighbor[];
-  units: string[];
 } // ABritArea
 
 export interface BritLandArea extends ABritArea {
@@ -91,12 +90,10 @@ export interface BritNation {
   id: BritNationId;
   label: string;
   color: BritColor;
-  infantries: string[];
-  cavalries: string[];
-  buildings: string[];
-  leaders: BritLeaderId[];
-  population: BritPopulation | null;
-  active: boolean;
+  infantryIds: BritUnitId[];
+  cavalryIds: BritUnitId[];
+  buildingIds: BritUnitId[];
+  leaderIds: BritLeaderId[];
 } // BritNation
 
 export type BritRoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;

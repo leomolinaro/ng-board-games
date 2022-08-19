@@ -3,10 +3,8 @@
   <div class="brit-board-map-layer">
     <brit-map
       #britMap
-      [areas]="areas"
-      [nations]="nations"
-      [rounds]="rounds"
-      [unitsMap]="unitsMap"
+      [areaStates]="areaStates"
+      [nationStates]="nationStates"
       [validAreas]="validAreas"
       [validUnits]="validUnits"
       (areaClick)="areaClick.emit ($event)"
@@ -31,7 +29,6 @@
     <div class="brit-board-players-widget">
       <brit-player *ngFor="let player of players; trackBy: playerTrackBy" class="brit-board-player-widget"
         [player]="player"
-        [nationsMap]="nationsMap"
         [currentPlayer]="player === currentPlayer"
         (selectPlayer)="onPlayerSelect (player)"
         (nationClick)="onPlayerNationClick ($event)">

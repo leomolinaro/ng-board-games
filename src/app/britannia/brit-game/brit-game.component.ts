@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@bg-services";
-import { arrayUtil, ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
+import { ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { BritAreaId, BritUnitId } from "../brit-components.models";
@@ -18,11 +18,8 @@ import { BritUiStore } from "./brit-ui.store";
   selector: "brit-game",
   template: `
     <brit-board
-      [areas]="areas$ | async"
-      [nations]="nations$ | async"
-      [rounds]="rounds$ | async"
-      [nationsMap]="nationsMap$ | async"
-      [unitsMap]="unitsMap$ | async"
+      [areaStates]="areaStates$ | async"
+      [nationStates]="nationStates$ | async"
       [players]="players$ | async"
       [logs]="logs$ | async"
       [message]="message$ | async"
@@ -75,11 +72,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
-  areas$ = this.game.selectAreas$ ();
-  nations$ = this.game.selectNations$ ();
-  nationsMap$ = this.game.selectNationsMap$ ();
-  rounds$ = this.game.selectRounds$ ();
-  unitsMap$ = this.game.selectUnitsMap$ ();
+  areaStates$ = this.game.selectAreas$ ();
+  nationStates$ = this.game.selectNations$ ();
   players$ = this.game.selectPlayers$ ();
   logs$ = this.game.selectLogs$ ();
   // endGame$ = this.game.selectEndGame$ ();
@@ -111,15 +105,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
       ]) => {
         if (game) {
           const user = this.authService.getUser ();
-          const nations = this.components.createNationsAndUnits ();
-          const areas = this.components.createAreas ();
-          const rounds = this.components.createRounds ();
-          this.game.setInitialState (
+          this.game.initGameState (
             players.map (p => this.playerDocToPlayer (p, user)),
-            nations.map (n => n.nation),
-            areas,
-            arrayUtil.flattify (nations.map (n => n.units)),
-            rounds,
             this.gameId,
             game.owner
           );
@@ -158,7 +145,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
       id: playerDoc.id,
       color: playerDoc.color,
       name: playerDoc.name,
-      nations: this.components.getNationIdsOfColor (playerDoc.color),
+      nationIds: this.components.getNationIdsOfColor (playerDoc.color),
       score: 0
     };
   } // playerDocToAPlayerInit
