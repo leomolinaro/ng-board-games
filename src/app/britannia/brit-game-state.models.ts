@@ -1,5 +1,5 @@
 import { BgUser } from "@bg-services";
-import { BritAreaId, BritColor, BritLeaderId, BritNationId, BritPhase, BritPopulation } from "./brit-components.models";
+import { BritAreaId, BritColor, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation } from "./brit-components.models";
 
 export interface BritGameState {
   gameId: string;
@@ -60,11 +60,15 @@ export type BritPlayer = BritAiPlayer | BritRealPlayer;
 // export interface BritLogTurn { type: "turn"; player: string; }
 // export interface BritLogSetupPlacement { type: "setupPlacement"; land: BritLandCoordinates; player: string; }
 export interface BritLogSetup { type: "setup"; }
-export interface BritLogRound { type: "round"; roundNumber: number; }
+export interface BritLogRound { type: "round"; roundId: number; }
 export interface BritLogNationTurn { type: "nation-turn"; nationId: BritNationId; }
 export interface BritLogPhase { type: "phase"; phase: BritPhase; }
+export interface BritLogPopulationMarkerSet { type: "population-marker-set"; populationMarker: number | null; }
+export interface BritLogInfantryPlacement { type: "infantry-placement"; landId: BritLandAreaId; quantity: number; }
+export interface BritLogInfantryReinforcement { type: "infantry-reinforcement"; areaId: BritAreaId; quantity: number; }
 
-export type BritLog = BritLogSetup | BritLogRound | BritLogNationTurn | BritLogPhase /*| BritLogRecuitment | BritLogConstruction
+export type BritLog = BritLogSetup | BritLogRound | BritLogNationTurn | BritLogPhase | BritLogPopulationMarkerSet | BritLogInfantryPlacement | BritLogInfantryReinforcement;
+ /*| BritLogRecuitment | BritLogConstruction
   | BritLogNewCity | BritLogNobleTitle | BritLogExpedition | BritLogMovement */;
 
 export interface BritSetup {

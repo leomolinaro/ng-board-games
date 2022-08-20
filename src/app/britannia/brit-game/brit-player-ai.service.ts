@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { BritNationId } from "../brit-components.models";
-import { BritArmiesPlacement } from "../brit-story.models";
+import { BritArmyPlacement } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 
@@ -12,7 +12,7 @@ export class BritPlayerAiService implements BritPlayerService {
     private game: BritGameStore
   ) { }
 
-  armiesPlacement$ (nInfantries: number, nationId: BritNationId, playerId: string): Observable<BritArmiesPlacement> {
+  armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: string): Observable<BritArmyPlacement> {
     throw new Error("Method not implemented.");
   } // armiesPlacement$
 

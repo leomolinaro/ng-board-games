@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
-import { BritAreaId, BritNationId, BritPhase, BritPopulation, BritUnitId } from "../brit-components.models";
+import { BritAreaId, BritLandAreaId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaState, BritGameState, BritLog, BritNationState, BritPlayer, BritSetup } from "../brit-game-state.models";
-import { BritArmiesPlacement } from "../brit-story.models";
 
 @Injectable ()
 export class BritGameStore extends BgStore<BritGameState> {
@@ -296,11 +295,13 @@ export class BritGameStore extends BgStore<BritGameState> {
     this.update ("Apply infantry placement", s => this.placeInfantry (areaId, nationId, s));
   } // applyInfantryPlacement
 
-  applyPopulationIncrease (population: BritPopulation | null, armiesPlacement: BritArmiesPlacement, nationId: BritNationId) {
+  applyPopulationIncrease (population: BritPopulation | null, infantryPlacement: { areaId: BritAreaId, quantity: number }[], nationId: BritNationId) {
     this.update ("Apply population increase", s => {
       s = this.setNationPopulation (population, nationId, s);
-      for (const areaId of armiesPlacement.infantriesPlacement) {
-        s = this.placeInfantry (areaId, nationId, s);
+      for (const ip of infantryPlacement) {
+        for (let i = 0; i < ip.quantity; i++) {
+          s = this.placeInfantry (ip.areaId, nationId, s);
+        } // for
       } // for
       return s;
     });
@@ -373,9 +374,12 @@ export class BritGameStore extends BgStore<BritGameState> {
   // } // applyNobleTitle
 
   logSetup () { this.addLog ({ type: "setup" }); }
-  logRound (roundNumber: number) { this.addLog ({ type: "round", roundNumber: roundNumber }); }
+  logRound (roundId: BritRoundId) { this.addLog ({ type: "round", roundId: roundId }); }
   logNationTurn (nationId: BritNationId) { this.addLog ({ type: "nation-turn", nationId: nationId }); }
   logPhase (phase: BritPhase) { this.addLog ({ type: "phase", phase: phase }); }
+  logPopulationMarkerSet (populationMarker: number | null) { this.addLog ({ type: "population-marker-set", populationMarker }); }
+  logInfantryPlacement (landId: BritLandAreaId, quantity: number) { this.addLog ({ type: "infantry-placement", landId, quantity }); }
+  logInfantryReinforcements (areaId: BritAreaId, quantity: number) { this.addLog ({ type: "infantry-reinforcement", areaId, quantity }); }
   // logMovement (movement: BritMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }
   // logExpedition (land: BritLandCoordinates, player: string) { this.addLog ({ type: "expedition", land: land, player: player }); }
   // logNobleTitle (resources: BritResourceType[], player: string) { this.addLog ({ type: "nobleTitle", resources: resources, player: player }); }
@@ -383,6 +387,5 @@ export class BritGameStore extends BgStore<BritGameState> {
   // logConstruction (construction: BritConstruction, player: string) { this.addLog ({ type: "construction", construction: construction, player: player }); }
   // logRecuitment (land: BritLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
   // logSetupPlacement (land: BritLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
-
 
 } // BritGameStore

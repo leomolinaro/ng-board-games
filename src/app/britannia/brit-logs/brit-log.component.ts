@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BritPhase } from "../brit-components.models";
+import { BritArea, BritAreaId, BritPhase } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritLog, BritPlayer } from "../brit-game-state.models";
 
@@ -15,11 +15,11 @@ interface BritLogPlayerFragment {
   player: BritPlayer;
 } // BritLogStringFragment
 
-// interface BritLogLandFragment {
-//   type: "land";
-//   label: string;
-//   land: BritLand;
-// } // BritLogLandFragment
+interface BritLogAreaFragment {
+  type: "area";
+  label: string;
+  area: BritArea;
+} // BritLogAreaFragment
 
 // interface BritLogPawnFragment {
 //   type: "pawn";
@@ -27,7 +27,7 @@ interface BritLogPlayerFragment {
 //   pawn: BritPawnType;
 // } // BritLogPawnFragment
 
-type BritLogFragment = BritLogStringFragment | BritLogPlayerFragment/*  | BritLogLandFragment | BritLogPawnFragment */;
+type BritLogFragment = BritLogStringFragment | BritLogPlayerFragment | BritLogAreaFragment/*  | BritLogLandFragment | BritLogPawnFragment */;
 
 @Component ({
   selector: "brit-log",
@@ -35,14 +35,16 @@ type BritLogFragment = BritLogStringFragment | BritLogPlayerFragment/*  | BritLo
     <div
       class="brit-log"
       [ngClass]="{
-        'brit-log-title': log.type === 'setup' || log.type === 'round',
-        'brit-log-subtitle': log.type === 'nation-turn'
+        'brit-log-h0': log.type === 'setup' || log.type === 'round',
+        'brit-log-h1': log.type === 'nation-turn',
+        'brit-log-h2': log.type === 'phase'
       }">
       <ng-container *ngFor="let fragment of fragments" [ngSwitch]="fragment.type">
         <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
-        <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
+        <span *ngSwitchCase="'area'">{{ fragment.label }}</span>
+        <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
         <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
-        <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a>
+        <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a> -->
       </ng-container>
     </div>
   `,
@@ -50,15 +52,19 @@ type BritLogFragment = BritLogStringFragment | BritLogPlayerFragment/*  | BritLo
     @import "brit-variables";
 
     .brit-log {
-      margin-left: 1vw;
+      margin-left: 1.5vw;
 
-      &.brit-log-title {
-        font-size: 120%;
+      &.brit-log-h0 {
+        font-size: 130%;
         margin-left: 0;
       }
-      &.brit-log-subtitle {
-        font-size: 110%;
+      &.brit-log-h1 {
+        font-size: 120%;
         margin-left: 0.5vw;
+      }
+      &.brit-log-h2 {
+        font-size: 110%;
+        margin-left: 1vw;
       }
 
       .is-red { color: $red; }
@@ -85,9 +91,12 @@ export class BritLogComponent implements OnChanges {
       const l = this.log;
       switch (l.type) {
         case "setup": this.fragments = [this.string ("Setup")]; break;
-        case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
+        case "round": this.fragments = [this.string (`Round ${l.roundId}`)]; break;
         case "nation-turn": this.fragments = [this.string (this.components.NATION[l.nationId].label)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
+        case "population-marker-set": this.fragments = [this.string (`Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`)]; break;
+        case "infantry-placement": this.fragments = [this.string (`${l.quantity} infantr${l.quantity === 1 ? "y" : "ies"} placed in `), this.area (l.landId)]; break;
+        case "infantry-reinforcement": this.fragments = [this.string (`${l.quantity} infantry reinforcement${l.quantity === 1 ? "" : "s"} in `), this.area (l.areaId)]; break;
         // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
         // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
         // case "movement": this.fragments = [this.player (l.player), this.string (" moves a knight from "), this.land (l.movement.fromLand), this.string (" to "), this.land (l.movement.toLand), this.string (".")]; break;
@@ -96,6 +105,7 @@ export class BritLogComponent implements OnChanges {
         // case "newCity": this.fragments = [this.player (l.player), this.string (" builds a new city in "), this.land (l.land), this.string (".")]; break;
         // case "nobleTitle": this.fragments = [this.player (l.player), this.string (" earns a new noble title.")]; break;
         // case "setupPlacement": this.fragments = [this.player (l.player), this.string (" places a knight in "), this.land (l.land), this.string (".")]; break;
+        // default: console.error (`Log type ${l.type} not managed`);
       } // switch
     } // if
   } // ngOnChanges
@@ -106,6 +116,15 @@ export class BritLogComponent implements OnChanges {
       label: label
     };
   } // string
+
+  private area (areaId: BritAreaId): BritLogAreaFragment {
+    const area = this.components.AREA[areaId];
+    return {
+      type: "area",
+      label: area.name,
+      area
+    };
+  } // area
 
   // private player (playerId: string): BritLogPlayerFragment {
   //   const player = this.game.getPlayer (playerId);

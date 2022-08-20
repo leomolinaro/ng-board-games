@@ -4,7 +4,7 @@ import { forEach, forN } from "@bg-utils";
 import { Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
-import { BritNationId } from "../brit-components.models";
+import { BritLandAreaId, BritNationId, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritPlayer, BritPlayerId } from "../brit-game-state.models";
 import { BritRemoteService, BritStoryDoc } from "../brit-remote.service";
@@ -65,7 +65,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
   game$ (stories: BritStoryDoc[]): Observable<void> {
     this.stories = stories;
     this.setup ();
-    return forN (16, index => this.round$ (index + 1)).pipe (
+    return forN (16, index => this.round$ (index + 1 as BritRoundId)).pipe (
       tap (() => {
         this.ui.updateUi ("End game", s => ({
           ...s,
@@ -81,16 +81,16 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     this.game.applySetup (gameSetup);
   } // setup
 
-  round$ (roundNumber: number): Observable<void> {
-    this.game.logRound (roundNumber);
-    return forEach (this.components.NATION_IDS, nationId => this.nationTurn$ (nationId));
+  round$ (roundId: BritRoundId): Observable<void> {
+    this.game.logRound (roundId);
+    return forEach (this.components.NATION_IDS, nationId => this.nationTurn$ (nationId, roundId));
   } // round$
 
-  nationTurn$ (nationId: BritNationId): Observable<void> {
+  nationTurn$ (nationId: BritNationId, roundId: BritRoundId): Observable<void> {
     if (this.rules.populationIncrease.isNationActive (nationId, this.game.get ())) {
       this.game.logNationTurn (nationId);
       const player = this.game.getPlayerByNation (nationId)!;
-      return this.populationIncreasePhase$ (nationId, player.id).pipe (
+      return this.populationIncreasePhase$ (nationId, player.id, roundId).pipe (
         switchMap (() => this.movementPhase$ (nationId, player.id)),
         switchMap (() => this.battlesRetreatsPhase$ (nationId, player.id)),
         switchMap (() => this.raiderWithdrawalPhase$ (nationId, player.id)),
@@ -101,21 +101,44 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     } // if - else
   } // nationTurn$
 
-  private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId): Observable<void> {
+  private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId, roundId: BritRoundId): Observable<void> {
     this.game.logPhase ("populationIncrease");
-    const data = this.rules.populationIncrease.calculatePopulationIncreaseData (nationId, this.game.get ());
-    if (data.nInfantries) {
-      return this.executeTask$ (playerId, p => p.armiesPlacement$ (data.nInfantries, nationId, playerId)).pipe (
-        map (armiesPlacement => {
-          this.game.applyPopulationIncrease (data.populationMarker, armiesPlacement, nationId);
-          return void 0;
-        })
-      );
-    } else {
-      this.game.applyPopulationIncrease (data.populationMarker, { infantriesPlacement: [] }, nationId);
-      return of (void 0);
+    const data = this.rules.populationIncrease.calculatePopulationIncreaseData (nationId, roundId, this.game.get ());
+    
+    switch (data.type) {
+      case "infantry-placement": {
+        if (data.nInfantries) {
+          return this.executeTask$ (playerId, p => p.armyPlacement$ (data.nInfantries, nationId, playerId)).pipe (
+            map (armyPlacement => {
+              const infantryPlacement: { areaId: BritLandAreaId, quantity: number }[] = [];
+              for (const ip of armyPlacement.infantryPlacement) {
+                infantryPlacement.push (typeof ip === "object" ? ip : { areaId: ip, quantity: 1 });
+              } // for
+              this.game.applyPopulationIncrease (data.populationMarker, infantryPlacement, nationId);
+              for (const ip of infantryPlacement) {
+                this.game.logInfantryPlacement (ip.areaId, ip.quantity);
+              } // for
+              this.game.logPopulationMarkerSet (data.populationMarker);
+              return void 0;
+            })
+          );
+        } else {
+          this.game.applyPopulationIncrease (data.populationMarker, [], nationId);
+          this.game.logPopulationMarkerSet (data.populationMarker);
+          return of (void 0);
+        } // if - else
+      } // case
+      case "roman-reinforcements": {
+        if (data.nInfantries) {
+          this.game.applyPopulationIncrease (null, [{ areaId: "english-channel", quantity: data.nInfantries }], nationId);
+        } // if
+        this.game.logInfantryReinforcements ("english-channel", data.nInfantries);
+        return of (void 0);
+      } // case
     } // if - else
   } // populationIncreasePhase$
+
+
 
   private movementPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("movement");

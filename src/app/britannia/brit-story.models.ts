@@ -1,7 +1,7 @@
 import { BritLandAreaId } from "./brit-components.models";
 
-export type BritStory = BritArmiesPlacement;
+export type BritStory = BritArmyPlacement;
 
-export interface BritArmiesPlacement {
-  infantriesPlacement: BritLandAreaId[];
-} // BritArmiesPlacement
+export interface BritArmyPlacement {
+  infantryPlacement: (BritLandAreaId | { areaId: BritLandAreaId, quantity: number })[];
+} // BritArmyPlacement
