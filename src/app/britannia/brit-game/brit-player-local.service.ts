@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { forN } from "@bg-utils";
-import { map, mapTo, Observable } from "rxjs";
-import { BritLandAreaId, BritNationId } from "../brit-components.models";
+import { EMPTY, expand, last, map, mapTo, Observable, race, tap } from "rxjs";
+import { BritAreaId, BritLandAreaId, BritNationId, BritUnitId } from "../brit-components.models";
 import { BritPlayerId } from "../brit-game-state.models";
 import { BritRulesService } from "../brit-rules/brit-rules.service";
-import { BritArmyPlacement } from "../brit-story.models";
+import { BritArmyMovement, BritArmyPlacement } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -54,5 +54,62 @@ export class BritPlayerLocalService implements BritPlayerService {
     }));
     return this.ui.areaChange$<BritLandAreaId> ();
   } // chooseLandForRecruitment$
+
+  armyMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovement> {
+    return this.chooseUnitsForMovement$ (nationId, playerId).pipe (
+      expand<BritUnitId[] | BritAreaId, Observable<BritUnitId[] | BritAreaId>> (unitIdsOrAreaId => {
+        if (Array.isArray (unitIdsOrAreaId)) {
+          this.ui.updateUi ("Units selected", s => ({
+            ...s,
+            selectedUnits: unitIdsOrAreaId
+          }));
+          if (unitIdsOrAreaId.length) {
+            console.log ("TODO");
+            return this.chooseUnitsOrAreaForMovement$ (nationId, playerId, unitIdsOrAreaId).pipe (
+              tap (r => console.log ("RRRRRRR", r))
+            );
+          } else {
+            return this.chooseUnitsForMovement$ (nationId, playerId);
+          } // if - else
+        } else {
+          return EMPTY;
+        } // if - else
+      }),
+      last ()
+    );
+  } // armyMovement$
+
+  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritUnitId[]> {
+    const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
+    this.ui.updateUi ("Select units for movement", s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayer: playerId,
+      message: `Select one or more units to be moved.`,
+      validUnits: validUnits,
+      canCancel: false,
+    }));
+    return this.ui.unitsChange$<BritUnitId> ();
+  } // chooseUnitsForMovement$
+
+  private chooseUnitsOrAreaForMovement$ (nationId: BritNationId, playerId: BritPlayerId, selectedUnitIds: BritUnitId[]): Observable<BritUnitId[] | BritAreaId> {
+    const unitAreaId = this.rules.movement.getAreaByUnit (selectedUnitIds[0], this.game.get ())!;
+    const validUnits = this.rules.movement.getValidUnitsByAreaForMovement (nationId, unitAreaId, this.game.get ());
+    const validAreas = this.rules.movement.getValidAreasForMovement (unitAreaId, nationId, this.game.get ())
+    this.ui.updateUi ("Select area or units for movement", s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayer: playerId,
+      message: `Select an area to move the selected units, or select more units to be moved.`,
+      validUnits: validUnits,
+      validAreas: validAreas,
+      selectedUnits: selectedUnitIds,
+      canCancel: true,
+    }));
+    return race (
+      this.ui.unitsChange$<BritUnitId> (),
+      this.ui.areaChange$ ()
+    );
+  } // chooseUnitsOrAreaForMovement$
 
 } // BritPlayerLocalService

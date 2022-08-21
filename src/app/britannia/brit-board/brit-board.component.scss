@@ -119,7 +119,7 @@
   }
 }
 
-::ng-deep .brit-nation-card-sheet {
+::ng-deep .brit-nation-card-sheet, ::ng-deep .brit-unit-number-selection-sheet {
   mat-bottom-sheet-container {
     min-width: auto;
     padding: 0;

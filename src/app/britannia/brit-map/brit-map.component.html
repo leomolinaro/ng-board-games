@@ -32,7 +32,11 @@
 
     <ng-container *ngFor="let areaNode of areaNodes; trackBy: areaTrackBy">
       <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
-        <svg:svg class="brit-unit" width="34" height="34" [attr.x]="unitNode.svgX" [attr.y]="unitNode.svgY">
+        <svg:svg class="brit-unit" width="34" height="34" [attr.x]="unitNode.svgX" [attr.y]="unitNode.svgY"
+          [ngClass]="{
+            'is-active': isValidUnit && isValidUnit[unitNode.unitGroup[0].id],
+            'is-disabled': isValidUnit && !isValidUnit[unitNode.unitGroup[0].id]
+          }" (click)="onUnitClick (unitNode)">
           <svg:rect
             class="brit-unit-rect"
             x="2"
@@ -54,6 +58,17 @@
             y="100%">
             {{ unitNode.quantity }}
           </svg:text>
+          <svg:rect
+            *ngIf="isValidUnit && !isValidUnit[unitNode.unitGroup[0].id]"
+            [matTooltip]="unitNode.tooltip"
+            matTooltipClass="brit-map-tooltip"
+            class="brit-unit-rect-overlay"
+            x="0"
+            y="0"
+            width="34"
+            height="34"
+            rx="2">
+          </svg:rect>
         </svg:svg>
       </ng-container>
     </ng-container>

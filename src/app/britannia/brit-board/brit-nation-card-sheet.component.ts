@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from "@angular/core";
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritNation, BritNationId } from "../brit-components.models";
+import { BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritNationState } from "../brit-game-state.models";
 
@@ -11,8 +11,8 @@ interface BritUnitNode {
   total: number;
 } // BritUnitNode
 
-@Component({
-  selector: 'brit-nation-card-sheet',
+@Component ({
+  selector: "brit-nation-card-sheet",
   template: `
     <img class="brit-nation-card" [src]="nationCardImageSource">
     <button mat-icon-button class="brit-nation-card-close-button" (click)="onCloseClick ()">
@@ -65,7 +65,7 @@ interface BritUnitNode {
 export class BritNationCardSheetComponent implements OnInit {
 
   constructor (
-    private bottomSheetRef: MatBottomSheetRef<BritNationCardSheetComponent, BritNation>,
+    private bottomSheetRef: MatBottomSheetRef<BritNationCardSheetComponent, void>,
     @Inject (MAT_BOTTOM_SHEET_DATA) public data: [BritNationId, BritNationState],
     private assetsService: BritAssetsService,
     private components: BritComponentsService,

@@ -11,6 +11,7 @@ import { forkJoin, Observable } from "rxjs";
 import { BritActionsComponent } from "./brit-actions/brit-actions.component";
 import { BritBoardComponent } from "./brit-board/brit-board.component";
 import { BritNationCardSheetComponent } from './brit-board/brit-nation-card-sheet.component';
+import { BritUnitsSelectorSheetComponent } from "./brit-board/brit-units-selector-sheet.component";
 import { BritGameComponent } from "./brit-game/brit-game.component";
 import { BritHomeComponent } from "./brit-home/brit-home.component";
 import { BritHomeModule } from "./brit-home/brit-home.module";
@@ -20,6 +21,7 @@ import { BritMapComponent } from "./brit-map/brit-map.component";
 import { BritMapService } from "./brit-map/brit-map.service";
 import { BritPlayerComponent } from './brit-player/brit-player.component';
 import { BritRemoteService } from "./brit-remote.service";
+import { BritUnitsSelectorComponent } from "./brit-units-selector/brit-units-selector.component";
 
 @Injectable ()
 export class BritAreaPathResolver implements Resolve<any> {
@@ -54,6 +56,8 @@ const routes: Routes = [
     BritMapComponent,
     BritPlayerComponent,
     BritNationCardSheetComponent,
+    BritUnitsSelectorSheetComponent,
+    BritUnitsSelectorComponent,
     BritLogsComponent,
     BritLogComponent,
     BritActionsComponent

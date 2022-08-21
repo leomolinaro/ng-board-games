@@ -40,8 +40,12 @@ export class BritComponentsService {
     return map;
   } // areasToMap
 
-  getLandArea (landAreaId: BritLandAreaId): BritLandArea { return this.AREA[landAreaId] as BritLandArea; } 
-  getSeaArea (seaAreaId: BritSeaAreaId): BritSeaArea { return this.AREA[seaAreaId] as BritSeaArea; } 
+  getArea (areaId: BritAreaId): BritArea { return this.AREA[areaId]; }
+  getLandArea (landAreaId: BritLandAreaId): BritLandArea { return this.AREA[landAreaId] as BritLandArea; }
+  getSeaArea (seaAreaId: BritSeaAreaId): BritSeaArea { return this.AREA[seaAreaId] as BritSeaArea; }
+  forEachArea (forEachArea: (area: BritArea) => void): void {
+    this.AREA_IDS.forEach (areaId => forEachArea (this.AREA[areaId]));
+  } // forEachArea
   
   getNationIdsOfColor (color: BritColor): BritNationId[] {
     switch (color) {
@@ -57,6 +61,10 @@ export class BritComponentsService {
     this.NATION_IDS.forEach (nationId => map[nationId] = getValue (nationId));
     return map;
   } // nationsToMap
+
+  getNation (nationId: BritNationId): BritNation { return this.NATION[nationId]; }
+
+  getUnit (unitId: BritUnitId): BritUnit { return this.UNIT[unitId]; }
 
   init () {
     // Land areas

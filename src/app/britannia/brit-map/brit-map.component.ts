@@ -19,8 +19,8 @@ interface BritAreaNode {
 } // BritAreaNode
 
 interface BritUnitNode {
-  id: BritUnitId;
-  unit: BritUnit;
+  id: string;
+  unitGroup: BritUnit[];
   imageSource: string;
   index: number;
   areaNode: BritAreaNode;
@@ -91,10 +91,11 @@ export class BritMapComponent implements OnChanges {
   @Input () nationStates!: Record<BritNationId, BritNationState>;
   @Input () validAreas: BritAreaId[] | null = null;
   @Input () validUnits: BritUnitId[] | null = null;
+  @Input () selectedUnits: BritUnitId[] | null = null;
   // in caso di update dell'unità in un'area, bisogna cambiare il riferimento delle BritArea.units
 
   @Output () areaClick = new EventEmitter<BritAreaId> ();
-  @Output () unitClick = new EventEmitter<BritUnitId> ();
+  @Output () unitGroupClick = new EventEmitter<BritUnitId[]> ();
 
   areaNodes!: BritAreaNode[];
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
@@ -145,6 +146,9 @@ export class BritMapComponent implements OnChanges {
     if (changes.validUnits) {
       this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
     } // if
+    // if (changes.selectedUnits) {
+    //   this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
+    // } // if
   } // ngOnChanges
 
   ngOnInit () {
@@ -243,7 +247,7 @@ export class BritMapComponent implements OnChanges {
     const point = this.getUnitNodePoint (index, nAreaUnits, areaNode.id);
     return {
       id: unit.type === "leader" ? unit.id : `${unit.nationId}-${unit.type}`,
-      unit,
+      unitGroup,
       imageSource,
       index,
       areaNode,
@@ -312,6 +316,12 @@ export class BritMapComponent implements OnChanges {
       this.areaClick.emit (areaNode.id);
     } // if
   } // onAreaClick
+
+  onUnitClick (unitNode: BritUnitNode) {
+    if (this.validUnits?.includes (unitNode.unitGroup[0].id)) {
+      this.unitGroupClick.emit (unitNode.unitGroup.map (u => u.id));
+    } // if
+  } // onUnitClick
 
   getNationPopulationNodeX = (nationNode: BritNationPopulationNode, index: number, populationNode: BritPopulationNode) => {
     return this.mapService.getPopulationX (populationNode.id, index) * GRID_STEP;

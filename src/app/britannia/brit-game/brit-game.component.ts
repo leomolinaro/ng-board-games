@@ -27,12 +27,13 @@ import { BritUiStore } from "./brit-ui.store";
       [currentPlayer]="currentPlayer$ | async"
       [validAreas]="validAreas$ | async"
       [validUnits]="validUnits$ | async"
+      [selectedUnits]="selectedUnits$ | async"
       [canPass]="canPass$ | async"
       [canCancel]="canCancel$ | async"
       (passClick)="onPassClick ()"
       (cancelClick)="onCancelClick ()"
       (areaClick)="onAreaClick ($event)"
-      (unitClick)="onUnitClick ($event)">
+      (selectedUnitsChange)="onUnitsSelect ($event)">
     </brit-board>
     <!-- [validLands]="validLands$ | async"
     [validActions]="validActions$ | async"
@@ -84,6 +85,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
   message$ = this.ui.selectMessage$ ();
   validAreas$ = this.ui.selectValidAreas$ ();
   validUnits$ = this.ui.selectValidUnits$ ();
+  selectedUnits$ = this.ui.selectSelectedUnits$ ();
   // validActions$ = this.ui.selectValidActions$ ();
   // validBuildings$ = this.ui.selectValidBuildings$ ();
   // validResources$ = this.ui.selectValidResources$ ();
@@ -155,7 +157,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
   // onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
   // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
   onAreaClick (areaId: BritAreaId) { this.ui.areaChange (areaId); }
-  onUnitClick (unitId: BritUnitId) { this.ui.unitChange (unitId); }
+  onUnitsSelect (unitIds: BritUnitId[]) { this.ui.unitsChange (unitIds); }
   // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
   onPassClick () { this.ui.passChange (); }
   onCancelClick () { this.ui.cancelChange (); }

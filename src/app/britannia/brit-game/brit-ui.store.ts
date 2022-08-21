@@ -12,6 +12,7 @@ interface BritUiState {
   message: string | null;
   validAreas: BritAreaId[] | null;
   validUnits: BritUnitId[] | null;
+  selectedUnits: BritUnitId[] | null;
   // validResources: {
   //   player: string;
   //   resources: BritResourceType[]
@@ -35,6 +36,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       message: null,
       validAreas: null,
       validUnits: null,
+      selectedUnits: null,
       // validActions: null,
       // validBuildings: null,
       // validResources: null,
@@ -47,13 +49,13 @@ export class BritUiStore extends BgStore<BritUiState> {
   passChange () { this.$passChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
   areaChange (areaId: BritAreaId) { this.$areaChange.next (areaId); }
-  unitChange (unitId: BritUnitId) { this.$unitChange.next (unitId); }
+  unitsChange (unitIds: BritUnitId[]) { this.$unitsChange.next (unitIds); }
   // buildingChange (building: BritBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: BritResourceType) { this.$resourceChange.next (resource); }
   cancelChange () { this.$cancelChange.next (void 0); }
   // private $actionChange = new Subject<BritAction> ();
   private $areaChange = new Subject<BritAreaId> ();
-  private $unitChange = new Subject<BritUnitId> ();
+  private $unitsChange = new Subject<BritUnitId[]> ();
   // private $numberOfKnightsChange = new Subject<number> ();
   private $passChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
@@ -61,7 +63,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   private $cancelChange = new Subject<void> ();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
   areaChange$<T extends BritAreaId = BritAreaId> (): Observable<T> { return (this.$areaChange as unknown as Subject<T>).asObservable ().pipe (first ()); }
-  unitChange$<T extends BritUnitId = BritUnitId> (): Observable<T> { return (this.$unitChange as unknown as Subject<T>).asObservable ().pipe (first ()); }
+  unitsChange$<T extends BritUnitId = BritUnitId> (): Observable<T[]> { return (this.$unitsChange as unknown as Subject<T[]>).asObservable ().pipe (first ()); }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
   // passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
   // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
@@ -71,6 +73,7 @@ export class BritUiStore extends BgStore<BritUiState> {
 
   selectValidAreas$ () { return this.select$ (s => s.validAreas); }
   selectValidUnits$ () { return this.select$ (s => s.validUnits); }
+  selectSelectedUnits$ () { return this.select$ (s => s.selectedUnits); }
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
@@ -130,7 +133,8 @@ export class BritUiStore extends BgStore<BritUiState> {
     return {
       message: null,
       validAreas: null,
-      validUnits: null
+      validUnits: null,
+      selectedUnits: null
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,

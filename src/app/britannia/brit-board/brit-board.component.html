@@ -7,8 +7,9 @@
       [nationStates]="nationStates"
       [validAreas]="validAreas"
       [validUnits]="validUnits"
+      [selectedUnits]="selectedUnits"
       (areaClick)="areaClick.emit ($event)"
-      (unitClick)="unitClick.emit ($event)">
+      (unitGroupClick)="onUnitGroupClick ($event)">
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">

@@ -104,7 +104,6 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
   private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId, roundId: BritRoundId): Observable<void> {
     this.game.logPhase ("populationIncrease");
     const data = this.rules.populationIncrease.calculatePopulationIncreaseData (nationId, roundId, this.game.get ());
-    
     switch (data.type) {
       case "infantry-placement": {
         if (data.nInfantries) {
@@ -138,11 +137,14 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     } // if - else
   } // populationIncreasePhase$
 
-
-
   private movementPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("movement");
-    return of (void 0);
+    return this.executeTask$ (playerId, p => p.armyMovement$ (nationId, playerId)).pipe (
+      map (armyMovement => {
+        console.log ("armyMovement", armyMovement);
+        return void 0;
+      })
+    );
   } // movement$
 
   private battlesRetreatsPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
