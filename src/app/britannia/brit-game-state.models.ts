@@ -13,14 +13,53 @@ export interface BritGameState {
   logs: BritLog[];
 } // BritGameState
 
+export type BritAreaUnitId = string;
+
+interface ABritAreaUnit {
+  nationId: BritNationId;
+  areaId: BritAreaId;
+} // ABritAreaUnit
+
+export interface BritAreaInfantry extends ABritAreaUnit {
+  nationId: BritNationId;
+  type: "infantry";
+  quantity: number;
+} // BritAreaInfantry
+
+export interface BritAreaCavalry extends ABritAreaUnit {
+  nationId: BritNationId;
+  type: "cavalry";
+  quantity: number;
+} // BritAreaCavalry
+
+export interface BritAreaRomanFort extends ABritAreaUnit {
+  nationId: BritNationId;
+  type: "roman-fort";
+  quantity: number;
+} // BritAreaRomanFort
+
+export interface BritAreaSaxonBuhr extends ABritAreaUnit {
+  nationId: BritNationId;
+  type: "saxon-buhr";
+  quantity: number;
+} // BritAreaSaxonBuhr
+
+export interface BritAreaLeader extends ABritAreaUnit {
+  nationId: BritNationId;
+  type: "leader";
+  leaderId: BritLeaderId;
+} // BritAreaLeader
+
+export type BritAreaUnit = BritAreaInfantry | BritAreaCavalry | BritAreaRomanFort | BritAreaSaxonBuhr | BritAreaLeader;
+
 export interface BritAreaState {
-  unitIds: string[];
+  units: BritAreaUnit[];
 } // BritAreaState
 
 export interface BritNationState {
-  infantryIds: string[];
-  cavalryIds: string[];
-  buildingIds: string[];
+  nInfantries: number;
+  nCavalries: number;
+  nBuildings: number;
   leaderIds: BritLeaderId[];
   population: BritPopulation | null;
   active: boolean;

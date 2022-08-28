@@ -1,31 +1,38 @@
 export type BritColor = "blue" | "yellow" | "red" | "green";
 
-interface ABritUnit {
-  id: BritUnitId;
-  nationId: BritNationId;
-  nationLabel: string;
-  type: string;
-  typeLabel: string;
-  nationColor: BritColor;
-} // ABritUnit
+// interface ABritUnit {
+//   id: BritUnitId;
+//   nationId: BritNationId;
+//   nationLabel: string;
+//   type: string;
+//   typeLabel: string;
+//   nationColor: BritColor;
+// } // ABritUnit
+
+export type BritUnitType = "infantry" | "cavalry" | "roman-fort" | "saxon-buhr" | "leader";
 
 export type BritLeaderId = "arthur" | "william" | "aelle" | "egbert" | "alfred" | "edgar" | "harold" |
 "ivar-and-halfdan" | "cnut" | "svein-estrithson" | "harald-hardrada" | "ida" | "oswiu" | "offa" |
 "boudicca" | "urien" | "fergus-mor-mac-erc" | "ketil-flatnose" | "olaf-guthfrithsson";
 
-export interface BritArmy extends ABritUnit { }
-export interface BritInfantry extends ABritUnit { type: "infantry"; }
-export interface BritCavalry extends ABritUnit { type: "cavalry"; }
-export interface BritLeader extends ABritUnit {
+export interface BritLeader {
   id: BritLeaderId;
-  type: "leader";
   name: string;
 } // BritLeader
-export interface BritBuilding extends ABritUnit { }
-export interface BritRomanFort extends BritBuilding { type: "roman-fort"; }
-export interface BritSaxonBuhr extends BritBuilding { type: "saxon-buhr"; }
-export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritRomanFort | BritSaxonBuhr;
-export type BritUnitId = string;
+
+// export interface BritArmy extends ABritUnit { }
+// export interface BritInfantry extends ABritUnit { type: "infantry"; }
+// export interface BritCavalry extends ABritUnit { type: "cavalry"; }
+// export interface BritLeader extends ABritUnit {
+//   id: BritLeaderId;
+//   type: "leader";
+//   name: string;
+// } // BritLeader
+// export interface BritBuilding extends ABritUnit { }
+// export interface BritRomanFort extends BritBuilding { type: "roman-fort"; }
+// export interface BritSaxonBuhr extends BritBuilding { type: "saxon-buhr"; }
+// export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritRomanFort | BritSaxonBuhr;
+// export type BritUnitId = string;
 
 export type BritRegionId = "wales" | "england" | "scotland";
 
@@ -90,9 +97,9 @@ export interface BritNation {
   id: BritNationId;
   label: string;
   color: BritColor;
-  infantryIds: BritUnitId[];
-  cavalryIds: BritUnitId[];
-  buildingIds: BritUnitId[];
+  nInfantries: number;
+  nCavalries: number;
+  nBuildings: number;
   leaderIds: BritLeaderId[];
 } // BritNation
 

@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritUnitId } from "../brit-components.models";
-import { BritComponentsService } from "../brit-components.service";
+import { BritAreaUnit } from "../brit-game-state.models";
 
 export interface BritUnitsSelectorSheetInput {
-  unitId: BritUnitId;
+  unit: BritAreaUnit;
   quantity: number;
   maxQuantity: number;
 } // BritUnitsSelectorSheetInput
@@ -29,8 +28,7 @@ export class BritUnitsSelectorSheetComponent implements OnInit {
   constructor (
     private bottomSheetRef: MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>,
     @Inject (MAT_BOTTOM_SHEET_DATA) public data: BritUnitsSelectorSheetInput,
-    private assetsService: BritAssetsService,
-    private components: BritComponentsService
+    private assetsService: BritAssetsService
   ) { }
 
   imageSource!: string;
@@ -38,8 +36,7 @@ export class BritUnitsSelectorSheetComponent implements OnInit {
 
   ngOnInit () {
     this.quantity = this.data.quantity;
-    const unit = this.components.getUnit (this.data.unitId);
-    this.imageSource = this.assetsService.getUnitImageSourceByType (unit.type, unit.nationId)
+    this.imageSource = this.assetsService.getUnitImageSourceByType (this.data.unit.type, this.data.unit.nationId)
   } // ngOnInit
 
   onCloseClick () {

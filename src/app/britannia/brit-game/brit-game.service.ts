@@ -139,9 +139,9 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   private movementPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("movement");
-    return this.executeTask$ (playerId, p => p.armyMovement$ (nationId, playerId)).pipe (
-      map (armyMovement => {
-        console.log ("armyMovement", armyMovement);
+    return this.executeTask$ (playerId, p => p.armyMovements$ (nationId, playerId)).pipe (
+      map (armyMovements => {
+        console.log ("armyMovements", armyMovements);
         return void 0;
       })
     );

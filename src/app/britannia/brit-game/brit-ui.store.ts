@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@bg-utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BritAreaId, BritUnitId } from "../brit-components.models";
+import { BritAreaId } from "../brit-components.models";
+import { BritAreaUnit } from "../brit-game-state.models";
 import { BritGameStore } from "./brit-game.store";
 
 interface BritUiState {
@@ -11,8 +12,8 @@ interface BritUiState {
   canCancel: boolean;
   message: string | null;
   validAreas: BritAreaId[] | null;
-  validUnits: BritUnitId[] | null;
-  selectedUnits: BritUnitId[] | null;
+  validUnits: BritAreaUnit[] | null;
+  selectedUnits: BritAreaUnit[] | null;
   // validResources: {
   //   player: string;
   //   resources: BritResourceType[]
@@ -20,7 +21,6 @@ interface BritUiState {
   // validActions: BritAction[] | null;
   // validBuildings: ("stronghold" | "village")[] | null;
   canPass: boolean;
-  // maxNumberOfKnights: number | null;
 } // BritUiState
 
 @Injectable ()
@@ -40,8 +40,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       // validActions: null,
       // validBuildings: null,
       // validResources: null,
-      canPass: false,
-      // maxNumberOfKnights: null
+      canPass: false
     }, "Brit UI");
   } // constructor
 
@@ -49,23 +48,25 @@ export class BritUiStore extends BgStore<BritUiState> {
   passChange () { this.$passChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
   areaChange (areaId: BritAreaId) { this.$areaChange.next (areaId); }
-  unitsChange (unitIds: BritUnitId[]) { this.$unitsChange.next (unitIds); }
+  unitChange (unit: BritAreaUnit) { this.$unitChange.next (unit); }
+  selectedUnitsChange (units: BritAreaUnit[]) { this.$selectedUnitsChange.next (units); }
   // buildingChange (building: BritBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: BritResourceType) { this.$resourceChange.next (resource); }
   cancelChange () { this.$cancelChange.next (void 0); }
   // private $actionChange = new Subject<BritAction> ();
   private $areaChange = new Subject<BritAreaId> ();
-  private $unitsChange = new Subject<BritUnitId[]> ();
-  // private $numberOfKnightsChange = new Subject<number> ();
+  private $unitChange = new Subject<BritAreaUnit> ();
+  private $selectedUnitsChange = new Subject<BritAreaUnit[]> ();
   private $passChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<BritResourceType> ();
   private $cancelChange = new Subject<void> ();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
   areaChange$<T extends BritAreaId = BritAreaId> (): Observable<T> { return (this.$areaChange as unknown as Subject<T>).asObservable ().pipe (first ()); }
-  unitsChange$<T extends BritUnitId = BritUnitId> (): Observable<T[]> { return (this.$unitsChange as unknown as Subject<T[]>).asObservable ().pipe (first ()); }
+  unitChange$ (): Observable<BritAreaUnit> { return this.$unitChange.asObservable ().pipe (first ()); }
+  selectedUnitsChange$ (): Observable<BritAreaUnit[]> { return this.$selectedUnitsChange.asObservable ().pipe (first ()); }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
-  // passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
+  passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
   // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
   // resourceChange$ () { return this.$resourceChange.asObservable ().pipe (first ()); }
   cancelChange$ () { return this.$cancelChange.asObservable ().pipe (first ()); }
@@ -134,7 +135,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       message: null,
       validAreas: null,
       validUnits: null,
-      selectedUnits: null
+      selectedUnits: null,
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,

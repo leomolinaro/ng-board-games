@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BritAreaId, BritNationId, BritUnitId } from "../brit-components.models";
+import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { BritGameState } from "../brit-game-state.models";
+import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,11 @@ export class BritRulesMovementService {
     private components: BritComponentsService
   ) { }
 
-  getValidUnitsForMovement (nationId: BritNationId, state: BritGameState): BritUnitId[] {
+  getValidUnitsForMovement (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
     return this.getPlacedMovingUnitsByNation (nationId, state);
   } // getValidUnitsForMovement
 
-  getValidUnitsByAreaForMovement (nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritUnitId[] {
+  getValidUnitsByAreaForMovement (nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritAreaUnit[] {
     return this.getPlacedMovingUnitsByNationByArea (areaId, nationId, state);
   } // getValidUnitsByAreaForMovement
 
@@ -33,39 +33,30 @@ export class BritRulesMovementService {
     return validAreas;
   } // getValidAreasForMovement
 
-  private getPlacedMovingUnitsByNation (nationId: BritNationId, state: BritGameState): BritUnitId[] {
-    const unitIds: BritUnitId[] = [];
+  private getPlacedMovingUnitsByNation (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+    const units: BritAreaUnit[] = [];
     this.components.AREA_IDS.forEach (areaId => {
       const areaState = state.areas[areaId];
-      areaState.unitIds.forEach (unitId => {
-        const unit = this.components.getUnit (unitId);
+      areaState.units.forEach (unit => {
         if (unit.nationId !== nationId) { return; }
-        if ( unit.type === "infantry" || unit.type === "cavalry" || unit.type === "leader") {
-          unitIds.push (unitId);
+        if (unit.type === "infantry" || unit.type === "cavalry" || unit.type === "leader") {
+          units.push (unit);
         } // if
       });
     });
-    return unitIds;
+    return units;
   } // getPlacedMovingUnitsByNation
 
-  private getPlacedMovingUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritUnitId[] {
-    const unitIds: BritUnitId[] = [];
+  private getPlacedMovingUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+    const units: BritAreaUnit[] = [];
     const areaState = state.areas[areaId];
-    areaState.unitIds.forEach (unitId => {
-      const unit = this.components.getUnit (unitId);
+    areaState.units.forEach (unit => {
       if (unit.nationId !== nationId) { return; }
       if (unit.type === "infantry" || unit.type === "cavalry" || unit.type === "leader") {
-        unitIds.push (unitId);
+        units.push (unit);
       } // if
     });
-    return unitIds;
+    return units;
   } // getPlacedMovingUnitsByNationByArea
 
-  getAreaByUnit (unitId: BritUnitId, state: BritGameState): BritAreaId | undefined {
-    return this.components.AREA_IDS.find (areaId => {
-      const areaState = state.areas[areaId];
-      return areaState.unitIds.includes (unitId);
-    });
-  } // getAreaByUnit
-  
 } // BritRulesMovementService

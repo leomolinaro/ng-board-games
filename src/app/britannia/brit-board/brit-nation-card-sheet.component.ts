@@ -29,7 +29,7 @@ interface BritUnitNode {
     @import "bg-variables";
     :host {
       display: flex;
-      flex-direction: column;  
+      flex-direction: column;
       .brit-nation-card {
         max-width: 500px;
         min-width: 30vw;
@@ -88,25 +88,25 @@ export class BritNationCardSheetComponent implements OnInit {
     const nation = this.components.NATION[nationId];
     this.nationCardImageSource = this.assetsService.getNationCardImageSource (nation.id);
     this.unitNodes = [];
-    if (nation.infantryIds.length) {
+    if (nation.nInfantries) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("infantry", nation.id),
-        total: nation.infantryIds.length,
-        available: nationState.infantryIds.length
+        total: nation.nInfantries,
+        available: nationState.nInfantries
       });
     } // if
-    if (nation.cavalryIds.length) {
+    if (nation.nCavalries) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType ("cavalry", nation.id),
-        total: nation.cavalryIds.length,
-        available: nationState.cavalryIds.length
+        total: nation.nCavalries,
+        available: nationState.nCavalries
       });
     } // if
-    if (nation.buildingIds.length) {
+    if (nation.nBuildings) {
       this.unitNodes.push ({
         imageSource: this.assetsService.getUnitImageSourceByType (nation.id === "romans" ? "roman-fort" : "saxon-buhr", nation.id),
-        total: nation.buildingIds.length,
-        available: nationState.buildingIds.length
+        total: nation.nBuildings,
+        available: nationState.nBuildings
       });
     } // if
     for (const leader of nation.leaderIds) {

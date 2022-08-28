@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
-import { BritAreaId, BritLandAreaId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitId } from "../brit-components.models";
+import { BritAreaId, BritLandAreaId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitType } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaState, BritGameState, BritLog, BritNationState, BritPlayer, BritSetup } from "../brit-game-state.models";
 
@@ -15,15 +15,15 @@ export class BritGameStore extends BgStore<BritGameState> {
       gameId: "",
       gameOwner: null as any,
       players: { map: { }, ids: [] },
-      areas: components.areasToMap (areaId => ({ unitIds: [] })),
+      areas: components.areasToMap (areaId => ({ units: [] })),
       nations: components.nationsToMap (nationId => {
         const nation = components.NATION[nationId];
         return {
           active: false,
           population: null,
-          infantryIds: [...nation.infantryIds],
-          cavalryIds: [...nation.cavalryIds],
-          buildingIds: [...nation.buildingIds],
+          nInfantries: nation.nInfantries,
+          nCavalries: nation.nCavalries,
+          nBuildings: nation.nBuildings,
           leaderIds: [...nation.leaderIds],
         };
       }),
@@ -238,22 +238,30 @@ export class BritGameStore extends BgStore<BritGameState> {
     }), s);
   } // setNationActive
 
-  private addUnitToArea (unitId: BritUnitId, areaId: BritAreaId, s: BritGameState): BritGameState {
-    return this.updateArea (areaId, area => ({
-      ...area,
-      unitIds: immutableUtil.listPush ([unitId], area.unitIds)
-    }), s);
+  private addUnitToArea (unitType: Exclude<BritUnitType, "leader">, nationId: BritNationId, areaId: BritAreaId, s: BritGameState): BritGameState {
+    return this.updateArea (areaId, area => {
+      const index = area.units.findIndex (u => u.type === unitType && u.nationId === nationId);
+      if (index >= 0) {
+        const unit = area.units[index];
+        if (unit.type === "leader") { return area; }
+        return {
+          ...area,
+          units: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity + 1 }, area.units)
+        };
+      } else {
+        return {
+          ...area,
+          units: immutableUtil.listPush ([{ type: unitType, nationId: nationId, quantity: 1, areaId }], area.units)
+        };
+      } // if - else
+    }, s);
   } // addUnitToArea
 
-  private removeInfantryFromNation (nationId: BritNationId, s: BritGameState): [BritUnitId, BritGameState] {
-    const unitId = s.nations[nationId].infantryIds[0];
-    return [
-      unitId,
-      this.updateNation (nationId, n => ({
-        ...n,
-        infantryIds: immutableUtil.listRemoveByIndex (0, n.infantryIds)
-      }), s)
-    ];
+  private removeInfantryFromNation (nationId: BritNationId, s: BritGameState): BritGameState {
+    return this.updateNation (nationId, n => ({
+      ...n,
+      nInfantries: n.nInfantries - 1
+    }), s)
   } // removeInfantryFromNation
 
   applySetup (setup: BritSetup) {
@@ -263,8 +271,8 @@ export class BritGameStore extends BgStore<BritGameState> {
         if (areaSetup) {
           const [nationId, nInfantries] = typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];
           for (let i = 0; i < nInfantries; i++) {
-            let [infantryId, newState] = this.removeInfantryFromNation (nationId, state);
-            state = this.addUnitToArea (infantryId, areaId, newState);
+            state = this.removeInfantryFromNation (nationId, state);
+            state = this.addUnitToArea ("infantry", nationId, areaId, state);
           } // for
         } // if
         setup.populationMarkers.forEach (nationId => {
@@ -279,15 +287,8 @@ export class BritGameStore extends BgStore<BritGameState> {
   } // applySetup
 
   private placeInfantry (areaId: BritAreaId, nationId: BritNationId, s: BritGameState): BritGameState {
-    const unitId = s.nations[nationId].infantryIds[0];
-    s = this.updateNation (nationId, n => ({
-      ...n,
-      infantryIds: immutableUtil.listRemoveByIndex (0, n.infantryIds)
-    }), s);
-    s = this.updateArea (areaId, a => ({
-      ...a,
-      unitIds: immutableUtil.listPush ([unitId], a.unitIds)
-    }), s);
+    s = this.removeInfantryFromNation (nationId, s);
+    s = this.addUnitToArea ("infantry", nationId, areaId, s);
     return s;
   } // placeInfantry
 

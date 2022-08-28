@@ -28,17 +28,17 @@
     padding: 2vmin;
 
     grid-template-areas:
-      "players extras extras"
-      "players extras extras"
+      "players instructions extras"
+      "players . extras"
       "players . actions"
-      "players instructions actions";
+      "players . actions";
 
     .brit-board-instructions-widget {
       grid-area: instructions;
       pointer-events: auto;
       margin-left: auto;
       margin-right: auto;
-      margin-top: auto;
+      margin-bottom: auto;
       padding: 2vh;
       background: $surface;
       color: white;

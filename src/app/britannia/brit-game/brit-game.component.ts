@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@bg-services";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@bg-utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
-import { BritAreaId, BritUnitId } from "../brit-components.models";
+import { BritBoardComponent } from "../brit-board/brit-board.component";
+import { BritAreaId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { ABritPlayer, BritPlayer } from "../brit-game-state.models";
+import { ABritPlayer, BritAreaUnit, BritPlayer } from "../brit-game-state.models";
 import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
@@ -33,7 +34,8 @@ import { BritUiStore } from "./brit-ui.store";
       (passClick)="onPassClick ()"
       (cancelClick)="onCancelClick ()"
       (areaClick)="onAreaClick ($event)"
-      (selectedUnitsChange)="onUnitsSelect ($event)">
+      (unitClick)="onUnitClick ($event)"
+      (selectedUnitsChange)="onSelectedUnitsChange ($event)">
     </brit-board>
     <!-- [validLands]="validLands$ | async"
     [validActions]="validActions$ | async"
@@ -91,7 +93,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   // validResources$ = this.ui.selectValidResources$ ();
   canPass$ = this.ui.selectCanPass$ ();
   canCancel$ = this.ui.selectCanCancel$ ();
-  // maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
+
+  @ViewChild (BritBoardComponent) boardComponent!: BritBoardComponent;
 
   @SingleEvent ()
   ngOnInit () {
@@ -157,7 +160,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   // onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
   // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
   onAreaClick (areaId: BritAreaId) { this.ui.areaChange (areaId); }
-  onUnitsSelect (unitIds: BritUnitId[]) { this.ui.unitsChange (unitIds); }
+  onUnitClick (unit: BritAreaUnit) { this.ui.unitChange (unit); }
+  onSelectedUnitsChange (units: BritAreaUnit[]) { this.ui.selectedUnitsChange (units); }
   // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
   onPassClick () { this.ui.passChange (); }
   onCancelClick () { this.ui.cancelChange (); }

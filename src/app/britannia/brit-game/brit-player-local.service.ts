@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { forN } from "@bg-utils";
-import { EMPTY, expand, last, map, mapTo, Observable, race, tap } from "rxjs";
-import { BritAreaId, BritLandAreaId, BritNationId, BritUnitId } from "../brit-components.models";
-import { BritPlayerId } from "../brit-game-state.models";
+import { EMPTY, expand, last, map, mapTo, Observable, race } from "rxjs";
+import { BritAreaId, BritLandAreaId, BritNationId } from "../brit-components.models";
+import { BritAreaUnit, BritPlayerId } from "../brit-game-state.models";
 import { BritRulesService } from "../brit-rules/brit-rules.service";
-import { BritArmyMovement, BritArmyPlacement } from "../brit-story.models";
+import { BritArmyMovement, BritArmyMovements, BritArmyPlacement } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -55,31 +55,57 @@ export class BritPlayerLocalService implements BritPlayerService {
     return this.ui.areaChange$<BritLandAreaId> ();
   } // chooseLandForRecruitment$
 
-  armyMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovement> {
+  armyMovements$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovements> {
+    const armyMovements: BritArmyMovements = { movements: [] };
+    return this.armyMovement$ (nationId, playerId).pipe (
+      expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> (movementOrPass => {
+        if (movementOrPass === "pass") {
+          return EMPTY;
+        } else {
+          armyMovements.movements.push (movementOrPass);
+          return this.armyMovement$ (nationId, playerId);
+        } // if - else
+      }),
+      last (),
+      mapTo (armyMovements)
+    );
+  } // armyMovements$
+
+  private armyMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovement | "pass"> {
     return this.chooseUnitsForMovement$ (nationId, playerId).pipe (
-      expand<BritUnitId[] | BritAreaId, Observable<BritUnitId[] | BritAreaId>> (unitIdsOrAreaId => {
-        if (Array.isArray (unitIdsOrAreaId)) {
+      map (unitsOrPass => unitsOrPass === "pass" ? "pass" : ({ units: unitsOrPass, toAreaId: null! })),
+      expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> (armyMovementOrPass => {
+        if (armyMovementOrPass === "pass") {
+          return EMPTY;
+        } else if (armyMovementOrPass.toAreaId) {
+          return EMPTY;
+        } else {
           this.ui.updateUi ("Units selected", s => ({
             ...s,
-            selectedUnits: unitIdsOrAreaId
+            selectedUnits: armyMovementOrPass.units
           }));
-          if (unitIdsOrAreaId.length) {
-            console.log ("TODO");
-            return this.chooseUnitsOrAreaForMovement$ (nationId, playerId, unitIdsOrAreaId).pipe (
-              tap (r => console.log ("RRRRRRR", r))
+          if (armyMovementOrPass.units.length) {
+            return this.chooseUnitsOrAreaForMovement$ (nationId, playerId, armyMovementOrPass.units).pipe (
+              map (unitsOrAreaId => {
+                if (typeof unitsOrAreaId === "string") {
+                  return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
+                } else {
+                  return { ...armyMovementOrPass, units: unitsOrAreaId };
+                } // if - else
+              })
             );
           } else {
-            return this.chooseUnitsForMovement$ (nationId, playerId);
+            return this.chooseUnitsForMovement$ (nationId, playerId).pipe (
+              map (unitsOrPass => unitsOrPass === "pass" ? "pass" : ({ ...armyMovementOrPass, units: unitsOrPass }))
+            );
           } // if - else
-        } else {
-          return EMPTY;
         } // if - else
       }),
       last ()
     );
   } // armyMovement$
 
-  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritUnitId[]> {
+  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritAreaUnit[] | "pass"> {
     const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
     this.ui.updateUi ("Select units for movement", s => ({
       ...s,
@@ -87,15 +113,20 @@ export class BritPlayerLocalService implements BritPlayerService {
       turnPlayer: playerId,
       message: `Select one or more units to be moved.`,
       validUnits: validUnits,
+      selectedUnits: [],
       canCancel: false,
+      canPass: true
     }));
-    return this.ui.unitsChange$<BritUnitId> ();
+    return race<[BritAreaUnit[], "pass"]> (
+      this.ui.selectedUnitsChange$ (),
+      this.ui.passChange$ ().pipe (mapTo ("pass"))
+    );
   } // chooseUnitsForMovement$
 
-  private chooseUnitsOrAreaForMovement$ (nationId: BritNationId, playerId: BritPlayerId, selectedUnitIds: BritUnitId[]): Observable<BritUnitId[] | BritAreaId> {
-    const unitAreaId = this.rules.movement.getAreaByUnit (selectedUnitIds[0], this.game.get ())!;
-    const validUnits = this.rules.movement.getValidUnitsByAreaForMovement (nationId, unitAreaId, this.game.get ());
-    const validAreas = this.rules.movement.getValidAreasForMovement (unitAreaId, nationId, this.game.get ())
+  private chooseUnitsOrAreaForMovement$ (nationId: BritNationId, playerId: BritPlayerId, selectedUnits: BritAreaUnit[]): Observable<BritAreaUnit[] | BritAreaId> {
+    const areaId = selectedUnits[0].areaId;
+    const validUnits = this.rules.movement.getValidUnitsByAreaForMovement (nationId, areaId, this.game.get ());
+    const validAreas = this.rules.movement.getValidAreasForMovement (areaId, nationId, this.game.get ())
     this.ui.updateUi ("Select area or units for movement", s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -103,11 +134,11 @@ export class BritPlayerLocalService implements BritPlayerService {
       message: `Select an area to move the selected units, or select more units to be moved.`,
       validUnits: validUnits,
       validAreas: validAreas,
-      selectedUnits: selectedUnitIds,
+      selectedUnits: selectedUnits,
       canCancel: true,
     }));
     return race (
-      this.ui.unitsChange$<BritUnitId> (),
+      this.ui.selectedUnitsChange$ (),
       this.ui.areaChange$ ()
     );
   } // chooseUnitsOrAreaForMovement$

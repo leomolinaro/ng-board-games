@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { immutableUtil, SimpleChanges } from "@bg-utils";
-import { BritAreaId, BritNationId, BritUnitId } from "../brit-components.models";
-import { BritAreaState, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
+import { Observable } from "rxjs";
+import { BritAreaId, BritNationId } from "../brit-components.models";
+import { BritAreaLeader, BritAreaState, BritAreaUnit, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./brit-units-selector-sheet.component";
 
@@ -27,8 +28,8 @@ export class BritBoardComponent {
   // @Input () otherPlayers!: BaronyPlayer[];
   @Input () message: string | null = null;
   @Input () validAreas: BritAreaId[] | null = null;
-  @Input () validUnits: BritUnitId[] | null = null;
-  @Input () selectedUnits: BritUnitId[] | null = null;
+  @Input () validUnits: BritAreaUnit[] | null = null;
+  @Input () selectedUnits: BritAreaUnit[] | null = null;
   // @Input () validActions: BaronyAction[] | null = null;
   // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
@@ -38,7 +39,8 @@ export class BritBoardComponent {
   @Output () playerSelect = new EventEmitter<BritPlayer> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
   @Output () areaClick = new EventEmitter<BritAreaId> ();
-  @Output () selectedUnitsChange = new EventEmitter<BritUnitId[]> ();
+  @Output () unitClick = new EventEmitter<BritAreaUnit> ();
+  @Output () selectedUnitsChange = new EventEmitter<BritAreaUnit[]> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
   @Output () passClick = new EventEmitter<void> ();
   @Output () cancelClick = new EventEmitter<void> ();
@@ -86,41 +88,41 @@ export class BritBoardComponent {
     } // if - else
   } // onPlayerNationClick
 
-  onUnitGroupClick (unitIds: BritUnitId[]) {
-    let quantity = 0;
-    let newSelectedUnits = this.selectedUnits?.length ? immutableUtil.listRemoveAll (u => {
-      if (unitIds.includes (u)) {
-        quantity++;
-        return true;
+  onUnitClick (unit: BritAreaUnit) {
+    if (this.selectedUnits) {
+      const unitId = this.getUnitNodeId (unit);
+      const selectedIndex = this.selectedUnits.findIndex (u => this.getUnitNodeId (u) === unitId);
+      const selectedUnit = selectedIndex >= 0 ? this.selectedUnits[selectedIndex] : null;
+      const newSelectedUnits = selectedIndex >= 0 ? immutableUtil.listRemoveByIndex (selectedIndex, this.selectedUnits) : [...this.selectedUnits];
+      if (unit.type === "leader" || unit.quantity === 1) {
+        if (!selectedUnit) { newSelectedUnits.push (unit); }
+        this.selectedUnitsChange.emit (newSelectedUnits);
       } else {
-        return false;
-      } // if - else
-    }, this.selectedUnits) : [];
-    if (unitIds.length > 1) {
-      this.lastBottomSheet = "unit-number-selection";
-      const ref = this.bottomSheet.open<BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput, number> (BritUnitsSelectorSheetComponent, {
-        data: {
-          unitId: unitIds[0],
-          quantity: quantity,
-          maxQuantity: unitIds.length
-        },
-        panelClass: "brit-unit-number-selection-sheet",
-        hasBackdrop: true
-      });
-      ref.afterDismissed ().subscribe (quantity => {
-        if (quantity != null) {
-          if (quantity > 0) {
-            newSelectedUnits = immutableUtil.listPush (unitIds.slice (0, quantity), newSelectedUnits);
+        this.lastBottomSheet = "unit-number-selection";
+        this.nSelectedUnits$ (unit, selectedUnit ? (selectedUnit as Exclude<BritAreaUnit, BritAreaLeader>).quantity : 1, unit.quantity).subscribe (quantity => {
+          if (quantity != null) {
+            if (quantity > 0) { newSelectedUnits.push ({ ...unit, quantity }); }
+            this.selectedUnitsChange.emit (newSelectedUnits);
           } // if
-          this.selectedUnitsChange.emit (newSelectedUnits);
-        } // if
-      });
+        });
+      } // if - else
     } else {
-      if (!quantity) {
-        newSelectedUnits = immutableUtil.listPush (unitIds, newSelectedUnits);
-      } // if
-      this.selectedUnitsChange.emit (newSelectedUnits);
+      this.unitClick.emit (unit);
     } // if - else
-  } // onUnitGroupClick
+  } // onUnitClick
+
+  private getUnitNodeId (unit: BritAreaUnit) {
+    return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
+  } // getUnitNodeId
+
+  private nSelectedUnits$ (unit: BritAreaUnit, quantity: number, maxQuantity: number): Observable<number | undefined> {
+    this.lastBottomSheet = "unit-number-selection";
+    const ref = this.bottomSheet.open<BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput, number> (BritUnitsSelectorSheetComponent, {
+      data: { unit, quantity, maxQuantity },
+      panelClass: "brit-unit-number-selection-sheet",
+      hasBackdrop: true
+    });
+    return ref.afterDismissed ();
+  } // nUnitsSelector$
 
 } // BritBoardComponent

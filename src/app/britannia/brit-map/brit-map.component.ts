@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, TrackByFunction, ViewChild } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
-import { arrayUtil, downloadUtil, objectUtil, SimpleChanges } from "@bg-utils";
+import { arrayUtil, downloadUtil, SimpleChanges } from "@bg-utils";
 import { environment } from "src/environments/environment";
 import { BritAssetsService } from "../brit-assets.service";
-import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId, BritUnit, BritUnitId } from "../brit-components.models";
+import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { BritAreaState, BritNationState } from "../brit-game-state.models";
+import { BritAreaState, BritAreaUnit, BritNationState } from "../brit-game-state.models";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
 
@@ -20,7 +20,7 @@ interface BritAreaNode {
 
 interface BritUnitNode {
   id: string;
-  unitGroup: BritUnit[];
+  unit: BritAreaUnit;
   imageSource: string;
   index: number;
   areaNode: BritAreaNode;
@@ -90,12 +90,12 @@ export class BritMapComponent implements OnChanges {
   @Input () areaStates!: Record<BritAreaId, BritAreaState>;
   @Input () nationStates!: Record<BritNationId, BritNationState>;
   @Input () validAreas: BritAreaId[] | null = null;
-  @Input () validUnits: BritUnitId[] | null = null;
-  @Input () selectedUnits: BritUnitId[] | null = null;
+  @Input () validUnits: BritAreaUnit[] | null = null;
+  @Input () selectedUnits: BritAreaUnit[] | null = null;
   // in caso di update dell'unità in un'area, bisogna cambiare il riferimento delle BritArea.units
 
   @Output () areaClick = new EventEmitter<BritAreaId> ();
-  @Output () unitGroupClick = new EventEmitter<BritUnitId[]> ();
+  @Output () unitClick = new EventEmitter<BritAreaUnit> ();
 
   areaNodes!: BritAreaNode[];
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
@@ -134,7 +134,7 @@ export class BritMapComponent implements OnChanges {
 
   ngOnChanges (changes: SimpleChanges<BritMapComponent>) {
     if (changes.areaStates) {
-      this.refreshAreaNodes (false);
+      this.refreshAreaNodes ();
     } // if
     if (changes.nationStates) {
       this.refreshPopulationNodes ();
@@ -144,7 +144,7 @@ export class BritMapComponent implements OnChanges {
       this.isValidArea = this.validAreas ? arrayUtil.toMap (this.validAreas, id => id, () => true) : null;
     } // if
     if (changes.validUnits) {
-      this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
+      this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, u => this.getUnitNodeId (u), () => true) : null;
     } // if
     // if (changes.selectedUnits) {
     //   this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
@@ -155,13 +155,13 @@ export class BritMapComponent implements OnChanges {
     this.refreshRoundNodes ();
   } // ngOnInit
 
-  private refreshAreaNodes (force: boolean): boolean {
+  private refreshAreaNodes (): boolean {
     let refreshedUnits = false;
     const { nodes, map } = arrayUtil.entitiesToNodes (
       this.components.AREA_IDS, this.areaNodeMap || { },
       areaId => areaId,
-      (areaId, node) => !force && this.areaStates[areaId] === node.state,
-      (areaId, index, oldNode) => this.areaToNode (areaId, oldNode, force)
+      (areaId, node) => this.areaStates[areaId] === node.state,
+      (areaId, index, oldNode) => this.areaToNode (areaId, oldNode)
     );
     this.areaNodes = nodes;
     this.areaNodeMap = map;
@@ -212,7 +212,7 @@ export class BritMapComponent implements OnChanges {
     this.roundNodeMap = map;
   } // refreshRoundNodes
 
-  private areaToNode (areaId: BritAreaId, oldNode: BritAreaNode | null, force: boolean): BritAreaNode {
+  private areaToNode (areaId: BritAreaId, oldNode: BritAreaNode | null): BritAreaNode {
     const path = this.mapService.getAreaPath (areaId);
     const area = this.components.AREA[areaId];
     const state = this.areaStates[areaId];
@@ -224,37 +224,33 @@ export class BritMapComponent implements OnChanges {
       unitNodes: null!,
       tooltip: area.name
     };
-    if (!force && state.unitIds === oldNode?.state.unitIds) {
+    if (state.units === oldNode?.state.units) {
       node.unitNodes = oldNode.unitNodes;
     } else {
-      const unitsByKey = arrayUtil.group (
-        state.unitIds.map (unitId => this.components.UNIT[unitId]),
-        u => u.type === "leader" ? u.id : `${u.nationId}-${u.type}`);
-      const unitGroups: BritUnit[][] = [];
-      objectUtil.forEachProp (unitsByKey, (key, units) => { unitGroups.push (units); });
-      node.unitNodes = [];
-      let index = 0;
-      unitGroups.forEach (unitGroup => {
-        node.unitNodes.push (this.unitToNode (unitGroup, index++, node, unitGroups.length));
-      });
+      node.unitNodes = state.units.map ((u, index) => this.unitToNode (u, index, node, state.units.length))
     } // if - else
     return node;
   } // areaToNode
 
-  private unitToNode (unitGroup: BritUnit[], index: number, areaNode: BritAreaNode, nAreaUnits: number): BritUnitNode {
-    const unit = unitGroup[0];
+  private getUnitNodeId (unit: BritAreaUnit) {
+    return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
+  } // getUnitNodeId
+
+  private unitToNode (unit: BritAreaUnit, index: number, areaNode: BritAreaNode, nAreaUnits: number): BritUnitNode {
     const imageSource = this.assetsService.getUnitImageSource (unit);
     const point = this.getUnitNodePoint (index, nAreaUnits, areaNode.id);
     return {
-      id: unit.type === "leader" ? unit.id : `${unit.nationId}-${unit.type}`,
-      unitGroup,
+      id: this.getUnitNodeId (unit),
+      unit,
       imageSource,
       index,
       areaNode,
       svgX: point ? (point.x * GRID_STEP - 15) : 0,
       svgY: point ? (point.y * GRID_STEP - 15) : 0,
-      quantity: unitGroup.length,
-      tooltip: unit.type === "leader" ? unit.name : (unit.nationLabel + " " + unit.typeLabel)
+      quantity: unit.type === "leader" ? 1 : unit.quantity,
+      tooltip: unit.type === "leader"
+        ? this.components.getLeader (unit.leaderId).name
+        : `${this.components.getNation (unit.nationId)} ${this.components.getUnitTypeLabel (unit.type)})`
     };
   } // unitToNode
 
@@ -318,8 +314,8 @@ export class BritMapComponent implements OnChanges {
   } // onAreaClick
 
   onUnitClick (unitNode: BritUnitNode) {
-    if (this.validUnits?.includes (unitNode.unitGroup[0].id)) {
-      this.unitGroupClick.emit (unitNode.unitGroup.map (u => u.id));
+    if (this.isValidUnit && this.isValidUnit[unitNode.id]) {
+      this.unitClick.emit (unitNode.unit);
     } // if
   } // onUnitClick
 

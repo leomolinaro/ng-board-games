@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
-import { arrayUtil } from "@bg-utils";
-import { BritArea, BritAreaId, BritColor, BritEvent, BritInvasion, BritLandArea, BritLandAreaId, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritPopulation, BritRegionId, BritRevolt, BritRound, BritRoundId, BritSeaArea, BritSeaAreaId, BritSpecialEvent, BritUnit, BritUnitId } from "./brit-components.models";
+import { BritArea, BritAreaId, BritColor, BritEvent, BritInvasion, BritLandArea, BritLandAreaId, BritLeader, BritLeaderId, BritNation, BritNationId, BritNeighbor, BritPopulation, BritRegionId, BritRevolt, BritRound, BritRoundId, BritSeaArea, BritSeaAreaId, BritSpecialEvent, BritUnitType } from "./brit-components.models";
 
 @Injectable ({
   providedIn: "root"
@@ -17,22 +16,22 @@ export class BritComponentsService {
   "south-mercia", "north-mercia", "hwicce", "devon", "cornwall", "gwent", "dyfed", "powys",
   "gwynedd", "clwyd", "march", "cheshire", "york", "bernicia", "pennines", "cumbria", "lothian", "galloway",
   "dunedin", "strathclyde", "dalriada", "alban", "mar", "moray", "skye", "caithness", "orkneys", "hebrides"];
-  
+
   readonly SEA_AREA_IDS: BritSeaAreaId[] = ["icelandic-sea", "north-sea", "frisian-sea", "english-channel", "irish-sea", "atlantic-ocean"];
-  
+
   readonly AREA_IDS: BritAreaId[] = [...this.LAND_AREA_IDS, ...this.SEA_AREA_IDS];
-  
+
   readonly NATION_IDS: BritNationId[] = ["romans", "romano-british", "normans", "saxons", "danes", "norwegians",
   "jutes", "angles", "belgae", "welsh", "brigantes",
   "caledonians", "picts", "irish", "scots", "norsemen", "dubliners"];
-  
+
   readonly POPULATIONS: BritPopulation[] = [0, 1, 2, 3, 4, 5];
   readonly ROUND_IDS: BritRoundId[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
   readonly AREA: Record<BritAreaId, BritArea> = { } as any;
   readonly NATION: Record<BritNationId, BritNation> = { } as any;
-  readonly UNIT: Record<BritUnitId, BritUnit> = { } as any;
   readonly ROUND: Record<BritRoundId, BritRound> = { } as any;
+  readonly LEADER: Record<BritLeaderId, BritLeader> = { } as any;
 
   areasToMap<V> (getValue: (areaId: BritAreaId) => V): Record<BritAreaId, V> {
     const map: Record<BritAreaId, V> = { } as any;
@@ -46,7 +45,7 @@ export class BritComponentsService {
   forEachArea (forEachArea: (area: BritArea) => void): void {
     this.AREA_IDS.forEach (areaId => forEachArea (this.AREA[areaId]));
   } // forEachArea
-  
+
   getNationIdsOfColor (color: BritColor): BritNationId[] {
     switch (color) {
       case "yellow": return ["romans", "romano-british", "norwegians", "scots", "dubliners"];
@@ -64,7 +63,16 @@ export class BritComponentsService {
 
   getNation (nationId: BritNationId): BritNation { return this.NATION[nationId]; }
 
-  getUnit (unitId: BritUnitId): BritUnit { return this.UNIT[unitId]; }
+  getLeader (leaderId: BritLeaderId): BritLeader { return this.LEADER[leaderId]; }
+
+  getUnitTypeLabel (unitType: Exclude<BritUnitType, "leader">) {
+    switch (unitType) {
+      case "infantry": return "Infantry";
+      case "cavalry": return "Cavalry"
+      case "roman-fort": return "Fort";
+      case "saxon-buhr": return "Buhr";
+    } // switch
+  } // getUnitTypeLabel
 
   init () {
     // Land areas
@@ -240,7 +248,7 @@ export class BritComponentsService {
       neighbors: neighbors
     };
   } // initLandArea
-  
+
   private initSeaArea (id: BritSeaAreaId, name: string, neighbors: BritAreaId[]) {
     this.AREA[id] = {
       id: id,
@@ -251,88 +259,22 @@ export class BritComponentsService {
   } // initSeaArea
 
   private initNation (nationId: BritNationId, label: string, color: BritColor, nInfantries: number, nCavalries: number, nBuildings: number, leaderIdAndNames: [BritLeaderId, string][]) {
-    const infantryIds = arrayUtil.range (nInfantries, index => this.initInfantry (nationId, label, color, index));
-    const cavalryIds = arrayUtil.range (nCavalries, index => this.initCavalry (nationId, label, color, index));
-    const buildingIds = nBuildings
-      ? (nationId === "romans"
-        ? arrayUtil.range (nBuildings, index => this.initRomanFort (nationId, label, color, index))
-        : (nationId === "saxons"
-          ? arrayUtil.range (nBuildings, index => this.initSaxonBuhr (nationId, label, color, index))
-          : []))
-      : [];
-    leaderIdAndNames.map (l => this.initLeader (l[0], l[1], nationId, label, color));
+    leaderIdAndNames.map (l => this.initLeader (l[0], l[1]));
     this.NATION[nationId] = {
       id: nationId,
       label: label,
       color: color,
-      infantryIds: infantryIds,
-      cavalryIds: cavalryIds,
-      buildingIds: buildingIds,
+      nInfantries,
+      nCavalries,
+      nBuildings,
       leaderIds: leaderIdAndNames.map (u => u[0])
     };
   } // initNation
 
-  private initInfantry (nationId: BritNationId, nationLabel: string, nationColor: BritColor, infantryIndex: number): BritUnitId {
-    const id = `${nationId}-infantry-${infantryIndex}`;
-    this.UNIT[id] = {
-      id,
-      type: "infantry",
-      nationId,
-      nationLabel,
-      typeLabel: "Infantry",
-      nationColor
-    };
-    return id;
-  } // initInfantry
-  
-  private initCavalry (nationId: BritNationId, nationLabel: string, nationColor: BritColor, cavalryIndex: number): BritUnitId {
-    const id = `${nationId}-cavalry-${cavalryIndex}`;
-    this.UNIT[id] = {
-      id,
-      type: "cavalry",
-      nationId,
-      nationLabel,
-      typeLabel: "Cavalry",
-      nationColor
-    };
-    return id;
-  } // createCavalry
-  
-  private initRomanFort (nationId: BritNationId & "romans", nationLabel: string, nationColor: BritColor, fortIndex: number): BritUnitId {
-    const id = `${nationId}-fort-${fortIndex}`;
-    this.UNIT[id] = {
-      id,
-      type: "roman-fort",
-      nationId,
-      nationLabel,
-      typeLabel: "Fort",
-      nationColor
-    };
-    return id;
-  } // createRomanFort
-  
-  private initSaxonBuhr (nationId: BritNationId & "saxons", nationLabel: string, nationColor: BritColor, fortIndex: number): BritUnitId {
-    const id = `${nationId}-fort-${fortIndex}`;
-    this.UNIT[id] = {
-      id,
-      type: "saxon-buhr",
-      nationId,
-      nationLabel,
-      typeLabel: "Buhr",
-      nationColor
-    };
-    return id;
-  } // initSaxonBuhr
-  
-  private initLeader (leaderId: BritLeaderId, leaderName: string, nationId: BritNationId, nationLabel: string, nationColor: BritColor) {
-    this.UNIT[leaderId] = {
+  private initLeader (leaderId: BritLeaderId, leaderName: string) {
+    this.LEADER[leaderId] = {
       id: leaderId,
-      type: "leader",
-      nationId,
-      name: leaderName,
-      nationLabel,
-      typeLabel: "Leader",
-      nationColor
+      name: leaderName
     };
   } // initLeader
 
@@ -347,11 +289,11 @@ export class BritComponentsService {
       events
     };
   } // initRound
-  
+
 } // BritRulesComponentsService
 
 class BritEventBuilder {
-  
+
   constructor (
     private nation: BritNationId
   ) { }
