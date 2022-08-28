@@ -63,6 +63,7 @@ export class BritPlayerLocalService implements BritPlayerService {
           return EMPTY;
         } else {
           armyMovements.movements.push (movementOrPass);
+          this.game.applyArmyMovement (movementOrPass);
           return this.armyMovement$ (nationId, playerId);
         } // if - else
       }),

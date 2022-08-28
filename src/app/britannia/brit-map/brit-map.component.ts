@@ -250,7 +250,7 @@ export class BritMapComponent implements OnChanges {
       quantity: unit.type === "leader" ? 1 : unit.quantity,
       tooltip: unit.type === "leader"
         ? this.components.getLeader (unit.leaderId).name
-        : `${this.components.getNation (unit.nationId)} ${this.components.getUnitTypeLabel (unit.type)})`
+        : `${this.components.getNation (unit.nationId)} ${this.components.getUnitTypeLabel (unit.type, true)})`
     };
   } // unitToNode
 

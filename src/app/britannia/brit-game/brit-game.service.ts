@@ -141,7 +141,12 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     this.game.logPhase ("movement");
     return this.executeTask$ (playerId, p => p.armyMovements$ (nationId, playerId)).pipe (
       map (armyMovements => {
-        console.log ("armyMovements", armyMovements);
+        if (armyMovements.movements?.length) {
+          this.game.applyArmyMovements (armyMovements);
+          for (const movement of armyMovements.movements) {
+            this.game.logArmyMovement (movement.units, movement.toAreaId);
+          } // for
+        } // if
         return void 0;
       })
     );

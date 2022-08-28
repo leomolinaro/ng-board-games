@@ -65,12 +65,12 @@ export class BritComponentsService {
 
   getLeader (leaderId: BritLeaderId): BritLeader { return this.LEADER[leaderId]; }
 
-  getUnitTypeLabel (unitType: Exclude<BritUnitType, "leader">) {
+  getUnitTypeLabel (unitType: Exclude<BritUnitType, "leader">, singular: boolean) {
     switch (unitType) {
-      case "infantry": return "Infantry";
-      case "cavalry": return "Cavalry"
-      case "roman-fort": return "Fort";
-      case "saxon-buhr": return "Buhr";
+      case "infantry": return singular ? "Infantry" : "Infantries";
+      case "cavalry": return singular ? "Cavalry" : "Cavalries";
+      case "roman-fort": return singular ? "Fort" : "Forts";
+      case "saxon-buhr": return singular ? "Buhr" : "Buhrs";
     } // switch
   } // getUnitTypeLabel
 

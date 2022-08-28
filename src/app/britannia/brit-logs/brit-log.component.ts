@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@bg-utils";
-import { BritArea, BritAreaId, BritPhase } from "../brit-components.models";
+import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { BritLog, BritPlayer } from "../brit-game-state.models";
+import { BritAreaLeader, BritAreaUnit, BritLog, BritPlayer } from "../brit-game-state.models";
 
 interface BritLogStringFragment {
   type: "string";
@@ -97,6 +97,30 @@ export class BritLogComponent implements OnChanges {
         case "population-marker-set": this.fragments = [this.string (`Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`)]; break;
         case "infantry-placement": this.fragments = [this.string (`${l.quantity} infantr${l.quantity === 1 ? "y" : "ies"} placed in `), this.area (l.landId)]; break;
         case "infantry-reinforcement": this.fragments = [this.string (`${l.quantity} infantry reinforcement${l.quantity === 1 ? "" : "s"} in `), this.area (l.areaId)]; break;
+        case "army-movement": {
+          this.fragments = [];
+          let quantity = 0;
+          let isFirst = true;
+          for (const unit of l.units) {
+            if (isFirst) {
+              isFirst = false
+            } else {
+              this.fragments.push (this.string (", "))
+            } // if - else
+            if (unit.type === "leader") {
+              quantity++;
+              this.fragments.push (this.leader (unit.leaderId));
+            } else {
+              quantity += unit.quantity;
+              this.fragments.push (this.unit (unit));
+            } // if - else
+          } // for
+          this.fragments.push (this.string (` ${quantity === 1 ? "moves" : "move"} from `));
+          this.fragments.push (this.area (l.units[0].areaId));
+          this.fragments.push (this.string (` to `));
+          this.fragments.push (this.area (l.toAreaId));
+          break;
+        } // case
         // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
         // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
         // case "movement": this.fragments = [this.player (l.player), this.string (" moves a knight from "), this.land (l.movement.fromLand), this.string (" to "), this.land (l.movement.toLand), this.string (".")]; break;
@@ -125,6 +149,20 @@ export class BritLogComponent implements OnChanges {
       area
     };
   } // area
+
+  private leader (leaderId: BritLeaderId): BritLogStringFragment {
+    return {
+      type: "string",
+      label: this.components.getLeader (leaderId).name
+    };
+  } // leader
+
+  private unit (unit: Exclude<BritAreaUnit, BritAreaLeader>): BritLogStringFragment {
+    return {
+      type: "string",
+      label: `${unit.quantity} ${this.components.getNation (unit.nationId).label.toLowerCase ()} ${this.components.getUnitTypeLabel (unit.type, unit.quantity === 1)}`
+    };
+  } // leader
 
   // private player (playerId: string): BritLogPlayerFragment {
   //   const player = this.game.getPlayer (playerId);
