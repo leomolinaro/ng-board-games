@@ -263,7 +263,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       const index = area.units.findIndex (u => u.type === unitType && u.nationId === nationId);
       const unit = area.units[index];
       if (unit.type === "leader") { return area; }
-      if (unit.quantity >= quantity) {
+      if (unit.quantity <= quantity) {
         return {
           ...area,
           units: immutableUtil.listRemoveByIndex (index, area.units)

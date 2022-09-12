@@ -143,9 +143,11 @@ export class BritMapComponent implements OnChanges {
     } // if
     if (changes.validAreas) {
       this.isValidArea = this.validAreas ? arrayUtil.toMap (this.validAreas, id => id, () => true) : null;
+      if (!this.validUnits) { this.isValidUnit = this.validAreas ? { } : null; }
     } // if
     if (changes.validUnits) {
       this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, u => this.getUnitNodeId (u), () => true) : null;
+      if (!this.validAreas) { this.isValidArea = this.validUnits ? { } : null; }
     } // if
     if (changes.selectedUnits) {
       if (this.selectedUnits) {
