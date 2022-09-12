@@ -117,6 +117,7 @@ export class BritMapComponent implements OnChanges {
 
   isValidArea: Record<string, boolean> | null = null;
   isValidUnit: Record<string, boolean> | null = null;
+  nSelectedUnits: Record<string, number> | null = null;
 
   @ViewChild (BgSvgComponent) bgSvg!: BgSvgComponent;
   @ViewChild ("britMap") mapElementRef!: ElementRef<SVGGElement>;
@@ -146,9 +147,16 @@ export class BritMapComponent implements OnChanges {
     if (changes.validUnits) {
       this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, u => this.getUnitNodeId (u), () => true) : null;
     } // if
-    // if (changes.selectedUnits) {
-    //   this.isValidUnit = this.validUnits ? arrayUtil.toMap (this.validUnits, id => id, () => true) : null;
-    // } // if
+    if (changes.selectedUnits) {
+      if (this.selectedUnits) {
+        this.nSelectedUnits = { };
+        for (const selectedUnit of this.selectedUnits) {
+          this.nSelectedUnits[this.getUnitNodeId (selectedUnit)] = selectedUnit.type === "leader" ? 1 : selectedUnit.quantity;
+        } // for
+      } else {
+        this.nSelectedUnits = null;
+      } // if - else
+    } // if
   } // ngOnChanges
 
   ngOnInit () {
@@ -250,7 +258,7 @@ export class BritMapComponent implements OnChanges {
       quantity: unit.type === "leader" ? 1 : unit.quantity,
       tooltip: unit.type === "leader"
         ? this.components.getLeader (unit.leaderId).name
-        : `${this.components.getNation (unit.nationId)} ${this.components.getUnitTypeLabel (unit.type, true)})`
+        : `${this.components.getNation (unit.nationId).label} ${this.components.getUnitTypeLabel (unit.type, true)}`
     };
   } // unitToNode
 

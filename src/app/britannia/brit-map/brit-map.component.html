@@ -56,7 +56,7 @@
             class="brit-unit-quantity"
             x="92%"
             y="100%">
-            {{ unitNode.quantity }}
+            <ng-container *ngIf="nSelectedUnits && nSelectedUnits[unitNode.id] as nSelected">{{ nSelected }}/</ng-container>{{ unitNode.quantity }}
           </svg:text>
           <svg:rect
             *ngIf="isValidUnit && !isValidUnit[unitNode.id]"
