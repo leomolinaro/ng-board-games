@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
+import { BritArmyMovement } from "../brit-story.models";
+
+// interface BritMovingGroup {
+//   areaUnit: BritAreaUnit[];
+//   movements: number;
+// }
 
 @Injectable({
   providedIn: 'root'
@@ -12,12 +18,23 @@ export class BritRulesMovementService {
     private components: BritComponentsService
   ) { }
 
-  getValidUnitsForMovement (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
-    return this.getPlacedMovingUnitsByNation (nationId, state);
+  getValidUnitsForMovement (nationId: BritNationId, movements: BritArmyMovement[], state: BritGameState): BritAreaUnit[] {
+    const areaUnits = this.getMovableAreaUnitsByNation (nationId, state);
+    // const movementsByTargetArea = arrayUtil.group (movements, m => m.toAreaId);
+    const validAreaUnits: BritAreaUnit[] = [];
+    for (const areaUnit of areaUnits) {
+    //   const movementsToArea = movementsByTargetArea[areaUnit.areaId];
+    //   if (areaMovements) {
+    //     areaMovements.find (m => m.)
+    //   } else {
+        validAreaUnits.push (areaUnit);
+    //   } // if - else
+    } // for
+    return validAreaUnits;
   } // getValidUnitsForMovement
 
   getValidUnitsByAreaForMovement (nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritAreaUnit[] {
-    return this.getPlacedMovingUnitsByNationByArea (areaId, nationId, state);
+    return this.getMovableAreaUnitsByNationByArea (areaId, nationId, state);
   } // getValidUnitsByAreaForMovement
 
   getValidAreasForMovement (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaId[] {
@@ -33,7 +50,7 @@ export class BritRulesMovementService {
     return validAreas;
   } // getValidAreasForMovement
 
-  private getPlacedMovingUnitsByNation (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+  private getMovableAreaUnitsByNation (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
     this.components.AREA_IDS.forEach (areaId => {
       const areaState = state.areas[areaId];
@@ -45,9 +62,9 @@ export class BritRulesMovementService {
       });
     });
     return units;
-  } // getPlacedMovingUnitsByNation
+  } // getMovableAreaUnitsByNation
 
-  private getPlacedMovingUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+  private getMovableAreaUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
     const areaState = state.areas[areaId];
     areaState.units.forEach (unit => {
@@ -57,6 +74,6 @@ export class BritRulesMovementService {
       } // if
     });
     return units;
-  } // getPlacedMovingUnitsByNationByArea
+  } // getMovableAreaUnitsByNationByArea
 
 } // BritRulesMovementService

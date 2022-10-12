@@ -57,14 +57,14 @@ export class BritPlayerLocalService implements BritPlayerService {
 
   armyMovements$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovements> {
     const armyMovements: BritArmyMovements = { movements: [] };
-    return this.armyMovement$ (nationId, playerId, false).pipe (
+    return this.armyMovement$ (nationId, playerId, armyMovements.movements).pipe (
       expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> (movementOrPass => {
         if (movementOrPass === "pass") {
           return EMPTY;
         } else {
           armyMovements.movements.push (movementOrPass);
           this.game.applyArmyMovement (movementOrPass);
-          return this.armyMovement$ (nationId, playerId, true);
+          return this.armyMovement$ (nationId, playerId, armyMovements.movements);
         } // if - else
       }),
       last (),
@@ -72,8 +72,8 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // armyMovements$
 
-  private armyMovement$ (nationId: BritNationId, playerId: BritPlayerId, canCancel: boolean): Observable<BritArmyMovement | "pass"> {
-    return this.chooseUnitsForMovement$ (nationId, playerId, canCancel).pipe (
+  private armyMovement$ (nationId: BritNationId, playerId: BritPlayerId, movements: BritArmyMovement[]): Observable<BritArmyMovement | "pass"> {
+    return this.chooseUnitsForMovement$ (nationId, playerId, movements).pipe (
       map (unitsOrPass => unitsOrPass === "pass" ? "pass" : ({ units: unitsOrPass, toAreaId: null! })),
       expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> (armyMovementOrPass => {
         if (armyMovementOrPass === "pass") {
@@ -96,7 +96,7 @@ export class BritPlayerLocalService implements BritPlayerService {
               })
             );
           } else {
-            return this.chooseUnitsForMovement$ (nationId, playerId, true).pipe (
+            return this.chooseUnitsForMovement$ (nationId, playerId, movements).pipe (
               map (unitsOrPass => unitsOrPass === "pass" ? "pass" : ({ ...armyMovementOrPass, units: unitsOrPass }))
             );
           } // if - else
@@ -106,8 +106,8 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // armyMovement$
 
-  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId, canCancel: boolean): Observable<BritAreaUnit[] | "pass"> {
-    const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
+  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId, movements: BritArmyMovement[]): Observable<BritAreaUnit[] | "pass"> {
+    const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, movements, this.game.get ());
     this.ui.updateUi ("Select units for movement", s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -115,7 +115,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       message: `Select one or more units to be moved.`,
       validUnits: validUnits,
       selectedUnits: [],
-      canCancel: canCancel,
+      canCancel: !!movements.length,
       canPass: true
     }));
     return race<[BritAreaUnit[], "pass"]> (
