@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
-import { BritArmyMovement } from "../brit-story.models";
 
 // interface BritMovingGroup {
 //   areaUnit: BritAreaUnit[];
@@ -18,24 +17,38 @@ export class BritRulesMovementService {
     private components: BritComponentsService
   ) { }
 
-  getValidUnitsForMovement (nationId: BritNationId, movements: BritArmyMovement[], state: BritGameState): BritAreaUnit[] {
-    const areaUnits = this.getMovableAreaUnitsByNation (nationId, state);
-    // const movementsByTargetArea = arrayUtil.group (movements, m => m.toAreaId);
-    const validAreaUnits: BritAreaUnit[] = [];
-    for (const areaUnit of areaUnits) {
-    //   const movementsToArea = movementsByTargetArea[areaUnit.areaId];
-    //   if (areaMovements) {
-    //     areaMovements.find (m => m.)
-    //   } else {
-        validAreaUnits.push (areaUnit);
-    //   } // if - else
-    } // for
-    return validAreaUnits;
+  getValidUnitsForMovement (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+    const units: BritAreaUnit[] = [];
+    this.components.AREA_IDS.forEach (areaId => {
+      const areaUnits = this.getValidUnitsByNationByArea (areaId, nationId, state);
+      units.push (...areaUnits);
+    });
+    return units;
   } // getValidUnitsForMovement
 
   getValidUnitsByAreaForMovement (nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritAreaUnit[] {
-    return this.getMovableAreaUnitsByNationByArea (areaId, nationId, state);
+    return this.getValidUnitsByNationByArea (areaId, nationId, state);
   } // getValidUnitsByAreaForMovement
+
+  private getValidUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+    const areaState = state.areas[areaId];
+    const areaUnits = areaState.units.filter (u => u.nationId === nationId);
+    const area = this.components.AREA[areaId];
+    const validUnits: BritAreaUnit[] = [];
+    for (const areaUnit of areaUnits) {
+      if (areaUnit.nMovements > 0 && area.type === "land" && area.difficultTerrain) { continue; }
+       // TODO molte regole...
+
+      if (areaUnit.type === "cavalry" || areaUnit.nationId === "romans") {
+        if (areaUnit.nMovements < 3) { validUnits.push (areaUnit); }
+      } else if (areaUnit.type === "infantry") {
+        if (areaUnit.nMovements < 2) { validUnits.push (areaUnit); }
+      } else if (areaUnit.type === "leader") {
+
+      } // if - else
+    } // for
+    return validUnits;
+  } // getValidAreaUnitsByNationByArea
 
   getValidAreasForMovement (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
@@ -49,31 +62,5 @@ export class BritRulesMovementService {
     });
     return validAreas;
   } // getValidAreasForMovement
-
-  private getMovableAreaUnitsByNation (nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
-    const units: BritAreaUnit[] = [];
-    this.components.AREA_IDS.forEach (areaId => {
-      const areaState = state.areas[areaId];
-      areaState.units.forEach (unit => {
-        if (unit.nationId !== nationId) { return; }
-        if (unit.type === "infantry" || unit.type === "cavalry" || unit.type === "leader") {
-          units.push (unit);
-        } // if
-      });
-    });
-    return units;
-  } // getMovableAreaUnitsByNation
-
-  private getMovableAreaUnitsByNationByArea (areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
-    const units: BritAreaUnit[] = [];
-    const areaState = state.areas[areaId];
-    areaState.units.forEach (unit => {
-      if (unit.nationId !== nationId) { return; }
-      if (unit.type === "infantry" || unit.type === "cavalry" || unit.type === "leader") {
-        units.push (unit);
-      } // if
-    });
-    return units;
-  } // getMovableAreaUnitsByNationByArea
 
 } // BritRulesMovementService

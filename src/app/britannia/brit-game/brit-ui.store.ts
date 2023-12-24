@@ -21,6 +21,7 @@ interface BritUiState {
   // validActions: BritAction[] | null;
   // validBuildings: ("stronghold" | "village")[] | null;
   canPass: boolean;
+  canConfirm: boolean;
 } // BritUiState
 
 @Injectable ()
@@ -40,12 +41,14 @@ export class BritUiStore extends BgStore<BritUiState> {
       // validActions: null,
       // validBuildings: null,
       // validResources: null,
-      canPass: false
+      canPass: false,
+      canConfirm: false
     }, "Brit UI");
   } // constructor
 
   // actionChange (action: BritAction) { this.$actionChange.next (action); }
   passChange () { this.$passChange.next (); }
+  confirmChange () { this.$confirmChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
   areaChange (areaId: BritAreaId) { this.$areaChange.next (areaId); }
   unitChange (unit: BritAreaUnit) { this.$unitChange.next (unit); }
@@ -58,6 +61,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   private $unitChange = new Subject<BritAreaUnit> ();
   private $selectedUnitsChange = new Subject<BritAreaUnit[]> ();
   private $passChange = new Subject<void> ();
+  private $confirmChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<BritResourceType> ();
   private $cancelChange = new Subject<void> ();
@@ -67,6 +71,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   selectedUnitsChange$ (): Observable<BritAreaUnit[]> { return this.$selectedUnitsChange.asObservable ().pipe (first ()); }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
   passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
+  confirmChange$ () { return this.$confirmChange.asObservable ().pipe (first ()); }
   // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
   // resourceChange$ () { return this.$resourceChange.asObservable ().pipe (first ()); }
   cancelChange$ () { return this.$cancelChange.asObservable ().pipe (first ()); }
@@ -79,6 +84,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
   selectCanPass$ () { return this.select$ (s => s.canPass); }
+  selectCanContinue$ () { return this.select$ (s => s.canConfirm); }
   selectCanCancel$ () { return this.select$ (s => s.canCancel); }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }

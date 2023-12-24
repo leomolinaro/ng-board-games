@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
-import { immutableUtil, SimpleChanges } from "@bg-utils";
+import { SimpleChanges, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritAreaLeader, BritAreaState, BritAreaUnit, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
@@ -34,6 +34,7 @@ export class BritBoardComponent {
   // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
   @Input () canPass: boolean = false;
+  @Input () canConfirm: boolean = false;
   @Input () canCancel: boolean = false;
 
   @Output () playerSelect = new EventEmitter<BritPlayer> ();
@@ -43,6 +44,7 @@ export class BritBoardComponent {
   @Output () selectedUnitsChange = new EventEmitter<BritAreaUnit[]> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
   @Output () passClick = new EventEmitter<void> ();
+  @Output () confirmClick = new EventEmitter<void> ();
   @Output () cancelClick = new EventEmitter<void> ();
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
@@ -61,6 +63,7 @@ export class BritBoardComponent {
   // onLandTileClick (landTile: BritLand) { this.landTileClick.emit (landTile); }
   // onActionClick (action: BritAction) { this.actionClick.emit (action); }
   onPassClick () { this.passClick.emit (); }
+  onConfirmClick () { this.confirmClick.emit (); }
   onCancelClick () { this.cancelClick.emit (); }
   // onKnightsConfirm () {
   //   this.knightsConfirm.emit (this.numberOfKnights);

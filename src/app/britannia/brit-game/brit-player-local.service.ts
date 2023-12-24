@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { forN } from "@bg-utils";
-import { EMPTY, expand, last, map, mapTo, Observable, race } from "rxjs";
+import { EMPTY, Observable, expand, last, map, mapTo, race, switchMap } from "rxjs";
 import { BritAreaId, BritLandAreaId, BritNationId } from "../brit-components.models";
+import { BritComponentsService } from "../brit-components.service";
 import { BritAreaUnit, BritPlayerId } from "../brit-game-state.models";
 import { BritRulesService } from "../brit-rules/brit-rules.service";
-import { BritArmyMovement, BritArmyMovements, BritArmyPlacement } from "../brit-story.models";
+import { BritArmyMovement, BritArmyMovements, BritArmyPlacement, BritBattleInitiation } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -15,7 +16,8 @@ export class BritPlayerLocalService implements BritPlayerService {
   constructor (
     private game: BritGameStore,
     private ui: BritUiStore,
-    private rules: BritRulesService
+    private rules: BritRulesService,
+    private components: BritComponentsService
   ) { }
 
   armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyPlacement> {
@@ -63,7 +65,7 @@ export class BritPlayerLocalService implements BritPlayerService {
           return EMPTY;
         } else {
           armyMovements.movements.push (movementOrPass);
-          this.game.applyArmyMovement (movementOrPass);
+          this.game.applyArmyMovement (movementOrPass, true);
           return this.armyMovement$ (nationId, playerId, armyMovements.movements);
         } // if - else
       }),
@@ -107,7 +109,7 @@ export class BritPlayerLocalService implements BritPlayerService {
   } // armyMovement$
 
   private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId, movements: BritArmyMovement[]): Observable<BritAreaUnit[] | "pass"> {
-    const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, movements, this.game.get ());
+    const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
     this.ui.updateUi ("Select units for movement", s => ({
       ...s,
       ...this.ui.resetUi (),
@@ -132,7 +134,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       ...s,
       ...this.ui.resetUi (),
       turnPlayer: playerId,
-      message: `Select an area to move the selected units, or select more units to be moved.`,
+      message: `Choose an area to move the selected units to, or select more units to be moved.`,
       validUnits: validUnits,
       validAreas: validAreas,
       selectedUnits: selectedUnits,
@@ -143,5 +145,40 @@ export class BritPlayerLocalService implements BritPlayerService {
       this.ui.areaChange$ ()
     );
   } // chooseUnitsOrAreaForMovement$
+
+  battleInitiation$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritBattleInitiation> {
+    return this.chooseLandForBattle$ (nationId, playerId).pipe (
+      switchMap (landId => {
+        return this.confirmBattleInitiation$ (landId, playerId).pipe (
+          map (() => ({ landId }))
+        )
+      })
+    )
+  } // battleInitiation$
+
+  private chooseLandForBattle$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritLandAreaId> {
+    const validAreas = this.rules.battlesRetreats.getValidAreasForBattle (nationId, this.game.get ());
+    this.ui.updateUi ("Select area for battle", s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayer: playerId,
+      message: `Choose an area to resolve the battle into.`,
+      validAreas: validAreas,
+    }));
+    return this.ui.areaChange$<BritLandAreaId> ();
+  } // chooseLandForBattle$
+
+  private confirmBattleInitiation$ (landId: BritLandAreaId, playerId: BritPlayerId): Observable<void> {
+    this.ui.updateUi ("Confirm battle initiation", s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayer: playerId,
+      message: `Confirm to initiate the battle in ${this.components.AREA[landId].name}.`,
+      validAreas: [landId],
+      canConfirm: true,
+      canCancel: true
+    }));
+    return this.ui.confirmChange$ ();
+  } // confirmBattleInitiation$
 
 } // BritPlayerLocalService

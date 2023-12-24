@@ -18,6 +18,7 @@ export type BritAreaUnitId = string;
 interface ABritAreaUnit {
   nationId: BritNationId;
   areaId: BritAreaId;
+  nMovements: number;
 } // ABritAreaUnit
 
 export interface BritAreaInfantry extends ABritAreaUnit {

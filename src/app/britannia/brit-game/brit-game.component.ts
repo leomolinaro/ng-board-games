@@ -30,8 +30,10 @@ import { BritUiStore } from "./brit-ui.store";
       [validUnits]="validUnits$ | async"
       [selectedUnits]="selectedUnits$ | async"
       [canPass]="canPass$ | async"
+      [canConfirm]="canConfirm$ | async"
       [canCancel]="canCancel$ | async"
       (passClick)="onPassClick ()"
+      (confirmClick)="onConfirmClick ()"
       (cancelClick)="onCancelClick ()"
       (areaClick)="onAreaClick ($event)"
       (unitClick)="onUnitClick ($event)"
@@ -92,6 +94,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
   // validBuildings$ = this.ui.selectValidBuildings$ ();
   // validResources$ = this.ui.selectValidResources$ ();
   canPass$ = this.ui.selectCanPass$ ();
+  canConfirm$ = this.ui.selectCanContinue$ ();
   canCancel$ = this.ui.selectCanCancel$ ();
 
   @ViewChild (BritBoardComponent) boardComponent!: BritBoardComponent;
@@ -164,6 +167,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
   onSelectedUnitsChange (units: BritAreaUnit[]) { this.ui.selectedUnitsChange (units); }
   // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
   onPassClick () { this.ui.passChange (); }
+  onConfirmClick () { this.ui.confirmChange (); }
   onCancelClick () { this.ui.cancelChange (); }
   // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }

@@ -142,7 +142,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
     return this.executeTask$ (playerId, p => p.armyMovements$ (nationId, playerId)).pipe (
       map (armyMovements => {
         if (armyMovements.movements?.length) {
-          this.game.applyArmyMovements (armyMovements);
+          this.game.applyArmyMovements (armyMovements, true);
           for (const movement of armyMovements.movements) {
             this.game.logArmyMovement (movement.units, movement.toAreaId);
           } // for
@@ -154,17 +154,26 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
 
   private battlesRetreatsPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("battlesRetreats");
-    return of (void 0);
-  } // battlesRetreats$
+    if (this.rules.battlesRetreats.hasBattlesToResolve (nationId, this.game.get ())) {
+      return this.executeTask$ (playerId, p => p.battleInitiation$ (nationId, playerId)).pipe (
+        map (battleInitiation => {
+          console.log ("battleInitiation", battleInitiation)
+          return void 0;
+        })
+      );
+    } else {
+      return of (void 0);
+    } // if - else
+  } // battlesRetreatsPhase$
 
   private raiderWithdrawalPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("raiderWithdrawal");
     return of (void 0);
-  } // raiderWithdrawal$
+  } // raiderWithdrawalPhase$
 
   private overpopulationPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("overpopulation");
     return of (void 0);
-  } // overpopulation$
+  } // overpopulationPhase$
 
 } // BritGameService

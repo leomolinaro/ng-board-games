@@ -58,6 +58,13 @@
             y="100%">
             <ng-container *ngIf="nSelectedUnits && nSelectedUnits[unitNode.id] as nSelected">{{ nSelected }}/</ng-container>{{ unitNode.quantity }}
           </svg:text>
+          <svg:text
+            *ngIf="unitNode.unit.nMovements > 0"
+            class="brit-unit-n-movements"
+            x="92%"
+            y="0">
+            {{ unitNode.unit.nMovements }}
+          </svg:text>
           <svg:rect
             *ngIf="isValidUnit && !isValidUnit[unitNode.id]"
             [matTooltip]="unitNode.tooltip"

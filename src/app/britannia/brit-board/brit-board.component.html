@@ -23,8 +23,10 @@
     <brit-actions
       class="brit-board-actions-widget"
       [canPass]="canPass"
+      [canConfirm]="canConfirm"
       [canCancel]="canCancel"
       (passClick)="onPassClick ()"
+      (confirmClick)="onConfirmClick ()"
       (cancelClick)="onCancelClick ()">
     </brit-actions>
     <div class="brit-board-players-widget">

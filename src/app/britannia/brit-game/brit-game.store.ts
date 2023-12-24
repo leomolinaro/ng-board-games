@@ -3,7 +3,7 @@ import { BgUser } from "@bg-services";
 import { arrayUtil, BgStore, immutableUtil } from "@bg-utils";
 import { BritAreaId, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitType } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { BritAreaState, BritAreaUnit, BritGameState, BritLog, BritNationState, BritPlayer, BritSetup } from "../brit-game-state.models";
+import { BritAreaLeader, BritAreaState, BritAreaUnit, BritGameState, BritLog, BritNationState, BritPlayer, BritSetup } from "../brit-game-state.models";
 import { BritArmyMovement, BritArmyMovements } from "../brit-story.models";
 
 @Injectable ()
@@ -239,9 +239,9 @@ export class BritGameStore extends BgStore<BritGameState> {
     }), s);
   } // setNationActive
 
-  private addUnitsToArea (unitType: Exclude<BritUnitType, "leader">, nationId: BritNationId, areaId: BritAreaId, quantity: number, s: BritGameState): BritGameState {
+  private addUnitsToArea (unitType: Exclude<BritUnitType, "leader">, nationId: BritNationId, areaId: BritAreaId, quantity: number, nMovements: number, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => {
-      const index = area.units.findIndex (u => u.type === unitType && u.nationId === nationId);
+      const index = area.units.findIndex (u => u.type === unitType && u.nationId === nationId && u.nMovements === nMovements);
       if (index >= 0) {
         const unit = area.units[index];
         if (unit.type === "leader") { return area; }
@@ -252,44 +252,51 @@ export class BritGameStore extends BgStore<BritGameState> {
       } else {
         return {
           ...area,
-          units: immutableUtil.listPush ([{ type: unitType, nationId: nationId, quantity: quantity, areaId }], area.units)
+          units: immutableUtil.listPush ([{ type: unitType, nationId: nationId, quantity: quantity, areaId, nMovements }], area.units)
         };
       } // if - else
     }, s);
   } // addUnitsToArea
 
-  private removeUnitsFromArea (unitType: Exclude<BritUnitType, "leader">, nationId: BritNationId, areaId: BritAreaId, quantity: number, s: BritGameState): BritGameState {
+  private removeUnitsFromAreaByIndex (unitIndex: number, areaId: BritAreaId, quantity: number, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => {
-      const index = area.units.findIndex (u => u.type === unitType && u.nationId === nationId);
-      const unit = area.units[index];
+      const unit = area.units[unitIndex];
       if (unit.type === "leader") { return area; }
       if (unit.quantity <= quantity) {
         return {
           ...area,
-          units: immutableUtil.listRemoveByIndex (index, area.units)
+          units: immutableUtil.listRemoveByIndex (unitIndex, area.units)
         };
       } else {
         return {
           ...area,
-          units: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity - quantity }, area.units)
+          units: immutableUtil.listReplaceByIndex (unitIndex, { ...unit, quantity: unit.quantity - quantity }, area.units)
         };
       } // if - else
     }, s);
-  } // removeUnitsFromArea
+  } // removeUnitsFromAreaByIndex
 
-  private addLeaderToArea (leaderId: BritLeaderId, nationId: BritNationId, areaId: BritAreaId, s: BritGameState): BritGameState {
+  private addLeaderToArea (leaderId: BritLeaderId, nationId: BritNationId, areaId: BritAreaId, nMovements: number, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => ({
         ...area,
-        units: immutableUtil.listPush ([{ type: "leader", nationId: nationId, leaderId, areaId }], area.units)
+        units: immutableUtil.listPush ([{ type: "leader", nationId: nationId, leaderId, areaId, nMovements }], area.units)
       }), s);
   } // addLeaderToArea
 
-  private removeLeaderFromArea (leaderId: BritLeaderId, areaId: BritAreaId, s: BritGameState): BritGameState {
+  private findAreaLeaderIndex (leader: BritAreaLeader, areaId: BritAreaId, s: BritGameState): number {
+    return s.areas[areaId].units.findIndex (u => u.type === "leader" && u.leaderId === leader.leaderId);
+  } // findAreaLeaderIndex
+
+  private findAreaUnitIndex (unit: Exclude<BritAreaUnit, BritAreaLeader>, areaId: BritAreaId, s: BritGameState): number {
+    return s.areas[areaId].units.findIndex (u => u.type === unit.type && u.nationId === unit.nationId && u.nMovements === unit.nMovements)
+  } // findAreaUnitIndex
+
+  private removeUnitFromAreaByIndex (unitIndex: number, areaId: BritAreaId, s: BritGameState): BritGameState {
     return this.updateArea (areaId, area => ({
         ...area,
-        units: immutableUtil.listRemoveFirst (u => u.type === "leader" && u.leaderId === leaderId, area.units)
+        units: immutableUtil.listRemoveByIndex (unitIndex, area.units)
       }), s);
-  } // removeLeaderFromArea
+  } // removeUnitFromAreaByIndex
 
   private removeUnitsFromNation (unitType: Exclude<BritUnitType, "leader">, nationId: BritNationId, quantity: number, s: BritGameState): BritGameState {
     return this.updateNation (nationId, n => {
@@ -316,7 +323,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         if (areaSetup) {
           const [nationId, nInfantries] = typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];
           state = this.removeUnitsFromNation ("infantry", nationId, nInfantries, state);
-          state = this.addUnitsToArea ("infantry", nationId, areaId, nInfantries, state);
+          state = this.addUnitsToArea ("infantry", nationId, areaId, nInfantries, 0, state);
         } // if
         setup.populationMarkers.forEach (nationId => {
           state = this.setNationPopulation (0, nationId, state);
@@ -331,7 +338,7 @@ export class BritGameStore extends BgStore<BritGameState> {
 
   private placeInfantry (areaId: BritAreaId, nationId: BritNationId, s: BritGameState): BritGameState {
     s = this.removeUnitsFromNation ("infantry", nationId, 1, s);
-    s = this.addUnitsToArea ("infantry", nationId, areaId, 1, s);
+    s = this.addUnitsToArea ("infantry", nationId, areaId, 1, 0, s);
     return s;
   } // placeInfantry
 
@@ -351,27 +358,60 @@ export class BritGameStore extends BgStore<BritGameState> {
     });
   } // applyPopulationIncrease
 
-  applyArmyMovements (armyMovements: BritArmyMovements) {
+  applyArmyMovements (armyMovements: BritArmyMovements, doCountMovements: boolean) {
     this.update ("Apply army movements", s => {
       for (const movement of armyMovements.movements) {
-        s = this.armyMovement (movement, s);
+        s = this.armyMovement (movement, doCountMovements, s);
+      } // for
+      for (const movement of armyMovements.movements) {
+        s = this.resetAreaNMovements (movement.toAreaId, s);
       } // for
       return s;
     });
   } // applyArmyMovements
 
-  applyArmyMovement (armyMovement: BritArmyMovement) {
-    this.update ("Apply army movement", s => this.armyMovement (armyMovement, s));
+  private resetAreaNMovements (areaId: BritAreaId, s: BritGameState): BritGameState {
+    return this.updateArea (areaId, area => {
+      const newUnits: BritAreaUnit[] = [];
+      for (const unit of area.units) {
+        if (unit.type === "leader") {
+          newUnits.push ({ ...unit, nMovements: 0 });
+        } else {
+          const newIndex = newUnits.findIndex (u => u.type === unit.type && u.nationId === unit.nationId);
+          if (newIndex >= 0) {
+            const newUnit = newUnits[newIndex];
+            if (newUnit.type === "leader") { throw "Unexpected"; }
+            newUnit.quantity += unit.quantity;
+          } else {
+            newUnits.push ({ ...unit, nMovements: 0 });
+          } // if - else
+        } // if - else
+      } // for
+      return {
+        ...area,
+        units: newUnits
+      };
+    }, s);
+  } // resetAreaNMovements
+
+  applyArmyMovement (armyMovement: BritArmyMovement, doCountMovements: boolean) {
+    this.update ("Apply army movement", s => this.armyMovement (armyMovement, doCountMovements, s));
   } // applyArmyMovement
 
-  private armyMovement (armyMovement: BritArmyMovement, s: BritGameState): BritGameState {
+  private armyMovement (armyMovement: BritArmyMovement, doCountMovements: boolean, s: BritGameState): BritGameState {
     for (const unit of armyMovement.units) {
       if (unit.type === "leader") {
-        s = this.removeLeaderFromArea (unit.leaderId, unit.areaId, s);
-        s = this.addLeaderToArea (unit.leaderId, unit.nationId, armyMovement.toAreaId, s);
+        const areaLeaderIndex = this.findAreaLeaderIndex (unit, unit.areaId, s);
+        const areaLeader = s.areas[unit.areaId].units[areaLeaderIndex] as BritAreaLeader;
+        s = this.removeUnitFromAreaByIndex (areaLeaderIndex, unit.areaId, s);
+        const nMovements = doCountMovements ? (areaLeader.nMovements + 1) : 0;
+        s = this.addLeaderToArea (unit.leaderId, unit.nationId, armyMovement.toAreaId, nMovements, s);
       } else {
-        s = this.removeUnitsFromArea (unit.type, unit.nationId, unit.areaId, unit.quantity, s);
-        s = this.addUnitsToArea (unit.type, unit.nationId, armyMovement.toAreaId, unit.quantity, s);
+        const areaUnitIndex = this.findAreaUnitIndex (unit, unit.areaId, s);
+        const areaUnit = s.areas[unit.areaId].units[areaUnitIndex] as Exclude<BritAreaUnit, BritAreaLeader>;
+        s = this.removeUnitsFromAreaByIndex (areaUnitIndex, unit.areaId, unit.quantity, s);
+        const nMovements = doCountMovements ? (areaUnit.nMovements + 1) : 0;
+        s = this.addUnitsToArea (unit.type, unit.nationId, armyMovement.toAreaId, unit.quantity, nMovements, s);
       } // if - else
     } // for
     return s;
