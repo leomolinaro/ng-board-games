@@ -2,7 +2,6 @@
   "name": "ng-board-games",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve -o",
     "build": "ng build",
     "test": "ng test",
