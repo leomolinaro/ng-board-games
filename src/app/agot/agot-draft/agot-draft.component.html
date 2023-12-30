@@ -7,7 +7,9 @@
     <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
       <mat-accordion displayMode="flat" multi="true">
         <mat-expansion-panel expanded="true" hideToggle="true" disabled="true">
-          <mat-slider style="width: 100%" min="0" max="80" step="1" (input)="nCards = $event.value || 0" [value]="nCards"></mat-slider>
+          <mat-slider style="width: 100%" min="0" max="80" step="1">
+            <input matSliderThumb [value]="nCards" (valueChange)="nCards = $event || 0">
+          </mat-slider>
           <p style="margin-top: 0">{{nCards}} cards</p>
           <mat-checkbox [(ngModel)]="duplicates">Allow duplicates</mat-checkbox>
           <mat-action-row>

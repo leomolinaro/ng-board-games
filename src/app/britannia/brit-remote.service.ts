@@ -40,26 +40,26 @@ export class BritRemoteService {
     private cloud: BgCloudService
   ) { }
 
-  private games (queryFn?: BgCloudCollectionQuery<BritGameDoc> | undefined) { return this.cloud.collection<BritGameDoc> ("brit-games"); }
+  private games () { return this.cloud.collection<BritGameDoc> ("brit-games"); }
   getGame$ (gameId: string) { return this.cloud.get$ (gameId, this.games ()); }
-  selectGames$ (queryFn?: BgCloudCollectionQuery<BritGameDoc> | undefined) { return this.cloud.selectAll$ (this.games (queryFn)); }
+  selectGames$ (queryFn?: BgCloudCollectionQuery<BritGameDoc> | undefined) { return this.cloud.selectAll$ (this.games (), queryFn); }
   insertGame$ (game: BritGameDoc): Observable<BritGameDoc> { return this.cloud.insert$<BritGameDoc> (game, game.id, this.games ()); }
   updateGame$ (patch: Partial<BritGameDoc>, gameId: string) { return this.cloud.update$ (patch, gameId, this.games ()); }
   deleteGame$ (gameId: string) { return this.cloud.delete$ (gameId, this.games ()); }
   
-  private players (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.collection<BritPlayerDoc> (`brit-games/${gameId}/players`, queryFn); }
-  getPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.getAll$ (this.players (gameId, queryFn)); }
-  selectPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.selectAll$ (this.players (gameId, queryFn)); }
+  private players (gameId: string) { return this.cloud.collection<BritPlayerDoc> (`brit-games/${gameId}/players`); }
+  getPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.getAll$ (this.players (gameId), queryFn); }
+  selectPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.selectAll$ (this.players (gameId), queryFn); }
   selectPlayer$ (playerId: string, gameId: string) { return this.cloud.select$ (playerId, this.players (gameId)); }
   insertPlayer$ (player: Omit<BritPlayerDoc, "id">, gameId: string): Observable<BritPlayerDoc> { return this.cloud.insert$ (id => ({ id: id, ...player } as BritPlayerDoc), this.players (gameId)); } 
   updatePlayer$ (patch: Partial<BritPlayerDoc>, playerId: string, gameId: string) { return this.cloud.update$ (patch, playerId, this.players (gameId)); }
   deletePlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.players (gameId)); }
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }
   
-  private stories (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.collection<BritStoryDoc> (`brit-games/${gameId}/stories`, queryFn); }
-  getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId, queryFn)); }
+  private stories (gameId: string) { return this.cloud.collection<BritStoryDoc> (`brit-games/${gameId}/stories`); }
+  getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId), queryFn); }
   getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
-  selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId, queryFn)); }
+  selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
   selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
   insertStory$ (story: BritStoryDoc, gameId: string): Observable<BritStoryDoc> { return this.cloud.insert$ (story, story.id + "", this.stories (gameId)); } 
   updateStory$ (patch: Partial<BritStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }

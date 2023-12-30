@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { BgAuthService } from "@bg-services";
+import { ABgGameService, BgAuthService } from "@bg-services";
 import { forEach, forN } from "@bg-utils";
 import { Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
-import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
 import { BritLandAreaId, BritNationId, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritPlayer, BritPlayerId } from "../brit-game-state.models";

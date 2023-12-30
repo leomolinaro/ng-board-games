@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@bg-services";
-import { arrayUtil, immutableUtil } from "@bg-utils";
+import { BgStore, arrayUtil, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
-import { BgStore } from "src/app/bg-utils/store.util";
 import { BaronyColor, BaronyConstruction, BaronyFinalScores, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyMovement, BaronyPawn, BaronyPawnType, BaronyPlayer, BaronyResourceType, landCoordinatesToId } from "../barony-models";
 
 interface BaronyGameBox {

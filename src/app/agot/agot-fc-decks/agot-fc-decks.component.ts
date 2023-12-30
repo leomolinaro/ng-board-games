@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { Loading, SingleEvent, UntilDestroy } from "@bg-utils";
+import { BgTransformFn, Loading, SingleEvent, UntilDestroy } from "@bg-utils";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
-import { BgTransformFn } from "src/app/bg-utils/bg-transform.pipe";
 import { AgotDataService } from "../agot-services/agot-data.service";
-import { agotAgendaCode as agenda, AgotFactionCode } from "../agot.models";
+import { AgotFactionCode, agotAgendaCode as agenda } from "../agot.models";
 
 interface AgotFcDeck {
   name: string;

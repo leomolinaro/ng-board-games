@@ -92,7 +92,7 @@ export class BritActionsComponent implements OnChanges {
 
   actions = [];
 
-  labels: { [action: string]: string } = {
+  labels = {
     pass: "Pass",
     confirm: "Confirm",
     cancel: "Cancel"

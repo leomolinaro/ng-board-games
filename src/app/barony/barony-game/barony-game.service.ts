@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { BgAuthService, BgUser } from "@bg-services";
-import { EMPTY, forkJoin, Observable } from "rxjs";
+import { ABgGameService, BgAuthService, BgUser } from "@bg-services";
+import { EMPTY, Observable, forkJoin } from "rxjs";
 import { expand, last, map, mapTo } from "rxjs/operators";
-import { ABgGameService } from "src/app/bg-services/a-bg-game.service";
 import { ABaronyPlayer, BaronyConstruction, BaronyLandCoordinates, BaronyMovement, BaronyPlayer, BaronyResourceType, BaronySetupPlacement, BaronyStory, BaronyTurn, landCoordinatesToId } from "../barony-models";
 import { BaronyPlayerDoc, BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
 import { BaronyGameStore } from "./barony-game.store";

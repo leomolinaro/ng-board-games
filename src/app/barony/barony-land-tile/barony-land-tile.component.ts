@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
-import { BooleanInput, immutableUtil, Loading } from "@bg-utils";
+import { BooleanInput, Loading, immutableUtil } from "@bg-utils";
 import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../barony-models";
 import { hexToCartesian } from "./barony-land-tile-coordinates.pipe";

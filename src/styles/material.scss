@@ -1,25 +1,30 @@
-@import '~@angular/material/theming';
+// @import '~@angular/material/theming';
+@use '@angular/material' as mat;
 @import "bg-variables";
 
 // Define a custom typography config that overrides the font-family as well as the
 // `headlines` and `body-1` levels.
-$material-typography: mat-typography-config(
-  $font-family: "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica,Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji", // 'Roboto, monospace',
-  $display-4:     mat-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
-  $display-3:     mat-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
-  $display-2:     mat-typography-level(48px, 48px, 400, $letter-spacing: -0.005em),
-  $display-1:     mat-typography-level(36px, 40px, 400),
-  $headline:      mat-typography-level(26px, 32px, 400),
-  $title:         mat-typography-level(22px, 32px, 500),
-  $subheading-2:  mat-typography-level(18px, 28px, 400),
-  $subheading-1:  mat-typography-level(16px, 24px, 400),
-  $body-2:        mat-typography-level(16px, 24px, 500),
-  $body-1:        mat-typography-level(16px, 20px, 400),
-  $caption:       mat-typography-level(14px, 20px, 400),
-  $button:        mat-typography-level(16px, 16px, 500),
-  // Line-height must be unit-less fraction of the font-size.
-  $input:         mat-typography-level(inherit, 1.125, 400)
+// $bg-typography: mat.define-typography-level(
+//   $font-family: "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica,Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji", // 'Roboto, monospace',
+//   $font-size:     1rem
+// );
+
+$bg-typography-config: mat.define-typography-config(
+  $headline-1:     mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $headline-2:     mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $headline-3:     mat.define-typography-level(45px, 45px, 400, $letter-spacing: -0.005em),
+  $headline-4:     mat.define-typography-level(34px, 40px, 400),
+  $headline-5:      mat.define-typography-level(24px, 32px, 400),
+  $subtitle-1:  mat.define-typography-level(18px, 28px, 400),
+  $subtitle-2:  mat.define-typography-level(16px, 24px, 400),
+  $body-2:        mat.define-typography-level(16px, 24px, 500),
+  $body-1:        mat.define-typography-level(16px, 20px, 400),
+  $caption:       mat.define-typography-level(14px, 20px, 400),
+  $button:        mat.define-typography-level(16px, 16px, 500)
 );
+  // $title:         mat.define-typography-level(22px, 32px, 500),
+  // $input:         mat.define-typography-level(inherit, 1.125, 400)
+// Line-height must be unit-less fraction of the font-size.
 
 // // Override typography CSS classes (e.g., mat-h1, mat-display-1, mat-typography, etc.).
 // @include mat-base-typography($material-typography);
@@ -27,26 +32,31 @@ $material-typography: mat-typography-config(
 // // // Override typography for a specific Angular Material components.
 // @include mat-menu-typography($material-typography);
 
-// Override typography for all Angular Material, including mat-base-typography and all components.
-@include angular-material-typography($material-typography);
+// // Override typography for all Angular Material, including mat-base-typography and all components.
+// @include angular-material-typography($material-typography);
 
 // @include angular-material-typography($material-typography);
 
-@include mat-core($material-typography);
+// @include mat.core($material-typography);
 
-$material-primary: mat-palette($mat-purple, 200);
-$material-accent:  mat-palette($mat-green, 200);
-$material-warn:    mat-palette($mat-deep-orange);
+$bg-primary: mat.define-palette(mat.$purple-palette, 200);
+$bg-accent:  mat.define-palette(mat.$green-palette, 200);
+$bg-warn:    mat.define-palette(mat.$deep-orange-palette);
 
-$material-theme:   mat-dark-theme((
+// $material-theme:   mat-dark-theme((
+  
+// ));
+
+// // Include the default theme styles (color and default density)
+// @include angular-material-theme($material-theme);
+
+$bg-theme: mat.define-dark-theme((
   color: (
-    primary: $material-primary,
-    accent: $material-accent,
-    warn: $material-warn,
-  )
+    primary: $bg-primary,
+    accent: $bg-accent,
+    warn: $bg-warn,
+  ),
+  typography: $bg-typography-config,
 ));
 
-// Include the default theme styles (color and default density)
-@include angular-material-theme($material-theme);
-
-
+@include mat.all-component-themes($bg-theme);

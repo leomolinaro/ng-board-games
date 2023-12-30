@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 export const BG_PATHS = {
   barony: "barony",
   britannia: "britannia",
+  wort: "war-of-the-ring-2",
   agotLcg2: "a-game-of-thrones-lcg-2",
   talisman: "talisman"
 } // BG_PATHS
@@ -18,6 +19,7 @@ const APPS: BgApp[] = [
   { name: "Britannia", routerLink: BG_PATHS.britannia, imageSource: "assets/britannia/game-image.jpg" },
   { name: "A Game of Thrones LCG 2.0", routerLink: BG_PATHS.agotLcg2, imageSource: "assets/agot/game-image.jpg" },
   { name: "Talisman", routerLink: BG_PATHS.talisman, imageSource: "assets/talisman/game-image.jpg" },
+  { name: "War of the Ring", routerLink: BG_PATHS.wort, imageSource: "assets/wotr/game-image.png" }
 ];
 
 @Injectable ({

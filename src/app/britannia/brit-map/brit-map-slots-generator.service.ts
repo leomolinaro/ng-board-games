@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from "@bg-utils";
-import { BgSimulatedAnnealing } from "src/app/bg-utils/random.util";
 import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
@@ -189,7 +188,7 @@ export class BritMapSlotsGeneratorService {
   } // generateSeaSlots
 
   private generateLandSlots (n: number, landPoints: BritLandPoints, landId: BritLandAreaId): BritMapPoint[] {
-    const simulation = new BgSimulatedAnnealing<BritMapLandPoint[]> (
+    const simulation = new randomUtil.BgSimulatedAnnealing<BritMapLandPoint[]> (
       state => this.energy (state),
       state => this.randomNeighbor (state, landPoints, landId)
     );

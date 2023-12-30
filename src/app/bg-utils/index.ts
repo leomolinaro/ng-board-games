@@ -9,20 +9,17 @@ import { BgStore, debounceSync } from "./store.util";
 import * as stringUtil from "./string.util";
 import * as typesUtil from "./types.util";
 
+export * from "./bg-transform.pipe";
 export * from "./ng.util";
 export * from "./rxjs.util";
 export {
-  arrayUtil,
-  downloadUtil,
+  BgReduxDevtools,
+  BgStore, BgUtilsModule, arrayUtil, debounceSync, downloadUtil,
   immutableUtil,
   objectUtil,
   randomUtil,
   stringUtil,
-  typesUtil,
-  BgUtilsModule,
-  BgReduxDevtools,
-  BgStore,
-  debounceSync
+  typesUtil
 };
 
 

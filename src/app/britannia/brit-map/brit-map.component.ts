@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, TrackByFunction, ViewChild } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@bg-components/svg";
-import { arrayUtil, downloadUtil, SimpleChanges } from "@bg-utils";
-import { environment } from "src/environments/environment";
+import { SimpleChanges, arrayUtil, downloadUtil } from "@bg-utils";
+import { environment } from "../../../environments/environment";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritArea, BritAreaId, BritEvent, BritNation, BritNationId, BritPopulation, BritRound, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";

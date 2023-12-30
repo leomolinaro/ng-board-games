@@ -2,36 +2,40 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noImplicitThis": false,
     "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
-    "module": "es2020",
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
     "lib": [
-      "es2018",
+      "ES2022",
       "dom"
     ],
     "paths": {
-      "@bg-services": ["src/app/bg-services"],
-      "@bg-utils": ["src/app/bg-utils"],
-      "@bg-components/auth": ["src/app/bg-components/bg-auth"],
-      "@bg-components/form": ["src/app/bg-components/bg-form"],
-      "@bg-components/game-layout": ["src/app/bg-components/bg-game-layout"],
-      "@bg-components/home": ["src/app/bg-components/bg-home"],
-      "@bg-components/svg": ["src/app/bg-components/bg-svg"]
+      "@bg-services": ["./src/app/bg-services"],
+      "@bg-utils": ["./src/app/bg-utils"],
+      "@bg-components/auth": ["./src/app/bg-components/bg-auth"],
+      "@bg-components/form": ["./src/app/bg-components/bg-form"],
+      "@bg-components/game-layout": ["./src/app/bg-components/bg-game-layout"],
+      "@bg-components/home": ["./src/app/bg-components/bg-home"],
+      "@bg-components/svg": ["./src/app/bg-components/bg-svg"]
     }
   },
   "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true,

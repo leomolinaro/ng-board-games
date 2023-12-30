@@ -1,9 +1,8 @@
-import { Injectable } from "@angular/core";
-import { AngularFireAuth } from "@angular/fire/compat/auth";
-import firebase from "firebase/compat/app";
+import { inject, Injectable } from "@angular/core";
+import { Auth, GoogleAuthProvider, signInWithPopup, User, user } from "@angular/fire/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, first, map, switchMap } from "rxjs/operators";
-import { BgCloudCollectionQuery, BgCloudService } from "./bg-cloud.service";
+import { BgCloudService } from "./bg-cloud.service";
 
 export type BgUserLoginType = "guest" | "google";
 
@@ -29,15 +28,15 @@ interface IBgAuthProvider {
 export class BgAuthService {
 
   constructor (
-    public googleProvider: GoogleAuthProvider,
-    public guestProvider: GuestAuthProvider,
+    public googleProvider: BgGoogleAuthProvider,
+    public guestProvider: BgGuestAuthProvider,
     private cloud: BgCloudService
   ) { }
 
   private $user = new BehaviorSubject<BgUser | null> (null);
   private setUser (user: BgUser | null) { this.$user.next (user); }
 
-  private users (queryFn?: BgCloudCollectionQuery<BgUser>) { return this.cloud.collection<BgUser> ("users", queryFn); }
+  private users () { return this.cloud.collection<BgUser> ("users"); }
 
   getUser$ () { return this.$user.asObservable (); }
   getUser () { return this.$user.getValue () as BgUser; }
@@ -116,30 +115,28 @@ export class BgAuthService {
 @Injectable ({
   providedIn: "root"
 })
-class GoogleAuthProvider implements IBgAuthProvider {
+class BgGoogleAuthProvider implements IBgAuthProvider {
 
-  constructor (
-    public afa: AngularFireAuth,
-  ) { }
+  private auth: Auth = inject (Auth);
 
   signIn$ (): Observable<BgUser | null> {
-    return from (this.afa.signInWithPopup (new firebase.auth.GoogleAuthProvider ())).pipe (
+    return from (signInWithPopup (this.auth, new GoogleAuthProvider ())).pipe (
       map (userCredential => this.googleUserToBgUser (userCredential.user))
     );
   } // signIn$
 
   signOut$ () {
-    return from (this.afa.signOut ());
+    return from (this.auth.signOut ());
   } // signOut
 
   autoSignIn$ (): Observable<BgUser | null> {
-    return this.afa.user.pipe (
+    return user (this.auth).pipe (
       first (),
       map (authUser => this.googleUserToBgUser (authUser))
     );
   } // autoSignIn$
 
-  private googleUserToBgUser (authUser: firebase.User | null): BgUser | null {
+  private googleUserToBgUser (authUser: User | null): BgUser | null {
     return authUser ? {
       id: authUser.uid,
       email: authUser.email || "",
@@ -153,7 +150,7 @@ class GoogleAuthProvider implements IBgAuthProvider {
 @Injectable ({
   providedIn: "root"
 })
-class GuestAuthProvider implements IBgAuthProvider {
+class BgGuestAuthProvider implements IBgAuthProvider {
 
   signIn$ (): Observable<BgUser | null> {
     const guestKey = `guestKey${new Date ().getTime ()}`;
