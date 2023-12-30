@@ -85,36 +85,28 @@ export class BgCloudService {
     return doc (this.firestore, collection.path, ...pathSegments) as DocumentReference<T>;
   } // getDocRef
 
-  insert$<T extends object> (constructor: (id: string) => T, collection: BgCloudCollection<T>): Observable<T>;
-  insert$<T extends object> (data: T, id: string, collection: BgCloudCollection<T>): Observable<T>;
-  insert$<T extends object> (...args: any[]): Observable<T> { return from (this._insert<T> (...args)); }
+  insert$<T extends object> (constructor: (id: string) => T, collection: BgCloudCollection<T>): Observable<T> {
+    return from (this.insert<T> (constructor, collection));
+  } // insert$
 
-  async insert<T extends object> (constructor: (id: string) => T, collection: BgCloudCollection<T>): Promise<T>;
-  async insert<T extends object> (data: T, id: string, coll: BgCloudCollection<T>): Promise<T>;
-  async insert<T extends object> (...args: any[]): Promise<T> { return this._insert (...args); }
-  async _insert<T extends object> (...args: any[]): Promise<T> {
-    let id: string;
-    let data: T;
-    let coll: BgCloudCollection<T>;
-    if (args.length === 2) {
-      const constructor: (id: string) => T = args[0];
-      coll = args[1];
-      const docRef = doc (this.getCollectionRef (coll)); // N.B.: this.getDocRef (coll) dà errore per path non pari
-      const id = docRef.id;
-      data = constructor (id);
-      await setDoc (docRef, data);
-      return data;
-    } else {
-      data = args[0];
-      id = args[1];
-      coll = args[2];
-      await setDoc (this.getDocRef (coll, id), data);
-      return data;
-    } // if - else
-  } // _insert
+  async insert<T extends object> (constructor: (id: string) => T, collection: BgCloudCollection<T>): Promise<T> {
+    const docRef = doc (this.getCollectionRef (collection)); // N.B.: this.getDocRef (coll) dà errore per path non pari
+    const id = docRef.id;
+    const data = constructor (id);
+    await setDoc (docRef, data);
+    return data;
+  } // insert
+
+  set$<T extends object> (data: T, id: string, collection: BgCloudCollection<T>): Observable<T> {
+    return from (this.set (data, id, collection));
+  } // set$
+
+  async set<T extends object> (data: T, id: string, coll: BgCloudCollection<T>): Promise<T> {
+    await setDoc (this.getDocRef (coll, id), data);
+    return data;
+  } // set
 
   update$<T> (patch: Partial<T>, id: string, collection: BgCloudCollection<T>): Observable<void> {
-    console.log (collection, id, patch);
     return from (this.update (patch, id, collection));
   } // update$
 

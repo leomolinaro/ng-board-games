@@ -51,8 +51,8 @@ export class BaronyRemoteService {
 
   private games () { return this.cloud.collection<BaronyGameDoc> ("barony-games"); }
   getGame$ (gameId: string) { return this.cloud.get$ (gameId, this.games ()); }
-  selectGames$ (queryFn?: BgCloudCollectionQuery<BaronyGameDoc> | undefined) { return this.cloud.selectAll$ (this.games ()); }
-  insertGame$ (game: BaronyGameDoc): Observable<BaronyGameDoc> { return this.cloud.insert$<BaronyGameDoc> (game, game.id, this.games ()); }
+  selectGames$ () { return this.cloud.selectAll$ (this.games ()); }
+  insertGame$ (game: BaronyGameDoc): Observable<BaronyGameDoc> { return this.cloud.set$<BaronyGameDoc> (game, game.id, this.games ()); }
   updateGame$ (patch: Partial<BaronyGameDoc>, gameId: string) { return this.cloud.update$ (patch, gameId, this.games ()); }
   deleteGame$ (gameId: string) { return this.cloud.delete$ (gameId, this.games ()); }
   
@@ -67,7 +67,7 @@ export class BaronyRemoteService {
   
   private maps (gameId: string) { return this.cloud.collection<BaronyMapDoc> (`barony-games/${gameId}/maps`); }
   getMap$ (gameId: string) { return this.cloud.get$ ("map", this.maps (gameId)); }
-  insertMap$ (map: BaronyMapDoc, gameId: string): Observable<BaronyMapDoc> { return this.cloud.insert$ (map, "map", this.maps (gameId)); }
+  insertMap$ (map: BaronyMapDoc, gameId: string): Observable<BaronyMapDoc> { return this.cloud.set$ (map, "map", this.maps (gameId)); }
   deleteMap$ (gameId: string) { return this.cloud.delete$ ("map", this.maps (gameId)); }
   
   private stories (gameId: string) { return this.cloud.collection<BaronyStoryDoc> (`barony-games/${gameId}/stories`); }
@@ -75,7 +75,7 @@ export class BaronyRemoteService {
   getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
   selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
   selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
-  insertStory$ (story: BaronyStoryDoc, gameId: string): Observable<BaronyStoryDoc> { return this.cloud.insert$ (story, story.id + "", this.stories (gameId)); } 
+  insertStory$ (story: BaronyStoryDoc, gameId: string): Observable<BaronyStoryDoc> { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); } 
   updateStory$ (patch: Partial<BaronyStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }
   deleteStories$ (gameId: string) { return this.cloud.deleteAll$ (this.stories (gameId)); }

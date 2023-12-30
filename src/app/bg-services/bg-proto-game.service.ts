@@ -52,7 +52,7 @@ export class BgProtoGameService {
   getProtoPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined) { return this.cloud.getAll$ (this.protoPlayers (gameId), queryFn); }
   selectProtoPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined) { return this.cloud.selectAll$ (this.protoPlayers (gameId), queryFn); }
   selectProtoPlayer$ (playerId: string, gameId: string) { return this.cloud.select$ (playerId, this.protoPlayers (gameId)); }
-  insertProtoPlayer$ (protoPlayer: BgProtoPlayer, gameId: string): Observable<BgProtoPlayer> { return this.cloud.insert$ (protoPlayer, protoPlayer.id, this.protoPlayers (gameId)); } 
+  insertProtoPlayer$ (protoPlayer: BgProtoPlayer, gameId: string): Observable<BgProtoPlayer> { return this.cloud.set$ (protoPlayer, protoPlayer.id, this.protoPlayers (gameId)); } 
   updateProtoPlayer$ (patch: Partial<BgProtoPlayer>, playerId: string, gameId: string) { return this.cloud.update$ (patch, playerId, this.protoPlayers (gameId)); }
   deleteProtoPlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.protoPlayers (gameId)); }
   deleteProtoPlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.protoPlayers (gameId)); }
