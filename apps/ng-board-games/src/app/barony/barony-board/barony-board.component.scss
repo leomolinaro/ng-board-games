@@ -1,0 +1,154 @@
+@import 'barony-variables';
+
+.b-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+  background: $background;
+  .b-board-map-layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .b-board-widgets-layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 2vmin;
+    gap: 2vmin;
+    grid-template-areas:
+      'players extras extras'
+      'players extras extras'
+      'players instructions actions';
+    .b-board-instructions-widget {
+      grid-area: instructions;
+      pointer-events: auto;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: auto;
+      padding: 2vh;
+      background: $surface;
+      color: white;
+      font-size: $font-size-instructions;
+      &.is-red {
+        box-shadow: widget-shadow($red-light);
+      }
+      &.is-blue {
+        box-shadow: widget-shadow($blue-light);
+      }
+      &.is-yellow {
+        box-shadow: widget-shadow($yellow-light);
+      }
+      &.is-green {
+        box-shadow: widget-shadow($green-light);
+      }
+      .b-board-instructions {
+      }
+      barony-knights-selector,
+      barony-resources-selector,
+      barony-buildings-selector {
+        display: block;
+        margin-top: 2vh;
+      }
+    }
+    .b-board-actions-widget {
+      grid-area: actions;
+      pointer-events: auto;
+      margin-top: auto;
+      margin-left: auto;
+    }
+    .b-board-players-widget {
+      grid-area: players;
+      z-index: 1;
+      margin-top: auto;
+      margin-right: auto;
+      display: grid;
+      grid-template-columns: auto;
+      grid-gap: 2vmin;
+      // pointer-events: auto;
+      .b-board-player-widget {
+        pointer-events: auto;
+      }
+    }
+    .b-board-extras {
+      grid-area: extras;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 4vmin;
+      overflow: auto;
+      .b-board-buttons {
+        pointer-events: auto;
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-template-columns: 1fr;
+        grid-gap: 2vmin;
+        margin-bottom: auto;
+        margin-left: 2vmin;
+        .b-board-button {
+          color: white;
+          background-color: transparent;
+          cursor: pointer;
+          opacity: 0.5;
+          &.is-active {
+            opacity: 1;
+          }
+        }
+      }
+      .b-board-logs-widget {
+        pointer-events: auto;
+        @include golden-padding(2vmin);
+        // padding: 2vmin;
+        box-shadow: $widget-shadow;
+        font-size: $font-size-logs;
+        line-height: $line-height-logs;
+        color: white;
+        background-color: $surface;
+        margin-left: 2vmin;
+      }
+      .b-board-summary-image {
+        pointer-events: auto;
+        min-width: 30vw;
+        max-width: 400px;
+        height: max-content;
+        margin-left: 2vmin;
+      }
+      .b-board-scoreboard-widget {
+        pointer-events: auto;
+        min-width: 30vw;
+        max-width: 400px;
+        height: max-content;
+        margin-left: 2vmin;
+      }
+      .b-board-zoom-buttons-widget {
+        @include golden-padding(2vmin);
+        pointer-events: auto;
+        align-self: flex-start;
+        box-shadow: $widget-shadow;
+        color: white;
+        background-color: $surface;
+        margin-left: 2vmin;
+      }
+    }
+    // .b-board-scoreboard-widget {
+    //   grid-area: scoreboard;
+    //   z-index: 1;
+    //   margin-bottom: auto;
+    //   margin-right: auto;
+    //   // display: grid;
+    //   // grid-template-columns: auto;
+    //   // grid-gap: 2vmin;
+    //   pointer-events: auto;
+    // }
+  }
+}

@@ -1,0 +1,109 @@
+<mat-sidenav-container
+  class="sidenav-container"
+  *ngLet="isHandset$ | async as isHandset"
+>
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport="true"
+    [attr.role]="isHandset ? 'dialog' : 'navigation'"
+    [mode]="isHandset ? 'over' : 'side'"
+    [opened]="!isHandset"
+  >
+    <mat-toolbar>Draft generator</mat-toolbar>
+    <mat-progress-bar
+      *ngIf="loading$ | async"
+      mode="indeterminate"
+    ></mat-progress-bar>
+    <mat-accordion displayMode="flat" multi="true">
+      <mat-expansion-panel expanded="true" hideToggle="true" disabled="true">
+        <mat-slider style="width: 100%" min="0" max="80" step="1">
+          <input
+            matSliderThumb
+            [value]="nCards"
+            (valueChange)="nCards = $event || 0"
+          />
+        </mat-slider>
+        <p style="margin-top: 0">{{ nCards }} cards</p>
+        <mat-checkbox [(ngModel)]="duplicates">Allow duplicates</mat-checkbox>
+        <mat-action-row>
+          <button mat-button color="primary" (click)="generate()">
+            Generate
+          </button>
+        </mat-action-row>
+      </mat-expansion-panel>
+      <mat-expansion-panel expanded="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Types</mat-panel-title>
+        </mat-expansion-panel-header>
+        <button mat-button (click)="typeList.selectAll()">
+          <mat-icon>done_all</mat-icon>&nbsp;All
+        </button>
+        /
+        <button mat-button (click)="typeList.deselectAll()">
+          <mat-icon>close</mat-icon>&nbsp;None
+        </button>
+        <mat-selection-list dense #typeList [(ngModel)]="selectedTypeIds">
+          <mat-list-option
+            *ngFor="let type of types$ | async"
+            [value]="type.code"
+            >{{ type.name }}</mat-list-option
+          >
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel expanded="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Factions</mat-panel-title>
+        </mat-expansion-panel-header>
+        <button mat-button (click)="factionList.selectAll()">
+          <mat-icon>done_all</mat-icon>&nbsp;All
+        </button>
+        /
+        <button mat-button (click)="factionList.deselectAll()">
+          <mat-icon>close</mat-icon>&nbsp;None
+        </button>
+        <mat-selection-list dense #factionList [(ngModel)]="selectedFactionIds">
+          <mat-list-option
+            *ngFor="let faction of factions$ | async"
+            [value]="faction.code"
+            >{{ faction.name }}</mat-list-option
+          >
+        </mat-selection-list>
+      </mat-expansion-panel>
+      <mat-expansion-panel expanded="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Packs</mat-panel-title>
+        </mat-expansion-panel-header>
+        <button mat-button (click)="packList.selectAll()">
+          <mat-icon>done_all</mat-icon>&nbsp;All
+        </button>
+        /
+        <button mat-button (click)="packList.deselectAll()">
+          <mat-icon>close</mat-icon>&nbsp;None
+        </button>
+        <mat-selection-list dense #packList [(ngModel)]="selectedPackIds">
+          <mat-list-option
+            *ngFor="let pack of packs$ | async"
+            [value]="pack.code"
+            >{{ pack.name }}</mat-list-option
+          >
+        </mat-selection-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        *ngIf="isHandset"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>A Game of Thrones Lcg - Draft</span>
+    </mat-toolbar>
+    <agot-card-grid [cards]="draftCards"></agot-card-grid>
+  </mat-sidenav-content>
+</mat-sidenav-container>

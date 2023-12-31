@@ -1,0 +1,59 @@
+@import 'bg-variables';
+
+.brit-unit-selector-container {
+  @include golden-padding(1vmin);
+  display: flex;
+  align-items: center;
+  .brit-nation-unit-image {
+    height: 75px;
+  }
+  .brit-units {
+    margin-left: 0.5vw;
+    .brit-unit-number {
+      font-size: 4vmin;
+    }
+    .brit-unit-fraction-sign {
+      margin-right: 0.3vw;
+      margin-left: 0.3vw;
+      font-size: 3vmin;
+    }
+    .brit-unit-max {
+      font-size: 3vmin;
+    }
+  }
+  .brit-unit-buttons {
+    margin-left: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    & > button {
+      background: transparent;
+      color: white;
+      font-size: 4vmin;
+      width: 4vw;
+      &.is-active {
+        cursor: pointer;
+        &:hover {
+          // box-shadow: 0 0 6px 0px #fff;
+          // color: #666666;
+          // color: white;
+          // color: greenyellow;
+        }
+      }
+      &.is-disabled {
+        cursor: no-drop;
+        color: #999999;
+      }
+    }
+  }
+  .brit-unit-confirm {
+    background: transparent;
+    color: white;
+    margin-left: auto;
+    font-size: 3vmin;
+    width: 4vw;
+    height: 4vw;
+    &:hover {
+      // color: #666666;
+    }
+  }
+}

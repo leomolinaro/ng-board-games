@@ -1,0 +1,130 @@
+@import 'barony-variables';
+
+.b-player-card {
+  @include golden-padding(2vmin);
+  font-size: $font-size-players;
+  color: white;
+  background-color: $surface;
+  .b-player-header {
+    display: flex;
+    .b-player-icon {
+      display: flex;
+      align-items: center;
+    }
+    .b-player-name {
+      margin-left: 5px;
+    }
+    .b-player-type {
+      font-style: italic;
+      margin-left: 5px;
+      font-size: 80%;
+    }
+    .b-player-type-icon {
+      display: flex;
+      align-items: center;
+      margin-left: 5px;
+    }
+    .b-player-score-icon {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+    }
+    .b-player-score {
+      margin-left: 5px;
+    }
+  }
+  &.is-red {
+    box-shadow: widget-shadow($red-light);
+    .b-player-icon,
+    .b-player-score-icon,
+    .b-player-type-icon {
+      color: $red;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($red-light);
+    }
+    // background-color: $red-light;
+  }
+  &.is-yellow {
+    box-shadow: widget-shadow($yellow-light);
+    .b-player-icon,
+    .b-player-score-icon,
+    .b-player-type-icon {
+      color: $yellow;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($yellow-light);
+    }
+    // background-color: $yellow-light;
+  }
+  &.is-green {
+    box-shadow: widget-shadow($green-light);
+    .b-player-icon,
+    .b-player-score-icon,
+    .b-player-type-icon {
+      color: $green;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($green-light);
+    }
+    // background-color: $green-light;
+  }
+  &.is-blue {
+    box-shadow: widget-shadow($blue-light);
+    .b-player-icon,
+    .b-player-score-icon,
+    .b-player-type-icon {
+      color: $blue;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($blue-light);
+    }
+    // background-color: $blue-light;
+  }
+  &.is-local:not(.is-current) {
+    cursor: pointer;
+  }
+  &.is-remote,
+  &.is-ai {
+    cursor: no-drop;
+  }
+
+  .b-player-content {
+    margin-top: 1vh;
+    display: grid;
+    grid-template-columns: 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw 1.5vw;
+    column-gap: 1vmin;
+
+    .b-player-pawn-image,
+    .b-player-resource-image {
+      display: flex;
+      align-items: center;
+      & > img {
+        width: 100%;
+      }
+      &.is-active {
+        cursor: pointer;
+        background: linear-gradient(90deg, white 50%, transparent 50%),
+          linear-gradient(90deg, white 50%, transparent 50%),
+          linear-gradient(0deg, white 50%, transparent 50%),
+          linear-gradient(0deg, white 50%, transparent 50%);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 16px 4px, 16px 4px, 4px 16px, 4px 16px;
+        background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px;
+        animation: dash 1s linear infinite;
+      }
+    }
+    .b-player-pawn-quantity,
+    .b-player-resource-quantity {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+@keyframes dash {
+  to {
+    background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+  }
+}

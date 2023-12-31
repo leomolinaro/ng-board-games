@@ -1,0 +1,59 @@
+<div
+  [class]="'brit-player-card ' + 'is-' + player.color"
+  [ngClass]="{
+    'is-current': currentPlayer,
+    'is-ai': player.isAi,
+    'is-remote': player.isRemote,
+    'is-local': player.isLocal
+  }"
+  (click)="onCardClick()"
+>
+  <div class="brit-player-header">
+    <i
+      class="brit-player-type-icon fa"
+      [ngClass]="
+        player.isAi
+          ? 'fa-desktop'
+          : player.isRemote
+          ? 'fa-globe'
+          : currentPlayer
+          ? 'fa-user'
+          : 'fa-user-o'
+      "
+    ></i>
+    <div class="brit-player-name">{{ player.name }}</div>
+    <i class="brit-player-score-icon fa fa-star"></i>
+    <div class="brit-player-score">{{ player.score }}</div>
+  </div>
+  <div class="brit-player-content">
+    <div
+      *ngFor="let nationNode of nationNodes; trackBy: nationTrackBy"
+      class="brit-player-nation"
+      (click)="onNationClick(nationNode, $event)"
+    >
+      <img
+        class="brit-player-nation-icon"
+        [src]="nationNode.iconSource"
+        [matTooltip]="nationNode.nation.label"
+      />
+    </div>
+
+    <!-- <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
+      class="brit-player-pawn-image"
+      [ngClass]="{ 'is-active': pawnNode.active }"
+      (click)="onPawnClick (pawnNode)">
+      <img [src]="pawnNode.source">
+    </div> -->
+    <!-- <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="brit-player-resource-image"
+      [ngClass]="{ 'is-active': resourceNode.active }"
+      (click)="onResourceClick (resourceNode)">
+      <img [src]="resourceNode.source">
+    </div>
+    <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy" class="brit-player-pawn-quantity">
+      {{ $any (player.pawns)[pawnNode.type] }}
+    </div>
+    <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="brit-player-resource-quantity">
+      {{ resourceNode.quantity }}
+    </div> -->
+  </div>
+</div>

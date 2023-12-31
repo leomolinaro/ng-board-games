@@ -1,0 +1,15 @@
+$background: black; // #121212;
+$surface: #404040;
+$primary: #bcaaa4;
+$secondary: #a5d6a7;
+$on-primary: #000000;
+$on-secondary: #000000;
+$on-background: #ffffff;
+$on-surface: #ffffff;
+
+@mixin golden-padding($horizontal-padding) {
+  padding-right: $horizontal-padding;
+  padding-left: $horizontal-padding;
+  padding-top: $horizontal-padding / 1.618;
+  padding-bottom: $horizontal-padding / 1.618;
+}

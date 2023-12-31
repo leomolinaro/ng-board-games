@@ -1,0 +1,168 @@
+@import 'brit-variables';
+
+.brit-player-card {
+  @include golden-padding(2vmin);
+  font-size: $font-size-players;
+  color: white;
+  background-color: $surface;
+
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+
+  .brit-player-header {
+    display: flex;
+    .brit-player-icon {
+      display: flex;
+      align-items: center;
+    }
+    .brit-player-name {
+      margin-left: 5px;
+    }
+    .brit-player-type {
+      font-style: italic;
+      margin-left: 5px;
+      font-size: 80%;
+    }
+    .brit-player-type-icon {
+      display: flex;
+      align-items: center;
+      margin-left: 5px;
+    }
+    .brit-player-score-icon {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+    }
+    .brit-player-score {
+      margin-left: 5px;
+    }
+  }
+  &.is-red {
+    box-shadow: widget-shadow($red-light);
+    .brit-player-icon,
+    .brit-player-score-icon,
+    .brit-player-type-icon {
+      color: $red;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($red-light);
+    }
+    .brit-player-content {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+  &.is-yellow {
+    box-shadow: widget-shadow($yellow-light);
+    .brit-player-icon,
+    .brit-player-score-icon,
+    .brit-player-type-icon {
+      color: $yellow;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($yellow-light);
+    }
+    .brit-player-content {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+  }
+  &.is-green {
+    box-shadow: widget-shadow($green-light);
+    .brit-player-icon,
+    .brit-player-score-icon,
+    .brit-player-type-icon {
+      color: $green;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($green-light);
+    }
+    .brit-player-content {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+  &.is-blue {
+    box-shadow: widget-shadow($blue-light);
+    .brit-player-icon,
+    .brit-player-score-icon,
+    .brit-player-type-icon {
+      color: $blue;
+    }
+    &.is-local:not(.is-current):hover {
+      box-shadow: widget-shadow-hover($blue-light);
+    }
+    .brit-player-content {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+  }
+  &.is-local:not(.is-current) {
+    cursor: pointer;
+  }
+  &.is-remote,
+  &.is-ai {
+    cursor: no-drop;
+  }
+
+  .brit-player-content {
+    margin-top: 1vh;
+    display: grid;
+    grid-template-rows: 50px;
+    column-gap: 1vmin;
+
+    .brit-player-nation {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      .brit-player-nation-icon {
+        max-width: 100%;
+        max-height: 100%;
+        &:hover {
+          border-radius: 50%;
+          box-shadow: 0 0 6px 0px white;
+        }
+      }
+
+      // &:nth-child(odd) {
+      //   flex-direction: column;
+      //   // align-self: start;
+      // }
+
+      // &:nth-child(even) {
+      //   flex-direction: column-reverse;
+      //   align-self: end;
+      // }
+    }
+
+    // .brit-player-pawn-image, .brit-player-resource-image {
+    //   display: flex;
+    //   align-items: center;
+    //   & > img {
+    //     width: 100%;
+    //   }
+    //   &.is-active {
+    //     cursor: pointer;
+    //     background: linear-gradient(90deg, white 50%, transparent 50%), linear-gradient(90deg, white 50%, transparent 50%), linear-gradient(0deg, white 50%, transparent 50%), linear-gradient(0deg, white 50%, transparent 50%);
+    //     background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    //     background-size: 16px 4px, 16px 4px, 4px 16px, 4px 16px;
+    //     background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px;
+    //     animation: dash 1s linear infinite;
+    //   }
+    // }
+    // .brit-player-pawn-quantity, .brit-player-resource-quantity {
+    //   display: flex;
+    //   justify-content: center;
+    //   align-items: center;
+    // }
+  }
+  .brit-player-nation-card {
+    margin-top: 1vh;
+    max-width: 50vw;
+    max-height: 50vh;
+  }
+}
+
+@keyframes dash {
+  to {
+    background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+  }
+}

@@ -1,0 +1,11 @@
+<div class="b-buildings-selector-container">
+  <div
+    *ngFor="let building of buildings"
+    class="b-building-image"
+    (click)="onBuildingClick(building)"
+  >
+    <img
+      [src]="'assets/barony/pawns/' + player.color + '-' + building + '.png'"
+    />
+  </div>
+</div>

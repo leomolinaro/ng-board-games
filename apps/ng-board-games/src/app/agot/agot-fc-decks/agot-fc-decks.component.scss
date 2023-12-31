@@ -1,0 +1,15 @@
+.agot-fc-table {
+  width: 100%;
+
+  .mat-column-faction {
+    width: 120px;
+    .agot-fc-faction-cell {
+      display: flex;
+      justify-content: space-evenly;
+      padding: 5px;
+      .agot-fc-card-image {
+        width: 50px;
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 8px 0;
+}
+
+p {
+  margin: 0;
+}
+
+@import './styles/material.scss';
+@import './styles/layout.scss';
+@import './styles/scroll-bars.scss';
+@import './styles/buttons.scss';

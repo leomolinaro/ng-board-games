@@ -1,0 +1,13 @@
+@import 'bg-variables';
+
+:host {
+  margin-left: auto;
+}
+
+.bg-account-signed-in {
+  padding: 16px;
+}
+
+.bg-account-menu {
+  min-width: 180px;
+}

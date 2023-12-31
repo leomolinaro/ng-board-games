@@ -1,0 +1,30 @@
+<div class="b-knights-selector-container">
+  <div class="b-knights">
+    <span class="b-knights-number">{{ this.number }}</span>
+    <span class="b-knights-fraction-sign">/</span>
+    <span class="b-knights-max">{{ this.max }}</span>
+  </div>
+  <div class="b-knights-buttons">
+    <button
+      (click)="onIncrease()"
+      [ngClass]="{
+        'is-active': enableIncrease,
+        'is-disabled': !enableIncrease
+      }"
+    >
+      <i class="fa fa-caret-up"></i>
+    </button>
+    <button
+      (click)="onDecrease()"
+      [ngClass]="{
+        'is-active': enableDecrease,
+        'is-disabled': !enableDecrease
+      }"
+    >
+      <i class="fa fa-caret-down"></i>
+    </button>
+  </div>
+  <button class="b-knights-confirm" (click)="onConfirm()">
+    <i class="fa fa-check"></i>
+  </button>
+</div>

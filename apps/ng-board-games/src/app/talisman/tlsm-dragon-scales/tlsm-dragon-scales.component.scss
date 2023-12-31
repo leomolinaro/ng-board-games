@@ -1,0 +1,56 @@
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+
+  .tlsm-dashboard {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 2vmin;
+    padding: 2vmin;
+
+    grid-template-areas:
+      'varthrax logs'
+      'varthrax logs'
+      'cadorus logs'
+      'cadorus pool'
+      'grilipus pool'
+      'grilipus pool';
+
+    .tlsm-dragon-card {
+      &.varthrax {
+        grid-area: varthrax;
+      }
+      &.cadorus {
+        grid-area: cadorus;
+      }
+      &.grilipus {
+        grid-area: grilipus;
+      }
+      // z-index: 1;
+      // margin-top: auto;
+      // margin-right: auto;
+      // display: grid;
+      // grid-template-columns: auto;
+      // grid-gap: 2vmin;
+      // .b-board-player-widget {
+      //   pointer-events: auto;
+      //   background-color: white;
+      //   box-shadow: $widget-shadow;
+      //   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+      //   &:hover {
+      //     box-shadow: $widget-shadow-hover;
+      //   }
+      // }
+    }
+
+    .tlsm-logs-card {
+      grid-area: logs;
+    }
+
+    .tlsm-pool-card {
+      grid-area: pool;
+    }
+  }
+}
