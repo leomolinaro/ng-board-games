@@ -21,7 +21,15 @@
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
     "baseUrl": ".",
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "@leobg/agot": ["projects/agot/src/index.ts"],
+      "@leobg/barony": ["projects/barony/src/index.ts"],
+      "@leobg/britannia": ["projects/britannia/src/index.ts"],
+      "@leobg/commons": ["projects/commons/src/index.ts"],
+      "@leobg/talisman": ["projects/talisman/src/index.ts"],
+      "@leobg/wotr": ["projects/wotr/src/index.ts"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

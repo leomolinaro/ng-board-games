@@ -9,7 +9,9 @@
       "default",
       "!{projectRoot}/tsconfig.spec.json",
       "!{projectRoot}/**/*.spec.[jt]s",
-      "!{projectRoot}/karma.conf.js"
+      "!{projectRoot}/karma.conf.js",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.js"
     ]
   },
   "targetDefaults": {
@@ -21,7 +23,31 @@
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/karma.conf.js"],
       "cache": true
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.js"
+      ]
     }
   },
-  "nxCloudAccessToken": "N2VhYmE0ZDUtOWZkZi00NTY4LTk3ZjAtYTg5MWI4OWQxNDBjfHJlYWQtd3JpdGU=="
+  "nxCloudAccessToken": "N2VhYmE0ZDUtOWZkZi00NTY4LTk3ZjAtYTg5MWI4OWQxNDBjfHJlYWQtd3JpdGU==",
+  "generators": {
+    "@nx/angular:application": {
+      "style": "css",
+      "linter": "eslint",
+      "unitTestRunner": "none",
+      "e2eTestRunner": "none"
+    },
+    "@nx/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "none"
+    },
+    "@nx/angular:component": {
+      "style": "css"
+    }
+  }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@leobg/wotr",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/wotr/src",
+  "prefix": "wotr",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "projects/wotr/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/wotr/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/wotr/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}

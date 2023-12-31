@@ -1,0 +1,26 @@
+{
+  "name": "@leobg/talisman",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/talisman/src",
+  "prefix": "tlsm",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "projects/talisman/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/talisman/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/talisman/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}

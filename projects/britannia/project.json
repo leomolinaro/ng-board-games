@@ -1,0 +1,26 @@
+{
+  "name": "@leobg/britannia",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/britannia/src",
+  "prefix": "brit",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "projects/britannia/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/britannia/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/britannia/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@leobg/agot",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "projects/agot/src",
+  "prefix": "agot",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "projects/agot/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/agot/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/agot/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}
