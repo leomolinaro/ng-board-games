@@ -1,4 +1,3 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -20,19 +19,9 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
-    "paths": {
-      "@bg-services": ["./src/app/bg-services"],
-      "@bg-utils": ["./src/app/bg-utils"],
-      "@bg-components/auth": ["./src/app/bg-components/bg-auth"],
-      "@bg-components/form": ["./src/app/bg-components/bg-form"],
-      "@bg-components/game-layout": ["./src/app/bg-components/bg-game-layout"],
-      "@bg-components/home": ["./src/app/bg-components/bg-home"],
-      "@bg-components/svg": ["./src/app/bg-components/bg-svg"]
-    }
+    "lib": ["ES2022", "dom"],
+    "baseUrl": ".",
+    "rootDir": "."
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -41,5 +30,6 @@
     "strictTemplates": true,
     "strictInputTypes": false,
     "fullTemplateTypeCheck": true
-  }
+  },
+  "exclude": ["node_modules", "tmp"]
 }

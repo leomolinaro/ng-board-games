@@ -6,10 +6,7 @@
   ],
   "rules": {
     "align": {
-      "options": [
-        "parameters",
-        "statements"
-      ]
+      "options": ["parameters", "statements"]
     },
     "array-type": false,
     "arrow-parens": false,
@@ -35,23 +32,14 @@
     "member-ordering": [
       true,
       {
-        "order": [
-          "constructor"
-        ]
+        "order": ["constructor"]
       }
     ],
     "no-angle-bracket-type-assertion": false,
     "no-bitwise": false,
     "no-conflicting-lifecycle": true,
     "no-consecutive-blank-lines": true,
-    "no-console": [
-      true,
-      "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
-    ],
+    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
     "no-empty": false,
     "no-empty-interface": false,
     "no-host-metadata-property": false,
@@ -83,9 +71,7 @@
     "quotemark": [true, "double"],
     "radix": false,
     "semicolon": {
-      "options": [
-        "always"
-      ]
+      "options": ["always"]
     },
     "space-before-function-paren": true,
     "space-within-parens": true,

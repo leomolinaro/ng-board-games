@@ -1,8 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # config
-src/environments/environment.ts
-src/environments/environment.prod.ts
+environment.ts
+environment.prod.ts
 
 # compiled output
 /dist
@@ -15,8 +15,10 @@ src/environments/environment.prod.ts
 /bazel-out
 
 # dependencies
-/node_modules
-.angular/**/*
+node_modules
+.angular
+.nx
+.vscode
 package-lock.json
 
 # profiling files

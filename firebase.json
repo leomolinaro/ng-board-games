@@ -2,10 +2,8 @@
   "hosting": [
     {
       "target": "ng-board-games",
-      "public": "dist/ng-board-games",
-      "ignore": [
-        "**/.*"
-      ],
+      "public": "dist/apps/ng-board-games/browser",
+      "ignore": ["**/.*"],
       "headers": [
         {
           "source": "*.[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].+(css|js)",
