@@ -5,7 +5,7 @@
     "entryFile": "src/index.ts",
     "styleIncludePaths": [
       "src/styles",
-      "../commons/styles"
+      "../commons/src/styles"
     ]
   }
 }

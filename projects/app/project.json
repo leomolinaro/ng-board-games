@@ -19,7 +19,9 @@
         "stylePreprocessorOptions": {
           "includePaths": [
             "projects/app/src/styles",
-            "projects/commons/styles"
+            "projects/barony/src/styles",
+            "projects/britannia/src/styles",
+            "projects/commons/src/styles"
           ]
         },
         "assets": [
