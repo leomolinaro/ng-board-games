@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BgUser } from "@leobg/commons";
-import { BgCloudCollectionQuery, BgCloudService } from "projects/commons/src/lib/cloud/bg-cloud.service";
+import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandType, BaronyStory } from "./barony-models";
 

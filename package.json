@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "nx serve -o",
-    "build": "nx build",
+    "start": "nx serve app -o",
+    "build": "nx build app",
     "watch": "nx build --watch --configuration development",
     "test": "nx test",
     "lint": "nx lint",
     "e2e": "nx e2e",
-    "deploy": "nx build ng-board-games --configuration=production & firebase deploy",
+    "deploy": "nx build app --configuration=production & firebase deploy",
     "firebase:login": "firebase login",
     "firebase:logout": "firebase logout",
     "cypress": "cypress open"

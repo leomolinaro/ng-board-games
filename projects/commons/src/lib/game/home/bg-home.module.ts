@@ -17,7 +17,7 @@ import { BgTransformPipe } from "@leobg/commons/utils";
 import { BgAuthModule } from "../../authentication";
 import { BgFormModule } from "../../form";
 import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
-import { BgHomePlayerFormComponent } from "./bg-home-player-form/bg-home-player-form.component";
+import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
 import { BgHomeRoomDialogComponent } from "./bg-home-room-dialog/bg-home-room-dialog.component";
 import { BgHomeComponent } from "./bg-home.component";
 

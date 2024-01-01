@@ -1,5 +1,5 @@
 {
-  "name": "@leobg/wotr",
+  "name": "wotr",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "projects/wotr/src",
   "prefix": "wotr",

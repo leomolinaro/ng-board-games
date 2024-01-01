@@ -1,5 +1,5 @@
 {
-  "name": "@leobg/commons",
+  "name": "commons",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "projects/commons/src",
   "prefix": "bg",

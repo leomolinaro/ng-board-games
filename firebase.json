@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "ng-board-games",
-      "public": "dist/apps/ng-board-games/browser",
+      "public": "dist/projects/app/browser",
       "ignore": ["**/.*"],
       "headers": [
         {

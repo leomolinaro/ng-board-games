@@ -1,5 +1,5 @@
 {
-  "name": "@leobg/talisman",
+  "name": "talisman",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "projects/talisman/src",
   "prefix": "tlsm",
