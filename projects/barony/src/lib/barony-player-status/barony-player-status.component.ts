@@ -7,7 +7,8 @@ import {
   Output,
   TrackByFunction,
 } from "@angular/core";
-import { BgAuthService, BooleanInput, SimpleChanges } from "@leobg/commons";
+import { BgAuthService } from "@leobg/commons";
+import { BooleanInput, SimpleChanges } from "@leobg/commons/utils";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../barony-constants";
 import {
   BaronyBuilding,

@@ -3,7 +3,8 @@ import { NgModule } from "@angular/core";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTableModule } from "@angular/material/table";
 import { RouterModule, Routes } from "@angular/router";
-import { BgSvgModule, BgUtilsModule } from "@leobg/commons";
+import { BgSvgModule } from "@leobg/commons";
+import { BgTransformPipe } from "@leobg/commons/utils";
 import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
 import { BaronyBoardComponent } from "./barony-board/barony-board.component";
 import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/barony-buildings-selector.component";
@@ -47,7 +48,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
-    BgUtilsModule,
+    BgTransformPipe,
     BgSvgModule,
     BaronyHomeModule,
     MatIconModule,

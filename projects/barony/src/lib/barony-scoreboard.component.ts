@@ -4,7 +4,7 @@ import {
   Input,
   OnChanges,
 } from "@angular/core";
-import { SimpleChanges, objectUtil } from "@leobg/commons";
+import { SimpleChanges, objectUtil } from "@leobg/commons/utils";
 import { BaronyColor, BaronyPlayer } from "./barony-models";
 
 interface BaronyCounterNode {

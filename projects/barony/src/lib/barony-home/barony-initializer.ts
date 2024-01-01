@@ -1,4 +1,4 @@
-import { randomUtil } from "@leobg/commons";
+import { randomUtil } from "@leobg/commons/utils";
 import {
   BARONY_LAND_PIECES,
   BARONY_LAND_TYPES,

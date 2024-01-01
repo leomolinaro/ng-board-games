@@ -27,6 +27,7 @@
       "@leobg/barony": ["projects/barony/src/index.ts"],
       "@leobg/britannia": ["projects/britannia/src/index.ts"],
       "@leobg/commons": ["projects/commons/src/index.ts"],
+      "@leobg/commons/utils": ["projects/commons/utils/src/index.ts"],
       "@leobg/talisman": ["projects/talisman/src/index.ts"],
       "@leobg/wotr": ["projects/wotr/src/index.ts"]
     }

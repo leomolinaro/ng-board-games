@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { BgStore, BgUser, arrayUtil, immutableUtil } from "@leobg/commons";
+import { BgUser } from "@leobg/commons";
+import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
 import {
   BritAreaId,
   BritLandAreaId,

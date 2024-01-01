@@ -6,7 +6,7 @@ import {
   OnChanges,
   Output,
 } from "@angular/core";
-import { SimpleChanges, arrayUtil } from "@leobg/commons";
+import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
 

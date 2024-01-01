@@ -7,9 +7,9 @@ import {
   TrackByFunction,
 } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { filter, map, tap } from "rxjs/operators";
-import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "../../../utils";
 import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../../bg-proto-game.service";
 
 export interface BgRoomDialogInput<R extends string> {

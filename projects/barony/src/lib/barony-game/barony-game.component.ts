@@ -5,7 +5,7 @@ import {
   OnInit,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons";
+import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { tap } from "rxjs/operators";
 import {
   BaronyAction,

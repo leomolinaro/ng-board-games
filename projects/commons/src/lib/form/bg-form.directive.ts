@@ -9,13 +9,13 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  Output,
+  Output
 } from "@angular/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatRadioGroup } from "@angular/material/radio";
 import { MatSelect } from "@angular/material/select";
+import { ChangeListener, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
 import { tap } from "rxjs/operators";
-import { ChangeListener, SimpleChanges, UntilDestroy } from "../utils";
 
 interface BgFieldDirective<V, E> {
   setValue(value: V | null): void;

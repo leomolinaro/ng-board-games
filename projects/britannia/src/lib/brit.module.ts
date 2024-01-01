@@ -5,7 +5,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Resolve, RouterModule, Routes } from "@angular/router";
-import { BgSvgModule, BgUtilsModule } from "@leobg/commons";
+import { BgSvgModule } from "@leobg/commons";
+import { BgTransformPipe, NgLetDirective } from "@leobg/commons/utils";
 import { Observable, forkJoin } from "rxjs";
 import { BritActionsComponent } from "./brit-board/brit-actions.component";
 import { BritBoardComponent } from "./brit-board/brit-board.component";
@@ -66,11 +67,12 @@ const routes: Routes = [
     RouterModule.forChild (routes),
     BritHomeModule,
     BgSvgModule,
-    BgUtilsModule,
+    BgTransformPipe,
     MatBottomSheetModule,
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
+    NgLetDirective
   ],
   providers: [BritAreaPathResolver, BritRemoteService],
 })

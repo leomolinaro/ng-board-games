@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { forN } from "@leobg/commons";
+import { forN } from "@leobg/commons/utils";
 import {
   EMPTY,
   Observable,

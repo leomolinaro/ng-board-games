@@ -9,10 +9,10 @@ import {
   ViewChild,
 } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
 import { map, mapTo, switchMap, tap } from "rxjs/operators";
 import { BgAuthService } from "../../authentication";
-import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "../../utils";
 import {
   BgArcheoGame,
   BgBoardGame,

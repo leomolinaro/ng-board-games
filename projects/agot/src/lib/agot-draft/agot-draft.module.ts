@@ -12,7 +12,7 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSliderModule } from "@angular/material/slider";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterModule, Routes } from "@angular/router";
-import { BgUtilsModule } from "@leobg/commons";
+import { NgLetDirective } from "@leobg/commons/utils";
 import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
 import { AgotDraftComponent } from "./agot-draft.component";
 
@@ -37,7 +37,7 @@ const routes: Routes = [
     MatCheckboxModule,
     MatSliderModule,
     FormsModule,
-    BgUtilsModule,
+    NgLetDirective
   ],
 })
 export class AgotDraftModule {}

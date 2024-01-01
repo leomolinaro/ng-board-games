@@ -5,8 +5,8 @@ import {
   Input,
   Output,
 } from "@angular/core";
+import { BooleanInput } from "@leobg/commons/utils";
 import { BgAuthService, BgUser } from "../../../authentication";
-import { BooleanInput } from "../../../utils";
 import { BgProtoPlayer, BgProtoPlayerType } from "../../bg-proto-game.service";
 
 @Component ({

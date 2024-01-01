@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { randomUtil } from "@leobg/commons";
+import { randomUtil } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
 import {
   BaronyConstruction,

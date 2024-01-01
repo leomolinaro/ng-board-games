@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { ABgGameService, BgAuthService, forEach, forN } from "@leobg/commons";
+import { ABgGameService, BgAuthService } from "@leobg/commons";
+import { forEach, forN } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import {

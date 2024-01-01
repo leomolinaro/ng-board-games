@@ -7,7 +7,8 @@ import {
   Output,
   TrackByFunction,
 } from "@angular/core";
-import { BgAuthService, BooleanInput } from "@leobg/commons";
+import { BgAuthService } from "@leobg/commons";
+import { BooleanInput } from "@leobg/commons/utils";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";

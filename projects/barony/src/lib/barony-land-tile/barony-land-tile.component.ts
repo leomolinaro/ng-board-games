@@ -6,7 +6,7 @@ import {
   OnChanges,
   Output,
 } from "@angular/core";
-import { BooleanInput, Loading, SimpleChanges, immutableUtil } from "@leobg/commons";
+import { BooleanInput, Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import {
   BaronyColor,

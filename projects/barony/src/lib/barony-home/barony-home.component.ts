@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser, concatJoin } from "@leobg/commons";
+import { BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
+import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { BARONY_COLORS } from "../barony-constants";

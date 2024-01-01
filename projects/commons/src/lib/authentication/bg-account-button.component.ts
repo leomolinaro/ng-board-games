@@ -5,8 +5,8 @@ import {
   OnInit,
 } from "@angular/core";
 import { Router } from "@angular/router";
+import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { switchMap } from "rxjs/operators";
-import { ExhaustingEvent, UntilDestroy } from "../utils";
 import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
 
 @Component ({

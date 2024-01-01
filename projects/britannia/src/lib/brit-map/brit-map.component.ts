@@ -10,7 +10,8 @@ import {
   TrackByFunction,
   ViewChild,
 } from "@angular/core";
-import { BgMapZoomDirective, BgSvgComponent, SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons";
+import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
+import { SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { BritAssetsService } from "../brit-assets.service";
 import {
   BritArea,

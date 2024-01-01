@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { MatTableModule } from "@angular/material/table";
 import { RouterModule, Routes } from "@angular/router";
-import { BgUtilsModule } from "@leobg/commons";
+import { BgTransformPipe } from "@leobg/commons/utils";
 import { AgotFcDecksComponent } from "./agot-fc-decks.component";
 
 const routes: Routes = [
@@ -16,7 +16,7 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild (routes),
     MatTableModule,
-    BgUtilsModule,
+    BgTransformPipe
   ],
 })
 export class AgotFcPacksModule {}

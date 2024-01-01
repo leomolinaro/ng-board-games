@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BgStore } from "@leobg/commons";
+import { BgStore } from "@leobg/commons/utils";
 
 export type TlsmDragonId = "varthrax" | "cadorus" | "grilipus";
 

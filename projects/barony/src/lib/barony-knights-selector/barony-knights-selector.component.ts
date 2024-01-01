@@ -6,7 +6,7 @@ import {
   OnChanges,
   Output,
 } from "@angular/core";
-import { SimpleChanges } from "@leobg/commons";
+import { SimpleChanges } from "@leobg/commons/utils";
 
 @Component ({
   selector: "barony-knights-selector",

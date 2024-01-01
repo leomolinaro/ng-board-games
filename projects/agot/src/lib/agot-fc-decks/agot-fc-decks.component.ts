@@ -4,7 +4,7 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { BgTransformFn, Loading, SingleEvent, UntilDestroy } from "@leobg/commons";
+import { BgTransformFn, Loading, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { AgotDataService } from "../agot-services/agot-data.service";

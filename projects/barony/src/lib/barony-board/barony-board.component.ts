@@ -10,7 +10,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons";
+import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
 import { of } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import {

@@ -6,7 +6,8 @@ import {
   ViewChild,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { BgAuthService, BgUser, ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons";
+import { BgAuthService, BgUser } from "@leobg/commons";
+import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin } from "rxjs";
 import { tap } from "rxjs/operators";
 import { BritBoardComponent } from "../brit-board/brit-board.component";

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { immutableUtil, randomUtil } from "@leobg/commons";
+import { immutableUtil, randomUtil } from "@leobg/commons/utils";
 import {
   BritAreaId,
   BritLandAreaId,

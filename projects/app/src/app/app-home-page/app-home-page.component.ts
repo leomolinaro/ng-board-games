@@ -4,7 +4,8 @@ import {
   OnDestroy,
   OnInit,
 } from "@angular/core";
-import { BgAuthService, SingleEvent, UntilDestroy } from "@leobg/commons";
+import { BgAuthService } from "@leobg/commons";
+import { SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { AppGamesService } from "../app-games.service";
 
 @Component ({

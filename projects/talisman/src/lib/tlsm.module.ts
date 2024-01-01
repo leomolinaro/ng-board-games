@@ -12,7 +12,7 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterModule, Routes } from "@angular/router";
-import { BgUtilsModule } from "@leobg/commons";
+import { BgTimesPipe } from "@leobg/commons/utils";
 import { TlsmMessageDialog, TlsmMessageService } from "./tlsm-dragon-scales/services/tlsm-message.service";
 import { TlsmDragonCardComponent } from "./tlsm-dragon-scales/tlsm-dragon-card/tlsm-dragon-card.component";
 import { TlsmDragonScalesComponent } from "./tlsm-dragon-scales/tlsm-dragon-scales.component";
@@ -42,7 +42,7 @@ const routes: Routes = [
     MatSnackBarModule,
     MatDialogModule,
     MatGridListModule,
-    BgUtilsModule,
+    BgTimesPipe
   ],
   providers: [TlsmMessageService],
 })

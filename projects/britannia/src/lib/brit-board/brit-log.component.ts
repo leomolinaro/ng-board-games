@@ -4,7 +4,7 @@ import {
   Input,
   OnChanges,
 } from "@angular/core";
-import { SimpleChanges } from "@leobg/commons";
+import { SimpleChanges } from "@leobg/commons/utils";
 import {
   BritArea,
   BritAreaId,

@@ -10,7 +10,7 @@ import {
   MatBottomSheet,
   MatBottomSheetRef,
 } from "@angular/material/bottom-sheet";
-import { immutableUtil } from "@leobg/commons";
+import { immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import {

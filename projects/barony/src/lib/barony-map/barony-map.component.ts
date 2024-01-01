@@ -7,7 +7,8 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { BgMapZoomDirective, SimpleChanges, arrayUtil } from "@leobg/commons";
+import { BgMapZoomDirective } from "@leobg/commons";
+import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import {
   BaronyLand,
   BaronyLandCoordinates,
