@@ -113,7 +113,7 @@ module.exports = {
     //  "@typescript-eslint/no-misused-promises": "warn",
     "@typescript-eslint/no-namespace": "warn",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
-    "@typescript-eslint/no-non-null-assertion": "warn",
+    "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-parameter-properties": "off",
     "@typescript-eslint/no-shadow": [
       "warn",

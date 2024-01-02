@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BgUser } from '../authentication/bg-auth.service';
-import { BgCloudCollectionQuery, BgCloudService } from '../cloud/bg-cloud.service';
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { BgUser } from "../authentication/bg-auth.service";
+import { BgCloudCollectionQuery, BgCloudService } from "../cloud/bg-cloud.service";
 
-export type BgBoardGame = 'barony' | 'britannia';
+export type BgBoardGame = "barony" | "britannia" | "wotr";
 
 export interface BgArcheoGame {
   name: string;
@@ -28,83 +28,83 @@ export interface BgProtoPlayer<R extends string = string> {
   role: R;
 } // BgProtoPlayer
 
-export type BgProtoGameState = 'open' | 'running' | 'ended';
-export type BgProtoPlayerType = 'user' | 'open' | 'closed' | 'ai';
+export type BgProtoGameState = "open" | "running" | "ended";
+export type BgProtoPlayerType = "user" | "open" | "closed" | "ai";
 
-@Injectable({
-  providedIn: 'root',
+@Injectable ({
+  providedIn: "root",
 })
 export class BgProtoGameService {
-  constructor(private cloud: BgCloudService) {}
+  constructor (private cloud: BgCloudService) {}
 
-  private protoGames() {
-    return this.cloud.collection<BgProtoGame>(`proto-games`);
+  private protoGames () {
+    return this.cloud.collection<BgProtoGame> ("proto-games");
   }
-  getProtoGame$(gameId: string) {
-    this.cloud.get$(gameId, this.protoGames());
+  getProtoGame$ (gameId: string) {
+    this.cloud.get$ (gameId, this.protoGames ());
   }
-  selectProtoGames$(queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) {
-    return this.cloud.selectAll$(this.protoGames(), queryFn);
+  selectProtoGames$ (queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) {
+    return this.cloud.selectAll$ (this.protoGames (), queryFn);
   }
-  selectProtoGame$(gameId: string) {
-    return this.cloud.select$(gameId, this.protoGames());
+  selectProtoGame$ (gameId: string) {
+    return this.cloud.select$ (gameId, this.protoGames ());
   }
-  insertProtoGame$(
-    protoGame: Omit<BgProtoGame, 'id'>
+  insertProtoGame$ (
+    protoGame: Omit<BgProtoGame, "id">
   ): Observable<BgProtoGame> {
-    return this.cloud.insert$<BgProtoGame>(
+    return this.cloud.insert$<BgProtoGame> (
       (id) => ({ id: id, ...protoGame }),
-      this.protoGames()
+      this.protoGames ()
     );
   }
-  updateProtoGame$(patch: Partial<BgProtoGame>, gameId: string) {
-    return this.cloud.update$(patch, gameId, this.protoGames());
+  updateProtoGame$ (patch: Partial<BgProtoGame>, gameId: string) {
+    return this.cloud.update$ (patch, gameId, this.protoGames ());
   }
-  deleteProtoGame$(gameId: string) {
-    return this.cloud.delete$(gameId, this.protoGames());
+  deleteProtoGame$ (gameId: string) {
+    return this.cloud.delete$ (gameId, this.protoGames ());
   }
 
-  private protoPlayers(gameId: string) {
-    return this.cloud.collection<BgProtoPlayer>(
+  private protoPlayers (gameId: string) {
+    return this.cloud.collection<BgProtoPlayer> (
       `proto-games/${gameId}/proto-players`
     );
   }
-  getProtoPlayers$(
+  getProtoPlayers$ (
     gameId: string,
     queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined
   ) {
-    return this.cloud.getAll$(this.protoPlayers(gameId), queryFn);
+    return this.cloud.getAll$ (this.protoPlayers (gameId), queryFn);
   }
-  selectProtoPlayers$(
+  selectProtoPlayers$ (
     gameId: string,
     queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined
   ) {
-    return this.cloud.selectAll$(this.protoPlayers(gameId), queryFn);
+    return this.cloud.selectAll$ (this.protoPlayers (gameId), queryFn);
   }
-  selectProtoPlayer$(playerId: string, gameId: string) {
-    return this.cloud.select$(playerId, this.protoPlayers(gameId));
+  selectProtoPlayer$ (playerId: string, gameId: string) {
+    return this.cloud.select$ (playerId, this.protoPlayers (gameId));
   }
-  insertProtoPlayer$(
+  insertProtoPlayer$ (
     protoPlayer: BgProtoPlayer,
     gameId: string
   ): Observable<BgProtoPlayer> {
-    return this.cloud.set$(
+    return this.cloud.set$ (
       protoPlayer,
       protoPlayer.id,
-      this.protoPlayers(gameId)
+      this.protoPlayers (gameId)
     );
   }
-  updateProtoPlayer$(
+  updateProtoPlayer$ (
     patch: Partial<BgProtoPlayer>,
     playerId: string,
     gameId: string
   ) {
-    return this.cloud.update$(patch, playerId, this.protoPlayers(gameId));
+    return this.cloud.update$ (patch, playerId, this.protoPlayers (gameId));
   }
-  deleteProtoPlayer$(playerId: string, gameId: string) {
-    return this.cloud.delete$(playerId, this.protoPlayers(gameId));
+  deleteProtoPlayer$ (playerId: string, gameId: string) {
+    return this.cloud.delete$ (playerId, this.protoPlayers (gameId));
   }
-  deleteProtoPlayers$(gameId: string) {
-    return this.cloud.deleteAll$(this.protoPlayers(gameId));
+  deleteProtoPlayers$ (gameId: string) {
+    return this.cloud.deleteAll$ (this.protoPlayers (gameId));
   }
 } // BgProtoGameService

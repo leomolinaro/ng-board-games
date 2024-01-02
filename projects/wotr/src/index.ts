@@ -1,3 +1,1 @@
-export * from './lib/lib.routes';
-
-export * from './lib/wotr.component';
+export * from "./lib/wotr.module";
