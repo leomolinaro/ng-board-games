@@ -32,8 +32,6 @@ import { AppGamesService } from "../app-games.service";
         padding: 10px;
         .game {
           display: block;
-          // cursor: pointer;
-          width: 200px;
           height: 200px;
           &:hover {
             box-shadow: 0 4px 17px rgb(255 255 255 / 35%);

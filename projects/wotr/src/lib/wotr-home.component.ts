@@ -15,14 +15,14 @@ import {
 } from "./wotr-remote.service";
 
 @Component ({
-  selector: "brit-home",
+  selector: "wotr-home",
   standalone: true,
   imports: [BgHomeModule],
   template: `
     <bg-home [config]="config"></bg-home>
   `,
   styles: [`
-    @import 'brit-variables';
+    @import 'wotr-variables';
 
     ::ng-deep {
       .wotr-player-free-peoples {
