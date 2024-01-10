@@ -1,28 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
-import { forkJoin } from "rxjs";
-import { tap } from "rxjs/operators";
+import { forkJoin, tap } from "rxjs";
 import { BritBoardComponent } from "../brit-board/brit-board.component";
 import { BritAreaId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import {
-  ABritPlayer,
-  BritAreaUnit,
-  BritPlayer,
-} from "../brit-game-state.models";
-import {
-  BritPlayerDoc,
-  BritRemoteService,
-  BritStoryDoc,
-} from "../brit-remote.service";
+import { ABritPlayer, BritAreaUnit, BritPlayer } from "../brit-game-state.models";
+import { BritPlayerDoc, BritRemoteService, BritStoryDoc } from "../brit-remote.service";
 import { BritGameService } from "./brit-game.service";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
@@ -46,13 +31,12 @@ import { BritUiStore } from "./brit-ui.store";
       [canPass]="canPass$ | async"
       [canConfirm]="canConfirm$ | async"
       [canCancel]="canCancel$ | async"
-      (passClick)="onPassClick()"
-      (confirmClick)="onConfirmClick()"
-      (cancelClick)="onCancelClick()"
-      (areaClick)="onAreaClick($event)"
-      (unitClick)="onUnitClick($event)"
-      (selectedUnitsChange)="onSelectedUnitsChange($event)"
-    >
+      (passClick)="onPassClick ()"
+      (confirmClick)="onConfirmClick ()"
+      (cancelClick)="onCancelClick ()"
+      (areaClick)="onAreaClick ($event)"
+      (unitClick)="onUnitClick ($event)"
+      (selectedUnitsChange)="onSelectedUnitsChange ($event)">
     </brit-board>
     <!-- [validLands]="validLands$ | async"
     [validActions]="validActions$ | async"
