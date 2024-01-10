@@ -1,0 +1,68 @@
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { of } from "rxjs";
+import { map } from "rxjs/operators";
+import { WotrAssetsService } from "../../wotr-assets.service";
+import { WotrRegionId } from "../../wotr-components.models";
+
+export type WotrRegionSlots = Record<WotrRegionId, Record<number, WotrMapPoint[]>>;
+
+export interface WotrMapPoint {
+  x: number;
+  y: number;
+} // WotrMapPoint
+
+@Injectable ({
+  providedIn: "root",
+})
+export class WotrMapService {
+
+  constructor (
+    private http: HttpClient,
+    private assets: WotrAssetsService
+  ) {}
+
+  private svgLoaded = false;
+  private regionPaths!: { [id in WotrRegionId]: string };
+  private viewBox!: string;
+  private width!: number;
+
+  getRegionPath (regionId: WotrRegionId) { return this.regionPaths[regionId]; }
+
+  getViewBox () { return this.viewBox; }
+
+  getWidth () { return this.width; }
+
+  loadRegionPaths$ () {
+    if (this.svgLoaded) { return of (true); }
+    return this.http.get (this.assets.getMapSvgSource (), { responseType: "text" }).pipe (
+      map ((response) => {
+        const parser = new DOMParser ();
+        const dom = parser.parseFromString (response, "application/xml");
+        const svg = dom.getElementsByTagName ("svg").item (0)!;
+        this.viewBox = svg.getAttribute ("viewBox")!;
+        this.width = +this.viewBox.split (" ")[2];
+        this.regionPaths = this.getGroupPaths<WotrRegionId> ("wotr-regions", dom,
+          (pId) => pId as WotrRegionId);
+        this.svgLoaded = true;
+        return true;
+      })
+    );
+  } // loadRegionPaths$
+
+  private getGroupPaths<K extends string | number> (groupId: string, dom: Document, pathIdToId: (pathId: string) => K) {
+    const wotrGroup = dom.getElementById (groupId);
+    const paths: Record<K, string> = {} as any;
+    wotrGroup?.childNodes.forEach ((childNode) => {
+      if (childNode.nodeName === "path") {
+        const pathElement = childNode as SVGPathElement;
+        const pathId = pathElement.getAttribute ("id")!;
+        const id = pathIdToId (pathId);
+        const pathD = pathElement.getAttribute ("d")!;
+        paths[id] = pathD;
+      } // if
+    });
+    return paths;
+  } // getGroupPaths
+
+} // WotrMapService

@@ -1,0 +1,136 @@
+@import "wotr-variables";
+
+.wotr-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: hidden;
+  background: $background;
+  .wotr-board-map-layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  // .wotr-board-widgets-layer {
+  //   position: absolute;
+  //   top: 0;
+  //   bottom: 0;
+  //   left: 0;
+  //   right: 0;
+  //   pointer-events: none;
+  //   display: grid;
+  //   grid-template-columns: 1fr 1fr 1fr;
+  //   grid-template-rows: 1fr 1fr 1fr 1fr;
+  //   padding: 2vmin;
+
+  //   grid-template-regions:
+  //     'players instructions extras'
+  //     'players . extras'
+  //     'players . actions'
+  //     'players . actions';
+
+  //   .wotr-board-instructions-widget {
+  //     grid-region: instructions;
+  //     pointer-events: auto;
+  //     margin-left: auto;
+  //     margin-right: auto;
+  //     margin-bottom: auto;
+  //     padding: 2vh;
+  //     background: $surface;
+  //     color: white;
+  //     font-size: $font-size-instructions;
+  //     &.is-red {
+  //       box-shadow: widget-shadow($red-light);
+  //     }
+  //     &.is-blue {
+  //       box-shadow: widget-shadow($blue-light);
+  //     }
+  //     &.is-yellow {
+  //       box-shadow: widget-shadow($yellow-light);
+  //     }
+  //     &.is-green {
+  //       box-shadow: widget-shadow($green-light);
+  //     }
+  //     .wotr-board-instructions {
+  //     }
+  //   }
+  //   .wotr-board-actions-widget {
+  //     grid-region: actions;
+  //     pointer-events: auto;
+  //     margin-top: auto;
+  //     margin-left: auto;
+  //   }
+  //   .wotr-board-players-widget {
+  //     grid-region: players;
+  //     z-index: 1;
+  //     margin-top: auto;
+  //     margin-right: auto;
+  //     display: grid;
+  //     grid-template-columns: auto;
+  //     grid-gap: 2vmin;
+  //     overflow: auto;
+  //     max-height: 100%;
+  //     pointer-events: auto;
+  //     .wotr-board-player-widget {
+  //       // pointer-events: auto; // N.B.: fuori e non dentro per permettere lo scroll nel caso ci fosse
+  //     }
+  //   }
+  //   .wotr-board-extras {
+  //     grid-region: extras;
+  //     display: flex;
+  //     justify-content: flex-end;
+  //     font-size: 4vmin;
+  //     .wotr-board-buttons {
+  //       pointer-events: auto;
+  //       display: grid;
+  //       grid-template-rows: 1fr 1fr 1fr;
+  //       grid-template-columns: 1fr;
+  //       grid-gap: 2vmin;
+  //       margin-bottom: auto;
+  //       margin-left: 2vmin;
+  //       .wotr-board-button {
+  //         color: white;
+  //         background-color: transparent;
+  //         cursor: pointer;
+  //         opacity: 0.5;
+  //         &.is-active {
+  //           opacity: 1;
+  //         }
+  //       }
+  //     }
+  //     .wotr-board-logs-widget {
+  //       pointer-events: auto;
+  //       @include golden-padding(2vmin);
+  //       // padding: 2vmin;
+  //       box-shadow: $widget-shadow;
+  //       font-size: $font-size-logs;
+  //       line-height: $line-height-logs;
+  //       color: white;
+  //       background-color: $surface;
+  //       margin-left: 2vmin;
+  //     }
+  //     .wotr-board-zoom-buttons-widget {
+  //       @include golden-padding(2vmin);
+  //       pointer-events: auto;
+  //       align-self: flex-start;
+  //       box-shadow: $widget-shadow;
+  //       color: white;
+  //       background-color: $surface;
+  //       margin-left: 2vmin;
+  //     }
+  //   }
+  // }
+}
+
+// ::ng-deep .wotr-nation-card-sheet,
+// ::ng-deep .wotr-unit-number-selection-sheet {
+//   mat-bottom-sheet-container {
+//     min-width: auto;
+//     padding: 0;
+//     box-shadow: 0 0 6px 0px white;
+//   }
+// }

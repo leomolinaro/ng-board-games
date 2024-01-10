@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
-// import { BritStory } from "./brit-story.models";
 import { WotrFront } from "./wotr-components.models";
+import { WotrStory } from "./wotr-story.models";
 
 export interface WotrGameDoc {
   id: string;
@@ -30,7 +30,7 @@ export interface WotrReadPlayerDoc extends AWotrPlayerDoc {
 
 export type WotrPlayerDoc = WotrAiPlayerDoc | WotrReadPlayerDoc;
 
-// export type WotrStoryDoc = BritStory & { id: number };
+export type WotrStoryDoc = WotrStory & { id: number };
 
 @Injectable ({
   providedIn: "root"
@@ -56,12 +56,12 @@ export class WotrRemoteService {
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }
 
   private stories (gameId: string) { return this.cloud.collection</* WotrStoryDoc */any> (`wotr-games/${gameId}/stories`); }
-  // getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId), queryFn); }
-  // getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
-  // selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
-  // selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
-  // insertStory$ (story: WotrStoryDoc, gameId: string): Observable<WotrStoryDoc> { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
-  // updateStory$ (patch: Partial<WotrStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
+  getStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined) { return this.cloud.getAll$ (this.stories (gameId), queryFn); }
+  getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
+  selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
+  selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
+  insertStory$ (story: WotrStoryDoc, gameId: string): Observable<WotrStoryDoc> { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
+  updateStory$ (patch: Partial<WotrStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }
   deleteStories$ (gameId: string) { return this.cloud.deleteAll$ (this.stories (gameId)); }
 

@@ -1,0 +1,14 @@
+<div class="wotr-board">
+  <div class="wotr-board-map-layer">
+    <wotr-map
+      #wotrMap
+      [regionStates]="regionStates"
+      [validRegions]="validRegions"
+      (regionClick)="regionClick.emit ($event)">
+      <!-- [nationStates]="nationStates"
+      [validUnits]="validUnits"
+      [selectedUnits]="selectedUnits"
+      (unitClick)="onUnitClick ($event)" -->
+    </wotr-map>
+  </div>
+</div>

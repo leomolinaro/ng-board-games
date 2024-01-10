@@ -1,253 +1,67 @@
 export type WotrFront = "free-peoples" | "shadow";
 
-// // interface ABritUnit {
-// //   id: BritUnitId;
-// //   nationId: BritNationId;
-// //   nationLabel: string;
-// //   type: string;
-// //   typeLabel: string;
-// //   nationColor: BritColor;
-// // } // ABritUnit
+export type WotrRegionId =
+  "forlindon" | "north-ered-luin" | "ered-luin" | "grey-havens" | "harlindon" | "tower-hills" |
+  "evendim" | "arnor" | "north-downs" | "bree" | "buckland" | "the-shire" | "south-ered-luin" | "minhiriath" |
+  "cardolan" | "old-forest" | "south-downs" | "weather-hills" | "ettenmoors" | "angmar" | "mount-gram" |
+  "mount-gundabad" | "troll-shaws" | "rivendell" | "fords-of-bruinen" | "hollin" | "moria" | "north-dunland" | "tharbad" |
+  "south-dunland" | "enedwaith" | "gap-of-rohan" | "orthanc" | "druwaith-iaur" | "andrast" | "high-pass" | "goblins-gate" |
+  "eagles-eyre" | "old-ford" | "gladden-fields" | "dimrill-dale" | "lorien" | "parth-celebrant" | "fangorn" | "fords-of-isen" |
+  "helms-deep" | "westemnet" | "edoras" | "folde" | "eastemnet" | "anfalas" | "erech" | "dol-amroth" | "lamedon" | "pelargir" |
+  "lossarnach" | "minas-tirith" | "druadan-forest" | "carrock" | "rhosgobel" | "north-anduin-vale" | "south-anduin-vale" |
+  "western-brown-lands" | "western-emyn-muil" | "dead-marshes" | "osgiliath" | "south-ithilien" | "north-ithilien" | "eastern-emyn-muil" |
+  "eastern-brown-lands" | "dagorlad" | "ash-mountains" | "noman-lands" | "southern-dorwinion" | "northern-dorwinion" | "southern-rhovanion" |
+  "northern-rhovanion" | "vale-of-the-celduin" | "vale-of-the-carnen" | "eastern-mirkwood" | "narrows-of-the-forest" | "dol-guldur" |
+  "southern-mirkwood" | "old-forest-road" | "western-mirkwood" | "northern-mirkwood" | "withered-heath" | "woodland-realm" | "dale" |
+  "erebor" | "iron-hills" | "north-rhun" | "east-rhun" | "south-rhun" | "morannon" | "minas-morgul" | "gorgoroth" | "nurn" | "barad-dur" |
+  "west-harondor" | "east-harondor" | "umbar" | "near-harad" | "far-harad" | "khand";
 
-// export type BritUnitType =
-//   | "infantry"
-//   | "cavalry"
-//   | "roman-fort"
-//   | "saxon-buhr"
-//   | "leader";
+export type WotrNeighbor = { id: WotrRegionId; impassable: boolean };
 
-// export type BritLeaderId =
-//   | "arthur"
-//   | "william"
-//   | "aelle"
-//   | "egbert"
-//   | "alfred"
-//   | "edgar"
-//   | "harold"
-//   | "ivar-and-halfdan"
-//   | "cnut"
-//   | "svein-estrithson"
-//   | "harald-hardrada"
-//   | "ida"
-//   | "oswiu"
-//   | "offa"
-//   | "boudicca"
-//   | "urien"
-//   | "fergus-mor-mac-erc"
-//   | "ketil-flatnose"
-//   | "olaf-guthfrithsson";
+export type WotrSettlentType = "town" | "city" | "stronghold";
 
-// export interface BritLeader {
-//   id: BritLeaderId;
-//   name: string;
-// } // BritLeader
+export interface WotrRegion {
+  id: WotrRegionId;
+  name: string;
+  nationId: WotrNationId | null;
+  seaside: boolean;
+  neighbors: WotrNeighbor[];
+  fortification: boolean;
+  settlement: WotrSettlentType | null;
+} // WotrRegion
 
-// // export interface BritArmy extends ABritUnit { }
-// // export interface BritInfantry extends ABritUnit { type: "infantry"; }
-// // export interface BritCavalry extends ABritUnit { type: "cavalry"; }
-// // export interface BritLeader extends ABritUnit {
-// //   id: BritLeaderId;
-// //   type: "leader";
-// //   name: string;
-// // } // BritLeader
-// // export interface BritBuilding extends ABritUnit { }
-// // export interface BritRomanFort extends BritBuilding { type: "roman-fort"; }
-// // export interface BritSaxonBuhr extends BritBuilding { type: "saxon-buhr"; }
-// // export type BritUnit = BritInfantry | BritCavalry | BritLeader | BritRomanFort | BritSaxonBuhr;
-// // export type BritUnitId = string;
+export type WotrNationId = "dwarves" | "elves" | "gondor" | "the-north" | "rohan" | "isengard" | "sauron" | "southrons-&-esterlings";
 
-// export type BritRegionId = "wales" | "england" | "scotland";
+export interface WotrNation {
+  id: WotrNationId;
+  label: string;
+  front: WotrFront;
+  nRegulars: number;
+  nElites: number;
+  nLeaders?: number;
+  nNazgul?: number;
+} // WotrNation
 
-// export type BritPopulation = 0 | 1 | 2 | 3 | 4 | 5;
+export type WotrCompanion = "gandalf" | "strider" | "boromir" | "legolas" | "gimli" | "meriadoc" | "peregrin" | "aragorn";
+export type WotrMinion = "saruman" | "the-witch-king" | "the-mouth-of-sauron";
+export type WotrUnitType = "regular" | "elite" | "leader" | "nazgul";
 
-// export interface BritRegion {
-//   id: BritRegionId;
-//   name: string;
-// } // BritRegion
+export type WotrPhase = 1 | 2 | 3 | 4 | 5 | 6;
 
-// export type BritLandAreaId =
-//   | "avalon"
-//   | "downlands"
-//   | "wessex"
-//   | "sussex"
-//   | "kent"
-//   | "essex"
-//   | "lindsey"
-//   | "suffolk"
-//   | "norfolk"
-//   | "south-mercia"
-//   | "north-mercia"
-//   | "hwicce"
-//   | "devon"
-//   | "cornwall"
-//   | "gwent"
-//   | "dyfed"
-//   | "powys"
-//   | "gwynedd"
-//   | "clwyd"
-//   | "march"
-//   | "cheshire"
-//   | "york"
-//   | "bernicia"
-//   | "pennines"
-//   | "cumbria"
-//   | "lothian"
-//   | "galloway"
-//   | "dunedin"
-//   | "strathclyde"
-//   | "dalriada"
-//   | "alban"
-//   | "mar"
-//   | "moray"
-//   | "skye"
-//   | "caithness"
-//   | "orkneys"
-//   | "hebrides";
+export type WotrFreePeopleCharacterCardId = "";
+export type WotrFreePeopleStrategyCardId = "";
+export type WotrShadowCharacterCardId = "";
+export type WotrShadowStrategyCardId = "";
+export type WotrFreePeopleCardId = WotrFreePeopleCharacterCardId | WotrFreePeopleStrategyCardId;
+export type WotrShadowCardId = WotrShadowCharacterCardId | WotrShadowStrategyCardId;
+export type WotrCharacterCardId = WotrFreePeopleCharacterCardId | WotrShadowCharacterCardId;
+export type WotrStrategyCardId = WotrFreePeopleStrategyCardId | WotrShadowStrategyCardId;
+export type WotrCardId = WotrCharacterCardId | WotrStrategyCardId;
 
-// export type BritSeaAreaId =
-//   | "icelandic-sea"
-//   | "north-sea"
-//   | "frisian-sea"
-//   | "english-channel"
-//   | "irish-sea"
-//   | "atlantic-ocean";
+export type WotrFreePeopleActionDie = "character" | "army" | "muster" | "event" | "muster-army" | "will-of-the-west";
+export type WotrShadowActionDie = "character" | "army" | "muster" | "event" | "muster-army" | "eye";
+export type WotrActionDie = WotrFreePeopleActionDie | WotrShadowActionDie;
 
-// export type BritAreaId = BritLandAreaId | BritSeaAreaId;
+export type WotrCombatDie = 1 | 2 | 3 | 4 | 5 | 6;
 
-// export function isBritLandAreaId (areaId: BritAreaId): areaId is BritLandAreaId {
-//   return !isBritSeaAreaId (areaId);
-// } // isBritLandAreaId
-
-// export function isBritSeaAreaId (areaId: BritAreaId): areaId is BritSeaAreaId {
-//   switch (areaId) {
-//     case "icelandic-sea":
-//     case "north-sea":
-//     case "frisian-sea":
-//     case "english-channel":
-//     case "irish-sea":
-//     case "atlantic-ocean":
-//       return true;
-//     default:
-//       return false;
-//   } // switch
-// } // isBritSeaAreaId
-
-// export type BritNeighbor = BritAreaId | { id: BritAreaId; strait: true };
-
-// interface ABritArea {
-//   name: string;
-//   neighbors: BritNeighbor[];
-// } // ABritArea
-
-// export interface BritLandArea extends ABritArea {
-//   id: BritLandAreaId;
-//   region: BritRegionId;
-//   type: "land";
-//   difficultTerrain: boolean;
-// } // BritLandArea
-
-// export interface BritSeaArea extends ABritArea {
-//   id: BritSeaAreaId;
-//   type: "sea";
-// } // BritSeaArea
-
-// export type BritArea = BritLandArea | BritSeaArea;
-
-// export type BritNationId =
-//   | "romans"
-//   | "romano-british"
-//   | "normans"
-//   | "saxons"
-//   | "danes"
-//   | "norwegians"
-//   | "jutes"
-//   | "angles"
-//   | "belgae"
-//   | "welsh"
-//   | "brigantes"
-//   | "caledonians"
-//   | "picts"
-//   | "irish"
-//   | "scots"
-//   | "norsemen"
-//   | "dubliners";
-
-// export interface BritNation {
-//   id: BritNationId;
-//   label: string;
-//   color: BritColor;
-//   nInfantries: number;
-//   nCavalries: number;
-//   nBuildings: number;
-//   leaderIds: BritLeaderId[];
-// } // BritNation
-
-// export type BritRoundId =
-//   | 1
-//   | 2
-//   | 3
-//   | 4
-//   | 5
-//   | 6
-//   | 7
-//   | 8
-//   | 9
-//   | 10
-//   | 11
-//   | 12
-//   | 13
-//   | 14
-//   | 15
-//   | 16;
-
-// export interface BritRound {
-//   id: BritRoundId;
-//   fromYear: number;
-//   toYear: number;
-//   events: BritEvent[];
-//   scoring: boolean;
-//   bretwaldaElection: boolean;
-//   kingElection: boolean;
-// } // BritRound
-
-// export type BritPhase =
-//   | "populationIncrease"
-//   | "movement"
-//   | "battlesRetreats"
-//   | "raiderWithdrawal"
-//   | "overpopulation";
-
-// export interface BritEvent {
-//   nation: BritNationId;
-//   invasions: BritInvasion[] | null;
-//   revolt: BritRevolt | null;
-//   majorInvasion: boolean;
-//   raiding: boolean;
-//   boats: boolean;
-//   special: BritSpecialEvent | null;
-//   leader: BritLeaderId | null;
-// } // BritEvent
-
-// export type BritSpecialEvent =
-//   | "romans-invasion"
-//   | "boudicca-revolt"
-//   | "romans-withdrawal"
-//   | "romans-replacement"
-//   | "oswiu-invasion"
-//   | "offa-invasion"
-//   | "danes-first-invasion"
-//   | "cnut-invasion"
-//   | "norwegians-reinforcements"
-//   | "saxons-reinforcements"
-//   | "normans-reinforcements";
-
-// export interface BritInvasion {
-//   infantries: number;
-//   cavalries: number;
-//   area: BritSeaAreaId;
-// } // BritInvasion
-
-// export interface BritRevolt {
-//   infantries: number;
-//   cavalries: number;
-// } // BritRevolt
+export type WotrHuntTile = never;
