@@ -9,6 +9,7 @@ import {
   Output,
   TrackByFunction,
   ViewChild,
+  isDevMode,
 } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
@@ -148,7 +149,7 @@ export class BritMapComponent implements OnChanges {
   @ViewChild ("britMap") mapElementRef!: ElementRef<SVGGElement>;
   @ViewChild (BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
 
-  production = true; // environment.production;
+  protected isDevMode = isDevMode ();
 
   areaTrackBy: TrackByFunction<BritAreaNode> = (index: number, areaNode: BritAreaNode) => areaNode.id;
   unitTrackBy: TrackByFunction<BritUnitNode> = (index: number, unitNode: BritUnitNode) => unitNode.id;
@@ -253,10 +254,7 @@ export class BritMapComponent implements OnChanges {
     this.roundNodeMap = map;
   } // refreshRoundNodes
 
-  private areaToNode (
-    areaId: BritAreaId,
-    oldNode: BritAreaNode | null
-  ): BritAreaNode {
+  private areaToNode (areaId: BritAreaId, oldNode: BritAreaNode | null): BritAreaNode {
     const path = this.mapService.getAreaPath (areaId);
     const area = this.components.AREA[areaId];
     const state = this.areaStates[areaId];

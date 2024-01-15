@@ -1,31 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TrackByFunction,
-} from "@angular/core";
-import {
-  MatBottomSheet,
-  MatBottomSheetRef,
-} from "@angular/material/bottom-sheet";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
+import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { BritAreaId, BritNationId } from "../brit-components.models";
-import {
-  BritAreaLeader,
-  BritAreaState,
-  BritAreaUnit,
-  BritLog,
-  BritNationState,
-  BritPlayer,
-} from "../brit-game-state.models";
+import { BritAreaLeader, BritAreaState, BritAreaUnit, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
-import {
-  BritUnitsSelectorSheetComponent,
-  BritUnitsSelectorSheetInput,
-} from "./brit-units-selector-sheet.component";
+import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./brit-units-selector-sheet.component";
 
 @Component ({
   selector: "brit-board",

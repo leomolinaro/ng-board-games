@@ -1,11 +1,6 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { immutableUtil, randomUtil } from "@leobg/commons/utils";
-import {
-  BritAreaId,
-  BritLandAreaId,
-  BritSeaAreaId,
-  isBritLandAreaId,
-} from "../brit-components.models";
+import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
 
@@ -24,10 +19,7 @@ interface BritMapLandPoint {
 
 export type BritMapSeaPoint = BritMapPoint;
 
-const BRIT_SEA_GRID: Record<
-BritSeaAreaId,
-{ startX: number; startY: number; width: number }
-> = {
+const BRIT_SEA_GRID: Record<BritSeaAreaId, { startX: number; startY: number; width: number }> = {
   "atlantic-ocean": { startX: 5, startY: 41, width: 6 },
   "english-channel": { startX: 23, startY: 57, width: 8 },
   "frisian-sea": { startX: 30, startY: 37, width: 6 },
@@ -41,7 +33,7 @@ BritSeaAreaId,
 })
 export class BritMapSlotsGeneratorService {
   
-  constructor (private components: BritComponentsService) {}
+  private components = inject (BritComponentsService);
 
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },
@@ -54,20 +46,9 @@ export class BritMapSlotsGeneratorService {
     { x: 0, y: -1 },
   ];
 
-  generateSlots (
-    xMax: number,
-    yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null
-  ): BritAreaSlots {
-    const areaSlots: Record<
-    BritAreaId,
-    Record<number, BritMapPoint[]>
-    > = {} as any;
-    const landPointsById = this.generateLandPoints (
-      xMax,
-      yMax,
-      coordinatesToAreaId
-    );
+  generateSlots (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => BritAreaId | null): BritAreaSlots {
+    const areaSlots: Record<BritAreaId, Record<number, BritMapPoint[]>> = {} as any;
+    const landPointsById = this.generateLandPoints (xMax, yMax, coordinatesToAreaId);
 
     for (const landId of this.components.LAND_AREA_IDS) {
       const landPoints = landPointsById[landId];
@@ -91,11 +72,7 @@ export class BritMapSlotsGeneratorService {
     return areaSlots;
   } // generateSlots
 
-  private generateLandPoints (
-    xMax: number,
-    yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null
-  ) {
+  private generateLandPoints (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => BritAreaId | null) {
     const landPointsById: Record<BritLandAreaId, BritLandPoints> = {} as any;
     const landPointByYByX: Record<number, Record<number, BritMapLandPoint>> = {};
 
@@ -180,10 +157,7 @@ export class BritMapSlotsGeneratorService {
     return landPointsById;
   } // generateLandPoints
 
-  private getLandPointByCoordinates (
-    x: number, y: number,
-    landPointByYByX: Record<number, Record<number, BritMapLandPoint>>
-  ): BritMapLandPoint | null {
+  private getLandPointByCoordinates (x: number, y: number, landPointByYByX: Record<number, Record<number, BritMapLandPoint>>): BritMapLandPoint | null {
     const landPointByY = landPointByYByX[x];
     if (!landPointByY) { return null; }
     const landPoint = landPointByY[y];
@@ -199,10 +173,7 @@ export class BritMapSlotsGeneratorService {
     return 2 / this.quadDistance (innerPoint1, innerPoint2);
   } // manyBodyEnergy
 
-  private quadDistance (
-    pointA: { x: number; y: number },
-    pointB: { x: number; y: number }
-  ) {
+  private quadDistance (pointA: { x: number; y: number }, pointB: { x: number; y: number }) {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   } // quadDistance
 
