@@ -1,4 +1,6 @@
 import { Injectable } from "@angular/core";
+import { WotrNationId, WotrRegionId } from "../wotr-components.models";
+import { WotrRegionSetup, WotrSetup } from "../wotr-game-state.models";
 
 @Injectable ({
   providedIn: "root",
@@ -7,69 +9,55 @@ export class WotrRulesSetupService {
   
   constructor () {}
 
-  getGameSetup (): BritSetup {
+  getGameSetup (): WotrSetup {
     return {
-      areas: {
-        avalon: "welsh",
-        downlands: "belgae",
-        wessex: "belgae",
-        sussex: "belgae",
-        kent: "belgae",
-        essex: "belgae",
-        lindsey: "belgae",
-        suffolk: "belgae",
-        norfolk: "belgae",
-        "south-mercia": "belgae",
-        "north-mercia": "belgae",
-        hwicce: "welsh",
-        devon: "welsh",
-        cornwall: "welsh",
-        gwent: "welsh",
-        dyfed: "welsh",
-        powys: "welsh",
-        gwynedd: "welsh",
-        clwyd: "welsh",
-        march: "brigantes",
-        cheshire: "brigantes",
-        york: "brigantes",
-        bernicia: "brigantes",
-        pennines: "brigantes",
-        cumbria: "brigantes",
-        lothian: "brigantes",
-        galloway: "brigantes",
-        dunedin: "picts",
-        strathclyde: "brigantes",
-        dalriada: "picts",
-        alban: "picts",
-        mar: "picts",
-        moray: "picts",
-        skye: "picts",
-        caithness: "caledonians",
-        orkneys: "caledonians",
-        hebrides: "caledonians",
-        "icelandic-sea": null,
-        "north-sea": null,
-        "frisian-sea": null,
-        "english-channel": ["romans", 16],
-        "irish-sea": null,
-        "atlantic-ocean": null,
-      },
-      populationMarkers: [
-        "welsh",
-        "belgae",
-        "brigantes",
-        "picts",
-        "caledonians",
+      regions: [
+        this.fpRegionSetup ("erebor", "dwarves", 1, 2, 1),
+        this.fpRegionSetup ("ered-luin", "dwarves", 1, 0, 0),
+        this.fpRegionSetup ("iron-hills", "dwarves", 1, 0, 0),
+        this.fpRegionSetup ("grey-havens", "elves", 1, 1, 1),
+        this.fpRegionSetup ("rivendell", "elves", 0, 2, 1),
+        this.fpRegionSetup ("woodland-realm", "elves", 1, 1, 1),
+        this.fpRegionSetup ("lorien", "elves", 1, 2, 1),
+        this.fpRegionSetup ("minas-tirith", "gondor", 3, 1, 1),
+        this.fpRegionSetup ("dol-amroth", "gondor", 3, 0, 0),
+        this.fpRegionSetup ("osgiliath", "gondor", 2, 0, 0),
+        this.fpRegionSetup ("pelargir", "gondor", 1, 0, 0),
+        this.fpRegionSetup ("bree", "north", 1, 0, 0),
+        this.fpRegionSetup ("carrock", "north", 1, 0, 0),
+        this.fpRegionSetup ("dale", "north", 1, 0, 1),
+        this.fpRegionSetup ("north-downs", "north", 0, 1, 0),
+        this.fpRegionSetup ("the-shire", "north", 1, 0, 1),
+        this.fpRegionSetup ("edoras", "rohan", 1, 1, 0),
+        this.fpRegionSetup ("fords-of-isen", "rohan", 2, 0, 1),
+        this.fpRegionSetup ("helms-deep", "rohan", 1, 0, 0),
+        this.sRegionSetup ("orthanc", "isengard", 4, 1, 0),
+        this.sRegionSetup ("north-dunland", "isengard", 1, 0, 0),
+        this.sRegionSetup ("south-dunland", "isengard", 1, 0, 0),
+        this.sRegionSetup ("barad-dur", "sauron", 4, 1, 1),
+        this.sRegionSetup ("dol-guldur", "sauron", 5, 1, 1),
+        this.sRegionSetup ("gorgoroth", "sauron", 3, 0, 0),
+        this.sRegionSetup ("minas-morgul", "sauron", 5, 0, 1),
+        this.sRegionSetup ("moria", "sauron", 2, 0, 0),
+        this.sRegionSetup ("mount-gundabad", "sauron", 2, 0, 0),
+        this.sRegionSetup ("nurn", "sauron", 2, 0, 0),
+        this.sRegionSetup ("morannon", "sauron", 5, 0, 1),
+        this.sRegionSetup ("far-harad", "southrons", 3, 1, 0),
+        this.sRegionSetup ("near-harad", "southrons", 3, 1, 0),
+        this.sRegionSetup ("north-rhun", "southrons", 2, 0, 0),
+        this.sRegionSetup ("south-rhun", "southrons", 3, 1, 0),
+        this.sRegionSetup ("umbar", "southrons", 3, 0, 0),
       ],
-      activeNations: [
-        "romans",
-        "welsh",
-        "belgae",
-        "brigantes",
-        "picts",
-        "caledonians",
-      ],
+      fellowshipRegion: "rivendell"
     };
   } // getGameSetup
+
+  private fpRegionSetup (region: WotrRegionId, nation: WotrNationId, nRegulars: number, nElites: number, nLeaders: number): WotrRegionSetup {
+    return { region, nation, nRegulars, nElites, nLeaders, nNazgul: 0 };
+  }
+
+  private sRegionSetup (region: WotrRegionId, nation: WotrNationId, nRegulars: number, nElites: number, nNazgul: number): WotrRegionSetup {
+    return { region, nation, nRegulars, nElites, nLeaders: 0, nNazgul };
+  }
 
 } // WotrRulesSetupService

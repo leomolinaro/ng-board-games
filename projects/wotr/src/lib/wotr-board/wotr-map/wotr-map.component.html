@@ -1,4 +1,6 @@
-<!-- <button *ngIf="!production" style="position: absolute" (click)="calculateSlots()">Calculate slots</button> -->
+@if (isDevMode) {
+  <button style="position: absolute" (click)="calculateSlots ()">Calculate slots</button>
+}
 <svg:svg bgSvg
   xmlns="http://www.w3.org/2000/svg"
   version="1.1"
@@ -11,27 +13,109 @@
     <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin"
       [attr.xlink:href]="mapImageSource">
     </image>
-    <svg:g *ngFor="let regionNode of regionNodes; trackBy: regionTrackBy">
-      <svg:path
-        [ngClass]="{
-          'is-active': isValidRegion ? isValidRegion[regionNode.id] : false,
-          'is-disabled': isValidRegion ? !isValidRegion[regionNode.id] : false
-        }"
-        [attr.id]="'wotr-region-' + regionNode.id"
-        class="wotr-region-path"
-        [attr.d]="regionNode.path"
-        (click)="onRegionClick (regionNode, $event)">
-      </svg:path>
-      <!-- [matTooltip]="regionNode.tooltip"
-      matTooltipClass="wotr-map-tooltip" -->
-      <svg:circle
-        *ngFor="let point of testGridPoints"
-        [attr.cx]="point.x"
-        [attr.cy]="point.y"
-        [attr.r]="3"
-        [attr.style]="'fill: ' + point.color">
-      </svg:circle>
-    </svg:g>
+    @for (regionNode of regionNodes; track regionNode.id) {
+      <svg:g>
+        <svg:path
+          [ngClass]="{
+            'is-active': isValidRegion ? isValidRegion[regionNode.id] : false,
+            'is-disabled': isValidRegion ? !isValidRegion[regionNode.id] : false
+          }"
+          [attr.id]="'wotr-region-' + regionNode.id"
+          class="wotr-region-path"
+          [attr.d]="regionNode.path"
+          (click)="onRegionClick (regionNode, $event)">
+        </svg:path>
+        <!-- [matTooltip]="regionNode.tooltip"
+        matTooltipClass="wotr-map-tooltip" -->
+        @for (point of testGridPoints; track point) {
+          <svg:circle
+            [attr.cx]="point.x"
+            [attr.cy]="point.y"
+            [attr.r]="1"
+            [attr.style]="'fill: ' + point.color">
+          </svg:circle>
+        }
+  
+        @if (regionNode.army) {
+          <svg:svg style="overflow: visible;" [attr.x]="regionNode.army.svgX" [attr.y]="regionNode.army.svgY">
+            @for (armyUnit of regionNode.army.armyUnits; track $index; ) {
+              <svg:image
+                [attr.width]="armyUnit.image.width" [attr.height]="armyUnit.image.height"
+                [attr.x]="armyUnit.svgX" [attr.y]="armyUnit.svgY"
+                transform="scale(0.8, 0.8)"
+                [attr.xlink:href]="armyUnit.image.source"/> 
+            }
+            @for (leaderUnit of regionNode.army.leaderUnits; track $index; ) {
+              <svg:image
+                [attr.width]="leaderUnit.image.width" [attr.height]="leaderUnit.image.height"
+                [attr.x]="leaderUnit.svgX" [attr.y]="leaderUnit.svgY"
+                transform="scale(0.8, 0.8)"
+                [attr.xlink:href]="leaderUnit.image.source"/>
+            }
+            <svg:text class="wotr-army-counters"
+              [attr.x]="regionNode.army.counters.svgX" [attr.y]="regionNode.army.counters.svgY"
+              transform="scale(0.8, 0.8)">
+              {{regionNode.army.counters.nRegulars}}/{{regionNode.army.counters.nElites}}/{{regionNode.army.counters.leadership}}
+            </svg:text>
+          </svg:svg>
+        }
+        @for (freeGroup of regionNode.freeGroups; track $index) {
+          <svg:svg style="overflow: visible;" [attr.x]="freeGroup.svgX" [attr.y]="freeGroup.svgY">
+            @for (freeUnit of freeGroup.units; track $index; ) {
+              <svg:image
+                [attr.width]="freeUnit.image.width" [attr.height]="freeUnit.image.height"
+                [attr.x]="freeUnit.svgX" [attr.y]="freeUnit.svgY"
+                transform="scale(0.8, 0.8)"
+                [attr.xlink:href]="freeUnit.image.source"/>
+            }
+          </svg:svg>
+        }
+      </svg:g>
+    }
+      <!-- <ng-container *ngFor="let unitNode of areaNode.unitNodes; trackBy: unitTrackBy">
+        <svg:svg
+          class="brit-unit"
+          width="34"
+          height="34"
+          [attr.x]="unitNode.svgX"
+          [attr.y]="unitNode.svgY"
+          [ngClass]="{
+            'is-active': isValidUnit && isValidUnit[unitNode.id],
+            'is-disabled': isValidUnit && !isValidUnit[unitNode.id]
+          }"
+          (click)="onUnitClick(unitNode)">
+          <svg:rect class="brit-unit-rect"
+            x="2" y="2" width="30" height="30">
+          </svg:rect>
+          <svg:image
+            [matTooltip]="unitNode.tooltip"
+            matTooltipClass="brit-map-tooltip"
+            x="2" y="2" width="30"
+            [attr.xlink:href]="unitNode.imageSource"/>
+          <svg:text
+            *ngIf="unitNode.quantity > 1"
+            class="brit-unit-quantity"
+            x="92%" y="100%">
+            <ng-container *ngIf="nSelectedUnits && nSelectedUnits[unitNode.id] as nSelected">
+              {{ nSelected }}/
+            </ng-container>
+            {{ unitNode.quantity }}
+          </svg:text>
+          <svg:text *ngIf="unitNode.unit.nMovements > 0"
+            class="brit-unit-n-movements"
+            x="92%" y="0">
+            {{ unitNode.unit.nMovements }}
+          </svg:text>
+          <svg:rect *ngIf="isValidUnit && !isValidUnit[unitNode.id]"
+            [matTooltip]="unitNode.tooltip"
+            matTooltipClass="brit-map-tooltip"
+            class="brit-unit-rect-overlay"
+            x="0" y="0" width="34" height="34" rx="2">
+          </svg:rect>
+        </svg:svg>
+      </ng-container> -->
+      
+    
 
   </svg:g>
 </svg:svg>

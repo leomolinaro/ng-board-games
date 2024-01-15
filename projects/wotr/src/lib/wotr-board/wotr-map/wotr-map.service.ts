@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { of } from "rxjs";
+import { Injectable, inject } from "@angular/core";
+import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { WotrAssetsService } from "../../wotr-assets.service";
 import { WotrRegionId } from "../../wotr-components.models";
@@ -17,15 +17,14 @@ export interface WotrMapPoint {
 })
 export class WotrMapService {
 
-  constructor (
-    private http: HttpClient,
-    private assets: WotrAssetsService
-  ) {}
+  private http = inject (HttpClient);
+  private assets = inject (WotrAssetsService);
 
   private svgLoaded = false;
   private regionPaths!: { [id in WotrRegionId]: string };
   private viewBox!: string;
   private width!: number;
+  private regionSlots!: WotrRegionSlots;
 
   getRegionPath (regionId: WotrRegionId) { return this.regionPaths[regionId]; }
 
@@ -64,5 +63,18 @@ export class WotrMapService {
     });
     return paths;
   } // getGroupPaths
+
+  loadRegionSlots$ (): Observable<boolean> {
+    return this.http.get (this.assets.getMapSlotsPath (), { responseType: "text" }).pipe (
+      map ((response) => {
+        this.regionSlots = JSON.parse (response);
+        return true;
+      })
+    );
+  } // loadAreaSlots$
+
+  getRegionSlots (n: number, regionId: WotrRegionId): WotrMapPoint[] {
+    return this.regionSlots[regionId][n];
+  } // getRegionSlots
 
 } // WotrMapService

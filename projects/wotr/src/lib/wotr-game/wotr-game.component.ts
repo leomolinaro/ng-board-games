@@ -68,7 +68,7 @@ import { WotrUiStore } from "./wotr-ui.store";
 })
 @UntilDestroy
 export class WotrGameComponent implements OnInit, OnDestroy {
-  
+
   private components = inject (WotrComponentsService);
   private game = inject (WotrGameStore);
   // private ui = inject (WotrUiStore);
@@ -173,3 +173,4 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   // // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
   
 } // WotrGameComponent
+

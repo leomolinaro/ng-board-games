@@ -2,7 +2,7 @@ import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { WotrNationId, WotrRegionId } from "../wotr-components.models";
-import { WotrLog, WotrNationState, WotrPlayer, WotrRegionState, WotrRegionUnit } from "../wotr-game-state.models";
+import { WotrLog, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 
 @Component ({
@@ -26,8 +26,8 @@ export class WotrBoardComponent {
   // @Input () otherPlayers!: BaronyPlayer[];
   @Input () message: string | null = null;
   @Input () validRegions: WotrRegionId[] | null = null;
-  @Input () validUnits: WotrRegionUnit[] | null = null;
-  @Input () selectedUnits: WotrRegionUnit[] | null = null;
+  // @Input () validUnits: WotrRegionUnit[] | null = null;
+  // @Input () selectedUnits: WotrRegionUnit[] | null = null;
   // @Input () validActions: BaronyAction[] | null = null;
   // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
@@ -38,8 +38,8 @@ export class WotrBoardComponent {
   @Output () playerSelect = new EventEmitter<WotrPlayer> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
   @Output () regionClick = new EventEmitter<WotrRegionId> ();
-  @Output () unitClick = new EventEmitter<WotrRegionUnit> ();
-  @Output () selectedUnitsChange = new EventEmitter<WotrRegionUnit[]> ();
+  // @Output () unitClick = new EventEmitter<WotrRegionUnit> ();
+  // @Output () selectedUnitsChange = new EventEmitter<WotrRegionUnit[]> ();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
   @Output () passClick = new EventEmitter<void> ();
   @Output () confirmClick = new EventEmitter<void> ();

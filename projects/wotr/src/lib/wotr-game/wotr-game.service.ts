@@ -1,9 +1,10 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { Observable, of } from "rxjs";
 import { WotrComponentsService } from "../wotr-components.service";
 import { WotrPlayer } from "../wotr-game-state.models";
 import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
+import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
 import { WotrStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
@@ -14,16 +15,14 @@ import { WotrUiStore } from "./wotr-ui.store";
 @Injectable ()
 export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrPlayerService> {
 
-  constructor (
-    // private rules: WotrRulesService,
-    private game: WotrGameStore,
-    private ui: WotrUiStore,
-    protected authService: BgAuthService,
-    private remoteService: WotrRemoteService,
-    protected aiService: WotrPlayerAiService,
-    protected localService: WotrPlayerLocalService,
-    private components: WotrComponentsService
-  ) { super (); }
+  private game = inject (WotrGameStore);
+  private rules= inject (WotrRulesService);
+  private ui = inject (WotrUiStore);
+  protected authService = inject (BgAuthService);
+  private remoteService = inject (WotrRemoteService);
+  protected aiService = inject (WotrPlayerAiService);
+  protected localService = inject (WotrPlayerLocalService);
+  private components = inject (WotrComponentsService);
 
   protected stories: WotrStoryDoc[] | null = null;
 
@@ -56,8 +55,8 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
 
   game$ (stories: WotrStoryDoc[]): Observable<void> {
     this.stories = stories;
+    this.setup ();
     return of (void 0);
-    // this.setup ();
     // return forN (16, (index) => this.round$ ((index + 1) as WotrRoundId)).pipe (
     //   tap (() => {
     //     this.ui.updateUi ("End game", (s) => ({
@@ -68,11 +67,11 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
     // );
   } // game$
 
-  // setup () {
-  //   this.game.logSetup ();
-  //   const gameSetup = this.rules.setup.getGameSetup ();
-  //   this.game.applySetup (gameSetup);
-  // } // setup
+  setup () {
+    // this.game.logSetup ();
+    const gameSetup = this.rules.setup.getGameSetup ();
+    this.game.applySetup (gameSetup);
+  } // setup
 
   // round$ (roundId: WotrRoundId): Observable<void> {
   //   this.game.logRound (roundId);

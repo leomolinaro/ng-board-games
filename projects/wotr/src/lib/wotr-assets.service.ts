@@ -1,37 +1,111 @@
 import { Injectable } from "@angular/core";
+import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "./wotr-components.models";
+
+const BASE_PATH = "assets/wotr";
+
+export interface WotrUnitImage {
+  source: string;
+  width: number;
+  height: number;
+}
 
 @Injectable ({
   providedIn: "root",
 })
 export class WotrAssetsService {
+  
+  constructor () {
+    this.init ();
+  }
 
-  constructor () {}
+  private init () {
+    this.initNations ();
+    this.initCompanions ();
+    this.initMinions ();
+  }
 
-  getMapImageSource () { return "assets/wotr/map.jpg"; }
-  getMapSvgSource () { return "assets/wotr/map.svg"; }
+  getMapSlotsPath (): string { return `${BASE_PATH}/wotr-map-slots.json`; }
+  getMapImageSource () { return `${BASE_PATH}/map.jpg`; }
+  getMapSvgSource () { return `${BASE_PATH}/map.svg`; }
 
-  // getNationIconImageSource (nationId: BritNationId) { return `assets/britannia/population-markers/${nationId}.png`; }
-  // getNationCardImageSource (nationId: BritNationId) { return `assets/britannia/nation-cards/${nationId}.png`; }
-  // getNationPopulationMarkerImageSource (nationId: BritNationId) { return `assets/britannia/population-markers/${nationId}.png`; }
+  private NATION_BY_ID: Record<WotrNationId, { regular: WotrUnitImage; elite: WotrUnitImage; leader?: WotrUnitImage }> = { } as any;
+  getArmyUnitImage (type: WotrArmyUnitType, nationId: WotrNationId) {
+    switch (type) {
+      case "regular": return this.NATION_BY_ID[nationId].regular;
+      case "elite": return this.NATION_BY_ID[nationId].elite;
+    }
+  }
+  getLeaderImage (nationId: WotrNationId) { return this.NATION_BY_ID[nationId].leader!; }
+  private initNations () {
+    this.NATION_BY_ID.dwarves = {
+      regular: this.unitImage ("dwarven-regular", 23, 34),
+      elite: this.unitImage ("dwarven-elite", 27, 42),
+      leader: this.unitImage ("dwarven-leader", 41, 43)
+    };
+    this.NATION_BY_ID.elves = {
+      regular: this.unitImage ("elven-regular", 19, 45),
+      elite: this.unitImage ("elven-elite", 36, 46),
+      leader: this.unitImage ("elven-leader", 29, 48)
+    };
+    this.NATION_BY_ID.gondor = {
+      regular: this.unitImage ("gondor-regular", 23, 48),
+      elite: this.unitImage ("gondor-elite", 41, 48),
+      leader: this.unitImage ("gondor-leader", 40, 46)
+    };
+    this.NATION_BY_ID.north = {
+      regular: this.unitImage ("north-regular", 30, 40),
+      elite: this.unitImage ("north-elite", 36, 54),
+      leader: this.unitImage ("north-leader", 33, 44)
+    };
+    this.NATION_BY_ID.rohan = {
+      regular: this.unitImage ("rohan-regular", 21, 48),
+      elite: this.unitImage ("rohan-elite", 47, 45),
+      leader: this.unitImage ("rohan-leader", 33, 44)
+    };
+    this.NATION_BY_ID.isengard = {
+      regular: this.unitImage ("isengard-regular", 35, 43),
+      elite: this.unitImage ("isengard-elite", 46, 46)
+    };
+    this.NATION_BY_ID.sauron = {
+      regular: this.unitImage ("sauron-regular", 31, 40),
+      elite: this.unitImage ("sauron-elite", 40, 44)
+    };
+    this.NATION_BY_ID.southrons = {
+      regular: this.unitImage ("southron-regular", 31, 49),
+      elite: this.unitImage ("southron-elite", 46, 46),
+    };
+  }
 
-  // getUnitImageSource (unit: BritAreaUnit) {
-  //   switch (unit.type) {
-  //     case "infantry": return `assets/britannia/infantries/${unit.nationId}.png`;
-  //     case "cavalry": return `assets/britannia/cavalries/${unit.nationId}.png`;
-  //     case "roman-fort": return "assets/britannia/buildings/roman-fort.png";
-  //     case "saxon-buhr": return "assets/britannia/buildings/saxon-buhr.png";
-  //     case "leader": return `assets/britannia/leaders/${unit.leaderId}.png`;
-  //   } // switch
-  // } // getUnitImageSource
+  private NAZGUL: WotrUnitImage = this.unitImage ("nazgul", 42, 67);
+  getNazgulImage () { return this.NAZGUL; }
 
-  // getUnitImageSourceByType (unitType: BritUnitType, nationId: BritNationId, leaderId?: BritLeaderId) {
-  //   switch (unitType) {
-  //     case "infantry": return `assets/britannia/infantries/${nationId}.png`;
-  //     case "cavalry": return `assets/britannia/cavalries/${nationId}.png`;
-  //     case "roman-fort": return "assets/britannia/buildings/roman-fort.png";
-  //     case "saxon-buhr": return "assets/britannia/buildings/saxon-buhr.png";
-  //     case "leader": return `assets/britannia/leaders/${leaderId}.png`;
-  //   } // switch
-  // } // getUnitImageSourceByType
+  private COMPANION_BY_ID: Record<WotrCompanionId, WotrUnitImage> = { } as any;
+  getCompanionImage (companionId: WotrCompanionId) { return this.COMPANION_BY_ID[companionId]; }
+  private initCompanions () {
+    this.COMPANION_BY_ID["gandalf-the-grey"] = this.unitImage ("gandalf-the-grey", 31, 55);
+    this.COMPANION_BY_ID.strider = this.unitImage ("strider", 31, 47);
+    this.COMPANION_BY_ID.boromir = this.unitImage ("boromir", 30, 44);
+    this.COMPANION_BY_ID.legolas = this.unitImage ("legolas", 28, 45);
+    this.COMPANION_BY_ID.gimli = this.unitImage ("gimli", 33, 38);
+    this.COMPANION_BY_ID.meriadoc = this.unitImage ("merry", 29, 33);
+    this.COMPANION_BY_ID.peregrin = this.unitImage ("peregrin", 30, 36);
+    this.COMPANION_BY_ID.aragorn = this.unitImage ("aragorn", 30, 48);
+    this.COMPANION_BY_ID["gandalf-the-white"] = this.unitImage ("gandalf-the-white", 31, 55);
+  }
+
+  private MINION_BY_ID: Record<WotrMinionId, WotrUnitImage> = { } as any;
+  getMinionImage (minionId: WotrMinionId) { return this.MINION_BY_ID[minionId]; }
+  private initMinions () {
+    this.MINION_BY_ID.saruman = this.unitImage ("saruman", 53, 44);
+    this.MINION_BY_ID["the-witch-king"] = this.unitImage ("witch-king", 57, 44);
+    this.MINION_BY_ID["the-mouth-of-sauron"] = this.unitImage ("mouth", 43, 41);
+  }
+
+  private FELLOWSHIP: WotrUnitImage = this.unitImage ("fellowship", 31, 31);
+  getFellowshipImage () { return this.FELLOWSHIP; }
+
+  private unitImage (fileName: string, width: number, height: number): WotrUnitImage {
+    return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
+  }
 
 } // BritAssetsService

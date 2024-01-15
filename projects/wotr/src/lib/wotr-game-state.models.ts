@@ -1,6 +1,9 @@
 import { BgUser } from "@leobg/commons";
 import {
+  WotrArmyUnitType,
+  WotrCompanionId,
   WotrFront,
+  WotrMinionId,
   WotrNationId,
   WotrRegionId
 } from "./wotr-components.models";
@@ -15,60 +18,44 @@ export interface WotrGameState {
   regions: Record<WotrRegionId, WotrRegionState>;
   nations: Record<WotrNationId, WotrNationState>;
   logs: WotrLog[];
-} // WotrGameState
+}
 
-interface AWotrRegionUnit {
+export interface WotrRegionArmyUnit {
   nationId: WotrNationId;
-  regionId: WotrRegionId;
-  nMovements: number;
-} // AWotrRegionUnit
-
-export interface WotrRegionRegular extends AWotrRegionUnit {
-  nationId: WotrNationId;
-  type: "regular";
+  type: WotrArmyUnitType;
   quantity: number;
-} // WotrRegionRegular
+}
 
-export interface WotrRegionElite extends AWotrRegionUnit {
-  nationId: WotrNationId;
-  type: "elite";
-  quantity: number;
-} // WotrRegionElite
-
-export interface WotrRegionLeader extends AWotrRegionUnit {
+export interface WotrRegionLeaderUnit {
   nationId: WotrNationId;
   type: "leader";
   quantity: number;
-} // WotrRegionLeader
-
-export interface WotrRegionNazgul extends AWotrRegionUnit {
-  nationId: WotrNationId;
-  type: "nazgul";
-  quantity: number;
-} // WotrRegionNazgul
-
-export type WotrRegionUnit =
-  | WotrRegionRegular
-  | WotrRegionElite
-  | WotrRegionLeader
-  | WotrRegionNazgul;
+}
 
 export interface WotrRegionState {
-  units: WotrRegionUnit[];
-} // WotrRegionState
+  armyUnits: WotrRegionArmyUnit[];
+  leaders: WotrRegionLeaderUnit[];
+  nNazgul: number;
+  companions: WotrCompanionId[];
+  minions: WotrMinionId[];
+  fellowship: boolean;
+}
 
 export interface WotrNationState {
   reinforcements: {
     regular: number;
     elite: number;
+    leader: number;
+    nazgul: number;
   };
   eliminated: {
     regular: number;
     elite: number;
+    leader: number;
   };
   active: boolean;
   politicalTrack: 3 | 2 | 1 | "at-war";
-} // WotrNationState
+}
 
 export type WotrPlayerId = string;
 
@@ -77,20 +64,20 @@ export interface AWotrPlayer {
   name: string;
   front: WotrFront;
   score: number;
-} // AWotrPlayer
+}
 
 export interface WotrAiPlayer extends AWotrPlayer {
   isAi: true;
   isRemote: false;
   isLocal: false;
-} // WotrAiPlayer
+}
 
 export interface WotrRealPlayer extends AWotrPlayer {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;
   controller: BgUser;
-} // WotrRealPlayer
+}
 
 export type WotrPlayer = WotrAiPlayer | WotrRealPlayer;
 
@@ -113,8 +100,16 @@ export type WotrLog = never;
 // | WotrLogInfantryReinforcement
 // | WotrLogArmyMovement;
 
-// export interface WotrSetup {
-//   regions: Record<WotrRegionId, [WotrNationId, number] | WotrNationId | null>;
-//   populationMarkers: WotrNationId[];
-//   activeNations: WotrNationId[];
-// } // WotrSetup
+export interface WotrSetup {
+  regions: WotrRegionSetup[];
+  fellowshipRegion: WotrRegionId;
+} // WotrSetup
+
+export interface WotrRegionSetup {
+  region: WotrRegionId;
+  nation: WotrNationId;
+  nRegulars: number;
+  nElites: number;
+  nLeaders: number;
+  nNazgul: number;
+}

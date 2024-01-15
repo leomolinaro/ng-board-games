@@ -1,33 +1,34 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
-import { BgStore, arrayUtil } from "@leobg/commons/utils";
-import { WotrNationId, WotrRegionId } from "../wotr-components.models";
+import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
+import { WotrArmyUnitType, WotrNationId, WotrRegionId } from "../wotr-components.models";
 import { WotrComponentsService } from "../wotr-components.service";
-import { WotrGameState, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrGameState, WotrNationState, WotrPlayer, WotrRegionState, WotrSetup } from "../wotr-game-state.models";
 
 @Injectable ()
 export class WotrGameStore extends BgStore<WotrGameState> {
 
   constructor (components: WotrComponentsService) {
-    
-    // const map: Record<BritNationId, V> = {} as any;
-    // this.NATION_IDS.forEach ((nationId) => (map[nationId] = getValue (nationId)));
-    // return map;
-    
     super ({
       gameId: "",
       gameOwner: null as any,
       players: { map: {}, ids: [] },
-      regions: components.regionsToMap ((regionId) => ({ units: [] })),
-      nations: components.nationsToMap ((nationId) => {
+      regions: components.regionsToMap<WotrRegionState> ((regionId) => ({
+        fellowship: false,
+        armyUnits: [],
+        leaders: [],
+        nNazgul: 0,
+        companions: [],
+        minions: []
+      })),
+      nations: components.nationsToMap<WotrNationState> ((nationId) => {
         const nation = components.NATION[nationId];
-        const nationState: WotrNationState = {
-          reinforcements: { regular: nation.nRegulars, elite: nation.nElites },
-          eliminated: { regular: 0, elite: 0 },
+        return {
+          reinforcements: { regular: nation.nRegulars, elite: nation.nElites, leader: nation.nLeaders, nazgul: nation.nNazgul },
+          eliminated: { regular: 0, elite: 0, leader: 0 },
           active: false,
           politicalTrack: 3
         };
-        return nationState;
       }),
       logs: [],
     }, "War of the Ring Game");
@@ -118,33 +119,25 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   //   };
   // } // updatePlayer
 
-  // private updateRegion (
-  //   regionId: WotrRegionId,
-  //   updater: (a: WotrRegionState) => WotrRegionState,
-  //   s: WotrGameState
-  // ): WotrGameState {
-  //   return {
-  //     ...s,
-  //     regions: {
-  //       ...s.regions,
-  //       [regionId]: updater (s.regions[regionId]),
-  //     },
-  //   };
-  // } // updateRegion
+  private updateRegion (regionId: WotrRegionId, updater: (a: WotrRegionState) => WotrRegionState, s: WotrGameState): WotrGameState {
+    return {
+      ...s,
+      regions: {
+        ...s.regions,
+        [regionId]: updater (s.regions[regionId]),
+      },
+    };
+  } // updateRegion
 
-  // private updateNation (
-  //   nationId: WotrNationId,
-  //   updater: (a: WotrNationState) => WotrNationState,
-  //   s: WotrGameState
-  // ): WotrGameState {
-  //   return {
-  //     ...s,
-  //     nations: {
-  //       ...s.nations,
-  //       [nationId]: updater (s.nations[nationId]),
-  //     },
-  //   };
-  // } // updateNation
+  private updateNation (nationId: WotrNationId, updater: (a: WotrNationState) => WotrNationState, s: WotrGameState): WotrGameState {
+    return {
+      ...s,
+      nations: {
+        ...s.nations,
+        [nationId]: updater (s.nations[nationId]),
+      },
+    };
+  }
 
   // // private addPawnToPlayer (pawnType: WotrPawnType, playerId: string) {
   // //   this.updatePlayer (playerId, p => ({
@@ -256,57 +249,57 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   //   );
   // } // setNationActive
 
-  // private addUnitsToRegion (
-  //   unitType: Exclude<WotrUnitType, "leader">,
-  //   nationId: WotrNationId,
-  //   regionId: WotrRegionId,
-  //   quantity: number,
-  //   nMovements: number,
-  //   s: WotrGameState
-  // ): WotrGameState {
-  //   return this.updateRegion (
-  //     regionId,
-  //     (region) => {
-  //       const index = region.units.findIndex (
-  //         (u) =>
-  //           u.type === unitType &&
-  //           u.nationId === nationId &&
-  //           u.nMovements === nMovements
-  //       );
-  //       if (index >= 0) {
-  //         const unit = region.units[index];
-  //         if (unit.type === "leader") {
-  //           return region;
-  //         }
-  //         return {
-  //           ...region,
-  //           units: immutableUtil.listReplaceByIndex (
-  //             index,
-  //             { ...unit, quantity: unit.quantity + quantity },
-  //             region.units
-  //           ),
-  //         };
-  //       } else {
-  //         return {
-  //           ...region,
-  //           units: immutableUtil.listPush (
-  //             [
-  //               {
-  //                 type: unitType,
-  //                 nationId: nationId,
-  //                 quantity: quantity,
-  //                 regionId,
-  //                 nMovements,
-  //               },
-  //             ],
-  //             region.units
-  //           ),
-  //         };
-  //       } // if - else
-  //     },
-  //     s
-  //   );
-  // } // addUnitsToRegion
+  private addRegularsToRegion (nationId: WotrNationId, regionId: WotrRegionId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.addArmyUnitsToRegion ("regular", nationId, regionId, quantity, s);
+  }
+
+  private addElitesToRegion (nationId: WotrNationId, regionId: WotrRegionId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.addArmyUnitsToRegion ("elite", nationId, regionId, quantity, s);
+  }
+
+  private addArmyUnitsToRegion (unitType: WotrArmyUnitType, nationId: WotrNationId, regionId: WotrRegionId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateRegion (regionId, (region) => {
+      const index = region.armyUnits.findIndex ((u) => u.type === unitType && u.nationId === nationId);
+      if (index >= 0) {
+        const unit = region.armyUnits[index];
+        return {
+          ...region,
+          armyUnits: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity + quantity }, region.armyUnits),
+        };
+      } else {
+        return {
+          ...region,
+          armyUnits: immutableUtil.listPush ([{ type: unitType, nationId, quantity }], region.armyUnits),
+        };
+      } // if - else
+    }, s);
+  }
+
+  private addLeadersToRegion (nationId: WotrNationId, regionId: WotrRegionId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateRegion (regionId, (region) => {
+      const index = region.leaders.findIndex ((u) => u.nationId === nationId);
+      if (index >= 0) {
+        const unit = region.leaders[index];
+        return {
+          ...region,
+          leaders: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity + quantity }, region.leaders),
+        };
+      } else {
+        return {
+          ...region,
+          leaders: immutableUtil.listPush ([{ nationId, quantity, type: "leader" }], region.leaders),
+        };
+      } // if - else
+    }, s);
+  }
+
+  private addNazgulToRegion (regionId: WotrRegionId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateRegion (regionId, (region) => ({ ...region, nNazgul: region.nNazgul + quantity }), s);
+  }
+
+  private addFellowshipToRegion (regionId: WotrRegionId, s: WotrGameState): WotrGameState {
+    return this.updateRegion (regionId, (region) => ({ ...region, fellowship: true }), s);
+  }
 
   // private removeUnitsFromRegionByIndex (
   //   unitIndex: number,
@@ -407,28 +400,21 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   //   );
   // } // removeUnitFromRegionByIndex
 
-  // private removeUnitsFromNation (
-  //   unitType: Exclude<WotrUnitType, "leader">,
-  //   nationId: WotrNationId,
-  //   quantity: number,
-  //   s: WotrGameState
-  // ): WotrGameState {
-  //   return this.updateNation (
-  //     nationId,
-  //     (n) => {
-  //       switch (unitType) {
-  //         case "infantry":
-  //           return { ...n, nInfantries: n.nInfantries - quantity };
-  //         case "cavalry":
-  //           return { ...n, nCavalries: n.nCavalries - quantity };
-  //         case "saxon-buhr":
-  //         case "roman-fort":
-  //           return { ...n, nBuildings: n.nBuildings - quantity };
-  //       } // switch
-  //     },
-  //     s
-  //   );
-  // } // removeUnitsFromNation
+  private removeRegularsFromReinforcements (nationId: WotrNationId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateNation (nationId, n => ({ ...n, reinforcements: { ...n.reinforcements, regular: n.reinforcements.regular - quantity } }), s);
+  }
+
+  private removeElitesFromReinforcements (nationId: WotrNationId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateNation (nationId, n => ({ ...n, reinforcements: { ...n.reinforcements, elite: n.reinforcements.elite - quantity } }), s);
+  }
+
+  private removeLeadersFromReinforcements (nationId: WotrNationId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateNation (nationId, n => ({ ...n, reinforcements: { ...n.reinforcements, leader: n.reinforcements.leader - quantity } }), s);
+  }
+
+  private removeNazgulFromReinforcements (nationId: WotrNationId, quantity: number, s: WotrGameState): WotrGameState {
+    return this.updateNation (nationId, n => ({ ...n, reinforcements: { ...n.reinforcements, nazgul: n.reinforcements.nazgul - quantity } }), s);
+  }
 
   // private removeLeaderFromNation (
   //   leaderId: WotrLeaderId,
@@ -448,40 +434,30 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   //   );
   // } // removeUnitFromNation
 
-  // applySetup (setup: WotrSetup) {
-  //   this.update ("Setup", (s) => {
-  //     return this.components.REGION_IDS.reduce ((state, regionId) => {
-  //       const regionSetup = setup.regions[regionId];
-  //       if (regionSetup) {
-  //         const [nationId, nInfantries] =
-  //           typeof regionSetup === "string"
-  //             ? [regionSetup, 1]
-  //             : [regionSetup[0], regionSetup[1]];
-  //         state = this.removeUnitsFromNation (
-  //           "infantry",
-  //           nationId,
-  //           nInfantries,
-  //           state
-  //         );
-  //         state = this.addUnitsToRegion (
-  //           "infantry",
-  //           nationId,
-  //           regionId,
-  //           nInfantries,
-  //           0,
-  //           state
-  //         );
-  //       } // if
-  //       setup.populationMarkers.forEach ((nationId) => {
-  //         state = this.setNationPopulation (0, nationId, state);
-  //       });
-  //       setup.activeNations.forEach ((nationId) => {
-  //         state = this.setNationActive (true, nationId, state);
-  //       });
-  //       return state;
-  //     }, s);
-  //   });
-  // } // applySetup
+  applySetup (setup: WotrSetup) {
+    this.update ("Setup", state => {
+      for (const r of setup.regions) {
+        if (r.nRegulars) {
+          state = this.removeRegularsFromReinforcements (r.nation, r.nRegulars, state);
+          state = this.addRegularsToRegion (r.nation, r.region, r.nRegulars, state);
+        }
+        if (r.nElites) {
+          state = this.removeElitesFromReinforcements (r.nation, r.nElites, state);
+          state = this.addElitesToRegion (r.nation, r.region, r.nElites, state);
+        }
+        if (r.nLeaders) {
+          state = this.removeLeadersFromReinforcements (r.nation, r.nLeaders, state);
+          state = this.addLeadersToRegion (r.nation, r.region, r.nLeaders, state);
+        }
+        if (r.nNazgul) {
+          state = this.removeNazgulFromReinforcements (r.nation, r.nNazgul, state);
+          state = this.addNazgulToRegion (r.region, r.nNazgul, state);
+        }
+      }
+      state = this.addFellowshipToRegion (setup.fellowshipRegion, state);
+      return state;
+    });
+  } // applySetup
 
   // private placeInfantry (
   //   regionId: WotrRegionId,

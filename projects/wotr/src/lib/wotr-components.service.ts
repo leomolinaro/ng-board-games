@@ -1,6 +1,10 @@
 import { Injectable } from "@angular/core";
 import {
+  WotrCompanion,
+  WotrCompanionId,
   WotrFront,
+  WotrMinion,
+  WotrMinionId,
   WotrNation,
   WotrNationId,
   WotrNeighbor,
@@ -16,7 +20,14 @@ export class WotrComponentsService {
 
   constructor () {
     this.init ();
-  } // constructor
+  }
+
+  init () {
+    this.initRegions ();
+    this.initNations ();
+    this.initCompanions ();
+    this.initMinions ();
+  }
 
   readonly FRONTS: WotrFront[] = ["free-peoples", "shadow"];
 
@@ -34,55 +45,19 @@ export class WotrComponentsService {
     "southern-mirkwood", "old-forest-road", "western-mirkwood", "northern-mirkwood", "withered-heath", "woodland-realm", "dale",
     "erebor", "iron-hills", "north-rhun", "east-rhun", "south-rhun", "morannon", "minas-morgul", "gorgoroth", "nurn", "barad-dur",
     "west-harondor", "east-harondor", "umbar", "near-harad", "far-harad", "khand"];
-
-  readonly NATION_IDS: WotrNationId[] = [
-    "dwarves", "elves", "gondor", "the-north", "rohan",
-    "isengard", "sauron", "southrons-&-esterlings"];
-
   readonly REGION: Record<WotrRegionId, WotrRegion> = {} as any;
-  readonly NATION: Record<WotrNationId, WotrNation> = {} as any;
 
   regionsToMap<V> (getValue: (regionId: WotrRegionId) => V): Record<WotrRegionId, V> {
     const map: Record<WotrRegionId, V> = { } as any;
     this.REGION_IDS.forEach (regionId => (map[regionId] = getValue (regionId)));
     return map;
-  } // regionsToMap
-
+  }
   getRegion (regionId: WotrRegionId): WotrRegion { return this.REGION[regionId]; }
   forEachRegion (forEachRegion: (region: WotrRegion) => void): void {
     this.REGION_IDS.forEach ((regionId) => forEachRegion (this.REGION[regionId]));
-  } // forEachRegion
+  }
 
-  // getNationIdsOfColor (color: WotrColor): WotrNationId[] {
-  //   switch (color) {
-  //     case "yellow": return ["romans", "romano-wotrish", "norwegians", "scots", "dubliners"];
-  //     case "red": return ["saxons", "brigantes", "irish", "norsemen"];
-  //     case "blue": return ["normans", "angles", "belgae", "picts"];
-  //     case "green": return ["danes", "jutes", "welsh", "caledonians"];
-  //   } // switch
-  // } // getNationIdsOfColor
-
-  nationsToMap<V> (getValue: (nationId: WotrNationId) => V): Record<WotrNationId, V> {
-    const map: Record<WotrNationId, V> = { } as any;
-    this.NATION_IDS.forEach (nationId => (map[nationId] = getValue (nationId)));
-    return map;
-  } // nationsToMap
-
-  getNation (nationId: WotrNationId): WotrNation { return this.NATION[nationId]; }
-
-  // getLeader (leaderId: WotrLeaderId): WotrLeader { return this.LEADER[leaderId]; }
-
-  // getUnitTypeLabel (unitType: Exclude<WotrUnitType, "leader">, singular: boolean) {
-  //   switch (unitType) {
-  //     case "infantry": return singular ? "Infantry" : "Infantries";
-  //     case "cavalry": return singular ? "Cavalry" : "Cavalries";
-  //     case "roman-fort": return singular ? "Fort" : "Forts";
-  //     case "saxon-buhr": return singular ? "Buhr" : "Buhrs";
-  //   } // switch
-  // } // getUnitTypeLabel
-
-  init () {
-    // Regions
+  private initRegions () {
     this.initRegion ("forlindon", "Forlindon", null, false, null, ["grey-havens"], ["north-ered-luin", "ered-luin"], true);
     this.initRegion ("north-ered-luin", "North Ered Luin", "dwarves", false, null, ["ered-luin", "evendim"], ["forlindon"], true);
     this.initRegion ("ered-luin", "Ered Luin", "dwarves", false, "town", ["north-ered-luin", "evendim", "tower-hills", "grey-havens"], ["forlindon"], false);
@@ -91,10 +66,10 @@ export class WotrComponentsService {
     this.initRegion ("tower-hills", "Tower Hills", null, false, null, ["grey-havens", "ered-luin", "evendim", "the-shire", "south-ered-luin"], ["harlindon"], false);
     this.initRegion ("evendim", "Evendim", null, false, null, ["arnor", "north-downs", "buckland", "the-shire", "tower-hills", "ered-luin", "north-ered-luin"], [], true);
     this.initRegion ("arnor", "Arnor", null, false, null, ["angmar", "ettenmoors", "north-downs", "evendim"], [], false);
-    this.initRegion ("north-downs", "North Downs", "the-north", false, null, ["arnor", "ettenmoors", "weather-hills", "bree", "buckland", "evendim"], [], false);
-    this.initRegion ("bree", "Bree", "the-north", false, "town", ["north-downs", "weather-hills", "south-downs", "buckland"], [], false);
-    this.initRegion ("buckland", "Buckland", "the-north", false, null, ["north-downs", "bree", "south-downs", "cardolan", "old-forest", "the-shire", "evendim"], [], false);
-    this.initRegion ("the-shire", "The Shire", "the-north", false, "city", ["evendim", "buckland", "old-forest", "south-ered-luin", "tower-hills"], [], false);
+    this.initRegion ("north-downs", "North Downs", "north", false, null, ["arnor", "ettenmoors", "weather-hills", "bree", "buckland", "evendim"], [], false);
+    this.initRegion ("bree", "Bree", "north", false, "town", ["north-downs", "weather-hills", "south-downs", "buckland"], [], false);
+    this.initRegion ("buckland", "Buckland", "north", false, null, ["north-downs", "bree", "south-downs", "cardolan", "old-forest", "the-shire", "evendim"], [], false);
+    this.initRegion ("the-shire", "The Shire", "north", false, "city", ["evendim", "buckland", "old-forest", "south-ered-luin", "tower-hills"], [], false);
     this.initRegion ("south-ered-luin", "South Ered Luin", null, false, null, ["the-shire", "old-forest", "cardolan", "minhiriath", "harlindon", "tower-hills"], [], true);
     this.initRegion ("minhiriath", "Minhiriath", null, false, null, ["south-ered-luin", "cardolan", "tharbad", "enedwaith"], [], true);
     this.initRegion ("cardolan", "Cardolan", null, false, null, ["old-forest", "buckland", "south-downs", "north-dunland", "tharbad", "minhiriath", "south-ered-luin"], [], false);
@@ -141,8 +116,8 @@ export class WotrComponentsService {
     this.initRegion ("lossarnach", "Lossarnach", "gondor", false, "town", ["minas-tirith", "osgiliath", "pelargir"], ["lamedon"], false);
     this.initRegion ("minas-tirith", "Minas Tirith", "gondor", false, "stronghold", ["druadan-forest", "osgiliath", "lossarnach"], ["lamedon"], false);
     this.initRegion ("druadan-forest", "Druadan Forest", "gondor", false, null, ["folde", "eastemnet", "western-emyn-muil", "dead-marshes", "osgiliath", "minas-tirith"], ["lamedon"], false);
-    this.initRegion ("carrock", "Carrock", "the-north", false, "town", ["eagles-eyre", "old-ford", "rhosgobel", "old-forest-road", "western-mirkwood", "northern-mirkwood"], ["mount-gundabad"], false);
-    this.initRegion ("rhosgobel", "Rhosgobel", "the-north", false, null, ["carrock", "old-forest-road", "narrows-of-the-forest", "north-anduin-vale", "gladden-fields", "old-ford"], [], false);
+    this.initRegion ("carrock", "Carrock", "north", false, "town", ["eagles-eyre", "old-ford", "rhosgobel", "old-forest-road", "western-mirkwood", "northern-mirkwood"], ["mount-gundabad"], false);
+    this.initRegion ("rhosgobel", "Rhosgobel", "north", false, null, ["carrock", "old-forest-road", "narrows-of-the-forest", "north-anduin-vale", "gladden-fields", "old-ford"], [], false);
     this.initRegion ("north-anduin-vale", "North Anduin Vale", null, false, null, ["rhosgobel", "narrows-of-the-forest", "dol-guldur", "south-anduin-vale", "dimrill-dale", "gladden-fields"], [], false);
     this.initRegion ("south-anduin-vale", "South Anduin Vale", null, false, null, ["north-anduin-vale", "dol-guldur", "western-brown-lands", "parth-celebrant", "dimrill-dale"], [], false);
     this.initRegion ("western-brown-lands", "Western Brown Lands", null, false, null, ["south-anduin-vale", "dol-guldur", "eastern-brown-lands", "western-emyn-muil", "eastemnet", "parth-celebrant"], [], false);
@@ -166,17 +141,17 @@ export class WotrComponentsService {
     this.initRegion ("narrows-of-the-forest", "Narrows of the Forest", null, false, null, ["old-forest-road", "eastern-mirkwood", "dol-guldur", "north-anduin-vale", "rhosgobel"], [], false);
     this.initRegion ("dol-guldur", "Dol Guldur", "sauron", false, "stronghold", ["north-anduin-vale", "narrows-of-the-forest", "eastern-mirkwood", "southern-mirkwood", "eastern-brown-lands", "western-brown-lands", "south-anduin-vale"], [], false);
     this.initRegion ("southern-mirkwood", "Southern Mirkwood", null, false, null, ["eastern-mirkwood", "northern-rhovanion", "southern-rhovanion", "eastern-brown-lands", "dol-guldur"], [], false);
-    this.initRegion ("old-forest-road", "Old Forest Road", "the-north", false, null, ["woodland-realm", "dale", "northern-rhovanion", "eastern-mirkwood", "narrows-of-the-forest", "rhosgobel", "carrock", "western-mirkwood"], [], false);
+    this.initRegion ("old-forest-road", "Old Forest Road", "north", false, null, ["woodland-realm", "dale", "northern-rhovanion", "eastern-mirkwood", "narrows-of-the-forest", "rhosgobel", "carrock", "western-mirkwood"], [], false);
     this.initRegion ("western-mirkwood", "Western Mirkwood", null, false, null, ["northern-mirkwood", "woodland-realm", "old-forest-road", "carrock"], [], false);
     this.initRegion ("northern-mirkwood", "Northern Mirkwood", null, false, null, ["carrock", "western-mirkwood", "woodland-realm", "withered-heath"], [], false);
     this.initRegion ("withered-heath", "Withered Heath", null, false, null, ["northern-mirkwood", "woodland-realm", "dale", "erebor"], [], false);
     this.initRegion ("woodland-realm", "Woodland Realm", "elves", false, null, ["northern-mirkwood", "withered-heath", "dale", "old-forest-road", "western-mirkwood"], [], false);
-    this.initRegion ("dale", "Dale", "the-north", false, "city", [], [], false);
+    this.initRegion ("dale", "Dale", "north", false, "city", [], [], false);
     this.initRegion ("erebor", "Erebor", "dwarves", false, "stronghold", [], [], false);
     this.initRegion ("iron-hills", "Iron Hills", "dwarves", false, "town", [], [], false);
-    this.initRegion ("north-rhun", "North Rhun", "southrons-&-esterlings", false, "town", [], [], false);
-    this.initRegion ("east-rhun", "East Rhun", "southrons-&-esterlings", false, null, [], [], false);
-    this.initRegion ("south-rhun", "South Rhun", "southrons-&-esterlings", false, "town", [], [], false);
+    this.initRegion ("north-rhun", "North Rhun", "southrons", false, "town", [], [], false);
+    this.initRegion ("east-rhun", "East Rhun", "southrons", false, null, [], [], false);
+    this.initRegion ("south-rhun", "South Rhun", "southrons", false, "town", [], [], false);
     this.initRegion ("morannon", "Morannon", "sauron", false, "stronghold", [], [], false);
     this.initRegion ("minas-morgul", "Minas Morgul", "sauron", false, "stronghold", [], [], false);
     this.initRegion ("gorgoroth", "Gorgoroth", "sauron", false, null, [], [], false);
@@ -184,20 +159,11 @@ export class WotrComponentsService {
     this.initRegion ("barad-dur", "Barad-dur", "sauron", false, "stronghold", [], [], false);
     this.initRegion ("west-harondor", "West Harondor", null, false, null, [], [], true);
     this.initRegion ("east-harondor", "East Harondor", null, false, null, [], [], false);
-    this.initRegion ("umbar", "Umbar", "southrons-&-esterlings", false, "stronghold", [], [], true);
-    this.initRegion ("near-harad", "Near Harad", "southrons-&-esterlings", false, "town", [], [], false);
-    this.initRegion ("far-harad", "Far Harad", "southrons-&-esterlings", false, "city", [], [], false);
-    this.initRegion ("khand", "Khand", "southrons-&-esterlings", false, null, [], [], false);
-    // Nations
-    this.NATION.dwarves = { ...this.createNation ("dwarves", "Dwarves", "free-peoples", 5, 5), nLeaders: 4 };
-    this.NATION.elves = { ...this.createNation ("elves", "Elves", "free-peoples", 5, 10), nLeaders: 4 };
-    this.NATION.gondor = { ...this.createNation ("gondor", "Gondor", "free-peoples", 15, 5), nLeaders: 4 };
-    this.NATION.rohan = { ...this.createNation ("rohan", "Rohan", "free-peoples", 10, 5), nLeaders: 4 };
-    this.NATION["the-north"] = { ...this.createNation ("the-north", "The North", "free-peoples", 10, 5), nLeaders: 4 };
-    this.NATION.isengard = this.createNation ("isengard", "Isengard", "shadow", 12, 6);
-    this.NATION.sauron = { ...this.createNation ("sauron", "Sauron", "shadow", 36, 6), nNazgul: 4 };
-    this.NATION["southrons-&-esterlings"] = this.createNation ("southrons-&-esterlings", "Southrons & Esterlings", "shadow", 24, 6);
-  } // init
+    this.initRegion ("umbar", "Umbar", "southrons", false, "stronghold", [], [], true);
+    this.initRegion ("near-harad", "Near Harad", "southrons", false, "town", [], [], false);
+    this.initRegion ("far-harad", "Far Harad", "southrons", false, "city", [], [], false);
+    this.initRegion ("khand", "Khand", "southrons", false, null, [], [], false);
+  }
 
   private initRegion (
     id: WotrRegionId, name: string, nationId: WotrNationId | null,
@@ -218,85 +184,98 @@ export class WotrComponentsService {
       neighbors: neighbors,
       seaside: seaside
     };
-  } // initRegion
+  }
 
-  private createNation (nationId: WotrNationId, label: string, front: WotrFront, nRegulars: number, nElites: number) {
-    return { id: nationId, label, front, nRegulars, nElites};
-  } // createNation
+  readonly NATION_IDS: WotrNationId[] = [
+    "dwarves", "elves", "gondor", "north", "rohan",
+    "isengard", "sauron", "southrons"];
+  readonly NATION: Record<WotrNationId, WotrNation> = {} as any;
 
-  // private initLeader (leaderId: WotrLeaderId, leaderName: string) {
-  //   this.LEADER[leaderId] = {
-  //     id: leaderId,
-  //     name: leaderName,
-  //   };
-  // } // initLeader
+  nationsToMap<V> (getValue: (nationId: WotrNationId) => V): Record<WotrNationId, V> {
+    const map: Record<WotrNationId, V> = { } as any;
+    this.NATION_IDS.forEach (nationId => (map[nationId] = getValue (nationId)));
+    return map;
+  }
+  getNation (nationId: WotrNationId): WotrNation { return this.NATION[nationId]; }
+  
+  private initNations () {
+    this.initFreePeopleNation ("dwarves", "Dwarves", 5, 5, 4);
+    this.initFreePeopleNation ("elves", "Elves", 5, 10, 4);
+    this.initFreePeopleNation ("gondor", "Gondor", 15, 5, 4);
+    this.initFreePeopleNation ("rohan", "Rohan", 10, 5, 4);
+    this.initFreePeopleNation ("north", "The North", 10, 5, 4);
+    this.initShadowNation ("isengard", "Isengard", 12, 6, 0);
+    this.initShadowNation ("sauron", "Sauron", 36, 6, 8);
+    this.initShadowNation ("southrons", "Southrons & Esterlings", 24, 6, 0);
+  }
 
-  // private initRound (
-  //   roundId: WotrRoundId,
-  //   fromYear: number,
-  //   toYear: number,
-  //   types: ("scoring" | "bretwalda" | "king")[],
-  //   ...events: WotrEvent[]
-  // ) {
-  //   this.ROUND[roundId] = {
-  //     id: roundId,
-  //     fromYear,
-  //     toYear,
-  //     scoring: types.includes ("scoring"),
-  //     bretwaldaElection: types.includes ("bretwalda"),
-  //     kingElection: types.includes ("king"),
-  //     events,
-  //   };
-  // } // initRound
+  private initFreePeopleNation (nationId: WotrNationId, name: string, nRegulars: number, nElites: number, nLeaders: number) {
+    this.NATION[nationId] = {
+      id: nationId, name, front: "free-peoples",
+      nRegulars, nElites, nLeaders, nNazgul: 0
+    };
+  }
 
-} // WotrRulesComponentsService
+  private initShadowNation (nationId: WotrNationId, name: string, nRegulars: number, nElites: number, nNazgul: number) {
+    this.NATION[nationId] = {
+      id: nationId, name, front: "shadow",
+      nRegulars, nElites, nLeaders: 0, nNazgul
+    };
+  }
 
-// class WotrEventBuilder {
-//   constructor (private nation: WotrNationId) {}
+  readonly COMPANION_IDS: WotrCompanionId[] = [
+    "gandalf-the-grey", "strider", "boromir", "legolas",
+    "gimli", "meriadoc", "peregrin", "aragorn", "gandalf-the-white"
+  ];
+  readonly COMPANION: Record<WotrCompanionId, WotrCompanion> = {} as any;
+  
+  companionsToMap<V> (getValue: (companionId: WotrCompanionId) => V): Record<WotrCompanionId, V> {
+    const map: Record<WotrCompanionId, V> = { } as any;
+    this.COMPANION_IDS.forEach (companionId => (map[companionId] = getValue (companionId)));
+    return map;
+  }
+  getCompanion (companionId: WotrCompanionId): WotrCompanion { return this.COMPANION[companionId]; }
 
-//   private _invasions: WotrInvasion[] | null = null;
-//   private _revolt: WotrRevolt | null = null;
-//   private _majorInvasion: boolean = false;
-//   private _raiding: boolean = false;
-//   private _boats: boolean = false;
-//   private _special: WotrSpecialEvent | null = null;
-//   private _leader: WotrLeaderId | null = null;
+  private initCompanions () {
+    this.initCompanion ("gandalf-the-grey", "gandalf-the-grey", 3, 1);
+    this.initCompanion ("strider", "strider", 3, 1);
+    this.initCompanion ("boromir", "boromir", 2, 1);
+    this.initCompanion ("legolas", "legolas", 2, 1);
+    this.initCompanion ("gimli", "gimli", 2, 1);
+    this.initCompanion ("meriadoc", "meriadoc", 1, 1);
+    this.initCompanion ("peregrin", "peregrin", 1, 1);
+    this.initCompanion ("aragorn", "aragorn", 3, 2);
+    this.initCompanion ("gandalf-the-white", "gandalf-the-white", 3, 1);
+  }
 
-//   leader (leader: WotrLeaderId) { this._leader = leader; return this; }
-//   special (special: WotrSpecialEvent) { this._special = special; return this; }
-//   majorInvasion () { this._majorInvasion = true; return this; }
-//   raiding () { this._raiding = true; return this; }
-//   boats () { this._boats = true; return this; }
-//   revolt (infantries: number, cavalries?: number) {
-//     this._revolt = {
-//       infantries,
-//       cavalries: cavalries || 0,
-//     };
-//     return this;
-//   } // revolt
-//   invasion (region: WotrSeaRegionId, infantries: number, cavalries?: number) {
-//     if (!this._invasions) {
-//       this._invasions = [];
-//     }
-//     this._invasions.push ({
-//       region,
-//       infantries,
-//       cavalries: cavalries || 0,
-//     });
-//     return this;
-//   } // invasion
+  private initCompanion (
+    id: WotrCompanionId, name: string,
+    level: number, leadership: number
+  ) {
+    this.COMPANION[id] = { id, name, level, leadership };
+  }
 
-//   build (): WotrEvent {
-//     return {
-//       nation: this.nation,
-//       boats: this._boats,
-//       majorInvasion: this._majorInvasion,
-//       raiding: this._raiding,
-//       leader: this._leader,
-//       special: this._special,
-//       invasions: this._invasions,
-//       revolt: this._revolt,
-//     };
-//   } // build
+  readonly MINION_IDS: WotrMinionId[] = ["saruman", "the-mouth-of-sauron", "the-witch-king"];
+  readonly MINION: Record<WotrMinionId, WotrMinion> = {} as any;
+  
+  minionsToMap<V> (getValue: (minionId: WotrMinionId) => V): Record<WotrMinionId, V> {
+    const map: Record<WotrMinionId, V> = { } as any;
+    this.MINION_IDS.forEach (minionId => (map[minionId] = getValue (minionId)));
+    return map;
+  }
+  getMinion (minionId: WotrMinionId): WotrMinion { return this.MINION[minionId]; }
 
-// } // WotrEventBuilder
+  private initMinions () {
+    this.initMinion ("saruman", "Saruman", 0, 1);
+    this.initMinion ("the-mouth-of-sauron", "The Mouth of Sauron", 3, 2);
+    this.initMinion ("the-witch-king", "The Witch King", -1, 2);
+  }
+
+  private initMinion (
+    id: WotrMinionId, name: string,
+    level: number, leadership: number
+  ) {
+    this.MINION[id] = { id, name, level, leadership };
+  }
+
+}

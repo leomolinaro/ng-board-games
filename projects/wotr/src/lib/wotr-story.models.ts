@@ -1,4 +1,4 @@
-import { WotrActionDie, WotrCardId, WotrCombatDie, WotrCompanion, WotrFront, WotrHuntTile, WotrMinion, WotrNationId, WotrPhase, WotrRegionId, WotrUnitType } from "./wotr-components.models";
+import { WotrActionDie, WotrCardId, WotrCombatDie, WotrCompanionId, WotrFront, WotrHuntTile, WotrMinionId, WotrNationId, WotrPhase, WotrRegionId, WotrUnitType } from "./wotr-components.models";
 
 export interface WotrStory {
   front: WotrFront;
@@ -20,11 +20,11 @@ export interface WotrFellowhipProgress { type: "fellowship-progress" }
 export interface WotrHuntDiceRoll { type: "hunt-dice-roll"; dice: WotrCombatDie[] }
 export interface WotrHuntTileDraw { type: "hunt-tile-draw"; tile: WotrHuntTile }
 export interface WotrFellowhipHide { type: "fellowship-hide" }
-export interface WotrCompanionSeparation { type: "companion-separation"; companions: WotrCompanion[]; toRegion: WotrRegionId }
-export interface WotrCompanionMovement { type: "companion-movement"; companions: WotrCompanion[]; toRegion: WotrRegionId }
-export interface WotrCompanionElimination { type: "companion-elimination"; companions: WotrCompanion[] }
-export interface WotrMinionMovement { type: "minion-movement"; minions: WotrMinion[]; toRegion: WotrRegionId }
-export interface WotrMinionElimination { type: "minion-elimination"; minions: WotrMinion[] }
+export interface WotrCompanionSeparation { type: "companion-separation"; companions: WotrCompanionId[]; toRegion: WotrRegionId }
+export interface WotrCompanionMovement { type: "companion-movement"; companions: WotrCompanionId[]; toRegion: WotrRegionId }
+export interface WotrCompanionElimination { type: "companion-elimination"; companions: WotrCompanionId[] }
+export interface WotrMinionMovement { type: "minion-movement"; minions: WotrMinionId[]; toRegion: WotrRegionId }
+export interface WotrMinionElimination { type: "minion-elimination"; minions: WotrMinionId[] }
 export interface WotrNazgulMovement { type: "nazgul-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; nNazgul: number }
 export interface WotrArmyMovement { type: "army-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrArmy }
 export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrArmy }
@@ -32,12 +32,12 @@ export interface WotrNationAdvance { type: "nation-advance"; nSteps: number }
 export interface WotrNationActivation { type: "nation-activation" }
 export interface WotrUnitRecruitment { type: "unit-recruitment"; unitType: WotrUnitType; nUnits: number; nation: WotrNationId }
 export interface WotrUnitElimination { type: "unit-elimination"; unitType: WotrUnitType; nUnits: number; nation: WotrNationId }
-export interface WotrCompanionPlay { type: "companion-play"; companion: WotrCompanion }
-export interface WotrMinionPlay { type: "minion-play"; minion: WotrMinion }
+export interface WotrCompanionPlay { type: "companion-play"; companion: WotrCompanionId }
+export interface WotrMinionPlay { type: "minion-play"; minion: WotrMinionId }
 
 export interface WotrArmy {
-  minions?: WotrMinion[];
-  companions?: WotrCompanion[];
+  minions?: WotrMinionId[];
+  companions?: WotrCompanionId[];
   units?: {
     nUnits: number;
     type: WotrUnitType;

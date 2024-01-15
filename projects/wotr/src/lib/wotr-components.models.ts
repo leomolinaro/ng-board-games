@@ -30,21 +30,39 @@ export interface WotrRegion {
   settlement: WotrSettlentType | null;
 } // WotrRegion
 
-export type WotrNationId = "dwarves" | "elves" | "gondor" | "the-north" | "rohan" | "isengard" | "sauron" | "southrons-&-esterlings";
+export type WotrNationId = "dwarves" | "elves" | "gondor" | "north" | "rohan" | "isengard" | "sauron" | "southrons";
 
 export interface WotrNation {
   id: WotrNationId;
-  label: string;
+  name: string;
   front: WotrFront;
   nRegulars: number;
   nElites: number;
-  nLeaders?: number;
-  nNazgul?: number;
+  nLeaders: number;
+  nNazgul: number;
 } // WotrNation
 
-export type WotrCompanion = "gandalf" | "strider" | "boromir" | "legolas" | "gimli" | "meriadoc" | "peregrin" | "aragorn";
-export type WotrMinion = "saruman" | "the-witch-king" | "the-mouth-of-sauron";
-export type WotrUnitType = "regular" | "elite" | "leader" | "nazgul";
+export type WotrCompanionId = "gandalf-the-grey" | "strider" | "boromir" | "legolas" | "gimli" | "meriadoc" | "peregrin" | "aragorn" | "gandalf-the-white";
+export type WotrMinionId = "saruman" | "the-witch-king" | "the-mouth-of-sauron";
+export type WotrArmyUnitType = "regular" | "elite";
+export type WotrFreePeopleLeaderUnitType = "leader" | "companion";
+export type WotrShadowLeaderUnitType = "nazgul" | "minion";
+export type WotrFreeUnitType = "nazgul" | "companion" | "minion" | "fellowship";
+export type WotrUnitType = WotrArmyUnitType | WotrFreePeopleLeaderUnitType | WotrShadowLeaderUnitType | WotrFreeUnitType;
+
+export interface WotrCompanion {
+  id: WotrCompanionId;
+  name: string;
+  level: number;
+  leadership: number;
+} // WotrCompanion
+
+export interface WotrMinion {
+  id: WotrMinionId;
+  name: string;
+  level: number;
+  leadership: number;
+} // WotrMinion
 
 export type WotrPhase = 1 | 2 | 3 | 4 | 5 | 6;
 

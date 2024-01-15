@@ -70,3 +70,6 @@
 ::ng-deep .wotr-map-tooltip {
   pointer-events: none; // non funziona (servirebbe ad evitare che il ctrl+rotella faccia zoom sulla pagina e non sulla mappa)
 }
+.wotr-army-counters {
+  fill: white;
+}

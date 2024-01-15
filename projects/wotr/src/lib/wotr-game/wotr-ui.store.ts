@@ -3,7 +3,6 @@ import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
 import { WotrRegionId } from "../wotr-components.models";
-import { WotrRegionUnit } from "../wotr-game-state.models";
 import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {
@@ -12,8 +11,8 @@ interface WotrUiState {
   canCancel: boolean;
   message: string | null;
   validRegions: WotrRegionId[] | null;
-  validUnits: WotrRegionUnit[] | null;
-  selectedUnits: WotrRegionUnit[] | null;
+  // validUnits: WotrRegionUnit[] | null;
+  // selectedUnits: WotrRegionUnit[] | null;
   // validResources: {
   //   player: string;
   //   resources: WotrResourceType[]
@@ -34,8 +33,8 @@ export class WotrUiStore extends BgStore<WotrUiState> {
         canCancel: false,
         message: null,
         validRegions: null,
-        validUnits: null,
-        selectedUnits: null,
+        // validUnits: null,
+        // selectedUnits: null,
         // validActions: null,
         // validBuildings: null,
         // validResources: null,
@@ -57,12 +56,12 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   regionChange (regionId: WotrRegionId) {
     this.$regionChange.next (regionId);
   }
-  unitChange (unit: WotrRegionUnit) {
-    this.$unitChange.next (unit);
-  }
-  selectedUnitsChange (units: WotrRegionUnit[]) {
-    this.$selectedUnitsChange.next (units);
-  }
+  // unitChange (unit: WotrRegionUnit) {
+  //   this.$unitChange.next (unit);
+  // }
+  // selectedUnitsChange (units: WotrRegionUnit[]) {
+  //   this.$selectedUnitsChange.next (units);
+  // }
   // buildingChange (building: WotrBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: WotrResourceType) { this.$resourceChange.next (resource); }
   cancelChange () {
@@ -70,8 +69,8 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   }
   // private $actionChange = new Subject<WotrAction> ();
   private $regionChange = new Subject<WotrRegionId> ();
-  private $unitChange = new Subject<WotrRegionUnit> ();
-  private $selectedUnitsChange = new Subject<WotrRegionUnit[]> ();
+  // private $unitChange = new Subject<WotrRegionUnit> ();
+  // private $selectedUnitsChange = new Subject<WotrRegionUnit[]> ();
   private $passChange = new Subject<void> ();
   private $confirmChange = new Subject<void> ();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
@@ -83,12 +82,12 @@ export class WotrUiStore extends BgStore<WotrUiState> {
       .asObservable ()
       .pipe (first ());
   }
-  unitChange$ (): Observable<WotrRegionUnit> {
-    return this.$unitChange.asObservable ().pipe (first ());
-  }
-  selectedUnitsChange$ (): Observable<WotrRegionUnit[]> {
-    return this.$selectedUnitsChange.asObservable ().pipe (first ());
-  }
+  // unitChange$ (): Observable<WotrRegionUnit> {
+  //   return this.$unitChange.asObservable ().pipe (first ());
+  // }
+  // selectedUnitsChange$ (): Observable<WotrRegionUnit[]> {
+  //   return this.$selectedUnitsChange.asObservable ().pipe (first ());
+  // }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
   passChange$ () {
     return this.$passChange.asObservable ().pipe (first ());
@@ -108,12 +107,12 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   selectValidRegions$ () {
     return this.select$ ((s) => s.validRegions);
   }
-  selectValidUnits$ () {
-    return this.select$ ((s) => s.validUnits);
-  }
-  selectSelectedUnits$ () {
-    return this.select$ ((s) => s.selectedUnits);
-  }
+  // selectValidUnits$ () {
+  //   return this.select$ ((s) => s.validUnits);
+  // }
+  // selectSelectedUnits$ () {
+  //   return this.select$ ((s) => s.selectedUnits);
+  // }
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
@@ -189,8 +188,8 @@ export class WotrUiStore extends BgStore<WotrUiState> {
     return {
       message: null,
       validRegions: null,
-      validUnits: null,
-      selectedUnits: null,
+      // validUnits: null,
+      // selectedUnits: null,
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,
