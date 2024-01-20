@@ -40,11 +40,8 @@ interface BaronyTurnOutput {
 } // BaronyTurnOutput
 
 @Injectable ()
-export class BaronyGameService extends ABgGameService<
-BaronyPlayer,
-BaronyStory,
-ABaronyPlayerService
-> {
+export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory, ABaronyPlayerService> {
+  
   constructor (
     private game: BaronyGameStore,
     protected aiService: BaronyPlayerAiService,
@@ -52,9 +49,7 @@ ABaronyPlayerService
     protected authService: BgAuthService,
     private ui: BaronyUiStore,
     private remoteService: BaronyRemoteService
-  ) {
-    super ();
-  }
+  ) { super (); }
 
   protected stories: BaronyStoryDoc[] | null = null;
 

@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
-import { WotrComponentsService } from "../wotr-components.service";
+import { Observable } from "rxjs";
+import { WotrFront } from "../wotr-components/front.models";
+import { WotrStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
@@ -11,8 +13,11 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     private game: WotrGameStore,
     private ui: WotrUiStore,
     // private rules: WotrRulesService,
-    private components: WotrComponentsService
   ) {}
+
+  firstPhaseDrawCards$ (front: WotrFront): Observable<WotrStory> {
+    throw new Error ("Method not implemented.");
+  }
 
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement> {
   //   const placement: WotrArmyPlacement = {

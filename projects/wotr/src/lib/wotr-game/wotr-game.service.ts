@@ -1,28 +1,32 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
-import { Observable, of } from "rxjs";
-import { WotrComponentsService } from "../wotr-components.service";
+import { EMPTY, Observable, expand, last, map, of, switchMap, tap } from "rxjs";
+import { WotrFront } from "../wotr-components/front.models";
 import { WotrPlayer } from "../wotr-game-state.models";
 import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
-import { WotrStory } from "../wotr-story.models";
+import { WotrDiscardCards, WotrDrawCards, WotrStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
 import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
+function unexpectedStory (story: WotrStory) {
+  console.error ("Unexpected story", story);
+  return new Error ("Unexpected story");
+}
+
 @Injectable ()
 export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrPlayerService> {
 
   private game = inject (WotrGameStore);
-  private rules= inject (WotrRulesService);
+  private rules = inject (WotrRulesService);
   private ui = inject (WotrUiStore);
   protected authService = inject (BgAuthService);
   private remoteService = inject (WotrRemoteService);
   protected aiService = inject (WotrPlayerAiService);
   protected localService = inject (WotrPlayerLocalService);
-  private components = inject (WotrComponentsService);
 
   protected stories: WotrStoryDoc[] | null = null;
 
@@ -34,7 +38,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
 
   protected insertStory$<S extends WotrStory> (story: S, storyId: number, gameId: string): Observable<S> {
     return this.remoteService.insertStory$ ({ id: storyId, ...story }, gameId) as any as Observable<S>;
-  } // insertStory$
+  }
 
   protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
@@ -51,34 +55,102 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
       canCancel: false,
       message: `${this.game.getPlayer (player).name} is thinking...`,
     }));
-  } // resetUi
+  }
 
-  game$ (stories: WotrStoryDoc[]): Observable<void> {
+  game$ (stories: WotrStoryDoc[]): Observable<unknown> {
     this.stories = stories;
     this.setup ();
-    return of (void 0);
-    // return forN (16, (index) => this.round$ ((index + 1) as WotrRoundId)).pipe (
-    //   tap (() => {
-    //     this.ui.updateUi ("End game", (s) => ({
-    //       ...s,
-    //       ...this.ui.resetUi (),
-    //     }));
-    //   })
-    // );
-  } // game$
+    let roundNumber = 0;
+    return this.round$ (++roundNumber).pipe (
+      expand (continueGame => {
+        if (continueGame) { return this.round$ (++roundNumber); }
+        this.ui.updateUi ("End game", (s) => ({
+          ...s,
+          ...this.ui.resetUi (),
+          canCancel: false,
+        }));
+        this.gameEnd ();
+        return EMPTY;
+      }),
+      last (),
+    );
+  }
 
   setup () {
-    // this.game.logSetup ();
+    this.game.logSetup ();
     const gameSetup = this.rules.setup.getGameSetup ();
     this.game.applySetup (gameSetup);
-  } // setup
+  }
 
-  // round$ (roundId: WotrRoundId): Observable<void> {
-  //   this.game.logRound (roundId);
-  //   return forEach (this.components.NATION_IDS, (nationId) =>
-  //     this.nationTurn$ (nationId, roundId)
-  //   );
-  // } // round$
+  round$ (roundNumber: number): Observable<boolean> {
+    this.game.logRound (roundNumber);
+    return this.firstPhase$ ().pipe (
+      switchMap (gameContinue => gameContinue ? this.fellowshipPhase$ () : of (false)),
+      switchMap (gameContinue => gameContinue ? this.huntAllocation$ () : of (false)),
+      switchMap (gameContinue => gameContinue ? this.actionRoll$ () : of (false)),
+      switchMap (gameContinue => gameContinue ? this.actionResolution$ () : of (false)),
+      switchMap (gameContinue => gameContinue ? this.victoryCheck$ (roundNumber) : of (false))
+    );
+    // return forEach (this.components.NATION_IDS, (nationId) =>
+    //   this.nationTurn$ (nationId, roundId)
+    // );
+  }
+
+  private firstPhase$ () {
+    this.game.logPhase (1);
+    return this.firstPhaseDrawCards$ ("free-peoples").pipe (
+      switchMap (() => this.firstPhaseDrawCards$ ("shadow")),
+      map (() => true)
+    );
+  }
+
+  private firstPhaseDrawCards$ (front: WotrFront) {
+    const playerId = this.game.getPlayerIdByFront (front);
+    return this.executeTask$ (playerId, p => p.firstPhaseDrawCards$ (front)).pipe (
+      tap (story => {
+        if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
+        const drawCards = story.actions[0];
+        this.game.applyDrawCards (drawCards, front);
+        const discardCards = story.actions[1];
+        if (discardCards) {
+          this.game.applyDiscardCards (discardCards, front);
+        }
+      })
+    );
+  }
+
+  private validateFirstPhaseDrawCards$ (story: WotrStory): story is Omit<WotrStory, "actions"> & { actions: [WotrDrawCards] | [WotrDrawCards, WotrDiscardCards] } {
+    return true;
+  }
+
+  private fellowshipPhase$ () {
+    this.game.logPhase (2);
+    return of (true);
+  }
+
+  private huntAllocation$ () {
+    this.game.logPhase (3);
+    return of (true);
+  }
+
+  private actionRoll$ () {
+    this.game.logPhase (4);
+    return of (true);
+  }
+
+  private actionResolution$ () {
+    this.game.logPhase (5);
+    return of (true);
+  }
+
+  private victoryCheck$ (roundNumber: number) {
+    this.game.logPhase (6);
+    return of (roundNumber < 6);
+  }
+
+  private gameEnd () {
+    this.game.logEndGame ();
+  }
 
   // nationTurn$ (nationId: WotrNationId, roundId: WotrRoundId): Observable<void> {
   //   if (
@@ -94,8 +166,8 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //     );
   //   } else {
   //     return of (void 0);
-  //   } // if - else
-  // } // nationTurn$
+  //   }
+  // }
 
   // private populationIncreasePhase$ (
   //   nationId: WotrNationId,
@@ -123,7 +195,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //               infantryPlacement.push (
   //                 typeof ip === "object" ? ip : { areaId: ip, quantity: 1 }
   //               );
-  //             } // for
+  //             }
   //             this.game.applyPopulationIncrease (
   //               data.populationMarker,
   //               infantryPlacement,
@@ -131,7 +203,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //             );
   //             for (const ip of infantryPlacement) {
   //               this.game.logInfantryPlacement (ip.areaId, ip.quantity);
-  //             } // for
+  //             }
   //             this.game.logPopulationMarkerSet (data.populationMarker);
   //             return void 0;
   //           })
@@ -144,8 +216,8 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //         );
   //         this.game.logPopulationMarkerSet (data.populationMarker);
   //         return of (void 0);
-  //       } // if - else
-  //     } // case
+  //       }
+  //     }
   //     case "roman-reinforcements": {
   //       if (data.nInfantries) {
   //         this.game.applyPopulationIncrease (
@@ -153,15 +225,15 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //           [{ areaId: "english-channel", quantity: data.nInfantries }],
   //           nationId
   //         );
-  //       } // if
+  //       }
   //       this.game.logInfantryReinforcements (
   //         "english-channel",
   //         data.nInfantries
   //       );
   //       return of (void 0);
-  //     } // case
-  //   } // if - else
-  // } // populationIncreasePhase$
+  //     }
+  //   }
+  // }
 
   // private movementPhase$ (nationId: WotrNationId, playerId: WotrPlayerId) {
   //   this.game.logPhase ("movement");
@@ -173,12 +245,12 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //         this.game.applyArmyMovements (armyMovements, true);
   //         for (const movement of armyMovements.movements) {
   //           this.game.logArmyMovement (movement.units, movement.toAreaId);
-  //         } // for
-  //       } // if
+  //         }
+  //       }
   //       return void 0;
   //     })
   //   );
-  // } // movement$
+  // }
 
   // private battlesRetreatsPhase$ (
   //   nationId: WotrNationId,
@@ -198,8 +270,8 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   //     );
   //   } else {
   //     return of (void 0);
-  //   } // if - else
-  // } // battlesRetreatsPhase$
+  //   }
+  // }
 
   // private raiderWithdrawalPhase$ (
   //   nationId: WotrNationId,
@@ -207,11 +279,11 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   // ) {
   //   this.game.logPhase ("raiderWithdrawal");
   //   return of (void 0);
-  // } // raiderWithdrawalPhase$
+  // }
 
   // private overpopulationPhase$ (nationId: WotrNationId, playerId: WotrPlayerId) {
   //   this.game.logPhase ("overpopulation");
   //   return of (void 0);
-  // } // overpopulationPhase$
+  // }
 
-} // WotrGameService
+}

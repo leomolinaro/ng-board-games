@@ -3,14 +3,14 @@ import { Injectable, inject } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrRegionId } from "../../wotr-components.models";
+import { WotrRegionId } from "../../wotr-components/region.models";
 
 export type WotrRegionSlots = Record<WotrRegionId, Record<number, WotrMapPoint[]>>;
 
 export interface WotrMapPoint {
   x: number;
   y: number;
-} // WotrMapPoint
+}
 
 @Injectable ({
   providedIn: "root",
@@ -32,22 +32,21 @@ export class WotrMapService {
 
   getWidth () { return this.width; }
 
-  loadRegionPaths$ () {
+  loadMapPaths$ () {
     if (this.svgLoaded) { return of (true); }
     return this.http.get (this.assets.getMapSvgSource (), { responseType: "text" }).pipe (
-      map ((response) => {
+      map (response => {
         const parser = new DOMParser ();
         const dom = parser.parseFromString (response, "application/xml");
         const svg = dom.getElementsByTagName ("svg").item (0)!;
         this.viewBox = svg.getAttribute ("viewBox")!;
         this.width = +this.viewBox.split (" ")[2];
-        this.regionPaths = this.getGroupPaths<WotrRegionId> ("wotr-regions", dom,
-          (pId) => pId as WotrRegionId);
+        this.regionPaths = this.getGroupPaths<WotrRegionId> ("wotr-regions", dom, pId => pId as WotrRegionId);
         this.svgLoaded = true;
         return true;
       })
     );
-  } // loadRegionPaths$
+  }
 
   private getGroupPaths<K extends string | number> (groupId: string, dom: Document, pathIdToId: (pathId: string) => K) {
     const wotrGroup = dom.getElementById (groupId);
@@ -59,10 +58,10 @@ export class WotrMapService {
         const id = pathIdToId (pathId);
         const pathD = pathElement.getAttribute ("d")!;
         paths[id] = pathD;
-      } // if
+      }
     });
     return paths;
-  } // getGroupPaths
+  }
 
   loadRegionSlots$ (): Observable<boolean> {
     return this.http.get (this.assets.getMapSlotsPath (), { responseType: "text" }).pipe (
@@ -71,10 +70,10 @@ export class WotrMapService {
         return true;
       })
     );
-  } // loadAreaSlots$
+  }
 
   getRegionSlots (n: number, regionId: WotrRegionId): WotrMapPoint[] {
     return this.regionSlots[regionId][n];
-  } // getRegionSlots
+  }
 
-} // WotrMapService
+}

@@ -4,8 +4,12 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { SimpleChanges as BgSimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../wotr-assets.service";
-import { WotrArmyUnitType, WotrCompanion, WotrCompanionId, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrMinion, WotrMinionId, WotrNationId, WotrRegion, WotrRegionId, WotrShadowLeaderUnitType } from "../../wotr-components.models";
-import { WotrComponentsService } from "../../wotr-components.service";
+import { WotrCompanionComponentsService } from "../../wotr-components/companion.service";
+import { WotrMinionComponentsService } from "../../wotr-components/minion.service";
+import { WotrArmyUnitType, WotrCompanion, WotrCompanionId, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrMinion, WotrMinionId, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-components/nation.models";
+import { WotrNationComponentsService } from "../../wotr-components/nation.service";
+import { WotrRegion, WotrRegionId } from "../../wotr-components/region.models";
+import { WotrRegionComponentsService } from "../../wotr-components/region.service";
 import { WotrRegionState } from "../../wotr-game-state.models";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapPoint, WotrMapService } from "./wotr-map.service";
@@ -106,7 +110,10 @@ export class WotrMapComponent implements OnChanges {
 
   private mapService = inject (WotrMapService);
   private assets = inject (WotrAssetsService);
-  private components = inject (WotrComponentsService);
+  private regions = inject (WotrRegionComponentsService);
+  private nations = inject (WotrNationComponentsService);
+  private companions = inject (WotrCompanionComponentsService);
+  private minions = inject (WotrMinionComponentsService);
   private slotsGeneratorService = inject (WotrMapSlotsGeneratorService);
   private cd = inject (ChangeDetectorRef);
 
@@ -144,7 +151,7 @@ export class WotrMapComponent implements OnChanges {
   private refreshRegionNodes (): boolean {
     const refreshedUnits = false;
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.components.REGION_IDS,
+      this.regions.getAllIds (),
       this.regionNodeMap || {},
       (regionId) => regionId,
       (regionId, node) => this.regionStates[regionId] === node.state,
@@ -157,7 +164,7 @@ export class WotrMapComponent implements OnChanges {
 
   private regionToNode (regionId: WotrRegionId, oldNode: WotrRegionNode | null): WotrRegionNode {
     const path = this.mapService.getRegionPath (regionId);
-    const region = this.components.REGION[regionId];
+    const region = this.regions.get (regionId);
     const state = this.regionStates[regionId];
     const node: WotrRegionNode = {
       id: regionId,
@@ -245,7 +252,7 @@ export class WotrMapComponent implements OnChanges {
   private regionToArmyNode (regionState: WotrRegionState): WotrArmyNode | null {
     if (!regionState.armyUnits.length) { return null; }
 
-    const armyFront = this.components.getNation (regionState.armyUnits[0].nationId).front;
+    const armyFront = this.nations.get (regionState.armyUnits[0].nationId).front;
 
     const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (regionState);
 
@@ -298,7 +305,7 @@ export class WotrMapComponent implements OnChanges {
     });
 
     regionState.companions.forEach (companionId => {
-      const companion = this.components.getCompanion (companionId);
+      const companion = this.companions.get (companionId);
       leadership += companion.leadership;
       leaders.push (companion);
     });
@@ -322,7 +329,7 @@ export class WotrMapComponent implements OnChanges {
       leaders.push ("nazgul");
     }
     regionState.minions.forEach (minionId => {
-      const minion = this.components.getMinion (minionId);
+      const minion = this.minions.get (minionId);
       leadership += minion.leadership;
       leaders.push (minion);
     });
@@ -345,7 +352,7 @@ export class WotrMapComponent implements OnChanges {
     }
 
     if (regionState.armyUnits.length) {
-      const armyFront = this.components.getNation (regionState.armyUnits[0].nationId).front;
+      const armyFront = this.nations.get (regionState.armyUnits[0].nationId).front;
       let freeUnits: WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
       let nUnits: number;
       switch (armyFront) {
@@ -365,7 +372,7 @@ export class WotrMapComponent implements OnChanges {
 
   private regionToFreePeopleFreeUnitNodes (regionState: WotrRegionState): [WotrFreePeopleFreeUnitNode[], number] {
     let nUnits = 0;
-    const freeUnits = regionState.companions.map (companionId => this.components.getCompanion (companionId));
+    const freeUnits = regionState.companions.map (companionId => this.companions.get (companionId));
     nUnits = regionState.companions.length;
     freeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
     const unitNodes = freeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
@@ -379,7 +386,7 @@ export class WotrMapComponent implements OnChanges {
     let nUnits = 0;
     const freeUnits: (WotrMinion | "nazgul")[] = [];
     nUnits += regionState.minions.length;
-    regionState.minions.forEach (minionId => freeUnits.push (this.components.getMinion (minionId)));
+    regionState.minions.forEach (minionId => freeUnits.push (this.minions.get (minionId)));
     if (regionState.nNazgul) {
       nUnits += regionState.nNazgul;
       freeUnits.push ("nazgul");

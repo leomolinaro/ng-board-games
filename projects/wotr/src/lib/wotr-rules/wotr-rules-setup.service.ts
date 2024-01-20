@@ -1,16 +1,20 @@
-import { Injectable } from "@angular/core";
-import { WotrNationId, WotrRegionId } from "../wotr-components.models";
-import { WotrRegionSetup, WotrSetup } from "../wotr-game-state.models";
+import { Injectable, inject } from "@angular/core";
+import { arrayUtil } from "@leobg/commons/utils";
+import { WotrCardService } from "../wotr-components/card.service";
+import { WotrNationId, WotrPoliticalStep } from "../wotr-components/nation.models";
+import { WotrRegionId } from "../wotr-components/region.models";
+import { WotrFrontDecksSetup, WotrNationSetup, WotrRegionSetup, WotrSetup } from "../wotr-game-state.models";
 
 @Injectable ({
   providedIn: "root",
 })
 export class WotrRulesSetupService {
   
-  constructor () {}
+  private cards = inject (WotrCardService);
 
   getGameSetup (): WotrSetup {
     return {
+      decks: this.decks (),
       regions: [
         this.fpRegionSetup ("erebor", "dwarves", 1, 2, 1),
         this.fpRegionSetup ("ered-luin", "dwarves", 1, 0, 0),
@@ -48,9 +52,42 @@ export class WotrRulesSetupService {
         this.sRegionSetup ("south-rhun", "southrons", 3, 1, 0),
         this.sRegionSetup ("umbar", "southrons", 3, 0, 0),
       ],
-      fellowshipRegion: "rivendell"
+      nations: [
+        this.nationSetup ("dwarves", 3, false),
+        this.nationSetup ("north", 3, false),
+        this.nationSetup ("rohan", 3, false),
+        this.nationSetup ("elves", 3, true),
+        this.nationSetup ("gondor", 2, false),
+        this.nationSetup ("southrons", 2, true),
+        this.nationSetup ("isengard", 1, true),
+        this.nationSetup ("sauron", 1, true),
+      ],
+      fellowship: {
+        region: "rivendell",
+        companions: ["gandalf-the-grey", "strider", "boromir", "legolas", "gimli", "meriadoc", "peregrin"],
+        guide: "gandalf-the-grey"
+      }
     };
   } // getGameSetup
+  
+  decks (): WotrFrontDecksSetup[] {
+    return [
+      {
+        front: "free-peoples",
+        characterDeck: arrayUtil.shuffle (this.cards.getAllFreePeoplesCharacterCardIds ()),
+        strategyDeck: arrayUtil.shuffle (this.cards.getAllFreePeoplesStrategyCardIds ()),
+      },
+      {
+        front: "shadow",
+        characterDeck: arrayUtil.shuffle (this.cards.getAllShadowCharacterCardIds ()),
+        strategyDeck: arrayUtil.shuffle (this.cards.getAllShadowStrategyCardIds ()),
+      }
+    ];
+  }
+
+  private nationSetup (nation: WotrNationId, politicalStep: WotrPoliticalStep, active: boolean): WotrNationSetup {
+    return { nation, active, politicalStep };
+  }
 
   private fpRegionSetup (region: WotrRegionId, nation: WotrNationId, nRegulars: number, nElites: number, nLeaders: number): WotrRegionSetup {
     return { region, nation, nRegulars, nElites, nLeaders, nNazgul: 0 };

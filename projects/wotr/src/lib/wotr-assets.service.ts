@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "./wotr-components.models";
+import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "./wotr-components/nation.models";
 
 const BASE_PATH = "assets/wotr";
 

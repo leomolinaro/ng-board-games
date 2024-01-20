@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { immutableUtil, randomUtil } from "@leobg/commons/utils";
-import { WotrRegionId } from "../../wotr-components.models";
-import { WotrComponentsService } from "../../wotr-components.service";
+import { WotrRegionId } from "../../wotr-components/region.models";
+import { WotrRegionComponentsService } from "../../wotr-components/region.service";
 import { WotrMapPoint, WotrRegionSlots } from "./wotr-map.service";
 
 interface WotrRegionPoints {
@@ -24,7 +24,7 @@ const MAX_SLOTS = 5;
 })
 export class WotrMapSlotsGeneratorService {
   
-  private components = inject (WotrComponentsService);
+  private regions = inject (WotrRegionComponentsService);
 
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },
@@ -41,7 +41,7 @@ export class WotrMapSlotsGeneratorService {
     const areaSlots: Record<WotrRegionId, Record<number, WotrMapPoint[]>> = {} as any;
     const regionPointsById = this.generateRegionPoints (xMax, yMax, coordinatesToAreaId);
 
-    for (const regionId of this.components.REGION_IDS) {
+    for (const regionId of this.regions.getAllIds ()) {
       const regionPoints = regionPointsById[regionId];
       const regionSlots: Record<number, WotrMapPoint[]> = {};
       for (let i = 1; i <= MAX_SLOTS; i++) {
@@ -90,7 +90,7 @@ export class WotrMapSlotsGeneratorService {
     } // for
 
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
-    for (const regionId of this.components.REGION_IDS) {
+    for (const regionId of this.regions.getAllIds ()) {
       const regionPoints = regionPointsById[regionId];
       if (regionPoints.innerPoints.length < MAX_SLOTS) {
         console.log (regionId, regionPoints)
@@ -128,7 +128,7 @@ export class WotrMapSlotsGeneratorService {
     } // for
 
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
-    for (const regionId of this.components.REGION_IDS) {
+    for (const regionId of this.regions.getAllIds ()) {
       const regionPoints = regionPointsById[regionId];
       for (const innerPoint of regionPoints.innerPoints) {
         let cenralEnergy = 0;

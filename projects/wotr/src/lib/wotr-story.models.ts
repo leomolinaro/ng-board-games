@@ -1,4 +1,10 @@
-import { WotrActionDie, WotrCardId, WotrCombatDie, WotrCompanionId, WotrFront, WotrHuntTile, WotrMinionId, WotrNationId, WotrPhase, WotrRegionId, WotrUnitType } from "./wotr-components.models";
+import { WotrCardId } from "./wotr-components/card.models";
+import { WotrActionDie, WotrCombatDie } from "./wotr-components/dice.models";
+import { WotrFront } from "./wotr-components/front.models";
+import { WotrHuntTile } from "./wotr-components/hunt.models";
+import { WotrCompanionId, WotrMinionId, WotrNationId, WotrUnitType } from "./wotr-components/nation.models";
+import { WotrPhase } from "./wotr-components/phase.models";
+import { WotrRegionId } from "./wotr-components/region.models";
 
 export interface WotrStory {
   front: WotrFront;
@@ -8,7 +14,7 @@ export interface WotrStory {
   actions: WotrStoryAction[];
 } // WotrStory
 
-export type WotrStoryAction = never;
+export type WotrStoryAction = WotrDrawCards | WotrDiscardCards;
 
 export interface WotrDrawCards { type: "draw-cards"; cards: WotrCardId[] }
 export interface WotrDiscardCards { type: "discard-cards"; cards: WotrCardId[] }

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
-import { WotrFront } from "./wotr-components.models";
+import { WotrFront } from "./wotr-components/front.models";
 import { WotrStory } from "./wotr-story.models";
 
 export interface WotrGameDoc {

@@ -1,14 +1,50 @@
 <div class="wotr-board">
-  <div class="wotr-board-map-layer">
-    <wotr-map
-      #wotrMap
-      [regionStates]="regionStates"
-      [validRegions]="validRegions"
-      (regionClick)="regionClick.emit ($event)">
-    </wotr-map>
+  <wotr-map
+    class="wotr-map"
+    #wotrMap
+    [regionStates]="regionStates"
+    [validRegions]="validRegions"
+    (regionClick)="regionClick.emit ($event)">
+  </wotr-map>
+  <div class="wotr-toolbar">Toolbar</div>
+  <div class="wotr-dice" style="display: flex; flex-direction: column; justify-content: center;">
+    <div>
+      <img src="assets/wotr/action-dice/fp-army-muster.png"/>
+      <img src="assets/wotr/action-dice/fp-event.png"/>
+      <img src="assets/wotr/action-dice/fp-character.png"/>
+      <img src="assets/wotr/action-dice/fp-will.png"/>
+    </div>
+    <div>
+      <img src="assets/wotr/action-dice/s-eye.png"/>
+      <img src="assets/wotr/action-dice/s-eye.png"/>
+      <img src="assets/wotr/action-dice/s-eye.png"/>
+      <img src="assets/wotr/action-dice/s-muster.png"/>
+      <img src="assets/wotr/action-dice/s-army.png"/>
+      <img src="assets/wotr/action-dice/s-army-muster.png"/>
+      <img src="assets/wotr/action-dice/s-character.png"/>
+    </div>
+  </div>
+  <div class="wotr-cards">
+    <mat-tab-group>
+      <mat-tab label="Free people">
+        <img src="assets/wotr/preview-cards/fp001.png"/>
+        <img src="assets/wotr/preview-cards/fp002.png"/>
+        <img src="assets/wotr/preview-cards/fp003.png"/>
+      </mat-tab>
+      <mat-tab label="Shadow">
+        <img src="assets/wotr/preview-cards/sa001.png"/>
+        <img src="assets/wotr/preview-cards/sa002.png"/>
+        <img src="assets/wotr/preview-cards/sa003.png"/>
+        <img src="assets/wotr/preview-cards/sa004.png"/>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <div class="wotr-detail">Detail</div>
+  <div class="wotr-logs">
+    <wotr-logs [logs]="logs"></wotr-logs>
+  </div>
     <!-- [nationStates]="nationStates"
     [validUnits]="validUnits"
     [selectedUnits]="selectedUnits"
     (unitClick)="onUnitClick ($event)" -->
-  </div>
 </div>

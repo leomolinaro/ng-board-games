@@ -1,14 +1,17 @@
 import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
-import { WotrNationId, WotrRegionId } from "../wotr-components.models";
+import { MatTabsModule } from "@angular/material/tabs";
+import { WotrNationId } from "../wotr-components/nation.models";
+import { WotrRegionId } from "../wotr-components/region.models";
 import { WotrLog, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 
 @Component ({
   selector: "wotr-board",
   standalone: true,
-  imports: [NgIf, WotrMapComponent],
+  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent],
   templateUrl: "./wotr-board.component.html",
   styleUrls: ["./wotr-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -5,7 +5,6 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
-import { WotrComponentsService } from "../wotr-components.service";
 import { AWotrPlayer, WotrPlayer } from "../wotr-game-state.models";
 import { WotrPlayerDoc, WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrGameService } from "./wotr-game.service";
@@ -19,15 +18,14 @@ import { WotrUiStore } from "./wotr-ui.store";
   standalone: true,
   imports: [WotrBoardComponent, AsyncPipe],
   template: `
-    CIAO
     <wotr-board
       [regionStates]="regionStates$ | async"
-    >
-  </wotr-board>
+      [logs]="logs$ | async">
+    </wotr-board>
     <!-- 
     [nationStates]="nationStates$ | async"
     [players]="players$ | async"
-    [logs]="logs$ | async"
+    
     [message]="message$ | async"
     [turnPlayer]="turnPlayer$ | async"
     [currentPlayer]="currentPlayer$ | async"
@@ -69,7 +67,6 @@ import { WotrUiStore } from "./wotr-ui.store";
 @UntilDestroy
 export class WotrGameComponent implements OnInit, OnDestroy {
 
-  private components = inject (WotrComponentsService);
   private game = inject (WotrGameStore);
   // private ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);
@@ -82,7 +79,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   regionStates$ = this.game.selectRegions$ ();
   // nationStates$ = this.game.selectNations$ ();
   // players$ = this.game.selectPlayers$ ();
-  // logs$ = this.game.selectLogs$ ();
+  logs$ = this.game.selectLogs$ ();
   // // endGame$ = this.game.selectEndGame$ ();
 
   // turnPlayer$ = this.ui.selectTurnPlayer$ ();

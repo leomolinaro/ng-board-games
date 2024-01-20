@@ -1,0 +1,1 @@
+export type WotrFront = "free-peoples" | "shadow";

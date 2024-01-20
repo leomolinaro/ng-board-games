@@ -1,5 +1,7 @@
 @import "wotr-variables";
 
+$area-background: #151515;
+
 .wotr-board {
   position: absolute;
   top: 0;
@@ -8,13 +10,50 @@
   right: 0;
   overflow: hidden;
   background: $background;
-  .wotr-board-map-layer {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+
+  display: grid;
+  grid-template-areas:
+    'map dice dice'
+    'map cards cards'
+    'map detail logs'
+    'toolbar toolbar toolbar';
+  grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
+  grid-template-rows: 80px 2fr 3fr 80px;
+  grid-gap: 10px;
+  > * {
+    overflow: hidden;
+    background-color: $area-background;
   }
+  .wotr-map {
+    grid-area: map;
+  }
+  .wotr-toolbar {
+    grid-area: toolbar;
+  }
+  .wotr-dice {
+    grid-area: dice;
+  }
+  .wotr-cards {
+    grid-area: cards;
+
+    ::ng-deep .mat-mdc-tab-header {
+      --mdc-secondary-navigation-tab-container-height: 25px;
+    }
+  }
+  .wotr-detail {
+    grid-area: detail;
+  }
+  .wotr-logs {
+    grid-area: logs;
+  }
+
+  // .wotr-board-map-layer {
+  //   position: absolute;
+  //   top: 0;
+  //   bottom: 0;
+  //   left: 0;
+  //   right: 0;
+  // }
   // .wotr-board-widgets-layer {
   //   position: absolute;
   //   top: 0;

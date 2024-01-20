@@ -4,8 +4,8 @@ import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { WotrFront } from "./wotr-components.models";
-import { WotrComponentsService } from "./wotr-components.service";
+import { WotrFront } from "./wotr-components/front.models";
+import { WotrFrontComponentsService } from "./wotr-components/front.service";
 import {
   AWotrPlayerDoc,
   WotrAiPlayerDoc,
@@ -41,7 +41,7 @@ export class WotrHomeComponent {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private gameService: WotrRemoteService,
-    private components: WotrComponentsService
+    private fronts: WotrFrontComponentsService
   ) {}
 
   config: BgHomeConfig<WotrFront> = {
@@ -56,7 +56,7 @@ export class WotrHomeComponent {
         this.gameService.deleteGame$ (gameId),
       ]),
     createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-    playerRoles: () => this.components.FRONTS,
+    playerRoles: () => this.fronts.getAll (),
     playerRoleCssClass: (front: WotrFront) => {
       switch (front) {
         case "free-peoples": return "wotr-player-free-peoples";

@@ -8,9 +8,9 @@
   width="100%"
   height="100%"
   [attr.viewBox]="viewBox"
-  preserveAspectratio="xMinYMin">
-  <svg:g #wotrMap [bgMapZoom]="{ translateX: 0, translateY: 50, scale: 1 }">
-    <image [attr.width]="mapWidth" preserveAspectRatio="xMinYMin"
+  preserveAspectRatio="xMidYMid">
+  <svg:g #wotrMap [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }">
+    <image [attr.width]="mapWidth" 
       [attr.xlink:href]="mapImageSource">
     </image>
     @for (regionNode of regionNodes; track regionNode.id) {

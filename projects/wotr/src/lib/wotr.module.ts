@@ -12,7 +12,7 @@ import { WotrGameComponent } from "./wotr-game/wotr-game.component";
 import { WotrHomeComponent } from "./wotr-home.component";
 
 const gameResolvers = {
-  regionPaths: () => inject (WotrMapService).loadRegionPaths$ (),
+  mapPaths: () => inject (WotrMapService).loadMapPaths$ (),
   regionSlots: () => inject (WotrMapService).loadRegionSlots$ (),
 };
 
