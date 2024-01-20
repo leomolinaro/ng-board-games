@@ -41,7 +41,7 @@ interface BaronyTurnOutput {
 }
 
 @Injectable ()
-export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory, ABaronyPlayerService> {
+export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer, BaronyStory, ABaronyPlayerService> {
   
   constructor (
     private game: BaronyGameStore,
@@ -190,36 +190,13 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$<S extends BaronyStory> (
-    story: S,
-    storyId: number,
-    gameId: string
-  ): Observable<S> {
-    return this.remoteService.insertStory$ (
-      {
-        id: storyId,
-        ...(story),
-      },
-      gameId
-    ) as any as Observable<S>;
-  }
+  protected insertStory$ (story: BaronyStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
+  protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
-  protected selectStory$ (storyId: number, gameId: string) {
-    return this.remoteService.selectStory$ (storyId, gameId);
-  }
-
-  protected getCurrentPlayerId () {
-    return this.ui.getCurrentPlayerId ();
-  }
-  protected setCurrentPlayer (playerId: BaronyColor) {
-    this.ui.setCurrentPlayer (playerId);
-  }
-  protected currentPlayerChange$ () {
-    return this.ui.currentPlayerChange$ ();
-  }
-  protected cancelChange$ () {
-    return this.ui.cancelChange$ ();
-  }
+  protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
+  protected setCurrentPlayer (playerId: BaronyColor) { this.ui.setCurrentPlayer (playerId); }
+  protected currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
+  protected cancelChange$ () { return this.ui.cancelChange$ (); }
 
   protected resetUi (player: BaronyColor) {
     this.ui.updateUi ("Reset UI", (s) => ({

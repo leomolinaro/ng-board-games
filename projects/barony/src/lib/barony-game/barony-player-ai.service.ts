@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
 import {
@@ -21,55 +21,45 @@ import * as baronyRules from "./barony-rules";
 
 @Injectable ()
 export class BaronyPlayerAiService {
-  constructor (private game: BaronyGameStore) {}
 
-  setupPlacement$ (playerId: string): Observable<BaronySetupPlacement> {
+  private game = inject (BaronyGameStore);
+
+  setupPlacement$ (playerId: BaronyColor): Observable<BaronySetupPlacement> {
     const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
     const land = randomUtil.getRandomElement (validLands);
     return of<BaronySetupPlacement> ({
       type: "setupPlacement",
       land: land.coordinates,
     });
-  } // setupPlacement$
+  }
 
-  turn$ (player: BaronyColor): Observable<BaronyTurn> {
-    const validActions = baronyRules.getValidActions (player, this.game);
+  turn$ (playerId: BaronyColor): Observable<BaronyTurn> {
+    const validActions = baronyRules.getValidActions (playerId, this.game);
     const action = randomUtil.getRandomElement (validActions);
     switch (action) {
       case "recruitment": {
-        const validLands = baronyRules.getValidLandsForRecruitment (
-          player,
-          this.game
-        );
+        const validLands = baronyRules.getValidLandsForRecruitment (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
-        const maxKnights = baronyRules.getMaxKnightForRecruitment (
-          land.coordinates,
-          player,
-          this.game
-        );
+        const maxKnights = baronyRules.getMaxKnightForRecruitment (land.coordinates, playerId, this.game);
         return of<BaronyTurnRectruitment> ({
           action: "recruitment",
           land: land.coordinates,
           numberOfKnights: maxKnights,
         });
-      } // case
+      }
       case "movement": {
-        const validSourceLands =
-          baronyRules.getValidSourceLandsForFirstMovement (player, this.game);
+        const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (playerId, this.game);
         const sourceLand = randomUtil.getRandomElement (validSourceLands);
-        const firstMovement = this.executeMovement (sourceLand, player);
-        this.game.applyMovement (firstMovement, player);
-        if (
-          baronyRules.isSecondMovementValid (player, firstMovement, this.game)
-        ) {
-          const validSourceLands2 =
-            baronyRules.getValidSourceLandsForSecondMovement (
-              player,
-              firstMovement,
-              this.game
-            );
+        const firstMovement = this.executeMovement (sourceLand, playerId);
+        this.game.applyMovement (firstMovement, playerId);
+        if (baronyRules.isSecondMovementValid (playerId, firstMovement, this.game)) {
+          const validSourceLands2 = baronyRules.getValidSourceLandsForSecondMovement (
+            playerId,
+            firstMovement,
+            this.game
+          );
           const sourceLand2 = randomUtil.getRandomElement (validSourceLands2);
-          const secondMovement = this.executeMovement (sourceLand2, player);
+          const secondMovement = this.executeMovement (sourceLand2, playerId);
           return of<BaronyTurnMovement> ({
             action: "movement",
             movements: [firstMovement, secondMovement],
@@ -79,63 +69,45 @@ export class BaronyPlayerAiService {
             action: "movement",
             movements: [firstMovement],
           });
-        } // if - else
-      } // case
+        }
+      }
       case "construction": {
         const constructions: BaronyConstruction[] = [];
         let validConstruction = true;
         do {
-          const validLands = baronyRules.getValidLandsForConstruction (
-            player,
-            this.game
-          );
+          const validLands = baronyRules.getValidLandsForConstruction (playerId, this.game);
           const land = randomUtil.getRandomElement (validLands);
-          const validBuildings = baronyRules.getValidBuildingsForConstruction (
-            player,
-            this.game
-          );
+          const validBuildings = baronyRules.getValidBuildingsForConstruction (playerId, this.game);
           const building = randomUtil.getRandomElement (validBuildings);
-          const construction: BaronyConstruction = {
-            building: building,
-            land: land.coordinates,
-          };
+          const construction: BaronyConstruction = { building: building, land: land.coordinates };
           constructions.push (construction);
-          this.game.applyConstruction (construction, player);
-          validConstruction = baronyRules.isConstructionValid (
-            player,
-            this.game
-          );
+          this.game.applyConstruction (construction, playerId);
+          validConstruction = baronyRules.isConstructionValid (playerId, this.game);
         } while (validConstruction);
         return of<BaronyTurnConstruction> ({
           action: "construction",
           constructions: constructions,
         });
-      } // case
+      }
       case "newCity": {
-        const validLands = baronyRules.getValidLandsForNewCity (
-          player,
-          this.game
-        );
+        const validLands = baronyRules.getValidLandsForNewCity (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
         return of<BaronyTurnNewCity> ({
           action: "newCity",
           land: land.coordinates,
         });
-      } // case
+      }
       case "expedition": {
-        const validLands = baronyRules.getValidLandsForExpedition (
-          player,
-          this.game
-        );
+        const validLands = baronyRules.getValidLandsForExpedition (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
         return of<BaronyTurnExpedition> ({
           action: "expedition",
           land: land.coordinates,
         });
-      } // case
+      }
       case "nobleTitle": {
         const resources: BaronyResourceType[] = [];
-        const p = this.game.getPlayer (player);
+        const p = this.game.getPlayer (playerId);
         const r = { ...p.resources };
         let sum = 0;
         while (sum < 15) {
@@ -156,61 +128,33 @@ export class BaronyPlayerAiService {
             r.mountain--;
             resources.push ("mountain");
           }
-        } // while
+        }
         return of<BaronyTurnNobleTitle> ({
           action: "nobleTitle",
           discardedResources: resources,
         });
-      } // case
-    } // switch
+      }
+    }
     throw new Error ("TODO");
-  } // turn$
+  }
 
-  private executeMovement (
-    sourceLand: BaronyLand,
-    player: BaronyColor
-  ): BaronyMovement {
-    const validTargetLands = baronyRules.getValidTargetLandsForMovement (
-      sourceLand.coordinates,
-      player,
-      this.game
-    );
+  private executeMovement (sourceLand: BaronyLand, player: BaronyColor): BaronyMovement {
+    const validTargetLands = baronyRules.getValidTargetLandsForMovement (sourceLand.coordinates, player, this.game);
     const targetLand = randomUtil.getRandomElement (validTargetLands);
     if (baronyRules.isConflict (targetLand.coordinates, player, this.game)) {
-      if (
-        baronyRules.isVillageBeingDestroyed (
-          targetLand.coordinates,
-          player,
-          this.game
-        )
-      ) {
-        const villagePlayer = baronyRules.getVillageDestroyedPlayer (
-          targetLand.coordinates,
-          player,
-          this.game
-        );
-        if (
-          baronyRules.hasResourcesToTakeForVillageDestruction (
-            villagePlayer.id,
-            this.game
-          )
-        ) {
-          const validResourcesForVillageDestruction =
-            baronyRules.getValidResourcesForVillageDestruction (
-              villagePlayer.id,
-              this.game
-            );
-          const resource = randomUtil.getRandomElement (
-            validResourcesForVillageDestruction
-          );
+      if (baronyRules.isVillageBeingDestroyed (targetLand.coordinates, player, this.game)) {
+        const villagePlayer = baronyRules.getVillageDestroyedPlayer (targetLand.coordinates, player, this.game);
+        if (baronyRules.hasResourcesToTakeForVillageDestruction (villagePlayer.id, this.game)) {
+          const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction (villagePlayer.id, this.game);
+          const resource = randomUtil.getRandomElement (validResourcesForVillageDestruction);
           return {
             fromLand: sourceLand.coordinates,
             toLand: targetLand.coordinates,
             conflict: true,
             gainedResource: resource,
           };
-        } // if
-      } // if
+        }
+      }
       return {
         fromLand: sourceLand.coordinates,
         toLand: targetLand.coordinates,
@@ -224,6 +168,7 @@ export class BaronyPlayerAiService {
         conflict: false,
         gainedResource: null,
       };
-    } // if - else
-  } // executeMovement
-} // BaronyPlayerAiService
+    }
+  }
+
+}

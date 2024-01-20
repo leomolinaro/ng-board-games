@@ -16,7 +16,7 @@ import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
-export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritPlayerService> {
+export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritStory, BritPlayerService> {
 
   constructor (
     private rules: BritRulesService,
@@ -37,10 +37,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$<S extends BritStory> (story: S, storyId: number, gameId: string): Observable<S> {
-    return this.remoteService.insertStory$ ({ id: storyId, ...(story) }, gameId) as any as Observable<S>;
-  } // insertStory$
-
+  protected insertStory$ (story: BritStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
   protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
@@ -56,7 +53,7 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
       canCancel: false,
       message: `${this.game.getPlayer (turnPlayer).name} is thinking...`,
     }));
-  } // resetUi
+  }
 
   game$ (stories: BritStoryDoc[]): Observable<void> {
     this.stories = stories;
@@ -69,20 +66,20 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
         }));
       })
     );
-  } // game$
+  }
 
   setup () {
     this.game.logSetup ();
     const gameSetup = this.rules.setup.getGameSetup ();
     this.game.applySetup (gameSetup);
-  } // setup
+  }
 
   round$ (roundId: BritRoundId): Observable<void> {
     this.game.logRound (roundId);
     return forEach (this.components.NATION_IDS, (nationId) =>
       this.nationTurn$ (nationId, roundId)
     );
-  } // round$
+  }
 
   nationTurn$ (nationId: BritNationId, roundId: BritRoundId): Observable<void> {
     if (
@@ -98,8 +95,8 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
       );
     } else {
       return of (void 0);
-    } // if - else
-  } // nationTurn$
+    }
+  }
 
   private populationIncreasePhase$ (nationId: BritNationId, playerId: BritColor, roundId: BritRoundId): Observable<void> {
     this.game.logPhase ("populationIncrease");
@@ -127,17 +124,17 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
           this.game.applyPopulationIncrease (data.populationMarker, [], nationId);
           this.game.logPopulationMarkerSet (data.populationMarker);
           return of (void 0);
-        } // if - else
-      } // case
+        }
+      }
       case "roman-reinforcements": {
         if (data.nInfantries) {
           this.game.applyPopulationIncrease (null, [{ areaId: "english-channel", quantity: data.nInfantries }], nationId);
-        } // if
+        }
         this.game.logInfantryReinforcements ("english-channel", data.nInfantries);
         return of (void 0);
-      } // case
-    } // if - else
-  } // populationIncreasePhase$
+      }
+    }
+  }
 
   private movementPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("movement");
@@ -147,12 +144,12 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
           this.game.applyArmyMovements (armyMovements, true);
           for (const movement of armyMovements.movements) {
             this.game.logArmyMovement (movement.units, movement.toAreaId);
-          } // for
-        } // if
+          }
+        }
         return void 0;
       })
     );
-  } // movement$
+  }
 
   private battlesRetreatsPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("battlesRetreats");
@@ -165,16 +162,16 @@ export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritP
       );
     } else {
       return of (void 0);
-    } // if - else
-  } // battlesRetreatsPhase$
+    }
+  }
 
   private raiderWithdrawalPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("raiderWithdrawal");
     return of (void 0);
-  } // raiderWithdrawalPhase$
+  }
 
   private overpopulationPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("overpopulation");
     return of (void 0);
-  } // overpopulationPhase$
-} // BritGameService
+  }
+}

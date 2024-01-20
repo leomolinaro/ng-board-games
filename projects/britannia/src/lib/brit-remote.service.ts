@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
+import { BgCloudCollectionQuery, BgCloudService, BgStoryDoc, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { BritColor } from "./brit-components.models";
 import { BritStory } from "./brit-story.models";
@@ -29,7 +29,7 @@ export interface BritReadPlayerDoc extends ABritPlayerDoc {
 
 export type BritPlayerDoc = BritAiPlayerDoc | BritReadPlayerDoc;
 
-export type BritStoryDoc = BritStory & { id: number };
+export type BritStoryDoc = BgStoryDoc<BritColor, BritStory>;
 
 @Injectable ({
   providedIn: "root"
@@ -59,7 +59,7 @@ export class BritRemoteService {
   getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
   selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
   selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
-  insertStory$ (story: BritStoryDoc, gameId: string): Observable<BritStoryDoc> { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
+  insertStory$ (story: BritStoryDoc, gameId: string) { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
   updateStory$ (patch: Partial<BritStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }
   deleteStories$ (gameId: string) { return this.cloud.deleteAll$ (this.stories (gameId)); }

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
+import { BgCloudCollectionQuery, BgCloudService, BgStoryDoc, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandType, BaronyStory } from "./barony-models";
 
@@ -36,7 +36,7 @@ export interface BaronyMapDoc {
   }[];
 } // BaronyLandDoc
 
-export type BaronyStoryDoc = BaronyStory & { id: number };
+export type BaronyStoryDoc = BgStoryDoc<BaronyColor, BaronyStory>;
 
 @Injectable ({
   providedIn: "root",
@@ -70,7 +70,7 @@ export class BaronyRemoteService {
   getStory$ (storyId: number, gameId: string) { return this.cloud.get$ (storyId + "", this.stories (gameId)); }
   selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined) { return this.cloud.selectAll$ (this.stories (gameId), queryFn); }
   selectStory$ (storyId: number, gameId: string) { return this.cloud.select$ (storyId + "", this.stories (gameId)); }
-  insertStory$ (story: BaronyStoryDoc, gameId: string): Observable<BaronyStoryDoc> { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
+  insertStory$ (story: BaronyStoryDoc, gameId: string) { return this.cloud.set$ (story, story.id + "", this.stories (gameId)); }
   updateStory$ (patch: Partial<BaronyStoryDoc>, storyId: string, gameId: string) { return this.cloud.update$ (patch, storyId, this.stories (gameId)); }
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }
   deleteStories$ (gameId: string) { return this.cloud.deleteAll$ (this.stories (gameId)); }

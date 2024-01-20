@@ -26,21 +26,21 @@ import { BaronyUiStore } from "./barony-ui.store";
 export class BaronyPlayerLocalService {
   constructor (private game: BaronyGameStore, private ui: BaronyUiStore) {}
 
-  setupPlacement$ (player: BaronyColor): Observable<BaronySetupPlacement> {
-    return this.chooseLandForSetupPlacement$ (player).pipe (
-      map<BaronyLand, BaronySetupPlacement> ((landTile) => ({
+  setupPlacement$ (playerId: BaronyColor): Observable<BaronySetupPlacement> {
+    return this.chooseLandForSetupPlacement$ (playerId).pipe (
+      map<BaronyLand, BaronySetupPlacement> (landTile => ({
         type: "setupPlacement",
         land: landTile.coordinates,
       }))
     );
   } // setupPlacement$
 
-  turn$ (player: BaronyColor): Observable<BaronyTurn> {
-    return this.chooseAction$ (player).pipe (
+  turn$ (playerId: BaronyColor): Observable<BaronyTurn> {
+    return this.chooseAction$ (playerId).pipe (
       switchMap ((action) => {
         switch (action) {
           case "recruitment": {
-            return this.chooseRectruitment$ (player).pipe (
+            return this.chooseRectruitment$ (playerId).pipe (
               map<
               { land: BaronyLand; numberOfKnights: number },
               BaronyTurnRectruitment
@@ -52,7 +52,7 @@ export class BaronyPlayerLocalService {
             );
           } // case
           case "movement": {
-            return this.chooseMovements$ (player).pipe (
+            return this.chooseMovements$ (playerId).pipe (
               map<BaronyMovement[], BaronyTurnMovement> ((movements) => ({
                 action: "movement",
                 movements: movements,
@@ -60,7 +60,7 @@ export class BaronyPlayerLocalService {
             );
           } // case
           case "construction": {
-            return this.chooseConstructions$ (player, null).pipe (
+            return this.chooseConstructions$ (playerId, null).pipe (
               map<BaronyConstruction[], BaronyTurnConstruction> (
                 (constructions) => ({
                   action: "construction",
@@ -70,7 +70,7 @@ export class BaronyPlayerLocalService {
             );
           } // case
           case "newCity": {
-            return this.chooseNewCity$ (player).pipe (
+            return this.chooseNewCity$ (playerId).pipe (
               map<BaronyLand, BaronyTurnNewCity> ((land) => ({
                 action: "newCity",
                 land: land.coordinates,
@@ -78,7 +78,7 @@ export class BaronyPlayerLocalService {
             );
           } // case
           case "expedition": {
-            return this.chooseExpedition$ (player).pipe (
+            return this.chooseExpedition$ (playerId).pipe (
               map<BaronyLand, BaronyTurnExpedition> ((land) => ({
                 action: "expedition",
                 land: land.coordinates,
@@ -86,7 +86,7 @@ export class BaronyPlayerLocalService {
             );
           } // case
           case "nobleTitle": {
-            return this.chooseNobleTitle$ (player).pipe (
+            return this.chooseNobleTitle$ (playerId).pipe (
               map<BaronyResourceType[], BaronyTurnNobleTitle> ((resources) => ({
                 action: "nobleTitle",
                 discardedResources: resources,

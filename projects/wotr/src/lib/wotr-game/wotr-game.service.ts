@@ -18,7 +18,7 @@ function unexpectedStory (story: WotrStory) {
 }
 
 @Injectable ()
-export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrPlayerService> {
+export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrStory, WotrPlayerService> {
 
   private game = inject (WotrGameStore);
   private rules = inject (WotrRulesService);
@@ -36,10 +36,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$<S extends WotrStory> (story: S, storyId: number, gameId: string): Observable<S> {
-    return this.remoteService.insertStory$ ({ id: storyId, ...story }, gameId) as any as Observable<S>;
-  }
-
+  protected insertStory$ (story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
   protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
