@@ -56,13 +56,13 @@ export class WotrHomeComponent {
         this.gameService.deleteGame$ (gameId),
       ]),
     createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-    playerRoles: () => this.fronts.getAll (),
-    playerRoleCssClass: (front: WotrFront) => {
+    playerIds: () => this.fronts.getAll (),
+    playerIdCssClass: (front: WotrFront) => {
       switch (front) {
         case "free-peoples": return "wotr-player-free-peoples";
         case "shadow": return "wotr-player-shadow";
-      } // switch
-    }, // playerRoleCssClass
+      }
+    }
   };
 
   private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFront>[]) {
@@ -77,35 +77,35 @@ export class WotrHomeComponent {
         forkJoin ([
           ...protoPlayers.map ((p, index) => {
             if (p.type === "ai") {
-              return this.insertAiPlayer$ (p.name, p.role, index + 1, game.id);
+              return this.insertAiPlayer$ (p.name, p.id, index + 1, game.id);
             } else {
-              return this.insertRealPlayer$ (p.name, p.role, index + 1, p.controller!, game.id);
-            } // if - else
+              return this.insertRealPlayer$ (p.name, p.id, index + 1, p.controller!, game.id);
+            }
           }),
         ])
       )
     );
-  } // createGame$
+  }
 
   private insertAiPlayer$ (name: string, front: WotrFront, sort: number, gameId: string): Observable<WotrPlayerDoc> {
-    const player: Omit<WotrAiPlayerDoc, "id"> = {
+    const player: WotrAiPlayerDoc = {
       ...this.aPlayerDoc (name, front, sort),
       isAi: true,
     };
     return this.gameService.insertPlayer$ (player, gameId);
-  } // insertAiPlayer$
+  }
 
   private insertRealPlayer$ (name: string, front: WotrFront, sort: number, controller: BgUser, gameId: string): Observable<WotrPlayerDoc> {
-    const player: Omit<WotrReadPlayerDoc, "id"> = {
+    const player: WotrReadPlayerDoc = {
       ...this.aPlayerDoc (name, front, sort),
       isAi: false,
       controller: controller,
     };
     return this.gameService.insertPlayer$ (player, gameId);
-  } // insertRealPlayer$
+  }
 
-  private aPlayerDoc (name: string, front: WotrFront, sort: number): Omit<AWotrPlayerDoc, "id"> {
-    return { name: name, front: front, sort: sort };
-  } // aPlayerDoc
+  private aPlayerDoc (name: string, front: WotrFront, sort: number): AWotrPlayerDoc {
+    return { name: name, id: front, sort: sort };
+  }
 
-} // BritHomeComponent
+}

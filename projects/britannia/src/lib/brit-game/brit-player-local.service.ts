@@ -1,29 +1,11 @@
 import { Injectable } from "@angular/core";
 import { forN } from "@leobg/commons/utils";
-import {
-  EMPTY,
-  Observable,
-  expand,
-  last,
-  map,
-  mapTo,
-  race,
-  switchMap,
-} from "rxjs";
-import {
-  BritAreaId,
-  BritLandAreaId,
-  BritNationId,
-} from "../brit-components.models";
+import { EMPTY, Observable, expand, last, map, mapTo, race, switchMap } from "rxjs";
+import { BritAreaId, BritColor, BritLandAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import { BritAreaUnit, BritPlayerId } from "../brit-game-state.models";
+import { BritAreaUnit } from "../brit-game-state.models";
 import { BritRulesService } from "../brit-rules/brit-rules.service";
-import {
-  BritArmyMovement,
-  BritArmyMovements,
-  BritArmyPlacement,
-  BritBattleInitiation,
-} from "../brit-story.models";
+import { BritArmyMovement, BritArmyMovements, BritArmyPlacement, BritBattleInitiation } from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -38,7 +20,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     private components: BritComponentsService
   ) {}
 
-  armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyPlacement> {
+  armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritArmyPlacement> {
     const placement: BritArmyPlacement = {
       infantryPlacement: [],
     };
@@ -60,7 +42,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     }).pipe (mapTo (placement));
   } // armiesPlacement$
 
-  private chooseLandForPlacement$ (iInfantry: number, nTotInfantries: number, nationId: BritNationId, playerId: BritPlayerId): Observable<BritLandAreaId> {
+  private chooseLandForPlacement$ (iInfantry: number, nTotInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritLandAreaId> {
     const validLands = this.rules.populationIncrease.getValidLandsForPlacement (nationId, playerId, this.game.get ());
     this.ui.updateUi ("Choose land for placement", (s) => ({
       ...s,
@@ -73,7 +55,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     return this.ui.areaChange$<BritLandAreaId> ();
   } // chooseLandForRecruitment$
 
-  armyMovements$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritArmyMovements> {
+  armyMovements$ (nationId: BritNationId, playerId: BritColor): Observable<BritArmyMovements> {
     const armyMovements: BritArmyMovements = { movements: [] };
     return this.armyMovement$ (nationId, playerId, armyMovements.movements).pipe (
       expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> ((movementOrPass) => {
@@ -94,7 +76,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // armyMovements$
 
-  private armyMovement$ (nationId: BritNationId, playerId: BritPlayerId, movements: BritArmyMovement[]): Observable<BritArmyMovement | "pass"> {
+  private armyMovement$ (nationId: BritNationId, playerId: BritColor, movements: BritArmyMovement[]): Observable<BritArmyMovement | "pass"> {
     return this.chooseUnitsForMovement$ (nationId, playerId, movements).pipe (
       map ((unitsOrPass) => unitsOrPass === "pass" ? "pass" : { units: unitsOrPass, toAreaId: null! }),
       expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">> ((armyMovementOrPass) => {
@@ -125,7 +107,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // armyMovement$
 
-  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritPlayerId, movements: BritArmyMovement[]): Observable<BritAreaUnit[] | "pass"> {
+  private chooseUnitsForMovement$ (nationId: BritNationId, playerId: BritColor, movements: BritArmyMovement[]): Observable<BritAreaUnit[] | "pass"> {
     const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
     this.ui.updateUi ("Select units for movement", (s) => ({
       ...s,
@@ -143,7 +125,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // chooseUnitsForMovement$
 
-  private chooseUnitsOrAreaForMovement$ (nationId: BritNationId, playerId: BritPlayerId, selectedUnits: BritAreaUnit[]): Observable<BritAreaUnit[] | BritAreaId> {
+  private chooseUnitsOrAreaForMovement$ (nationId: BritNationId, playerId: BritColor, selectedUnits: BritAreaUnit[]): Observable<BritAreaUnit[] | BritAreaId> {
     const areaId = selectedUnits[0].areaId;
     const validUnits = this.rules.movement.getValidUnitsByAreaForMovement (nationId, areaId, this.game.get ());
     const validAreas = this.rules.movement.getValidAreasForMovement (areaId, nationId, this.game.get ());
@@ -160,7 +142,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     return race (this.ui.selectedUnitsChange$ (), this.ui.areaChange$ ());
   } // chooseUnitsOrAreaForMovement$
 
-  battleInitiation$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritBattleInitiation> {
+  battleInitiation$ (nationId: BritNationId, playerId: BritColor): Observable<BritBattleInitiation> {
     return this.chooseLandForBattle$ (nationId, playerId).pipe (
       switchMap ((landId) => {
         return this.confirmBattleInitiation$ (landId, playerId).pipe (
@@ -170,7 +152,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // battleInitiation$
 
-  private chooseLandForBattle$ (nationId: BritNationId, playerId: BritPlayerId): Observable<BritLandAreaId> {
+  private chooseLandForBattle$ (nationId: BritNationId, playerId: BritColor): Observable<BritLandAreaId> {
     const validAreas = this.rules.battlesRetreats.getValidAreasForBattle (nationId, this.game.get ());
     this.ui.updateUi ("Select area for battle", (s) => ({
       ...s,
@@ -182,7 +164,7 @@ export class BritPlayerLocalService implements BritPlayerService {
     return this.ui.areaChange$<BritLandAreaId> ();
   } // chooseLandForBattle$
 
-  private confirmBattleInitiation$ (landId: BritLandAreaId, playerId: BritPlayerId): Observable<void> {
+  private confirmBattleInitiation$ (landId: BritLandAreaId, playerId: BritColor): Observable<void> {
     this.ui.updateUi ("Confirm battle initiation", (s) => ({
       ...s,
       ...this.ui.resetUi (),

@@ -11,14 +11,14 @@ import { WotrNationComponentsService } from "../wotr-components/nation.service";
 import { WotrPhase } from "../wotr-components/phase.models";
 import { WotrRegionId } from "../wotr-components/region.models";
 import { WotrRegionComponentsService } from "../wotr-components/region.service";
-import { WotrCompanionState, WotrFellowshipState, WotrFrontState, WotrGameState, WotrLog, WotrMinionState, WotrNationState, WotrPlayer, WotrPlayerId, WotrRegionState, WotrSetup } from "../wotr-game-state.models";
+import { WotrCompanionState, WotrFellowshipState, WotrFrontState, WotrGameState, WotrLog, WotrMinionState, WotrNationState, WotrPlayer, WotrRegionState, WotrSetup } from "../wotr-game-state.models";
 import { WotrDiscardCards, WotrDrawCards } from "../wotr-story.models";
 
 @Injectable ()
 export class WotrGameStore extends BgStore<WotrGameState> {
 
   constructor (
-    fronts: WotrFrontComponentsService,
+    private fronts: WotrFrontComponentsService,
     regions: WotrRegionComponentsService,
     nations: WotrNationComponentsService,
     companions: WotrCompanionComponentsService,
@@ -27,7 +27,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     super ({
       gameId: "",
       gameOwner: null as any,
-      players: { map: {}, ids: [] },
+      players: { } as any,
       fronts: fronts.toMap<WotrFrontState> (front => ({
         characterDeck: [],
         strategyDeck: [],
@@ -58,19 +58,16 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       fellowhip: { status: "hidden", companions: [], guide: "gandalf-the-grey" },
       logs: [],
     }, "War of the Ring Game");
-  } // constructor
+  }
 
   initGameState (players: WotrPlayer[], gameId: string, gameOwner: BgUser) {
     this.update ("Initial state", s => ({
       ...s,
       gameId: gameId,
       gameOwner: gameOwner,
-      players: {
-        map: arrayUtil.toMap (players, (p) => p.id),
-        ids: players.map ((p) => p.id),
-      },
+      players: arrayUtil.toMap (players, p => p.id) as Record<WotrFront, WotrPlayer>
     }));
-  } // initGameState
+  }
 
   private notTemporaryState: WotrGameState | null = null;
   isTemporaryState () { return !!this.notTemporaryState; }
@@ -82,25 +79,24 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       this.notTemporaryState = null;
     } else {
       throw new Error ("endTemporaryState without startTemporaryState");
-    } // if - else
-  } // endTemporaryState
+    }
+  }
 
   selectRegions$ () { return this.select$ (s => s.regions); }
   selectNations$ () { return this.select$ (s => s.nations); }
-  selectPlayerMap$ () { return this.select$ (s => s.players.map); }
+  selectPlayerMap$ () { return this.select$ (s => s.players); }
   selectPlayers$ () {
     return this.select$ (
       this.select$ (s => s.players),
-      (players) => players ? players.ids.map ((id) => players.map[id]) : []
+      (players) => players ? this.fronts.getAll ().map (front => players[front]) : []
     );
-  } // selectPlayers$
+  }
   selectLogs$ () { return this.select$ (s => s.logs); }
 
   getGameId (): string { return this.get (s => s.gameId); }
   getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
-  getPlayers (): WotrPlayer[] { return this.get (s => s.players.ids.map ((id) => s.players.map[id])); }
-  getPlayer (id: string): WotrPlayer { return this.get (s => s.players.map[id]); }
-  getPlayerIdByFront (front: WotrFront): WotrPlayerId { return this.get (s => front === "free-peoples" ? s.players.ids[0] : s.players.ids[1]); }
+  getPlayers (): WotrPlayer[] { return this.get (s => this.fronts.getAll ().map (front => s.players[front])); }
+  getPlayer (id: WotrFront): WotrPlayer { return this.get (s => s.players[id]); }
   getNation (nationId: WotrNationId): WotrNationState { return this.get (s => s.nations[nationId]); }
   getRegion (regionId: WotrRegionId): WotrRegionState { return this.get (s => s.regions[regionId]); }
 
@@ -113,7 +109,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   // //   const map = this.get (s => s.lands.map);
   // //   const coordinates = this.get (s => s.lands.coordinates);
   // //   return coordinates.map (coordinate => map[landCoordinatesToId (coordinate)]);
-  // // } // getLandTiles
+  // // }
   // // getLandOrNull (land: WotrLandCoordinates): WotrLand | null { return this.getLand (land) || null; }
 
   // // private selectLandTileMap$ () { return this.select$ (s => s.lands.map); }
@@ -124,7 +120,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   // //     this.selectLandTileKeys$ (),
   // //     (map, keys) => keys.map (k => map[landCoordinatesToId (k)])
   // //   );
-  // // } // selectLandTiles$
+  // // }
   // // selectPlayerIds$ () { return this.select$ (s => s.players.ids); }
   // // selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   // // selectLogs$ () { return this.select$ (s => s.logs); }
@@ -144,7 +140,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   //       },
   //     },
   //   };
-  // } // updatePlayer
+  // }
 
   private updateFront (front: WotrFront, updater: (a: WotrFrontState) => WotrFrontState, s: WotrGameState): WotrGameState {
     return { ...s, fronts: { ...s.fronts, [front]: updater (s.fronts[front]) } };
@@ -192,7 +188,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
           ...region,
           armyUnits: immutableUtil.listPush ([{ type: unitType, nationId, quantity }], region.armyUnits),
         };
-      } // if - else
+      }
     }, s);
   }
 
@@ -210,7 +206,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
           ...region,
           leaders: immutableUtil.listPush ([{ nationId, quantity, type: "leader" }], region.leaders),
         };
-      } // if - else
+      }
     }, s);
   }
 
@@ -280,7 +276,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       state = this.addFellowshipToRegion (setup.fellowship.region, state);
       return state;
     });
-  } // applySetup
+  }
 
   applyDrawCards (action: WotrDrawCards, front: WotrFront) {
     this.update ("Draw cards", state => this.updateFront (front, f => ({
@@ -310,7 +306,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
 
   private addLog (log: WotrLog) {
     this.update ("Add log", s => ({ ...s, logs: [...s.logs, log] }));
-  } // addLog
+  }
 
   logSetup () { this.addLog ({ type: "setup" }); }
   logRound (roundNumber: number) { this.addLog ({ type: "round", roundNumber }); }
@@ -329,4 +325,4 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   // // logRecuitment (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
   // // logSetupPlacement (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
 
-} // WotrGameStore
+}

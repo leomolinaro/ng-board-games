@@ -89,7 +89,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
 
     if (refreshPawns) {
       this.pawnNodes = BARONY_PAWN_TYPES.map ((pt) => ({
-        source: `assets/barony/pawns/${this.player.color}-${pt}.png`,
+        source: `assets/barony/pawns/${this.player.id}-${pt}.png`,
         type: pt,
         quantity: this.player.pawns[pt],
         active:

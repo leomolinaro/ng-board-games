@@ -31,7 +31,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   protected stories: WotrStoryDoc[] | null = null;
 
   protected getGameId () { return this.game.getGameId (); }
-  protected getPlayer (playerId: string) { return this.game.getPlayer (playerId); }
+  protected getPlayer (playerId: WotrFront) { return this.game.getPlayer (playerId); }
   protected getGameOwner () { return this.game.getGameOwner (); }
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
@@ -43,17 +43,17 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
-  protected setCurrentPlayer (playerId: string) { this.ui.setCurrentPlayer (playerId); }
+  protected setCurrentPlayer (playerId: WotrFront) { this.ui.setCurrentPlayer (playerId); }
   protected currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
   protected cancelChange$ () { return this.ui.cancelChange$ (); }
 
-  protected resetUi (player: string) {
+  protected resetUi (turnPlayer: WotrFront) {
     this.ui.updateUi ("Reset UI", (s) => ({
       ...s,
-      turnPlayer: player,
+      turnPlayer: turnPlayer,
       ...this.ui.resetUi (),
       canCancel: false,
-      message: `${this.game.getPlayer (player).name} is thinking...`,
+      message: `${this.game.getPlayer (turnPlayer).name} is thinking...`,
     }));
   }
 
@@ -105,8 +105,7 @@ export class WotrGameService extends ABgGameService<WotrPlayer, WotrStory, WotrP
   }
 
   private firstPhaseDrawCards$ (front: WotrFront) {
-    const playerId = this.game.getPlayerIdByFront (front);
-    return this.executeTask$ (playerId, p => p.firstPhaseDrawCards$ (front)).pipe (
+    return this.executeTask$ (front, p => p.firstPhaseDrawCards$ (front)).pipe (
       tap (story => {
         if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
         const drawCards = story.actions[0];

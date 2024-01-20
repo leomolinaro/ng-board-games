@@ -2,18 +2,12 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import {
-  BaronyAction,
-  BaronyBuilding,
-  BaronyLand,
-  BaronyLandCoordinates,
-  BaronyResourceType,
-} from "../barony-models";
+import { BaronyAction, BaronyBuilding, BaronyColor, BaronyLand, BaronyLandCoordinates, BaronyResourceType } from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 interface BaronyUiState {
-  currentPlayer: string | null;
-  turnPlayer: string;
+  currentPlayer: BaronyColor | null;
+  turnPlayer: BaronyColor;
   canCancel: boolean;
   message: string | null;
   validLands: BaronyLandCoordinates[] | null;
@@ -33,7 +27,7 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     super (
       {
         currentPlayer: null,
-        turnPlayer: "",
+        turnPlayer: "blue",
         canCancel: false,
         message: null,
         validLands: null,
@@ -100,39 +94,17 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     return this.selectCurrentPlayerId$ ().pipe (skip (1), first ());
   }
 
-  selectValidLands$ () {
-    return this.select$ ((s) => s.validLands);
-  }
-  selectValidResources$ () {
-    return this.select$ ((s) => s.validResources);
-  }
-  selectValidActions$ () {
-    return this.select$ ((s) => s.validActions);
-  }
-  selectValidBuildings$ () {
-    return this.select$ ((s) => s.validBuildings);
-  }
-  selectCanPass$ () {
-    return this.select$ ((s) => s.canPass);
-  }
-  selectCanCancel$ () {
-    return this.select$ ((s) => s.canCancel);
-  }
-  selectMaxNumberOfKnights$ () {
-    return this.select$ ((s) => s.maxNumberOfKnights);
-  }
-  selectCurrentPlayerId$ () {
-    return this.select$ ((s) => s.currentPlayer);
-  }
-  getCurrentPlayerId () {
-    return this.get ((s) => s.currentPlayer);
-  }
-  selectTurnPlayerId$ () {
-    return this.select$ ((s) => s.turnPlayer);
-  }
-  selectMessage$ () {
-    return this.select$ ((s) => s.message);
-  }
+  selectValidLands$ () { return this.select$ (s => s.validLands); }
+  selectValidResources$ () { return this.select$ (s => s.validResources); }
+  selectValidActions$ () { return this.select$ (s => s.validActions); }
+  selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
+  selectCanPass$ () { return this.select$ (s => s.canPass); }
+  selectCanCancel$ () { return this.select$ (s => s.canCancel); }
+  selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
+  selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
+  getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
+  selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
+  selectMessage$ () { return this.select$ (s => s.message); }
 
   selectCurrentPlayer$ () {
     return this.game.select$ (
@@ -179,17 +151,18 @@ export class BaronyUiStore extends BgStore<BaronyUiState> {
     };
   } // resetUi
 
-  setFirstActionUi (player: string): Partial<BaronyUiState> {
+  setFirstActionUi (player: BaronyColor): Partial<BaronyUiState> {
     return {
       turnPlayer: player,
       canCancel: false,
     };
-  } // setFirstActionUi
+  }
 
-  setCurrentPlayer (playerId: string | null) {
+  setCurrentPlayer (playerId: BaronyColor | null) {
     this.updateUi ("Set current player", (s) => ({
       ...s,
       currentPlayer: playerId,
     }));
-  } // setCurrentPlayer
-} // BaronyUiStore
+  }
+
+}

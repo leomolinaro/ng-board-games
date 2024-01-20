@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
 import {
+  BaronyColor,
   BaronyConstruction,
   BaronyLand,
   BaronyMovement,
@@ -31,7 +32,7 @@ export class BaronyPlayerAiService {
     });
   } // setupPlacement$
 
-  turn$ (player: string): Observable<BaronyTurn> {
+  turn$ (player: BaronyColor): Observable<BaronyTurn> {
     const validActions = baronyRules.getValidActions (player, this.game);
     const action = randomUtil.getRandomElement (validActions);
     switch (action) {
@@ -167,7 +168,7 @@ export class BaronyPlayerAiService {
 
   private executeMovement (
     sourceLand: BaronyLand,
-    player: string
+    player: BaronyColor
   ): BaronyMovement {
     const validTargetLands = baronyRules.getValidTargetLandsForMovement (
       sourceLand.coordinates,

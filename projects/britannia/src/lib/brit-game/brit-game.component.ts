@@ -148,9 +148,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
   private playerDocToAPlayerInit (playerDoc: BritPlayerDoc): ABritPlayer {
     return {
       id: playerDoc.id,
-      color: playerDoc.color,
       name: playerDoc.name,
-      nationIds: this.components.getNationIdsOfColor (playerDoc.color),
+      nationIds: this.components.getNationIdsOfColor (playerDoc.id),
       score: 0,
     };
   } // playerDocToAPlayerInit

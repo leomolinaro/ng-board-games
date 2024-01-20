@@ -13,10 +13,9 @@ export interface WotrGameDoc {
 } // WotrGameDoc
 
 export interface AWotrPlayerDoc {
-  id: string;
+  id: WotrFront;
   name: string;
   sort: number;
-  front: WotrFront;
 } // ABritPlayerDoc
 
 export interface WotrAiPlayerDoc extends AWotrPlayerDoc {
@@ -50,7 +49,7 @@ export class WotrRemoteService {
   getPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined) { return this.cloud.getAll$ (this.players (gameId), queryFn); }
   selectPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined) { return this.cloud.selectAll$ (this.players (gameId), queryFn); }
   selectPlayer$ (playerId: string, gameId: string) { return this.cloud.select$ (playerId, this.players (gameId)); }
-  insertPlayer$ (player: Omit<WotrPlayerDoc, "id">, gameId: string): Observable<WotrPlayerDoc> { return this.cloud.insert$ ((id) => ({ id: id, ...player } as WotrPlayerDoc), this.players (gameId)); }
+  insertPlayer$ (player: WotrPlayerDoc, gameId: string): Observable<WotrPlayerDoc> { return this.cloud.set$ (player, player.id, this.players (gameId)); }
   updatePlayer$ (patch: Partial<WotrPlayerDoc>, playerId: string, gameId: string) { return this.cloud.update$ (patch, playerId, this.players (gameId)); }
   deletePlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.players (gameId)); }
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }

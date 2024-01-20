@@ -4,6 +4,7 @@ import { EMPTY, Observable, forkJoin } from "rxjs";
 import { expand, last, map, mapTo } from "rxjs/operators";
 import {
   ABaronyPlayer,
+  BaronyColor,
   BaronyConstruction,
   BaronyLandCoordinates,
   BaronyMovement,
@@ -26,18 +27,18 @@ import * as baronyRules from "./barony-rules";
 import { BaronyUiStore } from "./barony-ui.store";
 
 interface ABaronyPlayerService {
-  setupPlacement$(playerId: string): Observable<BaronySetupPlacement>;
-  turn$(playerId: string): Observable<BaronyTurn>;
-} // ABaronyPlayerService
+  setupPlacement$(playerId: BaronyColor): Observable<BaronySetupPlacement>;
+  turn$(playerId: BaronyColor): Observable<BaronyTurn>;
+}
 
 interface BaronyRoundOutput {
   endGame: boolean;
   roundNumber: number;
-} // BaronyRoundOutput
+}
 
 interface BaronyTurnOutput {
   lastRound: boolean;
-} // BaronyTurnOutput
+}
 
 @Injectable ()
 export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory, ABaronyPlayerService> {
@@ -69,28 +70,28 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
         } else {
           const roundNumber = prevRoundOutput.roundNumber + 1;
           return this.round$ (roundNumber);
-        } // if - else
+        }
       }),
       last (),
       mapTo (void 0)
     );
-  } // game$
+  }
 
   private setup$ (): Observable<void> {
     this.game.logSetup ();
     const playerIds = this.game.getPlayerIds ();
-    const turns: string[] = [...playerIds];
+    const turns: BaronyColor[] = [...playerIds];
     for (let i = playerIds.length - 1; i >= 0; i--) {
       turns.push (playerIds[i]);
       turns.push (playerIds[i]);
-    } // for
+    }
     return this.setupPlacement$ (turns.shift ()!).pipe (
       expand (() =>
         turns.length ? this.setupPlacement$ (turns.shift ()!) : EMPTY
       ),
       last ()
     );
-  } // setup$
+  }
 
   private round$ (roundNumber: number): Observable<BaronyRoundOutput> {
     const playerIds = this.game.getPlayerIds ();
@@ -102,9 +103,9 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
       last (),
       map ((turnOutput) => ({ endGame: turnOutput.lastRound, roundNumber }))
     );
-  } // round$
+  }
 
-  setupPlacement$ (player: string): Observable<void> {
+  setupPlacement$ (player: BaronyColor): Observable<void> {
     return this.executeTask$ (player, (p) => p.setupPlacement$ (player)).pipe (
       map ((result) => {
         this.game.applySetup (result.land, player);
@@ -112,106 +113,82 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
         return void 0;
       })
     );
-  } // setupPlacement$
+  }
 
   private turn$ (
-    player: string,
+    player: BaronyColor,
     lastRound: boolean
   ): Observable<BaronyTurnOutput> {
     this.game.logTurn (player);
     return this.executeTask$ (player, (p) => p.turn$ (player)).pipe (
       map ((result) => {
         switch (result.action) {
-          case "recruitment":
-            this.recruitment (result.numberOfKnights, result.land, player);
-            break;
-          case "construction":
-            this.construction (result.constructions, player);
-            break;
-          case "expedition":
-            this.expedition (result.land, player);
-            break;
-          case "movement":
-            this.movement (result.movements, player);
-            break;
-          case "newCity":
-            this.newCity (result.land, player);
-            break;
-          case "nobleTitle":
-            this.nobleTitle (result.discardedResources, player);
-            break;
-        } // switch
+          case "recruitment": this.recruitment (result.numberOfKnights, result.land, player); break;
+          case "construction": this.construction (result.constructions, player); break;
+          case "expedition": this.expedition (result.land, player); break;
+          case "movement": this.movement (result.movements, player); break;
+          case "newCity": this.newCity (result.land, player); break;
+          case "nobleTitle": this.nobleTitle (result.discardedResources, player); break;
+        }
         if (!lastRound) {
           const playerWinning = baronyRules.isPlayerWinning (player, this.game);
-          if (playerWinning) {
-            lastRound = true;
-          }
-        } // if
+          if (playerWinning) { lastRound = true; }
+        }
         return { lastRound: lastRound };
       })
     );
-  } // turn$
+  }
 
   private recruitment (
     numberOfKnights: number,
     landTileCoordinates: BaronyLandCoordinates,
-    player: string
+    player: BaronyColor
   ) {
     for (let i = 0; i < numberOfKnights; i++) {
       this.game.applyRecruitment (landTileCoordinates, player);
       this.game.logRecuitment (landTileCoordinates, player);
-    } // for
-  } // recruitment
+    }
+  }
 
-  private construction (constructions: BaronyConstruction[], player: string) {
+  private construction (constructions: BaronyConstruction[], player: BaronyColor) {
     constructions.forEach ((construction) => {
       this.game.applyConstruction (construction, player);
       this.game.logConstruction (construction, player);
     });
-  } // construction
+  }
 
-  private expedition (land: BaronyLandCoordinates, player: string) {
+  private expedition (land: BaronyLandCoordinates, player: BaronyColor) {
     this.game.applyExpedition (land, player);
     this.game.logExpedition (land, player);
-  } // expedition
+  }
 
-  private movement (movements: BaronyMovement[], player: string) {
+  private movement (movements: BaronyMovement[], player: BaronyColor) {
     movements.forEach ((movement) => {
       this.game.applyMovement (movement, player);
       this.game.logMovement (movement, player);
     });
-  } // movement
+  }
 
-  private newCity (land: BaronyLandCoordinates, player: string) {
+  private newCity (land: BaronyLandCoordinates, player: BaronyColor) {
     this.game.applyNewCity (land, player);
     this.game.logNewCity (land, player);
-  } // newCity
+  }
 
-  private nobleTitle (resources: BaronyResourceType[], player: string) {
+  private nobleTitle (resources: BaronyResourceType[], player: BaronyColor) {
     this.game.applyNobleTitle (resources, player);
     this.game.logNobleTitle (resources, player);
-  } // nobleTitle
+  }
 
   private gameEnd () {
     const finalScores = baronyRules.getFinalScores (this.game);
     this.game.applyEndGame (finalScores);
-  } // gameEnd
+  }
 
-  protected getGameId () {
-    return this.game.getGameId ();
-  }
-  protected getPlayer (playerId: string) {
-    return this.game.getPlayer (playerId);
-  }
-  protected getGameOwner () {
-    return this.game.getGameOwner ();
-  }
-  protected startTemporaryState () {
-    this.game.startTemporaryState ();
-  }
-  protected endTemporaryState () {
-    this.game.endTemporaryState ();
-  }
+  protected getGameId () { return this.game.getGameId (); }
+  protected getPlayer (playerId: BaronyColor) { return this.game.getPlayer (playerId); }
+  protected getGameOwner () { return this.game.getGameOwner (); }
+  protected startTemporaryState () { this.game.startTemporaryState (); }
+  protected endTemporaryState () { this.game.endTemporaryState (); }
 
   protected insertStory$<S extends BaronyStory> (
     story: S,
@@ -225,7 +202,7 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
       },
       gameId
     ) as any as Observable<S>;
-  } // insertStory$
+  }
 
   protected selectStory$ (storyId: number, gameId: string) {
     return this.remoteService.selectStory$ (storyId, gameId);
@@ -234,7 +211,7 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
   protected getCurrentPlayerId () {
     return this.ui.getCurrentPlayerId ();
   }
-  protected setCurrentPlayer (playerId: string) {
+  protected setCurrentPlayer (playerId: BaronyColor) {
     this.ui.setCurrentPlayer (playerId);
   }
   protected currentPlayerChange$ () {
@@ -244,7 +221,7 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
     return this.ui.cancelChange$ ();
   }
 
-  protected resetUi (player: string) {
+  protected resetUi (player: BaronyColor) {
     this.ui.updateUi ("Reset UI", (s) => ({
       ...s,
       turnPlayer: player,
@@ -252,7 +229,7 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
       canCancel: false,
       message: `${this.game.getPlayer (player).name} is thinking...`,
     }));
-  } // resetUi
+  }
 
   loadGame$ (gameId: string) {
     return forkJoin ([
@@ -281,11 +258,11 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
             gameId,
             game.owner
           );
-        } // if
+        }
         return stories;
       })
     );
-  } // loadGame$
+  }
 
   private playerDocToPlayerInit (
     playerDoc: BaronyPlayerDoc,
@@ -306,13 +283,12 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
         isLocal: user.id === playerDoc.controller.id,
         isRemote: user.id !== playerDoc.controller.id,
       };
-    } // if - else
-  } // playerDocToPlayerInit
+    }
+  }
 
   private playerDocToAPlayerInit (playerDoc: BaronyPlayerDoc): ABaronyPlayer {
     return {
       id: playerDoc.id,
-      color: playerDoc.color,
       name: playerDoc.name,
       score: 0,
       pawns: {
@@ -330,5 +306,5 @@ export class BaronyGameService extends ABgGameService<BaronyPlayer, BaronyStory,
       victoryPoints: 0,
       winner: false,
     };
-  } // playerDocToAPlayerInit
-} // BaronyGameService
+  }
+}

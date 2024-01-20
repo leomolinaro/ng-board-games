@@ -114,20 +114,17 @@ export class WotrGameComponent implements OnInit, OnDestroy {
             game.owner
           );
           this.listenToGame (stories);
-        } // if
+        }
       })
     );
-  } // ngOnInit
+  }
 
   @ChangeListener ()
   private listenToGame (stories: WotrStoryDoc[]) {
     return this.gameService.game$ (stories);
-  } // listenToGame
-
-  private playerDocToPlayer (
-    playerDoc: WotrPlayerDoc,
-    user: BgUser
-  ): WotrPlayer {
+  }
+  
+  private playerDocToPlayer (playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit (playerDoc),
@@ -143,17 +140,15 @@ export class WotrGameComponent implements OnInit, OnDestroy {
         isLocal: user.id === playerDoc.controller.id,
         isRemote: user.id !== playerDoc.controller.id,
       };
-    } // if - else
-  } // playerDocToPlayer
+    }
+  }
 
   private playerDocToAPlayerInit (playerDoc: WotrPlayerDoc): AWotrPlayer {
     return {
       id: playerDoc.id,
-      front: playerDoc.front,
       name: playerDoc.name,
-      score: 0
     };
-  } // playerDocToAPlayerInit
+  }
 
   ngOnDestroy () {}
 
@@ -169,5 +164,5 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   // // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
   
-} // WotrGameComponent
+}
 

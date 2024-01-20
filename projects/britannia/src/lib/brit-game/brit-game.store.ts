@@ -1,37 +1,20 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
-import {
-  BritAreaId,
-  BritLandAreaId,
-  BritLeaderId,
-  BritNationId,
-  BritPhase,
-  BritPopulation,
-  BritRoundId,
-  BritUnitType,
-} from "../brit-components.models";
+import { BritAreaId, BritColor, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitType } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import {
-  BritAreaLeader,
-  BritAreaState,
-  BritAreaUnit,
-  BritGameState,
-  BritLog,
-  BritNationState,
-  BritPlayer,
-  BritSetup,
-} from "../brit-game-state.models";
+import { BritAreaLeader, BritAreaState, BritAreaUnit, BritGameState, BritLog, BritNationState, BritPlayer, BritSetup } from "../brit-game-state.models";
 import { BritArmyMovement, BritArmyMovements } from "../brit-story.models";
 
 @Injectable ()
 export class BritGameStore extends BgStore<BritGameState> {
+
   constructor (private components: BritComponentsService) {
     super (
       {
         gameId: "",
         gameOwner: null as any,
-        players: { map: {}, ids: [] },
+        players: { map: { }, colors: [] },
         areas: components.areasToMap ((areaId) => ({ units: [] })),
         nations: components.nationsToMap ((nationId) => {
           const nation = components.NATION[nationId];
@@ -56,8 +39,8 @@ export class BritGameStore extends BgStore<BritGameState> {
       gameId: gameId,
       gameOwner: gameOwner,
       players: {
-        map: arrayUtil.toMap (players, (p) => p.id),
-        ids: players.map ((p) => p.id),
+        map: arrayUtil.toMap (players, p => p.id) as Record<BritColor, BritPlayer>,
+        colors: players.map (p => p.id),
       },
     }));
   } // initGameState
@@ -94,39 +77,20 @@ export class BritGameStore extends BgStore<BritGameState> {
     return this.select$ (
       this.select$ ((s) => s.players),
       (players) => {
-        return players ? players.ids.map ((id) => players.map[id]) : [];
+        return players ? players.colors.map ((id) => players.map[id]) : [];
       }
     );
   } // selectPlayers$
 
-  selectLogs$ () {
-    return this.select$ ((s) => s.logs);
-  }
+  selectLogs$ () { return this.select$ (s => s.logs); }
 
-  getGameId (): string {
-    return this.get ((s) => s.gameId);
-  }
-  getGameOwner (): BgUser {
-    return this.get ((s) => s.gameOwner);
-  }
-  getPlayers (): BritPlayer[] {
-    return this.get ((s) => s.players.ids.map ((id) => s.players.map[id]));
-  }
-  getPlayer (id: string): BritPlayer {
-    return this.get ((s) => s.players.map[id]);
-  }
-  getNation (nationId: BritNationId): BritNationState {
-    return this.get ((s) => s.nations[nationId]);
-  }
-  getArea (areaId: BritAreaId): BritAreaState {
-    return this.get ((s) => s.areas[areaId]);
-  }
-
-  getPlayerByNation (nationId: BritNationId) {
-    return this.getPlayers ().find ((p) =>
-      p.nationIds.some ((n) => n === nationId)
-    );
-  } // getPlayerByNation
+  getGameId (): string { return this.get (s => s.gameId); }
+  getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
+  getPlayers (): BritPlayer[] { return this.get (s => s.players.colors.map (color => s.players.map[color]!)); }
+  getPlayer (color: BritColor): BritPlayer { return this.get (s => s.players.map[color]!); }
+  getNation (nationId: BritNationId) { return this.get (s => s.nations[nationId]); }
+  getArea (areaId: BritAreaId) { return this.get (s => s.areas[areaId]); }
+  getPlayerByNation (nationId: BritNationId) { return this.getPlayers ().find (p => p.nationIds.some (n => n === nationId)); }
 
   // // isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
   // getPlayerIds () { return this.get (s => s.players.ids); }
@@ -153,28 +117,20 @@ export class BritGameStore extends BgStore<BritGameState> {
   // selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   // selectLogs$ () { return this.select$ (s => s.logs); }
 
-  private updatePlayer (
-    playerId: string,
-    updater: (p: BritPlayer) => BritPlayer,
-    s: BritGameState
-  ): BritGameState {
+  private updatePlayer (color: BritColor, updater: (p: BritPlayer) => BritPlayer, s: BritGameState): BritGameState {
     return {
       ...s,
       players: {
         ...s.players,
         map: {
           ...s.players.map,
-          [playerId]: updater (s.players.map[playerId]),
+          [color]: updater (s.players.map[color]!),
         },
       },
     };
   } // updatePlayer
 
-  private updateArea (
-    areaId: BritAreaId,
-    updater: (a: BritAreaState) => BritAreaState,
-    s: BritGameState
-  ): BritGameState {
+  private updateArea (areaId: BritAreaId, updater: (a: BritAreaState) => BritAreaState, s: BritGameState): BritGameState {
     return {
       ...s,
       areas: {
@@ -184,11 +140,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     };
   } // updateArea
 
-  private updateNation (
-    nationId: BritNationId,
-    updater: (a: BritNationState) => BritNationState,
-    s: BritGameState
-  ): BritGameState {
+  private updateNation (nationId: BritNationId, updater: (a: BritNationState) => BritNationState, s: BritGameState): BritGameState {
     return {
       ...s,
       nations: {
@@ -278,11 +230,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     }));
   } // addLog
 
-  private setNationPopulation (
-    population: BritPopulation | null,
-    nationId: BritNationId,
-    s: BritGameState
-  ): BritGameState {
+  private setNationPopulation (population: BritPopulation | null, nationId: BritNationId, s: BritGameState): BritGameState {
     return this.updateNation (
       nationId,
       (nation) => ({
@@ -293,11 +241,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     );
   } // setNationPopulation
 
-  private setNationActive (
-    active: boolean,
-    nationId: BritNationId,
-    s: BritGameState
-  ): BritGameState {
+  private setNationActive (active: boolean, nationId: BritNationId, s: BritGameState): BritGameState {
     return this.updateNation (
       nationId,
       (nation) => ({
@@ -360,12 +304,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     );
   } // addUnitsToArea
 
-  private removeUnitsFromAreaByIndex (
-    unitIndex: number,
-    areaId: BritAreaId,
-    quantity: number,
-    s: BritGameState
-  ): BritGameState {
+  private removeUnitsFromAreaByIndex (unitIndex: number, areaId: BritAreaId, quantity: number, s: BritGameState): BritGameState {
     return this.updateArea (
       areaId,
       (area) => {

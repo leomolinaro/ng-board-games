@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { BritAreaId } from "../brit-components.models";
+import { BritAreaId, BritColor } from "../brit-components.models";
 import { BritAreaUnit } from "../brit-game-state.models";
 import { BritGameStore } from "./brit-game.store";
 
 interface BritUiState {
-  currentPlayer: string | null;
-  turnPlayer: string;
+  currentPlayer: BritColor | null;
+  turnPlayer: BritColor;
   canCancel: boolean;
   message: string | null;
   validAreas: BritAreaId[] | null;
@@ -30,7 +30,7 @@ export class BritUiStore extends BgStore<BritUiState> {
     super (
       {
         currentPlayer: null,
-        turnPlayer: "",
+        turnPlayer: "yellow",
         canCancel: false,
         message: null,
         validAreas: null,
@@ -118,27 +118,19 @@ export class BritUiStore extends BgStore<BritUiState> {
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
   selectCanPass$ () {
-    return this.select$ ((s) => s.canPass);
+    return this.select$ (s => s.canPass);
   }
   selectCanContinue$ () {
-    return this.select$ ((s) => s.canConfirm);
+    return this.select$ (s => s.canConfirm);
   }
   selectCanCancel$ () {
-    return this.select$ ((s) => s.canCancel);
+    return this.select$ (s => s.canCancel);
   }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
-  selectCurrentPlayerId$ () {
-    return this.select$ ((s) => s.currentPlayer);
-  }
-  getCurrentPlayerId () {
-    return this.get ((s) => s.currentPlayer);
-  }
-  selectTurnPlayerId$ () {
-    return this.select$ ((s) => s.turnPlayer);
-  }
-  selectMessage$ () {
-    return this.select$ ((s) => s.message);
-  }
+  selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
+  getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
+  selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
+  selectMessage$ () { return this.select$ (s => s.message); }
 
   selectCurrentPlayer$ () {
     return this.game.select$ (
@@ -208,7 +200,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   //   };
   // } // setFirstActionUi
 
-  setCurrentPlayer (playerId: string | null) {
+  setCurrentPlayer (playerId: BritColor | null) {
     this.updateUi ("Set current player", (s) => ({
       ...s,
       currentPlayer: playerId,

@@ -8,10 +8,7 @@ import { WotrRegionId } from "./wotr-components/region.models";
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
-  players: {
-    map: Record<string, WotrPlayer>;
-    ids: string[];
-  };
+  players: Record<WotrFront, WotrPlayer>;
   fronts: Record<WotrFront, WotrFrontState>;
   regions: Record<WotrRegionId, WotrRegionState>;
   nations: Record<WotrNationId, WotrNationState>;
@@ -81,13 +78,9 @@ export interface WotrMinionState {
   status: "available" | "inPlay" | "eliminated";
 }
 
-export type WotrPlayerId = string;
-
 export interface AWotrPlayer {
-  id: WotrPlayerId;
+  id: WotrFront;
   name: string;
-  front: WotrFront;
-  score: number;
 }
 
 export interface WotrAiPlayer extends AWotrPlayer {

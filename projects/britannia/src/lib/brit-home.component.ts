@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
@@ -43,12 +43,10 @@ import {
 })
 export class BritHomeComponent {
 
-  constructor (
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private gameService: BritRemoteService,
-    private components: BritComponentsService
-  ) {}
+  private router = inject (Router);
+  private activatedRoute = inject (ActivatedRoute);
+  private gameService = inject (BritRemoteService);
+  private components = inject (BritComponentsService);
 
   config: BgHomeConfig<BritColor> = {
     boardGame: "britannia",
@@ -62,8 +60,8 @@ export class BritHomeComponent {
         this.gameService.deleteGame$ (gameId),
       ]),
     createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-    playerRoles: () => this.components.COLORS,
-    playerRoleCssClass: (color: BritColor) => {
+    playerIds: () => this.components.COLORS,
+    playerIdCssClass: (color: BritColor) => {
       switch (color) {
         case "blue": return "brit-player-blue";
         case "green": return "brit-player-green";
@@ -85,9 +83,9 @@ export class BritHomeComponent {
         forkJoin ([
           ...protoPlayers.map ((p, index) => {
             if (p.type === "ai") {
-              return this.insertAiPlayer$ (p.name, p.role, index + 1, game.id);
+              return this.insertAiPlayer$ (p.id, p.name, index + 1, game.id);
             } else {
-              return this.insertRealPlayer$ (p.name, p.role, index + 1, p.controller!, game.id);
+              return this.insertRealPlayer$ (p.id, p.name, index + 1, p.controller!, game.id);
             } // if - else
           }),
         ])
@@ -95,25 +93,25 @@ export class BritHomeComponent {
     );
   } // createGame$
 
-  private insertAiPlayer$ (name: string, color: BritColor, sort: number, gameId: string): Observable<BritPlayerDoc> {
-    const player: Omit<BritAiPlayerDoc, "id"> = {
-      ...this.aPlayerDoc (name, color, sort),
+  private insertAiPlayer$ (playerId: BritColor, name: string, sort: number, gameId: string): Observable<BritPlayerDoc> {
+    const player: BritAiPlayerDoc = {
+      ...this.aPlayerDoc (playerId, name, sort),
       isAi: true,
     };
     return this.gameService.insertPlayer$ (player, gameId);
   } // insertAiPlayer$
 
-  private insertRealPlayer$ ( name: string, color: BritColor, sort: number, controller: BgUser, gameId: string): Observable<BritPlayerDoc> {
-    const player: Omit<BritReadPlayerDoc, "id"> = {
-      ...this.aPlayerDoc (name, color, sort),
+  private insertRealPlayer$ (playerId: BritColor, name: string, sort: number, controller: BgUser, gameId: string): Observable<BritPlayerDoc> {
+    const player: BritReadPlayerDoc = {
+      ...this.aPlayerDoc (playerId, name, sort),
       isAi: false,
       controller: controller,
     };
     return this.gameService.insertPlayer$ (player, gameId);
   } // insertRealPlayer$
 
-  private aPlayerDoc (name: string, color: BritColor, sort: number): Omit<ABritPlayerDoc, "id"> {
-    return { name: name, color: color, sort: sort };
+  private aPlayerDoc (playerId: BritColor, name: string, sort: number): ABritPlayerDoc {
+    return { id: playerId, name: name, sort: sort };
   } // aPlayerDoc
 
 } // BritHomeComponent

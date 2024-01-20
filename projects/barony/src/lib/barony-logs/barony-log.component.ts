@@ -7,6 +7,7 @@ import {
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyGameStore } from "../barony-game/barony-game.store";
 import {
+  BaronyColor,
   BaronyLand,
   BaronyLandCoordinates,
   BaronyLog,
@@ -168,19 +169,12 @@ export class BaronyLogComponent implements OnChanges {
   } // ngOnChanges
 
   private string (label: string): BaronyLogStringFragment {
-    return {
-      type: "string",
-      label: label,
-    };
+    return { type: "string", label: label };
   } // string
 
-  private player (playerId: string): BaronyLogPlayerFragment {
+  private player (playerId: BaronyColor): BaronyLogPlayerFragment {
     const player = this.game.getPlayer (playerId);
-    return {
-      type: "player",
-      label: player.name,
-      player: player,
-    };
+    return { type: "player", label: player.name, player: player };
   } // player
 
   private land (landId: BaronyLandCoordinates): BaronyLogLandFragment {

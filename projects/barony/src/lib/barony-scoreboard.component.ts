@@ -104,8 +104,8 @@ export class BaronyScoreboardComponent implements OnChanges {
           col = (p.score - 20) / 15;
         } // if - else
         this.counterNodes.push ({
-          color: p.color,
-          href: `assets/barony/pawns/${p.color}-counter.png`,
+          color: p.id,
+          href: `assets/barony/pawns/${p.id}-counter.png`,
           x: 200 + row * 70 + col * 105 + index * 5,
           y: 200 + row * 70 + index * 5,
         });

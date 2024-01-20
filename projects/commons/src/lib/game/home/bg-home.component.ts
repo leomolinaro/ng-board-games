@@ -1,43 +1,21 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild, inject } from "@angular/core";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "@leobg/commons/utils";
-import { Observable, of } from "rxjs";
-import { map, mapTo, switchMap, tap } from "rxjs/operators";
+import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
 import { BgAuthService } from "../../authentication";
-import {
-  BgArcheoGame,
-  BgBoardGame,
-  BgProtoGame,
-  BgProtoGameService,
-  BgProtoPlayer,
-} from "../bg-proto-game.service";
-import {
-  BgHomeRoomDialogComponent,
-  BgRoomDialogInput,
-  BgRoomDialogOutput,
-} from "./bg-home-room-dialog/bg-home-room-dialog.component";
+import { BgArcheoGame, BgBoardGame, BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
+import { BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-home-room-dialog.component";
 
-export interface BgHomeConfig<R extends string = string> {
+export interface BgHomeConfig<Pid extends string> {
   boardGame: BgBoardGame;
   boardGameName: string;
   startGame$: (gameId: string) => Observable<any>;
   deleteGame$: (gameId: string) => Observable<any>;
-  createGame$: (
-    protoGame: BgProtoGame,
-    protoPlayers: BgProtoPlayer<R>[]
-  ) => Observable<any>;
-  playerRoles: () => R[];
-  playerRoleCssClass: (playerRole: R) => string;
-} // BgHomeConfig
+  createGame$: (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<Pid>[]) => Observable<any>;
+  playerIds: () => Pid[];
+  playerIdCssClass: (playerId: Pid) => string;
+}
 
 @Component ({
   selector: "bg-home",
@@ -46,15 +24,14 @@ export interface BgHomeConfig<R extends string = string> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 @UntilDestroy
-export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
-  constructor (
-    private breakpointObserver: BreakpointObserver,
-    private protoGameService: BgProtoGameService,
-    private authService: BgAuthService,
-    private matDialog: MatDialog
-  ) {}
+export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
+  
+  private breakpointObserver = inject (BreakpointObserver);
+  private protoGameService = inject (BgProtoGameService);
+  private authService = inject (BgAuthService);
+  private matDialog = inject (MatDialog);
 
-  @Input () config!: BgHomeConfig;
+  @Input () config!: BgHomeConfig<Pid>;
   @ViewChild ("newGameDialog") newGameDialog!: TemplateRef<void>;
 
   @Loading () loading$!: Observable<boolean>;
@@ -74,7 +51,7 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
     this.protoGames$ = this.protoGameService.selectProtoGames$ ((ref) =>
       ref.where ("boardGame", "==", this.config.boardGame)
     );
-  } // ngOnInit
+  }
 
   ngOnDestroy () {}
 
@@ -97,18 +74,18 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
           // switchMap (output => {
           //   if (output?.startGame) {
           //     return this.config.startGame$ (output.gameId);
-          //   } // if
+          //   }
           //   return of (void 0);
           // })
         );
       })
     );
-  } // openNewGameDialog
+  }
 
   onArcheoGameChange (archeoGame: BgArcheoGame) {
     this.archeoGame = archeoGame;
     this.archeoGameValid = !!archeoGame.name;
-  } // onArcheoGameChange
+  }
 
   @ExhaustingEvent ({ suppressLoading: true })
   onCreateGame () {
@@ -124,47 +101,39 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
       this.newGameDialogRef?.close ();
       this.archeoGame = this.getDefaultArcheoGame ();
       return this.protoGameService.insertProtoGame$ (protoGame).pipe (
-        switchMap ((protoGame) => {
-          const inserts: Observable<BgProtoPlayer<string>>[] = this.config
-            .playerRoles ()
-            .map ((role, index) =>
-              this.insertProtoPlayer$ (index + 1 + "", role, protoGame.id)
-            );
-          return concatJoin (inserts).pipe (mapTo (protoGame));
+        switchMap (savedProtoGame => {
+          const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config.playerIds ()
+            .map (id => this.insertProtoPlayer$ (id, savedProtoGame.id));
+          return concatJoin (inserts).pipe (mapTo (savedProtoGame));
         }),
         switchMap ((pg) => this.playersRoom$ (pg))
       );
-    } // if
+    }
     return of (void 0);
-  } // onCreateGame
+  }
 
   private getDefaultArcheoGame () {
     return {
       name: "",
       online: false,
     };
-  } // getDefaultArcheoGame
+  }
 
-  private insertProtoPlayer$<R extends string> (
-    id: string,
-    role: R,
-    gameId: string
-  ) {
-    const player: BgProtoPlayer<R> = {
+  private insertProtoPlayer$ (id: Pid, gameId: string) {
+    const player: BgProtoPlayer<Pid> = {
       id: id,
-      role: role,
       name: "",
       controller: null,
       type: "closed",
       ready: false,
     };
     return this.protoGameService.insertProtoPlayer$ (player, gameId);
-  } // insertProtoPlayer$
+  }
 
   @ExhaustingEvent ()
   onDeleteGame (game: BgProtoGame) {
     return this.deleteGame$ (game.id);
-  } // onDeleteGame
+  }
 
   @ExhaustingEvent ()
   onEnterGame (game: BgProtoGame) {
@@ -172,49 +141,42 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
       return this.config.startGame$ (game.id);
     } else {
       return this.playersRoom$ (game);
-    } // if - else
-  } // onEnterGame
+    }
+  }
 
   private playersRoom$ (game: BgProtoGame) {
-    const dialogRef = this.matDialog.open<
-    BgHomeRoomDialogComponent<R>,
-    BgRoomDialogInput<R>,
-    BgRoomDialogOutput
-    > (BgHomeRoomDialogComponent, {
+    const dialogRef = this.matDialog.open<BgHomeRoomDialogComponent<Pid>, BgRoomDialogInput<Pid>, BgRoomDialogOutput> (BgHomeRoomDialogComponent, {
       width: "1000px",
       data: {
         protoGame: game,
-        createGame$: (protoGame, protoPlayers) =>
-          this.createGame$ (protoGame, protoPlayers),
+        createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
         deleteGame$: (gameId) => this.deleteGame$ (gameId),
-        roleToCssClass: (role) => this.config.playerRoleCssClass (role),
+        playerIdToCssClass: (role) => this.config.playerIdCssClass (role),
       },
     });
     return dialogRef.afterClosed ().pipe (
       switchMap ((output) => {
         if (output?.startGame) {
           return this.config.startGame$ (output.gameId);
-        } // if
+        }
         return of (void 0);
       })
     );
-  } // playersRoom$
+  }
 
-  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer[]) {
+  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<Pid>[]) {
     const activeProtoPlayers = protoPlayers.filter (
       (p) => p.type === "user" || p.type === "ai"
     );
-    return this.config
-      .createGame$ (protoGame, activeProtoPlayers)
-      .pipe (
-        switchMap (() =>
-          this.protoGameService.updateProtoGame$ (
-            { state: "running" },
-            protoGame.id
-          )
+    return this.config.createGame$ (protoGame, activeProtoPlayers).pipe (
+      switchMap (() =>
+        this.protoGameService.updateProtoGame$ (
+          { state: "running" },
+          protoGame.id
         )
-      );
-  } // createGame$
+      )
+    );
+  }
 
   private deleteGame$ (gameId: string) {
     return concatJoin ([
@@ -222,5 +184,6 @@ export class BgHomeComponent<R extends string> implements OnInit, OnDestroy {
       this.protoGameService.deleteProtoPlayers$ (gameId),
       this.protoGameService.deleteProtoGame$ (gameId),
     ]).pipe (mapTo (void 0));
-  } // deleteGame$
-} // BgHomeComponent
+  }
+  
+}

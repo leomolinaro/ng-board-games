@@ -13,10 +13,9 @@ export interface BritGameDoc {
 } // BritGameDoc
 
 export interface ABritPlayerDoc {
-  id: string;
+  id: BritColor;
   name: string;
   sort: number;
-  color: BritColor;
 } // ABritPlayerDoc
 
 export interface BritAiPlayerDoc extends ABritPlayerDoc {
@@ -50,7 +49,7 @@ export class BritRemoteService {
   getPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.getAll$ (this.players (gameId), queryFn); }
   selectPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined) { return this.cloud.selectAll$ (this.players (gameId), queryFn); }
   selectPlayer$ (playerId: string, gameId: string) { return this.cloud.select$ (playerId, this.players (gameId)); }
-  insertPlayer$ (player: Omit<BritPlayerDoc, "id">, gameId: string): Observable<BritPlayerDoc> { return this.cloud.insert$ ((id) => ({ id: id, ...player } as BritPlayerDoc), this.players (gameId)); }
+  insertPlayer$ (player: BritPlayerDoc, gameId: string): Observable<BritPlayerDoc> { return this.cloud.set$ (player, player.id, this.players (gameId)); }
   updatePlayer$ (patch: Partial<BritPlayerDoc>, playerId: string, gameId: string) { return this.cloud.update$ (patch, playerId, this.players (gameId)); }
   deletePlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.players (gameId)); }
   deletePlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.players (gameId)); }

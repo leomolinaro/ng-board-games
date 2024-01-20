@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
+import { WotrFront } from "../wotr-components/front.models";
 import { WotrRegionId } from "../wotr-components/region.models";
 import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {
-  currentPlayer: string | null;
-  turnPlayer: string;
+  currentPlayer: WotrFront | null;
+  turnPlayer: WotrFront;
   canCancel: boolean;
   message: string | null;
   validRegions: WotrRegionId[] | null;
@@ -29,7 +30,7 @@ export class WotrUiStore extends BgStore<WotrUiState> {
     super (
       {
         currentPlayer: null,
-        turnPlayer: "",
+        turnPlayer: "free-peoples",
         canCancel: false,
         message: null,
         validRegions: null,
@@ -100,9 +101,7 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   cancelChange$ () {
     return this.$cancelChange.asObservable ().pipe (first ());
   }
-  currentPlayerChange$ () {
-    return this.selectCurrentPlayerId$ ().pipe (skip (1), first ());
-  }
+  currentPlayerChange$ () { return this.selectCurrentPlayerId$ ().pipe (skip (1), first ()); }
 
   selectValidRegions$ () {
     return this.select$ ((s) => s.validRegions);
@@ -119,25 +118,13 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   selectCanPass$ () {
     return this.select$ ((s) => s.canPass);
   }
-  selectCanContinue$ () {
-    return this.select$ ((s) => s.canConfirm);
-  }
-  selectCanCancel$ () {
-    return this.select$ ((s) => s.canCancel);
-  }
+  selectCanContinue$ () { return this.select$ (s => s.canConfirm); }
+  selectCanCancel$ () { return this.select$ (s => s.canCancel); }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
-  selectCurrentPlayerId$ () {
-    return this.select$ ((s) => s.currentPlayer);
-  }
-  getCurrentPlayerId () {
-    return this.get ((s) => s.currentPlayer);
-  }
-  selectTurnPlayerId$ () {
-    return this.select$ ((s) => s.turnPlayer);
-  }
-  selectMessage$ () {
-    return this.select$ ((s) => s.message);
-  }
+  selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
+  getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
+  selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
+  selectMessage$ () { return this.select$ (s => s.message); }
 
   selectCurrentPlayer$ () {
     return this.game.select$ (
@@ -207,10 +194,11 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   //   };
   // } // setFirstActionUi
 
-  setCurrentPlayer (playerId: string | null) {
+  setCurrentPlayer (playerId: WotrFront | null) {
     this.updateUi ("Set current player", (s) => ({
       ...s,
       currentPlayer: playerId,
     }));
   } // setCurrentPlayer
+  
 } // WotrUiStore

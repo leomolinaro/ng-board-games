@@ -1,20 +1,12 @@
 import { BgUser } from "@leobg/commons";
-import {
-  BritAreaId,
-  BritColor,
-  BritLandAreaId,
-  BritLeaderId,
-  BritNationId,
-  BritPhase,
-  BritPopulation,
-} from "./brit-components.models";
+import { BritAreaId, BritColor, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation } from "./brit-components.models";
 
 export interface BritGameState {
   gameId: string;
   gameOwner: BgUser;
   players: {
-    map: Record<string, BritPlayer>;
-    ids: string[];
+    map: { [color in BritColor]?: BritPlayer };
+    colors: BritColor[];
   };
   areas: Record<BritAreaId, BritAreaState>;
   nations: Record<BritNationId, BritNationState>;
@@ -79,13 +71,10 @@ export interface BritNationState {
   active: boolean;
 } // BritNationState
 
-export type BritPlayerId = string;
-
 export interface ABritPlayer {
-  id: BritPlayerId;
+  id: BritColor;
   name: string;
   nationIds: BritNationId[];
-  color: BritColor;
   score: number;
 } // ABritPlayer
 

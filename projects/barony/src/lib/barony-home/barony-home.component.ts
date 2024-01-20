@@ -51,62 +51,45 @@ export class BaronyHomeComponent implements OnInit {
       ]),
     createGame$: (protoGame, protoPlayers) =>
       this.createGame$ (protoGame, protoPlayers),
-    playerRoles: () => BARONY_COLORS,
-    playerRoleCssClass: (color: BaronyColor) => {
+    playerIds: () => BARONY_COLORS,
+    playerIdCssClass: (color: BaronyColor) => {
       switch (color) {
-        case "blue":
-          return "barony-player-blue";
-        case "green":
-          return "barony-player-green";
-        case "red":
-          return "barony-player-red";
-        case "yellow":
-          return "barony-player-yellow";
-      } // switch
+        case "blue": return "barony-player-blue";
+        case "green": return "barony-player-green";
+        case "red": return "barony-player-red";
+        case "yellow": return "barony-player-yellow";
+      }
     }, // playerRoleCssClass
   };
 
-  ngOnInit (): void {} // ngOnInit
+  ngOnInit (): void {}
 
   private createGame$ (
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<BaronyColor>[]
   ) {
-    return this.gameService
-      .insertGame$ ({
-        id: protoGame.id,
-        owner: protoGame.owner,
-        name: protoGame.name,
-        online: protoGame.online,
-        state: "open",
-      })
-      .pipe (
-        switchMap ((game) =>
-          forkJoin ([
-            ...protoPlayers.map ((p, index) => {
-              if (p.type === "ai") {
-                return this.insertAiPlayer$ (p.name, p.role, index + 1, game.id);
-              } else {
-                return this.insertRealPlayer$ (
-                  p.name,
-                  p.role,
-                  index + 1,
-                  p.controller!,
-                  game.id
-                );
-              } // if - else
-            }),
-            this.insertMap$ (getRandomLands (protoPlayers.length), game.id),
-            // ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
-          ])
-        )
-      );
-  } // createGame$
+    return this.gameService.insertGame$ ({
+      id: protoGame.id,
+      owner: protoGame.owner,
+      name: protoGame.name,
+      online: protoGame.online,
+      state: "open",
+    }).pipe (
+      switchMap ((game) => forkJoin ([
+        ...protoPlayers.map ((p, index) => {
+          if (p.type === "ai") {
+            return this.insertAiPlayer$ (p.id, p.name, index + 1, game.id);
+          } else {
+            return this.insertRealPlayer$ (p.id, p.name, index + 1, p.controller!, game.id);
+          }
+        }),
+        this.insertMap$ (getRandomLands (protoPlayers.length), game.id),
+        // ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
+      ]))
+    );
+  }
 
-  private insertMap$ (
-    lands: { coordinates: BaronyLandCoordinates; type: BaronyLandType }[],
-    gameId: string
-  ): Observable<BaronyMapDoc> {
+  private insertMap$ (lands: { coordinates: BaronyLandCoordinates; type: BaronyLandType }[], gameId: string): Observable<BaronyMapDoc> {
     const baronyMap: BaronyMapDoc = {
       lands: lands.map ((l) => ({
         x: l.coordinates.x,
@@ -115,45 +98,27 @@ export class BaronyHomeComponent implements OnInit {
       })),
     };
     return this.gameService.insertMap$ (baronyMap, gameId);
-  } // insertMap$
+  }
 
-  private insertAiPlayer$ (
-    name: string,
-    color: BaronyColor,
-    sort: number,
-    gameId: string
-  ): Observable<BaronyPlayerDoc> {
-    const player: Omit<BaronyAiPlayerDoc, "id"> = {
-      ...this.aPlayerDoc (name, color, sort),
+  private insertAiPlayer$ (playerId: BaronyColor, name: string, sort: number, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: BaronyAiPlayerDoc = {
+      ...this.aPlayerDoc (playerId, name, sort),
       isAi: true,
     };
     return this.gameService.insertPlayer$ (player, gameId);
-  } // insertAiPlayer$
+  }
 
-  private insertRealPlayer$ (
-    name: string,
-    color: BaronyColor,
-    sort: number,
-    controller: BgUser,
-    gameId: string
-  ): Observable<BaronyPlayerDoc> {
-    const player: Omit<BaronyReadPlayerDoc, "id"> = {
-      ...this.aPlayerDoc (name, color, sort),
+  private insertRealPlayer$ (playerId: BaronyColor, name: string, sort: number, controller: BgUser, gameId: string): Observable<BaronyPlayerDoc> {
+    const player: BaronyReadPlayerDoc = {
+      ...this.aPlayerDoc (playerId, name, sort),
       isAi: false,
       controller: controller,
     };
     return this.gameService.insertPlayer$ (player, gameId);
-  } // insertRealPlayer$
+  }
 
-  private aPlayerDoc (
-    name: string,
-    color: BaronyColor,
-    sort: number
-  ): Omit<ABaronyPlayerDoc, "id"> {
-    return {
-      name: name,
-      color: color,
-      sort: sort,
-    };
-  } // aPlayerDoc
-} // BaronyHomeComponent
+  private aPlayerDoc (playerId: BaronyColor, name: string, sort: number): ABaronyPlayerDoc {
+    return { id: playerId, name: name, sort: sort };
+  }
+
+}

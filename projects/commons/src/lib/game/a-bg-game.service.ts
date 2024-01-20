@@ -1,29 +1,29 @@
 import { EMPTY, Observable, expand, filter, first, last, map, of, race, switchMap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
-interface ABgPlayer {
-  id: string;
+interface ABgPlayer<Id extends string> {
+  id: Id;
   name: string;
 }
 
-export interface BgAiPlayer extends ABgPlayer {
+export interface BgAiPlayer<Id extends string> extends ABgPlayer<Id> {
   isAi: true;
   isRemote: false;
   isLocal: false;
 }
 
-export interface BgRealPlayer extends ABgPlayer {
+export interface BgRealPlayer<Id extends string> extends ABgPlayer<Id> {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;
   controller: BgUser;
 }
 
-type BgPlayer = BgAiPlayer | BgRealPlayer;
+type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 type BgStoryDoc<St> = St & { id: number };
 
-export abstract class ABgGameService<Pl extends BgPlayer, St, PlSrv> {
+export abstract class ABgGameService<Pl extends BgPlayer<string>, St, PlSrv> {
   
   constructor () { }
 

@@ -17,7 +17,7 @@
       *ngIf="message"
       [class]="
         'brit-board-instructions-widget' +
-        (turnPlayer ? ' is-' + turnPlayer.color : '')
+        (turnPlayer ? ' is-' + turnPlayer.id : '')
       "
     >
       <div class="brit-board-instructions">{{ message }}</div>
