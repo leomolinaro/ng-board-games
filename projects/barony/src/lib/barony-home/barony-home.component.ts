@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
+import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
@@ -10,20 +10,42 @@ import {
   BaronyLandCoordinates,
   BaronyLandType,
 } from "../barony-models";
-import {
-  ABaronyPlayerDoc,
-  BaronyAiPlayerDoc,
-  BaronyMapDoc,
-  BaronyPlayerDoc,
-  BaronyReadPlayerDoc,
-  BaronyRemoteService,
-} from "../barony-remote.service";
+import { ABaronyPlayerDoc, BaronyAiPlayerDoc, BaronyMapDoc, BaronyPlayerDoc, BaronyReadPlayerDoc, BaronyRemoteService } from "../barony-remote.service";
 import { getRandomLands } from "./barony-initializer";
 
 @Component ({
   selector: "barony-home",
-  templateUrl: "./barony-home.component.html",
-  styleUrls: ["./barony-home.component.scss"],
+  standalone: true,
+  imports: [BgHomeModule],
+  template: `
+    <bg-home [config]="config"></bg-home>
+  `,
+  styles: [`
+    @import 'barony-variables';
+
+    ::ng-deep {
+      .barony-player-blue {
+        .bg-player-type-button {
+          background-color: $blue;
+        }
+      }
+      .barony-player-red {
+        .bg-player-type-button {
+          background-color: $red;
+        }
+      }
+      .barony-player-green {
+        .bg-player-type-button {
+          background-color: $green;
+        }
+      }
+      .barony-player-yellow {
+        .bg-player-type-button {
+          background-color: $yellow;
+        }
+      }
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaronyHomeComponent implements OnInit {

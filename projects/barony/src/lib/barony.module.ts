@@ -11,7 +11,6 @@ import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/ba
 import { BaronyEndGameComponent } from "./barony-end-game/barony-end-game.component";
 import { BaronyGameComponent } from "./barony-game/barony-game.component";
 import { BaronyHomeComponent } from "./barony-home/barony-home.component";
-import { BaronyHomeModule } from "./barony-home/barony-home.module";
 import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
 import { BaronyLandCoordinatesPipe } from "./barony-land-tile/barony-land-tile-coordinates.pipe";
 import { BaronyLandComponent } from "./barony-land-tile/barony-land-tile.component";
@@ -50,7 +49,7 @@ const routes: Routes = [
     RouterModule.forChild (routes),
     BgTransformPipe,
     BgSvgModule,
-    BaronyHomeModule,
+    BaronyHomeComponent,
     MatIconModule,
     MatTableModule,
   ],

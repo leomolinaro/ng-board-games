@@ -29,7 +29,7 @@ export interface BgRoomDialogOutput {
         (playerChange)="onPlayerChange($event, player.id)"
         [isOwner]="game.owner | bgIfUser"
         [isPlayer]="player.controller && (player.controller | bgIfUser)"
-        [ngClass]="player.role | bgTransform : roleToCssClass">
+        [ngClass]="player.id | bgTransform : roleToCssClass">
       </bg-home-player-form>
     </div>
     <div mat-dialog-actions *bgIfUser="game.owner">

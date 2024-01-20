@@ -66,8 +66,8 @@ type WotrLogFragment =
 
       .is-red { color: $red; }
       .is-blue { color: $blue; }
-      .is-yellow { color: $yellow; }
-      .is-green { color: $green; }
+      // .is-yellow { color: $yellow; }
+      // .is-green { color: $green; }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
