@@ -20,11 +20,8 @@ import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
-export class BritGameService extends ABgGameService<
-BritPlayer,
-BritStory,
-BritPlayerService
-> {
+export class BritGameService extends ABgGameService<BritPlayer, BritStory, BritPlayerService> {
+
   constructor (
     private rules: BritRulesService,
     private game: BritGameStore,
@@ -140,33 +137,20 @@ BritPlayerService
     } // if - else
   } // nationTurn$
 
-  private populationIncreasePhase$ (
-    nationId: BritNationId,
-    playerId: BritPlayerId,
-    roundId: BritRoundId
-  ): Observable<void> {
+  private populationIncreasePhase$ (nationId: BritNationId, playerId: BritPlayerId, roundId: BritRoundId): Observable<void> {
     this.game.logPhase ("populationIncrease");
-    const data = this.rules.populationIncrease.calculatePopulationIncreaseData (
-      nationId,
-      roundId,
-      this.game.get ()
-    );
+    const data = this.rules.populationIncrease.calculatePopulationIncreaseData (nationId, roundId, this.game.get ());
     switch (data.type) {
       case "infantry-placement": {
         if (data.nInfantries) {
-          return this.executeTask$ (playerId, (p) =>
-            p.armyPlacement$ (data.nInfantries, nationId, playerId)
-          ).pipe (
+          return this.executeTask$ (playerId, (p) => p.armyPlacement$ (data.nInfantries, nationId, playerId)).pipe (
             map ((armyPlacement) => {
-              const infantryPlacement: {
-                areaId: BritLandAreaId;
-                quantity: number;
-              }[] = [];
+              const infantryPlacement: { areaId: BritLandAreaId; quantity: number; }[] = [];
               for (const ip of armyPlacement.infantryPlacement) {
                 infantryPlacement.push (
                   typeof ip === "object" ? ip : { areaId: ip, quantity: 1 }
                 );
-              } // for
+              }
               this.game.applyPopulationIncrease (
                 data.populationMarker,
                 infantryPlacement,
@@ -174,7 +158,7 @@ BritPlayerService
               );
               for (const ip of infantryPlacement) {
                 this.game.logInfantryPlacement (ip.areaId, ip.quantity);
-              } // for
+              }
               this.game.logPopulationMarkerSet (data.populationMarker);
               return void 0;
             })
@@ -208,9 +192,7 @@ BritPlayerService
 
   private movementPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("movement");
-    return this.executeTask$ (playerId, (p) =>
-      p.armyMovements$ (nationId, playerId)
-    ).pipe (
+    return this.executeTask$ (playerId, (p) => p.armyMovements$ (nationId, playerId)).pipe (
       map ((armyMovements) => {
         if (armyMovements.movements?.length) {
           this.game.applyArmyMovements (armyMovements, true);
@@ -223,17 +205,10 @@ BritPlayerService
     );
   } // movement$
 
-  private battlesRetreatsPhase$ (
-    nationId: BritNationId,
-    playerId: BritPlayerId
-  ) {
+  private battlesRetreatsPhase$ (nationId: BritNationId, playerId: BritPlayerId) {
     this.game.logPhase ("battlesRetreats");
-    if (
-      this.rules.battlesRetreats.hasBattlesToResolve (nationId, this.game.get ())
-    ) {
-      return this.executeTask$ (playerId, (p) =>
-        p.battleInitiation$ (nationId, playerId)
-      ).pipe (
+    if (this.rules.battlesRetreats.hasBattlesToResolve (nationId, this.game.get ())) {
+      return this.executeTask$ (playerId, (p) => p.battleInitiation$ (nationId, playerId)).pipe (
         map ((battleInitiation) => {
           console.log ("battleInitiation", battleInitiation);
           return void 0;

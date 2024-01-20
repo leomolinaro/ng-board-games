@@ -4,20 +4,20 @@ import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 interface ABgPlayer {
   id: string;
   name: string;
-} // ABaronyPlayer
+}
 
 export interface BgAiPlayer extends ABgPlayer {
   isAi: true;
   isRemote: false;
   isLocal: false;
-} // BaronyAiPlayer
+}
 
 export interface BgRealPlayer extends ABgPlayer {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;
   controller: BgUser;
-} // BaronyAiPlayer
+}
 
 type BgPlayer = BgAiPlayer | BgRealPlayer;
 
@@ -53,48 +53,48 @@ export abstract class ABgGameService<Pl extends BgPlayer, St, PlSrv> {
     const user = this.authService.getUser ();
     const player = this.getPlayer (playerId);
     return player.isAi ? false : player.controller.id === user.id;
-  } // isLocalPlayer
+  }
 
   private isOwnerUser () {
     const user = this.authService.getUser ();
     const gameOwner = this.getGameOwner ();
     return user.id === gameOwner.id;
-  } // isOwnerUser
+  }
 
   private isCurrentPlayer (playerId: string) {
     const currentPlayerId = this.getCurrentPlayerId ();
     return currentPlayerId === playerId;
-  } // isCurrentPlayer
+  }
 
   private isAiPlayer (playerId: string) {
     const player = this.getPlayer (playerId);
     return player.isAi;
-  } // isAiPlayer
+  }
 
   private autoRefreshCurrentPlayer (player: string) {
     if (this.isLocalPlayer (player)) {
       this.setCurrentPlayer (player);
-    } // if - else
-  } // autoRefreshCurrentPlayer
+    }
+  }
 
   private executeTaskOnFixedPlayer$<R extends St> (playerId: string, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
     if (this.isLocalPlayer (playerId) && this.isCurrentPlayer (playerId)) {
       return task$ (this.localService).pipe (
-        switchMap ((result) => this.insertStory$ (result, ++this.lastStoryId, this.getGameId ()))
+        switchMap ((result) => this.insertStory$ (result, this.lastStoryId + 1, this.getGameId ()))
       );
     } else if (this.isAiPlayer (playerId) && this.isOwnerUser ()) {
       return task$ (this.aiService).pipe (
-        switchMap ((result) => this.insertStory$ (result, ++this.lastStoryId, this.getGameId ()))
+        switchMap ((result) => this.insertStory$ (result, this.lastStoryId + 1, this.getGameId ()))
       );
     } else {
       this.resetUi (playerId);
-      return this.selectStory$ (++this.lastStoryId, this.getGameId ()).pipe (
+      return this.selectStory$ (this.lastStoryId + 1, this.getGameId ()).pipe (
         filter ((story) => !!story),
-        map ((story) => story  as R),
+        map ((story) => story as R),
         first<R> ()
       );
-    } // if - else
-  } // executeTaskOnFixedPlayer$
+    }
+  }
 
   private executeTaskOnChangingPlayer$<R extends St> (playerId: string, task$: (playerService: PlSrv) => Observable<R>): Observable<R | null> {
     return race (
@@ -102,10 +102,10 @@ export abstract class ABgGameService<Pl extends BgPlayer, St, PlSrv> {
       this.currentPlayerChange$ ().pipe (map (() => null)),
       this.cancelChange$ ().pipe (map (() => null))
     );
-  } // executeTaskOnChangingPlayer$
+  }
 
   protected executeTask$<R extends St> (playerId: string, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
-    if (this.stories && this.stories.length) {
+    if (this.stories?.length) {
       const nextStory = this.stories.shift ()!;
       this.lastStoryId = nextStory.id;
       return of (nextStory as St as R);
@@ -113,19 +113,20 @@ export abstract class ABgGameService<Pl extends BgPlayer, St, PlSrv> {
       this.autoRefreshCurrentPlayer (playerId);
       this.startTemporaryState ();
       return this.executeTaskOnChangingPlayer$ (playerId, task$).pipe (
-        expand ((result) => {
+        expand (result => {
           this.endTemporaryState ();
           if (result) {
+            ++this.lastStoryId;
             return EMPTY;
           } else {
             this.startTemporaryState ();
             return this.executeTaskOnChangingPlayer$ (playerId, task$);
-          } // if - else
+          }
         }),
         last (),
-        map ((story) => story  as R)
+        map ((story) => story as R)
       );
-    } // if - else
-  } // executeTask$
+    }
+  }
 
-} // ABgGameService
+}
