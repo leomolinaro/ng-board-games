@@ -63,8 +63,7 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
 
   @SingleEvent ()
   ngOnInit () {
-    return this.gameService
-      .loadGame$ (this.gameId)
+    return this.gameService.loadGame$ (this.gameId)
       .pipe (tap ((stories) => this.listenToGame (stories)));
   } // ngOnInit
 

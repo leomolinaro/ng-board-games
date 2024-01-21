@@ -21,7 +21,7 @@ export interface BgRealPlayer<Id extends string> extends ABgPlayer<Id> {
 
 type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
-export type BgStoryDoc<Pid, St> = St & { id: number; playerId: Pid };
+export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
 
 export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid>, St, PlSrv> {
   
@@ -31,7 +31,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract localService: PlSrv;
   protected abstract aiService: PlSrv;
 
-  private lastStoryId: number = 0;
+  private storyTime: number = 0;
   protected abstract stories: BgStoryDoc<Pid, St>[] | null;
 
   protected abstract getGameId (): string;
@@ -46,8 +46,8 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract endTemporaryState (): void;
   protected abstract resetUi (playerId: string): void;
 
-  protected abstract insertStory$ (story: BgStoryDoc<Pid, St>, gameId: string): Observable<unknown>;
-  protected abstract selectStory$ (storyId: number, gameId: string): Observable<St | undefined>;
+  protected abstract insertStory$ (storyId: string, story: BgStoryDoc<Pid, St>, gameId: string): Observable<unknown>;
+  protected abstract selectStory$ (storyId: string, gameId: string): Observable<St | undefined>;
 
   private isLocalPlayer (playerId: string) {
     const user = this.authService.getUser ();
@@ -92,15 +92,15 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     if (playerService) {
       return task$ (playerService).pipe (
         switchMap (story => {
-          const storyDoc: BgStoryDoc<Pid, St> = { ...story, id: this.lastStoryId + 1, playerId };
-          return this.insertStory$ (storyDoc, this.getGameId ()).pipe (
-            map (() => story)
-          )
+          const storyDoc: BgStoryDoc<Pid, St> = { ...story, time: this.storyTime + 1, playerId };
+          const storyId = storyDoc.time + "." + playerId;
+          return this.insertStory$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => story));
         })
       );
     } else {
       this.resetUi (playerId);
-      return this.selectStory$ (this.lastStoryId + 1, this.getGameId ()).pipe (
+      const storyId = (this.storyTime + 1) + "." + playerId;
+      return this.selectStory$ (storyId, this.getGameId ()).pipe (
         filter (story => !!story),
         map (story => story as R),
         first<R> ()
@@ -119,16 +119,16 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
     if (this.stories?.length) {
       const nextStory = this.stories.shift ()!;
-      this.lastStoryId = nextStory.id;
+      this.storyTime = nextStory.time;
       return of (nextStory as St as R);
     } else {
       this.autoRefreshCurrentPlayer (playerId);
       this.startTemporaryState ();
       return this.executeTaskOnChangingPlayer$ (playerId, task$).pipe (
-        expand (result => {
+        expand (story => {
           this.endTemporaryState ();
-          if (result) {
-            ++this.lastStoryId;
+          if (story) {
+            ++this.storyTime;
             return EMPTY;
           } else {
             this.startTemporaryState ();
@@ -136,7 +136,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
           }
         }),
         last (),
-        map ((story) => story as R)
+        map (story => story as R)
       );
     }
   }

@@ -102,7 +102,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
     return forkJoin ([
       this.remote.getGame$ (this.gameId),
       this.remote.getPlayers$ (this.gameId, (ref) => ref.orderBy ("sort")),
-      this.remote.getStories$ (this.gameId, (ref) => ref.orderBy ("id")),
+      this.remote.getStories$ (this.gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
     ]).pipe (
       tap (([game, players, stories]) => {
         if (game) {
@@ -123,10 +123,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
     return this.gameService.game$ (stories);
   } // listenToGame
 
-  private playerDocToPlayer (
-    playerDoc: BritPlayerDoc,
-    user: BgUser
-  ): BritPlayer {
+  private playerDocToPlayer (playerDoc: BritPlayerDoc, user: BgUser): BritPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit (playerDoc),

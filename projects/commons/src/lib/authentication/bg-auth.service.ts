@@ -1,11 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import {
-  Auth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  User,
-  user,
-} from "@angular/fire/auth";
+import { Auth, GoogleAuthProvider, signInWithPopup, User, user } from "@angular/fire/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, first, map, switchMap } from "rxjs/operators";
 import { BgCloudService } from "../cloud/bg-cloud.service";
@@ -20,13 +14,13 @@ export interface BgUser {
   email: string;
   displayName: string;
   loginType: BgUserLoginType;
-} // BgUser
+}
 
 interface IBgAuthProvider {
   signIn$: () => Observable<BgUser | null>;
   autoSignIn$: () => Observable<BgUser | null>;
   signOut$: () => Observable<void>;
-} // IBgAuthProvider
+}
 
 @Injectable ({
   providedIn: "root",
@@ -71,8 +65,8 @@ export class BgAuthService {
         .pipe (switchMap ((user) => this.login$ (user)));
     } else {
       return of (null);
-    } // if - else
-  } // autoSignIn$
+    }
+  }
 
   signIn$ (type: BgUserLoginType) {
     return this.provider (type)
@@ -84,7 +78,7 @@ export class BgAuthService {
           return throwError (e);
         })
       );
-  } // signIn$
+  }
 
   signOut$ () {
     const user = this.$user.getValue ();
@@ -94,8 +88,8 @@ export class BgAuthService {
       return this.provider (user.loginType).signOut$ ();
     } else {
       return of (void 0);
-    } // if - else
-  } // signOut
+    }
+  }
 
   deleteUser$ () {
     const user = this.$user.getValue ();
@@ -105,8 +99,8 @@ export class BgAuthService {
       );
     } else {
       return of (void 0);
-    } // if - else
-  } // deleteUser$
+    }
+  }
 
   private provider (type: BgUserLoginType): IBgAuthProvider {
     switch (type) {
@@ -116,8 +110,8 @@ export class BgAuthService {
         return this.guestProvider;
       default:
         throw new Error (`Login type ${type} not implemented.`);
-    } // switch
-  } // provider
+    }
+  }
 
   private login$ (user: BgUser | null) {
     if (user) {
@@ -127,14 +121,14 @@ export class BgAuthService {
     } else {
       this.setUser (null);
       return of (null);
-    } // if - else
-  } // login$
+    }
+  }
 
   private upsertUser$ (user: BgUser) {
     const users = this.users ();
-    return this.cloud.set$<BgUser> (user, user.id, users);
-  } // checkUser$
-} // BgAuthServiceService
+    return this.cloud.set$<BgUser> (user.id, user, users);
+  }
+}
 
 @Injectable ({
   providedIn: "root",
@@ -146,18 +140,18 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
     return from (signInWithPopup (this.auth, new GoogleAuthProvider ())).pipe (
       map ((userCredential) => this.googleUserToBgUser (userCredential.user))
     );
-  } // signIn$
+  }
 
   signOut$ () {
     return from (this.auth.signOut ());
-  } // signOut
+  }
 
   autoSignIn$ (): Observable<BgUser | null> {
     return user (this.auth).pipe (
       first (),
       map ((authUser) => this.googleUserToBgUser (authUser))
     );
-  } // autoSignIn$
+  }
 
   private googleUserToBgUser (authUser: User | null): BgUser | null {
     return authUser
@@ -168,8 +162,8 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
         loginType: "google",
       }
       : null;
-  } // googleUserToBgUser
-} // GoogleAuthProvider
+  }
+}
 
 @Injectable ({
   providedIn: "root",
@@ -180,12 +174,12 @@ class BgGuestAuthProvider implements IBgAuthProvider {
     localStorage.setItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, guestKey);
     const user = this.guestKeyToBgUser (guestKey);
     return of (user);
-  } // signIn$
+  }
 
   signOut$ () {
     localStorage.removeItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
     return of (void 0);
-  } // signOut
+  }
 
   autoSignIn$ (): Observable<BgUser | null> {
     const guestKey = localStorage.getItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
@@ -194,8 +188,8 @@ class BgGuestAuthProvider implements IBgAuthProvider {
       return of (user);
     } else {
       return of (null);
-    } // if - else
-  } // autoSignIn$
+    }
+  }
 
   private guestKeyToBgUser (guestKey: string): BgUser | null {
     return guestKey
@@ -206,5 +200,5 @@ class BgGuestAuthProvider implements IBgAuthProvider {
         loginType: "guest",
       }
       : null;
-  } // guestKeyToBgUser
-} // GuestAuthProvider
+  }
+}

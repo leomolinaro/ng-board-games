@@ -49,7 +49,7 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     protected localService: BaronyPlayerLocalService,
     protected authService: BgAuthService,
     private ui: BaronyUiStore,
-    private remoteService: BaronyRemoteService
+    private remote: BaronyRemoteService
   ) { super (); }
 
   protected stories: BaronyStoryDoc[] | null = null;
@@ -190,8 +190,8 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (story: BaronyStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
-  protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
+  protected insertStory$ (storyId: string, story: BaronyStoryDoc, gameId: string) { return this.remote.insertStory$ (storyId, story, gameId); }
+  protected selectStory$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: BaronyColor) { this.ui.setCurrentPlayer (playerId); }
@@ -210,10 +210,10 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
 
   loadGame$ (gameId: string) {
     return forkJoin ([
-      this.remoteService.getGame$ (gameId),
-      this.remoteService.getPlayers$ (gameId, (ref) => ref.orderBy ("sort")),
-      this.remoteService.getMap$ (gameId),
-      this.remoteService.getStories$ (gameId, (ref) => ref.orderBy ("id")),
+      this.remote.getGame$ (gameId),
+      this.remote.getPlayers$ (gameId, (ref) => ref.orderBy ("sort")),
+      this.remote.getMap$ (gameId),
+      this.remote.getStories$ (gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
     ]).pipe (
       map (([game, players, baronyMap, stories]) => {
         if (game && baronyMap) {

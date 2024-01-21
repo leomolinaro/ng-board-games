@@ -36,8 +36,8 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
-  protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
+  protected insertStory$ (storyId: string, story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
+  protected selectStory$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: WotrFront) { this.ui.setCurrentPlayer (playerId); }

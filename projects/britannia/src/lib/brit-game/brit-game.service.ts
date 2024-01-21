@@ -37,8 +37,8 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (story: BritStoryDoc, gameId: string) { return this.remoteService.insertStory$ (story, gameId); }
-  protected selectStory$ (storyId: number, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
+  protected insertStory$ (storyId: string, story: BritStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
+  protected selectStory$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: BritColor) { this.ui.setCurrentPlayer (playerId); }
