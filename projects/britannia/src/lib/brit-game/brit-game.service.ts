@@ -29,7 +29,7 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
     private components: BritComponentsService
   ) { super (); }
 
-  protected stories: BritStoryDoc[] | null = null;
+  protected storyDocs: BritStoryDoc[] | null = null;
 
   protected getGameId () { return this.game.getGameId (); }
   protected getPlayer (playerColor: BritColor) { return this.game.getPlayer (playerColor); }
@@ -37,8 +37,8 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (storyId: string, story: BritStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
-  protected selectStory$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
+  protected insertStoryDoc$ (storyId: string, story: BritStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
+  protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: BritColor) { this.ui.setCurrentPlayer (playerId); }
@@ -56,7 +56,7 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
   }
 
   game$ (stories: BritStoryDoc[]): Observable<void> {
-    this.stories = stories;
+    this.storyDocs = stories;
     this.setup ();
     return forN (16, (index) => this.round$ ((index + 1) as BritRoundId)).pipe (
       tap (() => {

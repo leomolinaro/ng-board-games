@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService } from "@leobg/commons";
+import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, map, of, switchMap, tap } from "rxjs";
 import { WotrFront } from "../wotr-components/front.models";
 import { WotrPlayer } from "../wotr-game-state.models";
@@ -12,11 +12,6 @@ import { WotrPlayerLocalService } from "./wotr-player-local.service";
 import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
-function unexpectedStory (story: WotrStory) {
-  console.error ("Unexpected story", story);
-  return new Error ("Unexpected story");
-}
-
 @Injectable ()
 export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrStory, WotrPlayerService> {
 
@@ -28,7 +23,7 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   protected aiService = inject (WotrPlayerAiService);
   protected localService = inject (WotrPlayerLocalService);
 
-  protected stories: WotrStoryDoc[] | null = null;
+  protected storyDocs: WotrStoryDoc[] | null = null;
 
   protected getGameId () { return this.game.getGameId (); }
   protected getPlayer (playerId: WotrFront) { return this.game.getPlayer (playerId); }
@@ -36,8 +31,8 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (storyId: string, story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
-  protected selectStory$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
+  protected insertStoryDoc$ (storyId: string, story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
+  protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: WotrFront) { this.ui.setCurrentPlayer (playerId); }
@@ -55,7 +50,7 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   }
 
   game$ (stories: WotrStoryDoc[]): Observable<unknown> {
-    this.stories = stories;
+    this.storyDocs = stories;
     this.setup ();
     let roundNumber = 0;
     return this.round$ (++roundNumber).pipe (

@@ -52,10 +52,10 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     private remote: BaronyRemoteService
   ) { super (); }
 
-  protected stories: BaronyStoryDoc[] | null = null;
+  protected storyDocs: BaronyStoryDoc[] | null = null;
 
   game$ (stories: BaronyStoryDoc[]): Observable<void> {
-    this.stories = stories;
+    this.storyDocs = stories;
     return this.setup$ ().pipe (
       mapTo<void, BaronyRoundOutput> ({ endGame: false, roundNumber: 0 }),
       expand ((prevRoundOutput) => {
@@ -190,8 +190,8 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
 
-  protected insertStory$ (storyId: string, story: BaronyStoryDoc, gameId: string) { return this.remote.insertStory$ (storyId, story, gameId); }
-  protected selectStory$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
+  protected insertStoryDoc$ (storyId: string, story: BaronyStoryDoc, gameId: string) { return this.remote.insertStory$ (storyId, story, gameId); }
+  protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
   protected setCurrentPlayer (playerId: BaronyColor) { this.ui.setCurrentPlayer (playerId); }

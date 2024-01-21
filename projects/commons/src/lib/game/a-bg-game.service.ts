@@ -1,4 +1,4 @@
-import { EMPTY, Observable, expand, filter, first, last, map, of, race, switchMap } from "rxjs";
+import { EMPTY, NEVER, Observable, expand, filter, first, last, map, of, race, switchMap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -23,6 +23,11 @@ type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
 
+export function unexpectedStory<St> (storyDoc: St) {
+  console.error ("Unexpected story", storyDoc);
+  return new Error ("Unexpected story");
+}
+
 export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid>, St, PlSrv> {
   
   constructor () { }
@@ -32,7 +37,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract aiService: PlSrv;
 
   private storyTime: number = 0;
-  protected abstract stories: BgStoryDoc<Pid, St>[] | null;
+  protected abstract storyDocs: BgStoryDoc<Pid, St>[] | null;
 
   protected abstract getGameId (): string;
   protected abstract getPlayer (playerId: string): Pl;
@@ -46,8 +51,8 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract endTemporaryState (): void;
   protected abstract resetUi (playerId: string): void;
 
-  protected abstract insertStory$ (storyId: string, story: BgStoryDoc<Pid, St>, gameId: string): Observable<unknown>;
-  protected abstract selectStory$ (storyId: string, gameId: string): Observable<St | undefined>;
+  protected abstract insertStoryDoc$ (storyId: string, storyDoc: BgStoryDoc<Pid, St>, gameId: string): Observable<unknown>;
+  protected abstract selectStoryDoc$ (storyId: string, gameId: string): Observable<BgStoryDoc<Pid, St> | undefined>;
 
   private isLocalPlayer (playerId: string) {
     const user = this.authService.getUser ();
@@ -87,58 +92,64 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     }
   }
 
-  private executeTaskOnFixedPlayer$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
+  private getLocalStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
     const playerService = this.getPlayerService (playerId);
-    if (playerService) {
-      return task$ (playerService).pipe (
-        switchMap (story => {
-          const storyDoc: BgStoryDoc<Pid, St> = { ...story, time: this.storyTime + 1, playerId };
-          const storyId = storyDoc.time + "." + playerId;
-          return this.insertStory$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => story));
-        })
-      );
-    } else {
-      this.resetUi (playerId);
-      const storyId = (this.storyTime + 1) + "." + playerId;
-      return this.selectStory$ (storyId, this.getGameId ()).pipe (
-        filter (story => !!story),
-        map (story => story as R),
-        first<R> ()
-      );
-    }
+    if (!playerService) { return NEVER; }
+    return task$ (playerService).pipe (
+      switchMap (story => {
+        const storyDoc: BgStoryDoc<Pid, R> = { ...story, time, playerId };
+        const storyId = storyDoc.time + "." + playerId;
+        return this.insertStoryDoc$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => storyDoc));
+      })
+    );
   }
 
-  private executeTaskOnChangingPlayer$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R | null> {
+  private getRemoteStory$<R extends St> (time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R> | null> {
+    const storyId = time + "." + playerId;
+    return this.selectStoryDoc$ (storyId, this.getGameId ()).pipe (
+      filter (storyDoc => !!storyDoc),
+      map (story => story as BgStoryDoc<Pid, R>),
+      first ()
+    );
+  }
+
+  private getPastStory (time: number, playerId: Pid) {
+    if (!this.storyDocs?.length) { return null; }
+    const storyDoc = this.storyDocs.shift ()!;
+    if (storyDoc.time !== time || storyDoc.playerId !== playerId) { throw unexpectedStory (storyDoc); }
+    this.storyTime = time;
+    return storyDoc;
+  }
+
+  private getStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
+    this.startTemporaryState ();
+    this.resetUi (playerId);
     return race (
-      this.executeTaskOnFixedPlayer$ (playerId, task$),
+      this.getLocalStory$ (time, playerId, task$),
+      this.getRemoteStory$<R> (time, playerId),
       this.currentPlayerChange$ ().pipe (map (() => null)),
       this.cancelChange$ ().pipe (map (() => null))
     );
   }
 
   protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
-    if (this.stories?.length) {
-      const nextStory = this.stories.shift ()!;
-      this.storyTime = nextStory.time;
-      return of (nextStory as St as R);
-    } else {
-      this.autoRefreshCurrentPlayer (playerId);
-      this.startTemporaryState ();
-      return this.executeTaskOnChangingPlayer$ (playerId, task$).pipe (
-        expand (story => {
-          this.endTemporaryState ();
-          if (story) {
-            ++this.storyTime;
-            return EMPTY;
-          } else {
-            this.startTemporaryState ();
-            return this.executeTaskOnChangingPlayer$ (playerId, task$);
-          }
-        }),
-        last (),
-        map (story => story as R)
-      );
-    }
+    const time = this.storyTime + 1;
+    const pastStory = this.getPastStory (time, playerId);
+    if (pastStory) { return of (pastStory as St as R); }
+    this.autoRefreshCurrentPlayer (playerId);
+    return this.getStory$ (time, playerId, task$).pipe (
+      expand (storyDoc => {
+        this.endTemporaryState ();
+        if (storyDoc) {
+          this.storyTime = time;
+          return EMPTY;
+        } else {
+          return this.getStory$ (time, playerId, task$);
+        }
+      }),
+      last (),
+      map (story => story!)
+    );
   }
 
 }
