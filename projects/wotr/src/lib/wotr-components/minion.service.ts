@@ -19,6 +19,7 @@ export class WotrMinionComponentsService {
     return map;
   }
   get (minionId: WotrMinionId): WotrMinion { return this.MINION[minionId]; }
+  getAllIds () { return this.MINION_IDS; }
 
   private init () {
     this.initMinion ("saruman", "Saruman", 0, 1);

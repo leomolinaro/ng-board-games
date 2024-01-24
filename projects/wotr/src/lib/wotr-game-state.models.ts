@@ -1,5 +1,6 @@
 import { BgUser } from "@leobg/commons";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "./wotr-components/card.models";
+import { WotrActionDie } from "./wotr-components/dice.models";
 import { WotrFront } from "./wotr-components/front.models";
 import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId, WotrPoliticalStep } from "./wotr-components/nation.models";
 import { WotrPhase } from "./wotr-components/phase.models";
@@ -8,7 +9,10 @@ import { WotrRegionId } from "./wotr-components/region.models";
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
-  players: Record<WotrFront, WotrPlayer>;
+  players: {
+    map: Record<WotrFront, WotrPlayer>;
+    ids: WotrFront[];
+  };
   fronts: Record<WotrFront, WotrFrontState>;
   regions: Record<WotrRegionId, WotrRegionState>;
   nations: Record<WotrNationId, WotrNationState>;
@@ -19,12 +23,14 @@ export interface WotrGameState {
 }
 
 export interface WotrFrontState {
+  id: WotrFront;
   handCards: WotrCardId[];
   tableCards: WotrCardId[];
   characterDeck: WotrCharacterCardId[];
   strategyDeck: WotrStrategyCardId[];
   characterDiscardPile: WotrCharacterCardId[];
   strategyDiscardPile: WotrStrategyCardId[];
+  actionDice: WotrActionDie[];
 }
 
 export interface WotrRegionArmyUnit {
@@ -40,6 +46,7 @@ export interface WotrRegionLeaderUnit {
 }
 
 export interface WotrRegionState {
+  id: WotrRegionId;
   armyUnits: WotrRegionArmyUnit[];
   leaders: WotrRegionLeaderUnit[];
   nNazgul: number;
@@ -49,13 +56,14 @@ export interface WotrRegionState {
 }
 
 export interface WotrNationState {
+  id: WotrNationId;
   reinforcements: {
     regular: number;
     elite: number;
     leader: number;
     nazgul: number;
   };
-  eliminated: {
+  casualties: {
     regular: number;
     elite: number;
     leader: number;
@@ -71,10 +79,12 @@ export interface WotrFellowshipState {
 }
 
 export interface WotrCompanionState {
+  id: WotrCompanionId;
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
 }
 
 export interface WotrMinionState {
+  id: WotrMinionId;
   status: "available" | "inPlay" | "eliminated";
 }
 

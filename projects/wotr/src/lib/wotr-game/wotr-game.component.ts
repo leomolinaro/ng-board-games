@@ -19,14 +19,30 @@ import { WotrUiStore } from "./wotr-ui.store";
   imports: [WotrBoardComponent, AsyncPipe],
   template: `
     <wotr-board
-      [regionStates]="regionStates$ | async"
-      [logs]="logs$ | async">
+      [players]="store.players$ | async"
+      [fronts]="store.fronts$ | async"
+      [regions]="store.regions$ | async"
+      [nations]="store.nations$ | async"
+      [companions]="store.companions$ | async"
+      [minions]="store.minions$ | async"
+      [logs]="store.logs$ | async"
+      [message]="ui.message$ | async"
+      (playerSelect)="ui.setCurrentPlayer ($event)"
+      (testClick)="ui.testChange ()">
     </wotr-board>
+  <!-- // // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
+  // onRegionClick (regionId: WotrRegionId) { this.ui.regionChange (regionId); }
+  // onUnitClick (unit: WotrRegionUnit) { this.ui.unitChange (unit); }
+  // onSelectedUnitsChange (units: WotrRegionUnit[]) { this.ui.selectedUnitsChange (units); }
+  // // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
+  // onPassClick () { this.ui.passChange (); }
+  // onConfirmClick () { this.ui.confirmChange (); }
+  // // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
+  // // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); } --> -->
     <!-- 
     [nationStates]="nationStates$ | async"
     [players]="players$ | async"
     
-    [message]="message$ | async"
     [turnPlayer]="turnPlayer$ | async"
     [currentPlayer]="currentPlayer$ | async"
     [validRegions]="validRegions$ | async"
@@ -67,8 +83,8 @@ import { WotrUiStore } from "./wotr-ui.store";
 @UntilDestroy
 export class WotrGameComponent implements OnInit, OnDestroy {
 
-  private game = inject (WotrGameStore);
-  // private ui = inject (WotrUiStore);
+  protected store = inject (WotrGameStore);
+  protected ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
   private authService = inject (BgAuthService);
@@ -76,10 +92,6 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
-  regionStates$ = this.game.selectRegions$ ();
-  // nationStates$ = this.game.selectNations$ ();
-  // players$ = this.game.selectPlayers$ ();
-  logs$ = this.game.selectLogs$ ();
   // // endGame$ = this.game.selectEndGame$ ();
 
   // turnPlayer$ = this.ui.selectTurnPlayer$ ();
@@ -108,7 +120,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
       tap (([game, players, stories]) => {
         if (game) {
           const user = this.authService.getUser ();
-          this.game.initGameState (
+          this.store.initGameState (
             players.map ((p) => this.playerDocToPlayer (p, user)),
             this.gameId,
             game.owner
@@ -152,17 +164,5 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy () {}
 
-  // // onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
-  // // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
-  // onRegionClick (regionId: WotrRegionId) { this.ui.regionChange (regionId); }
-  // onUnitClick (unit: WotrRegionUnit) { this.ui.unitChange (unit); }
-  // onSelectedUnitsChange (units: WotrRegionUnit[]) { this.ui.selectedUnitsChange (units); }
-  // // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
-  // onPassClick () { this.ui.passChange (); }
-  // onConfirmClick () { this.ui.confirmChange (); }
-  // onCancelClick () { this.ui.cancelChange (); }
-  // // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
-  // // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
-  
 }
 

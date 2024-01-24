@@ -12,39 +12,57 @@ $area-background: #151515;
   background: $background;
 
   display: grid;
+  // grid-template-areas:
+  //   'map dice dice'
+  //   'map cards cards'
+  //   'map detail logs'
+  //   'toolbar toolbar toolbar';
+  // grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
+  // grid-template-rows: 80px 2fr 3fr 80px;
   grid-template-areas:
-    'map dice dice'
-    'map cards cards'
-    'map detail logs'
-    'toolbar toolbar toolbar';
-  grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
-  grid-template-rows: 80px 2fr 3fr 80px;
+    'toolbar toolbar toolbar'
+    'free-peoples map detail'
+    'shadow map logs ';
+  grid-template-columns: 2fr minmax(50%, 1200px) 1fr;
+  grid-template-rows: 40px 1fr 1fr;
   grid-gap: 10px;
+  padding-bottom: 10px;
   > * {
     overflow: hidden;
-    background-color: $area-background;
+    // background-color: $area-background;
   }
   .wotr-map {
     grid-area: map;
   }
   .wotr-toolbar {
     grid-area: toolbar;
+    background-color: $area-background;
   }
   .wotr-dice {
     grid-area: dice;
+    background-color: $area-background;
   }
-  .wotr-cards {
-    grid-area: cards;
-
-    ::ng-deep .mat-mdc-tab-header {
-      --mdc-secondary-navigation-tab-container-height: 25px;
-    }
+  .wotr-free-peoples {
+    grid-area: free-peoples;
+    background-color: $area-background;
+    box-shadow: widget-shadow($blue);
+    @include golden-padding(2vmin);
+    ::ng-deep { --wotr-front-color: #{$blue}; }
+  }
+  .wotr-shadow {
+    grid-area: shadow;
+    background-color: $area-background;
+    box-shadow: widget-shadow($red);
+    @include golden-padding(2vmin);
+    ::ng-deep { --wotr-front-color: #{$red}; }
   }
   .wotr-detail {
     grid-area: detail;
+    background-color: $area-background;
   }
   .wotr-logs {
     grid-area: logs;
+    background-color: $area-background;
   }
 
   // .wotr-board-map-layer {

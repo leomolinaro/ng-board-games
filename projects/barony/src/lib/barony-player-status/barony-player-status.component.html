@@ -19,8 +19,7 @@
           : currentPlayer
           ? 'fa-user'
           : 'fa-user-o'
-      "
-    ></i>
+      "></i>
     <div class="b-player-name">{{ player.name }}</div>
     <i class="b-player-score-icon fa fa-star"></i>
     <div class="b-player-score">{{ player.score }}</div>
@@ -30,28 +29,24 @@
       *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
       class="b-player-pawn-image"
       [ngClass]="{ 'is-active': pawnNode.active }"
-      (click)="onPawnClick(pawnNode)"
-    >
+      (click)="onPawnClick(pawnNode)">
       <img [src]="pawnNode.source" />
     </div>
     <div
       *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy"
       class="b-player-resource-image"
       [ngClass]="{ 'is-active': resourceNode.active }"
-      (click)="onResourceClick(resourceNode)"
-    >
+      (click)="onResourceClick(resourceNode)">
       <img [src]="resourceNode.source" />
     </div>
     <div
       *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
-      class="b-player-pawn-quantity"
-    >
+      class="b-player-pawn-quantity">
       {{ $any(player.pawns)[pawnNode.type] }}
     </div>
     <div
       *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy"
-      class="b-player-resource-quantity"
-    >
+      class="b-player-resource-quantity">
       {{ resourceNode.quantity }}
     </div>
   </div>

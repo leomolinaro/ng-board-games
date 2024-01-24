@@ -1,33 +1,53 @@
 import { NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
-import { MatBottomSheet } from "@angular/material/bottom-sheet";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, inject, input } from "@angular/core";
 import { MatTabsModule } from "@angular/material/tabs";
-import { WotrNationId } from "../wotr-components/nation.models";
+import { WotrCompanionComponentsService } from "../wotr-components/companion.service";
+import { WotrFront } from "../wotr-components/front.models";
+import { WotrMinionComponentsService } from "../wotr-components/minion.service";
+import { WotrCompanionId, WotrMinionId, WotrNationId } from "../wotr-components/nation.models";
+import { WotrNationComponentsService } from "../wotr-components/nation.service";
 import { WotrRegionId } from "../wotr-components/region.models";
-import { WotrLog, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrCompanionState, WotrFrontState, WotrLog, WotrMinionState, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrFrontAreaComponent } from "./wotr-front-area.component";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 
 @Component ({
   selector: "wotr-board",
   standalone: true,
-  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent],
+  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, WotrFrontAreaComponent],
   templateUrl: "./wotr-board.component.html",
   styleUrls: ["./wotr-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WotrBoardComponent {
 
-  constructor (private bottomSheet: MatBottomSheet) {}
+  // constructor (private bottomSheet: MatBottomSheet) {}
 
-  @Input () regionStates!: Record<WotrRegionId, WotrRegionState>;
-  @Input () nationStates!: Record<WotrNationId, WotrNationState>;
-  @Input () players!: WotrPlayer[];
-  @Input () logs!: WotrLog[];
+  private nationComp = inject (WotrNationComponentsService);
+  private companionComp = inject (WotrCompanionComponentsService);
+  private minionComp = inject (WotrMinionComponentsService);
+
+  players = input.required<WotrPlayer[]> ();
+  fronts = input.required<Record<WotrFront, WotrFrontState>> ();
+  regions = input.required<Record<WotrRegionId, WotrRegionState>> ();
+  nations = input.required<Record<WotrNationId, WotrNationState>> ();
+  companions = input.required<Record<WotrCompanionId, WotrCompanionState>> ();
+  minions = input.required<Record<WotrMinionId, WotrMinionState>> ();
+  logs = input.required<WotrLog[]> ();
+  message = input<string> ();
+  currentPlayer = input<WotrPlayer> ();
+
+  protected freePeopleFront = computed (() => this.fronts ()["free-peoples"]);
+  protected freePeopleNations = computed (() => this.nationComp.getFreePeopleNationIds ().map (nationId => this.nations ()[nationId]));
+  protected freePeopleCompanions = computed (() => this.companionComp.getAllIds ().map (id => this.companions ()[id]));
+  protected shadowFront = computed (() => this.fronts ().shadow);
+  protected shadowNations = computed (() => this.nationComp.getShadowNationIds ().map (nationId => this.nations ()[nationId]));
+  protected shadowMinions = computed (() => this.minionComp.getAllIds ().map (id => this.minions ()[id]));
+
   @Input () turnPlayer: WotrPlayer | null = null;
-  @Input () currentPlayer: WotrPlayer | null = null;
+  // @Input () currentPlayer: WotrPlayer | null = null;
   // @Input () otherPlayers!: BaronyPlayer[];
-  @Input () message: string | null = null;
   @Input () validRegions: WotrRegionId[] | null = null;
   // @Input () validUnits: WotrRegionUnit[] | null = null;
   // @Input () selectedUnits: WotrRegionUnit[] | null = null;
@@ -38,7 +58,13 @@ export class WotrBoardComponent {
   @Input () canConfirm: boolean = false;
   @Input () canCancel: boolean = false;
 
-  @Output () playerSelect = new EventEmitter<WotrPlayer> ();
+  protected playerTabIndex = computed (() => {
+    const currentPlayer = this.currentPlayer ();
+    if (!currentPlayer) { return 0; }
+    return this.players ().findIndex (p => currentPlayer.id === p.id);
+  });
+
+  @Output () playerSelect = new EventEmitter<WotrFront> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
   @Output () regionClick = new EventEmitter<WotrRegionId> ();
   // @Output () unitClick = new EventEmitter<WotrRegionUnit> ();
@@ -49,14 +75,14 @@ export class WotrBoardComponent {
   @Output () cancelClick = new EventEmitter<void> ();
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
-
-  playerTrackBy: TrackByFunction<WotrPlayer> = (index, player) => player.id;
+  @Output () testClick = new EventEmitter<void> ();
 
   summaryFixed = false;
   logsFixed = false;
   zoomFixed = false;
+  onPlayerTabChange (tabIndex: number) { this.playerSelect.next (this.players ()[tabIndex].id); }
 
-  onPlayerSelect (player: WotrPlayer) { this.playerSelect.emit (player); }
+  // onPlayerSelect (player: WotrPlayer) { this.playerSelect.emit (player); }
   // onBuildingSelect (building: WotrBuilding) { this.buildingSelect.emit (building); }
   // onLandTileClick (landTile: WotrLand) { this.landTileClick.emit (landTile); }
   // onActionClick (action: WotrAction) { this.actionClick.emit (action); }

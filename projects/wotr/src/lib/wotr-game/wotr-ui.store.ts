@@ -22,41 +22,34 @@ interface WotrUiState {
   // validBuildings: ("stronghold" | "village")[] | null;
   canPass: boolean;
   canConfirm: boolean;
-} // WotrUiState
+}
 
 @Injectable ()
 export class WotrUiStore extends BgStore<WotrUiState> {
+  
   constructor (private game: WotrGameStore) {
-    super (
-      {
-        currentPlayer: null,
-        turnPlayer: "free-peoples",
-        canCancel: false,
-        message: null,
-        validRegions: null,
-        // validUnits: null,
-        // selectedUnits: null,
-        // validActions: null,
-        // validBuildings: null,
-        // validResources: null,
-        canPass: false,
-        canConfirm: false,
-      },
-      "Wotr UI"
-    );
-  } // constructor
+    super ({
+      currentPlayer: null,
+      turnPlayer: "free-peoples",
+      canCancel: false,
+      message: null,
+      validRegions: null,
+      // validUnits: null,
+      // selectedUnits: null,
+      // validActions: null,
+      // validBuildings: null,
+      // validResources: null,
+      canPass: false,
+      canConfirm: false,
+    },
+    "Wotr UI");
+  }
 
   // actionChange (action: WotrAction) { this.$actionChange.next (action); }
-  passChange () {
-    this.$passChange.next ();
-  }
-  confirmChange () {
-    this.$confirmChange.next ();
-  }
+  passChange () { this.$passChange.next (); }
+  confirmChange () { this.$confirmChange.next (); }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
-  regionChange (regionId: WotrRegionId) {
-    this.$regionChange.next (regionId);
-  }
+  regionChange (regionId: WotrRegionId) { this.$regionChange.next (regionId); }
   // unitChange (unit: WotrRegionUnit) {
   //   this.$unitChange.next (unit);
   // }
@@ -65,23 +58,24 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   // }
   // buildingChange (building: WotrBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: WotrResourceType) { this.$resourceChange.next (resource); }
-  cancelChange () {
-    this.$cancelChange.next (void 0);
-  }
+  cancelChange () { this.$cancelChange.next (void 0); }
   // private $actionChange = new Subject<WotrAction> ();
   private $regionChange = new Subject<WotrRegionId> ();
   // private $unitChange = new Subject<WotrRegionUnit> ();
   // private $selectedUnitsChange = new Subject<WotrRegionUnit[]> ();
   private $passChange = new Subject<void> ();
   private $confirmChange = new Subject<void> ();
+  
+  private $testChange = new Subject<void> ();
+  testChange () { this.$testChange.next (void 0); }
+  testChange$ () { return this.$testChange.asObservable ().pipe (first ()); }
+
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<WotrResourceType> ();
   private $cancelChange = new Subject<void> ();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
   regionChange$<T extends WotrRegionId = WotrRegionId> (): Observable<T> {
-    return (this.$regionChange as unknown as Subject<T>)
-      .asObservable ()
-      .pipe (first ());
+    return (this.$regionChange as unknown as Subject<T>).asObservable ().pipe (first ());
   }
   // unitChange$ (): Observable<WotrRegionUnit> {
   //   return this.$unitChange.asObservable ().pipe (first ());
@@ -90,22 +84,12 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   //   return this.$selectedUnitsChange.asObservable ().pipe (first ());
   // }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
-  passChange$ () {
-    return this.$passChange.asObservable ().pipe (first ());
-  }
-  confirmChange$ () {
-    return this.$confirmChange.asObservable ().pipe (first ());
-  }
-  // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
-  // resourceChange$ () { return this.$resourceChange.asObservable ().pipe (first ()); }
-  cancelChange$ () {
-    return this.$cancelChange.asObservable ().pipe (first ());
-  }
+  passChange$ () { return this.$passChange.asObservable ().pipe (first ()); }
+  confirmChange$ () { return this.$confirmChange.asObservable ().pipe (first ()); }
+  cancelChange$ () { return this.$cancelChange.asObservable ().pipe (first ()); }
   currentPlayerChange$ () { return this.selectCurrentPlayerId$ ().pipe (skip (1), first ()); }
 
-  selectValidRegions$ () {
-    return this.select$ ((s) => s.validRegions);
-  }
+  selectValidRegions$ () { return this.select$ ((s) => s.validRegions); }
   // selectValidUnits$ () {
   //   return this.select$ ((s) => s.validUnits);
   // }
@@ -124,23 +108,23 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
   getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
   selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
-  selectMessage$ () { return this.select$ (s => s.message); }
+  message$ = this.select$ (s => s.message);
 
   selectCurrentPlayer$ () {
     return this.game.select$ (
       this.selectCurrentPlayerId$ (),
-      this.game.selectPlayerMap$ (),
+      this.game.playerMap$,
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   selectTurnPlayer$ () {
     return this.game.select$ (
       this.selectTurnPlayerId$ (),
-      this.game.selectPlayerMap$ (),
+      this.game.playerMap$,
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   // selectOtherPlayers$ () {
   //   return this.game.select$ (
@@ -154,14 +138,14 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   //         const offset = playerIds.indexOf (currentPlayerId);
   //         for (let i = 1; i < n; i++) {
   //           toReturn.push (playerMap[playerIds[(offset + i) % n]]);
-  //         } // for
+  //         }
   //         return toReturn;
   //       } else {
   //         return playerIds.map (id => playerMap[id]);
-  //       } // if - else
+  //       }
   //     }
   //   );
-  // } // selectOtherPlayers$
+  // }
 
   updateUi<
     S extends WotrUiState & {
@@ -169,7 +153,7 @@ export class WotrUiStore extends BgStore<WotrUiState> {
     }
   > (actionName: string, updater: (state: WotrUiState) => S) {
     this.update (actionName, updater);
-  } // updateUi
+  }
 
   resetUi (): Partial<WotrUiState> {
     return {
@@ -185,20 +169,20 @@ export class WotrUiStore extends BgStore<WotrUiState> {
       // validLands: null,
       // validResources: null
     };
-  } // resetUi
+  }
 
   // setFirstActionUi (player: string): Partial<WotrUiState> {
   //   return {
   //     turnPlayer: player,
   //     canCancel: false
   //   };
-  // } // setFirstActionUi
+  // }
 
   setCurrentPlayer (playerId: WotrFront | null) {
     this.updateUi ("Set current player", (s) => ({
       ...s,
       currentPlayer: playerId,
     }));
-  } // setCurrentPlayer
+  }
   
-} // WotrUiStore
+}

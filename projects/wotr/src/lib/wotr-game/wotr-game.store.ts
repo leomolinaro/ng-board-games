@@ -27,16 +27,22 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     super ({
       gameId: "",
       gameOwner: null as any,
-      players: { } as any,
+      players: {
+        map: { } as any,
+        ids: []
+      },
       fronts: fronts.toMap<WotrFrontState> (front => ({
+        id: front,
         characterDeck: [],
         strategyDeck: [],
         handCards: [],
         tableCards: [],
         characterDiscardPile: [],
-        strategyDiscardPile: []
+        strategyDiscardPile: [],
+        actionDice: []
       })),
       regions: regions.toMap<WotrRegionState> (regionId => ({
+        id: regionId,
         fellowship: false,
         armyUnits: [],
         leaders: [],
@@ -47,14 +53,15 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       nations: nations.toMap<WotrNationState> (nationId => {
         const nation = nations.get (nationId);
         return {
+          id: nationId,
           reinforcements: { regular: nation.nRegulars, elite: nation.nElites, leader: nation.nLeaders, nazgul: nation.nNazgul },
-          eliminated: { regular: 0, elite: 0, leader: 0 },
+          casualties: { regular: 0, elite: 0, leader: 0 },
           active: false,
           politicalStep: 3
         };
       }),
-      companions: companions.toMap<WotrCompanionState> (companionId => ({ status: "available" })),
-      minions: minions.toMap<WotrMinionState> (minionId => ({ status: "available" })),
+      companions: companions.toMap<WotrCompanionState> (companionId => ({ id: companionId, status: "available" })),
+      minions: minions.toMap<WotrMinionState> (minionId => ({ id: minionId, status: "available" })),
       fellowhip: { status: "hidden", companions: [], guide: "gandalf-the-grey" },
       logs: [],
     }, "War of the Ring Game");
@@ -65,7 +72,10 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       ...s,
       gameId: gameId,
       gameOwner: gameOwner,
-      players: arrayUtil.toMap (players, p => p.id) as Record<WotrFront, WotrPlayer>
+      players: {
+        map: arrayUtil.toMap (players, p => p.id) as Record<WotrFront, WotrPlayer>,
+        ids: players.map (p => p.id)
+      }
     }));
   }
 
@@ -82,21 +92,19 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     }
   }
 
-  selectRegions$ () { return this.select$ (s => s.regions); }
-  selectNations$ () { return this.select$ (s => s.nations); }
-  selectPlayerMap$ () { return this.select$ (s => s.players); }
-  selectPlayers$ () {
-    return this.select$ (
-      this.select$ (s => s.players),
-      (players) => players ? this.fronts.getAll ().map (front => players[front]) : []
-    );
-  }
-  selectLogs$ () { return this.select$ (s => s.logs); }
+  playerMap$ = this.select$ (s => s.players.map);
+  players$ = this.select$ (this.select$ (s => s.players), (players) => players.ids.map (id => players.map[id]));
+  fronts$ = this.select$ (s => s.fronts);
+  regions$ = this.select$ (s => s.regions);
+  nations$ = this.select$ (s => s.nations);
+  companions$ = this.select$ (s => s.companions);
+  minions$ = this.select$ (s => s.minions);
+  logs$ = this.select$ (s => s.logs);
 
   getGameId (): string { return this.get (s => s.gameId); }
   getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
-  getPlayers (): WotrPlayer[] { return this.get (s => this.fronts.getAll ().map (front => s.players[front])); }
-  getPlayer (id: WotrFront): WotrPlayer { return this.get (s => s.players[id]); }
+  getPlayers (): WotrPlayer[] { return this.get (s => this.fronts.getAll ().map (front => s.players.map[front])); }
+  getPlayer (id: WotrFront): WotrPlayer { return this.get (s => s.players.map[id]); }
   getNation (nationId: WotrNationId): WotrNationState { return this.get (s => s.nations[nationId]); }
   getRegion (regionId: WotrRegionId): WotrRegionState { return this.get (s => s.regions[regionId]); }
 
@@ -274,6 +282,14 @@ export class WotrGameStore extends BgStore<WotrGameState> {
         guide: setup.fellowship.guide
       }), state);
       state = this.addFellowshipToRegion (setup.fellowship.region, state);
+
+
+      // Esempi
+      state = this.updateFront ("free-peoples", f => ({ ...f, handCards: ["fpcha03", "fpstr14"] }), state);
+      state = this.updateFront ("shadow", f => ({ ...f, handCards: ["scha21", "scha13", "sstr23"] }), state);
+      state = this.updateFront ("free-peoples", f => ({ ...f, actionDice: ["character", "will-of-the-west", "event"] }), state);
+      state = this.updateFront ("shadow", f => ({ ...f, actionDice: ["muster-army", "army", "character", "character", "event", "muster"] }), state);
+
       return state;
     });
   }

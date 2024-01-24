@@ -10,7 +10,7 @@ export interface WotrStory {
   die?: WotrActionDie;
   card?: WotrCardId;
   actions: WotrStoryAction[];
-} // WotrStory
+}
 
 export type WotrStoryAction = WotrDrawCards | WotrDiscardCards;
 
@@ -47,4 +47,4 @@ export interface WotrArmy {
     type: WotrUnitType;
     nation: WotrNationId;
   }[];
-} // WotrArmy
+}

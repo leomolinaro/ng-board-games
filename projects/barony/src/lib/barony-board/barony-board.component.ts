@@ -1,27 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  TemplateRef,
-  ViewChild,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
-import { of } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import {
-  BaronyAction,
-  BaronyBuilding,
-  BaronyLand,
-  BaronyLandCoordinates,
-  BaronyLog,
-  BaronyPlayer,
-  BaronyResourceType,
-} from "../barony-models";
+import { of, switchMap } from "rxjs";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
 
 @Component ({
   selector: "barony-board",

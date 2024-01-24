@@ -1,8 +1,8 @@
 @import "bg-variables";
 
-// @function widget-shadow($color) {
-//   @return inset 0 0 6px 0px $color;
-// }
+@function widget-shadow($color) {
+  @return inset 0 0 6px 0px $color;
+}
 // @function widget-shadow-hover($color) {
 //   @return inset 0 0 6px 2px $color;
 // }
@@ -15,8 +15,8 @@
 // $blue-light: #80d6ff;
 // $yellow-light: #ffff8b;
 
-$red: #ef5350;
-$blue: #42a5f5;
+$red: #952D22;
+$blue: #6687AA;
 // $green: #66bb6a;
 // $yellow: #ffee58;
 

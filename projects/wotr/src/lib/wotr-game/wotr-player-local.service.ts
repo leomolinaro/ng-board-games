@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 import { WotrFront } from "../wotr-components/front.models";
 import { WotrStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
@@ -16,7 +16,20 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   ) {}
 
   firstPhaseDrawCards$ (front: WotrFront): Observable<WotrStory> {
-    throw new Error ("Method not implemented.");
+    this.ui.updateUi ("asd", s => ({
+      ...s,
+      // ...this.ui.resetUi (),
+      // turnPlayer: playerId,
+      message: `[${front}] Draw cards`,
+      // validAreas: validLands,
+      // canCancel: iInfantry !== 1,
+    }));
+    return this.ui.testChange$ ().pipe (
+      map (() => ({
+        phase: 1,
+        actions: [{ type: "draw-cards", cards: ["fpcha01"] }]
+      }))
+    );
   }
 
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement> {

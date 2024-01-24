@@ -1,4 +1,4 @@
-import { EMPTY, NEVER, Observable, expand, filter, first, last, map, of, race, switchMap } from "rxjs";
+import { EMPTY, NEVER, Observable, expand, filter, finalize, first, forkJoin, last, map, of, race, switchMap, tap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -22,6 +22,11 @@ export interface BgRealPlayer<Id extends string> extends ABgPlayer<Id> {
 type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
+
+interface BgStoryTask<Pid extends string, St, PlSrv> {
+  playerId: Pid;
+  task$: (playerService: PlSrv) => Observable<St>;
+}
 
 export function unexpectedStory<St> (storyDoc: St) {
   console.error ("Unexpected story", storyDoc);
@@ -79,7 +84,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   private autoRefreshCurrentPlayer (player: string) {
     if (this.isLocalPlayer (player)) {
       this.setCurrentPlayer (player);
+      return true;
     }
+    return false;
   }
 
   private getPlayerService (playerId: Pid) {
@@ -95,12 +102,14 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   private getLocalStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
     const playerService = this.getPlayerService (playerId);
     if (!playerService) { return NEVER; }
+    this.startTemporaryState ();
     return task$ (playerService).pipe (
       switchMap (story => {
         const storyDoc: BgStoryDoc<Pid, R> = { ...story, time, playerId };
         const storyId = storyDoc.time + "." + playerId;
         return this.insertStoryDoc$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => storyDoc));
-      })
+      }),
+      finalize (() => this.endTemporaryState ())
     );
   }
 
@@ -113,16 +122,15 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  private getPastStory (time: number, playerId: Pid) {
+  private getPastStory<R extends St> (time: number, playerId: Pid): null | R {
     if (!this.storyDocs?.length) { return null; }
     const storyDoc = this.storyDocs.shift ()!;
     if (storyDoc.time !== time || storyDoc.playerId !== playerId) { throw unexpectedStory (storyDoc); }
     this.storyTime = time;
-    return storyDoc;
+    return storyDoc as St as R;
   }
 
   private getStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
-    this.startTemporaryState ();
     this.resetUi (playerId);
     return race (
       this.getLocalStory$ (time, playerId, task$),
@@ -132,23 +140,32 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
-    const time = this.storyTime + 1;
-    const pastStory = this.getPastStory (time, playerId);
-    if (pastStory) { return of (pastStory as St as R); }
-    this.autoRefreshCurrentPlayer (playerId);
+  private getStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
+    const pastStory = this.getPastStory<R> (time, playerId);
+    if (pastStory) { return of (pastStory); }
     return this.getStory$ (time, playerId, task$).pipe (
       expand (storyDoc => {
-        this.endTemporaryState ();
-        if (storyDoc) {
-          this.storyTime = time;
-          return EMPTY;
-        } else {
-          return this.getStory$ (time, playerId, task$);
-        }
+        if (storyDoc) { return EMPTY; }
+        return this.getStory$ (time, playerId, task$);
       }),
       last (),
       map (story => story!)
+    );
+  }
+
+  protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
+    const time = this.storyTime + 1;
+    this.autoRefreshCurrentPlayer (playerId);
+    return this.getStoryWrap$<R> (time, playerId, task$).pipe (
+      tap (() => this.storyTime = time)
+    );
+  }
+
+  protected executeTasks$ (tasks: BgStoryTask<Pid, St, PlSrv>[]): Observable<St[]> {
+    const time = this.storyTime + 1;
+    tasks.find (task => this.autoRefreshCurrentPlayer (task.playerId));
+    return forkJoin (tasks.map (task => this.getStoryWrap$ (time, task.playerId, task.task$))).pipe (
+      tap (() => this.storyTime = time)
     );
   }
 

@@ -22,6 +22,7 @@ export class WotrCompanionComponentsService {
     return map;
   }
   get (companionId: WotrCompanionId): WotrCompanion { return this.COMPANION[companionId]; }
+  getAllIds () { return this.COMPANION_IDS; }
 
   private init () {
     this.initCompanion ("gandalf-the-grey", "gandalf-the-grey", 3, 1);

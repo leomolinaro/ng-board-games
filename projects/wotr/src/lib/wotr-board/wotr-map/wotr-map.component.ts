@@ -1,5 +1,5 @@
-import { NgClass, NgForOf } from "@angular/common";
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, inject, isDevMode } from "@angular/core";
+import { NgClass } from "@angular/common";
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, inject, isDevMode } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { SimpleChanges as BgSimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
@@ -101,7 +101,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
 @Component ({
   selector: "wotr-map",
   standalone: true,
-  imports: [BgSvgModule, MatTooltipModule, NgClass, NgForOf],
+  imports: [BgSvgModule, MatTooltipModule, NgClass],
   templateUrl: "./wotr-map.component.html",
   styleUrls: ["./wotr-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -115,7 +115,6 @@ export class WotrMapComponent implements OnChanges {
   private companions = inject (WotrCompanionComponentsService);
   private minions = inject (WotrMinionComponentsService);
   private slotsGeneratorService = inject (WotrMapSlotsGeneratorService);
-  private cd = inject (ChangeDetectorRef);
 
   @Input () regionStates!: Record<WotrRegionId, WotrRegionState>;
   // @Input () nationStates!: Record<WotrNationId, WotrNationState>;

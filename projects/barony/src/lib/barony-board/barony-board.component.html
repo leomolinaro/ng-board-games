@@ -4,8 +4,7 @@
       #baronyMap
       [lands]="lands"
       [validLands]="validLands"
-      (landTileClick)="onLandTileClick($event)"
-    >
+      (landTileClick)="onLandTileClick($event)">
     </barony-map>
   </div>
   <div class="b-board-widgets-layer">
@@ -14,29 +13,25 @@
       [class]="
         'b-board-instructions-widget' +
         (turnPlayer ? ' is-' + turnPlayer.id : '')
-      "
-    >
+      ">
       <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
         *ngIf="maxNumberOfKnights"
         [(number)]="numberOfKnights"
         min="1"
         [max]="maxNumberOfKnights"
-        (confirm)="onKnightsConfirm()"
-      >
+        (confirm)="onKnightsConfirm()">
       </barony-knights-selector>
       <barony-buildings-selector
         *ngIf="validBuildings"
         [buildings]="validBuildings"
         [player]="currentPlayer"
-        (buildingClick)="onBuildingSelect($event)"
-      >
+        (buildingClick)="onBuildingSelect($event)">
       </barony-buildings-selector>
       <barony-resources-selector
         *ngIf="validResources"
         [resources]="validResources.resources"
-        (resourceClick)="onResourceSelect($event)"
-      >
+        (resourceClick)="onResourceSelect($event)">
       </barony-resources-selector>
     </div>
     <barony-actions
@@ -47,8 +42,7 @@
       [validActions]="validActions"
       (actionClick)="onActionClick($event)"
       (passClick)="onPassClick()"
-      (cancelClick)="onCancelClick()"
-    >
+      (cancelClick)="onCancelClick()">
     </barony-actions>
     <div class="b-board-players-widget">
       <barony-player-status
@@ -56,58 +50,49 @@
         class="b-board-player-widget"
         (selectPlayer)="onPlayerSelect(player)"
         [player]="player"
-        [currentPlayer]="player === currentPlayer"
-      >
+        [currentPlayer]="player === currentPlayer">
       </barony-player-status>
     </div>
     <div class="b-board-extras">
       <bg-map-zoom-buttons
         *ngIf="zoomFixed"
         class="b-board-zoom-buttons-widget"
-        [controls]="baronyMap.bgMapZoom"
-      ></bg-map-zoom-buttons>
+        [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
       <img
         *ngIf="summaryFixed"
         class="b-board-summary-image"
-        src="assets/barony/summary.jpg"
-      />
+        src="assets/barony/summary.jpg"/>
       <barony-scoreboard
         *ngIf="scoreboardFixed"
         class="b-board-scoreboard-widget"
-        [players]="players"
-      ></barony-scoreboard>
+        [players]="players"></barony-scoreboard>
       <barony-logs
         *ngIf="logsFixed"
         class="b-board-logs-widget"
-        [logs]="logs"
-      ></barony-logs>
+        [logs]="logs"></barony-logs>
       <div class="b-board-buttons">
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': zoomFixed }"
-          (click)="zoomFixed = !zoomFixed"
-        >
+          (click)="zoomFixed = !zoomFixed">
           <i class="fa fa-search-plus"></i>
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': summaryFixed }"
-          (click)="summaryFixed = !summaryFixed"
-        >
+          (click)="summaryFixed = !summaryFixed">
           <i class="fa fa-book"></i>
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': scoreboardFixed }"
-          (click)="scoreboardFixed = !scoreboardFixed"
-        >
+          (click)="scoreboardFixed = !scoreboardFixed">
           <i class="fa fa-star"></i>
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': logsFixed }"
-          (click)="logsFixed = !logsFixed"
-        >
+          (click)="logsFixed = !logsFixed">
           <i class="fa fa-file-text"></i>
         </button>
       </div>

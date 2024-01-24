@@ -1,7 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
-import { EMPTY, Observable, expand, last, map, of, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
 import { WotrFront } from "../wotr-components/front.models";
+import { WotrFrontComponentsService } from "../wotr-components/front.service";
 import { WotrPlayer } from "../wotr-game-state.models";
 import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
@@ -22,6 +23,8 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   private remoteService = inject (WotrRemoteService);
   protected aiService = inject (WotrPlayerAiService);
   protected localService = inject (WotrPlayerLocalService);
+
+  private fronts = inject (WotrFrontComponentsService);
 
   protected storyDocs: WotrStoryDoc[] | null = null;
 
@@ -90,22 +93,20 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
 
   private firstPhase$ () {
     this.game.logPhase (1);
-    return this.firstPhaseDrawCards$ ("free-peoples").pipe (
-      switchMap (() => this.firstPhaseDrawCards$ ("shadow")),
-      map (() => true)
-    );
-  }
-
-  private firstPhaseDrawCards$ (front: WotrFront) {
-    return this.executeTask$ (front, p => p.firstPhaseDrawCards$ (front)).pipe (
-      tap (story => {
-        if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
-        const drawCards = story.actions[0];
-        this.game.applyDrawCards (drawCards, front);
-        const discardCards = story.actions[1];
-        if (discardCards) {
-          this.game.applyDiscardCards (discardCards, front);
-        }
+    return this.executeTasks$ (this.fronts.getAll ().map (
+      front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
+    )).pipe (
+      tap (stories => {
+        this.fronts.getAll ().forEach ((front, index) => {
+          const story = stories[index];
+          if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
+          const drawCards = story.actions[0];
+          this.game.applyDrawCards (drawCards, front);
+          const discardCards = story.actions[1];
+          if (discardCards) {
+            this.game.applyDiscardCards (discardCards, front);
+          }
+        });
       })
     );
   }

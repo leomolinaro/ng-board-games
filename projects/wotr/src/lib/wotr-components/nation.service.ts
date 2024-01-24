@@ -10,10 +10,10 @@ export class WotrNationComponentsService {
     this.init ();
   }
 
-  private readonly NATION_IDS: WotrNationId[] = [
-    "dwarves", "elves", "gondor", "north", "rohan",
-    "isengard", "sauron", "southrons"
-  ];
+  private readonly FP_NATION_IDS: WotrNationId[] = ["dwarves", "elves", "gondor", "north", "rohan"];
+  private readonly S_NATION_IDS: WotrNationId[] = ["isengard", "sauron", "southrons"];
+
+  private readonly NATION_IDS: WotrNationId[] = [...this.FP_NATION_IDS, ...this.S_NATION_IDS];
 
   private readonly NATION: Record<WotrNationId, WotrNation> = {} as any;
 
@@ -23,6 +23,9 @@ export class WotrNationComponentsService {
     return map;
   }
   get (nationId: WotrNationId): WotrNation { return this.NATION[nationId]; }
+
+  getFreePeopleNationIds () { return this.FP_NATION_IDS; }
+  getShadowNationIds () { return this.S_NATION_IDS; }
   
   private init () {
     this.initFreePeopleNation ("dwarves", "Dwarves", 5, 5, 4);

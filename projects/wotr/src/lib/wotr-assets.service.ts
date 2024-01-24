@@ -1,4 +1,7 @@
 import { Injectable } from "@angular/core";
+import { WotrCardId } from "./wotr-components/card.models";
+import { WotrActionDie } from "./wotr-components/dice.models";
+import { WotrFront } from "./wotr-components/front.models";
 import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "./wotr-components/nation.models";
 
 const BASE_PATH = "assets/wotr";
@@ -88,7 +91,7 @@ export class WotrAssetsService {
     this.COMPANION_BY_ID.legolas = this.unitImage ("legolas", 28, 45);
     this.COMPANION_BY_ID.gimli = this.unitImage ("gimli", 33, 38);
     this.COMPANION_BY_ID.meriadoc = this.unitImage ("merry", 29, 33);
-    this.COMPANION_BY_ID.peregrin = this.unitImage ("peregrin", 30, 36);
+    this.COMPANION_BY_ID.peregrin = this.unitImage ("pippin", 30, 36);
     this.COMPANION_BY_ID.aragorn = this.unitImage ("aragorn", 30, 48);
     this.COMPANION_BY_ID["gandalf-the-white"] = this.unitImage ("gandalf-the-white", 31, 55);
   }
@@ -104,8 +107,12 @@ export class WotrAssetsService {
   private FELLOWSHIP: WotrUnitImage = this.unitImage ("fellowship", 31, 31);
   getFellowshipImage () { return this.FELLOWSHIP; }
 
+  getCardPreviewImage (cardId: WotrCardId) { return `${BASE_PATH}/card-previews/${cardId}.png`; }
+
   private unitImage (fileName: string, width: number, height: number): WotrUnitImage {
     return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
   }
+
+  getActionDieImage (actionDie: WotrActionDie, front: WotrFront) { return `${BASE_PATH}/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie}.png`; }
 
 } // BritAssetsService

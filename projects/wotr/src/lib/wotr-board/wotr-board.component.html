@@ -2,46 +2,28 @@
   <wotr-map
     class="wotr-map"
     #wotrMap
-    [regionStates]="regionStates"
+    [regionStates]="regions ()"
     [validRegions]="validRegions"
     (regionClick)="regionClick.emit ($event)">
   </wotr-map>
-  <div class="wotr-toolbar">Toolbar</div>
-  <div class="wotr-dice" style="display: flex; flex-direction: column; justify-content: center;">
-    <div>
-      <img src="assets/wotr/action-dice/fp-army-muster.png"/>
-      <img src="assets/wotr/action-dice/fp-event.png"/>
-      <img src="assets/wotr/action-dice/fp-character.png"/>
-      <img src="assets/wotr/action-dice/fp-will.png"/>
-    </div>
-    <div>
-      <img src="assets/wotr/action-dice/s-eye.png"/>
-      <img src="assets/wotr/action-dice/s-eye.png"/>
-      <img src="assets/wotr/action-dice/s-eye.png"/>
-      <img src="assets/wotr/action-dice/s-muster.png"/>
-      <img src="assets/wotr/action-dice/s-army.png"/>
-      <img src="assets/wotr/action-dice/s-army-muster.png"/>
-      <img src="assets/wotr/action-dice/s-character.png"/>
-    </div>
+  <div class="wotr-toolbar">{{ message () }}  <button (click)="testClick.next ()">Test</button></div>
+  <div class="wotr-free-peoples">
+    <wotr-front-area
+      [front]="freePeopleFront ()"
+      [nations]="freePeopleNations ()"
+      [companions]="freePeopleCompanions ()">
+    </wotr-front-area>
   </div>
-  <div class="wotr-cards">
-    <mat-tab-group>
-      <mat-tab label="Free people">
-        <img src="assets/wotr/card-previews/fp001.png"/>
-        <img src="assets/wotr/card-previews/fp002.png"/>
-        <img src="assets/wotr/card-previews/fp003.png"/>
-      </mat-tab>
-      <mat-tab label="Shadow">
-        <img src="assets/wotr/card-previews/sa001.png"/>
-        <img src="assets/wotr/card-previews/sa002.png"/>
-        <img src="assets/wotr/card-previews/sa003.png"/>
-        <img src="assets/wotr/card-previews/sa004.png"/>
-      </mat-tab>
-    </mat-tab-group>
+  <div class="wotr-shadow">
+    <wotr-front-area
+      [front]="shadowFront ()"
+      [nations]="shadowNations ()"
+      [minions]="shadowMinions ()">
+    </wotr-front-area>
   </div>
   <div class="wotr-detail">Detail</div>
   <div class="wotr-logs">
-    <wotr-logs [logs]="logs"></wotr-logs>
+    <wotr-logs [logs]="logs ()"></wotr-logs>
   </div>
     <!-- [nationStates]="nationStates"
     [validUnits]="validUnits"
