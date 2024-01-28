@@ -19,7 +19,7 @@ interface BgMapZoomRefreshParams {
   xt: number;
   yt: number;
   reset: boolean;
-} // BgMapZoomRefreshParams
+}
 
 @Component ({
   selector: "svg[bgSvg]",
@@ -34,7 +34,7 @@ export class BgSvgComponent {
   getScreenCTM () {
     return this.elementRef.nativeElement.getScreenCTM ();
   }
-} // BgSvgComponent
+}
 
 @Directive ({
   selector: "[bgMapZoom]",
@@ -71,7 +71,7 @@ export class BgMapZoomDirective implements OnInit {
   ngOnInit () {
     this.parseConfig ();
     this.transform = `matrix (${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`;
-  } // ngOnInit
+  }
 
   private parseConfig () {
     this.scale = this.config.scale || 1;
@@ -79,7 +79,7 @@ export class BgMapZoomDirective implements OnInit {
     this.translateY = this.config.translateY || 0;
     this.zoomStep = this.config.zoomStep || 0.1;
     this.translateStep = this.config.translateStep || 15;
-  } // parseConfig
+  }
 
   @HostListener ("mousedown", ["$event"])
   onMouseDown (event: MouseEvent) {
@@ -90,22 +90,22 @@ export class BgMapZoomDirective implements OnInit {
     } else if (event.button === 1) {
       event.preventDefault ();
       this.reset ();
-    } // if - else
-  } // onMouseDown
+    }
+  }
 
   @HostListener ("mouseup", ["$event"])
   onMouseUp (event: MouseEvent) {
     if (event.button === 0) {
       this.endGrabbing ();
-    } // if
-  } // onMouseUp
+    }
+  }
 
   @HostListener ("mouseleave", ["$event"])
   onMouseLeave (event: MouseEvent) {
     if (this.grabbing) {
       this.endGrabbing ();
-    } // if
-  } // onMouseLeave
+    }
+  }
 
   @HostListener ("mousemove", ["$event"])
   onMouseMove (event: MouseEvent) {
@@ -122,8 +122,8 @@ export class BgMapZoomDirective implements OnInit {
         yt: yt,
         reset: false,
       });
-    } // if
-  } // onMouseMove
+    }
+  }
 
   // @HostListener ("touchmove", ["$event"]) TODO
   onTouchMove (event: TouchEvent) {
@@ -146,8 +146,8 @@ export class BgMapZoomDirective implements OnInit {
         this.grabbingX = event.touches[0].clientX;
         this.grabbingY = event.touches[0].clientY;
       }, 50);
-    } // onTouchMove
-  } // onTouchMove
+    }
+  }
 
   public moveUp () { this.move (0, -MOVE_STEP); }
   public moveDown () { this.move (0, MOVE_STEP); }
@@ -159,9 +159,9 @@ export class BgMapZoomDirective implements OnInit {
     this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: 0, yt: 0, reset: true });
     if (this.grabbing) {
       this.endGrabbing ();
-    } // if
+    }
     this.cd.markForCheck ();
-  } // reset
+  }
 
   public autoSize () {
     // const containerEl = this.bgSvg.elementRef.nativeElement;
@@ -181,23 +181,23 @@ export class BgMapZoomDirective implements OnInit {
     //   reset: false
     // });
     // this.cd.markForCheck ();
-  } // autoSize
+  }
 
   private move (xt: number, yt: number) {
     this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: xt, yt: yt, reset: false });
     this.cd.markForCheck ();
-  } // move
+  }
 
   private zoom (zoom: number) {
     this.refreshTransform ({ zoom: zoom, x0: 0, y0: 0, xt: 0, yt: 0, reset: false });
     this.cd.markForCheck ();
-  } // move
+  }
 
   private endGrabbing () {
     this.grabbing = false;
     this.grabbingX = null;
     this.grabbingY = null;
-  } // endGrabbing
+  }
 
   @HostListener ("mousewheel", ["$event"])
   onMouseWheel (event: MouseEvent | any) {
@@ -215,8 +215,8 @@ export class BgMapZoomDirective implements OnInit {
     } else {
       event.preventDefault ();
       this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: 0, yt: this.translateStep * (event.deltaY > 0 ? -1 : 1), reset: false });
-    } // if - else */
-  } // onMouseWheel
+    }*/
+  }
 
   // @HostListener ("keydown", ["$event"]) TODO
   onKeyDown (event: KeyboardEvent) {
@@ -235,9 +235,9 @@ export class BgMapZoomDirective implements OnInit {
       case "a": refreshParams.xt = this.translateStep; break;
       case "s": refreshParams.yt = -1 * this.translateStep; break;
       default: return;
-    } // switch
+    }
     this.refreshTransform (refreshParams);
-  } // onKeyDown
+  }
 
   private refreshTransform (refreshParams: BgMapZoomRefreshParams) {
     if (refreshParams.reset) {
@@ -249,8 +249,8 @@ export class BgMapZoomDirective implements OnInit {
       const newYt = refreshParams.y0 * (1 - newScale) + refreshParams.yt;
       this.translateX = newXt + newScale * this.translateX;
       this.translateY = newYt + newScale * this.translateY;
-    } // if - else
+    }
     this.transform = `matrix (${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`;
-  } // refreshTransform
+  }
 
-} // BgMapZoomDirective
+}

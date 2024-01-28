@@ -11,14 +11,16 @@
     <wotr-front-area
       [front]="freePeopleFront ()"
       [nations]="freePeopleNations ()"
-      [companions]="freePeopleCompanions ()">
+      [companions]="freePeopleCompanions ()"
+      (cardClick)="onPreviewCardClick ($event, freePeopleFront ())">
     </wotr-front-area>
   </div>
   <div class="wotr-shadow">
     <wotr-front-area
       [front]="shadowFront ()"
       [nations]="shadowNations ()"
-      [minions]="shadowMinions ()">
+      [minions]="shadowMinions ()"
+      (cardClick)="onPreviewCardClick ($event, shadowFront ())">
     </wotr-front-area>
   </div>
   <div class="wotr-detail">Detail</div>

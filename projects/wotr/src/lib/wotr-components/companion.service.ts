@@ -25,15 +25,15 @@ export class WotrCompanionComponentsService {
   getAllIds () { return this.COMPANION_IDS; }
 
   private init () {
-    this.initCompanion ("gandalf-the-grey", "gandalf-the-grey", 3, 1);
-    this.initCompanion ("strider", "strider", 3, 1);
-    this.initCompanion ("boromir", "boromir", 2, 1);
-    this.initCompanion ("legolas", "legolas", 2, 1);
-    this.initCompanion ("gimli", "gimli", 2, 1);
-    this.initCompanion ("meriadoc", "meriadoc", 1, 1);
-    this.initCompanion ("peregrin", "peregrin", 1, 1);
-    this.initCompanion ("aragorn", "aragorn", 3, 2);
-    this.initCompanion ("gandalf-the-white", "gandalf-the-white", 3, 1);
+    this.initCompanion ("gandalf-the-grey", "Gandalf the Grey", 3, 1);
+    this.initCompanion ("strider", "Strider", 3, 1);
+    this.initCompanion ("boromir", "Boromir", 2, 1);
+    this.initCompanion ("legolas", "Legolas", 2, 1);
+    this.initCompanion ("gimli", "Gimli", 2, 1);
+    this.initCompanion ("meriadoc", "Meriadoc", 1, 1);
+    this.initCompanion ("peregrin", "Peregrin", 1, 1);
+    this.initCompanion ("aragorn", "Aragorn", 3, 2);
+    this.initCompanion ("gandalf-the-white", "Gandalf the White", 3, 1);
   }
 
   private initCompanion (

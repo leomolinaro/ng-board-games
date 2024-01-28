@@ -1,6 +1,8 @@
 import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, inject, input } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
+import { WotrCardId } from "../wotr-components/card.models";
 import { WotrCompanionComponentsService } from "../wotr-components/companion.service";
 import { WotrFront } from "../wotr-components/front.models";
 import { WotrMinionComponentsService } from "../wotr-components/minion.service";
@@ -8,6 +10,7 @@ import { WotrCompanionId, WotrMinionId, WotrNationId } from "../wotr-components/
 import { WotrNationComponentsService } from "../wotr-components/nation.service";
 import { WotrRegionId } from "../wotr-components/region.models";
 import { WotrCompanionState, WotrFrontState, WotrLog, WotrMinionState, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrCardsDialogComponent, WotrCardsDialogData } from "./wotr-cards-dialog.component";
 import { WotrFrontAreaComponent } from "./wotr-front-area.component";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
@@ -24,6 +27,7 @@ export class WotrBoardComponent {
 
   // constructor (private bottomSheet: MatBottomSheet) {}
 
+  private dialog = inject (MatDialog);
   private nationComp = inject (WotrNationComponentsService);
   private companionComp = inject (WotrCompanionComponentsService);
   private minionComp = inject (WotrMinionComponentsService);
@@ -94,5 +98,22 @@ export class WotrBoardComponent {
   //   this.numberOfKnights = 1;
   // } // onKnightsConfirm
   // onResourceSelect (resource: WotrResourceType) { this.resourceSelect.emit (resource); }
+
+  onPreviewCardClick (cardId: WotrCardId, front: WotrFrontState) {
+    this.dialog.open<WotrCardsDialogComponent, WotrCardsDialogData> (
+      WotrCardsDialogComponent,
+      {
+        data: {
+          selectedCardId: cardId,
+          cardIds: front.handCards
+        },
+        panelClass: "wotr-cards-overlay-panel",
+        // width: `${front.handCards.length * 192}px`,
+        // height: `${352}px`
+        // backdropClass: "cdk-overlay-transparent-backdrop",
+        // hasBackdrop: false
+      }
+    );
+  }
 
 } // WotrBoardComponent

@@ -28,27 +28,37 @@ export class WotrNationComponentsService {
   getShadowNationIds () { return this.S_NATION_IDS; }
   
   private init () {
-    this.initFreePeopleNation ("dwarves", "Dwarves", 5, 5, 4);
-    this.initFreePeopleNation ("elves", "Elves", 5, 10, 4);
-    this.initFreePeopleNation ("gondor", "Gondor", 15, 5, 4);
-    this.initFreePeopleNation ("rohan", "Rohan", 10, 5, 4);
-    this.initFreePeopleNation ("north", "The North", 10, 5, 4);
-    this.initShadowNation ("isengard", "Isengard", 12, 6, 0);
-    this.initShadowNation ("sauron", "Sauron", 36, 6, 8);
-    this.initShadowNation ("southrons", "Southrons & Esterlings", 24, 6, 0);
+    this.initFreePeopleNation ("dwarves", "Dwarves", 5, 5, 4, "Dwarves regular", "Dwarves elite", "Dwarves leader");
+    this.initFreePeopleNation ("elves", "Elves", 5, 10, 4, "Elves regular", "Elves elite", "Elves leader");
+    this.initFreePeopleNation ("gondor", "Gondor", 15, 5, 4, "Gondor regular", "Gondor elite", "Gondor leader");
+    this.initFreePeopleNation ("rohan", "Rohan", 10, 5, 4, "Rohan regular", "Rohan elite", "Rohan leader");
+    this.initFreePeopleNation ("north", "The North", 10, 5, 4, "Northern regular", "Northern elite", "Northern leader");
+    this.initShadowNation ("isengard", "Isengard", 12, 6, 0, "Isengard regular", "Isengard elite");
+    this.initShadowNation ("sauron", "Sauron", 36, 6, 8, "Sauron regular", "Sauron elite");
+    this.initShadowNation ("southrons", "Southrons & Esterlings", 24, 6, 0, "Southrons & Esterlings regular", "Southrons & Esterlings elite");
   }
 
-  private initFreePeopleNation (nationId: WotrNationId, name: string, nRegulars: number, nElites: number, nLeaders: number) {
+  private initFreePeopleNation (
+    nationId: WotrNationId, name: string,
+    nRegulars: number, nElites: number, nLeaders: number,
+    regularLabel: string, eliteLabel: string, leaderLabel: string
+  ) {
     this.NATION[nationId] = {
       id: nationId, name, front: "free-peoples",
-      nRegulars, nElites, nLeaders, nNazgul: 0
+      nRegulars, nElites, nLeaders, nNazgul: 0,
+      regularLabel, eliteLabel, leaderLabel
     };
   }
 
-  private initShadowNation (nationId: WotrNationId, name: string, nRegulars: number, nElites: number, nNazgul: number) {
+  private initShadowNation (
+    nationId: WotrNationId, name: string,
+    nRegulars: number, nElites: number, nNazgul: number,
+    regularLabel: string, eliteLabel: string
+  ) {
     this.NATION[nationId] = {
       id: nationId, name, front: "shadow",
-      nRegulars, nElites, nLeaders: 0, nNazgul
+      nRegulars, nElites, nLeaders: 0, nNazgul,
+      regularLabel, eliteLabel, leaderLabel: null
     };
   }
 

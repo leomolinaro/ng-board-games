@@ -23,7 +23,7 @@ $area-background: #151515;
     'toolbar toolbar toolbar'
     'free-peoples map detail'
     'shadow map logs ';
-  grid-template-columns: 2fr minmax(50%, 1200px) 1fr;
+  grid-template-columns: minmax(300px, 2fr) minmax(50%, 1200px) minmax(150px, 1fr);
   grid-template-rows: 40px 1fr 1fr;
   grid-gap: 10px;
   padding-bottom: 10px;
@@ -191,3 +191,13 @@ $area-background: #151515;
 //     box-shadow: 0 0 6px 0px white;
 //   }
 // }
+
+::ng-deep {
+  .wotr-cards-overlay-panel {
+    .mat-mdc-dialog-container .mdc-dialog__surface {
+      box-shadow: none;
+      background-color: transparent;
+      overflow: visible;
+    }
+  }
+}

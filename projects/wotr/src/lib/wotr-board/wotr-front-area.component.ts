@@ -1,11 +1,15 @@
 import { NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input } from "@angular/core";
 import { MatTabsModule } from "@angular/material/tabs";
+import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../wotr-components/card.models";
+import { WotrCompanionComponentsService } from "../wotr-components/companion.service";
 import { WotrActionDie } from "../wotr-components/dice.models";
+import { WotrMinionComponentsService } from "../wotr-components/minion.service";
 import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "../wotr-components/nation.models";
+import { WotrNationComponentsService } from "../wotr-components/nation.service";
 import { WotrCompanionState, WotrFrontState, WotrMinionState, WotrNationState } from "../wotr-game-state.models";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
@@ -13,13 +17,15 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 @Component ({
   selector: "wotr-front-area",
   standalone: true,
-  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, BgTransformPipe],
+  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, BgTransformPipe, MatTooltip],
   template: `
     <mat-tab-group>
       <mat-tab [label]="'Cards ' + nChaCards () + ' / ' + nStrCards ()">
         <div class="cards">
           @for (card of handCards (); track card) {
-            <img [src]="card | bgTransform:cardPreviewImage"/>
+            <img class="card-preview-image"
+              [src]="card | bgTransform:cardPreviewImage"
+              (click)="cardClick.next (card)"/>
           }
         </div>
       </mat-tab>
@@ -27,26 +33,32 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
         <div class="reinforcements">
           @for (nation of nations (); track nation.id) {
             @for (i of (nation.reinforcements.regular | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:armyUnitImage:'regular'"/>
+              <img [src]="nation.id | bgTransform:armyUnitImage:'regular'"
+                [matTooltip]="nation.id | bgTransform:armyUnitTooltip:'regular'"/>
             }
             @for (i of (nation.reinforcements.elite | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:armyUnitImage:'elite'"/>
+              <img [src]="nation.id | bgTransform:armyUnitImage:'elite'"
+                [matTooltip]="nation.id | bgTransform:armyUnitTooltip:'elite'"/>
             }
             @for (i of (nation.reinforcements.leader | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:leaderImage"/>
+              <img [src]="nation.id | bgTransform:leaderImage"
+                [matTooltip]="nation.id | bgTransform:leaderTooltip"/>
             }
             @for (i of (nation.reinforcements.nazgul | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:nazgulImage"/>
+              <img [src]="nation.id | bgTransform:nazgulImage"
+                [matTooltip]="nation.id | bgTransform:nazgulTooltip"/>
             }
           }
           @for (companion of companions (); track companion.id) {
             @if (companion.status === "available") {
-              <img [src]="companion.id | bgTransform:companionImage"/>
+              <img [src]="companion.id | bgTransform:companionImage"
+                [matTooltip]="companion.id | bgTransform:companionTooltip"/>
             }
           }
           @for (minion of minions (); track minion.id) {
             @if (minion.status === "available") {
-              <img [src]="minion.id | bgTransform:minionImage"/>
+              <img [src]="minion.id | bgTransform:minionImage"
+                [matTooltip]="minion.id | bgTransform:minionTooltip"/>
             }
           }
         </div>
@@ -55,23 +67,28 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
       <div class="casualties">
           @for (nation of nations (); track nation.id) {
             @for (i of (nation.casualties.regular | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:armyUnitImage:'regular'"/>
+              <img [src]="nation.id | bgTransform:armyUnitImage:'regular'"
+                [matTooltip]="nation.id | bgTransform:armyUnitTooltip:'regular'"/>
             }
             @for (i of (nation.casualties.elite | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:armyUnitImage:'elite'"/>
+              <img [src]="nation.id | bgTransform:armyUnitImage:'elite'"
+                [matTooltip]="nation.id | bgTransform:armyUnitTooltip:'elite'"/>
             }
             @for (i of (nation.casualties.leader | bgTransform:range); track i) {
-              <img [src]="nation.id | bgTransform:leaderImage"/>
+              <img [src]="nation.id | bgTransform:leaderImage"
+                [matTooltip]="nation.id | bgTransform:leaderTooltip"/>
             }
           }
           @for (companion of companions (); track companion.id) {
             @if (companion.status === "eliminated") {
-              <img [src]="companion.id | bgTransform:companionImage"/>
+              <img [src]="companion.id | bgTransform:companionImage"
+                [matTooltip]="companion.id | bgTransform:companionTooltip"/>
             }
           }
           @for (minion of minions (); track minion.id) {
             @if (minion.status === "eliminated") {
-              <img [src]="minion.id | bgTransform:minionImage"/>
+              <img [src]="minion.id | bgTransform:minionImage"
+                [matTooltip]="minion.id | bgTransform:minionTooltip"/>
             }
           }
         </div>
@@ -95,12 +112,16 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
     }
     .cards {
       margin-top: 5px;
-      img:not(:last-child) {
-        margin-right: 5px;
+      .card-preview-image {
+        cursor: pointer;
+        &:not(:last-child) {
+          margin-right: 5px;
+        }
       }
     }
 
-    .mat-mdc-tab-group {
+    mat-tab-group {
+      overflow: auto;
       ::ng-deep {
         .mat-mdc-tab-header {
           --mdc-secondary-navigation-tab-container-height: 25px;
@@ -116,28 +137,47 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
         // }
       }
     }
+    .action-dice {
+      padding-top: 10px;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WotrFrontAreaComponent {
 
   protected assets = inject (WotrAssetsService);
+  protected nationComp = inject (WotrNationComponentsService);
+  protected companionComp = inject (WotrCompanionComponentsService);
+  protected minionComp = inject (WotrMinionComponentsService);
 
   front = input.required<WotrFrontState> ();
   nations = input.required<WotrNationState[]> ();
   companions = input<WotrCompanionState[]> ();
   minions = input<WotrMinionState[]> ();
+
+  @Output () cardClick = new EventEmitter<WotrCardId> ();
+
   protected handCards = computed (() => this.front ().handCards);
   protected nChaCards = computed (() => this.handCards ().reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0));
   protected nStrCards = computed (() => this.handCards ().reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0));
 
   protected cardPreviewImage: BgTransformFn<WotrCardId, string> = cardId => this.assets.getCardPreviewImage (cardId);
   protected armyUnitImage: BgTransformFn<WotrNationId, string, WotrArmyUnitType> = (nationId, type) => this.assets.getArmyUnitImage (type, nationId).source;
+  protected armyUnitTooltip: BgTransformFn<WotrNationId, string, WotrArmyUnitType> = (nationId, type) => {
+    switch (type) {
+      case "regular": return this.nationComp.get (nationId).regularLabel;
+      case "elite": return this.nationComp.get (nationId).eliteLabel;
+    }
+  };
   protected leaderImage: BgTransformFn<WotrNationId, string> = nationId => this.assets.getLeaderImage (nationId).source;
+  protected leaderTooltip: BgTransformFn<WotrNationId, string> = (nationId) => this.nationComp.get (nationId).leaderLabel!;
   protected nazgulImage: BgTransformFn<void, string> = () => this.assets.getNazgulImage ().source;
+  protected nazgulTooltip: BgTransformFn<void, string> = () => "Nazgul";
   protected companionImage: BgTransformFn<WotrCompanionId, string> = companionId => this.assets.getCompanionImage (companionId).source;
+  protected companionTooltip: BgTransformFn<WotrCompanionId, string> = companionId => this.companionComp.get (companionId).name;
   protected minionImage: BgTransformFn<WotrMinionId, string> = minionId => this.assets.getMinionImage (minionId).source;
+  protected minionTooltip: BgTransformFn<WotrMinionId, string> = minionId => this.minionComp.get (minionId).name;
   protected actionDieImage: BgTransformFn<WotrActionDie, string> = actionDie => this.assets.getActionDieImage (actionDie, this.front ().id);
   protected range: BgTransformFn<number, number[]> = n => arrayUtil.range (n);
 
-} // WotrFrontAreaComponent
+}

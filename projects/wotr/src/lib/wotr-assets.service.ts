@@ -108,6 +108,7 @@ export class WotrAssetsService {
   getFellowshipImage () { return this.FELLOWSHIP; }
 
   getCardPreviewImage (cardId: WotrCardId) { return `${BASE_PATH}/card-previews/${cardId}.png`; }
+  getCardImage (cardId: WotrCardId) { return `${BASE_PATH}/cards/${cardId}.png`; }
 
   private unitImage (fileName: string, width: number, height: number): WotrUnitImage {
     return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
