@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
-import { WotrCardId } from "./wotr-components/wotr-card.models";
-import { WotrCompanionId } from "./wotr-components/wotr-companion.models";
-import { WotrActionDie } from "./wotr-components/wotr-dice.models";
-import { WotrFrontId } from "./wotr-components/wotr-front.models";
-import { WotrMinionId } from "./wotr-components/wotr-minion.models";
-import { WotrArmyUnitType, WotrNationId } from "./wotr-components/wotr-nation.models";
+import { WotrCardId } from "./wotr-elements/wotr-card.models";
+import { WotrCompanionId } from "./wotr-elements/wotr-companion.models";
+import { WotrActionDie } from "./wotr-elements/wotr-dice.models";
+import { WotrFrontId } from "./wotr-elements/wotr-front.models";
+import { WotrMinionId } from "./wotr-elements/wotr-minion.models";
+import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/wotr-nation.models";
 
 const BASE_PATH = "assets/wotr";
 

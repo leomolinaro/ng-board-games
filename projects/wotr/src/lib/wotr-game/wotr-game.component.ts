@@ -5,7 +5,7 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
-import { AWotrPlayer, WotrPlayer } from "../wotr-game-state.models";
+import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrPlayerDoc, WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrGameService } from "./wotr-game.service";
 import { WotrGameStore } from "./wotr-game.store";

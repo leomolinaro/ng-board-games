@@ -2,19 +2,24 @@ import { Injectable, computed } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
-import { isCharacterCard, isStrategyCard } from "../wotr-components/wotr-card.models";
-import { WotrCompanion, WotrCompanionId } from "../wotr-components/wotr-companion.models";
-import * as fromCompanion from "../wotr-components/wotr-companion.state";
-import { WotrFront, WotrFrontId } from "../wotr-components/wotr-front.models";
-import * as fromFront from "../wotr-components/wotr-front.state";
-import { WotrMinion, WotrMinionId } from "../wotr-components/wotr-minion.models";
-import * as fromMinion from "../wotr-components/wotr-minion.state";
-import { WotrNation, WotrNationId } from "../wotr-components/wotr-nation.models";
-import * as fromNation from "../wotr-components/wotr-nation.state";
-import { WotrPhase } from "../wotr-components/wotr-phase.models";
-import { WotrRegion, WotrRegionId } from "../wotr-components/wotr-region.models";
-import * as fromRegion from "../wotr-components/wotr-region.state";
-import { WotrFellowshipState, WotrGameState, WotrLog, WotrPlayer, WotrSetup } from "../wotr-game-state.models";
+import { isCharacterCard, isStrategyCard } from "../wotr-elements/wotr-card.models";
+import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import * as fromCompanion from "../wotr-elements/wotr-companion.state";
+import { WotrFellowship } from "../wotr-elements/wotr-fellowhip.models";
+import * as fromFellowhip from "../wotr-elements/wotr-fellowship.state";
+import { WotrFront, WotrFrontId } from "../wotr-elements/wotr-front.models";
+import * as fromFront from "../wotr-elements/wotr-front.state";
+import { WotrGameState } from "../wotr-elements/wotr-game.state";
+import { WotrLog } from "../wotr-elements/wotr-log.models";
+import { WotrMinion, WotrMinionId } from "../wotr-elements/wotr-minion.models";
+import * as fromMinion from "../wotr-elements/wotr-minion.state";
+import { WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
+import * as fromNation from "../wotr-elements/wotr-nation.state";
+import { WotrPhase } from "../wotr-elements/wotr-phase.models";
+import { WotrPlayer } from "../wotr-elements/wotr-player.models";
+import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
+import * as fromRegion from "../wotr-elements/wotr-region.state";
+import { WotrSetup } from "../wotr-rules/wotr-rules-setup.service";
 import { WotrDiscardCards, WotrDrawCards } from "../wotr-story.models";
 
 @Injectable ()
@@ -33,7 +38,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       nationState: fromNation.initNationState (),
       companionState: fromCompanion.initCompanionState (),
       minionState: fromMinion.initMinionState (),
-      fellowhip: { status: "hidden", companions: [], guide: "gandalf-the-grey" },
+      fellowhip: fromFellowhip.initFellowshipState (),
       logs: [],
     }, "War of the Ring Game");
   }
@@ -157,7 +162,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     return { ...s, minionState: { ...s.minionState, map: { ...s.minionState.map, [minionId]: updater (s.minionState.map[minionId]) } } };
   }
 
-  private updateFellowship (updater: (a: WotrFellowshipState) => WotrFellowshipState, s: WotrGameState): WotrGameState {
+  private updateFellowship (updater: (a: WotrFellowship) => WotrFellowship, s: WotrGameState): WotrGameState {
     return { ...s, fellowhip: updater (s.fellowhip) };
   }
 

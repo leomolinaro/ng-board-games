@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { WotrFrontId } from "../wotr-components/wotr-front.models";
-import { WotrRegionId } from "../wotr-components/wotr-region.models";
+import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {

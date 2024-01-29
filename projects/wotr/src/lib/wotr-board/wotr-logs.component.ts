@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
-import { WotrLog } from "../wotr-game-state.models";
+import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrLogComponent } from "./wotr-log.component";
 
 @Component ({
@@ -32,7 +32,7 @@ export class WotrLogsComponent implements OnChanges {
   ngOnChanges (changes: SimpleChanges<this>) {
     if (changes.logs) {
       setTimeout (() => { this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight; });
-    } // if
-  } // ngOnChanges
+    }
+  }
 
-} // WotrLogsComponent
+}

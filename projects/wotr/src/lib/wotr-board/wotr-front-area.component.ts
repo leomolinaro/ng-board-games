@@ -4,12 +4,12 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { WotrCardId, isCharacterCard, isStrategyCard } from "../wotr-components/wotr-card.models";
-import { WotrCompanion, WotrCompanionId } from "../wotr-components/wotr-companion.models";
-import { WotrActionDie } from "../wotr-components/wotr-dice.models";
-import { WotrFront } from "../wotr-components/wotr-front.models";
-import { WotrMinion, WotrMinionId } from "../wotr-components/wotr-minion.models";
-import { WotrArmyUnitType, WotrNation, WotrNationId } from "../wotr-components/wotr-nation.models";
+import { WotrCardId, isCharacterCard, isStrategyCard } from "../wotr-elements/wotr-card.models";
+import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrActionDie } from "../wotr-elements/wotr-dice.models";
+import { WotrFront } from "../wotr-elements/wotr-front.models";
+import { WotrMinion, WotrMinionId } from "../wotr-elements/wotr-minion.models";
+import { WotrArmyUnitType, WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 

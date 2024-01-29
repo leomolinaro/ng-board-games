@@ -1,9 +1,45 @@
 import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
-import { WotrCardService } from "../wotr-components/wotr-card.service";
-import { WotrNationId, WotrPoliticalStep } from "../wotr-components/wotr-nation.models";
-import { WotrRegionId } from "../wotr-components/wotr-region.models";
-import { WotrFrontDecksSetup, WotrNationSetup, WotrRegionSetup, WotrSetup } from "../wotr-game-state.models";
+import { WotrCharacterCardId, WotrStrategyCardId } from "../wotr-elements/wotr-card.models";
+import { WotrCardService } from "../wotr-elements/wotr-card.service";
+import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrNationId, WotrPoliticalStep } from "../wotr-elements/wotr-nation.models";
+import { WotrRegionId } from "../wotr-elements/wotr-region.models";
+
+export interface WotrSetup {
+  regions: WotrRegionSetup[];
+  fellowship: WotrFellowshipSetup;
+  nations: WotrNationSetup[];
+  decks: WotrFrontDecksSetup[];
+}
+
+export interface WotrFrontDecksSetup {
+  front: WotrFrontId;
+  characterDeck: WotrCharacterCardId[];
+  strategyDeck: WotrStrategyCardId[];
+}
+
+export interface WotrRegionSetup {
+  region: WotrRegionId;
+  nation: WotrNationId;
+  nRegulars: number;
+  nElites: number;
+  nLeaders: number;
+  nNazgul: number;
+}
+
+export interface WotrNationSetup {
+  nation: WotrNationId;
+  active: boolean;
+  politicalStep: WotrPoliticalStep;
+}
+
+export interface WotrFellowshipSetup {
+  region: WotrRegionId;
+  companions: WotrCompanionId[];
+  guide: WotrCompanionId;
+}
 
 @Injectable ({
   providedIn: "root",
@@ -68,7 +104,7 @@ export class WotrRulesSetupService {
         guide: "gandalf-the-grey"
       }
     };
-  } // getGameSetup
+  }
   
   decks (): WotrFrontDecksSetup[] {
     return [
@@ -97,4 +133,4 @@ export class WotrRulesSetupService {
     return { region, nation, nRegulars, nElites, nLeaders: 0, nNazgul };
   }
 
-} // WotrRulesSetupService
+}

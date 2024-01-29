@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
-import { WotrFrontId } from "../wotr-components/wotr-front.models";
-import { WotrPlayer } from "../wotr-game-state.models";
+import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
 import { WotrDiscardCards, WotrDrawCards, WotrStory } from "../wotr-story.models";
