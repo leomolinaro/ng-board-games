@@ -1,8 +1,8 @@
 import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
-import { WotrPhase } from "../wotr-components/phase.models";
-import { WotrRegion } from "../wotr-components/region.models";
+import { WotrPhase } from "../wotr-components/wotr-phase.models";
+import { WotrRegion } from "../wotr-components/wotr-region.models";
 import { WotrLog, WotrPlayer } from "../wotr-game-state.models";
 
 interface WotrLogStringFragment {

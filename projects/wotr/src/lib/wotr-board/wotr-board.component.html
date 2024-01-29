@@ -2,8 +2,10 @@
   <wotr-map
     class="wotr-map"
     #wotrMap
-    [regionStates]="regions ()"
+    [regions]="regions ()"
     [validRegions]="validRegions"
+    [companionById]="companionById ()"
+    [minionById]="minionById ()"
     (regionClick)="regionClick.emit ($event)">
   </wotr-map>
   <div class="wotr-toolbar">{{ message () }}  <button (click)="testClick.next ()">Test</button></div>
@@ -11,7 +13,7 @@
     <wotr-front-area
       [front]="freePeopleFront ()"
       [nations]="freePeopleNations ()"
-      [companions]="freePeopleCompanions ()"
+      [companions]="companions ()"
       (cardClick)="onPreviewCardClick ($event, freePeopleFront ())">
     </wotr-front-area>
   </div>
@@ -19,7 +21,7 @@
     <wotr-front-area
       [front]="shadowFront ()"
       [nations]="shadowNations ()"
-      [minions]="shadowMinions ()"
+      [minions]="minions ()"
       (cardClick)="onPreviewCardClick ($event, shadowFront ())">
     </wotr-front-area>
   </div>

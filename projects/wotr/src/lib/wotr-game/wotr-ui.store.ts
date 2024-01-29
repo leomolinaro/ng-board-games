@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
-import { WotrFront } from "../wotr-components/front.models";
-import { WotrRegionId } from "../wotr-components/region.models";
+import { WotrFrontId } from "../wotr-components/wotr-front.models";
+import { WotrRegionId } from "../wotr-components/wotr-region.models";
 import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {
-  currentPlayer: WotrFront | null;
-  turnPlayer: WotrFront;
+  currentPlayer: WotrFrontId | null;
+  turnPlayer: WotrFrontId;
   canCancel: boolean;
   message: string | null;
   validRegions: WotrRegionId[] | null;
@@ -178,7 +178,7 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   //   };
   // }
 
-  setCurrentPlayer (playerId: WotrFront | null) {
+  setCurrentPlayer (playerId: WotrFrontId | null) {
     this.updateUi ("Set current player", (s) => ({
       ...s,
       currentPlayer: playerId,

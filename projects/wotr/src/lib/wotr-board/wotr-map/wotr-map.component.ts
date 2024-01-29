@@ -1,23 +1,19 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, inject, isDevMode } from "@angular/core";
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, Signal, ViewChild, computed, inject, input, isDevMode } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
-import { SimpleChanges as BgSimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
+import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../wotr-assets.service";
-import { WotrCompanionComponentsService } from "../../wotr-components/companion.service";
-import { WotrMinionComponentsService } from "../../wotr-components/minion.service";
-import { WotrArmyUnitType, WotrCompanion, WotrCompanionId, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrMinion, WotrMinionId, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-components/nation.models";
-import { WotrNationComponentsService } from "../../wotr-components/nation.service";
-import { WotrRegion, WotrRegionId } from "../../wotr-components/region.models";
-import { WotrRegionComponentsService } from "../../wotr-components/region.service";
-import { WotrRegionState } from "../../wotr-game-state.models";
+import { WotrCompanion, WotrCompanionId } from "../../wotr-components/wotr-companion.models";
+import { WotrMinion, WotrMinionId } from "../../wotr-components/wotr-minion.models";
+import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-components/wotr-nation.models";
+import { WotrRegion, WotrRegionId } from "../../wotr-components/wotr-region.models";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapPoint, WotrMapService } from "./wotr-map.service";
 
 interface WotrRegionNode {
   id: WotrRegionId;
   region: WotrRegion;
-  state: WotrRegionState;
   path: string;
   tooltip: string;
   army: WotrArmyNode | null;
@@ -106,23 +102,21 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
   styleUrls: ["./wotr-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WotrMapComponent implements OnChanges {
+export class WotrMapComponent {
 
   private mapService = inject (WotrMapService);
   private assets = inject (WotrAssetsService);
-  private regions = inject (WotrRegionComponentsService);
-  private nations = inject (WotrNationComponentsService);
-  private companions = inject (WotrCompanionComponentsService);
-  private minions = inject (WotrMinionComponentsService);
   private slotsGeneratorService = inject (WotrMapSlotsGeneratorService);
 
-  @Input () regionStates!: Record<WotrRegionId, WotrRegionState>;
+  regions = input.required<WotrRegion[]> ();
   // @Input () nationStates!: Record<WotrNationId, WotrNationState>;
   @Input () validRegions: WotrRegionId[] | null = null;
 
+  companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
+  minionById = input.required<Record<WotrMinionId, WotrMinion>> ();
+
   @Output () regionClick = new EventEmitter<WotrRegionId> ();
 
-  regionNodes!: WotrRegionNode[];
   private regionNodeMap!: Record<WotrRegionId, WotrRegionNode>;
   viewBox = this.mapService.getViewBox ();
   mapWidth = this.mapService.getWidth ();
@@ -141,49 +135,38 @@ export class WotrMapComponent implements OnChanges {
 
   protected mapImageSource = this.assets.getMapImageSource ();
 
-  ngOnChanges (changes: BgSimpleChanges<this>) {
-    if (changes.regionStates) {
-      this.refreshRegionNodes ();
-    } // if
-  } // ngOnChanges
-
-  private refreshRegionNodes (): boolean {
-    const refreshedUnits = false;
+  regionNodes: Signal<WotrRegionNode[]> = computed (() => {
     const { nodes, map } = arrayUtil.entitiesToNodes (
-      this.regions.getAllIds (),
+      this.regions (),
       this.regionNodeMap || {},
-      (regionId) => regionId,
-      (regionId, node) => this.regionStates[regionId] === node.state,
-      (regionId, index, oldNode) => this.regionToNode (regionId, oldNode)
+      (region) => region.id,
+      (region, node) => region === node.region,
+      (region, index, oldNode) => this.regionToNode (region, oldNode)
     );
-    this.regionNodes = nodes;
     this.regionNodeMap = map;
-    return refreshedUnits;
-  } // refreshRegionNodes
+    return nodes;
+  })
 
-  private regionToNode (regionId: WotrRegionId, oldNode: WotrRegionNode | null): WotrRegionNode {
-    const path = this.mapService.getRegionPath (regionId);
-    const region = this.regions.get (regionId);
-    const state = this.regionStates[regionId];
+  private regionToNode (region: WotrRegion, oldNode: WotrRegionNode | null): WotrRegionNode {
+    const path = this.mapService.getRegionPath (region.id);
     const node: WotrRegionNode = {
-      id: regionId,
+      id: region.id,
       region,
-      state,
       path,
       army: null,
       freeGroups: [],
       tooltip: region.name
     };
-    if (oldNode && this.equalsRegionUnits (state, oldNode.state)) {
+    if (oldNode && this.equalsRegionUnits (region, oldNode.region)) {
       node.army = oldNode.army;
       node.freeGroups = oldNode.freeGroups;
     } else {
-      node.army = this.regionToArmyNode (state);
-      node.freeGroups = this.regionToFreeGroups (state);
-      this.setNodeCoordinates (regionId, node);
-    } // if - else
+      node.army = this.regionToArmyNode (region);
+      node.freeGroups = this.regionToFreeGroups (region);
+      this.setNodeCoordinates (region.id, node);
+    }
     return node;
-  } // regionToNode
+  }
 
   private setNodeCoordinates (regionId: WotrRegionId, node: WotrRegionNode) {
     const nGroups = (node.army ? 1 : 0) + node.freeGroups.length;
@@ -238,7 +221,7 @@ export class WotrMapComponent implements OnChanges {
     }
   }
 
-  private equalsRegionUnits (a: WotrRegionState, b: WotrRegionState) {
+  private equalsRegionUnits (a: WotrRegion, b: WotrRegion) {
     if (a.armyUnits !== b.armyUnits) { return false; }
     if (a.leaders !== b.leaders) { return false; }
     if (a.nNazgul !== b.nNazgul) { return false; }
@@ -246,20 +229,20 @@ export class WotrMapComponent implements OnChanges {
     if (a.minions !== b.minions) { return false; }
     if (a.fellowship !== b.fellowship) { return false; }
     return true;
-  } // equalsRegionUnits
+  }
 
-  private regionToArmyNode (regionState: WotrRegionState): WotrArmyNode | null {
-    if (!regionState.armyUnits.length) { return null; }
+  private regionToArmyNode (region: WotrRegion): WotrArmyNode | null {
+    if (!region.armyUnits.length) { return null; }
 
-    const armyFront = this.nations.get (regionState.armyUnits[0].nationId).front;
+    const armyFront = region.armyUnits[0].frontId;
 
-    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (regionState);
+    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region);
 
     let leaderUnits: WotrFreePeopleLeaderUnitNode[] | WotrShadowLeaderUnitNode[];
     let leadership: number;
     switch (armyFront) {
-      case "free-peoples": [leaderUnits, leadership] = this.regionToFreePeopleLeaderUnitNodes (regionState); break;
-      case "shadow": [leaderUnits, leadership] = this.regionToShadowLeaderUnitNodes (regionState); break;
+      case "free-peoples": [leaderUnits, leadership] = this.regionToFreePeopleLeaderUnitNodes (region); break;
+      case "shadow": [leaderUnits, leadership] = this.regionToShadowLeaderUnitNodes (region); break;
     }
 
     return {
@@ -271,17 +254,17 @@ export class WotrMapComponent implements OnChanges {
     };
   }
 
-  private regionToArmyUnitNodes (regionState: WotrRegionState):  [WotrArmyUnitNode[], number, number] {
+  private regionToArmyUnitNodes (region: WotrRegion):  [WotrArmyUnitNode[], number, number] {
     let nRegulars = 0;
     let nElites = 0;
-    for (const unit of regionState.armyUnits) {
+    for (const unit of region.armyUnits) {
       switch (unit.type) {
         case "regular": nRegulars += unit.quantity; break;
         case "elite": nElites += unit.quantity; break;
       }
     }
 
-    const armyUnits = [...regionState.armyUnits];
+    const armyUnits = [...region.armyUnits];
     armyUnits.sort ((a, b) => {
       return a.type === "elite" ? 1 : -1;
     });
@@ -294,17 +277,17 @@ export class WotrMapComponent implements OnChanges {
     return [unitNodes, nRegulars, nElites];
   }
 
-  private regionToFreePeopleLeaderUnitNodes (regionState: WotrRegionState): [WotrFreePeopleLeaderUnitNode[], number] {
+  private regionToFreePeopleLeaderUnitNodes (region: WotrRegion): [WotrFreePeopleLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCompanion | WotrNationId)[] = [];
 
-    regionState.leaders.forEach (leader => {
+    region.leaders.forEach (leader => {
       leadership += leader.quantity;
       leaders.push (leader.nationId);
     });
 
-    regionState.companions.forEach (companionId => {
-      const companion = this.companions.get (companionId);
+    region.companions.forEach (companionId => {
+      const companion = this.companionById ()[companionId];
       leadership += companion.leadership;
       leaders.push (companion);
     });
@@ -320,15 +303,15 @@ export class WotrMapComponent implements OnChanges {
     return [unitNodes, leadership];
   }
 
-  private regionToShadowLeaderUnitNodes (regionState: WotrRegionState): [WotrShadowLeaderUnitNode[], number] {
+  private regionToShadowLeaderUnitNodes (region: WotrRegion): [WotrShadowLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrMinion | "nazgul")[] = [];
-    if (regionState.nNazgul) {
-      leadership += regionState.nNazgul;
+    if (region.nNazgul) {
+      leadership += region.nNazgul;
       leaders.push ("nazgul");
     }
-    regionState.minions.forEach (minionId => {
-      const minion = this.minions.get (minionId);
+    region.minions.forEach (minionId => {
+      const minion = this.minionById ()[minionId];
       leadership += minion.leadership;
       leaders.push (minion);
     });
@@ -343,36 +326,36 @@ export class WotrMapComponent implements OnChanges {
     return [unitNodes, leadership];
   }
 
-  private regionToFreeGroups (regionState: WotrRegionState): WotrFreeGroupNode[] {
+  private regionToFreeGroups (region: WotrRegion): WotrFreeGroupNode[] {
     const freeGroups: WotrFreeGroupNode[] = [];
 
-    if (regionState.fellowship) {
+    if (region.fellowship) {
       freeGroups.push ({ units: [{ unitType: "fellowship", image: this.assets.getFellowshipImage (), svgX: 0, svgY: 0 }], nUnits: 1, svgX: 0, svgY: 0 });
     }
 
-    if (regionState.armyUnits.length) {
-      const armyFront = this.nations.get (regionState.armyUnits[0].nationId).front;
+    if (region.armyUnits.length) {
+      const armyFront = region.armyUnits[0].frontId;
       let freeUnits: WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
       let nUnits: number;
       switch (armyFront) {
-        case "free-peoples": [freeUnits, nUnits] = this.regionToShadowFreeUnitNodes (regionState); break;
-        case "shadow": [freeUnits, nUnits] = this.regionToFreePeopleFreeUnitNodes (regionState); break;
+        case "free-peoples": [freeUnits, nUnits] = this.regionToShadowFreeUnitNodes (region); break;
+        case "shadow": [freeUnits, nUnits] = this.regionToFreePeopleFreeUnitNodes (region); break;
       }
       if (freeUnits.length) { freeGroups.push ({ units: freeUnits, nUnits, svgX: 0, svgY: 0 }); }
     } else {
-      const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes (regionState);
+      const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes (region);
       if (fpFreeUnits.length) { freeGroups.push ({ units: fpFreeUnits, nUnits: fpNUnits, svgX: 0, svgY: 0 }); }
-      const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes (regionState);
+      const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes (region);
       if (sFreeUnits.length) { freeGroups.push ({ units: sFreeUnits, nUnits: sNUnits, svgX: 0, svgY: 0 }); }
     }
 
     return freeGroups;
-  } // regionToLeaders
+  }
 
-  private regionToFreePeopleFreeUnitNodes (regionState: WotrRegionState): [WotrFreePeopleFreeUnitNode[], number] {
+  private regionToFreePeopleFreeUnitNodes (region: WotrRegion): [WotrFreePeopleFreeUnitNode[], number] {
     let nUnits = 0;
-    const freeUnits = regionState.companions.map (companionId => this.companions.get (companionId));
-    nUnits = regionState.companions.length;
+    const freeUnits = region.companions.map (companionId => this.companionById ()[companionId]);
+    nUnits = region.companions.length;
     freeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
     const unitNodes = freeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
       unitType: "companion", companion: freeUnit.id,
@@ -381,13 +364,13 @@ export class WotrMapComponent implements OnChanges {
     return [unitNodes, nUnits];
   }
 
-  private regionToShadowFreeUnitNodes (regionState: WotrRegionState): [WotrShadowFreeUnitNode[], number] {
+  private regionToShadowFreeUnitNodes (region: WotrRegion): [WotrShadowFreeUnitNode[], number] {
     let nUnits = 0;
     const freeUnits: (WotrMinion | "nazgul")[] = [];
-    nUnits += regionState.minions.length;
-    regionState.minions.forEach (minionId => freeUnits.push (this.minions.get (minionId)));
-    if (regionState.nNazgul) {
-      nUnits += regionState.nNazgul;
+    nUnits += region.minions.length;
+    region.minions.forEach (minionId => freeUnits.push (this.minionById ()[minionId]));
+    if (region.nNazgul) {
+      nUnits += region.nNazgul;
       freeUnits.push ("nazgul");
     }
     freeUnits.sort ((a, b) => this.compareShadowFreeUnits (a, b));
@@ -436,7 +419,7 @@ export class WotrMapComponent implements OnChanges {
   private getGroupNodePoint (groupIndex: number, nGroups: number, regionId: WotrRegionId): WotrMapPoint {
     const slots = this.mapService.getRegionSlots (nGroups, regionId);
     return slots[groupIndex];
-  } // getGroupNodePoint
+  }
 
 
 
@@ -444,7 +427,6 @@ export class WotrMapComponent implements OnChanges {
   //   return unit.type === "leader"
   //     ? unit.leaderId
   //     : `${unit.nationId}-${unit.type}-${unit.regionId}`;
-  // } // getUnitNodeId
 
   // private unitToNode (unit: WotrRegionUnit, index: number, regionNode: WotrRegionNode, nRegionUnits: number): WotrUnitNode {
   //   const imageSource = this.assetsService.getUnitImageSource (unit);
@@ -462,24 +444,20 @@ export class WotrMapComponent implements OnChanges {
   //       ? this.components.getLeader (unit.leaderId).name
   //       : `${this.components.getNation (unit.nationId).label} ${this.components.getUnitTypeLabel (unit.type, true)}`,
   //   };
-  // } // unitToNode
 
   // private getUnitNodePoint (unitIndex: number, nRegionUnits: number, regionId: WotrRegionId): WotrMapPoint | null {
   //   const slots = this.mapService.getRegionSlots (nRegionUnits, regionId);
   //   return slots[unitIndex];
-  // } // getUnitNodePoint
 
   onRegionClick (regionNode: WotrRegionNode, event: MouseEvent) {
     if (this.validRegions?.includes (regionNode.id)) {
       this.regionClick.emit (regionNode.id);
-    } // if
-  } // onRegionClick
+    }
+  }
 
   // onUnitClick (unitNode: WotrUnitNode) {
   //   if (this.isValidUnit && this.isValidUnit[unitNode.id]) {
   //     this.unitClick.emit (unitNode.unit);
-  //   } // if
-  // } // onUnitClick
 
   calculateSlots () {
     const splittedViewBox = this.viewBox.split (" ");
@@ -497,16 +475,17 @@ export class WotrMapComponent implements OnChanges {
         return elementId.slice (12) as WotrRegionId;
       } else {
         return null;
-      } // if - else
+      }
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;
     const slots = this.slotsGeneratorService.generateSlots (
+      this.regions (),
       xMax,
       yMax,
       coordinatesToAreaId
     );
     downloadUtil.downloadJson (slots, "wotr-map-slots.json");
-  } // calculateSlots
+  }
 
-} // WotrMapComponent
+}

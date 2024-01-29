@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
-import { WotrFront } from "../wotr-components/front.models";
+import { WotrFrontId } from "../wotr-components/wotr-front.models";
 import { WotrStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerService } from "./wotr-player.service";
@@ -15,7 +15,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     // private rules: WotrRulesService,
   ) {}
 
-  firstPhaseDrawCards$ (front: WotrFront): Observable<WotrStory> {
+  firstPhaseDrawCards$ (front: WotrFrontId): Observable<WotrStory> {
     this.ui.updateUi ("asd", s => ({
       ...s,
       // ...this.ui.resetUi (),

@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
-import { WotrCardService } from "../wotr-components/card.service";
-import { WotrNationId, WotrPoliticalStep } from "../wotr-components/nation.models";
-import { WotrRegionId } from "../wotr-components/region.models";
+import { WotrCardService } from "../wotr-components/wotr-card.service";
+import { WotrNationId, WotrPoliticalStep } from "../wotr-components/wotr-nation.models";
+import { WotrRegionId } from "../wotr-components/wotr-region.models";
 import { WotrFrontDecksSetup, WotrNationSetup, WotrRegionSetup, WotrSetup } from "../wotr-game-state.models";
 
 @Injectable ({

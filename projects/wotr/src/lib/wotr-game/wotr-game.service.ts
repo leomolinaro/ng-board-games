@@ -1,8 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
-import { WotrFront } from "../wotr-components/front.models";
-import { WotrFrontComponentsService } from "../wotr-components/front.service";
+import { WotrFrontId } from "../wotr-components/wotr-front.models";
 import { WotrPlayer } from "../wotr-game-state.models";
 import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
@@ -14,7 +13,7 @@ import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
 @Injectable ()
-export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrStory, WotrPlayerService> {
+export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, WotrStory, WotrPlayerService> {
 
   private game = inject (WotrGameStore);
   private rules = inject (WotrRulesService);
@@ -24,12 +23,10 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   protected aiService = inject (WotrPlayerAiService);
   protected localService = inject (WotrPlayerLocalService);
 
-  private fronts = inject (WotrFrontComponentsService);
-
   protected storyDocs: WotrStoryDoc[] | null = null;
 
   protected getGameId () { return this.game.getGameId (); }
-  protected getPlayer (playerId: WotrFront) { return this.game.getPlayer (playerId); }
+  protected getPlayer (playerId: WotrFrontId) { return this.game.getPlayer (playerId); }
   protected getGameOwner () { return this.game.getGameOwner (); }
   protected startTemporaryState () { this.game.startTemporaryState (); }
   protected endTemporaryState () { this.game.endTemporaryState (); }
@@ -38,11 +35,11 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
   protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
 
   protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
-  protected setCurrentPlayer (playerId: WotrFront) { this.ui.setCurrentPlayer (playerId); }
+  protected setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayer (playerId); }
   protected currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
   protected cancelChange$ () { return this.ui.cancelChange$ (); }
 
-  protected resetUi (turnPlayer: WotrFront) {
+  protected resetUi (turnPlayer: WotrFrontId) {
     this.ui.updateUi ("Reset UI", (s) => ({
       ...s,
       turnPlayer: turnPlayer,
@@ -93,11 +90,11 @@ export class WotrGameService extends ABgGameService<WotrFront, WotrPlayer, WotrS
 
   private firstPhase$ () {
     this.game.logPhase (1);
-    return this.executeTasks$ (this.fronts.getAll ().map (
+    return this.executeTasks$ (this.game.getFrontIds ().map (
       front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
     )).pipe (
       tap (stories => {
-        this.fronts.getAll ().forEach ((front, index) => {
+        this.game.getFrontIds ().forEach ((front, index) => {
           const story = stories[index];
           if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
           const drawCards = story.actions[0];

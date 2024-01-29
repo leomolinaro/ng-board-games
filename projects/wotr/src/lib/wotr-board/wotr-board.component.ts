@@ -2,14 +2,13 @@ import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, inject, input } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
-import { WotrCardId } from "../wotr-components/card.models";
-import { WotrCompanionComponentsService } from "../wotr-components/companion.service";
-import { WotrFront } from "../wotr-components/front.models";
-import { WotrMinionComponentsService } from "../wotr-components/minion.service";
-import { WotrCompanionId, WotrMinionId, WotrNationId } from "../wotr-components/nation.models";
-import { WotrNationComponentsService } from "../wotr-components/nation.service";
-import { WotrRegionId } from "../wotr-components/region.models";
-import { WotrCompanionState, WotrFrontState, WotrLog, WotrMinionState, WotrNationState, WotrPlayer, WotrRegionState } from "../wotr-game-state.models";
+import { WotrCardId } from "../wotr-components/wotr-card.models";
+import { WotrCompanion, WotrCompanionId } from "../wotr-components/wotr-companion.models";
+import { WotrFront, WotrFrontId } from "../wotr-components/wotr-front.models";
+import { WotrMinion, WotrMinionId } from "../wotr-components/wotr-minion.models";
+import { WotrNation } from "../wotr-components/wotr-nation.models";
+import { WotrRegion, WotrRegionId } from "../wotr-components/wotr-region.models";
+import { WotrLog, WotrPlayer } from "../wotr-game-state.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "./wotr-cards-dialog.component";
 import { WotrFrontAreaComponent } from "./wotr-front-area.component";
 import { WotrLogsComponent } from "./wotr-logs.component";
@@ -28,26 +27,20 @@ export class WotrBoardComponent {
   // constructor (private bottomSheet: MatBottomSheet) {}
 
   private dialog = inject (MatDialog);
-  private nationComp = inject (WotrNationComponentsService);
-  private companionComp = inject (WotrCompanionComponentsService);
-  private minionComp = inject (WotrMinionComponentsService);
 
   players = input.required<WotrPlayer[]> ();
-  fronts = input.required<Record<WotrFront, WotrFrontState>> ();
-  regions = input.required<Record<WotrRegionId, WotrRegionState>> ();
-  nations = input.required<Record<WotrNationId, WotrNationState>> ();
-  companions = input.required<Record<WotrCompanionId, WotrCompanionState>> ();
-  minions = input.required<Record<WotrMinionId, WotrMinionState>> ();
+  regions = input.required<WotrRegion[]> ();
+  freePeopleFront = input.required<WotrFront> ();
+  freePeopleNations = input.required<WotrNation[]> ();
+  shadowFront = input.required<WotrFront> ();
+  shadowNations = input.required<WotrNation[]> ();
+  companions = input.required<WotrCompanion[]> ();
+  companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
+  minions = input.required<WotrMinion[]> ();
+  minionById = input.required<Record<WotrMinionId, WotrMinion>> ();
   logs = input.required<WotrLog[]> ();
   message = input<string> ();
   currentPlayer = input<WotrPlayer> ();
-
-  protected freePeopleFront = computed (() => this.fronts ()["free-peoples"]);
-  protected freePeopleNations = computed (() => this.nationComp.getFreePeopleNationIds ().map (nationId => this.nations ()[nationId]));
-  protected freePeopleCompanions = computed (() => this.companionComp.getAllIds ().map (id => this.companions ()[id]));
-  protected shadowFront = computed (() => this.fronts ().shadow);
-  protected shadowNations = computed (() => this.nationComp.getShadowNationIds ().map (nationId => this.nations ()[nationId]));
-  protected shadowMinions = computed (() => this.minionComp.getAllIds ().map (id => this.minions ()[id]));
 
   @Input () turnPlayer: WotrPlayer | null = null;
   // @Input () currentPlayer: WotrPlayer | null = null;
@@ -68,7 +61,7 @@ export class WotrBoardComponent {
     return this.players ().findIndex (p => currentPlayer.id === p.id);
   });
 
-  @Output () playerSelect = new EventEmitter<WotrFront> ();
+  @Output () playerSelect = new EventEmitter<WotrFrontId> ();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
   @Output () regionClick = new EventEmitter<WotrRegionId> ();
   // @Output () unitClick = new EventEmitter<WotrRegionUnit> ();
@@ -99,7 +92,7 @@ export class WotrBoardComponent {
   // } // onKnightsConfirm
   // onResourceSelect (resource: WotrResourceType) { this.resourceSelect.emit (resource); }
 
-  onPreviewCardClick (cardId: WotrCardId, front: WotrFrontState) {
+  onPreviewCardClick (cardId: WotrCardId, front: WotrFront) {
     this.dialog.open<WotrCardsDialogComponent, WotrCardsDialogData> (
       WotrCardsDialogComponent,
       {

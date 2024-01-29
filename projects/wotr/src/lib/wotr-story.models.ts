@@ -1,9 +1,11 @@
-import { WotrCardId } from "./wotr-components/card.models";
-import { WotrActionDie, WotrCombatDie } from "./wotr-components/dice.models";
-import { WotrHuntTile } from "./wotr-components/hunt.models";
-import { WotrCompanionId, WotrMinionId, WotrNationId, WotrUnitType } from "./wotr-components/nation.models";
-import { WotrPhase } from "./wotr-components/phase.models";
-import { WotrRegionId } from "./wotr-components/region.models";
+import { WotrCardId } from "./wotr-components/wotr-card.models";
+import { WotrCompanionId } from "./wotr-components/wotr-companion.models";
+import { WotrActionDie, WotrCombatDie } from "./wotr-components/wotr-dice.models";
+import { WotrHuntTile } from "./wotr-components/wotr-hunt.models";
+import { WotrMinionId } from "./wotr-components/wotr-minion.models";
+import { WotrNationId, WotrUnitType } from "./wotr-components/wotr-nation.models";
+import { WotrPhase } from "./wotr-components/wotr-phase.models";
+import { WotrRegionId } from "./wotr-components/wotr-region.models";
 
 export interface WotrStory {
   phase: WotrPhase;

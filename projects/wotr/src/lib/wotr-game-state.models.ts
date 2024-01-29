@@ -1,75 +1,30 @@
 import { BgUser } from "@leobg/commons";
-import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "./wotr-components/card.models";
-import { WotrActionDie } from "./wotr-components/dice.models";
-import { WotrFront } from "./wotr-components/front.models";
-import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId, WotrPoliticalStep } from "./wotr-components/nation.models";
-import { WotrPhase } from "./wotr-components/phase.models";
-import { WotrRegionId } from "./wotr-components/region.models";
+import { WotrCharacterCardId, WotrStrategyCardId } from "./wotr-components/wotr-card.models";
+import { WotrCompanionId } from "./wotr-components/wotr-companion.models";
+import { WotrCompanionState } from "./wotr-components/wotr-companion.state";
+import { WotrFrontId } from "./wotr-components/wotr-front.models";
+import { WotrFrontState } from "./wotr-components/wotr-front.state";
+import { WotrMinionState } from "./wotr-components/wotr-minion.state";
+import { WotrNationId, WotrPoliticalStep } from "./wotr-components/wotr-nation.models";
+import { WotrNationState } from "./wotr-components/wotr-nation.state";
+import { WotrPhase } from "./wotr-components/wotr-phase.models";
+import { WotrRegionId } from "./wotr-components/wotr-region.models";
+import { WotrRegionState } from "./wotr-components/wotr-region.state";
 
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
   players: {
-    map: Record<WotrFront, WotrPlayer>;
-    ids: WotrFront[];
+    map: Record<WotrFrontId, WotrPlayer>;
+    ids: WotrFrontId[];
   };
-  fronts: Record<WotrFront, WotrFrontState>;
-  regions: Record<WotrRegionId, WotrRegionState>;
-  nations: Record<WotrNationId, WotrNationState>;
+  frontState: WotrFrontState;
+  regionState: WotrRegionState;
+  nationState: WotrNationState;
   fellowhip: WotrFellowshipState;
-  companions: Record<WotrCompanionId, WotrCompanionState>;
-  minions: Record<WotrMinionId, WotrMinionState>;
+  companionState: WotrCompanionState;
+  minionState: WotrMinionState;
   logs: WotrLog[];
-}
-
-export interface WotrFrontState {
-  id: WotrFront;
-  handCards: WotrCardId[];
-  tableCards: WotrCardId[];
-  characterDeck: WotrCharacterCardId[];
-  strategyDeck: WotrStrategyCardId[];
-  characterDiscardPile: WotrCharacterCardId[];
-  strategyDiscardPile: WotrStrategyCardId[];
-  actionDice: WotrActionDie[];
-}
-
-export interface WotrRegionArmyUnit {
-  nationId: WotrNationId;
-  type: WotrArmyUnitType;
-  quantity: number;
-}
-
-export interface WotrRegionLeaderUnit {
-  nationId: WotrNationId;
-  type: "leader";
-  quantity: number;
-}
-
-export interface WotrRegionState {
-  id: WotrRegionId;
-  armyUnits: WotrRegionArmyUnit[];
-  leaders: WotrRegionLeaderUnit[];
-  nNazgul: number;
-  companions: WotrCompanionId[];
-  minions: WotrMinionId[];
-  fellowship: boolean;
-}
-
-export interface WotrNationState {
-  id: WotrNationId;
-  reinforcements: {
-    regular: number;
-    elite: number;
-    leader: number;
-    nazgul: number;
-  };
-  casualties: {
-    regular: number;
-    elite: number;
-    leader: number;
-  };
-  active: boolean;
-  politicalStep: WotrPoliticalStep;
 }
 
 export interface WotrFellowshipState {
@@ -78,18 +33,8 @@ export interface WotrFellowshipState {
   guide: WotrCompanionId;
 }
 
-export interface WotrCompanionState {
-  id: WotrCompanionId;
-  status: "inFellowship" | "available" | "inPlay" | "eliminated";
-}
-
-export interface WotrMinionState {
-  id: WotrMinionId;
-  status: "available" | "inPlay" | "eliminated";
-}
-
 export interface AWotrPlayer {
-  id: WotrFront;
+  id: WotrFrontId;
   name: string;
 }
 
@@ -137,7 +82,7 @@ export interface WotrSetup {
 } // WotrSetup
 
 export interface WotrFrontDecksSetup {
-  front: WotrFront;
+  front: WotrFrontId;
   characterDeck: WotrCharacterCardId[];
   strategyDeck: WotrStrategyCardId[];
 }

@@ -10,7 +10,7 @@
     <image [attr.width]="mapWidth" 
       [attr.xlink:href]="mapImageSource">
     </image>
-    @for (regionNode of regionNodes; track regionNode.id) {
+    @for (regionNode of regionNodes (); track regionNode.id) {
       <svg:g>
         <svg:path
           [ngClass]="{

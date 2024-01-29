@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgStoryDoc, BgUser } from "@leobg/commons";
-import { WotrFront } from "./wotr-components/front.models";
+import { WotrFrontId } from "./wotr-components/wotr-front.models";
 import { WotrStory } from "./wotr-story.models";
 
 export interface WotrGameDoc {
@@ -12,7 +12,7 @@ export interface WotrGameDoc {
 } // WotrGameDoc
 
 export interface AWotrPlayerDoc {
-  id: WotrFront;
+  id: WotrFrontId;
   name: string;
   sort: number;
 } // ABritPlayerDoc
@@ -28,7 +28,7 @@ export interface WotrReadPlayerDoc extends AWotrPlayerDoc {
 
 export type WotrPlayerDoc = WotrAiPlayerDoc | WotrReadPlayerDoc;
 
-export type WotrStoryDoc = BgStoryDoc<WotrFront, WotrStory>;
+export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrStory>;
 
 @Injectable ({
   providedIn: "root"

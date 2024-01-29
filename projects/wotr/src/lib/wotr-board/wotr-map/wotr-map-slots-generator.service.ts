@@ -1,7 +1,6 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { immutableUtil, randomUtil } from "@leobg/commons/utils";
-import { WotrRegionId } from "../../wotr-components/region.models";
-import { WotrRegionComponentsService } from "../../wotr-components/region.service";
+import { WotrRegion, WotrRegionId } from "../../wotr-components/wotr-region.models";
 import { WotrMapPoint, WotrRegionSlots } from "./wotr-map.service";
 
 interface WotrRegionPoints {
@@ -24,8 +23,6 @@ const MAX_SLOTS = 5;
 })
 export class WotrMapSlotsGeneratorService {
   
-  private regions = inject (WotrRegionComponentsService);
-
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },
     { x: -1, y: 0 },
@@ -37,24 +34,24 @@ export class WotrMapSlotsGeneratorService {
     { x: 0, y: -1 },
   ];
 
-  generateSlots (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null): WotrRegionSlots {
+  generateSlots (regions: WotrRegion[], xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null): WotrRegionSlots {
     const areaSlots: Record<WotrRegionId, Record<number, WotrMapPoint[]>> = {} as any;
-    const regionPointsById = this.generateRegionPoints (xMax, yMax, coordinatesToAreaId);
+    const regionPointsById = this.generateRegionPoints (regions, xMax, yMax, coordinatesToAreaId);
 
-    for (const regionId of this.regions.getAllIds ()) {
-      const regionPoints = regionPointsById[regionId];
+    for (const region of regions) {
+      const regionPoints = regionPointsById[region.id];
       const regionSlots: Record<number, WotrMapPoint[]> = {};
       for (let i = 1; i <= MAX_SLOTS; i++) {
-        const slots = this.generateRegionSlots (i, regionPoints, regionId);
+        const slots = this.generateRegionSlots (i, regionPoints, region.id);
         regionSlots[i] = slots;
       } // for
-      areaSlots[regionId] = regionSlots;
+      areaSlots[region.id] = regionSlots;
     } // for
 
     return areaSlots;
   } // generateSlots
 
-  private generateRegionPoints (xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null) {
+  private generateRegionPoints (regions: WotrRegion[], xMax: number, yMax: number, coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null) {
     const regionPointsById: Record<WotrRegionId, WotrRegionPoints> = {} as any;
     const regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>> = {};
 
@@ -90,10 +87,10 @@ export class WotrMapSlotsGeneratorService {
     } // for
 
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
-    for (const regionId of this.regions.getAllIds ()) {
-      const regionPoints = regionPointsById[regionId];
+    for (const region of regions) {
+      const regionPoints = regionPointsById[region.id];
       if (regionPoints.innerPoints.length < MAX_SLOTS) {
-        console.log (regionId, regionPoints)
+        console.log (region, regionPoints)
       }
       const points = regionPoints.innerPoints;
       const outerPoints: WotrMapPoint[] = [];
@@ -107,7 +104,7 @@ export class WotrMapSlotsGeneratorService {
           const regionPoint = this.getRegionPointByCoordinates (nX, nY, regionPointByYByX);
           let outerPoint: WotrMapPoint | null = null;
           if (regionPoint) {
-            if (regionPoint.regionId === regionId) {
+            if (regionPoint.regionId === region.id) {
               point.neighbours.push (regionPoint);
             } else {
               outerPoint = regionPoint;
@@ -128,8 +125,8 @@ export class WotrMapSlotsGeneratorService {
     } // for
 
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
-    for (const regionId of this.regions.getAllIds ()) {
-      const regionPoints = regionPointsById[regionId];
+    for (const region of regions) {
+      const regionPoints = regionPointsById[region.id];
       for (const innerPoint of regionPoints.innerPoints) {
         let cenralEnergy = 0;
         for (const outerBorderPoint of regionPoints.outerBorderPoints) {

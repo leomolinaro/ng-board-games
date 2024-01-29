@@ -1,8 +1,10 @@
 import { Injectable } from "@angular/core";
-import { WotrCardId } from "./wotr-components/card.models";
-import { WotrActionDie } from "./wotr-components/dice.models";
-import { WotrFront } from "./wotr-components/front.models";
-import { WotrArmyUnitType, WotrCompanionId, WotrMinionId, WotrNationId } from "./wotr-components/nation.models";
+import { WotrCardId } from "./wotr-components/wotr-card.models";
+import { WotrCompanionId } from "./wotr-components/wotr-companion.models";
+import { WotrActionDie } from "./wotr-components/wotr-dice.models";
+import { WotrFrontId } from "./wotr-components/wotr-front.models";
+import { WotrMinionId } from "./wotr-components/wotr-minion.models";
+import { WotrArmyUnitType, WotrNationId } from "./wotr-components/wotr-nation.models";
 
 const BASE_PATH = "assets/wotr";
 
@@ -114,6 +116,6 @@ export class WotrAssetsService {
     return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
   }
 
-  getActionDieImage (actionDie: WotrActionDie, front: WotrFront) { return `${BASE_PATH}/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie}.png`; }
+  getActionDieImage (actionDie: WotrActionDie, front: WotrFrontId) { return `${BASE_PATH}/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie}.png`; }
 
 } // BritAssetsService

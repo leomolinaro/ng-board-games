@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrCardNumber, WotrFreePeopleCharacterCardId, WotrFreePeopleStrategyCardId, WotrShadowCharacterCardId, WotrShadowStrategyCardId } from "./card.models";
+import { WotrCardNumber, WotrFreePeopleCharacterCardId, WotrFreePeopleStrategyCardId, WotrShadowCharacterCardId, WotrShadowStrategyCardId } from "./wotr-card.models";
 
 @Injectable ({
   providedIn: "root",

@@ -1,4 +1,7 @@
-import { WotrNationId } from "./nation.models";
+import { WotrCompanionId } from "./wotr-companion.models";
+import { WotrFrontId } from "./wotr-front.models";
+import { WotrMinionId } from "./wotr-minion.models";
+import { WotrArmyUnitType, WotrNationId } from "./wotr-nation.models";
 
 export type WotrRegionId =
   "forlindon" | "north-ered-luin" | "ered-luin" | "grey-havens" | "harlindon" | "tower-hills" |
@@ -28,4 +31,23 @@ export interface WotrRegion {
   neighbors: WotrNeighbor[];
   fortification: boolean;
   settlement: WotrSettlentType | null;
-} // WotrRegion
+  armyUnits: WotrRegionArmyUnit[];
+  leaders: WotrRegionLeaderUnit[];
+  nNazgul: number;
+  companions: WotrCompanionId[];
+  minions: WotrMinionId[];
+  fellowship: boolean;
+}
+
+export interface WotrRegionArmyUnit {
+  nationId: WotrNationId;
+  frontId: WotrFrontId;
+  type: WotrArmyUnitType;
+  quantity: number;
+}
+
+export interface WotrRegionLeaderUnit {
+  nationId: WotrNationId;
+  type: "leader";
+  quantity: number;
+}

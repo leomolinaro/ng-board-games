@@ -4,8 +4,7 @@ import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { WotrFront } from "./wotr-components/front.models";
-import { WotrFrontComponentsService } from "./wotr-components/front.service";
+import { WotrFrontId } from "./wotr-components/wotr-front.models";
 import {
   AWotrPlayerDoc,
   WotrAiPlayerDoc,
@@ -41,10 +40,9 @@ export class WotrHomeComponent {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private gameService: WotrRemoteService,
-    private fronts: WotrFrontComponentsService
   ) {}
 
-  config: BgHomeConfig<WotrFront> = {
+  config: BgHomeConfig<WotrFrontId> = {
     boardGame: "wotr",
     boardGameName: "War of the Ring (2nd Edition)",
     startGame$: (gameId: string) =>
@@ -56,8 +54,8 @@ export class WotrHomeComponent {
         this.gameService.deleteGame$ (gameId),
       ]),
     createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-    playerIds: () => this.fronts.getAll (),
-    playerIdCssClass: (front: WotrFront) => {
+    playerIds: () => ["free-peoples", "shadow"],
+    playerIdCssClass: (front: WotrFrontId) => {
       switch (front) {
         case "free-peoples": return "wotr-player-free-peoples";
         case "shadow": return "wotr-player-shadow";
@@ -65,7 +63,7 @@ export class WotrHomeComponent {
     }
   };
 
-  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFront>[]) {
+  private createGame$ (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFrontId>[]) {
     return this.gameService.insertGame$ ({
       id: protoGame.id,
       owner: protoGame.owner,
@@ -87,7 +85,7 @@ export class WotrHomeComponent {
     );
   }
 
-  private insertAiPlayer$ (name: string, front: WotrFront, sort: number, gameId: string): Observable<WotrPlayerDoc> {
+  private insertAiPlayer$ (name: string, front: WotrFrontId, sort: number, gameId: string): Observable<WotrPlayerDoc> {
     const player: WotrAiPlayerDoc = {
       ...this.aPlayerDoc (name, front, sort),
       isAi: true,
@@ -95,7 +93,7 @@ export class WotrHomeComponent {
     return this.gameService.insertPlayer$ (player, gameId);
   }
 
-  private insertRealPlayer$ (name: string, front: WotrFront, sort: number, controller: BgUser, gameId: string): Observable<WotrPlayerDoc> {
+  private insertRealPlayer$ (name: string, front: WotrFrontId, sort: number, controller: BgUser, gameId: string): Observable<WotrPlayerDoc> {
     const player: WotrReadPlayerDoc = {
       ...this.aPlayerDoc (name, front, sort),
       isAi: false,
@@ -104,7 +102,7 @@ export class WotrHomeComponent {
     return this.gameService.insertPlayer$ (player, gameId);
   }
 
-  private aPlayerDoc (name: string, front: WotrFront, sort: number): AWotrPlayerDoc {
+  private aPlayerDoc (name: string, front: WotrFrontId, sort: number): AWotrPlayerDoc {
     return { name: name, id: front, sort: sort };
   }
 
