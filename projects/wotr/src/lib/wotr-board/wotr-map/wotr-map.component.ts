@@ -115,7 +115,7 @@ export class WotrMapComponent {
   companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
   minionById = input.required<Record<WotrMinionId, WotrMinion>> ();
 
-  @Output () regionClick = new EventEmitter<WotrRegionId> ();
+  @Output () regionClick = new EventEmitter<WotrRegion> ();
 
   private regionNodeMap!: Record<WotrRegionId, WotrRegionNode>;
   viewBox = this.mapService.getViewBox ();
@@ -450,9 +450,9 @@ export class WotrMapComponent {
   //   return slots[unitIndex];
 
   onRegionClick (regionNode: WotrRegionNode, event: MouseEvent) {
-    if (this.validRegions?.includes (regionNode.id)) {
-      this.regionClick.emit (regionNode.id);
-    }
+    // if (this.validRegions?.includes (regionNode.id)) {
+    this.regionClick.emit (regionNode.region);
+    // }
   }
 
   // onUnitClick (unitNode: WotrUnitNode) {

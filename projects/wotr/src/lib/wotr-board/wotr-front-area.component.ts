@@ -150,7 +150,6 @@ export class WotrFrontAreaComponent {
   protected armyUnitImage: BgTransformFn<WotrNationId, string, WotrArmyUnitType> = (nationId, type) => this.assets.getArmyUnitImage (type, nationId).source;
   protected leaderImage: BgTransformFn<WotrNationId, string> = nationId => this.assets.getLeaderImage (nationId).source;
   protected nazgulImage: BgTransformFn<void, string> = () => this.assets.getNazgulImage ().source;
-  protected nazgulTooltip: BgTransformFn<void, string> = () => "Nazgul";
   protected companionImage: BgTransformFn<WotrCompanionId, string> = companionId => this.assets.getCompanionImage (companionId).source;
   protected minionImage: BgTransformFn<WotrMinionId, string> = minionId => this.assets.getMinionImage (minionId).source;
   protected actionDieImage: BgTransformFn<WotrActionDie, string> = actionDie => this.assets.getActionDieImage (actionDie, this.front ().id);

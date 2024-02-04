@@ -1,9 +1,11 @@
+import { WotrStoryAction } from "../wotr-story.models";
+import { WotrFrontId } from "./wotr-front.models";
 import { WotrPhase } from "./wotr-phase.models";
 
 export interface WotrLogSetup { type: "setup" }
 export interface WotrLogEndGame { type: "endGame" }
 export interface WotrLogRound { type: "round"; roundNumber: number }
-// export interface WotrLogNationTurn { type: "nation-turn"; nationId: WotrNationId }
+export interface WotrLogAction { type: "action"; front: WotrFrontId; action: WotrStoryAction }
 export interface WotrLogPhase { type: "phase"; phase: WotrPhase }
 // export interface WotrLogPopulationMarkerSet { type: "population-marker-set"; populationMarker: number | null }
 // export interface WotrLogInfantryPlacement { type: "infantry-placement"; landId: WotrLandRegionId; quantity: number }
@@ -14,7 +16,7 @@ export type WotrLog =
 | WotrLogSetup
 | WotrLogEndGame
 | WotrLogRound
-// | WotrLogNationTurn
+| WotrLogAction
 | WotrLogPhase;
 // | WotrLogPopulationMarkerSet
 // | WotrLogInfantryPlacement

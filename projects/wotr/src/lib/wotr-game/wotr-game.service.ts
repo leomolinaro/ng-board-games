@@ -3,9 +3,9 @@ import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
+import { WotrRemoteService } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
-import { WotrDiscardCards, WotrDrawCards, WotrStory } from "../wotr-story.models";
+import { WotrCardDiscard, WotrCardDraw, WotrStory, WotrStoryDoc } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
@@ -83,9 +83,6 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
       switchMap (gameContinue => gameContinue ? this.actionResolution$ () : of (false)),
       switchMap (gameContinue => gameContinue ? this.victoryCheck$ (roundNumber) : of (false))
     );
-    // return forEach (this.components.NATION_IDS, (nationId) =>
-    //   this.nationTurn$ (nationId, roundId)
-    // );
   }
 
   private firstPhase$ () {
@@ -94,21 +91,21 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
       front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
     )).pipe (
       tap (stories => {
-        this.game.getFrontIds ().forEach ((front, index) => {
+        this.game.getFrontIds ().forEach ((frontId, index) => {
           const story = stories[index];
           if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
           const drawCards = story.actions[0];
-          this.game.applyDrawCards (drawCards, front);
+          this.game.applyDrawCards (drawCards, frontId);
           const discardCards = story.actions[1];
           if (discardCards) {
-            this.game.applyDiscardCards (discardCards, front);
+            this.game.applyDiscardCards (discardCards, frontId);
           }
         });
       })
     );
   }
 
-  private validateFirstPhaseDrawCards$ (story: WotrStory): story is Omit<WotrStory, "actions"> & { actions: [WotrDrawCards] | [WotrDrawCards, WotrDiscardCards] } {
+  private validateFirstPhaseDrawCards$ (story: WotrStory): story is Omit<WotrStory, "actions"> & { actions: [WotrCardDraw] | [WotrCardDraw, WotrCardDiscard] } {
     return true;
   }
 

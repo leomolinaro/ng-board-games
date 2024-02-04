@@ -20,7 +20,7 @@ import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
 import * as fromRegion from "../wotr-elements/wotr-region.state";
 import { WotrSetup } from "../wotr-rules/wotr-rules-setup.service";
-import { WotrDiscardCards, WotrDrawCards } from "../wotr-story.models";
+import { WotrCardDiscard, WotrCardDraw, WotrStoryAction } from "../wotr-story.models";
 
 @Injectable ()
 export class WotrGameStore extends BgStore<WotrGameState> {
@@ -93,6 +93,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   private nationState = toSignal (this.select$ (s => s.nationState), { requireSync: true });
   freePeopleNations = computed (() => fromNation.getFreePeopleNations (this.nationState ()));
   shadowNations = computed (() => fromNation.getShadowNations (this.nationState ()));
+  nationById = computed (() => this.nationState ().map);
   getNation (nationId: WotrNationId): WotrNation { return this.nationState ().map[nationId]; }
 
   getGameId (): string { return this.get (s => s.gameId); }
@@ -209,24 +210,26 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       state = this.updateRegion (setup.fellowship.region, region => fromRegion.addFellowshipToRegion (region), state);
 
 
-      // Esempi
-      state = this.updateFront ("free-peoples", f => ({ ...f, handCards: ["fpcha03", "fpstr14"] }), state);
-      state = this.updateFront ("shadow", f => ({ ...f, handCards: ["scha21", "scha13", "sstr23"] }), state);
-      state = this.updateFront ("free-peoples", f => ({ ...f, actionDice: ["character", "will-of-the-west", "event"] }), state);
-      state = this.updateFront ("shadow", f => ({ ...f, actionDice: ["muster-army", "army", "character", "character", "event", "muster"] }), state);
+      // // Esempi
+      // state = this.updateFront ("free-peoples", f => ({ ...f, handCards: ["fpcha03", "fpstr14"] }), state);
+      // state = this.updateFront ("shadow", f => ({ ...f, handCards: ["scha21", "scha13", "sstr23"] }), state);
+      // state = this.updateFront ("free-peoples", f => ({ ...f, actionDice: ["character", "will-of-the-west", "event"] }), state);
+      // state = this.updateFront ("shadow", f => ({ ...f, actionDice: ["muster-army", "army", "character", "character", "event", "muster"] }), state);
 
       return state;
     });
   }
 
-  applyDrawCards (action: WotrDrawCards, front: WotrFrontId) {
+  applyDrawCards (action: WotrCardDraw, front: WotrFrontId) {
+    this.logAction (action, front);
     this.update ("Draw cards", state => this.updateFront (front, f => ({
       ...f,
       handCards: immutableUtil.listPush (action.cards, f.handCards)
     }), state));
   }
 
-  applyDiscardCards (action: WotrDiscardCards, front: WotrFrontId) {
+  applyDiscardCards (action: WotrCardDiscard, front: WotrFrontId) {
+    this.logAction (action, front);
     this.update ("Discard cards", state => this.updateFront (front, f => {
       let characterDiscardPile = f.characterDiscardPile;
       let strategyDiscardPile = f.strategyDiscardPile;
@@ -253,11 +256,11 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   logRound (roundNumber: number) { this.addLog ({ type: "round", roundNumber }); }
   logPhase (phase: WotrPhase) { this.addLog ({ type: "phase", phase: phase }); }
   logEndGame () { this.addLog ({ type: "endGame" }); }
+  logAction (action: WotrStoryAction, front: WotrFrontId) { this.addLog ({ type: "action", action, front }); }
   // logNationTurn (nationId: WotrNationId) { this.addLog ({ type: "nation-turn", nationId: nationId }); }
   // logPopulationMarkerSet (populationMarker: number | null) { this.addLog ({ type: "population-marker-set", populationMarker }); }
   // logInfantryPlacement (landId: WotrLandRegionId, quantity: number) { this.addLog ({ type: "infantry-placement", landId, quantity }); }
   // logInfantryReinforcements (regionId: WotrRegionId, quantity: number) { this.addLog ({ type: "infantry-reinforcement", regionId, quantity }); }
-  // logArmyMovement (units: WotrRegionUnit[], toRegionId: WotrRegionId) { this.addLog ({ type: "army-movement", units, toRegionId }); }
   // // logMovement (movement: WotrMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }
   // // logExpedition (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "expedition", land: land, player: player }); }
   // // logNobleTitle (resources: WotrResourceType[], player: string) { this.addLog ({ type: "nobleTitle", resources: resources, player: player }); }

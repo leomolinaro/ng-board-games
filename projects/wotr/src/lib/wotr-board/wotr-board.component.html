@@ -6,7 +6,7 @@
     [validRegions]="validRegions"
     [companionById]="companionById ()"
     [minionById]="minionById ()"
-    (regionClick)="regionClick.emit ($event)">
+    (regionClick)="onRegionClick ($event)">
   </wotr-map>
   <div class="wotr-toolbar">{{ message () }}  <button (click)="testClick.next ()">Test</button></div>
   <div class="wotr-free-peoples">
@@ -27,7 +27,7 @@
   </div>
   <div class="wotr-detail">Detail</div>
   <div class="wotr-logs">
-    <wotr-logs [logs]="logs ()"></wotr-logs>
+    <wotr-logs [logs]="logs ()" [players]="players ()"></wotr-logs>
   </div>
     <!-- [nationStates]="nationStates"
     [validUnits]="validUnits"

@@ -106,7 +106,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     return task$ (playerService).pipe (
       switchMap (story => {
         const storyDoc: BgStoryDoc<Pid, R> = { ...story, time, playerId };
-        const storyId = storyDoc.time + "." + playerId;
+        const storyId = getStoryId (storyDoc.time, playerId);
         return this.insertStoryDoc$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => storyDoc));
       }),
       finalize (() => this.endTemporaryState ())
@@ -114,7 +114,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   }
 
   private getRemoteStory$<R extends St> (time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R> | null> {
-    const storyId = time + "." + playerId;
+    const storyId = getStoryId (time, playerId);
     return this.selectStoryDoc$ (storyId, this.getGameId ()).pipe (
       filter (storyDoc => !!storyDoc),
       map (story => story as BgStoryDoc<Pid, R>),
@@ -169,4 +169,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
+}
+
+export function getStoryId (time: number, playerId: string) {
+  const timeString = time.toString ();
+  const zerosToAdd = 4 - timeString.length;
+  return `${"0".repeat (zerosToAdd)}${timeString}.${playerId}`;
 }

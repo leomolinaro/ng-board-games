@@ -12,16 +12,6 @@
     </image>
     @for (regionNode of regionNodes (); track regionNode.id) {
       <svg:g>
-        <svg:path
-          [ngClass]="{
-            'is-active': isValidRegion ? isValidRegion[regionNode.id] : false,
-            'is-disabled': isValidRegion ? !isValidRegion[regionNode.id] : false
-          }"
-          [attr.id]="'wotr-region-' + regionNode.id"
-          class="wotr-region-path"
-          [attr.d]="regionNode.path"
-          (click)="onRegionClick (regionNode, $event)">
-        </svg:path>
         <!-- [matTooltip]="regionNode.tooltip"
         matTooltipClass="wotr-map-tooltip" -->
         @for (point of testGridPoints; track point) {
@@ -67,6 +57,16 @@
             }
           </svg:svg>
         }
+        <svg:path
+          [ngClass]="{
+            'is-active': isValidRegion ? isValidRegion[regionNode.id] : false,
+            'is-disabled': isValidRegion ? !isValidRegion[regionNode.id] : false
+          }"
+          [attr.id]="'wotr-region-' + regionNode.id"
+          class="wotr-region-path"
+          [attr.d]="regionNode.path"
+          (click)="onRegionClick (regionNode, $event)">
+        </svg:path>
       </svg:g>
     }
   </svg:g>

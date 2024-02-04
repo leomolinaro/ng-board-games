@@ -1,32 +1,18 @@
 import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrRegion } from "../wotr-elements/wotr-region.models";
+import { WotrStoryAction } from "../wotr-story.models";
 
-interface WotrLogStringFragment {
-  type: "string";
-  label: string;
-}
-
-interface WotrLogPlayerFragment {
-  type: "player";
-  label: string;
-  player: WotrPlayer;
-}
-
-interface WotrLogRegionFragment {
-  type: "region";
-  label: string;
-  region: WotrRegion;
-}
+interface WotrLogStringFragment { type: "string"; label: string }
+interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
 
 type WotrLogFragment =
   | WotrLogStringFragment
-  | WotrLogPlayerFragment
-  | WotrLogRegionFragment /*  | WotrLogLandFragment | WotrLogPawnFragment */;
+  | WotrLogPlayerFragment;
 
 @Component ({
   selector: "wotr-log",
@@ -39,13 +25,10 @@ type WotrLogFragment =
         'wotr-log-h1': log.type === 'phase'
       }">
       @for (fragment of fragments; track $index) {
-        <ng-container [ngSwitch]="fragment.type">
-          <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
-          <span *ngSwitchCase="'region'">{{ fragment.label }}</span>
-          <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
-          <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
-          <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a> -->
-        </ng-container>
+        @switch (fragment.type) {
+          @case ("string") { <span>{{ fragment.label }}</span> }
+          @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
+        }
       }
     </div>
   `,
@@ -72,6 +55,7 @@ export class WotrLogComponent implements OnChanges {
   // private components: WotrComponentsService) {}
 
   @Input () log!: WotrLog;
+  @Input () players!: WotrPlayer[];
 
   fragments!: WotrLogFragment[];
 
@@ -83,6 +67,7 @@ export class WotrLogComponent implements OnChanges {
         case "endGame": this.fragments = [this.string ("End Game")]; break;
         case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
+        case "action": this.fragments = this.actionToFragment (l.front, l.action); break;
         // case "nation-turn":
         //   this.fragments = [
         //     this.string (this.components.NATION[l.nationId].label),
@@ -165,6 +150,15 @@ export class WotrLogComponent implements OnChanges {
     };
   }
 
+  private player (front: WotrFrontId): WotrLogPlayerFragment {
+    const player = this.players.find (p => p.id === front)!;
+    return {
+      type: "player",
+      label: player?.name,
+      front: front
+    };
+  }
+
   // private region (regionId: WotrRegionId): WotrLogRegionFragment {
   //   const region = this.components.REGION[regionId];
   //   return {
@@ -244,6 +238,13 @@ export class WotrLogComponent implements OnChanges {
       case 4: return "Action Roll";
       case 5: return "Action Resolution";
       case 6: return "Victory Check";
+    }
+  }
+
+  private actionToFragment (front: WotrFrontId, action: WotrStoryAction) {
+    switch (action.type) {
+      case "card-draw": return [this.player (front), this.string (` draws ${action.cards.length} card${action.cards.length === 1 ? "" : "s"}`)];
+      default: return [this.string ("TODO")];
     }
   }
 

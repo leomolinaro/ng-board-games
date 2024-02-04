@@ -10,21 +10,19 @@
 // );
 
 $bg-typography-config: mat.define-typography-config(
-  $headline-1:
-    mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
-  $headline-2:
-    mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
-  $headline-3:
-    mat.define-typography-level(45px, 45px, 400, $letter-spacing: -0.005em),
-  $headline-4: mat.define-typography-level(34px, 40px, 400),
-  $headline-5: mat.define-typography-level(24px, 32px, 400),
-  $subtitle-1: mat.define-typography-level(18px, 28px, 400),
-  $subtitle-2: mat.define-typography-level(16px, 24px, 400),
-  $body-2: mat.define-typography-level(16px, 24px, 500),
-  $body-1: mat.define-typography-level(16px, 20px, 400),
-  $caption: mat.define-typography-level(14px, 20px, 400),
-  $button: mat.define-typography-level(16px, 16px, 500),
+  $headline-1: mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em, $font-family: system-ui),
+  $headline-2: mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em, $font-family: system-ui),
+  $headline-3: mat.define-typography-level(45px, 45px, 400, $letter-spacing: -0.005em, $font-family: system-ui),
+  $headline-4: mat.define-typography-level(34px, 40px, 400, $font-family: system-ui),
+  $headline-5: mat.define-typography-level(24px, 32px, 400, $font-family: system-ui),
+  $subtitle-1: mat.define-typography-level(18px, 28px, 400, $font-family: system-ui),
+  $subtitle-2: mat.define-typography-level(16px, 24px, 400, $font-family: system-ui),
+  $body-2: mat.define-typography-level(16px, 24px, 500, $font-family: system-ui),
+  $body-1: mat.define-typography-level(16px, 20px, 400, $font-family: system-ui),
+  $caption: mat.define-typography-level(14px, 20px, 400, $font-family: system-ui),
+  $button: mat.define-typography-level(16px, 16px, 500, $font-family: system-ui),
 );
+
 // $title:         mat.define-typography-level(22px, 32px, 500),
 // $input:         mat.define-typography-level(inherit, 1.125, 400)
 // Line-height must be unit-less fraction of the font-size.

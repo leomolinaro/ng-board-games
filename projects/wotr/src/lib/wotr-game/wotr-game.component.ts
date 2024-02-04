@@ -6,7 +6,8 @@ import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils"
 import { forkJoin, tap } from "rxjs";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrPlayerDoc, WotrRemoteService, WotrStoryDoc } from "../wotr-remote.service";
+import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
+import { WotrStoryDoc } from "../wotr-story.models";
 import { WotrGameService } from "./wotr-game.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
@@ -23,6 +24,7 @@ import { WotrUiStore } from "./wotr-ui.store";
       [regions]="store.regions ()"
       [freePeopleFront]="store.freePeopleFront ()"
       [freePeopleNations]="store.freePeopleNations ()"
+      [nationById]="store.nationById ()"
       [companions]="store.companions ()"
       [companionById]="store.companionById ()"
       [shadowFront]="store.shadowFront ()"

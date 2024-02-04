@@ -27,7 +27,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     return this.ui.testChange$ ().pipe (
       map (() => ({
         phase: 1,
-        actions: [{ type: "draw-cards", cards: ["fpcha01"] }]
+        actions: [{ type: "card-draw", cards: ["fpcha01"] }]
       }))
     );
   }

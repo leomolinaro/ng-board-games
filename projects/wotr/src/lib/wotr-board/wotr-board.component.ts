@@ -7,13 +7,14 @@ import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.
 import { WotrFront, WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrMinion, WotrMinionId } from "../wotr-elements/wotr-minion.models";
-import { WotrNation } from "../wotr-elements/wotr-nation.models";
+import { WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "./wotr-cards-dialog.component";
 import { WotrFrontAreaComponent } from "./wotr-front-area.component";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
+import { WotrRegionDialogComponent, WotrRegionDialogData } from "./wotr-region-dialog.component";
 
 @Component ({
   selector: "wotr-board",
@@ -35,6 +36,7 @@ export class WotrBoardComponent {
   freePeopleNations = input.required<WotrNation[]> ();
   shadowFront = input.required<WotrFront> ();
   shadowNations = input.required<WotrNation[]> ();
+  nationById = input.required<Record<WotrNationId, WotrNation>> ();
   companions = input.required<WotrCompanion[]> ();
   companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
   minions = input.required<WotrMinion[]> ();
@@ -102,10 +104,21 @@ export class WotrBoardComponent {
           cardIds: front.handCards
         },
         panelClass: "wotr-cards-overlay-panel",
-        // width: `${front.handCards.length * 192}px`,
-        // height: `${352}px`
-        // backdropClass: "cdk-overlay-transparent-backdrop",
-        // hasBackdrop: false
+      }
+    );
+  }
+
+  onRegionClick (region: WotrRegion) {
+    this.dialog.open<WotrRegionDialogComponent, WotrRegionDialogData> (
+      WotrRegionDialogComponent,
+      {
+        data: {
+          region,
+          nationById: this.nationById (),
+          companionById: this.companionById (),
+          minionById: this.minionById ()
+        },
+        panelClass: "mat-typography",
       }
     );
   }
