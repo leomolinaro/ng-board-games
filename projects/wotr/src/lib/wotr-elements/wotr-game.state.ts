@@ -3,6 +3,7 @@ import { WotrCompanionState } from "./wotr-companion.state";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontState } from "./wotr-front.state";
+import { WotrHuntState } from "./wotr-hunt.state";
 import { WotrLog } from "./wotr-log.models";
 import { WotrMinionState } from "./wotr-minion.state";
 import { WotrNationState } from "./wotr-nation.state";
@@ -19,8 +20,9 @@ export interface WotrGameState {
   frontState: WotrFrontState;
   regionState: WotrRegionState;
   nationState: WotrNationState;
-  fellowhip: WotrFellowship;
   companionState: WotrCompanionState;
   minionState: WotrMinionState;
+  fellowhip: WotrFellowship;
+  hunt: WotrHuntState;
   logs: WotrLog[];
 }

@@ -1,11 +1,11 @@
 import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
+import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRemoteService } from "../wotr-remote.service";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
-import { WotrCardDiscard, WotrCardDraw, WotrStory, WotrStoryDoc } from "../wotr-story.models";
+import { WotrStory, WotrStoryDoc } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
@@ -69,7 +69,6 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
   }
 
   setup () {
-    this.game.logSetup ();
     const gameSetup = this.rules.setup.getGameSetup ();
     this.game.applySetup (gameSetup);
   }
@@ -93,20 +92,10 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
       tap (stories => {
         this.game.getFrontIds ().forEach ((frontId, index) => {
           const story = stories[index];
-          if (!this.validateFirstPhaseDrawCards$ (story)) { throw unexpectedStory (story); }
-          const drawCards = story.actions[0];
-          this.game.applyDrawCards (drawCards, frontId);
-          const discardCards = story.actions[1];
-          if (discardCards) {
-            this.game.applyDiscardCards (discardCards, frontId);
-          }
+          this.game.applyActions (story.actions, frontId);
         });
       })
     );
-  }
-
-  private validateFirstPhaseDrawCards$ (story: WotrStory): story is Omit<WotrStory, "actions"> & { actions: [WotrCardDraw] | [WotrCardDraw, WotrCardDiscard] } {
-    return true;
   }
 
   private fellowshipPhase$ () {
@@ -116,7 +105,11 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
 
   private huntAllocation$ () {
     this.game.logPhase (3);
-    return of (true);
+    return this.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
+      tap (story => {
+        this.game.applyActions (story.actions, "shadow");
+      })
+    );
   }
 
   private actionRoll$ () {

@@ -5,7 +5,7 @@ import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrStoryAction } from "../wotr-story.models";
+import { WotrAction } from "../wotr-story.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
@@ -241,7 +241,7 @@ export class WotrLogComponent implements OnChanges {
     }
   }
 
-  private actionToFragment (front: WotrFrontId, action: WotrStoryAction) {
+  private actionToFragment (front: WotrFrontId, action: WotrAction) {
     switch (action.type) {
       case "card-draw": return [this.player (front), this.string (` draws ${action.cards.length} card${action.cards.length === 1 ? "" : "s"}`)];
       default: return [this.string ("TODO")];
