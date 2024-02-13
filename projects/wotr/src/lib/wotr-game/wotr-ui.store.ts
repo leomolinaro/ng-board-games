@@ -3,8 +3,8 @@ import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrRegionId } from "../wotr-elements/wotr-region.models";
-import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {
   currentPlayer: WotrFrontId | null;

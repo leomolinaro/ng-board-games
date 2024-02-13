@@ -1,18 +1,31 @@
 import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { WotrActionDiceLogsService } from "../wotr-actions/wotr-action-dice-logs.service";
+import { WotrActionLogger } from "../wotr-actions/wotr-action-log";
+import { WotrArmyLogsService } from "../wotr-actions/wotr-army-logs.service";
+import { WotrCardLogsService } from "../wotr-actions/wotr-card-logs.service";
+import { WotrCombatLogsService } from "../wotr-actions/wotr-combat-logs.service";
+import { WotrCompanionLogsService } from "../wotr-actions/wotr-companion-logs.service";
+import { WotrFellowshipLogsService } from "../wotr-actions/wotr-fellowship-logs.service";
+import { WotrHuntLogsService } from "../wotr-actions/wotr-hunt-logs.service";
+import { WotrMinionLogsService } from "../wotr-actions/wotr-minion-logs.service";
+import { WotrPoliticalLogsService } from "../wotr-actions/wotr-political-logs.service";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
+import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrAction } from "../wotr-story.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
+interface WotrLogRegionFragment { type: "region"; label: string; region: WotrRegion }
 
 type WotrLogFragment =
   | WotrLogStringFragment
-  | WotrLogPlayerFragment;
+  | WotrLogPlayerFragment
+  | WotrLogRegionFragment;
 
 @Component ({
   selector: "wotr-log",
@@ -28,6 +41,7 @@ type WotrLogFragment =
         @switch (fragment.type) {
           @case ("string") { <span>{{ fragment.label }}</span> }
           @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
+          @case ("region") {  <span>{{ fragment.label }}</span> }
         }
       }
     </div>
@@ -52,10 +66,21 @@ type WotrLogFragment =
 })
 export class WotrLogComponent implements OnChanges {
   
-  // private components: WotrComponentsService) {}
+  private actionLoggers: Record<WotrAction["type"], WotrActionLogger<WotrAction>> = {
+    ...inject (WotrCardLogsService).getActionLoggers (),
+    ...inject (WotrFellowshipLogsService).getActionLoggers (),
+    ...inject (WotrHuntLogsService).getActionLoggers (),
+    ...inject (WotrActionDiceLogsService).getActionLoggers (),
+    ...inject (WotrCompanionLogsService).getActionLoggers (),
+    ...inject (WotrMinionLogsService).getActionLoggers (),
+    ...inject (WotrArmyLogsService).getActionLoggers (),
+    ...inject (WotrPoliticalLogsService).getActionLoggers (),
+    ...inject (WotrCombatLogsService).getActionLoggers (),
+  } as any;
 
   @Input () log!: WotrLog;
   @Input () players!: WotrPlayer[];
+  @Input () regions!: WotrRegion[];
 
   fragments!: WotrLogFragment[];
 
@@ -67,96 +92,24 @@ export class WotrLogComponent implements OnChanges {
         case "endGame": this.fragments = [this.string ("End Game")]; break;
         case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
-        case "action": this.fragments = this.actionToFragment (l.front, l.action); break;
-        // case "nation-turn":
-        //   this.fragments = [
-        //     this.string (this.components.NATION[l.nationId].label),
-        //   ];
-        //   break;
-        // case "population-marker-set":
-        //   this.fragments = [
-        //     this.string (
-        //       `Population marker ${
-        //         l.populationMarker == null
-        //           ? "unset"
-        //           : `set to ${l.populationMarker}`
-        //       }`
-        //     ),
-        //   ];
-        //   break;
-        // case "infantry-placement":
-        //   this.fragments = [
-        //     this.string (
-        //       `${l.quantity} infantr${
-        //         l.quantity === 1 ? "y" : "ies"
-        //       } placed in `
-        //     ),
-        //     this.region (l.landId),
-        //   ];
-        //   break;
-        // case "infantry-reinforcement":
-        //   this.fragments = [
-        //     this.string (
-        //       `${l.quantity} infantry reinforcement${
-        //         l.quantity === 1 ? "" : "s"
-        //       } in `
-        //     ),
-        //     this.region (l.regionId),
-        //   ];
-        //   break;
-        // case "army-movement": {
-        //   this.fragments = [];
-        //   let quantity = 0;
-        //   let isFirst = true;
-        //   for (const unit of l.units) {
-        //     if (isFirst) {
-        //       isFirst = false;
-        //     } else {
-        //       this.fragments.push (this.string (", "));
-        //     }
-        //     if (unit.type === "leader") {
-        //       quantity++;
-        //       this.fragments.push (this.leader (unit.leaderId));
-        //     } else {
-        //       quantity += unit.quantity;
-        //       this.fragments.push (this.unit (unit));
-        //     }
-        //   }
-        //   this.fragments.push (
-        //     this.string (` ${quantity === 1 ? "moves" : "move"} from `)
-        //   );
-        //   this.fragments.push (this.region (l.units[0].regionId));
-        //   this.fragments.push (this.string (" to "));
-        //   this.fragments.push (this.region (l.toRegionId));
-        //   break;
-        // }
-        // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
-        // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
-        // case "movement": this.fragments = [this.player (l.player), this.string (" moves a knight from "), this.land (l.movement.fromLand), this.string (" to "), this.land (l.movement.toLand), this.string (".")]; break;
-        // case "construction": this.fragments = [this.player (l.player), this.string (" builds a "), this.pawn (l.construction.building), this.string (" in "), this.land (l.construction.land), this.string (".")]; break;
-        // case "expedition": this.fragments = [this.player (l.player), this.string (" makes an expedition to "), this.land (l.land), this.string (".")]; break;
-        // case "newCity": this.fragments = [this.player (l.player), this.string (" builds a new city in "), this.land (l.land), this.string (".")]; break;
-        // case "nobleTitle": this.fragments = [this.player (l.player), this.string (" earns a new noble title.")]; break;
-        // case "setupPlacement": this.fragments = [this.player (l.player), this.string (" places a knight in "), this.land (l.land), this.string (".")]; break;
+        case "action": this.fragments = this.actionLoggers[l.action.type] (l.action, l.front, this); break;
         // default: console.error (`Log type ${l.type} not managed`);
       }
     }
   }
 
-  private string (label: string): WotrLogStringFragment {
-    return {
-      type: "string",
-      label: label,
-    };
+  string (label: string): WotrLogStringFragment {
+    return { type: "string", label };
   }
 
-  private player (front: WotrFrontId): WotrLogPlayerFragment {
+  player (front: WotrFrontId): WotrLogPlayerFragment {
     const player = this.players.find (p => p.id === front)!;
-    return {
-      type: "player",
-      label: player?.name,
-      front: front
-    };
+    return { type: "player", label: player?.name, front };
+  }
+
+  region (regionId: WotrRegionId): WotrLogRegionFragment {
+    const region = this.regions.find (r => r.id === regionId)!;
+    return { type: "region", label: region?.name, region };
   }
 
   // private region (regionId: WotrRegionId): WotrLogRegionFragment {

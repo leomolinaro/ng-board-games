@@ -1,6 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrGameStateService } from "../wotr-elements/wotr-game-state.service";
-import { WotrActionApplier } from "./wotr-action-applier";
+import { Injectable } from "@angular/core";
+import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrCombatAction } from "./wotr-combat-actions";
 
 @Injectable ({
@@ -8,13 +7,11 @@ import { WotrCombatAction } from "./wotr-combat-actions";
 })
 export class WotrCombatActionsService {
 
-  private g = inject (WotrGameStateService);
-
-  getActionAppliers (): Record<WotrCombatAction["type"], WotrActionApplier<WotrCombatAction>> {
+  getActionAppliers (): WotrActionApplierMap<WotrCombatAction> {
     return {
-      "combat-card-choose": (action, front, state) => state,
-      "combat-card-choose-not": (action, front, state) => state,
-      "combat-roll": (action, front, state) => state,
+      "combat-card-choose": (action, front) => { },
+      "combat-card-choose-not": (action, front) => { },
+      "combat-roll": (action, front) => { },
     };
   }
 

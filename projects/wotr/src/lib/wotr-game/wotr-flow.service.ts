@@ -1,67 +1,24 @@
 import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
-import { WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrRemoteService } from "../wotr-remote.service";
+import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
-import { WotrStory, WotrStoryDoc } from "../wotr-story.models";
-import { WotrGameStore } from "./wotr-game.store";
-import { WotrPlayerAiService } from "./wotr-player-ai.service";
-import { WotrPlayerLocalService } from "./wotr-player-local.service";
-import { WotrPlayerService } from "./wotr-player.service";
-import { WotrUiStore } from "./wotr-ui.store";
+import { WotrStoryService } from "./wotr-story.service";
 
 @Injectable ()
-export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, WotrStory, WotrPlayerService> {
+export class WotrFlowService {
 
-  private game = inject (WotrGameStore);
+  private store = inject (WotrGameStore);
   private rules = inject (WotrRulesService);
-  private ui = inject (WotrUiStore);
-  protected authService = inject (BgAuthService);
-  private remoteService = inject (WotrRemoteService);
-  protected aiService = inject (WotrPlayerAiService);
-  protected localService = inject (WotrPlayerLocalService);
+  private story = inject (WotrStoryService);
 
-  protected storyDocs: WotrStoryDoc[] | null = null;
-
-  protected getGameId () { return this.game.getGameId (); }
-  protected getPlayer (playerId: WotrFrontId) { return this.game.getPlayer (playerId); }
-  protected getGameOwner () { return this.game.getGameOwner (); }
-  protected startTemporaryState () { this.game.startTemporaryState (); }
-  protected endTemporaryState () { this.game.endTemporaryState (); }
-
-  protected insertStoryDoc$ (storyId: string, story: WotrStoryDoc, gameId: string) { return this.remoteService.insertStory$ (storyId, story, gameId); }
-  protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remoteService.selectStory$ (storyId, gameId); }
-
-  protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
-  protected setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayer (playerId); }
-  protected currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
-  protected cancelChange$ () { return this.ui.cancelChange$ (); }
-
-  protected resetUi (turnPlayer: WotrFrontId) {
-    this.ui.updateUi ("Reset UI", (s) => ({
-      ...s,
-      turnPlayer: turnPlayer,
-      ...this.ui.resetUi (),
-      canCancel: false,
-      message: `${this.game.getPlayer (turnPlayer).name} is thinking...`,
-    }));
-  }
-
-  game$ (stories: WotrStoryDoc[]): Observable<unknown> {
-    this.storyDocs = stories;
+  game$ (): Observable<unknown> {
     this.setup ();
     let roundNumber = 0;
     return this.round$ (++roundNumber).pipe (
       expand (continueGame => {
         if (continueGame) { return this.round$ (++roundNumber); }
-        this.ui.updateUi ("End game", (s) => ({
-          ...s,
-          ...this.ui.resetUi (),
-          canCancel: false,
-        }));
-        this.gameEnd ();
+        this.store.logEndGame ();
         return EMPTY;
       }),
       last (),
@@ -70,11 +27,11 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
 
   setup () {
     const gameSetup = this.rules.setup.getGameSetup ();
-    this.game.applySetup (gameSetup);
+    this.store.applySetup (gameSetup);
   }
 
   round$ (roundNumber: number): Observable<boolean> {
-    this.game.logRound (roundNumber);
+    this.store.logRound (roundNumber);
     return this.firstPhase$ ().pipe (
       switchMap (gameContinue => gameContinue ? this.fellowshipPhase$ () : of (false)),
       switchMap (gameContinue => gameContinue ? this.huntAllocation$ () : of (false)),
@@ -85,50 +42,72 @@ export class WotrGameService extends ABgGameService<WotrFrontId, WotrPlayer, Wot
   }
 
   private firstPhase$ () {
-    this.game.logPhase (1);
-    return this.executeTasks$ (this.game.getFrontIds ().map (
+    this.store.logPhase (1);
+    return this.story.executeTasks$ (this.store.getFrontIds ().map (
       front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
     )).pipe (
       tap (stories => {
-        this.game.getFrontIds ().forEach ((frontId, index) => {
+        this.store.getFrontIds ().forEach ((frontId, index) => {
           const story = stories[index];
-          this.game.applyActions (story.actions, frontId);
+          this.store.applyActions (story.actions, frontId);
         });
       })
     );
   }
 
   private fellowshipPhase$ () {
-    this.game.logPhase (2);
+    this.store.logPhase (2);
     return of (true);
   }
 
   private huntAllocation$ () {
-    this.game.logPhase (3);
-    return this.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
+    this.store.logPhase (3);
+    return this.story.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
       tap (story => {
-        this.game.applyActions (story.actions, "shadow");
+        this.store.applyActions (story.actions, "shadow");
       })
     );
   }
 
   private actionRoll$ () {
-    this.game.logPhase (4);
-    return of (true);
+    this.store.logPhase (4);
+    return this.story.executeTasks$ (this.store.getFrontIds ().map (
+      front => ({ playerId: front, task$: p => p.rollActionDice$! (front) })
+    )).pipe (
+      tap (stories => {
+        this.store.getFrontIds ().forEach ((frontId, index) => {
+          const story = stories[index];
+          this.store.applyActions (story.actions, frontId);
+        });
+      })
+    );
   }
 
   private actionResolution$ () {
-    this.game.logPhase (5);
+    this.store.logPhase (5);
     return of (true);
+    // return this.executeTask$ (++roundNumber).pipe (
+    //   expand (continueGame => {
+    //     if (continueGame) { return this.round$ (++roundNumber); }
+    //     return EMPTY;
+    //   }),
+    //   last (),
+    // );
+  }
+
+  private frontActionResolution$ (frontId: WotrFrontId) {
+    return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
+      tap (story => {
+        // if (story.die) {
+        //   this.store.discardDie (story.die, frontId);
+        // }
+      })
+    );
   }
 
   private victoryCheck$ (roundNumber: number) {
-    this.game.logPhase (6);
+    this.store.logPhase (6);
     return of (roundNumber < 6);
-  }
-
-  private gameEnd () {
-    this.game.logEndGame ();
   }
 
   // nationTurn$ (nationId: WotrNationId, roundId: WotrRoundId): Observable<void> {

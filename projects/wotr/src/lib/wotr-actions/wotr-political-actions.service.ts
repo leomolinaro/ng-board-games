@@ -1,6 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrGameStateService } from "../wotr-elements/wotr-game-state.service";
-import { WotrActionApplier } from "./wotr-action-applier";
+import { Injectable } from "@angular/core";
+import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrPoliticalAction } from "./wotr-political-actions";
 
 @Injectable ({
@@ -8,12 +7,10 @@ import { WotrPoliticalAction } from "./wotr-political-actions";
 })
 export class WotrPoliticalActionsService {
 
-  private g = inject (WotrGameStateService);
-
-  getActionAppliers (): Record<WotrPoliticalAction["type"], WotrActionApplier<WotrPoliticalAction>> {
+  getActionAppliers (): WotrActionApplierMap<WotrPoliticalAction> {
     return {
-      "political-activation": (action, front, state) => state,
-      "political-advance": (action, front, state) => state,
+      "political-activation": (action, front) => { },
+      "political-advance": (action, front) => { },
     };
   }
 

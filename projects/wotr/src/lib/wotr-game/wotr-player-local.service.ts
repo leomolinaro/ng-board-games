@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrStory } from "../wotr-story.models";
-import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
 

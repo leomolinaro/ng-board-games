@@ -1,6 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrGameStateService } from "../wotr-elements/wotr-game-state.service";
-import { WotrActionApplier } from "./wotr-action-applier";
+import { Injectable } from "@angular/core";
+import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrCompanionAction } from "./wotr-companion-actions";
 
 @Injectable ({
@@ -8,15 +7,13 @@ import { WotrCompanionAction } from "./wotr-companion-actions";
 })
 export class WotrCompanionActionsService {
 
-  private g = inject (WotrGameStateService);
-
-  getActionAppliers (): Record<WotrCompanionAction["type"], WotrActionApplier<WotrCompanionAction>> {
+  getActionAppliers (): WotrActionApplierMap<WotrCompanionAction> {
     return {
-      "companion-elimination": (action, front, state) => state,
-      "companion-movement": (action, front, state) => state,
-      "companion-play": (action, front, state) => state,
-      "companion-random": (action, front, state) => state,
-      "companion-separation": (action, front, state) => state,
+      "companion-elimination": (action, front) => { },
+      "companion-movement": (action, front) => { },
+      "companion-play": (action, front) => { },
+      "companion-random": (action, front) => { },
+      "companion-separation": (action, front) => { },
     };
   }
 

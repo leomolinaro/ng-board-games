@@ -45,9 +45,9 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
   
   constructor (
     private game: BaronyGameStore,
-    protected aiService: BaronyPlayerAiService,
-    protected localService: BaronyPlayerLocalService,
-    protected authService: BgAuthService,
+    protected aiPlayer: BaronyPlayerAiService,
+    protected localPlayer: BaronyPlayerLocalService,
+    protected auth: BgAuthService,
     private ui: BaronyUiStore,
     private remote: BaronyRemoteService
   ) { super (); }
@@ -217,7 +217,7 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     ]).pipe (
       map (([game, players, baronyMap, stories]) => {
         if (game && baronyMap) {
-          const user = this.authService.getUser ();
+          const user = this.auth.getUser ();
           this.game.setInitialState (
             players.map ((p) => this.playerDocToPlayerInit (p, user)),
             baronyMap.lands.map ((l) => {

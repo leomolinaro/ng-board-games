@@ -5,13 +5,14 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
+import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
 import { WotrStoryDoc } from "../wotr-story.models";
-import { WotrGameService } from "./wotr-game.service";
-import { WotrGameStore } from "./wotr-game.store";
+import { WotrFlowService } from "./wotr-flow.service";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
+import { WotrStoryService } from "./wotr-story.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
 @Component ({
@@ -83,7 +84,8 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrUiStore,
     WotrPlayerAiService,
     WotrPlayerLocalService,
-    WotrGameService,
+    WotrStoryService,
+    WotrFlowService
   ],
 })
 @UntilDestroy
@@ -93,8 +95,9 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
-  private authService = inject (BgAuthService);
-  private gameService = inject (WotrGameService);
+  private auth = inject (BgAuthService);
+  private story = inject (WotrStoryService);
+  private flow = inject (WotrFlowService);
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
@@ -125,7 +128,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
     ]).pipe (
       tap (([game, players, stories]) => {
         if (game) {
-          const user = this.authService.getUser ();
+          const user = this.auth.getUser ();
           this.store.initGameState (
             players.map ((p) => this.playerDocToPlayer (p, user)),
             this.gameId,
@@ -139,7 +142,16 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   @ChangeListener ()
   private listenToGame (stories: WotrStoryDoc[]) {
-    return this.gameService.game$ (stories);
+    this.story.setStoryDocs (stories);
+    return this.flow.game$ ().pipe (
+      tap (() => {
+        this.ui.updateUi ("End game", (s) => ({
+          ...s,
+          ...this.ui.resetUi (),
+          canCancel: false,
+        }));
+      })
+    );
   }
   
   private playerDocToPlayer (playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayer {

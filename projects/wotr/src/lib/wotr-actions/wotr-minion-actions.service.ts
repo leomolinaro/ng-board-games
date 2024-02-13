@@ -1,6 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrGameStateService } from "../wotr-elements/wotr-game-state.service";
-import { WotrActionApplier } from "./wotr-action-applier";
+import { Injectable } from "@angular/core";
+import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrMinionAction } from "./wotr-minion-actions";
 
 @Injectable ({
@@ -8,14 +7,12 @@ import { WotrMinionAction } from "./wotr-minion-actions";
 })
 export class WotrMinionActionsService {
 
-  private g = inject (WotrGameStateService);
-
-  getActionAppliers (): Record<WotrMinionAction["type"], WotrActionApplier<WotrMinionAction>> {
+  getActionAppliers (): WotrActionApplierMap<WotrMinionAction> {
     return {
-      "minion-elimination": (action, front, state) => state,
-      "minion-movement": (action, front, state) => state,
-      "minion-play": (action, front, state) => state,
-      "nazgul-movement": (action, front, state) => state,
+      "minion-elimination": (action, front) => { },
+      "minion-movement": (action, front) => { },
+      "minion-play": (action, front) => { },
+      "nazgul-movement": (action, front) => { },
     };
   }
 

@@ -22,10 +22,10 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
     private rules: BritRulesService,
     private game: BritGameStore,
     private ui: BritUiStore,
-    protected authService: BgAuthService,
+    protected auth: BgAuthService,
     private remoteService: BritRemoteService,
-    protected aiService: BritPlayerAiService,
-    protected localService: BritPlayerLocalService,
+    protected aiPlayer: BritPlayerAiService,
+    protected localPlayer: BritPlayerLocalService,
     private components: BritComponentsService
   ) { super (); }
 

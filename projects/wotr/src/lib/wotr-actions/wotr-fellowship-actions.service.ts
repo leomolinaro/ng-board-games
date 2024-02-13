@@ -1,6 +1,5 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrGameStateService } from "../wotr-elements/wotr-game-state.service";
-import { WotrActionApplier } from "./wotr-action-applier";
+import { Injectable } from "@angular/core";
+import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 
 @Injectable ({
@@ -8,17 +7,15 @@ import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 })
 export class WotrFellowshipActionsService {
 
-  private g = inject (WotrGameStateService);
-
-  getActionAppliers (): Record<WotrFellowshipAction["type"], WotrActionApplier<WotrFellowshipAction>> {
+  getActionAppliers (): WotrActionApplierMap<WotrFellowshipAction> {
     return {
-      "fellowship-corruption": (action, front, state) => state,
-      "fellowship-declare": (action, front, state) => state,
-      "fellowship-declare-not": (action, front, state) => state,
-      "fellowship-guide": (action, front, state) => state,
-      "fellowship-hide": (action, front, state) => state,
-      "fellowship-progress": (action, front, state) => state,
-      "fellowship-reveal": (action, front, state) => state,
+      "fellowship-corruption": (action, front) => { },
+      "fellowship-declare": (action, front) => { },
+      "fellowship-declare-not": (action, front) => { },
+      "fellowship-guide": (action, front) => { },
+      "fellowship-hide": (action, front) => { },
+      "fellowship-progress": (action, front) => { },
+      "fellowship-reveal": (action, front) => { },
     };
   }
 

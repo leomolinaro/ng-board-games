@@ -23,7 +23,7 @@ type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
 
-interface BgStoryTask<Pid extends string, St, PlSrv> {
+export interface BgStoryTask<Pid extends string, St, PlSrv> {
   playerId: Pid;
   task$: (playerService: PlSrv) => Observable<St>;
 }
@@ -37,9 +37,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   
   constructor () { }
 
-  protected abstract authService: BgAuthService;
-  protected abstract localService: PlSrv;
-  protected abstract aiService: PlSrv;
+  protected abstract auth: BgAuthService;
+  protected abstract localPlayer: PlSrv;
+  protected abstract aiPlayer: PlSrv;
 
   private storyTime: number = 0;
   protected abstract storyDocs: BgStoryDoc<Pid, St>[] | null;
@@ -60,13 +60,13 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract selectStoryDoc$ (storyId: string, gameId: string): Observable<BgStoryDoc<Pid, St> | undefined>;
 
   private isLocalPlayer (playerId: string) {
-    const user = this.authService.getUser ();
+    const user = this.auth.getUser ();
     const player = this.getPlayer (playerId);
     return player.isAi ? false : player.controller.id === user.id;
   }
 
   private isOwnerUser () {
-    const user = this.authService.getUser ();
+    const user = this.auth.getUser ();
     const gameOwner = this.getGameOwner ();
     return user.id === gameOwner.id;
   }
@@ -91,9 +91,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 
   private getPlayerService (playerId: Pid) {
     if (this.isLocalPlayer (playerId) && this.isCurrentPlayer (playerId)) {
-      return this.localService;
+      return this.localPlayer;
     } else if (this.isAiPlayer (playerId) && this.isOwnerUser ()) {
-      return this.aiService;
+      return this.aiPlayer;
     } else {
       return null;
     }
