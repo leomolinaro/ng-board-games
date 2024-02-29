@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { WotrFrontId } from "./wotr-front.models";
-import { WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation.models";
+import { WotrFreeGenericUnitType, WotrGenericUnitType, WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation.models";
 
 export interface WotrNationState {
   map: Record<WotrNationId, WotrNation>;
@@ -68,29 +68,33 @@ export class WotrNationStore {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [nationId]: updater (s.map[nationId]) } }));
   }
 
-  removeRegularsFromReinforcements (quantity: number, nationId: WotrNationId) {
-    this.updateNation ("removeRegularsFromReinforcements", nationId, nation => ({
-      ...nation, reinforcements: { ...nation.reinforcements, regular: nation.reinforcements.regular - quantity }
+  private updateUnitReinforcements (unitType: WotrGenericUnitType, deltaQuantity: number, nationId: WotrNationId) {
+    this.updateNation ("updateUnitReinforcements", nationId, nation => ({
+      ...nation, reinforcements: { ...nation.reinforcements, [unitType]: nation.reinforcements[unitType] + deltaQuantity }
     }));
   }
 
-  removeElitesFromReinforcements (quantity: number, nationId: WotrNationId) {
-    this.updateNation ("removeElitesFromReinforcements", nationId, nation => ({
-      ...nation, reinforcements: { ...nation.reinforcements, elite: nation.reinforcements.elite - quantity }
+  addRegularsToReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("regular", quantity, nationId); }
+  removeRegularsFromReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("regular", -quantity, nationId); }
+  addElitesToReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("elite", quantity, nationId); }
+  removeElitesFromReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("elite", -quantity, nationId); }
+  addLeadersToReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("leader", quantity, nationId); }
+  removeLeadersFromReinforcements (quantity: number, nationId: WotrNationId) { this.updateUnitReinforcements ("leader", -quantity, nationId); }
+  addNazgulToReinforcements (quantity: number) { this.updateUnitReinforcements ("nazgul", quantity, "sauron"); }
+  removeNazgulFromReinforcements (quantity: number) { this.updateUnitReinforcements ("nazgul", -quantity, "sauron"); }
+
+  private updateUnitCasualties (unitType: WotrFreeGenericUnitType, deltaQuantity: number, nationId: WotrNationId) {
+    this.updateNation ("updateUnitCasualties", nationId, nation => ({
+      ...nation, casualties: { ...nation.casualties, [unitType]: nation.casualties[unitType] + deltaQuantity }
     }));
   }
 
-  removeLeadersFromReinforcements (quantity: number, nationId: WotrNationId) {
-    this.updateNation ("removeLeadersFromReinforcements", nationId, nation => ({
-      ...nation, reinforcements: { ...nation.reinforcements, leader: nation.reinforcements.leader - quantity }
-    }));
-  }
-
-  removeNazgulFromReinforcements (quantity: number, nationId: WotrNationId) {
-    this.updateNation ("removeNazgulFromReinforcements", nationId, nation => ({
-      ...nation, reinforcements: { ...nation.reinforcements, nazgul: nation.reinforcements.nazgul - quantity }
-    }));
-  }
+  addRegularsToCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("regular", quantity, nationId); }
+  removeRegularsFromCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("regular", -quantity, nationId); }
+  addElitesToCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("elite", quantity, nationId); }
+  removeElitesFromCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("elite", -quantity, nationId); }
+  addLeadersToCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("leader", quantity, nationId); }
+  removeLeadersFromCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("leader", -quantity, nationId); }
 
   setActive (active: boolean, nationId: WotrNationId) {
     this.updateNation ("setActive", nationId, nation => ({

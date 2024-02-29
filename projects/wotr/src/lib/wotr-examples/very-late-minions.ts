@@ -9,7 +9,7 @@ import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/wotr-c
 import { chooseRandomCompanion, eliminateCompanion } from "../wotr-actions/wotr-companion-actions";
 import { changeGuide, corruptFelloswhip, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/wotr-fellowship-actions";
 import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/wotr-hunt-actions";
-import { moveMinions, moveNazguls, playMinion } from "../wotr-actions/wotr-minion-actions";
+import { moveMinions, moveNazgul, playMinion } from "../wotr-actions/wotr-minion-actions";
 import { advanceNation } from "../wotr-actions/wotr-political-actions";
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../wotr-story.models";
 
@@ -90,7 +90,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().eventDieCard ("Celeborn's Galadhrim",
     recruitUnit ("lorien", elite ("elves")),
     drawCards ("Riders of Theoden")),
-  s ().eventDieCard ("Nazgul Search", moveNazguls ("minas-morgul", "old-ford")),
+  s ().eventDieCard ("Nazgul Search", moveNazgul ("minas-morgul", "old-ford")),
   fp ().story (revealFellowship ("carrock")),
   fp ().pass (),
   s ().musterArmyDie (
@@ -157,8 +157,8 @@ export const stories: WotrStoryDoc[] = [
   fp ().characterDie (moveFelloswhip ()),
   s ().characterDieCard ("The Black Captain Commands",
     moveMinions ("dale", "dol-amroth", "the-witch-king"),
-    moveNazguls ("dale", "dol-amroth", 2),
-    moveNazguls ("old-ford", "dol-amroth"))
+    moveNazgul ("dale", "dol-amroth", 2),
+    moveNazgul ("old-ford", "dol-amroth"))
   // Turn 6 30:00
 
 ];

@@ -1,15 +1,15 @@
 import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
 import { WotrMinionId } from "../wotr-elements/wotr-minion.models";
-import { WotrArmyUnitType, WotrNationId, WotrUnitType } from "../wotr-elements/wotr-nation.models";
+import { WotrArmyUnitType, WotrGenericUnitType, WotrNationId } from "../wotr-elements/wotr-nation.models";
 import { WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrArmy } from "../wotr-story.models";
 
 export type WotrArmyAction = WotrArmyMovement | WotrUnitRecruitment | WotrUnitElimination | WotrArmyAttack | WotrArmyRetreatIntoSiege;
 export interface WotrArmyMovement { type: "army-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrArmy }
 export function moveArmy (fromRegion: WotrRegionId, toRegion: WotrRegionId, ...comp: WotrUnitComposer[]): WotrArmyMovement { return { type: "army-movement", fromRegion, toRegion, army: army (...comp) }; }
-export interface WotrUnitRecruitment { type: "unit-recruitment"; region: WotrRegionId; unitType: WotrUnitType; quantity: number; nation: WotrNationId }
+export interface WotrUnitRecruitment { type: "unit-recruitment"; region: WotrRegionId; unitType: WotrGenericUnitType; quantity: number; nation: WotrNationId }
 export function recruitUnit (region: WotrRegionId, comp: WotrGenericUnitsComposer): WotrUnitRecruitment { return { type: "unit-recruitment", region, ...comp.recruited () }; }
-export interface WotrUnitElimination { type: "unit-elimination"; region: WotrRegionId; unitType: WotrUnitType; quantity: number; nation: WotrNationId }
+export interface WotrUnitElimination { type: "unit-elimination"; region: WotrRegionId; unitType: WotrGenericUnitType; quantity: number; nation: WotrNationId }
 export function eliminateUnit (region: WotrRegionId, comp: WotrGenericUnitsComposer): WotrUnitElimination { return { type: "unit-elimination", region, ...comp.recruited () }; }
 export interface WotrArmyRetreatIntoSiege { type: "army-retreat-into-siege"; region: WotrRegionId }
 export function retreatIntoSiege (region: WotrRegionId): WotrArmyRetreatIntoSiege { return { type: "army-retreat-into-siege", region }; }

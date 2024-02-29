@@ -186,7 +186,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
         this.regionStore.addLeadersToRegion (r.nation, r.nLeaders, r.region);
       }
       if (r.nNazgul) {
-        this.nationStore.removeNazgulFromReinforcements (r.nNazgul, r.nation);
+        this.nationStore.removeNazgulFromReinforcements (r.nNazgul);
         this.regionStore.addNazgulToRegion (r.nNazgul, r.region);
       }
     }

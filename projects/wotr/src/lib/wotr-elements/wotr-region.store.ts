@@ -182,11 +182,19 @@ export class WotrRegionStore {
     this.addArmyUnitsToRegion ("regular", nationId, frontId, quantity, regionId);
   }
 
+  removeRegularsFromRegion (nationId: WotrNationId, quantity: number, regionId: WotrRegionId) {
+    this.removeArmyUnitsFromRegion ("regular", nationId, quantity, regionId);
+  }
+
   addElitesToRegion (nationId: WotrNationId, frontId: WotrFrontId, quantity: number, regionId: WotrRegionId) {
     this.addArmyUnitsToRegion ("elite", nationId, frontId, quantity, regionId);
   }
 
-  addArmyUnitsToRegion (unitType: WotrArmyUnitType, nationId: WotrNationId, frontId: WotrFrontId, quantity: number, regionId: WotrRegionId) {
+  removeElitesFromRegion (nationId: WotrNationId, quantity: number, regionId: WotrRegionId) {
+    this.removeArmyUnitsFromRegion ("elite", nationId, quantity, regionId);
+  }
+
+  private addArmyUnitsToRegion (unitType: WotrArmyUnitType, nationId: WotrNationId, frontId: WotrFrontId, quantity: number, regionId: WotrRegionId) {
     this.updateRegion ("addArmyUnitsToRegion", regionId, region => {
       const index = region.armyUnits.findIndex ((u) => u.type === unitType && u.nationId === nationId);
       if (index >= 0) {
@@ -201,6 +209,20 @@ export class WotrRegionStore {
           armyUnits: immutableUtil.listPush ([{ type: unitType, nationId, frontId, quantity }], region.armyUnits),
         };
       }
+    });
+  }
+
+  private removeArmyUnitsFromRegion (unitType: WotrArmyUnitType, nationId: WotrNationId, quantity: number, regionId: WotrRegionId) {
+    this.updateRegion ("removeArmyUnitsFromRegion", regionId, region => {
+      const index = region.armyUnits.findIndex ((u) => u.type === unitType && u.nationId === nationId);
+      if (index >= 0) {
+        const unit = region.armyUnits[index];
+        return {
+          ...region,
+          armyUnits: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity - quantity }, region.armyUnits),
+        };
+      }
+      throw new Error ();
     });
   }
 
@@ -222,9 +244,29 @@ export class WotrRegionStore {
     });
   }
 
+  removeLeadersFromRegion (nationId: WotrNationId, quantity: number, regionId: WotrRegionId) {
+    this.updateRegion ("removeLeadersToRegion", regionId, region => {
+      const index = region.leaders.findIndex ((u) => u.nationId === nationId);
+      if (index >= 0) {
+        const unit = region.leaders[index];
+        return {
+          ...region,
+          leaders: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity - quantity }, region.leaders),
+        };
+      }
+      throw new Error ();
+    });
+  }
+
   addNazgulToRegion (quantity: number, regionId: WotrRegionId) {
     this.updateRegion ("addNazgulToRegion", regionId, region => ({
       ...region, nNazgul: region.nNazgul + quantity
+    }));
+  }
+
+  removeNazgulFromRegion (quantity: number, regionId: WotrRegionId) {
+    this.updateRegion ("removeNazgulToRegion", regionId, region => ({
+      ...region, nNazgul: region.nNazgul - quantity
     }));
   }
 

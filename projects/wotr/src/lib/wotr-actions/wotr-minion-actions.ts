@@ -7,6 +7,6 @@ export function moveMinions (fromRegion: WotrRegionId, toRegion: WotrRegionId, .
 export interface WotrMinionElimination { type: "minion-elimination"; minions: WotrMinionId[] }
 export function eliminateMinion (...minions: WotrMinionId[]): WotrMinionElimination { return { type: "minion-elimination", minions }; }
 export interface WotrNazgulMovement { type: "nazgul-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; nNazgul: number }
-export function moveNazguls (fromRegion: WotrRegionId, toRegion: WotrRegionId, nNazgul: number = 1): WotrNazgulMovement { return { type: "nazgul-movement", fromRegion, toRegion, nNazgul }; }
+export function moveNazgul (fromRegion: WotrRegionId, toRegion: WotrRegionId, nNazgul: number = 1): WotrNazgulMovement { return { type: "nazgul-movement", fromRegion, toRegion, nNazgul }; }
 export interface WotrMinionPlay { type: "minion-play"; minions: WotrMinionId[]; region: WotrRegionId }
 export function playMinion (region: WotrRegionId, ...minions: WotrMinionId[]): WotrMinionPlay { return { type: "minion-play", region, minions }; }

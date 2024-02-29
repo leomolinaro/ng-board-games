@@ -14,3 +14,10 @@ export interface WotrFront {
   strategyDiscardPile: WotrStrategyCardId[];
   actionDice: WotrActionDie[];
 }
+
+export function oppositeFront (front: WotrFrontId): WotrFrontId {
+  switch (front) {
+    case "free-peoples": return "shadow";
+    case "shadow": return "free-peoples";
+  }
+}

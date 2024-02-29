@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId, isCharacterCard, isStrategyCard } from "./wotr-card.models";
+import { WotrActionDie } from "./wotr-dice.models";
 import { WotrFront, WotrFrontId } from "./wotr-front.models";
 
 export interface WotrFrontState {
@@ -77,6 +78,20 @@ export class WotrFrontStore {
       ...front,
       handCards: immutableUtil.listPush (cardIds, front.handCards)
     }));
+  }
+
+  setActionDice (dice: WotrActionDie[], front: string): void {
+    
+    throw new Error("Method not implemented.");
+  }
+  removeActionDice(dice: import("./wotr-dice.models").WotrActionDie[], arg1: string): void {
+    throw new Error("Method not implemented.");
+  }
+  playCardsOnTable(cards: WotrCardId[], front: string): void {
+    throw new Error("Method not implemented.");
+  }
+  discardCardsFromTable(cards: WotrCardId[], front: string): void {
+    throw new Error("Method not implemented.");
   }
 
 }
