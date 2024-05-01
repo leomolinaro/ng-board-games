@@ -13,18 +13,23 @@ import { WotrMinionLogsService } from "../wotr-actions/wotr-minion-logs.service"
 import { WotrPoliticalLogsService } from "../wotr-actions/wotr-political-logs.service";
 import { WotrAssetsService } from "../wotr-assets.service";
 import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrHuntTile } from "../wotr-elements/wotr-hunt.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
+import { WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
+import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
+import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
 import { WotrAction } from "../wotr-story.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
-interface WotrLogRegionFragment { type: "region"; label: string; region: WotrRegion }
+interface WotrLogRegionFragment { type: "region"; region: WotrRegion }
+interface WotrLogNationFragment { type: "nation"; nation: WotrNation }
 interface WotrLogDieFragment { type: "die"; dieImage: string }
 interface WotrLogTokenFragment { type: "token"; tokenImage: string }
 interface WotrLogHuntTileFragment { type: "hunt-tile"; tileImage: string }
@@ -33,6 +38,7 @@ type WotrLogFragment =
   | WotrLogStringFragment
   | WotrLogPlayerFragment
   | WotrLogRegionFragment
+  | WotrLogNationFragment
   | WotrLogDieFragment
   | WotrLogTokenFragment
   | WotrLogHuntTileFragment;
@@ -51,7 +57,8 @@ type WotrLogFragment =
         @switch (fragment.type) {
           @case ("string") { <span>{{ fragment.label }}</span> }
           @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
-          @case ("region") {  <span>{{ fragment.label }}</span> }
+          @case ("region") {  <span>{{ fragment.region.name }}</span> }
+          @case ("nation") {  <span>{{ fragment.nation.name }}</span> }
           @case ("die") { <img class="action-die" [src]="fragment.dieImage"/> }
           @case ("token") { <img class="action-token" [src]="fragment.tokenImage"/> }
           @case ("hunt-tile") { <img class="hunt-tile" [src]="fragment.tileImage"/> }
@@ -99,6 +106,9 @@ export class WotrLogComponent implements OnChanges {
 
   private assets = inject (WotrAssetsService);
   private store = inject (WotrGameStore);
+  private nationStore = inject (WotrNationStore);
+  private regionStore = inject (WotrRegionStore);
+  private companionStore = inject (WotrCompanionStore);
 
   @Input () log!: WotrLog;
 
@@ -129,7 +139,7 @@ export class WotrLogComponent implements OnChanges {
   }
 
   companion (companionId: WotrCompanionId): WotrLogStringFragment {
-    const companion = this.store.getCompanion (companionId);
+    const companion = this.companionStore.companion (companionId);
     return { type: "string", label: companion.name };
   }
 
@@ -139,8 +149,13 @@ export class WotrLogComponent implements OnChanges {
   }
 
   region (regionId: WotrRegionId): WotrLogRegionFragment {
-    const region = this.store.getRegion (regionId);
-    return { type: "region", label: region.name, region };
+    const region = this.regionStore.region (regionId);
+    return { type: "region", region };
+  }
+
+  nation (nationId: WotrNationId): WotrLogNationFragment {
+    const nation = this.nationStore.nation (nationId);
+    return { type: "nation", nation };
   }
 
   die (die: WotrActionDie, frontId: WotrFrontId): WotrLogDieFragment {

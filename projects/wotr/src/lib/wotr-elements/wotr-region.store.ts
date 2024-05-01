@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCompanionId } from "./wotr-companion.models";
 import { WotrFrontId } from "./wotr-front.models";
@@ -11,12 +11,14 @@ export interface WotrRegionState {
   ids: WotrRegionId[];
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrRegionStore {
 
   update!: (actionName: string, updater: (a: WotrRegionState) => WotrRegionState) => void;
+  state!: Signal<WotrRegionState>;
+
+  regions = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
+  region (regionId: WotrRegionId): WotrRegion { return this.state ().map[regionId]; }
 
   init (): WotrRegionState {
     return {

@@ -4,9 +4,7 @@ import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 
-@Injectable ({
-  providedIn: "root",
-})
+@Injectable ()
 export class WotrFellowshipActionsService {
 
   private fellowhipStore = inject (WotrFellowshipStore);

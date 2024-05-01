@@ -1,35 +1,18 @@
-import { Injectable, computed, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil } from "@leobg/commons/utils";
-import { WotrActionApplier } from "../wotr-actions/wotr-action-applier";
-import { WotrActionDiceActionsService } from "../wotr-actions/wotr-action-dice-actions.service";
-import { WotrArmyActionsService } from "../wotr-actions/wotr-army-actions.service";
-import { WotrCardActionsService } from "../wotr-actions/wotr-card-actions.service";
-import { WotrCombatActionsService } from "../wotr-actions/wotr-combat-actions.service";
-import { WotrCompanionActionsService } from "../wotr-actions/wotr-companion-actions.service";
-import { WotrFellowshipActionsService } from "../wotr-actions/wotr-fellowship-actions.service";
-import { WotrHuntActionsService } from "../wotr-actions/wotr-hunt-actions.service";
-import { WotrMinionActionsService } from "../wotr-actions/wotr-minion-actions.service";
-import { WotrPoliticalActionsService } from "../wotr-actions/wotr-political-actions.service";
-import { WotrSetup } from "../wotr-rules/wotr-setup-rules.service";
-import { WotrAction } from "../wotr-story.models";
-import { WotrCompanion, WotrCompanionId } from "./wotr-companion.models";
 import { WotrCompanionState, WotrCompanionStore } from "./wotr-companion.store";
-import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontState, WotrFrontStore } from "./wotr-front.store";
 import { WotrHuntState, WotrHuntStore } from "./wotr-hunt.store";
 import { WotrLog } from "./wotr-log.models";
-import { WotrMinion, WotrMinionId } from "./wotr-minion.models";
+import { WotrLogStore } from "./wotr-log.store";
 import { WotrMinionState, WotrMinionStore } from "./wotr-minion.store";
-import { WotrNation, WotrNationId } from "./wotr-nation.models";
 import { WotrNationState, WotrNationStore } from "./wotr-nation.store";
-import { WotrPhase } from "./wotr-phase.models";
 import { WotrPlayer } from "./wotr-player.models";
-import { WotrRegion, WotrRegionId } from "./wotr-region.models";
 import { WotrRegionState, WotrRegionStore } from "./wotr-region.store";
 
 export interface WotrGameState {
@@ -53,13 +36,14 @@ export interface WotrGameState {
 export class WotrGameStore extends BgStore<WotrGameState> {
   
   constructor (
-    private frontStore: WotrFrontStore,
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
-    private companionStore: WotrCompanionStore,
-    private minionStore: WotrMinionStore,
-    private fellowshipStore: WotrFellowshipStore,
-    private huntStore: WotrHuntStore,
+    frontStore: WotrFrontStore,
+    regionStore: WotrRegionStore,
+    nationStore: WotrNationStore,
+    companionStore: WotrCompanionStore,
+    minionStore: WotrMinionStore,
+    fellowshipStore: WotrFellowshipStore,
+    huntStore: WotrHuntStore,
+    logStore: WotrLogStore,
   ) {
     super ({
       gameId: "",
@@ -75,37 +59,25 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       minionState: minionStore.init (),
       fellowship: fellowshipStore.init (),
       hunt: huntStore.init (),
-      logs: [],
+      logs: logStore.init (),
     }, "War of the Ring Game");
     frontStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, frontState: updater (s.frontState) }));
+    frontStore.state = toSignal (this.select$ (s => s.frontState), { requireSync: true });
     regionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, regionState: updater (s.regionState) }));
+    regionStore.state = toSignal (this.select$ (s => s.regionState), { requireSync: true });
     nationStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, nationState: updater (s.nationState) }));
+    nationStore.state = toSignal (this.select$ (s => s.nationState), { requireSync: true });
     companionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, companionState: updater (s.companionState) }));
+    companionStore.state = toSignal (this.select$ (s => s.companionState), { requireSync: true });
     minionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, minionState: updater (s.minionState) }));
+    minionStore.state = toSignal (this.select$ (s => s.minionState), { requireSync: true });
     fellowshipStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, fellowship: updater (s.fellowship) }));
+    fellowshipStore.state = toSignal (this.select$ (s => s.fellowship), { requireSync: true });
     huntStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, hunt: updater (s.hunt) }));
+    huntStore.state = toSignal (this.select$ (s => s.hunt), { requireSync: true });
+    logStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, logs: updater (s.logs) }));
+    logStore.state = toSignal (this.select$ (s => s.logs), { requireSync: true });
   }
-
-  private cardActions = inject (WotrCardActionsService);
-  private fellowshipActions = inject (WotrFellowshipActionsService);
-  private huntActions = inject (WotrHuntActionsService);
-  private actionDiceActions = inject (WotrActionDiceActionsService);
-  private companionActions = inject (WotrCompanionActionsService);
-  private minionActions = inject (WotrMinionActionsService);
-  private armyActions = inject (WotrArmyActionsService);
-  private politicalActions = inject (WotrPoliticalActionsService);
-  private combatActions = inject (WotrCombatActionsService);
-  private actionAppliers: Record<WotrAction["type"], WotrActionApplier<WotrAction>> = {
-    ...this.cardActions.getActionAppliers (),
-    ...this.fellowshipActions.getActionAppliers (),
-    ...this.huntActions.getActionAppliers (),
-    ...this.actionDiceActions.getActionAppliers (),
-    ...this.companionActions.getActionAppliers (),
-    ...this.minionActions.getActionAppliers (),
-    ...this.armyActions.getActionAppliers (),
-    ...this.politicalActions.getActionAppliers (),
-    ...this.combatActions.getActionAppliers (),
-  } as any;
 
   initGameState (players: WotrPlayer[], gameId: string, gameOwner: BgUser) {
     this.update ("Initial state", s => ({
@@ -134,90 +106,9 @@ export class WotrGameStore extends BgStore<WotrGameState> {
 
   playerMap$ = this.select$ (s => s.players.map);
   players$ = this.select$ (this.select$ (s => s.players), (players) => players.ids.map (id => players.map[id]));
-
-  private frontState = toSignal (this.select$ (s => s.frontState), { requireSync: true });
-  freePeopleFront = computed (() => this.frontState ().map["free-peoples"]);
-  shadowFront = computed (() => this.frontState ().map.shadow);
-  getFrontIds () { return this.get (s => s.frontState.ids); }
-  hasActionDice (frontId: WotrFrontId) { return this.get (s => !!s.frontState.map[frontId].actionDice.length); }
-  removeActionDie (die: WotrActionDie, frontId: WotrFrontId) { this.frontStore.removeActionDie (die, frontId); }
-  removeActionToken (token: WotrActionToken, frontId: WotrFrontId) { this.frontStore.removeActionToken (token, frontId); }
-
-  private regionState = toSignal (this.select$ (s => s.regionState), { requireSync: true });
-  regions = computed (() => this.regionStore.getRegions (this.regionState ()));
-  getRegion (regionId: WotrRegionId): WotrRegion { return this.regionState ().map[regionId]; }
-  
-  private companionState = toSignal (this.select$ (s => s.companionState), { requireSync: true });
-  companionById = computed (() => this.companionState ().map);
-  companions = computed (() => this.companionStore.getCompanions (this.companionState ()));
-  getCompanion (companionId: WotrCompanionId): WotrCompanion { return this.companionState ().map[companionId]; }
-
-  private minionState = toSignal (this.select$ (s => s.minionState), { requireSync: true });
-  minionById = computed (() => this.minionState ().map);
-  minions = computed (() => this.minionStore.getMinions (this.minionState ()));
-  getMinion (minionId: WotrMinionId): WotrMinion { return this.minionState ().map[minionId]; }
-
-  logs$ = this.select$ (s => s.logs);
-  
-  private nationState = toSignal (this.select$ (s => s.nationState), { requireSync: true });
-  freePeopleNations = computed (() => this.nationStore.getFreePeopleNations (this.nationState ()));
-  shadowNations = computed (() => this.nationStore.getShadowNations (this.nationState ()));
-  nationById = computed (() => this.nationState ().map);
-  getNation (nationId: WotrNationId): WotrNation { return this.nationState ().map[nationId]; }
-
   getGameId (): string { return this.get (s => s.gameId); }
   getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
   getPlayers (): WotrPlayer[] { return this.get (s => s.players.ids.map (front => s.players.map[front])); }
   getPlayer (id: WotrFrontId): WotrPlayer { return this.get (s => s.players.map[id]); }
-
-  applySetup (setup: WotrSetup) {
-    for (const d of setup.decks) {
-      this.frontStore.setCharacterDeck (d.characterDeck, d.front);
-      this.frontStore.setStrategyDeck (d.strategyDeck, d.front);
-    }
-    for (const r of setup.regions) {
-      const frontId = this.nationById ()[r.nation].front;
-      if (r.nRegulars) {
-        this.nationStore.removeRegularsFromReinforcements (r.nRegulars, r.nation);
-        this.regionStore.addRegularsToRegion (r.nation, frontId, r.nRegulars, r.region);
-      }
-      if (r.nElites) {
-        this.nationStore.removeElitesFromReinforcements (r.nElites, r.nation);
-        this.regionStore.addElitesToRegion (r.nation, frontId, r.nElites, r.region);
-      }
-      if (r.nLeaders) {
-        this.nationStore.removeLeadersFromReinforcements (r.nLeaders, r.nation);
-        this.regionStore.addLeadersToRegion (r.nation, r.nLeaders, r.region);
-      }
-      if (r.nNazgul) {
-        this.nationStore.removeNazgulFromReinforcements (r.nNazgul);
-        this.regionStore.addNazgulToRegion (r.nNazgul, r.region);
-      }
-    }
-    for (const nationSetup of setup.nations) {
-      this.nationStore.setActive (nationSetup.active, nationSetup.nation);
-      this.nationStore.setPoliticalStep (nationSetup.politicalStep, nationSetup.nation);
-    }
-    this.fellowshipStore.setCompanions (setup.fellowship.companions);
-    this.fellowshipStore.setGuide (setup.fellowship.guide);
-    this.regionStore.addFellowshipToRegion (setup.fellowship.region);
-  }
-
-  applyAction (action: WotrAction, frontId: WotrFrontId) {
-    this.actionAppliers[action.type] (action, frontId);
-  }
-
-  private addLog (actionName: string, log: WotrLog) {
-    return this.update (actionName, s => ({ ...s, logs: [...s.logs, log] }));
-  }
-
-  logSetup () { this.addLog ("Log setup", { type: "setup" }); }
-  logRound (roundNumber: number) { this.addLog ("Log round", { type: "round", roundNumber }); }
-  logPhase (phase: WotrPhase) { this.addLog ("Log phase", { type: "phase", phase: phase }); }
-  logAction (action: WotrAction, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId }); }
-  logDieAction (action: WotrAction, die: WotrActionDie, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die }); }
-  logTokenAction (action: WotrAction, token: WotrActionToken, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, token }); }
-  logEndGame () { this.addLog ("Log end game", { type: "endGame" }); }
-  logActionPass (frontId: WotrFrontId) { this.addLog ("Log action pass", { type: "action-pass", front: frontId }); }
 
 }

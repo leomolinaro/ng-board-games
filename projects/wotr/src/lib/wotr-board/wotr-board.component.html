@@ -9,23 +9,36 @@
     (regionClick)="onRegionClick ($event)">
   </wotr-map>
   <div class="wotr-toolbar">{{ message () }}  <button (click)="testClick.next ()">Test</button></div>
-  <div class="wotr-free-peoples">
-    <wotr-front-area
-      [front]="freePeopleFront ()"
-      [nations]="freePeopleNations ()"
-      [companions]="companions ()"
-      (cardClick)="onPreviewCardClick ($event, freePeopleFront ())">
-    </wotr-front-area>
+  <div class="wotr-fronts">
+    <mat-tab-group>
+      @for (front of fronts (); track front.id) {
+        <mat-tab [label]="front.name + ' ' + (front.handCards | bgTransform:nChaCards) + ' / ' + (front.handCards | bgTransform:nStrCards)"
+          [labelClass]="front.id" [bodyClass]="front.id">
+          <wotr-front-area
+            [front]="front"
+            [nations]="front.id === 'free-peoples' ? freePeopleNations () : shadowNations ()"
+            [companions]="front.id === 'free-peoples' ? companions () : undefined"
+            [minions]="front.id === 'shadow' ? minions () : undefined"
+            (cardClick)="onPreviewCardClick ($event, front)">
+          </wotr-front-area>
+        </mat-tab>
+      }
+      <mat-tab [label]="'Hunt (' + hunt ().nHuntDice + ' / ' + hunt ().nFreePeopleDice + ')'">
+        <wotr-hunt-area
+          [hunt]="hunt ()">
+        </wotr-hunt-area>
+      </mat-tab>
+    </mat-tab-group>
   </div>
-  <div class="wotr-shadow">
-    <wotr-front-area
-      [front]="shadowFront ()"
-      [nations]="shadowNations ()"
-      [minions]="minions ()"
-      (cardClick)="onPreviewCardClick ($event, shadowFront ())">
-    </wotr-front-area>
+  <div class="wotr-action-dice-box">
+    @for (front of fronts (); track front.id) {
+      <div class="wotr-action-dice">
+        @for (actionDie of front.actionDice; track actionDie) {
+          <img [src]="actionDie | bgTransform:actionDieImage:front.id"/>
+        }
+      </div>
+    }
   </div>
-  <div class="wotr-detail">Detail</div>
   <div class="wotr-logs">
     <wotr-logs [logs]="logs ()"></wotr-logs>
   </div>

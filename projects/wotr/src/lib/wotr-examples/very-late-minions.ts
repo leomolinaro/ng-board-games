@@ -11,6 +11,7 @@ import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, notDecl
 import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/wotr-hunt-actions";
 import { moveMinions, moveNazgul, playMinion } from "../wotr-actions/wotr-minion-actions";
 import { advanceNation } from "../wotr-actions/wotr-political-actions";
+import { WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../wotr-story.models";
 
 let time = 1;
@@ -162,6 +163,8 @@ export const stories: WotrStoryDoc[] = [
   // Turn 6 30:00
 
 ];
+
+export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
 
 function fp (t?: number) { if (!t) { t = time++; } return new WotrFreePeoplesStoryComposer (t); }
 function s (t?: number) { if (!t) { t = time++; } return new WotrShadowStoryComposer (t); }

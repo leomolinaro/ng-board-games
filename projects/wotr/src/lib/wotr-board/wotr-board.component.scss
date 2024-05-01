@@ -20,11 +20,12 @@ $area-background: #151515;
   // grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
   // grid-template-rows: 80px 2fr 3fr 80px;
   grid-template-areas:
-    'toolbar toolbar toolbar'
-    'free-peoples map detail'
-    'shadow map logs ';
-  grid-template-columns: minmax(300px, 2fr) minmax(50%, 1200px) minmax(150px, 1fr);
-  grid-template-rows: 40px 1fr 1fr;
+    'toolbar actionDiceBox'
+    'map actionDiceBox'
+    'map fronts'
+    'map logs ';
+  grid-template-columns: minmax(50%, 1fr) minmax(150px, 500px);
+  grid-template-rows: 40px fit-content(100px) 1fr 1fr;
   grid-gap: 10px;
   padding-bottom: 10px;
   > * {
@@ -42,18 +43,33 @@ $area-background: #151515;
     grid-area: dice;
     background-color: $area-background;
   }
-  .wotr-free-peoples {
-    grid-area: free-peoples;
+  .wotr-fronts {
+    grid-area: fronts;
     background-color: $area-background;
-    box-shadow: widget-shadow($blue);
-    @include golden-padding(2vmin);
-    ::ng-deep { --wotr-front-color: #{$blue}; }
+    // box-shadow: widget-shadow($blue);
+    @include golden-padding(1vmin);
+
+    mat-tab-group {
+      overflow: auto;
+      ::ng-deep {
+        .mat-mdc-tab-header {
+          --mdc-secondary-navigation-tab-container-height: 25px;
+        }
+        .free-peoples { --wotr-front-color: #{$blue}; }
+        .shadow { --wotr-front-color: #{$red}; }
+        .mat-mdc-tab.mdc-tab--active {
+          .mdc-tab__text-label { color: var(--wotr-front-color); }
+          .mdc-tab-indicator__content--underline { border-color: var(--wotr-front-color) !important; display: none }
+        }
+      }
+    }
+
   }
   .wotr-shadow {
     grid-area: shadow;
     background-color: $area-background;
-    box-shadow: widget-shadow($red);
-    @include golden-padding(2vmin);
+    // box-shadow: widget-shadow($red);
+    @include golden-padding(1vmin);
     ::ng-deep { --wotr-front-color: #{$red}; }
   }
   .wotr-detail {
@@ -61,8 +77,19 @@ $area-background: #151515;
     background-color: $area-background;
   }
   .wotr-logs {
+    @include golden-padding(1vmin);
+    // box-shadow: widget-shadow(white);
     grid-area: logs;
     background-color: $area-background;
+  }
+  .wotr-action-dice-box {
+    @include golden-padding(1vmin);
+    // box-shadow: widget-shadow(white);
+    grid-area: actionDiceBox;
+    background-color: $area-background;
+    .wotr-action-dice {
+      display: flex;
+    }
   }
 
   // .wotr-board-map-layer {

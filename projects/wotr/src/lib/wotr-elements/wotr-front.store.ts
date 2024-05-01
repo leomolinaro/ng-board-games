@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId, isCharacterCard, isStrategyCard } from "./wotr-card.models";
 import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
@@ -9,12 +9,19 @@ export interface WotrFrontState {
   map: Record<WotrFrontId, WotrFront>;
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrFrontStore {
 
   update!: (actionName: string, updater: (a: WotrFrontState) => WotrFrontState) => void;
+  state!: Signal<WotrFrontState>;
+
+  fronts = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
+  freePeopleFront = computed (() => this.state ().map["free-peoples"]);
+  shadowFront = computed (() => this.state ().map.shadow);
+  frontIds () { return this.state ().ids; }
+  hasActionDice (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionDice.length; }
+  hasActionTokens (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionTokens.length; }
+  front (id: WotrFrontId, state: WotrFrontState) { return state.map[id]; }
 
   init (): WotrFrontState {
     return {
@@ -43,9 +50,6 @@ export class WotrFrontStore {
   private updateFront (actionName: string, frontId: WotrFrontId, updater: (a: WotrFront) => WotrFront) {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [frontId]: updater (s.map[frontId]) } }));
   }
-  
-  getFront (id: WotrFrontId, state: WotrFrontState) { return state.map[id]; }
-  getFronts (state: WotrFrontState) { return state.ids.map (id => state.map[id]); }
   
   setCharacterDeck (characterDeck: WotrCharacterCardId[], frontId: WotrFrontId) {
     this.updateFront ("setCharacterDeck", frontId, front => ({ ...front, characterDeck }));
@@ -81,6 +85,13 @@ export class WotrFrontStore {
     }));
   }
 
+  setActionTokens (tokens: WotrActionToken[], frontId: WotrFrontId): void {
+    this.updateFront ("setActionTokens", frontId, front => ({
+      ...front,
+      actionTokens: tokens
+    }));
+  }
+
   setActionDice (dice: WotrActionDie[], frontId: WotrFrontId): void {
     this.updateFront ("setActionDice", frontId, front => ({
       ...front,
@@ -94,6 +105,14 @@ export class WotrFrontStore {
       actionDice: immutableUtil.listRemoveFirst (d => d === die, front.actionDice)
     }));
   }
+
+  removeAllEyeResults (frontId: WotrFrontId): void {
+    this.updateFront ("removeAllEyeResults", frontId, front => ({
+      ...front,
+      actionDice: immutableUtil.listRemoveAll (d => d === "eye", front.actionDice)
+    }));
+  }
+
 
   removeActionToken (token: WotrActionToken, frontId: WotrFrontId): void {
     this.updateFront ("removeActionToken", frontId, front => ({

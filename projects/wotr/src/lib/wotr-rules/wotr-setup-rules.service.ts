@@ -3,6 +3,7 @@ import { arrayUtil } from "@leobg/commons/utils";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../wotr-elements/wotr-card.models";
 import { WotrCardService } from "../wotr-elements/wotr-card.service";
 import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrNationId, WotrPoliticalStep } from "../wotr-elements/wotr-nation.models";
 import { WotrRegionId } from "../wotr-elements/wotr-region.models";
@@ -12,6 +13,8 @@ export interface WotrSetup {
   fellowship: WotrFellowshipSetup;
   nations: WotrNationSetup[];
   decks: WotrFrontDecksSetup[];
+  freePeopleTokens: WotrActionToken[];
+  shadowTokens: WotrActionToken[];
 }
 
 export interface WotrFrontDecksSetup {
@@ -102,7 +105,9 @@ export class WotrSetupRulesService {
         region: "rivendell",
         companions: ["gandalf-the-grey", "strider", "boromir", "legolas", "gimli", "meriadoc", "peregrin"],
         guide: "gandalf-the-grey"
-      }
+      },
+      freePeopleTokens: ["draw-card", "political-advance"],
+      shadowTokens: []
     };
   }
   

@@ -1,16 +1,19 @@
 import { Observable, map, of, switchMap } from "rxjs";
+import { WotrGameActionsService } from "../../wotr-actions/wotr-game-actions.service";
 import { WotrHuntRoll } from "../../wotr-actions/wotr-hunt-actions";
-import { WotrGameStore } from "../../wotr-elements/wotr-game.store";
 import { WotrHuntTile } from "../../wotr-elements/wotr-hunt.models";
+import { WotrHuntStore } from "../../wotr-elements/wotr-hunt.store";
+import { WotrLogStore } from "../../wotr-elements/wotr-log.store";
 import { WotrRulesService } from "../../wotr-rules/wotr-rules.service";
 import { WotrAction, WotrStory } from "../../wotr-story.models";
 import { WotrStoryService } from "../wotr-story.service";
-import { WotrSubFlow } from "./wotr-subflow";
 
-export class WotrFellowshipProgressFlow implements WotrSubFlow {
+export class WotrFellowshipProgressFlow {
 
   constructor (
-    private store: (WotrGameStore),
+    private huntStore: (WotrHuntStore),
+    private logStore: (WotrLogStore),
+    private gameActions: (WotrGameActionsService),
     private rules: (WotrRulesService),
     private story: (WotrStoryService)
   ) { }
@@ -18,7 +21,7 @@ export class WotrFellowshipProgressFlow implements WotrSubFlow {
   execute$ (action: WotrAction, story: WotrStory) {
     return this.huntRoll$ ().pipe (
       switchMap (huntRoll => {
-        const nSuccesses = this.rules.hunt.getNSuccesses (huntRoll, this.store.get ());
+        const nSuccesses = this.rules.hunt.getNSuccesses (huntRoll, this.huntStore.state ());
         if (!nSuccesses) { return of (void 0); }
         return this.drawHuntTile$ ().pipe (
           switchMap (huntTile => this.absorbHuntDamage$ (huntTile))
@@ -32,8 +35,8 @@ export class WotrFellowshipProgressFlow implements WotrSubFlow {
       map (story => {
         const action = story.actions[0];
         if (action?.type !== "hunt-roll") { throw new Error ("Unexpected story"); }
-        this.store.logAction (action, "shadow");
-        this.store.applyAction (action, "shadow");
+        this.logStore.logAction (action, "shadow");
+        this.gameActions.applyAction (action, "shadow");
         return action;
       })
     );
@@ -44,8 +47,8 @@ export class WotrFellowshipProgressFlow implements WotrSubFlow {
       map (story => {
         const action = story.actions[0];
         if (action?.type !== "hunt-tile-draw") { throw new Error ("Unexpected story"); }
-        this.store.logAction (action, "shadow");
-        this.store.applyAction (action, "shadow");
+        this.logStore.logAction (action, "shadow");
+        this.gameActions.applyAction (action, "shadow");
         return action.tile;
       })
     );
@@ -56,8 +59,8 @@ export class WotrFellowshipProgressFlow implements WotrSubFlow {
       map (story => {
         const action = story.actions[0];
         // if (action?.type !== "hunt-tile-draw") { throw new Error ("Unexpected story"); }
-        this.store.logAction (action, "free-peoples");
-        this.store.applyAction (action, "free-peoples");
+        this.logStore.logAction (action, "free-peoples");
+        this.gameActions.applyAction (action, "free-peoples");
         // return action.tile;
       })
     );

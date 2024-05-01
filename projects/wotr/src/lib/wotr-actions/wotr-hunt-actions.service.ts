@@ -3,9 +3,7 @@ import { WotrHuntStore } from "../wotr-elements/wotr-hunt.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 
-@Injectable ({
-  providedIn: "root",
-})
+@Injectable ()
 export class WotrHuntActionsService {
 
   private huntStore = inject (WotrHuntStore);

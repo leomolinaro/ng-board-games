@@ -1,16 +1,17 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
+import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrPoliticalAction } from "./wotr-political-actions";
 
-@Injectable ({
-  providedIn: "root",
-})
+@Injectable ()
 export class WotrPoliticalActionsService {
+
+  private nationStore = inject (WotrNationStore);
 
   getActionAppliers (): WotrActionApplierMap<WotrPoliticalAction> {
     return {
-      "political-activation": (action, front) => { throw new Error ("TODO") },
-      "political-advance": (action, front) => { throw new Error ("TODO") },
+      "political-activation": (action, front) => { this.nationStore.setActive (true, action.nation); },
+      "political-advance": (action, front) => { this.nationStore.advancePoliticalStep (action.quantity, action.nation); },
     };
   }
 

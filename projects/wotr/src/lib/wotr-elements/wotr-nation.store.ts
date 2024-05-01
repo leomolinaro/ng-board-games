@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal, computed } from "@angular/core";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFreeGenericUnitType, WotrGenericUnitType, WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation.models";
 
@@ -8,12 +8,16 @@ export interface WotrNationState {
   sNationIds: WotrNationId[];
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrNationStore {
 
   update!: (actionName: string, updater: (a: WotrNationState) => WotrNationState) => void;
+  state!: Signal<WotrNationState>;
+
+  freePeopleNations = computed (() => { const s = this.state (); return s.fpNationIds.map (id => s.map[id]); });
+  shadowNations = computed (() => { const s = this.state (); return s.sNationIds.map (id => s.map[id]); });
+  nationById = computed (() => this.state ().map);
+  nation (id: WotrNationId) { return this.state ().map[id]; }
 
   init (): WotrNationState {
     return {
@@ -60,10 +64,6 @@ export class WotrNationStore {
     };
   }
 
-  getNation (id: WotrNationId, state: WotrNationState) { return state.map[id]; }
-  getFreePeopleNations (state: WotrNationState) { return state.fpNationIds.map (id => state.map[id]); }
-  getShadowNations (state: WotrNationState) { return state.sNationIds.map (id => state.map[id]); }
-
   private updateNation (actionName: string, nationId: WotrNationId, updater: (a: WotrNation) => WotrNation) {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [nationId]: updater (s.map[nationId]) } }));
   }
@@ -106,6 +106,28 @@ export class WotrNationStore {
     this.updateNation ("setPoliticalStep", nationId, nation => ({
       ...nation, politicalStep
     }));
+  }
+
+  advancePoliticalStep (quantity: number, nationId: WotrNationId) {
+    this.updateNation ("advancePoliticalStep", nationId, nation => {
+      let next: WotrPoliticalStep;
+      for (let i = 0; i < quantity; i++) {
+        next = this.getNextPoliticalStep (nation.politicalStep);
+      }
+      return {
+        ...nation,
+        politicalStep: next!
+      };
+    });
+  }
+
+  private getNextPoliticalStep (politicalStep: WotrPoliticalStep): WotrPoliticalStep {
+    switch (politicalStep) {
+      case 3: return 2;
+      case 2: return 1;
+      case 1:
+      case "atWar": return "atWar";
+    }
   }
 
 }

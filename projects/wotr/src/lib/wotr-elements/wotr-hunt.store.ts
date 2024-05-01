@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrHuntTile } from "./wotr-hunt.models";
 
@@ -12,12 +12,11 @@ export interface WotrHuntState {
   nFreePeopleDice: number;
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrHuntStore {
 
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;
+  state!: Signal<WotrHuntState>;
 
   init (): WotrHuntState {
     return {

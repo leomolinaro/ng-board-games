@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal, computed } from "@angular/core";
 import { WotrMinion, WotrMinionId } from "./wotr-minion.models";
 
 export interface WotrMinionState {
@@ -6,12 +6,15 @@ export interface WotrMinionState {
   map: Record<WotrMinionId, WotrMinion>;
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrMinionStore {
 
   update!: (actionName: string, updater: (a: WotrMinionState) => WotrMinionState) => void;
+  state!: Signal<WotrMinionState>;
+
+  minionById = computed (() => this.state ().map);
+  minions = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
+  minion (minionId: WotrMinionId): WotrMinion { return this.state ().map[minionId]; }
 
   init (): WotrMinionState {
     return {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Signal, computed } from "@angular/core";
 import { WotrCompanion, WotrCompanionId } from "./wotr-companion.models";
 
 export interface WotrCompanionState {
@@ -6,12 +6,15 @@ export interface WotrCompanionState {
   map: Record<WotrCompanionId, WotrCompanion>;
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrCompanionStore {
 
   update!: (actionName: string, updater: (a: WotrCompanionState) => WotrCompanionState) => void;
+  state!: Signal<WotrCompanionState>;
+
+  companionById = computed (() => this.state ().map);
+  companions = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
+  companion (companionId: WotrCompanionId): WotrCompanion { return this.state ().map[companionId]; }
 
   init (): WotrCompanionState {
     return {
@@ -45,6 +48,13 @@ export class WotrCompanionStore {
 
   private updateCompanion (actionName: string, companionId: WotrCompanionId, updater: (a: WotrCompanion) => WotrCompanion) {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [companionId]: updater (s.map[companionId]) } }));
+  }
+
+  setEliminated (companionId: WotrCompanionId) {
+    this.updateCompanion ("setEliminated", companionId, companion => ({
+      ...companion,
+      status: "eliminated"
+    }));
   }
 
 }

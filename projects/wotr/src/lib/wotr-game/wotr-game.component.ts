@@ -4,9 +4,27 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
+import { WotrActionDiceActionsService } from "../wotr-actions/wotr-action-dice-actions.service";
+import { WotrArmyActionsService } from "../wotr-actions/wotr-army-actions.service";
+import { WotrCardActionsService } from "../wotr-actions/wotr-card-actions.service";
+import { WotrCombatActionsService } from "../wotr-actions/wotr-combat-actions.service";
+import { WotrCompanionActionsService } from "../wotr-actions/wotr-companion-actions.service";
+import { WotrFellowshipActionsService } from "../wotr-actions/wotr-fellowship-actions.service";
+import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
+import { WotrHuntActionsService } from "../wotr-actions/wotr-hunt-actions.service";
+import { WotrMinionActionsService } from "../wotr-actions/wotr-minion-actions.service";
+import { WotrPoliticalActionsService } from "../wotr-actions/wotr-political-actions.service";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
+import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
+import { WotrFellowshipStore } from "../wotr-elements/wotr-fellowship.store";
+import { WotrFrontStore } from "../wotr-elements/wotr-front.store";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
+import { WotrHuntStore } from "../wotr-elements/wotr-hunt.store";
+import { WotrLogStore } from "../wotr-elements/wotr-log.store";
+import { WotrMinionStore } from "../wotr-elements/wotr-minion.store";
+import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
+import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
 import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
 import { WotrStoryDoc } from "../wotr-story.models";
 import { WotrFlowService } from "./wotr-flow.service";
@@ -22,76 +40,64 @@ import { WotrUiStore } from "./wotr-ui.store";
   template: `
     <wotr-board
       [players]="store.players$ | async"
-      [regions]="store.regions ()"
-      [freePeopleFront]="store.freePeopleFront ()"
-      [freePeopleNations]="store.freePeopleNations ()"
-      [nationById]="store.nationById ()"
-      [companions]="store.companions ()"
-      [companionById]="store.companionById ()"
-      [shadowFront]="store.shadowFront ()"
-      [shadowNations]="store.shadowNations ()"
-      [minions]="store.minions ()"
-      [minionById]="store.minionById ()"
-      [logs]="store.logs$ | async"
+      [regions]="regionStore.regions ()"
+      [fronts]="frontStore.fronts ()"
+      [hunt]="huntStore.state ()"
+      [freePeopleNations]="nationStore.freePeopleNations ()"
+      [nationById]="nationStore.nationById ()"
+      [companions]="companionStore.companions ()"
+      [companionById]="companionStore.companionById ()"
+      [shadowNations]="nationStore.shadowNations ()"
+      [minions]="minionStore.minions ()"
+      [minionById]="minionStore.minionById ()"
+      [logs]="logStore.state ()"
       [message]="ui.message$ | async"
       (playerSelect)="ui.setCurrentPlayer ($event)"
       (testClick)="ui.testChange ()">
     </wotr-board>
-  <!-- // // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
-  // onRegionClick (regionId: WotrRegionId) { this.ui.regionChange (regionId); }
-  // onUnitClick (unit: WotrRegionUnit) { this.ui.unitChange (unit); }
-  // onSelectedUnitsChange (units: WotrRegionUnit[]) { this.ui.selectedUnitsChange (units); }
-  // // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
-  // onPassClick () { this.ui.passChange (); }
-  // onConfirmClick () { this.ui.confirmChange (); }
-  // // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
-  // // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); } --> -->
-    <!-- 
-    [nationStates]="nationStates$ | async"
-    [players]="players$ | async"
-    
-    [turnPlayer]="turnPlayer$ | async"
-    [currentPlayer]="currentPlayer$ | async"
-    [validRegions]="validRegions$ | async"
-    [validUnits]="validUnits$ | async"
-    [selectedUnits]="selectedUnits$ | async"
-    [canPass]="canPass$ | async"
-    [canConfirm]="canConfirm$ | async"
-    [canCancel]="canCancel$ | async"
-    (passClick)="onPassClick()"
-    (confirmClick)="onConfirmClick()"
-    (cancelClick)="onCancelClick()"
-    (regionClick)="onRegionClick($event)"
-    (unitClick)="onUnitClick($event)"
-    (selectedUnitsChange)="onSelectedUnitsChange($event)"
-    [validLands]="validLands$ | async"
-    [validActions]="validActions$ | async"
-    [validBuildings]="validBuildings$ | async"
-    [validResources]="validResources$ | async"
-    [maxNumberOfKnights]="maxNumberOfKnights$ | async"
-    [endGame]="endGame$ | async"
-    (playerSelect)="onPlayerSelect ($event)"
-    (buildingSelect)="onBuildingSelect ($event)"
-    (landTileClick)="onLandTileClick ($event)"
-    (actionClick)="onActionClick ($event)"
-    (knightsConfirm)="onKnightsConfirm ($event)"
-    (resourceSelect)="onResourceSelect ($event)" -->
   `,
   styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     WotrGameStore,
+    WotrFrontStore,
+    WotrRegionStore,
+    WotrNationStore,
+    WotrCompanionStore,
+    WotrMinionStore,
+    WotrFellowshipStore,
+    WotrHuntStore,
+    WotrLogStore,
+
+    WotrGameActionsService,
+    WotrCardActionsService,
+    WotrFellowshipActionsService,
+    WotrHuntActionsService,
+    WotrActionDiceActionsService,
+    WotrCompanionActionsService,
+    WotrMinionActionsService,
+    WotrArmyActionsService,
+    WotrPoliticalActionsService,
+    WotrCombatActionsService,
+
     WotrUiStore,
     WotrPlayerAiService,
     WotrPlayerLocalService,
     WotrStoryService,
-    WotrFlowService,
+    WotrFlowService
   ]
 })
 @UntilDestroy
 export class WotrGameComponent implements OnInit, OnDestroy {
 
   protected store = inject (WotrGameStore);
+  protected frontStore = inject (WotrFrontStore);
+  protected regionStore = inject (WotrRegionStore);
+  protected companionStore = inject (WotrCompanionStore);
+  protected minionStore = inject (WotrMinionStore);
+  protected nationStore = inject (WotrNationStore);
+  protected huntStore = inject (WotrHuntStore);
+  protected logStore = inject (WotrLogStore);
   protected ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
