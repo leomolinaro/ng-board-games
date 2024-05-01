@@ -1,31 +1,5 @@
-import {
-  Directive,
-  Input,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewContainerRef,
-} from "@angular/core";
-import {
-  BehaviorSubject,
-  EMPTY,
-  MonoTypeOperatorFunction,
-  Observable,
-  Subject,
-  of,
-} from "rxjs";
-import {
-  catchError,
-  concatMap,
-  debounceTime,
-  exhaustMap,
-  filter,
-  finalize,
-  map,
-  mergeMap,
-  switchMap,
-  takeUntil,
-} from "rxjs/operators";
+import { Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from "@angular/core";
+import { BehaviorSubject, EMPTY, MonoTypeOperatorFunction, Observable, Subject, catchError, concatMap, debounceTime, exhaustMap, filter, finalize, map, mergeMap, of, switchMap, takeUntil } from "rxjs";
 
 const destroyUsedSymbol = Symbol ("__destroyUsed");
 const destroyObsSymbol = Symbol ("__destroy$");

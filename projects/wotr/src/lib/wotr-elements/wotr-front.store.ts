@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId, isCharacterCard, isStrategyCard } from "./wotr-card.models";
-import { WotrActionDie } from "./wotr-dice.models";
+import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
 import { WotrFront, WotrFrontId } from "./wotr-front.models";
 
 export interface WotrFrontState {
@@ -35,7 +35,8 @@ export class WotrFrontStore {
       tableCards: [],
       characterDiscardPile: [],
       strategyDiscardPile: [],
-      actionDice: []
+      actionDice: [],
+      actionTokens: []
     };
   }
 
@@ -80,18 +81,39 @@ export class WotrFrontStore {
     }));
   }
 
-  setActionDice (dice: WotrActionDie[], front: string): void {
-    
-    throw new Error("Method not implemented.");
+  setActionDice (dice: WotrActionDie[], frontId: WotrFrontId): void {
+    this.updateFront ("setActionDice", frontId, front => ({
+      ...front,
+      actionDice: dice
+    }));
   }
-  removeActionDice(dice: import("./wotr-dice.models").WotrActionDie[], arg1: string): void {
-    throw new Error("Method not implemented.");
+
+  removeActionDie (die: WotrActionDie, frontId: WotrFrontId): void {
+    this.updateFront ("removeActionDie", frontId, front => ({
+      ...front,
+      actionDice: immutableUtil.listRemoveFirst (d => d === die, front.actionDice)
+    }));
   }
-  playCardsOnTable(cards: WotrCardId[], front: string): void {
-    throw new Error("Method not implemented.");
+
+  removeActionToken (token: WotrActionToken, frontId: WotrFrontId): void {
+    this.updateFront ("removeActionToken", frontId, front => ({
+      ...front,
+      actionTokens: immutableUtil.listRemoveFirst (t => t === token, front.actionTokens)
+    }));
   }
-  discardCardsFromTable(cards: WotrCardId[], front: string): void {
-    throw new Error("Method not implemented.");
+
+  playCardOnTable (card: WotrCardId, frontId: WotrFrontId): void {
+    this.updateFront ("playCardOnTable", frontId, front => ({
+      ...front,
+      tableCards: immutableUtil.listPush ([card], front.tableCards)
+    }));
+  }
+
+  discardCardFromTable (card: WotrCardId, frontId: WotrFrontId): void {
+    this.updateFront ("discardCardFromTable", frontId, front => ({
+      ...front,
+      tableCards: immutableUtil.listRemoveFirst (c => c === card, front.tableCards)
+    }));
   }
 
 }

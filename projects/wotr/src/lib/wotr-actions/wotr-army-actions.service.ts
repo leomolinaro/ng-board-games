@@ -17,11 +17,30 @@ export class WotrArmyActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrArmyAction> {
     return {
-      "army-attack": (action, front) => { },
+      "army-attack": (action, front) => { throw new Error ("TODO") },
       "army-movement": (action, front) => {
-        // action.army.units[0].
+        if (action.army.minions) {
+          for (const minion of action.army.minions) {
+            this.regionStore.removeMinionFromRegion (minion, action.fromRegion);
+            this.regionStore.addMinionToRegion (minion, action.fromRegion);
+          }
+        }
+        if (action.army.companions) {
+          for (const companion of action.army.companions) {
+            this.regionStore.removeCompanionFromRegion (companion, action.fromRegion);
+            this.regionStore.addCompanionToRegion (companion, action.fromRegion);
+          }
+        }
+        if (action.army.units) {
+          for (const unit of action.army.units) {
+            const unitUtil = this.unitUtil (unit.type);
+            const frontId = frontOfNation (unit.nation);
+            unitUtil.removeFromRegion (unit.quantity, unit.nation, action.fromRegion);
+            unitUtil.addToRegion (unit.quantity, frontId, unit.nation, action.toRegion);
+          }
+        }
       },
-      "army-retreat-into-siege": (action, front) => { },
+      "army-retreat-into-siege": (action, front) => { throw new Error ("TODO") },
       "unit-elimination": (action, front) => {
         const unitUtil = this.unitUtil (action.unitType);
         const frontId = frontOfNation (action.nation);

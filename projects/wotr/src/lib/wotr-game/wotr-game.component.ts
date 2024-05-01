@@ -85,8 +85,8 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrPlayerAiService,
     WotrPlayerLocalService,
     WotrStoryService,
-    WotrFlowService
-  ],
+    WotrFlowService,
+  ]
 })
 @UntilDestroy
 export class WotrGameComponent implements OnInit, OnDestroy {

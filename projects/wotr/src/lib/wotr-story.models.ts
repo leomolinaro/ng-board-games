@@ -1,5 +1,5 @@
 import { BgStoryDoc } from "@leobg/commons";
-import { WotrActionDiceAction, passAction, rollActionDice } from "./wotr-actions/wotr-action-dice-actions";
+import { WotrActionDiceAction, rollActionDice } from "./wotr-actions/wotr-action-dice-actions";
 import { WotrArmyAction } from "./wotr-actions/wotr-army-actions";
 import { WotrCardAction } from "./wotr-actions/wotr-card-actions";
 import { WotrCombatAction } from "./wotr-actions/wotr-combat-actions";
@@ -19,6 +19,7 @@ export interface WotrStory {
   die?: WotrActionDie;
   token?: WotrActionToken;
   card?: WotrCardId;
+  pass?: boolean;
   actions: WotrAction[];
 }
 
@@ -48,7 +49,6 @@ export interface WotrArmy {
 export class WotrFrontStoryComposer {
   constructor (private front: WotrFrontId, private time: number) { }
   rollActionDice (...dice: WotrActionDie[]) { return this.story (rollActionDice (dice)); }
-  pass () { return this.story (passAction ()); }
   characterDie (...actions: WotrAction[]) { return this.die ("character", ...actions); }
   eventDie (...actions: WotrAction[]) { return this.die ("event", ...actions); }
   musterDie (...actions: WotrAction[]) { return this.die ("muster", ...actions); }
@@ -58,6 +58,7 @@ export class WotrFrontStoryComposer {
   characterDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "character", ...this.card (card, ...actions) }; }
   musterArmyDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "muster-army", ...this.card (card, ...actions) }; }
   protected die (die: WotrActionDie, ...actions: WotrAction[]): WotrStoryDoc { return { die, ...this.story (...actions) }; }
+  pass () { return { pass: true, ...this.story () }; }
   card (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { card: labelToCardId (card), ...this.story (...actions) }; }
   token (token: WotrActionToken, ...actions: WotrAction[]): WotrStoryDoc { return { token, ...this.story (...actions) }; }
   story (...actions: WotrAction[]): WotrStoryDoc { return { time: this.time, playerId: this.front, actions }; }

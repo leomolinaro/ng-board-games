@@ -11,21 +11,31 @@ import { WotrFellowshipLogsService } from "../wotr-actions/wotr-fellowship-logs.
 import { WotrHuntLogsService } from "../wotr-actions/wotr-hunt-logs.service";
 import { WotrMinionLogsService } from "../wotr-actions/wotr-minion-logs.service";
 import { WotrPoliticalLogsService } from "../wotr-actions/wotr-political-logs.service";
+import { WotrAssetsService } from "../wotr-assets.service";
+import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrGameStore } from "../wotr-elements/wotr-game.store";
+import { WotrHuntTile } from "../wotr-elements/wotr-hunt.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
-import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrAction } from "../wotr-story.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
 interface WotrLogRegionFragment { type: "region"; label: string; region: WotrRegion }
+interface WotrLogDieFragment { type: "die"; dieImage: string }
+interface WotrLogTokenFragment { type: "token"; tokenImage: string }
+interface WotrLogHuntTileFragment { type: "hunt-tile"; tileImage: string }
 
 type WotrLogFragment =
   | WotrLogStringFragment
   | WotrLogPlayerFragment
-  | WotrLogRegionFragment;
+  | WotrLogRegionFragment
+  | WotrLogDieFragment
+  | WotrLogTokenFragment
+  | WotrLogHuntTileFragment;
 
 @Component ({
   selector: "wotr-log",
@@ -42,6 +52,10 @@ type WotrLogFragment =
           @case ("string") { <span>{{ fragment.label }}</span> }
           @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
           @case ("region") {  <span>{{ fragment.label }}</span> }
+          @case ("die") { <img class="action-die" [src]="fragment.dieImage"/> }
+          @case ("token") { <img class="action-token" [src]="fragment.tokenImage"/> }
+          @case ("hunt-tile") { <img class="hunt-tile" [src]="fragment.tileImage"/> }
+          <!-- @case ("hunt-tile") { <span>{{ fragment.label }}</span> } -->
         }
       }
     </div>
@@ -61,6 +75,11 @@ type WotrLogFragment =
       // .is-yellow { color: $yellow; }
       // .is-green { color: $green; }
     }
+    .action-die, .action-token, .hunt-tile {
+      vertical-align: top;
+      margin-left: 3px;
+      height: 16px;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -78,9 +97,10 @@ export class WotrLogComponent implements OnChanges {
     ...inject (WotrCombatLogsService).getActionLoggers (),
   } as any;
 
+  private assets = inject (WotrAssetsService);
+  private store = inject (WotrGameStore);
+
   @Input () log!: WotrLog;
-  @Input () players!: WotrPlayer[];
-  @Input () regions!: WotrRegion[];
 
   fragments!: WotrLogFragment[];
 
@@ -92,8 +112,14 @@ export class WotrLogComponent implements OnChanges {
         case "endGame": this.fragments = [this.string ("End Game")]; break;
         case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
-        case "action": this.fragments = this.actionLoggers[l.action.type] (l.action, l.front, this); break;
-        // default: console.error (`Log type ${l.type} not managed`);
+        case "action": {
+          this.fragments = this.actionLoggers[l.action.type] (l.action, l.front, this);
+          if (l.die) { this.fragments.push (this.die (l.die, l.front)); }
+          if (l.token) { this.fragments.push (this.token (l.token, l.front)); }
+          break;
+        }
+        case "action-pass": this.fragments = [this.player (l.front), this.string (" passes")]; break;
+        // default: throw new Error (`Log type ${l.type} not managed`);
       }
     }
   }
@@ -102,14 +128,31 @@ export class WotrLogComponent implements OnChanges {
     return { type: "string", label };
   }
 
+  companion (companionId: WotrCompanionId): WotrLogStringFragment {
+    const companion = this.store.getCompanion (companionId);
+    return { type: "string", label: companion.name };
+  }
+
   player (front: WotrFrontId): WotrLogPlayerFragment {
-    const player = this.players.find (p => p.id === front)!;
-    return { type: "player", label: player?.name, front };
+    const player = this.store.getPlayer (front);
+    return { type: "player", label: player.name, front };
   }
 
   region (regionId: WotrRegionId): WotrLogRegionFragment {
-    const region = this.regions.find (r => r.id === regionId)!;
-    return { type: "region", label: region?.name, region };
+    const region = this.store.getRegion (regionId);
+    return { type: "region", label: region.name, region };
+  }
+
+  die (die: WotrActionDie, frontId: WotrFrontId): WotrLogDieFragment {
+    return { type: "die", dieImage: this.assets.getActionDieImage (die, frontId) };
+  }
+
+  token (token: WotrActionToken, frontId: WotrFrontId): WotrLogTokenFragment {
+    return { type: "token", tokenImage: this.assets.getActionTokenImage (token, frontId) };
+  }
+
+  huntTile (tile: WotrHuntTile): WotrLogHuntTileFragment {
+    return { type: "hunt-tile", tileImage: this.assets.getHuntTileImage (tile) };
   }
 
   // private region (regionId: WotrRegionId): WotrLogRegionFragment {

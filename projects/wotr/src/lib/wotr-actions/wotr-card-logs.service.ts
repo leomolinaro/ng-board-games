@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrCardId } from "../wotr-elements/wotr-card.models";
+import { WotrCardId, cardToLabel } from "../wotr-elements/wotr-card.models";
 import { WotrActionLoggerMap } from "./wotr-action-log";
 import { WotrCardAction } from "./wotr-card-actions";
 
@@ -11,10 +11,10 @@ export class WotrCardLogsService {
   getActionLoggers (): WotrActionLoggerMap<WotrCardAction> {
     return {
       "card-discard": (action, front, f) => [f.player (front), f.string (` discards ${this.nCards (action.cards)}`)],
-      "card-discard-from-table": (action, front, f) => [f.player (front), f.string (` discards ${this.nCards (action.cards)} from table`)],
+      "card-discard-from-table": (action, front, f) => [f.player (front), f.string (` discards "${cardToLabel (action.card)}" from table`)],
       "card-draw": (action, front, f) => [f.player (front), f.string (` draws ${this.nCards (action.cards)}`)],
-      "card-play-on-table": (action, front, f) => [f.player (front), f.string (` plays ${this.nCards (action.cards)} on table`)],
-      "card-random-discard": (action, front, f) => [f.player (front), f.string (` discards ${this.nCards (action.cards)}`)],
+      "card-play-on-table": (action, front, f) => [f.player (front), f.string (` plays "${cardToLabel (action.card)}" on table`)],
+      "card-random-discard": (action, front, f) => [f.player (front), f.string (" discards 1 card")],
     };
   }
 

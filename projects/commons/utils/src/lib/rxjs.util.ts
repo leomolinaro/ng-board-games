@@ -5,8 +5,8 @@ import {
   ObservableInput,
   ObservedValuesFromArray,
   of,
-} from 'rxjs';
-import { expand, last, toArray } from 'rxjs/operators';
+} from "rxjs";
+import { expand, last, toArray } from "rxjs/operators";
 
 export function concatJoin<A>(sources: [ObservableInput<A>]): Observable<[A]>;
 export function concatJoin<A, B>(
@@ -44,50 +44,50 @@ export function concatJoin<A, B, C, D, E, F>(
 ): Observable<[A, B, C, D, E, F]>;
 export function concatJoin<O>(sources: ObservableInput<O>[]): Observable<O[]>;
 export function concatJoin(sources: ObservableInput<any>[]): Observable<any[]>;
-export function concatJoin<A extends ObservableInput<any>[]>(
+export function concatJoin<A extends ObservableInput<any>[]> (
   sources: A
 ): Observable<ObservedValuesFromArray<A>[]> {
-  return concat(...sources).pipe(toArray());
+  return concat (...sources).pipe (toArray ());
 } // concatJoin
 
-export function forN(
+export function forN (
   n: number,
   forFn: (index: number) => Observable<void>
 ): Observable<void> {
   if (n <= 0) {
-    return of(void 0);
+    return of (void 0);
   }
   let index = 0;
-  return forFn(index).pipe(
-    expand(() => {
+  return forFn (index).pipe (
+    expand (() => {
       index++;
       if (index < n) {
-        return forFn(index);
+        return forFn (index);
       } else {
         return EMPTY;
       } // if - else
     }),
-    last()
+    last ()
   );
 } // forN
 
-export function forEach<T>(
+export function forEach<T> (
   array: T[],
   forEachFn: (value: T) => Observable<void>
 ): Observable<void> {
   if (!array.length) {
-    return of(void 0);
+    return of (void 0);
   }
   let index = 0;
-  return forEachFn(array[index]).pipe(
-    expand(() => {
+  return forEachFn (array[index]).pipe (
+    expand (() => {
       index++;
       if (index < array.length) {
-        return forEachFn(array[index]);
+        return forEachFn (array[index]);
       } else {
         return EMPTY;
       } // if - else
     }),
-    last()
+    last ()
   );
 } // forEach

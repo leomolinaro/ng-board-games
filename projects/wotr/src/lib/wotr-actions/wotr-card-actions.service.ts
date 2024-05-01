@@ -14,10 +14,10 @@ export class WotrCardActionsService {
   getActionAppliers (): WotrActionApplierMap<WotrCardAction> {
     return {
       "card-discard": (action, front) => this.frontStore.discardCards (action.cards, front),
-      "card-discard-from-table": (action, front) => this.frontStore.discardCardsFromTable (action.cards, front),
+      "card-discard-from-table": (action, front) => this.frontStore.discardCardFromTable (action.card, front),
       "card-draw": (action, front) => this.frontStore.drawCards (action.cards, front),
-      "card-play-on-table": (action, front) => this.frontStore.playCardsOnTable (action.cards, front),
-      "card-random-discard": (action, front) => this.frontStore.discardCards (action.cards, oppositeFront (front)),
+      "card-play-on-table": (action, front) => this.frontStore.playCardOnTable (action.card, front),
+      "card-random-discard": (action, front) => this.frontStore.discardCards ([action.card], oppositeFront (front)),
     };
   }
 

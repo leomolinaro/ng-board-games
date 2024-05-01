@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { immutableUtil } from "@leobg/commons/utils";
 import { WotrHuntTile } from "./wotr-hunt.models";
 
 export interface WotrHuntState {
@@ -8,6 +9,7 @@ export interface WotrHuntState {
   huntAvailable: WotrHuntTile[];
   huntRemoved: WotrHuntTile[];
   nHuntDice: number;
+  nFreePeopleDice: number;
 }
 
 @Injectable ({
@@ -24,8 +26,31 @@ export class WotrHuntStore {
       huntReady: [],
       huntAvailable: ["b0", "b-1", "b-2", "er", "r1rs", "r3s", "rds", "rers"],
       huntRemoved: [],
-      nHuntDice: 0
+      nHuntDice: 0,
+      nFreePeopleDice: 0
     };
+  }
+
+  incrementFreePeopleDice (): void {
+    this.update ("incrementFreePeopleDice", state => ({
+      ...state,
+      nFreePeopleDice: state.nFreePeopleDice + 1
+    }));
+  }
+
+  setHuntDice (quantity: number): void {
+    this.update ("setHuntDice", state => ({
+      ...state,
+      nHuntDice: quantity
+    }));
+  }
+
+  drawHuntTile (tile: WotrHuntTile): void {
+    this.update ("drawHuntTile", state => ({
+      ...state,
+      huntPool: immutableUtil.listRemoveFirst (h => h === tile, state.huntPool),
+      huntDrawn: immutableUtil.listPush ([tile], state.huntDrawn)
+    }));
   }
 
 }

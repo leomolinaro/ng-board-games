@@ -145,7 +145,7 @@ export class WotrMapComponent {
     );
     this.regionNodeMap = map;
     return nodes;
-  })
+  });
 
   private regionToNode (region: WotrRegion, oldNode: WotrRegionNode | null): WotrRegionNode {
     const path = this.mapService.getRegionPath (region.id);

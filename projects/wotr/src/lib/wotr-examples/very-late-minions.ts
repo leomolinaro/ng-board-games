@@ -4,10 +4,10 @@
 
 import { discardDice } from "../wotr-actions/wotr-action-dice-actions";
 import { attack, eliminateUnit, elite, leader, minion, moveArmy, nazgul, recruitUnit, regular, retreatIntoSiege } from "../wotr-actions/wotr-army-actions";
-import { discardCards, discardRandomCards, drawCards, playCardOnTable } from "../wotr-actions/wotr-card-actions";
+import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../wotr-actions/wotr-card-actions";
 import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/wotr-combat-actions";
 import { chooseRandomCompanion, eliminateCompanion } from "../wotr-actions/wotr-companion-actions";
-import { changeGuide, corruptFelloswhip, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/wotr-fellowship-actions";
+import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/wotr-fellowship-actions";
 import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/wotr-hunt-actions";
 import { moveMinions, moveNazgul, playMinion } from "../wotr-actions/wotr-minion-actions";
 import { advanceNation } from "../wotr-actions/wotr-political-actions";
@@ -31,7 +31,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().characterDie (moveFelloswhip ()),
   s ().story (rollHuntDice (5, 2)),
   s ().story (drawHuntTile ("1")),
-  fp ().story (corruptFelloswhip (1)),
+  fp ().story (corruptFellowship (1)),
   s ().characterDie (moveArmy ("gorgoroth", "morannon", regular ("sauron", 4), elite ("sauron"), nazgul ())),
   fp ().musterArmyDie (
     moveArmy ("carrock", "old-forest-road", regular ("north")),
@@ -57,7 +57,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().characterDie (moveFelloswhip ()),
   s ().story (rollHuntDice (6, 2)),
   s ().story (drawHuntTile ("er")),
-  fp ().story (corruptFelloswhip (1), revealFellowship ("goblins-gate")),
+  fp ().story (corruptFellowship (1), revealFellowship ("goblins-gate")),
   s ().musterArmyDie (advanceNation ("isengard")),
   fp ().musterArmyDie (hideFellowship ()),
   s ().eventDieCard ("Rage of the Dunledings",
@@ -69,7 +69,7 @@ export const stories: WotrStoryDoc[] = [
   s ().story (drawHuntTile ("3")),
   fp ().story (chooseRandomCompanion ("strider")),
   fp ().story (eliminateCompanion ("strider"), changeGuide ("legolas")),
-  s ().card ("Worn with Sorrow and Toil", discardRandomCards ("The Ents Awake: Entmoot")),
+  s ().card ("Worn with Sorrow and Toil", discardRandomCard ("The Ents Awake: Entmoot")),
   s ().armyDie (
     moveArmy ("moria", "dimrill-dale", regular ("sauron", 1), regular ("isengard", 4)),
     moveArmy ("noman-lands", "southern-rhovanion", regular ("sauron", 9), elite ("sauron"), nazgul (2))),

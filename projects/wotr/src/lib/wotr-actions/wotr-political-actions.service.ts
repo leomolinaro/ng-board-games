@@ -9,8 +9,8 @@ export class WotrPoliticalActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrPoliticalAction> {
     return {
-      "political-activation": (action, front) => { },
-      "political-advance": (action, front) => { },
+      "political-activation": (action, front) => { throw new Error ("TODO") },
+      "political-advance": (action, front) => { throw new Error ("TODO") },
     };
   }
 

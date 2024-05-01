@@ -1,5 +1,5 @@
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "./wotr-card.models";
-import { WotrActionDie } from "./wotr-dice.models";
+import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
 
 export type WotrFrontId = "free-peoples" | "shadow";
 
@@ -13,6 +13,7 @@ export interface WotrFront {
   characterDiscardPile: WotrCharacterCardId[];
   strategyDiscardPile: WotrStrategyCardId[];
   actionDice: WotrActionDie[];
+  actionTokens: WotrActionToken[];
 }
 
 export function oppositeFront (front: WotrFrontId): WotrFrontId {

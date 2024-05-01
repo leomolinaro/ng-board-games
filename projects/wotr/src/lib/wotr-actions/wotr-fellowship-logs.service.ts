@@ -9,14 +9,21 @@ export class WotrFellowshipLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrFellowshipAction> {
     return {
-      "fellowship-corruption": (action, front, f) => [],
-      "fellowship-declare": (action, front, f) => [],
-      "fellowship-declare-not": (action, front, f) => [],
-      "fellowship-guide": (action, front, f) => [],
-      "fellowship-hide": (action, front, f) => [],
-      "fellowship-progress": (action, front, f) => [],
-      "fellowship-reveal": (action, front, f) => [],
+      "fellowship-corruption": (action, front, f) => [
+        f.player (front),
+        f.string (` ${ action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints (Math.abs (action.quantity))}`)
+      ],
+      "fellowship-declare": (action, front, f) => [f.player (front), f.string (" declares the fellowship in "), f.region (action.region)],
+      "fellowship-declare-not": (action, front, f) => [f.player (front), f.string (" does not declare the fellowship")],
+      "fellowship-guide": (action, front, f) => [f.player (front), f.string (" chooses "), f.companion (action.companion), " as the guide"],
+      "fellowship-hide": (action, front, f) => [f.player (front), f.string (" hides the fellowship")],
+      "fellowship-progress": (action, front, f) => [f.player (front), f.string (" moves the fellowhip")],
+      "fellowship-reveal": (action, front, f) => [f.player (front), f.string (" reveals the fellowship in "), f.region (action.region)],
     };
+  }
+
+  private nCorruptionPoints (quantity: number) {
+    return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
   }
 
 }

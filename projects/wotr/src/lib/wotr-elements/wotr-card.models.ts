@@ -224,3 +224,5 @@ const CARD_BY_LABEL =
   arrayUtil.toMap (Object.keys (LABEL_BY_CARD) as WotrCardId[], cardId => LABEL_BY_CARD[cardId], cardId => cardId) as Record<WotrCardLabel, WotrCardId>;
 
 export function labelToCardId (label: WotrCardLabel): WotrCardId { return CARD_BY_LABEL[label]; }
+
+export function cardToLabel (cardId: WotrCardId): string { return LABEL_BY_CARD[cardId]; }

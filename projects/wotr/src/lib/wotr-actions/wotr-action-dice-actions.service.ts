@@ -13,9 +13,14 @@ export class WotrActionDiceActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrActionDiceAction> {
     return {
-      "action-dice-discard": (action, front) => this.frontStore.removeActionDice (action.dice, oppositeFront (front)),
-      "action-pass": (action, front) => { },
-      "action-roll": (action, front) => this.frontStore.setActionDice (action.dice, front)
+      "action-dice-discard": (action, front) => {
+        const otherFront = oppositeFront (front);
+        for (const die of action.dice) {
+          this.frontStore.removeActionDie (die, otherFront);
+        }
+      },
+      "action-roll": (action, front) => this.frontStore.setActionDice (action.dice, front),
+      "action-skip": (action, front) => { /*empty*/ }
     };
   }
 

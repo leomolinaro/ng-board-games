@@ -44,7 +44,7 @@ export interface WotrFellowshipSetup {
 @Injectable ({
   providedIn: "root",
 })
-export class WotrRulesSetupService {
+export class WotrSetupRulesService {
   
   private cards = inject (WotrCardService);
 

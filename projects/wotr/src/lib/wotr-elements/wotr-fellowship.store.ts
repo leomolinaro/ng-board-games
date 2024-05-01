@@ -13,16 +13,18 @@ export class WotrFellowshipStore {
     return {
       status: "hidden",
       companions: [],
+      progress: 0,
+      corruption: 0,
       guide: "gandalf-the-grey"
     };
   }
 
-  setCompanions (companions: WotrCompanionId[]) {
-    this.update ("setCompanions", state => ({ ...state, companions }));
-  }
-
-  setGuide (guide: WotrCompanionId) {
-    this.update ("setGuide", state => ({ ...state, guide }));
-  }
+  setCompanions (companions: WotrCompanionId[]) { this.update ("setCompanions", state => ({ ...state, companions })); }
+  setGuide (guide: WotrCompanionId) { this.update ("setGuide", state => ({ ...state, guide })); }
+  setProgress (progress: number) { this.update ("setProgress", state => ({ ...state, progress })); }
+  increaseProgress () { this.update ("increaseProgress", state => ({ ...state, progress: state.progress + 1 })); }
+  changeCorruption (delta: number) { this.update ("changeCorruption", state => ({ ...state, corruption: state.corruption + delta })); }
+  hide () { this.update ("hide", state => ({ ...state, status: "hidden" })); }
+  reveal () { this.update ("reveal", state => ({ ...state, status: "revealed" })); }
 
 }

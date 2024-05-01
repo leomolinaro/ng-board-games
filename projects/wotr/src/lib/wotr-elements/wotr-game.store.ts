@@ -12,15 +12,18 @@ import { WotrFellowshipActionsService } from "../wotr-actions/wotr-fellowship-ac
 import { WotrHuntActionsService } from "../wotr-actions/wotr-hunt-actions.service";
 import { WotrMinionActionsService } from "../wotr-actions/wotr-minion-actions.service";
 import { WotrPoliticalActionsService } from "../wotr-actions/wotr-political-actions.service";
-import { WotrSetup } from "../wotr-rules/wotr-rules-setup.service";
+import { WotrSetup } from "../wotr-rules/wotr-setup-rules.service";
 import { WotrAction } from "../wotr-story.models";
+import { WotrCompanion, WotrCompanionId } from "./wotr-companion.models";
 import { WotrCompanionState, WotrCompanionStore } from "./wotr-companion.store";
+import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontState, WotrFrontStore } from "./wotr-front.store";
 import { WotrHuntState, WotrHuntStore } from "./wotr-hunt.store";
 import { WotrLog } from "./wotr-log.models";
+import { WotrMinion, WotrMinionId } from "./wotr-minion.models";
 import { WotrMinionState, WotrMinionStore } from "./wotr-minion.store";
 import { WotrNation, WotrNationId } from "./wotr-nation.models";
 import { WotrNationState, WotrNationStore } from "./wotr-nation.store";
@@ -136,18 +139,23 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   freePeopleFront = computed (() => this.frontState ().map["free-peoples"]);
   shadowFront = computed (() => this.frontState ().map.shadow);
   getFrontIds () { return this.get (s => s.frontState.ids); }
+  hasActionDice (frontId: WotrFrontId) { return this.get (s => !!s.frontState.map[frontId].actionDice.length); }
+  removeActionDie (die: WotrActionDie, frontId: WotrFrontId) { this.frontStore.removeActionDie (die, frontId); }
+  removeActionToken (token: WotrActionToken, frontId: WotrFrontId) { this.frontStore.removeActionToken (token, frontId); }
 
   private regionState = toSignal (this.select$ (s => s.regionState), { requireSync: true });
   regions = computed (() => this.regionStore.getRegions (this.regionState ()));
   getRegion (regionId: WotrRegionId): WotrRegion { return this.regionState ().map[regionId]; }
-
+  
   private companionState = toSignal (this.select$ (s => s.companionState), { requireSync: true });
   companionById = computed (() => this.companionState ().map);
   companions = computed (() => this.companionStore.getCompanions (this.companionState ()));
+  getCompanion (companionId: WotrCompanionId): WotrCompanion { return this.companionState ().map[companionId]; }
 
   private minionState = toSignal (this.select$ (s => s.minionState), { requireSync: true });
   minionById = computed (() => this.minionState ().map);
   minions = computed (() => this.minionStore.getMinions (this.minionState ()));
+  getMinion (minionId: WotrMinionId): WotrMinion { return this.minionState ().map[minionId]; }
 
   logs$ = this.select$ (s => s.logs);
   
@@ -163,14 +171,10 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   getPlayer (id: WotrFrontId): WotrPlayer { return this.get (s => s.players.map[id]); }
 
   applySetup (setup: WotrSetup) {
-
     for (const d of setup.decks) {
       this.frontStore.setCharacterDeck (d.characterDeck, d.front);
       this.frontStore.setStrategyDeck (d.strategyDeck, d.front);
     }
-
-    this.addLog ("Add log setup", { type: "setup" });
-    
     for (const r of setup.regions) {
       const frontId = this.nationById ()[r.nation].front;
       if (r.nRegulars) {
@@ -199,13 +203,8 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     this.regionStore.addFellowshipToRegion (setup.fellowship.region);
   }
 
-  applyActions (actions: WotrAction[], front: WotrFrontId) {
-    actions.forEach (action => this.applyAction (action, front));
-  }
-
-  private applyAction (action: WotrAction, front: WotrFrontId) {
-    this.addLog (`Log action [${action.type}]`, { type: "action", action, front });
-    this.actionAppliers[action.type] (action, front);
+  applyAction (action: WotrAction, frontId: WotrFrontId) {
+    this.actionAppliers[action.type] (action, frontId);
   }
 
   private addLog (actionName: string, log: WotrLog) {
@@ -215,18 +214,10 @@ export class WotrGameStore extends BgStore<WotrGameState> {
   logSetup () { this.addLog ("Log setup", { type: "setup" }); }
   logRound (roundNumber: number) { this.addLog ("Log round", { type: "round", roundNumber }); }
   logPhase (phase: WotrPhase) { this.addLog ("Log phase", { type: "phase", phase: phase }); }
+  logAction (action: WotrAction, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId }); }
+  logDieAction (action: WotrAction, die: WotrActionDie, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die }); }
+  logTokenAction (action: WotrAction, token: WotrActionToken, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, token }); }
   logEndGame () { this.addLog ("Log end game", { type: "endGame" }); }
-  // logAction (action: WotrAction, front: WotrFrontId) { this.addLog ({ type: "action", action, front }); }
-  // logNationTurn (nationId: WotrNationId) { this.addLog ({ type: "nation-turn", nationId: nationId }); }
-  // logPopulationMarkerSet (populationMarker: number | null) { this.addLog ({ type: "population-marker-set", populationMarker }); }
-  // logInfantryPlacement (landId: WotrLandRegionId, quantity: number) { this.addLog ({ type: "infantry-placement", landId, quantity }); }
-  // logInfantryReinforcements (regionId: WotrRegionId, quantity: number) { this.addLog ({ type: "infantry-reinforcement", regionId, quantity }); }
-  // // logMovement (movement: WotrMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }
-  // // logExpedition (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "expedition", land: land, player: player }); }
-  // // logNobleTitle (resources: WotrResourceType[], player: string) { this.addLog ({ type: "nobleTitle", resources: resources, player: player }); }
-  // // logNewCity (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "newCity", land: land, player: player }); }
-  // // logConstruction (construction: WotrConstruction, player: string) { this.addLog ({ type: "construction", construction: construction, player: player }); }
-  // // logRecuitment (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
-  // // logSetupPlacement (land: WotrLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
+  logActionPass (frontId: WotrFrontId) { this.addLog ("Log action pass", { type: "action-pass", front: frontId }); }
 
 }

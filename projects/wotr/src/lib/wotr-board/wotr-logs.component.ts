@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
-import { WotrPlayer } from "../wotr-elements/wotr-player.models";
-import { WotrRegion } from "../wotr-elements/wotr-region.models";
 import { WotrLogComponent } from "./wotr-log.component";
 
 @Component ({
@@ -11,7 +9,7 @@ import { WotrLogComponent } from "./wotr-log.component";
   imports: [WotrLogComponent],
   template: `
     @for (log of logs; track $index) {
-      <wotr-log [log]="log" [players]="players" [regions]="regions"></wotr-log>
+      <wotr-log [log]="log"></wotr-log>
     }
   `,
   styles: [`
@@ -30,8 +28,6 @@ export class WotrLogsComponent implements OnChanges {
   private elementRef = inject (ElementRef);
 
   @Input () logs!: WotrLog[];
-  @Input () players!: WotrPlayer[];
-  @Input () regions!: WotrRegion[];
 
   ngOnChanges (changes: SimpleChanges<this>) {
     if (changes.logs) {

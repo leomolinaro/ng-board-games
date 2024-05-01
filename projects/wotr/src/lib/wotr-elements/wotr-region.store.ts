@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
+import { WotrCompanionId } from "./wotr-companion.models";
 import { WotrFrontId } from "./wotr-front.models";
+import { WotrMinionId } from "./wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId } from "./wotr-nation.models";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region.models";
 
@@ -217,9 +219,12 @@ export class WotrRegionStore {
       const index = region.armyUnits.findIndex ((u) => u.type === unitType && u.nationId === nationId);
       if (index >= 0) {
         const unit = region.armyUnits[index];
+        const newQuantity = unit.quantity - quantity;
         return {
           ...region,
-          armyUnits: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity - quantity }, region.armyUnits),
+          armyUnits: newQuantity
+            ? immutableUtil.listReplaceByIndex (index, { ...unit, quantity: newQuantity }, region.armyUnits)
+            : immutableUtil.listRemoveByIndex (index, region.armyUnits),
         };
       }
       throw new Error ();
@@ -249,9 +254,12 @@ export class WotrRegionStore {
       const index = region.leaders.findIndex ((u) => u.nationId === nationId);
       if (index >= 0) {
         const unit = region.leaders[index];
+        const newQuantity = unit.quantity - quantity;
         return {
           ...region,
-          leaders: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity - quantity }, region.leaders),
+          leaders: newQuantity
+            ? immutableUtil.listReplaceByIndex (index, { ...unit, quantity: newQuantity }, region.leaders)
+            : immutableUtil.listRemoveByIndex (index, region.leaders),
         };
       }
       throw new Error ();
@@ -265,8 +273,32 @@ export class WotrRegionStore {
   }
 
   removeNazgulFromRegion (quantity: number, regionId: WotrRegionId) {
-    this.updateRegion ("removeNazgulToRegion", regionId, region => ({
+    this.updateRegion ("removeNazgulFromRegion", regionId, region => ({
       ...region, nNazgul: region.nNazgul - quantity
+    }));
+  }
+
+  addMinionToRegion (minionId: WotrMinionId, regionId: WotrRegionId) {
+    this.updateRegion ("addMinionToRegion", regionId, region => ({
+      ...region, minions: immutableUtil.listPush ([minionId], region.minions)
+    }));
+  }
+
+  removeMinionFromRegion (minionId: WotrMinionId, regionId: WotrRegionId) {
+    this.updateRegion ("removeMinionFromRegion", regionId, region => ({
+      ...region, minions: immutableUtil.listRemoveFirst (m => m === minionId, region.minions)
+    }));
+  }
+
+  addCompanionToRegion (companionId: WotrCompanionId, regionId: WotrRegionId) {
+    this.updateRegion ("addCompanionToRegion", regionId, region => ({
+      ...region, companions: immutableUtil.listPush ([companionId], region.companions)
+    }));
+  }
+
+  removeCompanionFromRegion (companionId: WotrCompanionId, regionId: WotrRegionId) {
+    this.updateRegion ("removeCompanionFromRegion", regionId, region => ({
+      ...region, companions: immutableUtil.listRemoveFirst (m => m === companionId, region.companions)
     }));
   }
 
@@ -274,6 +306,21 @@ export class WotrRegionStore {
     this.updateRegion ("addFellowshipToRegion", regionId, region => ({
       ...region, fellowship: true
     }));
+  }
+
+  moveFellowshipToRegion (regionId: WotrRegionId) {
+    this.update ("moveFellowshipToRegion", state => {
+      const fromRegionId = state.ids.find (r => state.map[r].fellowship)!;
+      const toRegionId = state.ids.find (r => r === regionId)!;
+      return {
+        ...state,
+        map: {
+          ...state.map,
+          [fromRegionId]: { ...state.map[fromRegionId], fellowship: false },
+          [toRegionId]: { ...state.map[toRegionId], fellowship: true }
+        }
+      };
+    });
   }
 
 }

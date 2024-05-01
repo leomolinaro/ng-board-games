@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
+import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrCompanionAction } from "./wotr-companion-actions";
 
@@ -7,13 +8,15 @@ import { WotrCompanionAction } from "./wotr-companion-actions";
 })
 export class WotrCompanionActionsService {
 
+  private companionStore = inject (WotrCompanionStore);
+
   getActionAppliers (): WotrActionApplierMap<WotrCompanionAction> {
     return {
-      "companion-elimination": (action, front) => { },
-      "companion-movement": (action, front) => { },
-      "companion-play": (action, front) => { },
-      "companion-random": (action, front) => { },
-      "companion-separation": (action, front) => { },
+      "companion-elimination": (action, front) => {throw new Error ("TODO") },
+      "companion-movement": (action, front) => {throw new Error ("TODO")  },
+      "companion-play": (action, front) => {throw new Error ("TODO")  },
+      "companion-random": (action, front) => {throw new Error ("TODO")  },
+      "companion-separation": (action, front) => {throw new Error ("TODO")  },
     };
   }
 

@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { WotrCardId } from "./wotr-elements/wotr-card.models";
 import { WotrCompanionId } from "./wotr-elements/wotr-companion.models";
-import { WotrActionDie } from "./wotr-elements/wotr-dice.models";
+import { WotrActionDie, WotrActionToken } from "./wotr-elements/wotr-dice.models";
 import { WotrFrontId } from "./wotr-elements/wotr-front.models";
+import { WotrHuntTile } from "./wotr-elements/wotr-hunt.models";
 import { WotrMinionId } from "./wotr-elements/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/wotr-nation.models";
 
@@ -117,5 +118,7 @@ export class WotrAssetsService {
   }
 
   getActionDieImage (actionDie: WotrActionDie, front: WotrFrontId) { return `${BASE_PATH}/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie}.png`; }
+  getActionTokenImage (actionToken: WotrActionToken, front: WotrFrontId) { return `${BASE_PATH}/action-tokens/${front === "free-peoples" ? "fp" : "s"}-${actionToken}.png`; }
+  getHuntTileImage (huntTile: WotrHuntTile) { return `${BASE_PATH}/hunt-tiles/${huntTile}.png`; }
 
-} // BritAssetsService
+}

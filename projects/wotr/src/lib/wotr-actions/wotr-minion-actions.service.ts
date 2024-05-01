@@ -9,10 +9,10 @@ export class WotrMinionActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrMinionAction> {
     return {
-      "minion-elimination": (action, front) => { },
-      "minion-movement": (action, front) => { },
-      "minion-play": (action, front) => { },
-      "nazgul-movement": (action, front) => { },
+      "minion-elimination": (action, front) => {throw new Error ("TODO")  },
+      "minion-movement": (action, front) => {throw new Error ("TODO")  },
+      "minion-play": (action, front) => {throw new Error ("TODO")  },
+      "nazgul-movement": (action, front) => {throw new Error ("TODO")  },
     };
   }
 

@@ -1,8 +1,11 @@
-import { Injectable, inject } from "@angular/core";
-import { EMPTY, Observable, expand, last, of, switchMap, tap } from "rxjs";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { Injectable, Injector, Type, inject } from "@angular/core";
+import { concatJoin } from "@leobg/commons/utils";
+import { EMPTY, Observable, defer, delay, expand, from, last, map, of, switchMap, tap } from "rxjs";
+import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
+import { WotrFrontId, oppositeFront } from "../wotr-elements/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
+import { WotrAction, WotrStory } from "../wotr-story.models";
 import { WotrStoryService } from "./wotr-story.service";
 
 @Injectable ()
@@ -11,6 +14,7 @@ export class WotrFlowService {
   private store = inject (WotrGameStore);
   private rules = inject (WotrRulesService);
   private story = inject (WotrStoryService);
+  private injector = inject (Injector);
 
   game$ (): Observable<unknown> {
     this.setup ();
@@ -27,6 +31,7 @@ export class WotrFlowService {
 
   setup () {
     const gameSetup = this.rules.setup.getGameSetup ();
+    this.store.logSetup ();
     this.store.applySetup (gameSetup);
   }
 
@@ -48,8 +53,7 @@ export class WotrFlowService {
     )).pipe (
       tap (stories => {
         this.store.getFrontIds ().forEach ((frontId, index) => {
-          const story = stories[index];
-          this.store.applyActions (story.actions, frontId);
+          this.flowStory (stories[index], frontId);
         });
       })
     );
@@ -64,7 +68,7 @@ export class WotrFlowService {
     this.store.logPhase (3);
     return this.story.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
       tap (story => {
-        this.store.applyActions (story.actions, "shadow");
+        this.flowStory (story, "shadow");
       })
     );
   }
@@ -77,7 +81,7 @@ export class WotrFlowService {
       tap (stories => {
         this.store.getFrontIds ().forEach ((frontId, index) => {
           const story = stories[index];
-          this.store.applyActions (story.actions, frontId);
+          this.flowStory (story, frontId);
         });
       })
     );
@@ -85,163 +89,87 @@ export class WotrFlowService {
 
   private actionResolution$ () {
     this.store.logPhase (5);
-    return of (true);
-    // return this.executeTask$ (++roundNumber).pipe (
-    //   expand (continueGame => {
-    //     if (continueGame) { return this.round$ (++roundNumber); }
-    //     return EMPTY;
-    //   }),
-    //   last (),
-    // );
+    return this.frontActionResolution$ ("free-peoples").pipe (
+      map<unknown, WotrFrontId> (() => "free-peoples"),
+      expand (lastFrontId => {
+        const otherFrontId = oppositeFront (lastFrontId);
+        if (this.store.hasActionDice (otherFrontId)) {
+          return this.frontActionResolution$ (otherFrontId).pipe (map (() => otherFrontId));
+        } else if (this.store.hasActionDice (lastFrontId)) {
+          return this.frontActionResolution$ (lastFrontId).pipe (map (() => lastFrontId));
+        } else {
+          return EMPTY;
+        }
+      }),
+      last ()
+    );
   }
 
   private frontActionResolution$ (frontId: WotrFrontId) {
     return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
-      tap (story => {
-        // if (story.die) {
-        //   this.store.discardDie (story.die, frontId);
-        // }
+      delay (400),
+      switchMap (story => {
+        console.log ("story", story)
+        if (story.die) {
+          return this.dieStory$ (story.die, story, frontId);
+        } else if (story.token) {
+          return this.tokenStory$ (story.token, story, frontId);
+        } else if (story.pass) {
+          this.store.logActionPass (frontId);
+          return of (void 0);
+        } else {
+          throw new Error (`Action resolution story not expected ${story.actions[0].type}`);
+        }
       })
     );
+  }
+
+  private flowStory (story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.store.logAction (action, frontId);
+      this.store.applyAction (action, frontId);
+    });
+  }
+
+  private dieStory$ (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.store.logDieAction (action, die, frontId);
+      this.store.applyAction (action, frontId);
+    });
+    this.store.removeActionDie (die, frontId);
+    return this.actionResolutionSubFlows$ (story);
+  }
+
+  private tokenStory$ (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.store.logTokenAction (action, token, frontId);
+      this.store.applyAction (action, frontId);
+    });
+    this.store.removeActionToken (token, frontId);
+    return this.actionResolutionSubFlows$ (story);
+  }
+
+  private actionResolutionSubFlows$ (story: WotrStory): Observable<unknown> {
+    return concatJoin (story.actions.map (action => this.actionResolutionSubFlow$ (action, story)));
+  }
+
+  private actionResolutionSubFlow$ (action: WotrAction, story: WotrStory): Observable<unknown> {
+    switch (action.type) {
+      case "fellowship-progress": return from (
+        import ("./wotr-subflows/wotr-fellowship-progress-flow.service")
+        .then ((m) => new m.WotrFellowshipProgressFlow (this.store, this.rules, this.story))
+      ).pipe (switchMap (subFlow => subFlow.execute$ (action, story)));
+    }
+    return of (void 0);
+  }
+
+  private lazyService<T> (loader: () => Promise<Type<T>>): Observable<T> {
+    return defer (() => loader ().then ((service) => this.injector.get (service, undefined, {  })));
   }
 
   private victoryCheck$ (roundNumber: number) {
     this.store.logPhase (6);
     return of (roundNumber < 6);
   }
-
-  // nationTurn$ (nationId: WotrNationId, roundId: WotrRoundId): Observable<void> {
-  //   if (
-  //     this.rules.populationIncrease.isNationActive (nationId, this.game.get ())
-  //   ) {
-  //     this.game.logNationTurn (nationId);
-  //     const player = this.game.getPlayerByNation (nationId)!;
-  //     return this.populationIncreasePhase$ (nationId, player.id, roundId).pipe (
-  //       switchMap (() => this.movementPhase$ (nationId, player.id)),
-  //       switchMap (() => this.battlesRetreatsPhase$ (nationId, player.id)),
-  //       switchMap (() => this.raiderWithdrawalPhase$ (nationId, player.id)),
-  //       switchMap (() => this.overpopulationPhase$ (nationId, player.id))
-  //     );
-  //   } else {
-  //     return of (void 0);
-  //   }
-  // }
-
-  // private populationIncreasePhase$ (
-  //   nationId: WotrNationId,
-  //   playerId: WotrPlayerId,
-  //   roundId: WotrRoundId
-  // ): Observable<void> {
-  //   this.game.logPhase ("populationIncrease");
-  //   const data = this.rules.populationIncrease.calculatePopulationIncreaseData (
-  //     nationId,
-  //     roundId,
-  //     this.game.get ()
-  //   );
-  //   switch (data.type) {
-  //     case "infantry-placement": {
-  //       if (data.nInfantries) {
-  //         return this.executeTask$ (playerId, (p) =>
-  //           p.armyPlacement$ (data.nInfantries, nationId, playerId)
-  //         ).pipe (
-  //           map ((armyPlacement) => {
-  //             const infantryPlacement: {
-  //               areaId: WotrLandAreaId;
-  //               quantity: number;
-  //             }[] = [];
-  //             for (const ip of armyPlacement.infantryPlacement) {
-  //               infantryPlacement.push (
-  //                 typeof ip === "object" ? ip : { areaId: ip, quantity: 1 }
-  //               );
-  //             }
-  //             this.game.applyPopulationIncrease (
-  //               data.populationMarker,
-  //               infantryPlacement,
-  //               nationId
-  //             );
-  //             for (const ip of infantryPlacement) {
-  //               this.game.logInfantryPlacement (ip.areaId, ip.quantity);
-  //             }
-  //             this.game.logPopulationMarkerSet (data.populationMarker);
-  //             return void 0;
-  //           })
-  //         );
-  //       } else {
-  //         this.game.applyPopulationIncrease (
-  //           data.populationMarker,
-  //           [],
-  //           nationId
-  //         );
-  //         this.game.logPopulationMarkerSet (data.populationMarker);
-  //         return of (void 0);
-  //       }
-  //     }
-  //     case "roman-reinforcements": {
-  //       if (data.nInfantries) {
-  //         this.game.applyPopulationIncrease (
-  //           null,
-  //           [{ areaId: "english-channel", quantity: data.nInfantries }],
-  //           nationId
-  //         );
-  //       }
-  //       this.game.logInfantryReinforcements (
-  //         "english-channel",
-  //         data.nInfantries
-  //       );
-  //       return of (void 0);
-  //     }
-  //   }
-  // }
-
-  // private movementPhase$ (nationId: WotrNationId, playerId: WotrPlayerId) {
-  //   this.game.logPhase ("movement");
-  //   return this.executeTask$ (playerId, (p) =>
-  //     p.armyMovements$ (nationId, playerId)
-  //   ).pipe (
-  //     map ((armyMovements) => {
-  //       if (armyMovements.movements?.length) {
-  //         this.game.applyArmyMovements (armyMovements, true);
-  //         for (const movement of armyMovements.movements) {
-  //           this.game.logArmyMovement (movement.units, movement.toAreaId);
-  //         }
-  //       }
-  //       return void 0;
-  //     })
-  //   );
-  // }
-
-  // private battlesRetreatsPhase$ (
-  //   nationId: WotrNationId,
-  //   playerId: WotrPlayerId
-  // ) {
-  //   this.game.logPhase ("battlesRetreats");
-  //   if (
-  //     this.rules.battlesRetreats.hasBattlesToResolve (nationId, this.game.get ())
-  //   ) {
-  //     return this.executeTask$ (playerId, (p) =>
-  //       p.battleInitiation$ (nationId, playerId)
-  //     ).pipe (
-  //       map ((battleInitiation) => {
-  //         console.log ("battleInitiation", battleInitiation);
-  //         return void 0;
-  //       })
-  //     );
-  //   } else {
-  //     return of (void 0);
-  //   }
-  // }
-
-  // private raiderWithdrawalPhase$ (
-  //   nationId: WotrNationId,
-  //   playerId: WotrPlayerId
-  // ) {
-  //   this.game.logPhase ("raiderWithdrawal");
-  //   return of (void 0);
-  // }
-
-  // private overpopulationPhase$ (nationId: WotrNationId, playerId: WotrPlayerId) {
-  //   this.game.logPhase ("overpopulation");
-  //   return of (void 0);
-  // }
 
 }
