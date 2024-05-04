@@ -6,7 +6,7 @@ import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../wotr-elements/wotr-card.models";
 import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
-import { WotrActionDie } from "../wotr-elements/wotr-dice.models";
+import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFront, WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrHuntState } from "../wotr-elements/wotr-hunt.store";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
@@ -38,6 +38,7 @@ export class WotrBoardComponent {
 
   players = input.required<WotrPlayer[]> ();
   regions = input.required<WotrRegion[]> ();
+  nations = input.required<WotrNation[]> ();
   fronts = input.required<WotrFront[]> ();
   hunt = input.required<WotrHuntState> ();
   freePeopleNations = input.required<WotrNation[]> ();
@@ -93,6 +94,7 @@ export class WotrBoardComponent {
   @Output () testClick = new EventEmitter<void> ();
 
   protected actionDieImage: BgTransformFn<WotrActionDie, string, WotrFrontId> = (actionDie, frontId) => this.assets.getActionDieImage (actionDie, frontId);
+  protected actionTokenImage: BgTransformFn<WotrActionToken, string, WotrFrontId> = (actionToken, frontId) => this.assets.getActionTokenImage (actionToken, frontId);
 
   summaryFixed = false;
   logsFixed = false;

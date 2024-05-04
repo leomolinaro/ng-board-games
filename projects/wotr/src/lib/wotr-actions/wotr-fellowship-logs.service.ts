@@ -11,14 +11,14 @@ export class WotrFellowshipLogsService {
     return {
       "fellowship-corruption": (action, front, f) => [
         f.player (front),
-        f.string (` ${ action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints (Math.abs (action.quantity))}`)
+        ` ${ action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints (Math.abs (action.quantity))}`
       ],
-      "fellowship-declare": (action, front, f) => [f.player (front), f.string (" declares the fellowship in "), f.region (action.region)],
-      "fellowship-declare-not": (action, front, f) => [f.player (front), f.string (" does not declare the fellowship")],
-      "fellowship-guide": (action, front, f) => [f.player (front), f.string (" chooses "), f.companion (action.companion), " as the guide"],
-      "fellowship-hide": (action, front, f) => [f.player (front), f.string (" hides the fellowship")],
-      "fellowship-progress": (action, front, f) => [f.player (front), f.string (" moves the fellowhip")],
-      "fellowship-reveal": (action, front, f) => [f.player (front), f.string (" reveals the fellowship in "), f.region (action.region)],
+      "fellowship-declare": (action, front, f) => [f.player (front), " declares the fellowship in ", f.region (action.region)],
+      "fellowship-declare-not": (action, front, f) => [f.player (front), " does not declare the fellowship"],
+      "fellowship-guide": (action, front, f) => [f.player (front), " chooses ", f.companion (action.companion), " as the guide"],
+      "fellowship-hide": (action, front, f) => [f.player (front), " hides the fellowship"],
+      "fellowship-progress": (action, front, f) => [f.player (front), " moves the fellowhip"],
+      "fellowship-reveal": (action, front, f) => [f.player (front), " reveals the fellowship in ", f.region (action.region)],
     };
   }
 

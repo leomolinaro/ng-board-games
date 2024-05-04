@@ -43,6 +43,7 @@ interface UnitNode {
     </div>
   `,
   styles: [`
+    @import "wotr-variables";
 
     :host {
       background-color: #151515;
@@ -51,6 +52,7 @@ interface UnitNode {
       // height: 100%;
       display: flex;
       flex-direction: column;
+      @include golden-padding(1vmin);
       // justify-content: center;
       // align-items: center;
     }

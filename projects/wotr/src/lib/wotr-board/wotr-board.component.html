@@ -4,6 +4,7 @@
     #wotrMap
     [regions]="regions ()"
     [validRegions]="validRegions"
+    [nations]="nations ()"
     [companionById]="companionById ()"
     [minionById]="minionById ()"
     (regionClick)="onRegionClick ($event)">
@@ -35,6 +36,9 @@
       <div class="wotr-action-dice">
         @for (actionDie of front.actionDice; track actionDie) {
           <img [src]="actionDie | bgTransform:actionDieImage:front.id"/>
+        }
+        @for (actionToken of front.actionTokens; track actionToken) {
+          <img [src]="actionToken | bgTransform:actionTokenImage:front.id"/>
         }
       </div>
     }

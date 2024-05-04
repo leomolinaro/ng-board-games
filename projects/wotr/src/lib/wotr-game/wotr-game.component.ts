@@ -4,12 +4,14 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
-import { WotrActionDiceActionsService } from "../wotr-actions/wotr-action-dice-actions.service";
+import { WotrActionDieActionsService } from "../wotr-actions/wotr-action-die-actions.service";
 import { WotrArmyActionsService } from "../wotr-actions/wotr-army-actions.service";
 import { WotrCardActionsService } from "../wotr-actions/wotr-card-actions.service";
 import { WotrCombatActionsService } from "../wotr-actions/wotr-combat-actions.service";
 import { WotrCompanionActionsService } from "../wotr-actions/wotr-companion-actions.service";
+import { WotrCompanionLogsService } from "../wotr-actions/wotr-companion-logs.service";
 import { WotrFellowshipActionsService } from "../wotr-actions/wotr-fellowship-actions.service";
+import { WotrGameActionLogsService } from "../wotr-actions/wotr-game-action-logs.service";
 import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
 import { WotrHuntActionsService } from "../wotr-actions/wotr-hunt-actions.service";
 import { WotrMinionActionsService } from "../wotr-actions/wotr-minion-actions.service";
@@ -45,6 +47,7 @@ import { WotrUiStore } from "./wotr-ui.store";
       [hunt]="huntStore.state ()"
       [freePeopleNations]="nationStore.freePeopleNations ()"
       [nationById]="nationStore.nationById ()"
+      [nations]="nationStore.nations ()"
       [companions]="companionStore.companions ()"
       [companionById]="companionStore.companionById ()"
       [shadowNations]="nationStore.shadowNations ()"
@@ -73,12 +76,15 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrCardActionsService,
     WotrFellowshipActionsService,
     WotrHuntActionsService,
-    WotrActionDiceActionsService,
+    WotrActionDieActionsService,
     WotrCompanionActionsService,
     WotrMinionActionsService,
     WotrArmyActionsService,
     WotrPoliticalActionsService,
     WotrCombatActionsService,
+
+    WotrGameActionLogsService,
+    WotrCompanionLogsService,
 
     WotrUiStore,
     WotrPlayerAiService,

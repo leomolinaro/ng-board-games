@@ -9,11 +9,11 @@ export class WotrArmyLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrArmyAction> {
     return {
-      "army-attack": (action, front, f) => [f.player (front), f.string (" army in "), f.region (action.fromRegion), f.string (" attacks "), f.region (action.toRegion)],
-      "army-movement": (action, front, f) => [f.player (front), f.string (" army moves from "), f.region (action.fromRegion), f.string (" to "), f.region (action.toRegion)],
-      "army-retreat-into-siege": (action, front, f) => [f.player (front), f.string (" army in "), f.region (action.region), f.string (" retreat into siege")],
-      "unit-elimination": (action, front, f) => [f.string ("TODO")],
-      "unit-recruitment": (action, front, f) => [f.player (front), f.string (" recruits TODO units in "), f.region (action.region)],
+      "army-attack": (action, front, f) => [f.player (front), " army in ", f.region (action.fromRegion), " attacks ", f.region (action.toRegion)],
+      "army-movement": (action, front, f) => [f.player (front), " army moves from ", f.region (action.fromRegion), " to ", f.region (action.toRegion)],
+      "army-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " retreat into siege"],
+      "unit-elimination": (action, front, f) => [f.player (front), " removes units from ", f.region (action.region)],
+      "unit-recruitment": (action, front, f) => [f.player (front), " recruits units in ", f.region (action.region)],
     };
   }
 

@@ -2,14 +2,14 @@ import { Injectable, inject } from "@angular/core";
 import { oppositeFront } from "../wotr-elements/wotr-front.models";
 import { WotrFrontStore } from "../wotr-elements/wotr-front.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
-import { WotrActionDiceAction } from "./wotr-action-dice-actions";
+import { WotrActionDieAction } from "./wotr-action-die-actions";
 
 @Injectable ()
-export class WotrActionDiceActionsService {
+export class WotrActionDieActionsService {
 
   private frontStore = inject (WotrFrontStore);
 
-  getActionAppliers (): WotrActionApplierMap<WotrActionDiceAction> {
+  getActionAppliers (): WotrActionApplierMap<WotrActionDieAction> {
     return {
       "action-dice-discard": (action, front) => {
         const otherFront = oppositeFront (front);
@@ -18,7 +18,7 @@ export class WotrActionDiceActionsService {
         }
       },
       "action-roll": (action, front) => this.frontStore.setActionDice (action.dice, front),
-      "action-skip": (action, front) => { /*empty*/ }
+      "action-die-skip": (action, front) => { /*empty*/ }
     };
   }
 

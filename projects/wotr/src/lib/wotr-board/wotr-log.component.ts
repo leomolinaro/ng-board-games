@@ -1,30 +1,21 @@
 import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
-import { WotrActionDiceLogsService } from "../wotr-actions/wotr-action-dice-logs.service";
-import { WotrActionLogger } from "../wotr-actions/wotr-action-log";
-import { WotrArmyLogsService } from "../wotr-actions/wotr-army-logs.service";
-import { WotrCardLogsService } from "../wotr-actions/wotr-card-logs.service";
-import { WotrCombatLogsService } from "../wotr-actions/wotr-combat-logs.service";
-import { WotrCompanionLogsService } from "../wotr-actions/wotr-companion-logs.service";
-import { WotrFellowshipLogsService } from "../wotr-actions/wotr-fellowship-logs.service";
-import { WotrHuntLogsService } from "../wotr-actions/wotr-hunt-logs.service";
-import { WotrMinionLogsService } from "../wotr-actions/wotr-minion-logs.service";
-import { WotrPoliticalLogsService } from "../wotr-actions/wotr-political-logs.service";
+import { WotrFragmentCreator } from "../wotr-actions/wotr-action-log";
+import { WotrGameActionLogsService } from "../wotr-actions/wotr-game-action-logs.service";
 import { WotrAssetsService } from "../wotr-assets.service";
 import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
 import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
-import { WotrHuntTile } from "../wotr-elements/wotr-hunt.models";
+import { WotrHuntTileId } from "../wotr-elements/wotr-hunt.models";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
 import { WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
 import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/wotr-region.models";
 import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
-import { WotrAction } from "../wotr-story.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
@@ -84,28 +75,17 @@ type WotrLogFragment =
     }
     .action-die, .action-token, .hunt-tile {
       vertical-align: top;
-      margin-left: 3px;
+      // margin-left: 3px;
       height: 16px;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WotrLogComponent implements OnChanges {
+export class WotrLogComponent implements OnChanges, WotrFragmentCreator<WotrLogFragment> {
   
-  private actionLoggers: Record<WotrAction["type"], WotrActionLogger<WotrAction>> = {
-    ...inject (WotrCardLogsService).getActionLoggers (),
-    ...inject (WotrFellowshipLogsService).getActionLoggers (),
-    ...inject (WotrHuntLogsService).getActionLoggers (),
-    ...inject (WotrActionDiceLogsService).getActionLoggers (),
-    ...inject (WotrCompanionLogsService).getActionLoggers (),
-    ...inject (WotrMinionLogsService).getActionLoggers (),
-    ...inject (WotrArmyLogsService).getActionLoggers (),
-    ...inject (WotrPoliticalLogsService).getActionLoggers (),
-    ...inject (WotrCombatLogsService).getActionLoggers (),
-  } as any;
-
   private assets = inject (WotrAssetsService);
   private store = inject (WotrGameStore);
+  private actionLogs = inject (WotrGameActionLogsService);
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private companionStore = inject (WotrCompanionStore);
@@ -123,9 +103,15 @@ export class WotrLogComponent implements OnChanges {
         case "round": this.fragments = [this.string (`Round ${l.roundNumber}`)]; break;
         case "phase": this.fragments = [this.string (this.getPhaseLabel (l.phase))]; break;
         case "action": {
-          this.fragments = this.actionLoggers[l.action.type] (l.action, l.front, this);
-          if (l.die) { this.fragments.push (this.die (l.die, l.front)); }
-          if (l.token) { this.fragments.push (this.token (l.token, l.front)); }
+          const fragments = this.actionLogs.getLogFragments<WotrLogFragment> (l.action, l.front, this);
+          this.fragments = [];
+          for (const f of fragments) {
+            if (typeof f === "string") { this.fragments.push (this.string (f)); }
+            else { this.fragments.push (f); }
+          }
+          if (l.die) { this.fragments.push (this.string (" "), this.die (l.die, l.front)); }
+          if (l.token) { this.fragments.push (this.string (" "), this.token (l.token, l.front)); }
+          if (l.card) { this.fragments.push (this.string (" "), this.string (l.card)); }
           break;
         }
         case "action-pass": this.fragments = [this.player (l.front), this.string (" passes")]; break;
@@ -134,7 +120,7 @@ export class WotrLogComponent implements OnChanges {
     }
   }
 
-  string (label: string): WotrLogStringFragment {
+  private string (label: string): WotrLogStringFragment {
     return { type: "string", label };
   }
 
@@ -166,80 +152,9 @@ export class WotrLogComponent implements OnChanges {
     return { type: "token", tokenImage: this.assets.getActionTokenImage (token, frontId) };
   }
 
-  huntTile (tile: WotrHuntTile): WotrLogHuntTileFragment {
+  huntTile (tile: WotrHuntTileId): WotrLogHuntTileFragment {
     return { type: "hunt-tile", tileImage: this.assets.getHuntTileImage (tile) };
   }
-
-  // private region (regionId: WotrRegionId): WotrLogRegionFragment {
-  //   const region = this.components.REGION[regionId];
-  //   return {
-  //     type: "region",
-  //     label: region.name,
-  //     region,
-  //   };
-  // }
-
-  // private leader (leaderId: WotrLeaderId): WotrLogStringFragment {
-  //   return {
-  //     type: "string",
-  //     label: this.components.getLeader (leaderId).name,
-  //   };
-  // }
-
-  // private unit (
-  //   unit: Exclude<WotrRegionUnit, WotrRegionLeader>
-  // ): WotrLogStringFragment {
-  //   return {
-  //     type: "string",
-  //     label: `${unit.quantity} ${this.components
-  //       .getNation (unit.nationId)
-  //       .label.toLowerCase ()} ${this.components.getUnitTypeLabel (
-  //       unit.type,
-  //       unit.quantity === 1
-  //     )}`,
-  //   };
-  // }
-
-  // private player (playerId: string): WotrLogPlayerFragment {
-  //   const player = this.game.getPlayer (playerId);
-  //   return {
-  //     type: "player",
-  //     label: player.name,
-  //     player: player
-  //   };
-  // }
-
-  // private land (landId: WotrLandCoordinates): WotrLogLandFragment {
-  //   const land = this.game.getLand (landId);
-  //   let label: string;
-  //   switch (land.type) {
-  //     case "fields": label = "fields"; break;
-  //     case "plain": label = "plain"; break;
-  //     case "mountain": label = "mountain"; break;
-  //     case "forest": label = "forest"; break;
-  //     case "lake": label = "lake"; break;
-  //   }
-  //   return {
-  //     type: "land",
-  //     label: label,
-  //     land: land
-  //   };
-  // }
-
-  // private pawn (pawnType: WotrPawnType): WotrLogPawnFragment {
-  //   let label: string;
-  //   switch (pawnType) {
-  //     case "city": label = "city"; break;
-  //     case "knight": label = "knight"; break;
-  //     case "stronghold": label = "stronghold"; break;
-  //     case "village": label = "village"; break;
-  //   }
-  //   return {
-  //     type: "pawn",
-  //     label: label,
-  //     pawn: pawnType
-  //   };
-  // }
 
   private getPhaseLabel (phase: WotrPhase): string {
     switch (phase) {
@@ -249,13 +164,6 @@ export class WotrLogComponent implements OnChanges {
       case 4: return "Action Roll";
       case 5: return "Action Resolution";
       case 6: return "Victory Check";
-    }
-  }
-
-  private actionToFragment (front: WotrFrontId, action: WotrAction) {
-    switch (action.type) {
-      case "card-draw": return [this.player (front), this.string (` draws ${action.cards.length} card${action.cards.length === 1 ? "" : "s"}`)];
-      default: return [this.string ("TODO")];
     }
   }
 

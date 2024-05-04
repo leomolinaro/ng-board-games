@@ -10,11 +10,11 @@ export class WotrCardLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrCardAction> {
     return {
-      "card-discard": (action, front, f) => [f.player (front), f.string (` discards ${this.nCards (action.cards)}`)],
-      "card-discard-from-table": (action, front, f) => [f.player (front), f.string (` discards "${cardToLabel (action.card)}" from table`)],
-      "card-draw": (action, front, f) => [f.player (front), f.string (` draws ${this.nCards (action.cards)}`)],
-      "card-play-on-table": (action, front, f) => [f.player (front), f.string (` plays "${cardToLabel (action.card)}" on table`)],
-      "card-random-discard": (action, front, f) => [f.player (front), f.string (" discards 1 card")],
+      "card-discard": (action, front, f) => [f.player (front), ` discards ${this.nCards (action.cards)}`],
+      "card-discard-from-table": (action, front, f) => [f.player (front), ` discards "${cardToLabel (action.card)}" from table`],
+      "card-draw": (action, front, f) => [f.player (front), ` draws ${this.nCards (action.cards)}`],
+      "card-play-on-table": (action, front, f) => [f.player (front), ` plays "${cardToLabel (action.card)}" on table`],
+      "card-random-discard": (action, front, f) => [f.player (front), " discards 1 card"],
     };
   }
 

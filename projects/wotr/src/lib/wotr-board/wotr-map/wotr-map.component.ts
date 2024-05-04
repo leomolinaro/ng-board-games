@@ -6,10 +6,11 @@ import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../wotr-assets.service";
 import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/wotr-companion.models";
 import { WotrMinion, WotrMinionId } from "../../wotr-elements/wotr-minion.models";
-import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-elements/wotr-nation.models";
+import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNation, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-elements/wotr-nation.models";
 import { WotrRegion, WotrRegionId } from "../../wotr-elements/wotr-region.models";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapPoint, WotrMapService } from "./wotr-map.service";
+import { WotrPoliticalTrackComponent } from "./wotr-political-track.component";
 
 interface WotrRegionNode {
   id: WotrRegionId;
@@ -97,7 +98,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
 @Component ({
   selector: "wotr-map",
   standalone: true,
-  imports: [BgSvgModule, MatTooltipModule, NgClass],
+  imports: [BgSvgModule, MatTooltipModule, NgClass, WotrPoliticalTrackComponent],
   templateUrl: "./wotr-map.component.html",
   styleUrls: ["./wotr-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,6 +110,7 @@ export class WotrMapComponent {
   private slotsGeneratorService = inject (WotrMapSlotsGeneratorService);
 
   regions = input.required<WotrRegion[]> ();
+  nations = input.required<WotrNation[]> ();
   // @Input () nationStates!: Record<WotrNationId, WotrNationState>;
   @Input () validRegions: WotrRegionId[] | null = null;
 

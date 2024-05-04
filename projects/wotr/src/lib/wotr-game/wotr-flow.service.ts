@@ -1,6 +1,6 @@
-import { Injectable, Injector, Type, inject } from "@angular/core";
+import { Injectable, Injector, inject } from "@angular/core";
 import { concatJoin } from "@leobg/commons/utils";
-import { EMPTY, Observable, defer, delay, expand, from, last, map, of, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, expand, from, last, map, of, switchMap, tap } from "rxjs";
 import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
 import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
@@ -16,6 +16,9 @@ import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
 import { WotrSetup } from "../wotr-rules/wotr-setup-rules.service";
 import { WotrAction, WotrStory } from "../wotr-story.models";
 import { WotrStoryService } from "./wotr-story.service";
+import { WotrUnexpectedStory } from "./wotr-unexpected-story";
+
+type WotrActionResolution = "die" | "token" | "pass" | "skipTokens";
 
 @Injectable ()
 export class WotrFlowService {
@@ -101,6 +104,7 @@ export class WotrFlowService {
 
   private firstPhase$ () {
     this.logStore.logPhase (1);
+    this.huntStore.resetHuntBox ();
     return this.story.executeTasks$ (this.frontStore.frontIds ().map (
       front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
     )).pipe (
@@ -121,6 +125,7 @@ export class WotrFlowService {
     this.logStore.logPhase (3);
     return this.story.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
       tap (story => {
+        console.log ("story", story);
         this.flowStory (story, "shadow");
       })
     );
@@ -132,10 +137,11 @@ export class WotrFlowService {
       front => ({ playerId: front, task$: p => p.rollActionDice$! (front) })
     )).pipe (
       tap (stories => {
+        console.log ("stories", stories);
         this.frontStore.frontIds ().forEach ((frontId, index) => {
           const story = stories[index];
           const action = story.actions[0];
-          if (action?.type !== "action-roll") { throw new Error ("Unexpected story"); }
+          if (action?.type !== "action-roll") { throw new WotrUnexpectedStory (story); }
           this.flowStory (story, frontId);
           if (frontId === "shadow") {
             this.eyeResultsToHuntBox ();
@@ -151,41 +157,47 @@ export class WotrFlowService {
       return counter;
     }, 0);
     this.frontStore.removeAllEyeResults ("shadow");
-    this.huntStore.setHuntDice (nEyeResults);
+    this.huntStore.addHuntDice (nEyeResults);
   }
 
-  private actionResolution$ () {
+  private actionResolution$ (): Observable<boolean> {
     this.logStore.logPhase (5);
-    return this.frontActionResolution$ ("free-peoples").pipe (
-      map<unknown, WotrFrontId> (() => "free-peoples"),
-      expand (lastFrontId => {
-        const otherFrontId = oppositeFront (lastFrontId);
-        if (this.frontStore.hasActionDice (otherFrontId) || this.frontStore.hasActionTokens (otherFrontId)) {
-          return this.frontActionResolution$ (otherFrontId).pipe (map (() => otherFrontId));
-        } else if (this.frontStore.hasActionDice (lastFrontId) || this.frontStore.hasActionTokens (lastFrontId)) {
-          return this.frontActionResolution$ (lastFrontId).pipe (map (() => lastFrontId));
-        } else {
-          return EMPTY;
-        }
+    let frontId: WotrFrontId | null = "free-peoples";
+    return this.frontActionResolution$ (frontId).pipe (
+      expand (resolution => {
+        frontId = this.getNextResolutionFrontId (frontId!, resolution);
+        if (!frontId) { return EMPTY; }
+        return this.frontActionResolution$ (frontId);
       }),
-      last ()
+      last (),
+      map (() => true)
     );
   }
 
-  private frontActionResolution$ (frontId: WotrFrontId) {
+  private getNextResolutionFrontId (frontId: WotrFrontId, resolution: WotrActionResolution): WotrFrontId | null {
+    const otherFrontId = oppositeFront (frontId);
+    if (this.frontStore.hasActionDice (otherFrontId)) { return otherFrontId; }
+    if (this.frontStore.hasActionTokens (otherFrontId) && resolution !== "skipTokens") { return otherFrontId; }
+    if (this.frontStore.hasActionDice (frontId)) { return frontId; }
+    if (this.frontStore.hasActionTokens (frontId) && resolution !== "skipTokens") { return frontId; }
+    return null;
+  }
+
+  private frontActionResolution$ (frontId: WotrFrontId): Observable<WotrActionResolution> {
     return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
-      delay (400),
       switchMap (story => {
-        console.log ("story", story)
         if (story.die) {
-          return this.dieStory$ (story.die, story, frontId);
+          return this.dieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
         } else if (story.token) {
-          return this.tokenStory$ (story.token, story, frontId);
+          return this.tokenStory$ (story.token, story, frontId).pipe (map<unknown, "token"> (() => "token"));
         } else if (story.pass) {
           this.logStore.logActionPass (frontId);
-          return of (void 0);
+          return of<"pass"> ("pass");
+        } else if (story.skipTokens) {
+          this.logStore.logSkipTokens (frontId);
+          return of<"skipTokens"> ("skipTokens");
         } else {
-          throw new Error (`Action resolution story not expected ${story.actions[0].type}`);
+          throw new WotrUnexpectedStory (story);
         }
       })
     );
@@ -224,14 +236,10 @@ export class WotrFlowService {
     switch (action.type) {
       case "fellowship-progress": return from (
         import ("./wotr-subflows/wotr-fellowship-progress-flow.service")
-        .then ((m) => new m.WotrFellowshipProgressFlow (this.huntStore, this.logStore, this.gameActions, this.rules, this.story))
+        .then ((m) => new m.WotrFellowshipProgressFlow (this.huntStore, this.companionStore, this.frontStore, this.logStore, this.gameActions, this.rules, this.story))
       ).pipe (switchMap (subFlow => subFlow.execute$ (action, story)));
     }
     return of (void 0);
-  }
-
-  private lazyService<T> (loader: () => Promise<Type<T>>): Observable<T> {
-    return defer (() => loader ().then ((service) => this.injector.get (service, undefined, {  })));
   }
 
   private victoryCheck$ (roundNumber: number) {

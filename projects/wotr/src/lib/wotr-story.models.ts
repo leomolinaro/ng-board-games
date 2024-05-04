@@ -1,5 +1,5 @@
 import { BgStoryDoc } from "@leobg/commons";
-import { WotrActionDiceAction, rollActionDice } from "./wotr-actions/wotr-action-dice-actions";
+import { WotrActionDieAction, rollActionDice } from "./wotr-actions/wotr-action-die-actions";
 import { WotrArmyAction } from "./wotr-actions/wotr-army-actions";
 import { WotrCardAction } from "./wotr-actions/wotr-card-actions";
 import { WotrCombatAction } from "./wotr-actions/wotr-combat-actions";
@@ -20,6 +20,7 @@ export interface WotrStory {
   token?: WotrActionToken;
   card?: WotrCardId;
   pass?: boolean;
+  skipTokens?: boolean;
   actions: WotrAction[];
 }
 
@@ -29,7 +30,7 @@ export type WotrAction =
   WotrCardAction |
   WotrFellowshipAction |
   WotrHuntAction |
-  WotrActionDiceAction |
+  WotrActionDieAction |
   WotrCompanionAction |
   WotrMinionAction |
   WotrArmyAction |
@@ -59,6 +60,7 @@ export class WotrFrontStoryComposer {
   musterArmyDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "muster-army", ...this.card (card, ...actions) }; }
   protected die (die: WotrActionDie, ...actions: WotrAction[]): WotrStoryDoc { return { die, ...this.story (...actions) }; }
   pass () { return { pass: true, ...this.story () }; }
+  skipTokens () { return { skipTokens: true, ...this.story () }; }
   card (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { card: labelToCardId (card), ...this.story (...actions) }; }
   token (token: WotrActionToken, ...actions: WotrAction[]): WotrStoryDoc { return { token, ...this.story (...actions) }; }
   story (...actions: WotrAction[]): WotrStoryDoc { return { time: this.time, playerId: this.front, actions }; }

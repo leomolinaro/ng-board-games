@@ -4,7 +4,7 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { WotrHuntTile } from "../wotr-elements/wotr-hunt.models";
+import { WotrHuntTileId } from "../wotr-elements/wotr-hunt.models";
 import { WotrHuntState } from "../wotr-elements/wotr-hunt.store";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
@@ -84,6 +84,6 @@ export class WotrHuntAreaComponent {
 
   hunt = input.required<WotrHuntState> ();
 
-  protected tileImage: BgTransformFn<WotrHuntTile, string> = huntTile => this.assets.getHuntTileImage (huntTile);
+  protected tileImage: BgTransformFn<WotrHuntTileId, string> = huntTile => this.assets.getHuntTileImage (huntTile);
 
 }

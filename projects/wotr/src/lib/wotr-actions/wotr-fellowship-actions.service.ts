@@ -21,7 +21,10 @@ export class WotrFellowshipActionsService {
       "fellowship-guide": (action, front) => { this.fellowhipStore.setGuide (action.companion); },
       "fellowship-hide": (action, front) => { this.fellowhipStore.hide (); },
       "fellowship-progress": (action, front) => { this.fellowhipStore.increaseProgress (); },
-      "fellowship-reveal": (action, front) => { this.fellowhipStore.reveal (); },
+      "fellowship-reveal": (action, front) => {
+        this.regionStore.moveFellowshipToRegion (action.region);
+        this.fellowhipStore.reveal ();
+      },
     };
   }
 

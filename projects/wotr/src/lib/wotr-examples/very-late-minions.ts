@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
-import { discardDice } from "../wotr-actions/wotr-action-dice-actions";
+import { discardDice } from "../wotr-actions/wotr-action-die-actions";
 import { attack, eliminateUnit, elite, leader, minion, moveArmy, nazgul, recruitUnit, regular, retreatIntoSiege } from "../wotr-actions/wotr-army-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../wotr-actions/wotr-card-actions";
 import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/wotr-combat-actions";
@@ -45,6 +45,7 @@ export const stories: WotrStoryDoc[] = [
     moveArmy ("north-anduin-vale", "dimrill-dale", regular ("sauron", 4), elite ("sauron"), nazgul ()),
     moveArmy ("dagorlad", "noman-lands", regular ("sauron", 9), elite ("sauron"), nazgul (2))),
   fp ().token ("political-advance", advanceNation ("elves", 1)),
+  fp ().skipTokens (),
   // Turn 2
   fp (time).story (drawCards ("The Ents Awake: Entmoot", "Kindred of Glorfindel")),
   s ().story (drawCards ("Return to Valinor", "Nazgul Search")),
@@ -53,7 +54,7 @@ export const stories: WotrStoryDoc[] = [
   s ().rollActionDice ("event", "muster-army", "event", "army", "event"),
   fp ().pass (),
   s ().eventDie (drawCards ("Rage of the Dunledings")),
-  fp ().eventDieCard ("Elven Cloaks", addHuntTile ("0r")),
+  fp ().eventDieCard ("Elven Cloaks", addHuntTile ("b0")),
   s ().eventDie (drawCards ("The Fighting Uruk-hai")),
   fp ().characterDie (moveFelloswhip ()),
   s ().story (rollHuntDice (6, 2)),
@@ -65,7 +66,7 @@ export const stories: WotrStoryDoc[] = [
     recruitUnit ("moria", regular ("isengard", 2)),
     moveArmy ("south-dunland", "moria", regular ("isengard")),
     moveArmy ("north-dunland", "moria", regular ("isengard"))),
-  fp ().characterDie (moveFelloswhip ()),
+  fp ().willOfTheWestDie (moveFelloswhip ()),
   s ().story (rollHuntDice (2, 6)),
   s ().story (drawHuntTile ("3")),
   fp ().story (chooseRandomCompanion ("strider")),

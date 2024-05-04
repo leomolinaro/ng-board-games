@@ -22,7 +22,6 @@
             [attr.style]="'fill: ' + point.color">
           </svg:circle>
         }
-  
         @if (regionNode.army) {
           <svg:svg style="overflow: visible;" [attr.x]="regionNode.army.svgX" [attr.y]="regionNode.army.svgY">
             @for (armyUnit of regionNode.army.armyUnits; track $index; ) {
@@ -69,6 +68,9 @@
         </svg:path>
       </svg:g>
     }
+    <svg:g wotrPoliticalTrack
+      [nations]="nations ()">
+    </svg:g>
   </svg:g>
 </svg:svg>
 @if (isDevMode) {

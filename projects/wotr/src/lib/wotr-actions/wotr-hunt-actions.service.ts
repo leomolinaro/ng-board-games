@@ -10,9 +10,9 @@ export class WotrHuntActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrHuntAction> {
     return {
-      "hunt-allocation": (action, front) => { this.huntStore.setHuntDice (action.quantity); },
+      "hunt-allocation": (action, front) => { this.huntStore.addHuntDice (action.quantity); },
       "hunt-roll": (action, front) => { /*empty*/ },
-      "hunt-tile-add": (action, front) => {throw new Error ("TODO")  },
+      "hunt-tile-add": (action, front) => { this.huntStore.prepareHuntTile (action.tile); },
       "hunt-tile-draw": (action, front) => { this.huntStore.drawHuntTile (action.tile); },
     };
   }

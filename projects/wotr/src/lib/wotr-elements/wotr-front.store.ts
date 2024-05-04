@@ -22,6 +22,7 @@ export class WotrFrontStore {
   hasActionDice (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionDice.length; }
   hasActionTokens (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionTokens.length; }
   front (id: WotrFrontId, state: WotrFrontState) { return state.map[id]; }
+  hasTableCard (cardId: WotrCardId, frontId: WotrFrontId) { return !!this.state ().map[frontId].tableCards.includes (cardId); }
 
   init (): WotrFrontState {
     return {

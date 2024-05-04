@@ -1,16 +1,15 @@
 import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
 import { WotrFrontId } from "../wotr-elements/wotr-front.models";
-import { WotrHuntTile } from "../wotr-elements/wotr-hunt.models";
+import { WotrHuntTileId } from "../wotr-elements/wotr-hunt.models";
 import { WotrNationId } from "../wotr-elements/wotr-nation.models";
 import { WotrRegionId } from "../wotr-elements/wotr-region.models";
 
-interface WotrFragmentCreator<F> {
+export interface WotrFragmentCreator<F> {
   player (front: WotrFrontId): F;
   region (region: WotrRegionId): F;
   nation (nation: WotrNationId): F;
-  string (label: string): F;
   companion (companionId: WotrCompanionId): F;
-  huntTile (huntTile: WotrHuntTile): F;
+  huntTile (huntTile: WotrHuntTileId): F;
 }
 export type WotrActionLogger<A, F = any> = (action: A, front: WotrFrontId, f: WotrFragmentCreator<F>) => F[];
 

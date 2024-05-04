@@ -12,7 +12,7 @@ export class WotrHuntRulesService {
     const nSuccesses = huntRoll.dice.reduce ((counter, die) => {
       if (die >= threshold) { counter++; }
       return counter;
-    });
+    }, 0);
     return nSuccesses;
   }
   

@@ -18,6 +18,7 @@ export class WotrNationStore {
   shadowNations = computed (() => { const s = this.state (); return s.sNationIds.map (id => s.map[id]); });
   nationById = computed (() => this.state ().map);
   nation (id: WotrNationId) { return this.state ().map[id]; }
+  nations = computed (() => { const s = this.state (); return [...s.fpNationIds, ...s.sNationIds].map (id => s.map[id]); });
 
   init (): WotrNationState {
     return {
