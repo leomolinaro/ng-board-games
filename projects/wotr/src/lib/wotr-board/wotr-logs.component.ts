@@ -17,7 +17,6 @@ import { WotrLogComponent } from "./wotr-log.component";
       display: block;
       max-height: 100%;
       overflow: auto;
-      // background: black;
       color: white;
     }
   `],

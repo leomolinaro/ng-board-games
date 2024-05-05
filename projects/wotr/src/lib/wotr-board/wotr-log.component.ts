@@ -70,12 +70,9 @@ type WotrLogFragment =
 
       .is-red { color: $red; }
       .is-blue { color: $blue; }
-      // .is-yellow { color: $yellow; }
-      // .is-green { color: $green; }
     }
     .action-die, .action-token, .hunt-tile {
       vertical-align: top;
-      // margin-left: 3px;
       height: 16px;
     }
   `],

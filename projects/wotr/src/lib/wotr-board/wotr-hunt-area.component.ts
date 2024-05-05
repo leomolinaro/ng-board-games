@@ -51,7 +51,6 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
     .tiles {
       margin-top: 5px;
       .tile-image {
-        // cursor: pointer;
         &:not(:last-child) {
           margin-right: 5px;
         }
@@ -68,7 +67,6 @@ import { WotrMapComponent } from "./wotr-map/wotr-map.component";
           --mdc-secondary-navigation-tab-container-height: 25px;
         }
         .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-          // color: var(--wotr-front-color);
         }
         .mat-mdc-tab .mdc-tab-indicator__content--underline {
           display: none

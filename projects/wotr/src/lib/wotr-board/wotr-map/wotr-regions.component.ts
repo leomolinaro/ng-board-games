@@ -170,16 +170,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
       @include wotr-path;
       &.is-active {
         cursor: pointer;
-        // stroke: white;
-        // stroke-width: 3;
-        // stroke-dasharray: 3;
-
-        // stroke-dasharray: 0.05,0.05;
-        // animation: dash 10s linear;
-        // animation-duration: 10s;
-        // animation-name: activeSignal;
-        // animation-iteration-count: infinite;
-        // animation-direction: normal;
       }
       &.is-disabled {
         fill: black;
@@ -192,9 +182,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
     .wotr-event-path { @include wotr-path; }
     .wotr-scoring-path { @include wotr-path; }
     .wotr-unit {
-      // & > * {
-      //   transition: 1s ease-in-out;
-      // }
       &.is-active {
         cursor: pointer;
       }
@@ -205,7 +192,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
         stroke-linejoin: bevel;
       }
       .wotr-unit-quantity {
-        // font-size: 0.5px;
         fill: white;
         font-weight: 600;
         alignment-baseline: after-edge;
@@ -228,13 +214,13 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
       stroke: white;
       stroke-width: 2px;
     }
-    ::ng-deep .wotr-map-tooltip {
-      pointer-events: none; // non funziona (servirebbe ad evitare che il ctrl+rotella faccia zoom sulla pagina e non sulla mappa)
-    }
     .wotr-army-counters {
       fill: white;
     }
-  `],
+    `],
+    // ::ng-deep .wotr-map-tooltip {
+    //   pointer-events: none; // non funziona (servirebbe ad evitare che il ctrl+rotella faccia zoom sulla pagina e non sulla mappa)
+    // }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WotrRegionsComponent {
