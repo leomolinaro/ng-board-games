@@ -45,6 +45,7 @@ import { WotrUiStore } from "./wotr-ui.store";
       [regions]="regionStore.regions ()"
       [fronts]="frontStore.fronts ()"
       [hunt]="huntStore.state ()"
+      [fellowship]="fellowshipStore.state ()"
       [freePeopleNations]="nationStore.freePeopleNations ()"
       [nationById]="nationStore.nationById ()"
       [nations]="nationStore.nations ()"
@@ -103,6 +104,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected minionStore = inject (WotrMinionStore);
   protected nationStore = inject (WotrNationStore);
   protected huntStore = inject (WotrHuntStore);
+  protected fellowshipStore = inject (WotrFellowshipStore);
   protected logStore = inject (WotrLogStore);
   protected ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);

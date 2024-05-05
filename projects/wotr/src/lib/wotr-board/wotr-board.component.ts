@@ -7,6 +7,7 @@ import { WotrAssetsService } from "../wotr-assets.service";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../wotr-elements/wotr-card.models";
 import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
 import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
+import { WotrFellowship } from "../wotr-elements/wotr-fellowhip.models";
 import { WotrFront, WotrFrontId } from "../wotr-elements/wotr-front.models";
 import { WotrHuntState } from "../wotr-elements/wotr-hunt.store";
 import { WotrLog } from "../wotr-elements/wotr-log.models";
@@ -41,6 +42,7 @@ export class WotrBoardComponent {
   nations = input.required<WotrNation[]> ();
   fronts = input.required<WotrFront[]> ();
   hunt = input.required<WotrHuntState> ();
+  fellowship = input.required<WotrFellowship> ();
   freePeopleNations = input.required<WotrNation[]> ();
   shadowNations = input.required<WotrNation[]> ();
   nationById = input.required<Record<WotrNationId, WotrNation>> ();

@@ -42,7 +42,6 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         [attr.xlink:href]="politicalNode.image"/> 
     }
   `,
-  styleUrls: ["./wotr-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WotrPoliticalTrackComponent {

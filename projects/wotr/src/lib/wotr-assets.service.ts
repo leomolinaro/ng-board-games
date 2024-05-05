@@ -123,5 +123,7 @@ export class WotrAssetsService {
   getPoliticalMarkerImage (nationId: WotrNationId, active: boolean) {
     return `${BASE_PATH}/political-markers/${nationId}-${active ? "active" : "inactive"}.png`;
   }
+  getFellowshipProgressCounter (revealed: boolean) { return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? "back" : "front"}.png`; }
+  getCorruptionCounter () { return `${BASE_PATH}/fellowship-counters/corruption-counter.png`; }
 
 }

@@ -68,9 +68,9 @@
         </svg:path>
       </svg:g>
     }
-    <svg:g wotrPoliticalTrack
-      [nations]="nations ()">
-    </svg:g>
+    <svg:g wotrPoliticalTrack [nations]="nations ()"></svg:g>
+    <svg:g wotrHuntBox [hunt]="hunt ()"></svg:g>
+    <svg:g wotrFellowshipTrack [fellowship]="fellowship ()"></svg:g>
   </svg:g>
 </svg:svg>
 @if (isDevMode) {
