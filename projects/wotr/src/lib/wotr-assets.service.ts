@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { WotrCardId } from "./wotr-elements/wotr-card.models";
 import { WotrCompanionId } from "./wotr-elements/wotr-companion.models";
 import { WotrActionDie, WotrActionToken } from "./wotr-elements/wotr-dice.models";
-import { WotrFrontId } from "./wotr-elements/wotr-front.models";
+import { WotrElvenRing, WotrFrontId } from "./wotr-elements/wotr-front.models";
 import { WotrHuntTileId } from "./wotr-elements/wotr-hunt.models";
 import { WotrMinionId } from "./wotr-elements/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/wotr-nation.models";
@@ -125,5 +125,6 @@ export class WotrAssetsService {
   }
   getFellowshipProgressCounter (revealed: boolean) { return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? "back" : "front"}.png`; }
   getCorruptionCounter () { return `${BASE_PATH}/fellowship-counters/corruption-counter.png`; }
+  getElvenRingImage (elvenRing: WotrElvenRing) { return `${BASE_PATH}/elven-rings/${elvenRing}.png`; }
 
 }

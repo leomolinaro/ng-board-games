@@ -6,10 +6,13 @@ import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../wotr-assets.service";
 import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/wotr-companion.models";
 import { WotrFellowship } from "../../wotr-elements/wotr-fellowhip.models";
+import { WotrFront } from "../../wotr-elements/wotr-front.models";
 import { WotrHuntState } from "../../wotr-elements/wotr-hunt.store";
 import { WotrMinion, WotrMinionId } from "../../wotr-elements/wotr-minion.models";
 import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNation, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-elements/wotr-nation.models";
 import { WotrRegion, WotrRegionId } from "../../wotr-elements/wotr-region.models";
+import { WotrElvenRingsBoxComponent } from "./wotr-elven-rings-box.component";
+import { WotrFellowshipBoxComponent } from "./wotr-fellowship-box.component";
 import { WotrFellowshipTrackComponent } from "./wotr-fellowship-track.component";
 import { WotrHuntBoxComponent } from "./wotr-hunt-box.component";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
@@ -102,7 +105,12 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
 @Component ({
   selector: "wotr-map",
   standalone: true,
-  imports: [BgSvgModule, MatTooltipModule, NgClass, WotrPoliticalTrackComponent, WotrHuntBoxComponent, WotrFellowshipTrackComponent],
+  imports: [
+    BgSvgModule, MatTooltipModule, NgClass,
+    WotrPoliticalTrackComponent, WotrHuntBoxComponent,
+    WotrFellowshipTrackComponent, WotrFellowshipBoxComponent,
+    WotrElvenRingsBoxComponent
+  ],
   templateUrl: "./wotr-map.component.html",
   styleUrls: ["./wotr-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -116,6 +124,7 @@ export class WotrMapComponent {
   regions = input.required<WotrRegion[]> ();
   nations = input.required<WotrNation[]> ();
   hunt = input.required<WotrHuntState[]> ();
+  fronts = input.required<WotrFront[]> ();
   fellowship = input.required<WotrFellowship[]> ();
   @Input () validRegions: WotrRegionId[] | null = null;
 

@@ -6,6 +6,7 @@
     [validRegions]="validRegions"
     [nations]="nations ()"
     [hunt]="hunt ()"
+    [fronts]="fronts ()"
     [fellowship]="fellowship ()"
     [companionById]="companionById ()"
     [minionById]="minionById ()"
@@ -26,7 +27,7 @@
           </wotr-front-area>
         </mat-tab>
       }
-      <mat-tab [label]="'Hunt (' + hunt ().nHuntDice + ' / ' + hunt ().nFreePeopleDice + ')'">
+      <mat-tab label="Hunt">
         <wotr-hunt-area
           [hunt]="hunt ()">
         </wotr-hunt-area>

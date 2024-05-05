@@ -87,6 +87,9 @@ export class WotrFlowService {
     this.frontStore.setActionTokens (setup.freePeopleTokens, "free-peoples");
     this.frontStore.setActionTokens (setup.shadowTokens, "shadow");
     this.fellowshipStore.setCompanions (setup.fellowship.companions);
+    for (const companion of setup.fellowship.companions) {
+      this.companionStore.setInFellowship (companion);
+    }
     this.fellowshipStore.setGuide (setup.fellowship.guide);
     this.regionStore.addFellowshipToRegion (setup.fellowship.region);
   }

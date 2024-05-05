@@ -2,6 +2,7 @@ import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "./wotr-card
 import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
 
 export type WotrFrontId = "free-peoples" | "shadow";
+export type WotrElvenRing = "vilya" | "nenya" | "narya";
 
 export interface WotrFront {
   id: WotrFrontId;
@@ -14,6 +15,7 @@ export interface WotrFront {
   strategyDiscardPile: WotrStrategyCardId[];
   actionDice: WotrActionDie[];
   actionTokens: WotrActionToken[];
+  elvenRings: WotrElvenRing[];
 }
 
 export function oppositeFront (front: WotrFrontId): WotrFrontId {

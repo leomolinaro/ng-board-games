@@ -57,4 +57,11 @@ export class WotrCompanionStore {
     }));
   }
 
+  setInFellowship (companionId: WotrCompanionId) {
+    this.updateCompanion ("setInFellowship", companionId, companion => ({
+      ...companion,
+      status: "inFellowship"
+    }));
+  }
+
 }

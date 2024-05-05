@@ -2,7 +2,7 @@ import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId, isCharacterCard, isStrategyCard } from "./wotr-card.models";
 import { WotrActionDie, WotrActionToken } from "./wotr-dice.models";
-import { WotrFront, WotrFrontId } from "./wotr-front.models";
+import { WotrElvenRing, WotrFront, WotrFrontId } from "./wotr-front.models";
 
 export interface WotrFrontState {
   ids: WotrFrontId[];
@@ -28,13 +28,13 @@ export class WotrFrontStore {
     return {
       ids: ["free-peoples", "shadow"],
       map: {
-        "free-peoples": this.initFront ("free-peoples", "Free Peoples"),
-        shadow: this.initFront ("shadow", "Shadow"),
+        "free-peoples": this.initFront ("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
+        shadow: this.initFront ("shadow", "Shadow", []),
       }
     };
   }
   
-  private initFront (id: WotrFrontId, name: string): WotrFront {
+  private initFront (id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]): WotrFront {
     return {
       id, name,
       characterDeck: [],
@@ -44,7 +44,8 @@ export class WotrFrontStore {
       characterDiscardPile: [],
       strategyDiscardPile: [],
       actionDice: [],
-      actionTokens: []
+      actionTokens: [],
+      elvenRings
     };
   }
 
