@@ -40,7 +40,9 @@ export class WotrBoardComponent {
   players = input.required<WotrPlayer[]> ();
   regions = input.required<WotrRegion[]> ();
   nations = input.required<WotrNation[]> ();
-  fronts = input.required<WotrFront[]> ();
+  freePeople = input.required<WotrFront> ();
+  shadow = input.required<WotrFront> ();
+  fronts = computed (() => ([this.freePeople (), this.shadow ()]));
   hunt = input.required<WotrHuntState> ();
   fellowship = input.required<WotrFellowship> ();
   freePeopleNations = input.required<WotrNation[]> ();

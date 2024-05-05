@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrElvenRing, WotrFront, WotrFrontId } from "../../wotr-elements/wotr-front.models";
+import { WotrElvenRing, WotrFrontId } from "../../wotr-elements/wotr-front.models";
 
 interface WotrElvenRingNode {
   id: string;
@@ -51,7 +51,8 @@ const Y0 = 18;
 })
 export class WotrElvenRingsBoxComponent {
 
-  fronts = input.required<WotrFront[]> ();
+  freePeopleElvenRings = input.required<WotrElvenRing[]> ();
+  shadowElvenRings = input.required<WotrElvenRing[]> ();
 
   private assets = inject (WotrAssetsService);
   
@@ -62,19 +63,20 @@ export class WotrElvenRingsBoxComponent {
   };
 
   elvenRingNodes: Signal<WotrElvenRingNode[]> = computed (() => {
-    const nodes: WotrElvenRingNode[] = [];
-    for (const front of this.fronts ()) {
-      for (const elvenRing of front.elvenRings) {
-        nodes.push ({
-          id: elvenRing,
-          image: this.assets.getElvenRingImage (elvenRing),
-          frontId: front.id,
-          svgX: this.svgX[elvenRing],
-          svgY: Y0
-        });
-      }
-    }
-    return nodes;
+    return [
+      ...this.freePeopleElvenRings ().map (e => this.elvenRingToNode (e, "free-peoples")),
+      ...this.shadowElvenRings ().map (e => this.elvenRingToNode (e, "shadow")),
+    ];
   });
+
+  private elvenRingToNode (elvenRing: WotrElvenRing, frontId: WotrFrontId) {
+    return {
+      id: elvenRing,
+      image: this.assets.getElvenRingImage (elvenRing),
+      frontId,
+      svgX: this.svgX[elvenRing],
+      svgY: Y0
+    };
+  }
 
 }

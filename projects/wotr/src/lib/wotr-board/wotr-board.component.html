@@ -1,12 +1,13 @@
 <div class="wotr-board">
+  <!-- [validRegions]="validRegions" -->
   <wotr-map
     class="wotr-map"
     #wotrMap
     [regions]="regions ()"
-    [validRegions]="validRegions"
     [nations]="nations ()"
     [hunt]="hunt ()"
-    [fronts]="fronts ()"
+    [freePeople]="freePeople ()"
+    [shadow]="shadow ()"
     [fellowship]="fellowship ()"
     [companionById]="companionById ()"
     [minionById]="minionById ()"

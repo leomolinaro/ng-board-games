@@ -43,7 +43,8 @@ import { WotrUiStore } from "./wotr-ui.store";
     <wotr-board
       [players]="store.players$ | async"
       [regions]="regionStore.regions ()"
-      [fronts]="frontStore.fronts ()"
+      [freePeople]="frontStore.freePeopleFront ()"
+      [shadow]="frontStore.shadowFront ()"
       [hunt]="huntStore.state ()"
       [fellowship]="fellowshipStore.state ()"
       [freePeopleNations]="nationStore.freePeopleNations ()"
