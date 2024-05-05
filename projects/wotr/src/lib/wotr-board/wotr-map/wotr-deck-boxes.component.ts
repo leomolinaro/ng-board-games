@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, input } from "@angular/core";
 import { WotrFront } from "../../wotr-elements/wotr-front.models";
 
-interface WotrCardBoxNode {
+interface WotrDeckBoxNode {
   id: string;
   nCards: number;
   svgX: number;
@@ -19,15 +19,15 @@ const S_STR_X = S_CHA_X + XSTEP;
 const S_Y = 808;
 
 @Component ({
-  selector: "[wotrEventCardBoxes]",
+  selector: "[wotrDeckBoxes]",
   standalone: true,
   imports: [],
   template: `
-    @for (cardBoxNode of cardBoxNodes (); track cardBoxNode.id) {
+    @for (deckBoxNode of deckBoxNodes (); track deckBoxNode.id) {
       <svg:text class="card-counters"
         transform="scale(0.8, 0.8)"
-        [attr.x]="cardBoxNode.svgX" [attr.y]="cardBoxNode.svgY">
-        {{ cardBoxNode.nCards }}
+        [attr.x]="deckBoxNode.svgX" [attr.y]="deckBoxNode.svgY">
+        {{ deckBoxNode.nCards }}
       </svg:text>
     }
   `,
@@ -38,12 +38,12 @@ const S_Y = 808;
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WotrEventCardBoxesComponent {
+export class WotrDeckBoxesComponent {
 
   freePeople = input.required<WotrFront> ();
   shadow = input.required<WotrFront> ();
 
-  cardBoxNodes: Signal<WotrCardBoxNode[]> = computed (() => {
+  deckBoxNodes: Signal<WotrDeckBoxNode[]> = computed (() => {
     return [
       { id: "fpCha", nCards: this.freePeople ().characterDeck.length, svgX: FP_CHA_X, svgY: FP_Y },
       { id: "fpStr", nCards: this.freePeople ().strategyDeck.length, svgX: FP_STR_X, svgY: FP_Y },

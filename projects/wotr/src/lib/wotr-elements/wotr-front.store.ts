@@ -81,10 +81,23 @@ export class WotrFrontStore {
   }
 
   drawCards (cardIds: WotrCardId[], frontId: WotrFrontId) {
-    this.updateFront ("drawCards", frontId, front => ({
-      ...front,
-      handCards: immutableUtil.listPush (cardIds, front.handCards)
-    }));
+    this.updateFront ("drawCards", frontId, front => {
+      let characterDeck = front.characterDeck;
+      let strategyDeck = front.strategyDeck;
+      for (const cardId of cardIds) {
+        if (isCharacterCard (cardId)) {
+          characterDeck = immutableUtil.listRemoveFirst (c => c === cardId, characterDeck);
+        } else if (isStrategyCard (cardId)) {
+          strategyDeck = immutableUtil.listRemoveFirst (c => c === cardId, strategyDeck);
+        }
+      }
+      return {
+        ...front,
+        characterDeck,
+        strategyDeck,
+        handCards: immutableUtil.listPush (cardIds, front.handCards)
+      };
+    });
   }
 
   setActionTokens (tokens: WotrActionToken[], frontId: WotrFrontId): void {

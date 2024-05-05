@@ -9,8 +9,8 @@ import { WotrHuntState } from "../../wotr-elements/wotr-hunt.store";
 import { WotrMinion, WotrMinionId } from "../../wotr-elements/wotr-minion.models";
 import { WotrNation } from "../../wotr-elements/wotr-nation.models";
 import { WotrRegion, WotrRegionId } from "../../wotr-elements/wotr-region.models";
+import { WotrDeckBoxesComponent } from "./wotr-deck-boxes.component";
 import { WotrElvenRingsBoxComponent } from "./wotr-elven-rings-box.component";
-import { WotrEventCardBoxesComponent } from "./wotr-event-card-boxes.component";
 import { WotrFellowshipBoxComponent } from "./wotr-fellowship-box.component";
 import { WotrFellowshipTrackComponent } from "./wotr-fellowship-track.component";
 import { WotrHuntBoxComponent } from "./wotr-hunt-box.component";
@@ -18,6 +18,7 @@ import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service
 import { WotrMapService } from "./wotr-map.service";
 import { WotrPoliticalTrackComponent } from "./wotr-political-track.component";
 import { WotrRegionsComponent } from "./wotr-regions.component";
+import { WotrTableCardsComponent } from "./wotr-table-card-boxes.component";
 
 const GRID_STEP = 10;
 
@@ -29,7 +30,8 @@ const GRID_STEP = 10;
     WotrRegionsComponent,
     WotrPoliticalTrackComponent, WotrHuntBoxComponent,
     WotrFellowshipTrackComponent, WotrFellowshipBoxComponent,
-    WotrElvenRingsBoxComponent, WotrEventCardBoxesComponent
+    WotrElvenRingsBoxComponent,
+    WotrDeckBoxesComponent, WotrTableCardsComponent
   ],
   template: `
     <svg:svg bgSvg
@@ -54,9 +56,8 @@ const GRID_STEP = 10;
         <svg:g wotrElvenRingsBox
           [freePeopleElvenRings]="freePeople ().elvenRings"
           [shadowElvenRings]="shadow ().elvenRings"></svg:g>
-        <svg:g wotrEventCardBoxes
-          [freePeople]="freePeople ()"
-          [shadow]="shadow ()"></svg:g>
+        <svg:g wotrDeckBoxes [freePeople]="freePeople ()" [shadow]="shadow ()"></svg:g>
+        <svg:g wotrTableCards [freePeople]="freePeople ()" [shadow]="shadow ()"></svg:g>
       </svg:g>
     </svg:svg>
     @if (isDevMode) {
