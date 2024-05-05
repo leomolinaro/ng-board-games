@@ -4,7 +4,9 @@ import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrActionLoggerMap } from "./wotr-action-log";
 import { WotrCompanionAction } from "./wotr-companion-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrCompanionLogsService {
 
   private companionStore = inject (WotrCompanionStore);

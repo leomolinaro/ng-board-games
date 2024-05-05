@@ -3,7 +3,9 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCompanionId } from "./wotr-companion.models";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrFellowshipStore {
 
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;

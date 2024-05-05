@@ -3,7 +3,9 @@ import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrPoliticalAction } from "./wotr-political-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrPoliticalActionsService {
 
   private nationStore = inject (WotrNationStore);

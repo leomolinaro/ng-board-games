@@ -8,7 +8,9 @@ export interface WotrNationState {
   sNationIds: WotrNationId[];
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrNationStore {
 
   update!: (actionName: string, updater: (a: WotrNationState) => WotrNationState) => void;

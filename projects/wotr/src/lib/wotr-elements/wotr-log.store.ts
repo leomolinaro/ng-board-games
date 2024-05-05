@@ -8,7 +8,9 @@ import { WotrPhase } from "./wotr-phase.models";
 
 export type WotrLogState = WotrLog[];
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrLogStore {
 
   update!: (actionName: string, updater: (a: WotrLogState) => WotrLogState) => void;

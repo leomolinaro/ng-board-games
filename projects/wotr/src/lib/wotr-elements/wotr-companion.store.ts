@@ -6,7 +6,9 @@ export interface WotrCompanionState {
   map: Record<WotrCompanionId, WotrCompanion>;
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrCompanionStore {
 
   update!: (actionName: string, updater: (a: WotrCompanionState) => WotrCompanionState) => void;

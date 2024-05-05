@@ -7,7 +7,9 @@ import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrArmyAction } from "./wotr-army-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrArmyActionsService {
 
   private nationStore = inject (WotrNationStore);

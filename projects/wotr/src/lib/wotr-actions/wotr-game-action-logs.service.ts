@@ -12,7 +12,9 @@ import { WotrHuntLogsService } from "./wotr-hunt-logs.service";
 import { WotrMinionLogsService } from "./wotr-minion-logs.service";
 import { WotrPoliticalLogsService } from "./wotr-political-logs.service";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrGameActionLogsService {
 
   private actionLoggers: Record<WotrAction["type"], WotrActionLogger<WotrAction>> = {

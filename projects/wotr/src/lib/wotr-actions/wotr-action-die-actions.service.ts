@@ -4,7 +4,9 @@ import { WotrFrontStore } from "../wotr-elements/wotr-front.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrActionDieActionsService {
 
   private frontStore = inject (WotrFrontStore);

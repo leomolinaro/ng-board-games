@@ -11,7 +11,9 @@ export interface WotrRegionState {
   ids: WotrRegionId[];
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrRegionStore {
 
   update!: (actionName: string, updater: (a: WotrRegionState) => WotrRegionState) => void;

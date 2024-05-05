@@ -4,7 +4,9 @@ import { WotrFrontStore } from "../wotr-elements/wotr-front.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrCardAction } from "./wotr-card-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrCardActionsService {
 
   private frontStore = inject (WotrFrontStore);

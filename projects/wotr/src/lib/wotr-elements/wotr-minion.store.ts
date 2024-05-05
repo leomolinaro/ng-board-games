@@ -6,7 +6,9 @@ export interface WotrMinionState {
   map: Record<WotrMinionId, WotrMinion>;
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrMinionStore {
 
   update!: (actionName: string, updater: (a: WotrMinionState) => WotrMinionState) => void;

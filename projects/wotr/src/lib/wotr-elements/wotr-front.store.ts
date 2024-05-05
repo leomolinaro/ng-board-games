@@ -9,7 +9,9 @@ export interface WotrFrontState {
   map: Record<WotrFrontId, WotrFront>;
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrFrontStore {
 
   update!: (actionName: string, updater: (a: WotrFrontState) => WotrFrontState) => void;

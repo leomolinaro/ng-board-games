@@ -13,7 +13,9 @@ export interface WotrHuntState {
   nFreePeopleDice: number;
 }
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrHuntStore {
 
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;

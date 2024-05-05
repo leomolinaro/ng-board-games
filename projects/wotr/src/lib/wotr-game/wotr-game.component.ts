@@ -4,18 +4,6 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
-import { WotrActionDieActionsService } from "../wotr-actions/wotr-action-die-actions.service";
-import { WotrArmyActionsService } from "../wotr-actions/wotr-army-actions.service";
-import { WotrCardActionsService } from "../wotr-actions/wotr-card-actions.service";
-import { WotrCombatActionsService } from "../wotr-actions/wotr-combat-actions.service";
-import { WotrCompanionActionsService } from "../wotr-actions/wotr-companion-actions.service";
-import { WotrCompanionLogsService } from "../wotr-actions/wotr-companion-logs.service";
-import { WotrFellowshipActionsService } from "../wotr-actions/wotr-fellowship-actions.service";
-import { WotrGameActionLogsService } from "../wotr-actions/wotr-game-action-logs.service";
-import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
-import { WotrHuntActionsService } from "../wotr-actions/wotr-hunt-actions.service";
-import { WotrMinionActionsService } from "../wotr-actions/wotr-minion-actions.service";
-import { WotrPoliticalActionsService } from "../wotr-actions/wotr-political-actions.service";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
 import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
 import { WotrFellowshipStore } from "../wotr-elements/wotr-fellowship.store";
@@ -65,34 +53,11 @@ import { WotrUiStore } from "./wotr-ui.store";
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     WotrGameStore,
-    WotrFrontStore,
-    WotrRegionStore,
-    WotrNationStore,
-    WotrCompanionStore,
-    WotrMinionStore,
-    WotrFellowshipStore,
-    WotrHuntStore,
-    WotrLogStore,
-
-    WotrGameActionsService,
-    WotrCardActionsService,
-    WotrFellowshipActionsService,
-    WotrHuntActionsService,
-    WotrActionDieActionsService,
-    WotrCompanionActionsService,
-    WotrMinionActionsService,
-    WotrArmyActionsService,
-    WotrPoliticalActionsService,
-    WotrCombatActionsService,
-
-    WotrGameActionLogsService,
-    WotrCompanionLogsService,
-
-    WotrUiStore,
+    WotrStoryService,
+    WotrFlowService,
     WotrPlayerAiService,
     WotrPlayerLocalService,
-    WotrStoryService,
-    WotrFlowService
+    WotrUiStore,
   ]
 })
 @UntilDestroy

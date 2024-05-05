@@ -2,7 +2,9 @@ import { Injectable } from "@angular/core";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrMinionAction } from "./wotr-minion-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrMinionActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrMinionAction> {

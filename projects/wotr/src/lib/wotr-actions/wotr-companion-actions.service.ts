@@ -5,7 +5,9 @@ import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
 import { WotrActionApplierMap } from "./wotr-action-applier";
 import { WotrCompanionAction } from "./wotr-companion-actions";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrCompanionActionsService {
 
   private companionStore = inject (WotrCompanionStore);

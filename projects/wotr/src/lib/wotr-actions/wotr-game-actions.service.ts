@@ -12,7 +12,9 @@ import { WotrHuntActionsService } from "./wotr-hunt-actions.service";
 import { WotrMinionActionsService } from "./wotr-minion-actions.service";
 import { WotrPoliticalActionsService } from "./wotr-political-actions.service";
 
-@Injectable ()
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrGameActionsService {
 
   private cardActions = inject (WotrCardActionsService);
