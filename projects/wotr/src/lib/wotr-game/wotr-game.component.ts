@@ -4,6 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
+import { WotrArmyEffectsService } from "../wotr-actions/army/wotr-army-effects.service";
 import { WotrCompanionEffectsService } from "../wotr-actions/companion/wotr-companion-effects.service";
 import { WotrFellowshipEffectsService } from "../wotr-actions/fellowship/wotr-fellowship-effects.service";
 import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
@@ -18,6 +19,7 @@ import { WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
 import { WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
+import { stories as exampleStories } from "../wotr-examples/very-late-minions";
 import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
 import { WotrStoryDoc } from "../wotr-story.models";
 import { WotrFlowService } from "./wotr-flow.service";
@@ -60,6 +62,7 @@ import { WotrUiStore } from "./wotr-ui.store";
 
     WotrFellowshipEffectsService,
     WotrCompanionEffectsService,
+    WotrArmyEffectsService,
 
     WotrStoryService,
     WotrFlowService,
@@ -122,7 +125,8 @@ export class WotrGameComponent implements OnInit, OnDestroy {
             this.gameId,
             game.owner
           );
-          this.listenToGame (stories);
+          // this.listenToGame (stories);
+          this.listenToGame (exampleStories);
         }
       })
     );

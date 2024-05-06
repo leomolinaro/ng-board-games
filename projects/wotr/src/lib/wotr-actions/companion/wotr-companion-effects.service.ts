@@ -15,11 +15,11 @@ export class WotrCompanionEffectsService {
 
   getEffectGetters (): WotrEffectGetterMap<WotrCompanionAction> {
     return {
-      "companion-elimination": (action, gameActions) => this.companionEliminationEffect$ (action, gameActions),
-      "companion-movement": (action, gameActions) => of (void 0),
-      "companion-play": (action, gameActions) => of (void 0),
-      "companion-random": (action, gameActions) => of (void 0),
-      "companion-separation": (action, gameActions) => of (void 0),
+      "companion-elimination": (action, front, gameActions) => this.companionEliminationEffect$ (action, gameActions),
+      "companion-movement": (action, front, gameActions) => of (void 0),
+      "companion-play": (action, front, gameActions) => of (void 0),
+      "companion-random": (action, front, gameActions) => of (void 0),
+      "companion-separation": (action, front, gameActions) => of (void 0),
     };
   }
 

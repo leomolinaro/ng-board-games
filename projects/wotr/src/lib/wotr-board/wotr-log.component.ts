@@ -9,6 +9,8 @@ import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.st
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrHuntTileId } from "../wotr-elements/hunt/wotr-hunt.models";
 import { WotrLog } from "../wotr-elements/log/wotr-log.models";
+import { WotrMinionId } from "../wotr-elements/minion/wotr-minion.models";
+import { WotrMinionStore } from "../wotr-elements/minion/wotr-minion.store";
 import { WotrNation, WotrNationId } from "../wotr-elements/nation/wotr-nation.models";
 import { WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/region/wotr-region.models";
@@ -18,6 +20,7 @@ import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
 
 interface WotrLogStringFragment { type: "string"; label: string }
+interface WotrLogCardFragment { type: "card"; label: string }
 interface WotrLogPlayerFragment { type: "player"; label: string; front: WotrFrontId }
 interface WotrLogRegionFragment { type: "region"; region: WotrRegion }
 interface WotrLogNationFragment { type: "nation"; nation: WotrNation }
@@ -27,6 +30,7 @@ interface WotrLogHuntTileFragment { type: "hunt-tile"; tileImage: string }
 
 type WotrLogFragment =
   | WotrLogStringFragment
+  | WotrLogCardFragment
   | WotrLogPlayerFragment
   | WotrLogRegionFragment
   | WotrLogNationFragment
@@ -49,6 +53,7 @@ type WotrLogFragment =
       @for (fragment of fragments (); track $index) {
         @switch (fragment.type) {
           @case ("string") { <span>{{ fragment.label }}</span> }
+          @case ("card") { <span><i>{{ fragment.label }}</i></span> }
           @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
           @case ("region") {  <span>{{ fragment.region.name }}</span> }
           @case ("nation") {  <span>{{ fragment.nation.name }}</span> }
@@ -98,6 +103,7 @@ export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private companionStore = inject (WotrCompanionStore);
+  private minionStore = inject (WotrMinionStore);
 
   log = input.required<WotrLog> ();
   debugBreakpoint = input.required<boolean> ();
@@ -121,9 +127,9 @@ export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
           if (typeof f === "string") { parsed.push (this.string (f)); }
           else { parsed.push (f); }
         }
+        if (l.card) { parsed.push (this.string (", using "), this.card (cardToLabel (l.card))); }
         if (l.die) { parsed.push (this.string (" "), this.die (l.die, l.front)); }
         if (l.token) { parsed.push (this.string (" "), this.token (l.token, l.front)); }
-        if (l.card) { parsed.push (this.string (" "), this.string (`(${cardToLabel (l.card)})`)); }
         return parsed;
       }
       case "action-pass": return [this.player (l.front), this.string (" passes")];
@@ -136,9 +142,18 @@ export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
     return { type: "string", label };
   }
 
+  private card (label: string): WotrLogCardFragment {
+    return { type: "card", label };
+  }
+
   companion (companionId: WotrCompanionId): WotrLogStringFragment {
     const companion = this.companionStore.companion (companionId);
     return { type: "string", label: companion.name };
+  }
+
+  minion (minionId: WotrMinionId): WotrLogStringFragment {
+    const minion = this.minionStore.minion (minionId);
+    return { type: "string", label: minion.name };
   }
 
   player (front: WotrFrontId): WotrLogPlayerFragment {

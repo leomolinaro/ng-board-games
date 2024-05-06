@@ -13,6 +13,7 @@ import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
 import { WotrAction, WotrStory } from "../wotr-story.models";
 import { WotrActionDieActionsService } from "./action-die/wotr-action-die-actions.service";
 import { WotrArmyActionsService } from "./army/wotr-army-actions.service";
+import { WotrArmyEffectsService } from "./army/wotr-army-effects.service";
 import { WotrCardActionsService } from "./card/wotr-card-actions.service";
 import { WotrCombatActionsService } from "./combat/wotr-combat-actions.service";
 import { WotrCompanionActionsService } from "./companion/wotr-companion-actions.service";
@@ -37,6 +38,7 @@ export class WotrGameActionsService {
   private companionEffects = inject (WotrCompanionEffectsService);
   private minionActions = inject (WotrMinionActionsService);
   private armyActions = inject (WotrArmyActionsService);
+  private armyEffects = inject (WotrArmyEffectsService);
   private politicalActions = inject (WotrPoliticalActionsService);
   private combatActions = inject (WotrCombatActionsService);
   private logStore = inject (WotrLogStore);
@@ -60,15 +62,16 @@ export class WotrGameActionsService {
 
   private effectGetters: Record<WotrAction["type"], WotrEffectGetter<WotrAction>> = {
     ...this.fellowshipEffects.getEffectGetters (),
-    ...this.companionEffects.getEffectGetters ()
+    ...this.companionEffects.getEffectGetters (),
+    ...this.armyEffects.getEffectGetters ()
   } as any;
 
   private applyAction (action: WotrAction, frontId: WotrFrontId) {
     this.actionAppliers[action.type] (action, frontId);
   }
 
-  private actionEffect$ (action: WotrAction, story: WotrStory): Observable<unknown> {
-    return this.effectGetters[action.type]?. (action, this) || of (void 0);
+  private actionEffect$ (action: WotrAction, story: WotrStory, front: WotrFrontId): Observable<unknown> {
+    return this.effectGetters[action.type]?. (action, front, this) || of (void 0);
   }
 
   applyStory$ (story: WotrStory, frontId: WotrFrontId) {
@@ -76,7 +79,7 @@ export class WotrGameActionsService {
       this.logStore.logAction (action, frontId);
       this.applyAction (action, frontId);
     });
-    return this.storyEffect$ (story);
+    return this.storyEffect$ (story, frontId);
   }
   
   applyCardStory$ (story: WotrStory, cardId: WotrCardId, frontId: WotrFrontId) {
@@ -84,7 +87,7 @@ export class WotrGameActionsService {
       this.logStore.logCardAction (action, cardId, frontId);
       this.applyAction (action, frontId);
     });
-    return this.storyEffect$ (story);
+    return this.storyEffect$ (story, frontId);
   }
 
   applyDieStory$ (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
@@ -93,7 +96,17 @@ export class WotrGameActionsService {
       this.applyAction (action, frontId);
     });
     this.frontStore.removeActionDie (die, frontId);
-    return this.storyEffect$ (story);
+    return this.storyEffect$ (story, frontId);
+  }
+
+  applyDieCardStory$ (die: WotrActionDie, card: WotrCardId, story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.logStore.logDieCardAction (action, die, card, frontId);
+      this.applyAction (action, frontId);
+    });
+    this.frontStore.removeActionDie (die, frontId);
+    this.frontStore.discardCards ([card], frontId);
+    return this.storyEffect$ (story, frontId);
   }
 
   applyTokenStory$ (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
@@ -102,11 +115,11 @@ export class WotrGameActionsService {
       this.applyAction (action, frontId);
     });
     this.frontStore.removeActionToken (token, frontId);
-    return this.storyEffect$ (story);
+    return this.storyEffect$ (story, frontId);
   }
 
-  private storyEffect$ (story: WotrStory): Observable<unknown> {
-    return concatJoin (story.actions.map (action => this.actionEffect$ (action, story)));
+  private storyEffect$ (story: WotrStory, front: WotrFrontId): Observable<unknown> {
+    return concatJoin (story.actions.map (action => this.actionEffect$ (action, story, front)));
   }
 
 }

@@ -9,9 +9,9 @@ export class WotrCombatLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrCombatAction> {
     return {
-      "combat-card-choose": (action, front, f) => [],
-      "combat-card-choose-not": (action, front, f) => [],
-      "combat-roll": (action, front, f) => [],
+      "combat-card-choose": (action, front, f) => [f.player (front), " choose a combat card"],
+      "combat-card-choose-not": (action, front, f) => [f.player (front), " does not play any combat card"],
+      "combat-roll": (action, front, f) => [f.player (front), " rolls ", action.dice.toString ()],
     };
   }
 

@@ -30,6 +30,7 @@ export class WotrLogStore {
   logAction (action: WotrAction, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId }); }
   logCardAction (action: WotrAction, cardId: WotrCardId, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, card: cardId, front: frontId }); }
   logDieAction (action: WotrAction, die: WotrActionDie, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die }); }
+  logDieCardAction (action: WotrAction, die: WotrActionDie, card: WotrCardId, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die, card }); }
   logTokenAction (action: WotrAction, token: WotrActionToken, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, token }); }
   logEndGame () { this.addLog ("Log end game", { type: "endGame" }); }
   logActionPass (frontId: WotrFrontId) { this.addLog ("Log action pass", { type: "action-pass", front: frontId }); }

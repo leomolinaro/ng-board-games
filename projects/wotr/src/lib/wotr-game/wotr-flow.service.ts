@@ -15,7 +15,7 @@ import { WotrSetup } from "../wotr-rules/wotr-setup-rules.service";
 import { WotrStoryService } from "./wotr-story.service";
 import { WotrUnexpectedStory } from "./wotr-unexpected-story";
 
-type WotrActionResolution = "die" | "token" | "pass" | "skipTokens";
+type WotrActionResolution = "die" | "dieCard" | "token" | "pass" | "skipTokens";
 
 @Injectable ()
 export class WotrFlowService {
@@ -184,7 +184,11 @@ export class WotrFlowService {
     return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
       switchMap (story => {
         if (story.die) {
-          return this.gameActions.applyDieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
+          if (story.card) {
+            return this.gameActions.applyDieCardStory$ (story.die, story.card, story, frontId).pipe (map<unknown, "dieCard"> (() => "dieCard"));
+          } else {
+            return this.gameActions.applyDieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
+          }
         } else if (story.token) {
           return this.gameActions.applyTokenStory$ (story.token, story, frontId).pipe (map<unknown, "token"> (() => "token"));
         } else if (story.pass) {

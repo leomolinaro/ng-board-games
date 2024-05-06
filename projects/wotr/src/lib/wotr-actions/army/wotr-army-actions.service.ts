@@ -17,7 +17,7 @@ export class WotrArmyActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrArmyAction> {
     return {
-      "army-attack": (action, front) => { throw new Error ("TODO") },
+      "army-attack": (action, front) => { /*empty*/ },
       "army-movement": (action, front) => {
         if (action.army.minions) {
           for (const minion of action.army.minions) {

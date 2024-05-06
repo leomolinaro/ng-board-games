@@ -22,13 +22,13 @@ export class WotrFellowshipEffectsService {
 
   getEffectGetters (): WotrEffectGetterMap<WotrFellowshipAction> {
     return {
-      "fellowship-corruption": (action/* , front */)  => of (void 0),
-      "fellowship-declare": (action/* , front */)  => of (void 0),
-      "fellowship-declare-not": (action/* , front */)  => of (void 0),
-      "fellowship-guide": (action/* , front */) => of (void 0),
-      "fellowship-hide": (action/* , front */) => of (void 0),
-      "fellowship-progress": (action, gameActions/* , front */) => this.fellowshipProgressEffect$ (action, gameActions),
-      "fellowship-reveal": (action/* , front */) => of (void 0),
+      "fellowship-corruption": (action, front)  => of (void 0),
+      "fellowship-declare": (action, front)  => of (void 0),
+      "fellowship-declare-not": (action, front)  => of (void 0),
+      "fellowship-guide": (action, front) => of (void 0),
+      "fellowship-hide": (action, front) => of (void 0),
+      "fellowship-progress": (action, front, gameActions) => this.fellowshipProgressEffect$ (action, gameActions),
+      "fellowship-reveal": (action, front) => of (void 0),
     };
   }
 
