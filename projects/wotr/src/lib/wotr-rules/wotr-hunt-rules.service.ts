@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { WotrHuntRoll } from "../wotr-actions/wotr-hunt-actions";
-import { WotrHuntState } from "../wotr-elements/wotr-hunt.store";
+import { WotrHuntRoll } from "../wotr-actions/hunt/wotr-hunt-actions";
+import { WotrHuntState } from "../wotr-elements/hunt/wotr-hunt.store";
 
 @Injectable ({
   providedIn: "root",

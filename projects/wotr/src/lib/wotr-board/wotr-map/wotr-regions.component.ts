@@ -4,10 +4,10 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../wotr-assets.service";
-import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/wotr-companion.models";
-import { WotrMinion, WotrMinionId } from "../../wotr-elements/wotr-minion.models";
-import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-elements/wotr-nation.models";
-import { WotrRegion, WotrRegionId } from "../../wotr-elements/wotr-region.models";
+import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/companion/wotr-companion.models";
+import { WotrMinion, WotrMinionId } from "../../wotr-elements/minion/wotr-minion.models";
+import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNationId, WotrShadowLeaderUnitType } from "../../wotr-elements/nation/wotr-nation.models";
+import { WotrRegion, WotrRegionId } from "../../wotr-elements/region/wotr-region.models";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapPoint, WotrMapService } from "./wotr-map.service";
 

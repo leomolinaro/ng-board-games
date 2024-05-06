@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrHuntState } from "../../wotr-elements/wotr-hunt.store";
+import { WotrHuntState } from "../../wotr-elements/hunt/wotr-hunt.store";
 
 interface WotrHuntDieNode {
   id: string;

@@ -4,11 +4,11 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { WotrCardId } from "../wotr-elements/wotr-card.models";
-import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
-import { WotrFront } from "../wotr-elements/wotr-front.models";
-import { WotrMinion, WotrMinionId } from "../wotr-elements/wotr-minion.models";
-import { WotrArmyUnitType, WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
+import { WotrCardId } from "../wotr-elements/card/wotr-card.models";
+import { WotrCompanion, WotrCompanionId } from "../wotr-elements/companion/wotr-companion.models";
+import { WotrFront } from "../wotr-elements/front/wotr-front.models";
+import { WotrMinion, WotrMinionId } from "../wotr-elements/minion/wotr-minion.models";
+import { WotrArmyUnitType, WotrNation, WotrNationId } from "../wotr-elements/nation/wotr-nation.models";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 

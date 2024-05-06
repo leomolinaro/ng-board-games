@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrElvenRing, WotrFrontId } from "../../wotr-elements/wotr-front.models";
+import { WotrElvenRing, WotrFrontId } from "../../wotr-elements/front/wotr-front.models";
 
 interface WotrElvenRingNode {
   id: string;
@@ -51,7 +51,7 @@ const Y0 = 18;
 })
 export class WotrElvenRingsBoxComponent {
 
-  freePeopleElvenRings = input.required<WotrElvenRing[]> ();
+  freePeoplesElvenRings = input.required<WotrElvenRing[]> ();
   shadowElvenRings = input.required<WotrElvenRing[]> ();
 
   private assets = inject (WotrAssetsService);
@@ -64,7 +64,7 @@ export class WotrElvenRingsBoxComponent {
 
   elvenRingNodes: Signal<WotrElvenRingNode[]> = computed (() => {
     return [
-      ...this.freePeopleElvenRings ().map (e => this.elvenRingToNode (e, "free-peoples")),
+      ...this.freePeoplesElvenRings ().map (e => this.elvenRingToNode (e, "free-peoples")),
       ...this.shadowElvenRings ().map (e => this.elvenRingToNode (e, "shadow")),
     ];
   });

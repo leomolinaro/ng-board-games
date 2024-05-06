@@ -4,7 +4,7 @@ import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { WotrFrontId } from "./wotr-elements/wotr-front.models";
+import { WotrFrontId } from "./wotr-elements/front/wotr-front.models";
 import { WotrExampleButton } from "./wotr-examples/wotr-example-button";
 import {
   AWotrPlayerDoc,

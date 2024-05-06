@@ -1,10 +1,11 @@
 import { Observable } from "rxjs";
-import { WotrCardId } from "../wotr-elements/wotr-card.models";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrCardId } from "../wotr-elements/card/wotr-card.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrStory } from "../wotr-story.models";
 
 export interface WotrPlayerService {
   firstPhaseDrawCards$ (front: WotrFrontId): Observable<WotrStory>;
+  fellowshipDeclaration$? (): Observable<WotrStory>;
   huntAllocation$? (): Observable<WotrStory>;
   rollActionDice$? (front: WotrFrontId): Observable<WotrStory>;
   rollHuntDice$? (): Observable<WotrStory>;

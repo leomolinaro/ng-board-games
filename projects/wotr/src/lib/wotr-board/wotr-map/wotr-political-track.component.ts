@@ -3,7 +3,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgSvgModule } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrNation, WotrNationId, WotrPoliticalStep } from "../../wotr-elements/wotr-nation.models";
+import { WotrNation, WotrNationId, WotrPoliticalStep } from "../../wotr-elements/nation/wotr-nation.models";
 
 interface WotrPoliticalNode {
   id: WotrNationId;

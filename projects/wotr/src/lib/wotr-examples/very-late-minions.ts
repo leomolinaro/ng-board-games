@@ -2,15 +2,15 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
-import { discardDice } from "../wotr-actions/wotr-action-die-actions";
-import { attack, eliminateUnit, elite, leader, minion, moveArmy, nazgul, recruitUnit, regular, retreatIntoSiege } from "../wotr-actions/wotr-army-actions";
-import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../wotr-actions/wotr-card-actions";
-import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/wotr-combat-actions";
-import { chooseRandomCompanion, eliminateCompanion } from "../wotr-actions/wotr-companion-actions";
-import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/wotr-fellowship-actions";
-import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/wotr-hunt-actions";
-import { moveMinions, moveNazgul, playMinion } from "../wotr-actions/wotr-minion-actions";
-import { advanceNation } from "../wotr-actions/wotr-political-actions";
+import { discardDice } from "../wotr-actions/action-die/wotr-action-die-actions";
+import { attack, eliminateUnit, elite, leader, minion, moveArmy, nazgul, recruitUnit, regular, retreatIntoSiege } from "../wotr-actions/army/wotr-army-actions";
+import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../wotr-actions/card/wotr-card-actions";
+import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/combat/wotr-combat-actions";
+import { chooseRandomCompanion, eliminateCompanion } from "../wotr-actions/companion/wotr-companion-actions";
+import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/fellowship/wotr-fellowship-actions";
+import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/hunt/wotr-hunt-actions";
+import { moveMinions, moveNazgul, playMinion } from "../wotr-actions/minion/wotr-minion-actions";
+import { advanceNation } from "../wotr-actions/political/wotr-political-actions";
 import { WotrActionToken } from "../wotr-elements/wotr-dice.models";
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../wotr-story.models";
 
@@ -19,6 +19,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 1
   fp (time).story (drawCards ("The Power of Tom Bombadil", "Elven Cloaks")),
   s ().story (drawCards ("The Day Without Dawn", "Worn with Sorrow and Toil")),
+  fp ().story (notDeclareFellowship ()),
   s ().huntAllocation (1),
   fp (time).rollActionDice ("character", "character", "muster-army", "muster"),
   s ().rollActionDice ("army", "character", "army", "character", "event", "eye"),
@@ -49,6 +50,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 2
   fp (time).story (drawCards ("The Ents Awake: Entmoot", "Kindred of Glorfindel")),
   s ().story (drawCards ("Return to Valinor", "Nazgul Search")),
+  fp ().story (notDeclareFellowship ()),
   s ().huntAllocation (1),
   fp (time).rollActionDice ("muster-army", "character", "event", "will-of-the-west"),
   s ().rollActionDice ("event", "muster-army", "event", "army", "event"),
@@ -75,6 +77,7 @@ export const stories: WotrStoryDoc[] = [
   s ().armyDie (
     moveArmy ("moria", "dimrill-dale", regular ("sauron", 1), regular ("isengard", 4)),
     moveArmy ("noman-lands", "southern-rhovanion", regular ("sauron", 9), elite ("sauron"), nazgul (2))),
+  fp ().skipTokens (),
   // Turn 3
   fp (time).story (drawCards ("Celeborn's Galadhrim", "Mithril Coat and Sting")),
   s ().story (drawCards ("Half-orcs and Goblin-men", "Wormtongue")),

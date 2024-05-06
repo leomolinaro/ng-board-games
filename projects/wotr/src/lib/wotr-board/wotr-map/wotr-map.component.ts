@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, V
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/wotr-companion.models";
-import { WotrFellowship } from "../../wotr-elements/wotr-fellowhip.models";
-import { WotrFront } from "../../wotr-elements/wotr-front.models";
-import { WotrHuntState } from "../../wotr-elements/wotr-hunt.store";
-import { WotrMinion, WotrMinionId } from "../../wotr-elements/wotr-minion.models";
-import { WotrNation } from "../../wotr-elements/wotr-nation.models";
-import { WotrRegion, WotrRegionId } from "../../wotr-elements/wotr-region.models";
+import { WotrCompanion, WotrCompanionId } from "../../wotr-elements/companion/wotr-companion.models";
+import { WotrFellowship } from "../../wotr-elements/fellowship/wotr-fellowhip.models";
+import { WotrFront } from "../../wotr-elements/front/wotr-front.models";
+import { WotrHuntState } from "../../wotr-elements/hunt/wotr-hunt.store";
+import { WotrMinion, WotrMinionId } from "../../wotr-elements/minion/wotr-minion.models";
+import { WotrNation } from "../../wotr-elements/nation/wotr-nation.models";
+import { WotrRegion, WotrRegionId } from "../../wotr-elements/region/wotr-region.models";
 import { WotrDeckBoxesComponent } from "./wotr-deck-boxes.component";
 import { WotrElvenRingsBoxComponent } from "./wotr-elven-rings-box.component";
 import { WotrFellowshipBoxComponent } from "./wotr-fellowship-box.component";
@@ -54,10 +54,10 @@ const GRID_STEP = 10;
         <svg:g wotrFellowshipTrack [fellowship]="fellowship ()"></svg:g>
         <svg:g wotrFellowshipBox [fellowship]="fellowship ()"></svg:g>
         <svg:g wotrElvenRingsBox
-          [freePeopleElvenRings]="freePeople ().elvenRings"
+          [freePeoplesElvenRings]="freePeoples ().elvenRings"
           [shadowElvenRings]="shadow ().elvenRings"></svg:g>
-        <svg:g wotrDeckBoxes [freePeople]="freePeople ()" [shadow]="shadow ()"></svg:g>
-        <svg:g wotrTableCards [freePeople]="freePeople ()" [shadow]="shadow ()"></svg:g>
+        <svg:g wotrDeckBoxes [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
+        <svg:g wotrTableCards [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
       </svg:g>
     </svg:svg>
     @if (isDevMode) {
@@ -75,7 +75,7 @@ export class WotrMapComponent {
   regions = input.required<WotrRegion[]> ();
   nations = input.required<WotrNation[]> ();
   hunt = input.required<WotrHuntState[]> ();
-  freePeople = input.required<WotrFront> ();
+  freePeoples = input.required<WotrFront> ();
   shadow = input.required<WotrFront> ();
   fellowship = input.required<WotrFellowship[]> ();
   companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();

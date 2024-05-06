@@ -1,19 +1,19 @@
 import { BgStoryDoc } from "@leobg/commons";
-import { WotrActionDieAction, rollActionDice } from "./wotr-actions/wotr-action-die-actions";
-import { WotrArmyAction } from "./wotr-actions/wotr-army-actions";
-import { WotrCardAction } from "./wotr-actions/wotr-card-actions";
-import { WotrCombatAction } from "./wotr-actions/wotr-combat-actions";
-import { WotrCompanionAction } from "./wotr-actions/wotr-companion-actions";
-import { WotrFellowshipAction } from "./wotr-actions/wotr-fellowship-actions";
-import { WotrHuntAction } from "./wotr-actions/wotr-hunt-actions";
-import { WotrMinionAction } from "./wotr-actions/wotr-minion-actions";
-import { WotrPoliticalAction } from "./wotr-actions/wotr-political-actions";
-import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-elements/wotr-card.models";
-import { WotrCompanionId } from "./wotr-elements/wotr-companion.models";
+import { WotrActionDieAction, rollActionDice } from "./wotr-actions/action-die/wotr-action-die-actions";
+import { WotrArmyAction } from "./wotr-actions/army/wotr-army-actions";
+import { WotrCardAction } from "./wotr-actions/card/wotr-card-actions";
+import { WotrCombatAction } from "./wotr-actions/combat/wotr-combat-actions";
+import { WotrCompanionAction } from "./wotr-actions/companion/wotr-companion-actions";
+import { WotrFellowshipAction } from "./wotr-actions/fellowship/wotr-fellowship-actions";
+import { WotrHuntAction } from "./wotr-actions/hunt/wotr-hunt-actions";
+import { WotrMinionAction } from "./wotr-actions/minion/wotr-minion-actions";
+import { WotrPoliticalAction } from "./wotr-actions/political/wotr-political-actions";
+import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-elements/card/wotr-card.models";
+import { WotrCompanionId } from "./wotr-elements/companion/wotr-companion.models";
+import { WotrFrontId } from "./wotr-elements/front/wotr-front.models";
+import { WotrMinionId } from "./wotr-elements/minion/wotr-minion.models";
+import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/nation/wotr-nation.models";
 import { WotrActionDie, WotrActionToken } from "./wotr-elements/wotr-dice.models";
-import { WotrFrontId } from "./wotr-elements/wotr-front.models";
-import { WotrMinionId } from "./wotr-elements/wotr-minion.models";
-import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/wotr-nation.models";
 
 export interface WotrStory {
   die?: WotrActionDie;

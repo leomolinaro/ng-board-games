@@ -4,8 +4,8 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { WotrHuntTileId } from "../wotr-elements/wotr-hunt.models";
-import { WotrHuntState } from "../wotr-elements/wotr-hunt.store";
+import { WotrHuntTileId } from "../wotr-elements/hunt/wotr-hunt.models";
+import { WotrHuntState } from "../wotr-elements/hunt/wotr-hunt.store";
 import { WotrLogsComponent } from "./wotr-logs.component";
 import { WotrMapComponent } from "./wotr-map/wotr-map.component";
 

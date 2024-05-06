@@ -1,8 +1,8 @@
-import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
-import { WotrHuntTileId } from "../wotr-elements/wotr-hunt.models";
-import { WotrNationId } from "../wotr-elements/wotr-nation.models";
-import { WotrRegionId } from "../wotr-elements/wotr-region.models";
+import { WotrCompanionId } from "../wotr-elements/companion/wotr-companion.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
+import { WotrHuntTileId } from "../wotr-elements/hunt/wotr-hunt.models";
+import { WotrNationId } from "../wotr-elements/nation/wotr-nation.models";
+import { WotrRegionId } from "../wotr-elements/region/wotr-region.models";
 
 export interface WotrFragmentCreator<F> {
   player (front: WotrFrontId): F;

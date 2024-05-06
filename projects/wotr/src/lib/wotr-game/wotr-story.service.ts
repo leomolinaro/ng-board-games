@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, BgStoryTask } from "@leobg/commons";
-import { Observable } from "rxjs";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { Observable, delay } from "rxjs";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRemoteService } from "../wotr-remote.service";
@@ -36,10 +36,10 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   protected override currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
   protected override cancelChange$ () { return this.ui.cancelChange$ (); }
   override executeTask$<R extends WotrStory> (playerId: WotrFrontId, task$: (playerService: WotrPlayerService) => Observable<R>): Observable<R> {
-    return super.executeTask$ (playerId, task$);
+    return super.executeTask$ (playerId, task$).pipe (delay (50));
   }
   override executeTasks$ (tasks: BgStoryTask<WotrFrontId, WotrStory, WotrPlayerService>[]): Observable<WotrStory[]> {
-    return super.executeTasks$ (tasks);
+    return super.executeTasks$ (tasks).pipe (delay (50));
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {

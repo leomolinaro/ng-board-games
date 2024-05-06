@@ -1,20 +1,17 @@
-import { Injectable, Injector, inject } from "@angular/core";
-import { concatJoin } from "@leobg/commons/utils";
-import { EMPTY, Observable, expand, from, last, map, of, switchMap, tap } from "rxjs";
+import { Injectable, inject } from "@angular/core";
+import { EMPTY, Observable, expand, last, map, of, switchMap, tap } from "rxjs";
 import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
-import { WotrCompanionStore } from "../wotr-elements/wotr-companion.store";
-import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
-import { WotrFellowshipStore } from "../wotr-elements/wotr-fellowship.store";
-import { WotrFrontId, oppositeFront } from "../wotr-elements/wotr-front.models";
-import { WotrFrontStore } from "../wotr-elements/wotr-front.store";
-import { WotrHuntStore } from "../wotr-elements/wotr-hunt.store";
-import { WotrLogStore } from "../wotr-elements/wotr-log.store";
-import { WotrMinionStore } from "../wotr-elements/wotr-minion.store";
-import { WotrNationStore } from "../wotr-elements/wotr-nation.store";
-import { WotrRegionStore } from "../wotr-elements/wotr-region.store";
+import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
+import { WotrFellowshipStore } from "../wotr-elements/fellowship/wotr-fellowship.store";
+import { WotrFrontId, oppositeFront } from "../wotr-elements/front/wotr-front.models";
+import { WotrFrontStore } from "../wotr-elements/front/wotr-front.store";
+import { WotrHuntStore } from "../wotr-elements/hunt/wotr-hunt.store";
+import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
+import { WotrMinionStore } from "../wotr-elements/minion/wotr-minion.store";
+import { WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
+import { WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
 import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
 import { WotrSetup } from "../wotr-rules/wotr-setup-rules.service";
-import { WotrAction, WotrStory } from "../wotr-story.models";
 import { WotrStoryService } from "./wotr-story.service";
 import { WotrUnexpectedStory } from "./wotr-unexpected-story";
 
@@ -35,7 +32,6 @@ export class WotrFlowService {
   private gameActions = inject (WotrGameActionsService);
   private rules = inject (WotrRulesService);
   private story = inject (WotrStoryService);
-  private injector = inject (Injector);
 
   game$ (): Observable<unknown> {
     this.setup ();
@@ -113,7 +109,7 @@ export class WotrFlowService {
     )).pipe (
       tap (stories => {
         this.frontStore.frontIds ().forEach ((frontId, index) => {
-          this.flowStory (stories[index], frontId);
+          this.gameActions.applyStory$ (stories[index], frontId);
         });
       })
     );
@@ -121,16 +117,15 @@ export class WotrFlowService {
 
   private fellowshipPhase$ () {
     this.logStore.logPhase (2);
-    return of (true);
+    return this.story.executeTask$ ("free-peoples", p => p.fellowshipDeclaration$! ()).pipe (
+      switchMap (story => this.gameActions.applyStory$ (story, "shadow"))
+    );
   }
 
   private huntAllocation$ () {
     this.logStore.logPhase (3);
     return this.story.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
-      tap (story => {
-        console.log ("story", story);
-        this.flowStory (story, "shadow");
-      })
+      switchMap (story => this.gameActions.applyStory$ (story, "shadow"))
     );
   }
 
@@ -140,12 +135,11 @@ export class WotrFlowService {
       front => ({ playerId: front, task$: p => p.rollActionDice$! (front) })
     )).pipe (
       tap (stories => {
-        console.log ("stories", stories);
         this.frontStore.frontIds ().forEach ((frontId, index) => {
           const story = stories[index];
           const action = story.actions[0];
           if (action?.type !== "action-roll") { throw new WotrUnexpectedStory (story); }
-          this.flowStory (story, frontId);
+          this.gameActions.applyStory$ (story, frontId);
           if (frontId === "shadow") {
             this.eyeResultsToHuntBox ();
           }
@@ -190,9 +184,9 @@ export class WotrFlowService {
     return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
       switchMap (story => {
         if (story.die) {
-          return this.dieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
+          return this.gameActions.applyDieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
         } else if (story.token) {
-          return this.tokenStory$ (story.token, story, frontId).pipe (map<unknown, "token"> (() => "token"));
+          return this.gameActions.applyTokenStory$ (story.token, story, frontId).pipe (map<unknown, "token"> (() => "token"));
         } else if (story.pass) {
           this.logStore.logActionPass (frontId);
           return of<"pass"> ("pass");
@@ -204,45 +198,6 @@ export class WotrFlowService {
         }
       })
     );
-  }
-
-  private flowStory (story: WotrStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.logStore.logAction (action, frontId);
-      this.gameActions.applyAction (action, frontId);
-    });
-  }
-
-  private dieStory$ (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.logStore.logDieAction (action, die, frontId);
-      this.gameActions.applyAction (action, frontId);
-    });
-    this.frontStore.removeActionDie (die, frontId);
-    return this.actionResolutionSubFlows$ (story);
-  }
-
-  private tokenStory$ (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.logStore.logTokenAction (action, token, frontId);
-      this.gameActions.applyAction (action, frontId);
-    });
-    this.frontStore.removeActionToken (token, frontId);
-    return this.actionResolutionSubFlows$ (story);
-  }
-
-  private actionResolutionSubFlows$ (story: WotrStory): Observable<unknown> {
-    return concatJoin (story.actions.map (action => this.actionResolutionSubFlow$ (action, story)));
-  }
-
-  private actionResolutionSubFlow$ (action: WotrAction, story: WotrStory): Observable<unknown> {
-    switch (action.type) {
-      case "fellowship-progress": return from (
-        import ("./wotr-subflows/wotr-fellowship-progress-flow.service")
-        .then ((m) => new m.WotrFellowshipProgressFlow (this.huntStore, this.companionStore, this.frontStore, this.logStore, this.gameActions, this.rules, this.story))
-      ).pipe (switchMap (subFlow => subFlow.execute$ (action, story)));
-    }
-    return of (void 0);
   }
 
   private victoryCheck$ (roundNumber: number) {

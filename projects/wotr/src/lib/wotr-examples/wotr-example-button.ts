@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService, BgUser, getStoryId } from "@leobg/commons";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { Observable, forkJoin, from, map, switchMap } from "rxjs";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrPlayerDoc, WotrReadPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
 import { WotrStoryDoc } from "../wotr-story.models";
 
@@ -82,7 +82,7 @@ export class WotrExampleButton implements OnDestroy {
       switchMap (game => forkJoin ([
         this.insertRealPlayer$ ("FP", "free-peoples", 1, user, game.id),
         this.insertRealPlayer$ ("S", "shadow", 2, user, game.id),
-        ...stories.slice (0, 60).map (story => {
+        ...stories.slice (0, 80).map (story => {
           const storyId = getStoryId (story.time, story.playerId);
           return this.remote.insertStory$ (storyId, story, game.id);
         })

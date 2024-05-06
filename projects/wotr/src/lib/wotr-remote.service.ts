@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgUser } from "@leobg/commons";
-import { WotrFrontId } from "./wotr-elements/wotr-front.models";
+import { WotrFrontId } from "./wotr-elements/front/wotr-front.models";
 import { WotrStoryDoc } from "./wotr-story.models";
 
 export interface WotrGameDoc {

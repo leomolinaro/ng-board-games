@@ -1,16 +1,16 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrAction } from "../wotr-story.models";
-import { WotrActionDieLogsService } from "./wotr-action-die-logs.service";
+import { WotrActionDieLogsService } from "./action-die/wotr-action-die-logs.service";
+import { WotrArmyLogsService } from "./army/wotr-army-logs.service";
+import { WotrCardLogsService } from "./card/wotr-card-logs.service";
+import { WotrCombatLogsService } from "./combat/wotr-combat-logs.service";
+import { WotrCompanionLogsService } from "./companion/wotr-companion-logs.service";
+import { WotrFellowshipLogsService } from "./fellowship/wotr-fellowship-logs.service";
+import { WotrHuntLogsService } from "./hunt/wotr-hunt-logs.service";
+import { WotrMinionLogsService } from "./minion/wotr-minion-logs.service";
+import { WotrPoliticalLogsService } from "./political/wotr-political-logs.service";
 import { WotrActionLogger, WotrFragmentCreator } from "./wotr-action-log";
-import { WotrArmyLogsService } from "./wotr-army-logs.service";
-import { WotrCardLogsService } from "./wotr-card-logs.service";
-import { WotrCombatLogsService } from "./wotr-combat-logs.service";
-import { WotrCompanionLogsService } from "./wotr-companion-logs.service";
-import { WotrFellowshipLogsService } from "./wotr-fellowship-logs.service";
-import { WotrHuntLogsService } from "./wotr-hunt-logs.service";
-import { WotrMinionLogsService } from "./wotr-minion-logs.service";
-import { WotrPoliticalLogsService } from "./wotr-political-logs.service";
 
 @Injectable ({
   providedIn: "root"

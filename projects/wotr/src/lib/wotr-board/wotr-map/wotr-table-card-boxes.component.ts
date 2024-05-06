@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrCardId } from "../../wotr-elements/wotr-card.models";
-import { WotrFront } from "../../wotr-elements/wotr-front.models";
+import { WotrCardId } from "../../wotr-elements/card/wotr-card.models";
+import { WotrFront } from "../../wotr-elements/front/wotr-front.models";
 
 interface WotrTableCardNode {
   id: WotrCardId;
@@ -36,7 +36,7 @@ const YSTEP = 47;
 })
 export class WotrTableCardsComponent {
 
-  freePeople = input.required<WotrFront> ();
+  freePeoples = input.required<WotrFront> ();
   shadow = input.required<WotrFront> ();
 
   private assets = inject (WotrAssetsService);
@@ -44,7 +44,7 @@ export class WotrTableCardsComponent {
   tableCardNodes: Signal<WotrTableCardNode[]> = computed (() => {
     const nodes: WotrTableCardNode[] = [];
     let index = 0;
-    this.freePeople ().tableCards.forEach (c => { nodes.push (this.cardToNode (c, index)); index++; });
+    this.freePeoples ().tableCards.forEach (c => { nodes.push (this.cardToNode (c, index)); index++; });
     this.shadow ().tableCards.forEach (c => { nodes.push (this.cardToNode (c, index)); index++; });
     return nodes;
   });

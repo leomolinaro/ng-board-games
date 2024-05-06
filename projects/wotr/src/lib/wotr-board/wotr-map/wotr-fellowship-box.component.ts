@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrFellowship } from "../../wotr-elements/wotr-fellowhip.models";
+import { WotrFellowship } from "../../wotr-elements/fellowship/wotr-fellowhip.models";
 
 interface WotrCompanionNode {
   id: string;

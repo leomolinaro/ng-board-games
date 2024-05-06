@@ -6,7 +6,7 @@
     [regions]="regions ()"
     [nations]="nations ()"
     [hunt]="hunt ()"
-    [freePeople]="freePeople ()"
+    [freePeoples]="freePeoples ()"
     [shadow]="shadow ()"
     [fellowship]="fellowship ()"
     [companionById]="companionById ()"
@@ -21,7 +21,7 @@
           [labelClass]="front.id" [bodyClass]="front.id">
           <wotr-front-area
             [front]="front"
-            [nations]="front.id === 'free-peoples' ? freePeopleNations () : shadowNations ()"
+            [nations]="front.id === 'free-peoples' ? freePeoplesNations () : shadowNations ()"
             [companions]="front.id === 'free-peoples' ? companions () : undefined"
             [minions]="front.id === 'shadow' ? minions () : undefined"
             (cardClick)="onPreviewCardClick ($event, front)">

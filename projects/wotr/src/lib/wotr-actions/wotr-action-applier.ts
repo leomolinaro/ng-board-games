@@ -1,4 +1,4 @@
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 
 export type WotrActionApplier<A> = (action: A, front: WotrFrontId) => void;
 

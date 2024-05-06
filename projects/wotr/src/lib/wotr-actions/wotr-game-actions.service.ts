@@ -1,31 +1,50 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
-import { WotrAction } from "../wotr-story.models";
+import { concatJoin } from "@leobg/commons/utils";
+import { Observable, of } from "rxjs";
+import { WotrCardId } from "../wotr-elements/card/wotr-card.models";
+import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
+import { WotrFrontStore } from "../wotr-elements/front/wotr-front.store";
+import { WotrHuntStore } from "../wotr-elements/hunt/wotr-hunt.store";
+import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
+import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
+import { WotrStoryService } from "../wotr-game/wotr-story.service";
+import { WotrRulesService } from "../wotr-rules/wotr-rules.service";
+import { WotrAction, WotrStory } from "../wotr-story.models";
+import { WotrActionDieActionsService } from "./action-die/wotr-action-die-actions.service";
+import { WotrArmyActionsService } from "./army/wotr-army-actions.service";
+import { WotrCardActionsService } from "./card/wotr-card-actions.service";
+import { WotrCombatActionsService } from "./combat/wotr-combat-actions.service";
+import { WotrCompanionActionsService } from "./companion/wotr-companion-actions.service";
+import { WotrCompanionEffectsService } from "./companion/wotr-companion-effects.service";
+import { WotrFellowshipActionsService } from "./fellowship/wotr-fellowship-actions.service";
+import { WotrFellowshipEffectsService } from "./fellowship/wotr-fellowship-effects.service";
+import { WotrHuntActionsService } from "./hunt/wotr-hunt-actions.service";
+import { WotrMinionActionsService } from "./minion/wotr-minion-actions.service";
+import { WotrPoliticalActionsService } from "./political/wotr-political-actions.service";
 import { WotrActionApplier } from "./wotr-action-applier";
-import { WotrActionDieActionsService } from "./wotr-action-die-actions.service";
-import { WotrArmyActionsService } from "./wotr-army-actions.service";
-import { WotrCardActionsService } from "./wotr-card-actions.service";
-import { WotrCombatActionsService } from "./wotr-combat-actions.service";
-import { WotrCompanionActionsService } from "./wotr-companion-actions.service";
-import { WotrFellowshipActionsService } from "./wotr-fellowship-actions.service";
-import { WotrHuntActionsService } from "./wotr-hunt-actions.service";
-import { WotrMinionActionsService } from "./wotr-minion-actions.service";
-import { WotrPoliticalActionsService } from "./wotr-political-actions.service";
+import { WotrEffectGetter } from "./wotr-effect-getter";
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrGameActionsService {
 
   private cardActions = inject (WotrCardActionsService);
   private fellowshipActions = inject (WotrFellowshipActionsService);
+  private fellowshipEffects = inject (WotrFellowshipEffectsService);
   private huntActions = inject (WotrHuntActionsService);
   private actionDiceActions = inject (WotrActionDieActionsService);
   private companionActions = inject (WotrCompanionActionsService);
+  private companionEffects = inject (WotrCompanionEffectsService);
   private minionActions = inject (WotrMinionActionsService);
   private armyActions = inject (WotrArmyActionsService);
   private politicalActions = inject (WotrPoliticalActionsService);
   private combatActions = inject (WotrCombatActionsService);
+  private logStore = inject (WotrLogStore);
+  private frontStore = inject (WotrFrontStore);
+  private huntStore = inject (WotrHuntStore);
+  private companionStore = inject (WotrCompanionStore);
+  private rules = inject (WotrRulesService);
+  private story = inject (WotrStoryService);
 
   private actionAppliers: Record<WotrAction["type"], WotrActionApplier<WotrAction>> = {
     ...this.cardActions.getActionAppliers (),
@@ -39,8 +58,55 @@ export class WotrGameActionsService {
     ...this.combatActions.getActionAppliers (),
   } as any;
 
-  applyAction (action: WotrAction, frontId: WotrFrontId) {
+  private effectGetters: Record<WotrAction["type"], WotrEffectGetter<WotrAction>> = {
+    ...this.fellowshipEffects.getEffectGetters (),
+    ...this.companionEffects.getEffectGetters ()
+  } as any;
+
+  private applyAction (action: WotrAction, frontId: WotrFrontId) {
     this.actionAppliers[action.type] (action, frontId);
+  }
+
+  private actionEffect$ (action: WotrAction, story: WotrStory): Observable<unknown> {
+    return this.effectGetters[action.type]?. (action, this) || of (void 0);
+  }
+
+  applyStory$ (story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.logStore.logAction (action, frontId);
+      this.applyAction (action, frontId);
+    });
+    return this.storyEffect$ (story);
+  }
+  
+  applyCardStory$ (story: WotrStory, cardId: WotrCardId, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.logStore.logCardAction (action, cardId, frontId);
+      this.applyAction (action, frontId);
+    });
+    return this.storyEffect$ (story);
+  }
+
+  applyDieStory$ (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.logStore.logDieAction (action, die, frontId);
+      this.applyAction (action, frontId);
+    });
+    this.frontStore.removeActionDie (die, frontId);
+    return this.storyEffect$ (story);
+  }
+
+  applyTokenStory$ (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
+    story.actions.forEach (action => {
+      this.logStore.logTokenAction (action, token, frontId);
+      this.applyAction (action, frontId);
+    });
+    this.frontStore.removeActionToken (token, frontId);
+    return this.storyEffect$ (story);
+  }
+
+  private storyEffect$ (story: WotrStory): Observable<unknown> {
+    return concatJoin (story.actions.map (action => this.actionEffect$ (action, story)));
   }
 
 }

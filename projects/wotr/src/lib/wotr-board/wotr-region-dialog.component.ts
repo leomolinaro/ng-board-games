@@ -4,10 +4,10 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../wotr-assets.service";
-import { WotrCompanion, WotrCompanionId } from "../wotr-elements/wotr-companion.models";
-import { WotrMinion, WotrMinionId } from "../wotr-elements/wotr-minion.models";
-import { WotrNation, WotrNationId } from "../wotr-elements/wotr-nation.models";
-import { WotrRegion } from "../wotr-elements/wotr-region.models";
+import { WotrCompanion, WotrCompanionId } from "../wotr-elements/companion/wotr-companion.models";
+import { WotrMinion, WotrMinionId } from "../wotr-elements/minion/wotr-minion.models";
+import { WotrNation, WotrNationId } from "../wotr-elements/nation/wotr-nation.models";
+import { WotrRegion } from "../wotr-elements/region/wotr-region.models";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;

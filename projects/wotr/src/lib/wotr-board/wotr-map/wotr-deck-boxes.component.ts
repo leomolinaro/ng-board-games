@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, input } from "@angular/core";
-import { WotrFront } from "../../wotr-elements/wotr-front.models";
+import { WotrFront } from "../../wotr-elements/front/wotr-front.models";
 
 interface WotrDeckBoxNode {
   id: string;
@@ -40,13 +40,13 @@ const S_Y = 808;
 })
 export class WotrDeckBoxesComponent {
 
-  freePeople = input.required<WotrFront> ();
+  freePeoples = input.required<WotrFront> ();
   shadow = input.required<WotrFront> ();
 
   deckBoxNodes: Signal<WotrDeckBoxNode[]> = computed (() => {
     return [
-      { id: "fpCha", nCards: this.freePeople ().characterDeck.length, svgX: FP_CHA_X, svgY: FP_Y },
-      { id: "fpStr", nCards: this.freePeople ().strategyDeck.length, svgX: FP_STR_X, svgY: FP_Y },
+      { id: "fpCha", nCards: this.freePeoples ().characterDeck.length, svgX: FP_CHA_X, svgY: FP_Y },
+      { id: "fpStr", nCards: this.freePeoples ().strategyDeck.length, svgX: FP_STR_X, svgY: FP_Y },
       { id: "sCha", nCards: this.shadow ().characterDeck.length, svgX: S_CHA_X, svgY: S_Y },
       { id: "sStr", nCards: this.shadow ().strategyDeck.length, svgX: S_STR_X, svgY: S_Y },
     ];

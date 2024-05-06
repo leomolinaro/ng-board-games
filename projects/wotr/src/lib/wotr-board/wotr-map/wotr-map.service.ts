@@ -3,7 +3,7 @@ import { Injectable, inject } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { WotrAssetsService } from "../../wotr-assets.service";
-import { WotrRegionId } from "../../wotr-elements/wotr-region.models";
+import { WotrRegionId } from "../../wotr-elements/region/wotr-region.models";
 
 export type WotrRegionSlots = Record<WotrRegionId, Record<number, WotrMapPoint[]>>;
 

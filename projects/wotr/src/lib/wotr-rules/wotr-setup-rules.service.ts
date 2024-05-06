@@ -1,12 +1,12 @@
 import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
-import { WotrCharacterCardId, WotrStrategyCardId } from "../wotr-elements/wotr-card.models";
-import { WotrCardService } from "../wotr-elements/wotr-card.service";
-import { WotrCompanionId } from "../wotr-elements/wotr-companion.models";
+import { WotrCharacterCardId, WotrStrategyCardId } from "../wotr-elements/card/wotr-card.models";
+import { WotrCardService } from "../wotr-elements/card/wotr-card.service";
+import { WotrCompanionId } from "../wotr-elements/companion/wotr-companion.models";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
+import { WotrNationId, WotrPoliticalStep } from "../wotr-elements/nation/wotr-nation.models";
+import { WotrRegionId } from "../wotr-elements/region/wotr-region.models";
 import { WotrActionToken } from "../wotr-elements/wotr-dice.models";
-import { WotrFrontId } from "../wotr-elements/wotr-front.models";
-import { WotrNationId, WotrPoliticalStep } from "../wotr-elements/wotr-nation.models";
-import { WotrRegionId } from "../wotr-elements/wotr-region.models";
 
 export interface WotrSetup {
   regions: WotrRegionSetup[];

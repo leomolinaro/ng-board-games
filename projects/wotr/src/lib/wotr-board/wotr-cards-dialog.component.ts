@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, HostListener, inject } from "@angul
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { WotrCardId } from "../wotr-elements/wotr-card.models";
+import { WotrCardId } from "../wotr-elements/card/wotr-card.models";
 
 export interface WotrCardsDialogData {
   selectedCardId: WotrCardId;
