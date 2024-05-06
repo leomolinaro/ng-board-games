@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { Observable, map } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrStory } from "../wotr-story.models";
@@ -15,22 +14,26 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     // private rules: WotrRulesService,
   ) {}
 
-  firstPhaseDrawCards$ (front: WotrFrontId): Observable<WotrStory> {
-    this.ui.updateUi ("asd", s => ({
-      ...s,
-      // ...this.ui.resetUi (),
-      // turnPlayer: playerId,
-      message: `[${front}] Draw cards`,
-      // validAreas: validLands,
-      // canCancel: iInfantry !== 1,
-    }));
-    return this.ui.testChange$ ().pipe (
-      map (() => ({
-        phase: 1,
-        actions: [{ type: "card-draw", cards: ["fpcha01"] }]
-      }))
-    );
+  async firstPhaseDrawCards (front: WotrFrontId): Promise<WotrStory> {
+    return {
+      actions: [{ type: "card-draw", cards: ["fpcha01"] }]
+    };
   }
+  //   this.ui.updateUi ("asd", s => ({
+  //     ...s,
+  //     // ...this.ui.resetUi (),
+  //     // turnPlayer: playerId,
+  //     message: `[${front}] Draw cards`,
+  //     // validAreas: validLands,
+  //     // canCancel: iInfantry !== 1,
+  //   }));
+  //   await firstValueFrom (this.ui.testChange$ ());
+  //     map (() => ({
+  //       phase: 1,
+  //       actions: [{ type: "card-draw", cards: ["fpcha01"] }]
+  //     }))
+  //   );
+  // }
 
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement> {
   //   const placement: WotrArmyPlacement = {
@@ -190,3 +193,4 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   // } // confirmBattleInitiation$
   
 } // WotrPlayerLocalService
+

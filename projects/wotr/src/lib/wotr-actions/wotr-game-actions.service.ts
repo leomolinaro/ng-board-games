@@ -1,6 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { concatJoin } from "@leobg/commons/utils";
-import { Observable, of } from "rxjs";
+import { from, of } from "rxjs";
 import { WotrCardId } from "../wotr-elements/card/wotr-card.models";
 import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
@@ -70,56 +69,62 @@ export class WotrGameActionsService {
     this.actionAppliers[action.type] (action, frontId);
   }
 
-  private actionEffect$ (action: WotrAction, story: WotrStory, front: WotrFrontId): Observable<unknown> {
+  private async actionEffect (action: WotrAction, story: WotrStory, front: WotrFrontId) {
     return this.effectGetters[action.type]?. (action, front, this) || of (void 0);
   }
 
   applyStory$ (story: WotrStory, frontId: WotrFrontId) {
+    return from (this.applyStory (story, frontId));
+  }
+
+  async applyStory (story: WotrStory, frontId: WotrFrontId) {
     story.actions.forEach (action => {
       this.logStore.logAction (action, frontId);
       this.applyAction (action, frontId);
     });
-    return this.storyEffect$ (story, frontId);
+    await this.storyEffect (story, frontId);
   }
-  
-  applyCardStory$ (story: WotrStory, cardId: WotrCardId, frontId: WotrFrontId) {
+
+  async applyCardStory (story: WotrStory, cardId: WotrCardId, frontId: WotrFrontId) {
     story.actions.forEach (action => {
       this.logStore.logCardAction (action, cardId, frontId);
       this.applyAction (action, frontId);
     });
-    return this.storyEffect$ (story, frontId);
+    await this.storyEffect (story, frontId);
   }
 
-  applyDieStory$ (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
+  async applyDieStory (die: WotrActionDie, story: WotrStory, frontId: WotrFrontId) {
     story.actions.forEach (action => {
       this.logStore.logDieAction (action, die, frontId);
       this.applyAction (action, frontId);
     });
     this.frontStore.removeActionDie (die, frontId);
-    return this.storyEffect$ (story, frontId);
+    await this.storyEffect (story, frontId);
   }
 
-  applyDieCardStory$ (die: WotrActionDie, card: WotrCardId, story: WotrStory, frontId: WotrFrontId) {
+  async applyDieCardStory (die: WotrActionDie, card: WotrCardId, story: WotrStory, frontId: WotrFrontId) {
     story.actions.forEach (action => {
       this.logStore.logDieCardAction (action, die, card, frontId);
       this.applyAction (action, frontId);
     });
     this.frontStore.removeActionDie (die, frontId);
     this.frontStore.discardCards ([card], frontId);
-    return this.storyEffect$ (story, frontId);
+    await this.storyEffect (story, frontId);
   }
 
-  applyTokenStory$ (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
+  async applyTokenStory (token: WotrActionToken, story: WotrStory, frontId: WotrFrontId) {
     story.actions.forEach (action => {
       this.logStore.logTokenAction (action, token, frontId);
       this.applyAction (action, frontId);
     });
     this.frontStore.removeActionToken (token, frontId);
-    return this.storyEffect$ (story, frontId);
+    await this.storyEffect (story, frontId);
   }
 
-  private storyEffect$ (story: WotrStory, front: WotrFrontId): Observable<unknown> {
-    return concatJoin (story.actions.map (action => this.actionEffect$ (action, story, front)));
+  private async storyEffect (story: WotrStory, front: WotrFrontId) {
+    for (const action of story.actions) {
+      await this.actionEffect (action, story, front);
+    }
   }
 
 }

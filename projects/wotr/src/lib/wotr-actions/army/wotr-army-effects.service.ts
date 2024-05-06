@@ -1,5 +1,4 @@
 import { Injectable, inject } from "@angular/core";
-import { of, switchMap } from "rxjs";
 import { WotrFrontId, oppositeFront } from "../../wotr-elements/front/wotr-front.models";
 import { WotrFrontStore } from "../../wotr-elements/front/wotr-front.store";
 import { WotrStoryService } from "../../wotr-game/wotr-story.service";
@@ -15,31 +14,20 @@ export class WotrArmyEffectsService {
 
   getEffectGetters (): WotrEffectGetterMap<WotrArmyAction> {
     return {
-      "army-attack": (action, front, gameActions) => this.armyAttackEffect$ (action, front, gameActions),
-      "army-movement": (action, front, gameActions) => of (void 0),
-      "army-retreat-into-siege": (action, front, gameActions) => of (void 0),
-      "unit-elimination": (action, front, gameActions) => of (void 0),
-      "unit-recruitment": (action, front, gameActions) => of (void 0),
+      "army-attack": async (action, front, gameActions) => this.armyAttackEffect (action, front, gameActions),
+      "army-movement": async (action, front, gameActions) => { },
+      "army-retreat-into-siege": async (action, front, gameActions) => { },
+      "unit-elimination": async (action, front, gameActions) => { },
+      "unit-recruitment": async (action, front, gameActions) => { },
     };
   }
 
-  private armyAttackEffect$ (action: WotrArmyAttack, front: WotrFrontId, gameActions: WotrGameActionsService) {
-    // return of (void 0);
+  private async armyAttackEffect (action: WotrArmyAttack, front: WotrFrontId, gameActions: WotrGameActionsService) {
     const otherFront = oppositeFront (front);
-    return this.story.executeTask$ (front, p => p.chooseCombatCard$! ()).pipe (
-      switchMap (chooseCombatCard => gameActions.applyStory$ (chooseCombatCard, front)),
-      switchMap (() => this.story.executeTask$ (otherFront, p => p.chooseCombatCard$! ())),
-      switchMap (chooseOpponentCombatCard => gameActions.applyStory$ (chooseOpponentCombatCard, otherFront)),
-    );
-
-
-    // const cardId = labelToCardId ("Worn with Sorrow and Toil");
-    // if (this.frontStore.hasTableCard (cardId, "shadow")) {
-    //     switchMap (s => gameActions.applyCardStory$ (s, cardId, "shadow"))
-    //   );
-    // } else {
-    //   return of (void 0);
-    // }
+    const chooseCombatCard = await this.story.executeTask (front, p => p.chooseCombatCard! ());
+    await gameActions.applyStory (chooseCombatCard, front);
+    const chooseOpponentCombatCard = await this.story.executeTask (otherFront, p => p.chooseCombatCard! ());
+    await gameActions.applyStory (chooseOpponentCombatCard, otherFront);
   }
 
 }

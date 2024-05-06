@@ -1,5 +1,4 @@
 import { Injectable, inject } from "@angular/core";
-import { EMPTY, Observable, expand, last, map, of, switchMap, tap } from "rxjs";
 import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
 import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
 import { WotrFellowshipStore } from "../wotr-elements/fellowship/wotr-fellowship.store";
@@ -33,20 +32,17 @@ export class WotrFlowService {
   private rules = inject (WotrRulesService);
   private story = inject (WotrStoryService);
 
-  game$ (): Observable<unknown> {
+  async game () {
     this.setup ();
     let roundNumber = 0;
-    return this.round$ (++roundNumber).pipe (
-      expand (continueGame => {
-        if (continueGame) { return this.round$ (++roundNumber); }
-        this.logStore.logEndGame ();
-        return EMPTY;
-      }),
-      last (),
-    );
+    let continueGame = await this.round (++roundNumber);
+    while (continueGame) {
+      continueGame = await this.round (++roundNumber);
+    }
+    this.logStore.logEndGame ();
   }
 
-  setup () {
+  private setup () {
     const gameSetup = this.rules.setup.getGameSetup ();
     this.logStore.logSetup ();
     this.applySetup (gameSetup);
@@ -90,62 +86,66 @@ export class WotrFlowService {
     this.regionStore.addFellowshipToRegion (setup.fellowship.region);
   }
 
-  round$ (roundNumber: number): Observable<boolean> {
+  private async round (roundNumber: number) {
     this.logStore.logRound (roundNumber);
-    return this.firstPhase$ ().pipe (
-      switchMap (gameContinue => gameContinue ? this.fellowshipPhase$ () : of (false)),
-      switchMap (gameContinue => gameContinue ? this.huntAllocation$ () : of (false)),
-      switchMap (gameContinue => gameContinue ? this.actionRoll$ () : of (false)),
-      switchMap (gameContinue => gameContinue ? this.actionResolution$ () : of (false)),
-      switchMap (gameContinue => gameContinue ? this.victoryCheck$ (roundNumber) : of (false))
-    );
+    let continueGame = await this.firstPhase ();
+    if (!continueGame) { return false; }
+    continueGame = await this.fellowshipPhase ();
+    if (!continueGame) { return false; }
+    continueGame = await this.huntAllocation ();
+    if (!continueGame) { return false; }
+    continueGame = await this.actionRoll ();
+    if (!continueGame) { return false; }
+    continueGame = await this.actionResolution ();
+    if (!continueGame) { return false; }
+    continueGame = await this.victoryCheck (roundNumber);
+    if (!continueGame) { return false; }
+    return true;
   }
 
-  private firstPhase$ () {
+  private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    return this.story.executeTasks$ (this.frontStore.frontIds ().map (
-      front => ({ playerId: front, task$: p => p.firstPhaseDrawCards$ (front) })
-    )).pipe (
-      tap (stories => {
-        this.frontStore.frontIds ().forEach ((frontId, index) => {
-          this.gameActions.applyStory$ (stories[index], frontId);
-        });
-      })
-    );
+    const stories = await this.story.executeTasks (this.frontStore.frontIds ().map (
+      front => ({ playerId: front, task: p => p.firstPhaseDrawCards! (front) })
+    ));
+    let index = 0;
+    for (const frontId of this.frontStore.frontIds ()) {
+      await this.gameActions.applyStory (stories[index++], frontId);
+    }
+    return true;
   }
 
-  private fellowshipPhase$ () {
+  private async fellowshipPhase () {
     this.logStore.logPhase (2);
-    return this.story.executeTask$ ("free-peoples", p => p.fellowshipDeclaration$! ()).pipe (
-      switchMap (story => this.gameActions.applyStory$ (story, "shadow"))
-    );
+    const story = await this.story.executeTask ("free-peoples", p => p.fellowshipDeclaration! ());
+    await this.gameActions.applyStory (story, "shadow");
+    return true;
   }
 
-  private huntAllocation$ () {
+  private async huntAllocation () {
     this.logStore.logPhase (3);
-    return this.story.executeTask$ ("shadow", p => p.huntAllocation$! ()).pipe (
-      switchMap (story => this.gameActions.applyStory$ (story, "shadow"))
-    );
+    const story = await this.story.executeTask ("shadow", p => p.huntAllocation! ());
+    await this.gameActions.applyStory (story, "shadow");
+    return true;
   }
 
-  private actionRoll$ () {
+  private async actionRoll () {
     this.logStore.logPhase (4);
-    return this.story.executeTasks$ (this.frontStore.frontIds ().map (
-      front => ({ playerId: front, task$: p => p.rollActionDice$! (front) })
-    )).pipe (
-      tap (stories => {
-        this.frontStore.frontIds ().forEach ((frontId, index) => {
-          const story = stories[index];
-          const action = story.actions[0];
-          if (action?.type !== "action-roll") { throw new WotrUnexpectedStory (story); }
-          this.gameActions.applyStory$ (story, frontId);
-          if (frontId === "shadow") {
-            this.eyeResultsToHuntBox ();
-          }
-        });
-      })
-    );
+    const stories = await this.story.executeTasks (this.frontStore.frontIds ().map (
+      front => ({ playerId: front, task: p => p.rollActionDice! (front) })
+    ));
+    let index = 0;
+    for (const frontId of this.frontStore.frontIds ()) {
+      const story = stories[index++];
+      const action = story.actions[0];
+      if (action?.type !== "action-roll") { throw new WotrUnexpectedStory (story); }
+      await this.gameActions.applyStory (story, frontId);
+      if (frontId === "shadow") {
+        this.eyeResultsToHuntBox ();
+      }
+    }
+    return true;
   }
 
   private eyeResultsToHuntBox () {
@@ -157,18 +157,14 @@ export class WotrFlowService {
     this.huntStore.addHuntDice (nEyeResults);
   }
 
-  private actionResolution$ (): Observable<boolean> {
+  private async actionResolution () {
     this.logStore.logPhase (5);
     let frontId: WotrFrontId | null = "free-peoples";
-    return this.frontActionResolution$ (frontId).pipe (
-      expand (resolution => {
-        frontId = this.getNextResolutionFrontId (frontId!, resolution);
-        if (!frontId) { return EMPTY; }
-        return this.frontActionResolution$ (frontId);
-      }),
-      last (),
-      map (() => true)
-    );
+    do {
+      const resolution = await this.frontActionResolution (frontId);
+      frontId = this.getNextResolutionFrontId (frontId, resolution);
+    } while (frontId);
+    return true;
   }
 
   private getNextResolutionFrontId (frontId: WotrFrontId, resolution: WotrActionResolution): WotrFrontId | null {
@@ -180,33 +176,33 @@ export class WotrFlowService {
     return null;
   }
 
-  private frontActionResolution$ (frontId: WotrFrontId): Observable<WotrActionResolution> {
-    return this.story.executeTask$ (frontId, p => p.actionResolution$! (frontId)).pipe (
-      switchMap (story => {
-        if (story.die) {
-          if (story.card) {
-            return this.gameActions.applyDieCardStory$ (story.die, story.card, story, frontId).pipe (map<unknown, "dieCard"> (() => "dieCard"));
-          } else {
-            return this.gameActions.applyDieStory$ (story.die, story, frontId).pipe (map<unknown, "die"> (() => "die"));
-          }
-        } else if (story.token) {
-          return this.gameActions.applyTokenStory$ (story.token, story, frontId).pipe (map<unknown, "token"> (() => "token"));
-        } else if (story.pass) {
-          this.logStore.logActionPass (frontId);
-          return of<"pass"> ("pass");
-        } else if (story.skipTokens) {
-          this.logStore.logSkipTokens (frontId);
-          return of<"skipTokens"> ("skipTokens");
-        } else {
-          throw new WotrUnexpectedStory (story);
-        }
-      })
-    );
+  private async frontActionResolution (frontId: WotrFrontId): Promise<WotrActionResolution> {
+    const story = await this.story.executeTask (frontId, p => p.actionResolution! (frontId));
+    if (story.die) {
+      if (story.card) {
+        await this.gameActions.applyDieCardStory (story.die, story.card, story, frontId);
+        return "dieCard";
+      } else {
+        await this.gameActions.applyDieStory (story.die, story, frontId);
+        return "die";
+      }
+    } else if (story.token) {
+      await this.gameActions.applyTokenStory (story.token, story, frontId);
+      return "token";
+    } else if (story.pass) {
+      this.logStore.logActionPass (frontId);
+      return "pass";
+    } else if (story.skipTokens) {
+      this.logStore.logSkipTokens (frontId);
+      return "skipTokens";
+    } else {
+      throw new WotrUnexpectedStory (story);
+    }
   }
 
-  private victoryCheck$ (roundNumber: number) {
+  private async victoryCheck (roundNumber: number) {
     this.logStore.logPhase (6);
-    return of (roundNumber < 6);
+    return roundNumber < 6;
   }
 
 }

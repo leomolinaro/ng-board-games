@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService, BgStoryTask } from "@leobg/commons";
-import { Observable, delay } from "rxjs";
+import { ABgGameService, BgAuthService } from "@leobg/commons";
+import { delay, firstValueFrom, from } from "rxjs";
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
@@ -10,6 +10,11 @@ import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
 import { WotrPlayerService } from "./wotr-player.service";
 import { WotrUiStore } from "./wotr-ui.store";
+
+export interface WotrStoryTask {
+  playerId: WotrFrontId;
+  task: (playerService: WotrPlayerService) => Promise<WotrStory>;
+}
 
 @Injectable ()
 export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, WotrStory, WotrPlayerService> {
@@ -35,11 +40,15 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayer (playerId); }
   protected override currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
   protected override cancelChange$ () { return this.ui.cancelChange$ (); }
-  override executeTask$<R extends WotrStory> (playerId: WotrFrontId, task$: (playerService: WotrPlayerService) => Observable<R>): Observable<R> {
-    return super.executeTask$ (playerId, task$).pipe (delay (50));
+  
+  async executeTask<R extends WotrStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
+    return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))).pipe (delay (50)));
   }
-  override executeTasks$ (tasks: BgStoryTask<WotrFrontId, WotrStory, WotrPlayerService>[]): Observable<WotrStory[]> {
-    return super.executeTasks$ (tasks).pipe (delay (50));
+  async executeTasks (tasks: WotrStoryTask[]): Promise<WotrStory[]> {
+    return firstValueFrom (super.executeTasks$ (tasks.map (t => ({
+      playerId: t.playerId,
+      task$: p => from (t.task (p))
+    }))).pipe (delay (50)));
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {

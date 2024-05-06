@@ -284,7 +284,7 @@ module.exports = {
     "no-alert": "warn",
     "no-array-constructor": "off",
     "no-async-promise-executor": "warn",
-    "no-await-in-loop": "warn",
+    "no-await-in-loop": "off",
     "no-bitwise": "off",
     "no-caller": "warn",
     "no-case-declarations": "warn",

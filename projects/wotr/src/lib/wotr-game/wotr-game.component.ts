@@ -2,8 +2,7 @@ import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
-import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
-import { forkJoin, tap } from "rxjs";
+import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrArmyEffectsService } from "../wotr-actions/army/wotr-army-effects.service";
 import { WotrCompanionEffectsService } from "../wotr-actions/companion/wotr-companion-effects.service";
 import { WotrFellowshipEffectsService } from "../wotr-actions/fellowship/wotr-fellowship-effects.service";
@@ -21,7 +20,6 @@ import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { stories as exampleStories } from "../wotr-examples/very-late-minions";
 import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
-import { WotrStoryDoc } from "../wotr-story.models";
 import { WotrFlowService } from "./wotr-flow.service";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
@@ -110,40 +108,28 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   // @ViewChild (WotrBoardComponent) boardComponent!: WotrBoardComponent;
 
-  @SingleEvent ()
-  ngOnInit () {
-    return forkJoin ([
-      this.remote.getGame$ (this.gameId),
-      this.remote.getPlayers$ (this.gameId, (ref) => ref.orderBy ("sort")),
-      this.remote.getStories$ (this.gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
-    ]).pipe (
-      tap (([game, players, stories]) => {
-        if (game) {
-          const user = this.auth.getUser ();
-          this.store.initGameState (
-            players.map ((p) => this.playerDocToPlayer (p, user)),
-            this.gameId,
-            game.owner
-          );
-          // this.listenToGame (stories);
-          this.listenToGame (exampleStories);
-        }
-      })
-    );
-  }
-
-  @ChangeListener ()
-  private listenToGame (stories: WotrStoryDoc[]) {
-    this.story.setStoryDocs (stories);
-    return this.flow.game$ ().pipe (
-      tap (() => {
-        this.ui.updateUi ("End game", (s) => ({
-          ...s,
-          ...this.ui.resetUi (),
-          canCancel: false,
-        }));
-      })
-    );
+  async ngOnInit () {
+    const [game, players, stories] = await Promise.all ([
+      this.remote.getGame (this.gameId),
+      this.remote.getPlayers (this.gameId, (ref) => ref.orderBy ("sort")),
+      this.remote.getStories (this.gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
+    ]);
+    if (game) {
+      const user = this.auth.getUser ();
+      this.store.initGameState (
+        players.map ((p) => this.playerDocToPlayer (p, user)),
+        this.gameId,
+        game.owner
+      );
+      // this.story.setStoryDocs (stories);
+      this.story.setStoryDocs (exampleStories);
+      await this.flow.game ();
+      this.ui.updateUi ("End game", (s) => ({
+        ...s,
+        ...this.ui.resetUi (),
+        canCancel: false,
+      }));
+    }
   }
   
   private playerDocToPlayer (playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayer {

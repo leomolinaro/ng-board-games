@@ -1,5 +1,4 @@
 import { Injectable, inject } from "@angular/core";
-import { of, switchMap } from "rxjs";
 import { labelToCardId } from "../../wotr-elements/card/wotr-card.models";
 import { WotrFrontStore } from "../../wotr-elements/front/wotr-front.store";
 import { WotrStoryService } from "../../wotr-game/wotr-story.service";
@@ -15,22 +14,19 @@ export class WotrCompanionEffectsService {
 
   getEffectGetters (): WotrEffectGetterMap<WotrCompanionAction> {
     return {
-      "companion-elimination": (action, front, gameActions) => this.companionEliminationEffect$ (action, gameActions),
-      "companion-movement": (action, front, gameActions) => of (void 0),
-      "companion-play": (action, front, gameActions) => of (void 0),
-      "companion-random": (action, front, gameActions) => of (void 0),
-      "companion-separation": (action, front, gameActions) => of (void 0),
+      "companion-elimination": async (action, front, gameActions) => this.companionEliminationEffect (action, gameActions),
+      "companion-movement": async (action, front, gameActions) => { },
+      "companion-play": async (action, front, gameActions) => { },
+      "companion-random": async (action, front, gameActions) => { },
+      "companion-separation": async (action, front, gameActions) => { },
     };
   }
 
-  private companionEliminationEffect$ (action: WotrCompanionElimination, gameActions: WotrGameActionsService) {
+  private async companionEliminationEffect (action: WotrCompanionElimination, gameActions: WotrGameActionsService) {
     const cardId = labelToCardId ("Worn with Sorrow and Toil");
     if (this.frontStore.hasTableCard (cardId, "shadow")) {
-      return this.story.executeTask$ ("shadow", p => p.activateTableCard$! (cardId)).pipe (
-        switchMap (s => gameActions.applyCardStory$ (s, cardId, "shadow"))
-      );
-    } else {
-      return of (void 0);
+      const story = await this.story.executeTask ("shadow", p => p.activateTableCard! (cardId));
+      await gameActions.applyCardStory (story, cardId, "shadow");
     }
   }
 

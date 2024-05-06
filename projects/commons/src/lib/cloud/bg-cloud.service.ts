@@ -81,11 +81,11 @@ export class BgCloudService {
   }
 
   get$<T> (path: string, coll: BgCloudCollection<T>): Observable<T | undefined> {
-    return from (this.get (coll, path));
+    return from (this.get (path, coll));
   }
 
-  async get<T> (coll: BgCloudCollection<T>, ...pathSegments: string[]): Promise<T | undefined> {
-    const snapshot = await getDoc (this.getDocRef (coll, ...pathSegments));
+  async get<T> (path: string, coll: BgCloudCollection<T>): Promise<T | undefined> {
+    const snapshot = await getDoc (this.getDocRef (coll, path));
     return snapshot.data ();
   }
 
