@@ -5,7 +5,7 @@
 import { discardDice } from "../wotr-actions/action-die/wotr-action-die-actions";
 import { attack, eliminateUnit, elite, leader, minion, moveArmy, nazgul, recruitUnit, regular, retreatIntoSiege } from "../wotr-actions/army/wotr-army-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../wotr-actions/card/wotr-card-actions";
-import { combatCard, noCombatCard, rollCombatDice } from "../wotr-actions/combat/wotr-combat-actions";
+import { combatCard as chooseCombatCard, noCombatCard, rollCombatDice } from "../wotr-actions/combat/wotr-combat-actions";
 import { chooseRandomCompanion, eliminateCompanion } from "../wotr-actions/companion/wotr-companion-actions";
 import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../wotr-actions/fellowship/wotr-fellowship-actions";
 import { addHuntTile, drawHuntTile, rollHuntDice } from "../wotr-actions/hunt/wotr-hunt-actions";
@@ -103,9 +103,9 @@ export const stories: WotrStoryDoc[] = [
   fp ().pass (),
   s ().musterArmyDie (attack ("northern-rhovanion", "old-forest-road", regular ("sauron", 9), elite ("sauron"), nazgul (2))),
   s ().story (noCombatCard ()),
-  fp ().story (combatCard ("The Power of Tom Bombadil")),
-  s (time).story (rollCombatDice (4, 2, 3, 4, 6)),
-  fp ().story (rollCombatDice (6)),
+  fp ().story (chooseCombatCard ("The Power of Tom Bombadil")),
+  fp (time).story (rollCombatDice (6)),
+  s ().story (rollCombatDice (4, 2, 3, 4, 6)),
   s ().story (eliminateUnit ("northern-rhovanion", regular ("sauron"))),
   fp ().story (eliminateUnit ("old-forest-road", regular ("north"))),
   s ().story (moveArmy ("northern-rhovanion", "old-forest-road", regular ("sauron", 8), elite ("sauron"), nazgul (2))),
@@ -116,7 +116,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().willOfTheWestDie (recruitUnit ("woodland-realm", elite ("elves"))),
   // Turn 4
   s (time).story (drawCards ("Isildur's Bane", "Hill-trolls")),
-  fp ().story (drawCards ("The Ents Awake: Entmoot", "The Red Arrow")),
+  fp ().story (drawCards ("The Ents Awake: Huorns", "The Red Arrow")),
   s ().huntAllocation (1),
   fp (time).rollActionDice ("muster", "muster-army", "muster-army", "will-of-the-west"),
   s ().rollActionDice ("eye", "eye", "eye", "event", "muster-army", "army"),
@@ -133,8 +133,8 @@ export const stories: WotrStoryDoc[] = [
   fp ().willOfTheWestDie (advanceNation ("north")),
   // Turn 5
   fp (time).story (
-    drawCards ("The Last Battle"),
-    discardCards ("The Ents Awake: Entmoot")),
+    drawCards ("I Will Go Alone", "The Last Battle"),
+    discardCards ("The Ents Awake: Huorns")),
   s ().story (
     drawCards ("The Black Captain Commands", "Corsairs of Umbar"),
     discardCards ("Wormtongue")),
@@ -154,12 +154,13 @@ export const stories: WotrStoryDoc[] = [
   fp ().pass (),
   s ().musterArmyDie (attack ("old-forest-road", "dale", regular ("sauron", 7), elite ("sauron"), elite ("isengard", 1), nazgul (2), minion ("the-witch-king"))),
   s ().story (noCombatCard ()),
-  fp ().story (
-    combatCard ("The Red Arrow"),
-    moveArmy ("dale", "erebor", regular ("north"), elite ("north"), leader ("north"))),
+  fp ().story (chooseCombatCard ("The Red Arrow")),
+  fp ().combatCard ("The Red Arrow", moveArmy ("dale", "erebor", regular ("north"), elite ("north"), leader ("north"))),
+  s ().story (moveArmy ("old-forest-road", "dale", regular ("sauron", 7), elite ("sauron"), elite ("isengard", 1), nazgul (2), minion ("the-witch-king"))),
   fp ().pass (),
-  s ().musterArmyDieCard ("Corsairs of Umbar", attack ("umbar", "dol-amroth")),
+  s ().musterArmyDieCard ("Corsairs of Umbar", attack ("umbar", "dol-amroth", regular ("southrons", 8), elite ("southrons", 2))),
   fp ().story (retreatIntoSiege ("dol-amroth")),
+  s ().story (moveArmy ("umbar", "dol-amroth", regular ("southrons", 8), elite ("southrons", 2))),
   fp ().characterDie (moveFelloswhip ()),
   s ().characterDieCard ("The Black Captain Commands",
     moveMinions ("dale", "dol-amroth", "the-witch-king"),

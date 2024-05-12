@@ -1,6 +1,5 @@
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
-import { WotrGameActionsService } from "./wotr-game-actions.service";
 
-export type WotrEffectGetter<A> = (action: A, front: WotrFrontId, gameActions: WotrGameActionsService) => Promise<void>;
+export type WotrActionEffect<A> = (action: A, front: WotrFrontId) => Promise<void>;
 
-export type WotrEffectGetterMap<A extends { type: string }> = { [key in A["type"]]: WotrEffectGetter<{ type: key } & A> };
+export type WotrActionEffectMap<A extends { type: string }> = { [key in A["type"]]: WotrActionEffect<{ type: key } & A> };

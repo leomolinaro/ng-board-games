@@ -11,6 +11,8 @@ export class WotrFellowshipStore {
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;
   state!: Signal<WotrFellowship>;
 
+  isRevealed () { return this.state ().status === "revealed"; }
+
   init (): WotrFellowship {
     return {
       status: "hidden",
@@ -27,7 +29,7 @@ export class WotrFellowshipStore {
   increaseProgress () { this.update ("increaseProgress", state => ({ ...state, progress: state.progress + 1 })); }
   changeCorruption (delta: number) { this.update ("changeCorruption", state => ({ ...state, corruption: state.corruption + delta })); }
   hide () { this.update ("hide", state => ({ ...state, status: "hidden" })); }
-  reveal () { this.update ("reveal", state => ({ ...state, status: "revealed" })); }
+  reveal () { this.update ("reveal", state => ({ ...state, status: "revealed", progress: 0 })); }
   removeCompanion (companionId: WotrCompanionId) {
     this.update ("removeCompanion", state => ({
       ...state,

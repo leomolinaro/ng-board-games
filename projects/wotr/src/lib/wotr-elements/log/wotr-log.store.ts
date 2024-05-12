@@ -27,13 +27,20 @@ export class WotrLogStore {
   logSetup () { this.addLog ("Log setup", { type: "setup" }); }
   logRound (roundNumber: number) { this.addLog ("Log round", { type: "round", roundNumber }); }
   logPhase (phase: WotrPhase) { this.addLog ("Log phase", { type: "phase", phase: phase }); }
-  logAction (action: WotrAction, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId }); }
-  logCardAction (action: WotrAction, cardId: WotrCardId, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, card: cardId, front: frontId }); }
-  logDieAction (action: WotrAction, die: WotrActionDie, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die }); }
-  logDieCardAction (action: WotrAction, die: WotrActionDie, card: WotrCardId, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, die, card }); }
-  logTokenAction (action: WotrAction, token: WotrActionToken, frontId: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front: frontId, token }); }
+  logBattleResolution () { this.addLog ("Log battle resolution", { type: "battle-resolution" }); }
+  logHuntResolution () { this.addLog ("Log hunt resolution", { type: "hunt-resolution" }); }
+  logAction (action: WotrAction, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front }); }
+  logBattleAction (action: WotrAction, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front, during: "battle" }); }
+  logHuntAction (action: WotrAction, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front, during: "hunt" }); }
+  logCardAction (action: WotrAction, cardId: WotrCardId, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, card: cardId, front }); }
+  logCombatCardAction (action: WotrAction, cardId: WotrCardId, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "combat-action", action, combatCard: cardId, front, during: "battle" }); }
+  logDieAction (action: WotrAction, die: WotrActionDie, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front, die }); }
+  logDieCardAction (action: WotrAction, die: WotrActionDie, card: WotrCardId, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front, die, card }); }
+  logTokenAction (action: WotrAction, token: WotrActionToken, front: WotrFrontId) { this.addLog (`Log action [${action.type}]`, { type: "action", action, front, token }); }
   logEndGame () { this.addLog ("Log end game", { type: "endGame" }); }
+  logCombatCard (card: WotrCardId, front: WotrFrontId) { this.addLog ("Log combat card", { type: "combat-card", card, front, during: "battle" }); }
   logActionPass (frontId: WotrFrontId) { this.addLog ("Log action pass", { type: "action-pass", front: frontId }); }
   logSkipTokens (frontId: WotrFrontId) { this.addLog ("Log skip tokens", { type: "tokens-skip", front: frontId }); }
+  logSkipCombatCard (card: WotrCardId, front: WotrFrontId) { this.addLog ("Log skip combat card", { type: "combat-card-skip", card, front, during: "battle" }); }
 
 }

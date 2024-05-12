@@ -1,9 +1,9 @@
 import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input, isDevMode } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, computed, inject, input, isDevMode } from "@angular/core";
 import { WotrFragmentCreator } from "../wotr-actions/wotr-action-log";
 import { WotrGameActionLogsService } from "../wotr-actions/wotr-game-action-logs.service";
 import { WotrAssetsService } from "../wotr-assets.service";
-import { cardToLabel } from "../wotr-elements/card/wotr-card.models";
+import { cardToLabel, combatCardToLabel } from "../wotr-elements/card/wotr-card.models";
 import { WotrCompanionId } from "../wotr-elements/companion/wotr-companion.models";
 import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
@@ -16,8 +16,8 @@ import { WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
 import { WotrRegion, WotrRegionId } from "../wotr-elements/region/wotr-region.models";
 import { WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
 import { WotrActionDie, WotrActionToken } from "../wotr-elements/wotr-dice.models";
-import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { WotrPhase } from "../wotr-elements/wotr-phase.models";
+import { WotrGameStore } from "../wotr-game/wotr-game.store";
 
 interface WotrLogStringFragment { type: "string"; label: string }
 interface WotrLogCardFragment { type: "card"; label: string }
@@ -43,10 +43,14 @@ type WotrLogFragment =
   standalone: true,
   imports: [NgClass, NgSwitch, NgSwitchCase],
   template: `
-    <div class="wotr-log"
+    <div class="log"
       [ngClass]="{
-        'wotr-log-h0': log ().type === 'setup' || log ().type === 'round' || log ().type === 'endGame',
-        'wotr-log-h1': log ().type === 'phase',
+        'log-h0': log ().type === 'setup' || log ().type === 'round' || log ().type === 'endGame',
+        'log-h1': log ().type === 'phase',
+        'battle-h2': log ().type === 'battle-resolution',
+        'hunt-h2': log ().type === 'hunt-resolution',
+        'battle-log': battleLog (),
+        'hunt-log': huntLog (),
         'breakpoint': debugBreakpoint ()
       }"
       (click)="logClick.next ()">
@@ -54,9 +58,9 @@ type WotrLogFragment =
         @switch (fragment.type) {
           @case ("string") { <span>{{ fragment.label }}</span> }
           @case ("card") { <span><i>{{ fragment.label }}</i></span> }
-          @case ("player") {  <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
-          @case ("region") {  <span>{{ fragment.region.name }}</span> }
-          @case ("nation") {  <span>{{ fragment.nation.name }}</span> }
+          @case ("player") { <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> }
+          @case ("region") { <span>{{ fragment.region.name }}</span> }
+          @case ("nation") { <span>{{ fragment.nation.name }}</span> }
           @case ("die") { <img class="action-die" [src]="fragment.dieImage"/> }
           @case ("token") { <img class="action-token" [src]="fragment.tokenImage"/> }
           @case ("hunt-tile") { <img class="hunt-tile" [src]="fragment.tileImage"/> }
@@ -68,12 +72,14 @@ type WotrLogFragment =
   styles: [`
     @import 'wotr-variables';
 
-    .wotr-log {
+    .log {
       margin-left: 1.5vw;
 
-      &.wotr-log-h0 { font-size: 130%; margin-left: 0; }
-      &.wotr-log-h1 { font-size: 120%; margin-left: 0.5vw; }
-      &.wotr-log-h2 { font-size: 110%; margin-left: 1vw; }
+      &.log-h0 { font-size: 130%; margin-left: 0; }
+      &.log-h1 { font-size: 120%; margin-left: 0.5vw; }
+      &.log-h2 { font-size: 110%; margin-left: 1vw; }
+      &.battle-h2, &.hunt-h2 { font-size: 110%; }
+      &.battle-log, &.hunt-log { margin-left: 2vw; }
 
       .is-red { color: $red; }
       .is-blue { color: $blue; }
@@ -95,7 +101,7 @@ type WotrLogFragment =
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
+export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFragment> {
   
   private assets = inject (WotrAssetsService);
   private store = inject (WotrGameStore);
@@ -109,17 +115,32 @@ export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
   debugBreakpoint = input.required<boolean> ();
   @Output () logClick = new EventEmitter<void> ();
 
-  protected fragments = computed (() => {
-    const l = this.log ();
+  protected battleLog = computed (() => {
+    const log = this.log ();
+    return "during" in log && log.during === "battle";
+  });
+
+  protected huntLog = computed (() => {
+    const log = this.log ();
+    return "during" in log && log.during === "hunt";
+  });
+
+  ngOnInit () {
     if (this.debugBreakpoint () && isDevMode ()) {
       // eslint-disable-next-line no-debugger
       debugger;
     }
+  }
+
+  protected fragments = computed (() => {
+    const l = this.log ();
     switch (l.type) {
       case "setup": return [this.string ("Setup")];
       case "endGame": return [this.string ("End Game")];
       case "round": return [this.string (`Round ${l.roundNumber}`)];
       case "phase": return [this.string (this.getPhaseLabel (l.phase))];
+      case "battle-resolution": return [this.string ("Battle Resolution")];
+      case "hunt-resolution": return [this.string ("Hunt Resolution")];
       case "action": {
         const fragments = this.actionLogs.getLogFragments<WotrLogFragment> (l.action, l.front, this);
         const parsed: WotrLogFragment[] = [];
@@ -132,8 +153,20 @@ export class WotrLogComponent implements WotrFragmentCreator<WotrLogFragment> {
         if (l.token) { parsed.push (this.string (" "), this.token (l.token, l.front)); }
         return parsed;
       }
+      case "combat-action": {
+        const fragments = this.actionLogs.getLogFragments<WotrLogFragment> (l.action, l.front, this);
+        const parsed: WotrLogFragment[] = [];
+        for (const f of fragments) {
+          if (typeof f === "string") { parsed.push (this.string (f)); }
+          else { parsed.push (f); }
+        }
+        parsed.push (this.string (", using "), this.card (combatCardToLabel (l.combatCard)));
+        return parsed;
+      }
       case "action-pass": return [this.player (l.front), this.string (" passes")];
       case "tokens-skip": return [this.player (l.front), this.string (" skips remaining tokens")];
+      case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
+      case "combat-card-skip": return [this.player (l.front), this.string (" skip "), this.card (combatCardToLabel (l.card))];
       // default: throw new Error (`Log type ${l.type} not managed`);
     }
   });

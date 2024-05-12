@@ -22,6 +22,7 @@ export class WotrHuntStore {
   state!: Signal<WotrHuntState>;
 
   huntTile (huntTileId: WotrHuntTileId): WotrHuntTile { return this.state ().map[huntTileId]; }
+  hasHuntDice (): boolean { return !!this.state ().nHuntDice; }
 
   init (): WotrHuntState {
     return {

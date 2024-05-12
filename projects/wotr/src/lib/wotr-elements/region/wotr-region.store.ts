@@ -173,7 +173,8 @@ export class WotrRegionStore {
       leaders: [],
       nNazgul: 0,
       companions: [],
-      minions: []
+      minions: [],
+      underSiegeFrontId: null
     };
   }
 
@@ -325,6 +326,13 @@ export class WotrRegionStore {
         }
       };
     });
+  }
+
+  retreatUnderSiege (frontId: WotrFrontId, regionId: WotrRegionId) {
+    this.updateRegion ("retreatUnderSiege", regionId, region => ({
+      ...region,
+      underSiegeFrontId: frontId
+    }));
   }
 
 }

@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
-import { WotrGameStore } from "../wotr-elements/wotr-game.store";
+import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable ()
@@ -8,7 +7,7 @@ export class WotrPlayerAiService implements WotrPlayerService {
 
   constructor (private game: WotrGameStore) {}
 
-  async firstPhaseDrawCards (front: WotrFrontId): Promise<never> {
+  async firstPhaseDrawCards (): Promise<never> {
     throw new Error ("Method not implemented.");
   }
 

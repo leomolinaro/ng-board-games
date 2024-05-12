@@ -6,7 +6,6 @@ import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrArmyEffectsService } from "../wotr-actions/army/wotr-army-effects.service";
 import { WotrCompanionEffectsService } from "../wotr-actions/companion/wotr-companion-effects.service";
 import { WotrFellowshipEffectsService } from "../wotr-actions/fellowship/wotr-fellowship-effects.service";
-import { WotrGameActionsService } from "../wotr-actions/wotr-game-actions.service";
 import { WotrBoardComponent } from "../wotr-board/wotr-board.component";
 import { WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
 import { WotrFellowshipStore } from "../wotr-elements/fellowship/wotr-fellowship.store";
@@ -16,11 +15,14 @@ import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
 import { WotrMinionStore } from "../wotr-elements/minion/wotr-minion.store";
 import { WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
 import { WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
-import { WotrGameStore } from "../wotr-elements/wotr-game.store";
 import { AWotrPlayer, WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { stories as exampleStories } from "../wotr-examples/very-late-minions";
 import { WotrPlayerDoc, WotrRemoteService } from "../wotr-remote.service";
-import { WotrFlowService } from "./wotr-flow.service";
+import { WotrBattleFlowService } from "./wotr-battle-flow.service";
+import { WotrGameActionService } from "./wotr-game-action.service";
+import { WotrGameFlowService } from "./wotr-game-flow.service";
+import { WotrGameStore } from "./wotr-game.store";
+import { WotrHuntFlowService } from "./wotr-hunt-flow.service";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
 import { WotrStoryService } from "./wotr-story.service";
@@ -48,22 +50,23 @@ import { WotrUiStore } from "./wotr-ui.store";
       [minionById]="minionStore.minionById ()"
       [logs]="logStore.state ()"
       [message]="ui.message$ | async"
-      (playerSelect)="ui.setCurrentPlayer ($event)"
-      (testClick)="ui.testChange ()">
+      (playerSelect)="ui.setCurrentPlayer ($event)">
     </wotr-board>
   `,
   styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     WotrGameStore,
-    WotrGameActionsService,
+    WotrStoryService,
+    WotrGameFlowService,
+    WotrGameActionService,
+    WotrHuntFlowService,
+    WotrBattleFlowService,
 
     WotrFellowshipEffectsService,
     WotrCompanionEffectsService,
     WotrArmyEffectsService,
 
-    WotrStoryService,
-    WotrFlowService,
     WotrPlayerAiService,
     WotrPlayerLocalService,
     WotrUiStore,
@@ -86,7 +89,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
   private story = inject (WotrStoryService);
-  private flow = inject (WotrFlowService);
+  private flow = inject (WotrGameFlowService);
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
@@ -108,7 +111,10 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   // @ViewChild (WotrBoardComponent) boardComponent!: WotrBoardComponent;
 
+  private gameActionService = inject (WotrGameActionService);
+
   async ngOnInit () {
+    this.gameActionService.registerActions ();
     const [game, players, stories] = await Promise.all ([
       this.remote.getGame (this.gameId),
       this.remote.getPlayers (this.gameId, (ref) => ref.orderBy ("sort")),

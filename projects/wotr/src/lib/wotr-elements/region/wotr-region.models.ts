@@ -37,6 +37,7 @@ export interface WotrRegion {
   companions: WotrCompanionId[];
   minions: WotrMinionId[];
   fellowship: boolean;
+  underSiegeFrontId: WotrFrontId | null;
 }
 
 export interface WotrRegionArmyUnit {

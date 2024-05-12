@@ -13,7 +13,7 @@
     [minionById]="minionById ()"
     (regionClick)="onRegionClick ($event)">
   </wotr-map>
-  <div class="wotr-toolbar">{{ message () }}  <button (click)="testClick.next ()">Test</button></div>
+  <div class="wotr-toolbar">{{ message () }}</div>
   <div class="wotr-fronts">
     <mat-tab-group>
       @for (front of fronts (); track front.id) {

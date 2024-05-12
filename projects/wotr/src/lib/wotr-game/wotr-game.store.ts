@@ -2,18 +2,19 @@ import { Injectable } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil } from "@leobg/commons/utils";
-import { WotrCompanionState, WotrCompanionStore } from "./companion/wotr-companion.store";
-import { WotrFellowship } from "./fellowship/wotr-fellowhip.models";
-import { WotrFellowshipStore } from "./fellowship/wotr-fellowship.store";
-import { WotrFrontId } from "./front/wotr-front.models";
-import { WotrFrontState, WotrFrontStore } from "./front/wotr-front.store";
-import { WotrHuntState, WotrHuntStore } from "./hunt/wotr-hunt.store";
-import { WotrLog } from "./log/wotr-log.models";
-import { WotrLogStore } from "./log/wotr-log.store";
-import { WotrMinionState, WotrMinionStore } from "./minion/wotr-minion.store";
-import { WotrNationState, WotrNationStore } from "./nation/wotr-nation.store";
-import { WotrRegionState, WotrRegionStore } from "./region/wotr-region.store";
-import { WotrPlayer } from "./wotr-player.models";
+import { WotrBattleState, WotrBattleStore } from "../wotr-elements/battle/wotr-battle.store";
+import { WotrCompanionState, WotrCompanionStore } from "../wotr-elements/companion/wotr-companion.store";
+import { WotrFellowship } from "../wotr-elements/fellowship/wotr-fellowhip.models";
+import { WotrFellowshipStore } from "../wotr-elements/fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
+import { WotrFrontState, WotrFrontStore } from "../wotr-elements/front/wotr-front.store";
+import { WotrHuntState, WotrHuntStore } from "../wotr-elements/hunt/wotr-hunt.store";
+import { WotrLog } from "../wotr-elements/log/wotr-log.models";
+import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
+import { WotrMinionState, WotrMinionStore } from "../wotr-elements/minion/wotr-minion.store";
+import { WotrNationState, WotrNationStore } from "../wotr-elements/nation/wotr-nation.store";
+import { WotrRegionState, WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
+import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 
 export interface WotrGameState {
   gameId: string;
@@ -30,6 +31,7 @@ export interface WotrGameState {
   fellowship: WotrFellowship;
   hunt: WotrHuntState;
   logs: WotrLog[];
+  battle: WotrBattleState;
 }
 
 @Injectable ()
@@ -44,6 +46,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     fellowshipStore: WotrFellowshipStore,
     huntStore: WotrHuntStore,
     logStore: WotrLogStore,
+    battleStore: WotrBattleStore
   ) {
     super ({
       gameId: "",
@@ -60,6 +63,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       fellowship: fellowshipStore.init (),
       hunt: huntStore.init (),
       logs: logStore.init (),
+      battle: battleStore.init ()
     }, "War of the Ring Game");
     frontStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, frontState: updater (s.frontState) }));
     frontStore.state = toSignal (this.select$ (s => s.frontState), { requireSync: true });
@@ -77,6 +81,8 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     huntStore.state = toSignal (this.select$ (s => s.hunt), { requireSync: true });
     logStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, logs: updater (s.logs) }));
     logStore.state = toSignal (this.select$ (s => s.logs), { requireSync: true });
+    battleStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, battle: updater (s.battle) }));
+    battleStore.state = toSignal (this.select$ (s => s.battle), { requireSync: true });
   }
 
   initGameState (players: WotrPlayer[], gameId: string, gameOwner: BgUser) {

@@ -4,7 +4,7 @@ import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
 import { WotrFrontId } from "../wotr-elements/front/wotr-front.models";
 import { WotrRegionId } from "../wotr-elements/region/wotr-region.models";
-import { WotrGameStore } from "../wotr-elements/wotr-game.store";
+import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrUiState {
   currentPlayer: WotrFrontId | null;
@@ -66,10 +66,6 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   private $passChange = new Subject<void> ();
   private $confirmChange = new Subject<void> ();
   
-  private $testChange = new Subject<void> ();
-  testChange () { this.$testChange.next (void 0); }
-  testChange$ () { return this.$testChange.asObservable ().pipe (first ()); }
-
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<WotrResourceType> ();
   private $cancelChange = new Subject<void> ();

@@ -28,8 +28,8 @@ export interface BgStoryTask<Pid extends string, St, PlSrv> {
   task$: (playerService: PlSrv) => Observable<St>;
 }
 
-export function unexpectedStory<St> (storyDoc: St) {
-  console.error ("Unexpected story", storyDoc);
+export function unexpectedStory<St> (actualStoryDoc: St, expected: string) {
+  console.error ("Unexpected story", actualStoryDoc, " Expected: ", expected);
   return new Error ("Unexpected story");
 }
 
@@ -122,14 +122,6 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  private getPastStory<R extends St> (time: number, playerId: Pid): null | R {
-    if (!this.storyDocs?.length) { return null; }
-    const storyDoc = this.storyDocs.shift ()!;
-    if (storyDoc.time !== time || storyDoc.playerId !== playerId) { throw unexpectedStory (storyDoc); }
-    this.storyTime = time;
-    return storyDoc as St as R;
-  }
-
   private getStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
     this.resetUi (playerId);
     return race (
@@ -141,8 +133,6 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   }
 
   private getStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
-    const pastStory = this.getPastStory<R> (time, playerId);
-    if (pastStory) { return of (pastStory); }
     return this.getStory$ (time, playerId, task$).pipe (
       expand (storyDoc => {
         if (storyDoc) { return EMPTY; }
@@ -156,6 +146,13 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
     const time = this.storyTime + 1;
     this.autoRefreshCurrentPlayer (playerId);
+    if (this.storyDocs?.length) {
+      const storyDoc = this.storyDocs.shift ()!;
+      this.storyTime = time;
+      if (storyDoc.time !== time) { throw unexpectedStory (storyDoc, `time ${time}`); }
+      if (storyDoc.playerId !== playerId) { throw unexpectedStory (storyDoc, `player ${playerId}`); }
+      return of (storyDoc as R);
+    }
     return this.getStoryWrap$<R> (time, playerId, task$).pipe (
       tap (() => this.storyTime = time)
     );
@@ -164,7 +161,33 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected executeTasks$ (tasks: BgStoryTask<Pid, St, PlSrv>[]): Observable<St[]> {
     const time = this.storyTime + 1;
     tasks.find (task => this.autoRefreshCurrentPlayer (task.playerId));
-    return forkJoin (tasks.map (task => this.getStoryWrap$ (time, task.playerId, task.task$))).pipe (
+
+    const storyDocByPlayer = new Map<Pid, BgStoryDoc<Pid, St>> ();
+    let i = 0;
+    while (this.storyDocs?.length && i < tasks.length) {
+      const storyDoc = this.storyDocs.shift ()!;
+      storyDocByPlayer.set (storyDoc.playerId, storyDoc);
+      i++;
+    }
+
+    const storyDoc$s: Observable<St>[] = [];
+    for (const task of tasks) {
+      const storyDoc = storyDocByPlayer.get (task.playerId);
+      if (storyDoc) {
+        storyDocByPlayer.delete (task.playerId);
+        storyDoc$s.push (of (storyDoc));
+        if (storyDoc.time !== time) { throw unexpectedStory (storyDoc, `time ${time}`); }
+      } else {
+        storyDoc$s.push (this.getStoryWrap$ (time, task.playerId, task.task$));
+      }
+    }
+
+    if (storyDocByPlayer.size) {
+      const next = storyDocByPlayer.values ().next ();
+      throw unexpectedStory (next, `player be ${tasks.map (t => t.playerId).join (" or ")}`);
+    }
+
+    return forkJoin (storyDoc$s).pipe (
       tap (() => this.storyTime = time)
     );
   }

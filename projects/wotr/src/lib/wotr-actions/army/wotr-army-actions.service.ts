@@ -22,13 +22,13 @@ export class WotrArmyActionsService {
         if (action.army.minions) {
           for (const minion of action.army.minions) {
             this.regionStore.removeMinionFromRegion (minion, action.fromRegion);
-            this.regionStore.addMinionToRegion (minion, action.fromRegion);
+            this.regionStore.addMinionToRegion (minion, action.toRegion);
           }
         }
         if (action.army.companions) {
           for (const companion of action.army.companions) {
             this.regionStore.removeCompanionFromRegion (companion, action.fromRegion);
-            this.regionStore.addCompanionToRegion (companion, action.fromRegion);
+            this.regionStore.addCompanionToRegion (companion, action.toRegion);
           }
         }
         if (action.army.units) {
@@ -40,7 +40,10 @@ export class WotrArmyActionsService {
           }
         }
       },
-      "army-retreat-into-siege": (action, front) => { throw new Error ("TODO") },
+      "army-retreat-into-siege": (action, front) => {
+        this.regionStore.retreatUnderSiege (front, action.region);
+      },
+      "army-not-retreat-into-siege": (action, front) => { /*empty*/ },
       "unit-elimination": (action, front) => {
         const unitUtil = this.unitUtil (action.unitType);
         const frontId = frontOfNation (action.nation);

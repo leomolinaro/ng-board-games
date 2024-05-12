@@ -7,14 +7,27 @@ import { WotrPhase } from "../wotr-phase.models";
 export interface WotrLogSetup { type: "setup" }
 export interface WotrLogEndGame { type: "endGame" }
 export interface WotrLogRound { type: "round"; roundNumber: number }
-export interface WotrLogAction { type: "action"; front: WotrFrontId; action: WotrAction; die?: WotrActionDie; token?: WotrActionToken; card?: WotrCardId }
+export interface WotrLogAction {
+  type: "action";
+  front: WotrFrontId;
+  action: WotrAction;
+  die?: WotrActionDie; token?: WotrActionToken; card?: WotrCardId;
+  during?: "battle" | "hunt";
+}
+export interface WotrLogCombatAction {
+  type: "combat-action";
+  front: WotrFrontId;
+  action: WotrAction;
+  combatCard: WotrCardId;
+  during: "battle";
+}
 export interface WotrLogActionPass { type: "action-pass"; front: WotrFrontId }
 export interface WotrLogTokensSkip { type: "tokens-skip"; front: WotrFrontId }
 export interface WotrLogPhase { type: "phase"; phase: WotrPhase }
-// export interface WotrLogPopulationMarkerSet { type: "population-marker-set"; populationMarker: number | null }
-// export interface WotrLogInfantryPlacement { type: "infantry-placement"; landId: WotrLandRegionId; quantity: number }
-// export interface WotrLogInfantryReinforcement { type: "infantry-reinforcement"; regionId: WotrRegionId; quantity: number }
-// export interface WotrLogArmyMovement { type: "army-movement"; units: WotrRegionUnit[];   toRegionId: WotrRegionId }
+export interface WotrLogBattleResolution { type: "battle-resolution" }
+export interface WotrLogHuntResolution { type: "hunt-resolution" }
+export interface WotrLogCombatCard { type: "combat-card"; card: WotrCardId; front: WotrFrontId; during: "battle" }
+export interface WotrLogCombatCardSkip { type: "combat-card-skip"; front: WotrFrontId; card: WotrCardId; during: "battle" }
 
 export type WotrLog =
 | WotrLogSetup
@@ -23,8 +36,9 @@ export type WotrLog =
 | WotrLogAction
 | WotrLogTokensSkip
 | WotrLogActionPass
-| WotrLogPhase;
-// | WotrLogPopulationMarkerSet
-// | WotrLogInfantryPlacement
-// | WotrLogInfantryReinforcement
-// | WotrLogArmyMovement;
+| WotrLogPhase
+| WotrLogBattleResolution
+| WotrLogHuntResolution
+| WotrLogCombatCard
+| WotrLogCombatAction
+| WotrLogCombatCardSkip;

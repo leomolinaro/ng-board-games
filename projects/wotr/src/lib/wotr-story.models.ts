@@ -15,14 +15,47 @@ import { WotrMinionId } from "./wotr-elements/minion/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId } from "./wotr-elements/nation/wotr-nation.models";
 import { WotrActionDie, WotrActionToken } from "./wotr-elements/wotr-dice.models";
 
-export interface WotrStory {
-  die?: WotrActionDie;
-  token?: WotrActionToken;
-  card?: WotrCardId;
-  pass?: boolean;
-  skipTokens?: boolean;
+export interface WotrDieStory {
+  die: WotrActionDie;
   actions: WotrAction[];
 }
+
+export interface WotrTokenStory {
+  token: WotrActionToken;
+  actions: WotrAction[];
+}
+
+export interface WotrCardStory {
+  card: WotrCardId;
+  actions: WotrAction[];
+}
+
+export interface WotrSimpleStory {
+  actions: WotrAction[];
+}
+
+export type WotrDieCardStory = WotrDieStory & WotrCardStory;
+
+export interface WotrPassStory {
+  pass: true;
+}
+
+export interface WotrSkipTokensStory {
+  skipTokens: true;
+}
+
+export interface WotrCombatCardStory {
+  combatCard: WotrCardId;
+  actions: WotrAction[];
+}
+
+export interface WotrSkipCombatCardStory {
+  skipCombatCard: WotrCardId;
+}
+
+export type WotrStory =
+  WotrDieStory | WotrTokenStory | WotrCardStory | WotrDieCardStory | WotrSimpleStory |
+  WotrPassStory | WotrSkipTokensStory | WotrCombatCardStory | WotrSkipCombatCardStory;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrStory>;
 
@@ -49,19 +82,21 @@ export interface WotrArmy {
 
 export class WotrFrontStoryComposer {
   constructor (private front: WotrFrontId, private time: number) { }
-  rollActionDice (...dice: WotrActionDie[]) { return this.story (rollActionDice (dice)); }
-  characterDie (...actions: WotrAction[]) { return this.die ("character", ...actions); }
-  eventDie (...actions: WotrAction[]) { return this.die ("event", ...actions); }
-  musterDie (...actions: WotrAction[]) { return this.die ("muster", ...actions); }
-  musterArmyDie (...actions: WotrAction[]) { return this.die ("muster-army", ...actions); }
-  armyDie (...actions: WotrAction[]) { return this.die ("army", ...actions); }
+  rollActionDice (...dice: WotrActionDie[]): WotrStoryDoc { return this.story (rollActionDice (dice)); }
+  characterDie (...actions: WotrAction[]): WotrStoryDoc { return this.die ("character", ...actions); }
+  eventDie (...actions: WotrAction[]): WotrStoryDoc { return this.die ("event", ...actions); }
+  musterDie (...actions: WotrAction[]): WotrStoryDoc { return this.die ("muster", ...actions); }
+  musterArmyDie (...actions: WotrAction[]): WotrStoryDoc { return this.die ("muster-army", ...actions); }
+  armyDie (...actions: WotrAction[]): WotrStoryDoc { return this.die ("army", ...actions); }
   eventDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "event", ...this.card (card, ...actions) }; }
   characterDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "character", ...this.card (card, ...actions) }; }
   musterArmyDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { die: "muster-army", ...this.card (card, ...actions) }; }
   protected die (die: WotrActionDie, ...actions: WotrAction[]): WotrStoryDoc { return { die, ...this.story (...actions) }; }
-  pass () { return { pass: true, ...this.story () }; }
-  skipTokens () { return { skipTokens: true, ...this.story () }; }
+  pass (): WotrStoryDoc { return { pass: true, ...this.story () }; }
+  skipTokens (): WotrStoryDoc { return { skipTokens: true, ...this.story () }; }
   card (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { card: labelToCardId (card), ...this.story (...actions) }; }
+  combatCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc { return { combatCard: labelToCardId (card), ...this.story (...actions) }; }
+  skipCombatCard (card: WotrCardLabel): WotrStoryDoc { return { skipCombatCard: labelToCardId (card), ...this.story () }; }
   token (token: WotrActionToken, ...actions: WotrAction[]): WotrStoryDoc { return { token, ...this.story (...actions) }; }
   story (...actions: WotrAction[]): WotrStoryDoc { return { time: this.time, playerId: this.front, actions }; }
 }
