@@ -18,7 +18,7 @@ import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
 import { WotrCombatDie } from "../wotr-elements/wotr-dice.models";
 import { WotrPlayer } from "../wotr-elements/wotr-player.models";
 import { WotrRemoteService } from "../wotr-remote.service";
-import { WotrAction, WotrCardStory, WotrCombatCardStory, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSimpleStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "../wotr-story.models";
+import { WotrAction, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "../wotr-story.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerAiService } from "./wotr-player-ai.service";
 import { WotrPlayerLocalService } from "./wotr-player-local.service";
@@ -29,6 +29,10 @@ export interface WotrStoryTask {
   playerId: WotrFrontId;
   task: (playerService: WotrPlayerService) => Promise<WotrStory>;
 }
+
+type WotrStoryApplier<S> = (story: S, front: WotrFrontId) => void;
+
+type WotrStoryApplierMap = { [key in WotrStory["type"]]: WotrStoryApplier<{ type: key } & WotrStory> };
 
 @Injectable ()
 export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, WotrStory, WotrPlayerService> {
@@ -124,96 +128,95 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     throw unexpectedStory (story, "some actions");
   }
 
-  private async applyStory (story: WotrStory, front: WotrFrontId) {
-    if ("die" in story) {
-      if ("card" in story) {
-        this.applyDieCardStory (story, front);
-        await this.actionsEffect (story, front);
-        this.frontStore.discardCards ([story.card], front);
-        this.frontStore.removeActionDie (story.die, front);
-      } else {
-        this.applyDieStory (story, front);
-        await this.actionsEffect (story, front);
-        this.frontStore.removeActionDie (story.die, front);
-      }
-    } else if ("card" in story) {
-      this.applyCardStory (story, front);
-      await this.actionsEffect (story, front);
-    } else if ("token" in story) {
-      this.applyTokenStory (story, front);
-      await this.actionsEffect (story, front);
+  private storyAppliers: WotrStoryApplierMap = {
+    phase: async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    battle: async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front, "battle");
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    hunt: async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front, "hunt");
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    die: async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+      this.frontStore.removeActionDie (story.die, front);
+    },
+    "die-card": async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+      this.frontStore.discardCards ([story.card], front);
+      this.frontStore.removeActionDie (story.die, front);
+    },
+    "reaction-card": async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    "reaction-combat-card": async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    "reaction-character": async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
+    },
+    token: async (story, front) => {
+      story.actions.forEach (action => {
+        this.applyAction (action, front);
+        this.logStore.logAction (action, story, front);
+      });
+      await this.actionsEffect (story.actions, story, front);
       this.frontStore.removeActionToken (story.token, front);
-    } else if ("pass" in story) {
-      this.logStore.logActionPass (front);
-    } else if ("skipTokens" in story) {
-      this.logStore.logSkipTokens (front);
-    } else if ("combatCard" in story) {
-      this.applyCombatCardStory (story, front);
-      await this.actionsEffect (story, front);
-    } else if ("skipCombatCard" in story) {
-      this.logStore.logSkipCombatCard (story.skipCombatCard, front);
-    } else {
-      this.applySimpleStory (story, front);
-      await this.actionsEffect (story, front);
-    }
+    },
+    "die-pass": async (story, front) => { this.logStore.logStory (story, front); },
+    "reaction-card-skip": async (story, front) => { this.logStore.logStory (story, front); },
+    "reaction-combat-card-skip": async (story, front) => { this.logStore.logStory (story, front, "battle"); },
+    "reaction-character-skip": async (story, front) => { this.logStore.logStory (story, front); },
+    "token-skip": async (story, front) => this.logStore.logStory (story, front),
+  };
+
+  private async applyStory (story: WotrStory, front: WotrFrontId) {
+    await (this.storyAppliers[story.type] as any) (story, front);
   }
 
   private applyAction (action: WotrAction, frontId: WotrFrontId) {
     this.actionAppliers[action.type] (action, frontId);
   }
 
-  private applySimpleStory (story: WotrSimpleStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      if (this.battleStore.battleInProgress ()) {
-        this.logStore.logBattleAction (action, frontId);
-      } else {
-        this.logStore.logAction (action, frontId);
-      }
-    });
-  }
-
-  private applyCardStory (story: WotrCardStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      this.logStore.logCardAction (action, story.card, frontId);
-    });
-  }
-
-  private applyCombatCardStory (story: WotrCombatCardStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      this.logStore.logCombatCardAction (action, story.combatCard, frontId);
-    });
-  }
-
-  private applyDieStory (story: WotrDieStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      this.logStore.logDieAction (action, story.die, frontId);
-    });
-  }
-
-  private applyDieCardStory (story: WotrDieCardStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      this.logStore.logDieCardAction (action, story.die, story.card, frontId);
-    });
-  }
-
-  private applyTokenStory (story: WotrTokenStory, frontId: WotrFrontId) {
-    story.actions.forEach (action => {
-      this.applyAction (action, frontId);
-      this.logStore.logTokenAction (action, story.token, frontId);
-    });
-  }
-
   private async actionEffect (action: WotrAction, story: WotrStory, front: WotrFrontId) {
     return this.actionEffects[action.type]?. (action, front) || of (void 0);
   }
 
-  private async actionsEffect (story: WotrStory & { actions: WotrAction[] }, front: WotrFrontId) {
-    for (const action of story.actions) {
+  private async actionsEffect (actions: WotrAction[], story: WotrStory, front: WotrFrontId) {
+    for (const action of actions) {
       await this.actionEffect (action, story, front);
     }
   }
@@ -256,16 +259,13 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   async actionResolution (front: WotrFrontId): Promise<WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory> {
     const story = await this.story (front, p => p.actionResolution! ());
-    if ("die" in story) {
-      return story;
-    } else if ("token" in story) {
-      return story;
-    } else if ("pass" in story) {
-      return story;
-    } else if ("skipTokens" in story) {
-      return story;
-    } else {
-      throw unexpectedStory (story, "die or token or pass or skipTokens");
+    switch (story.type) {
+      case "die":
+      case "die-card":
+      case "die-pass":
+      case "token":
+      case "token-skip": return story;
+      default: throw unexpectedStory (story, "die or token");
     }
   }
 
@@ -275,12 +275,10 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   async activateCombatCard (cardId: WotrCardId, front: WotrFrontId): Promise<false | WotrAction[]> {
     const story = await this.story (front, p => p.activateCombatCard! (cardId));
-    if ("skipCombatCard" in story) {
-      return false;
-    } else if ("combatCard" in story) {
-      return story.actions;
-    } else {
-      throw unexpectedStory (story, (" combat card activation or not"));
+    switch (story.type) {
+      case "reaction-combat-card": return story.actions;
+      case "reaction-combat-card-skip": return false;
+      default: throw unexpectedStory (story, (" combat card activation or not"));
     }
   }
 

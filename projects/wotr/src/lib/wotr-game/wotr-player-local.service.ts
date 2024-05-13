@@ -15,6 +15,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
 
   async firstPhaseDrawCards (): Promise<WotrStory> {
     return {
+      type: "phase",
       actions: [{ type: "card-draw", cards: ["fpcha01"] }]
     };
   }

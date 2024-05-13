@@ -3,6 +3,7 @@ import { WotrArmyAttack } from "../wotr-actions/army/wotr-army-actions";
 import { WotrBattleStore } from "../wotr-elements/battle/wotr-battle.store";
 import { WotrCard, WotrCardCombatLabel, WotrCardId, getCard } from "../wotr-elements/card/wotr-card.models";
 import { WotrFrontId, oppositeFront } from "../wotr-elements/front/wotr-front.models";
+import { WotrFrontStore } from "../wotr-elements/front/wotr-front.store";
 import { WotrLogStore } from "../wotr-elements/log/wotr-log.store";
 import { WotrRegionStore } from "../wotr-elements/region/wotr-region.store";
 import { WotrStoryService } from "./wotr-story.service";
@@ -25,6 +26,7 @@ class WotrBattleRound {
 @Injectable ()
 export class WotrBattleFlowService {
 
+  private frontStore = inject (WotrFrontStore);
   private regionStore = inject (WotrRegionStore);
   private storyService = inject (WotrStoryService);
   private logStore = inject (WotrLogStore);
@@ -76,8 +78,16 @@ export class WotrBattleFlowService {
   }
 
   private revealCombatCards (battleRound: WotrBattleRound) {
-    if (battleRound.attackerCombatCard) { this.logStore.logCombatCard (battleRound.attackerCombatCard.id, battleRound.attacker); }
-    if (battleRound.defenderCombatCard) { this.logStore.logCombatCard (battleRound.defenderCombatCard.id, battleRound.defender); }
+    if (battleRound.attackerCombatCard) {
+      this.frontStore.discardCards ([battleRound.attackerCombatCard.id], battleRound.attacker);
+      this.battleStore.addAttackerCombatCard (battleRound.attackerCombatCard.id);
+      this.logStore.logCombatCard (battleRound.attackerCombatCard.id, battleRound.attacker);
+    }
+    if (battleRound.defenderCombatCard) {
+      this.frontStore.discardCards ([battleRound.defenderCombatCard.id], battleRound.defender);
+      this.battleStore.addDefenderCombatCard (battleRound.defenderCombatCard.id);
+      this.logStore.logCombatCard (battleRound.defenderCombatCard.id, battleRound.defender);
+    }
   }
 
   private async resolveCombatCards (timing: number, battleRound: WotrBattleRound) {

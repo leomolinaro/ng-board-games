@@ -148,25 +148,22 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
           if (typeof f === "string") { parsed.push (this.string (f)); }
           else { parsed.push (f); }
         }
-        if (l.card) { parsed.push (this.string (", using "), this.card (cardToLabel (l.card))); }
-        if (l.die) { parsed.push (this.string (" "), this.die (l.die, l.front)); }
-        if (l.token) { parsed.push (this.string (" "), this.token (l.token, l.front)); }
+        if ("card" in l.story) { parsed.push (this.string (", using "), this.card (cardToLabel (l.story.card))); }
+        if ("die" in l.story) { parsed.push (this.string (" "), this.die (l.story.die, l.front)); }
+        if ("token" in l.story) { parsed.push (this.string (" "), this.token (l.story.token, l.front)); }
         return parsed;
       }
-      case "combat-action": {
-        const fragments = this.actionLogs.getLogFragments<WotrLogFragment> (l.action, l.front, this);
-        const parsed: WotrLogFragment[] = [];
-        for (const f of fragments) {
-          if (typeof f === "string") { parsed.push (this.string (f)); }
-          else { parsed.push (f); }
+      case "story": {
+        switch (l.story.type) {
+          case "die-pass": return [this.player (l.front), this.string (" passes")];
+          case "token-skip": return [this.player (l.front), this.string (" skips remaining tokens")];
+          case "reaction-card-skip": return [this.player (l.front), this.string (" skip "), this.card (cardToLabel (l.story.card))];
+          case "reaction-character-skip": return [this.player (l.front), this.string (" skip character reaction")/* , this.card (combatCardToLabel (l.story.character)) */];
+          case "reaction-combat-card-skip": return [this.player (l.front), this.string (" skip "), this.card (combatCardToLabel (l.story.card))];
         }
-        parsed.push (this.string (", using "), this.card (combatCardToLabel (l.combatCard)));
-        return parsed;
+        return [];
       }
-      case "action-pass": return [this.player (l.front), this.string (" passes")];
-      case "tokens-skip": return [this.player (l.front), this.string (" skips remaining tokens")];
       case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
-      case "combat-card-skip": return [this.player (l.front), this.string (" skip "), this.card (combatCardToLabel (l.card))];
       // default: throw new Error (`Log type ${l.type} not managed`);
     }
   });

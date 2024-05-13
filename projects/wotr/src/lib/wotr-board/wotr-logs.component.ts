@@ -3,7 +3,7 @@ import { SimpleChanges } from "@leobg/commons/utils";
 import { WotrLog } from "../wotr-elements/log/wotr-log.models";
 import { WotrLogComponent } from "./wotr-log.component";
 
-const DEBUG_LOG_INDEX = "wotr.debugLogIndex";
+const DEBUG_LOG_INDEXES = "wotr.debugLogIndex";
 
 @Component ({
   selector: "wotr-logs",
@@ -11,7 +11,7 @@ const DEBUG_LOG_INDEX = "wotr.debugLogIndex";
   imports: [WotrLogComponent],
   template: `
     @for (log of logs (); let i = $index; track i) {
-      <wotr-log [log]="log" [debugBreakpoint]="debugIndex === i" (click)="onLogClick (log, i)"></wotr-log>
+      <wotr-log [log]="log" [debugBreakpoint]="debugIndexes[i]" (click)="onLogClick (log, i)"></wotr-log>
     }
   `,
   styles: [`
@@ -29,11 +29,13 @@ export class WotrLogsComponent implements OnChanges, OnInit {
   private elementRef = inject (ElementRef);
 
   logs = input.required<WotrLog[]> ();
-  protected debugIndex: number | null = null;
+  protected debugIndexes: Record<string, boolean> = { };
 
   ngOnInit () {
-    const i = localStorage.getItem (DEBUG_LOG_INDEX);
-    this.debugIndex = i ? parseInt (i) : null;
+    const indexes = localStorage.getItem (DEBUG_LOG_INDEXES);
+    if (indexes) {
+      indexes.split (",").forEach (i => this.debugIndexes[i] = true);
+    }
   }
 
   ngOnChanges (changes: SimpleChanges<this>) {
@@ -44,13 +46,12 @@ export class WotrLogsComponent implements OnChanges, OnInit {
 
   onLogClick (log: WotrLog, index: number) {
     if (isDevMode ()) {
-      if (this.debugIndex === index) {
-        this.debugIndex = null;
-        localStorage.removeItem (DEBUG_LOG_INDEX);
+      if (this.debugIndexes[index]) {
+        delete this.debugIndexes[index];
       } else {
-        this.debugIndex = index;
-        localStorage.setItem (DEBUG_LOG_INDEX, String (index));
+        this.debugIndexes[index] = true;
       }
+      localStorage.setItem (DEBUG_LOG_INDEXES, Object.keys (this.debugIndexes).join (","));
     }
   }
 

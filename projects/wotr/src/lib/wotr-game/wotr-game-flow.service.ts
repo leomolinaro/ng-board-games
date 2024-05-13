@@ -114,9 +114,9 @@ export class WotrGameFlowService {
   private getNextResolutionFrontId (frontId: WotrFrontId, story: WotrStory): WotrFrontId | null {
     const otherFrontId = oppositeFront (frontId);
     if (this.frontStore.hasActionDice (otherFrontId)) { return otherFrontId; }
-    if (this.frontStore.hasActionTokens (otherFrontId) && !("skipTokens" in story)) { return otherFrontId; }
+    if (this.frontStore.hasActionTokens (otherFrontId) && story.type !== "token-skip") { return otherFrontId; }
     if (this.frontStore.hasActionDice (frontId)) { return frontId; }
-    if (this.frontStore.hasActionTokens (frontId) && !("skipTokens" in story)) { return frontId; }
+    if (this.frontStore.hasActionTokens (frontId) && story.type !== "token-skip") { return frontId; }
     return null;
   }
 
