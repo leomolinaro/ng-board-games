@@ -88,8 +88,8 @@ export class WotrCombatRound {
         this.regionStore.setControlledBy (this.attacker.id, this.action.toRegion); // TODO controllare se avanza
       }
     } else {
-      // TODO choose cease/retreat
-      continueBattle = true;
+      const wantContinueBattle = await this.storyService.wantContinueBattle (this.attacker.id);
+      continueBattle = wantContinueBattle;
     }
 
     await this.checkSorcerer ();

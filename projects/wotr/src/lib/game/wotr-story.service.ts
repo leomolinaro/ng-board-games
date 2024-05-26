@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { firstValueFrom, from } from "rxjs";
-import { WotrArmyNotRetreatIntoSiege, WotrArmyRetreatIntoSiege, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
+import { WotrArmyNotRetreatIntoSiege, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
@@ -348,6 +348,15 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   async battleAdvance (front: WotrFrontId): Promise<WotrStory> {
     return this.story (front, p => p.battleAdvance! ());
+  }
+
+  async wantContinueBattle (front: WotrFrontId): Promise<boolean> {
+    const story = await this.story (front, p => p.wantContinueBattle! ());
+    const action = this.findAction<WotrBattleContinue | WotrBattleCease> (story, "battle-continue", "battle-cease");
+    switch (action.type) {
+      case "battle-continue": return true;
+      case "battle-cease": return false;
+    }
   }
 
 }

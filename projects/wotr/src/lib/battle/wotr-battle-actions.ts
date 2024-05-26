@@ -6,7 +6,7 @@ import { WotrCombatDie } from "./wotr-combat-die.models";
 export type WotrBattleAction =
   WotrArmyAttack |
   WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege |
-  WotrAttackContinue | WotrAttackCease | WotrLeaderForfeit |
+  WotrBattleContinue | WotrBattleCease | WotrLeaderForfeit |
   WotrCombatCardChoose | WotrCombatCardChooseNot | WotrCombatRoll | WotrCombatReRoll;
 
 export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrUnits }
@@ -17,10 +17,10 @@ export interface WotrArmyRetreatIntoSiege { type: "army-retreat-into-siege"; reg
 export function retreatIntoSiege (region: WotrRegionId): WotrArmyRetreatIntoSiege { return { type: "army-retreat-into-siege", region }; }
 export interface WotrArmyNotRetreatIntoSiege { type: "army-not-retreat-into-siege"; region: WotrRegionId }
 export function notRetreatIntoSiege (region: WotrRegionId): WotrArmyNotRetreatIntoSiege { return { type: "army-not-retreat-into-siege", region }; }
-export interface WotrAttackContinue { type: "attack-continue"; region: WotrRegionId }
-export function continueAttack (region: WotrRegionId): WotrAttackContinue { return { type: "attack-continue", region }; }
-export interface WotrAttackCease { type: "attack-cease"; region: WotrRegionId }
-export function ceaseAttack (region: WotrRegionId): WotrAttackCease { return { type: "attack-cease", region }; }
+export interface WotrBattleContinue { type: "battle-continue"; region: WotrRegionId }
+export function continueBattle (region: WotrRegionId): WotrBattleContinue { return { type: "battle-continue", region }; }
+export interface WotrBattleCease { type: "battle-cease"; region: WotrRegionId }
+export function ceaseBattle (region: WotrRegionId): WotrBattleCease { return { type: "battle-cease", region }; }
 
 export interface WotrCombatCardChoose { type: "combat-card-choose"; card: WotrCardId }
 export function combatCard (card: WotrCardLabel): WotrCombatCardChoose { return { type: "combat-card-choose", card: labelToCardId (card) }; }

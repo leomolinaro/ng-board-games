@@ -4,7 +4,7 @@
 
 import { discardDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
-import { attack, combatCard, continueAttack, forfeitLeadership, noCombatCard, reRollCombatDice, retreatIntoSiege, rollCombatDice } from "../battle/wotr-battle-actions";
+import { attack, combatCard, continueBattle, forfeitLeadership, noCombatCard, reRollCombatDice, retreatIntoSiege, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCompanion, separateCompanions } from "../companion/wotr-companion-actions";
 import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
@@ -256,7 +256,7 @@ export const stories: WotrStoryDoc[] = [
     eliminateArmyUnit ("helms-deep", elite ("rohan")),
     recruitArmyUnit ("helms-deep", regular ("rohan"))
   ),
-  s ().battleStory (continueAttack ("helms-deep")),
+  s ().battleStory (continueBattle ("helms-deep")),
   s ().characterReaction ("the-witch-king", drawCards ("The Breaking of the Fellowship")),
 
   // fp (time).story (

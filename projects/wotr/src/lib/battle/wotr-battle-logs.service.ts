@@ -13,8 +13,8 @@ export class WotrBattleLogsService {
       "army-attack": (action, front, f) => [f.player (front), " army in ", f.region (action.fromRegion), " attacks ", f.region (action.toRegion)],
       "army-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " retreat into siege"],
       "army-not-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " does not retreat into siege"],
-      "attack-continue": (action, front, f) => [f.player (front), " continue attack in ", f.region (action.region)],
-      "attack-cease": (action, front, f) => [f.player (front), " cease tha attack in ", f.region (action.region)],
+      "battle-continue": (action, front, f) => [f.player (front), " continue battle in ", f.region (action.region)],
+      "battle-cease": (action, front, f) => [f.player (front), " cease tha battle in ", f.region (action.region)],
       "leader-forfeit": (action, front, f) => [f.player (front), " forfeits TODO leadership"],
 
       "combat-card-choose": (action, front, f) => [f.player (front), ` choose a ${isCharacterCard (action.card) ? "character" : "strategy"} combat card`],

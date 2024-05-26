@@ -26,6 +26,7 @@ export interface WotrPlayerService {
   reRollCombatDice? (): Promise<WotrStory>;
   chooseCasualties? (): Promise<WotrStory>;
   battleAdvance? (): Promise<WotrStory>;
+  wantContinueBattle? (): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;
