@@ -9,6 +9,7 @@ import { WotrMapSlotsGeneratorService } from "../game/board/map/wotr-map-slots-g
 import { WotrMapPoint, WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrMinion, WotrMinionId } from "../minion/wotr-minion.models";
 import { WotrArmyUnitType, WotrFreePeopleLeaderUnitType, WotrFreeUnitType, WotrNationId, WotrShadowLeaderUnitType } from "../nation/wotr-nation.models";
+import { WotrArmyUnit } from "../unit/wotr-unit-actions";
 import { WotrRegion, WotrRegionId } from "./wotr-region.models";
 
 interface WotrRegionNode {
@@ -342,21 +343,17 @@ export class WotrRegionsComponent {
   }
 
   private equalsRegionUnits (a: WotrRegion, b: WotrRegion) {
-    if (a.armyUnits !== b.armyUnits) { return false; }
-    if (a.leaders !== b.leaders) { return false; }
-    if (a.nNazgul !== b.nNazgul) { return false; }
-    if (a.companions !== b.companions) { return false; }
-    if (a.minions !== b.minions) { return false; }
+    if (a.units !== b.units) { return false; }
     if (a.fellowship !== b.fellowship) { return false; }
     return true;
   }
 
   private regionToArmyNode (region: WotrRegion): WotrArmyNode | null {
-    if (!region.armyUnits.length) { return null; }
+    if (!region.units.armyUnits?.length) { return null; }
 
-    const armyFront = region.armyUnits[0].frontId;
+    const armyFront = region.units.armyUnits[0].front;
 
-    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region);
+    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region.units.armyUnits);
 
     let leaderUnits: WotrFreePeopleLeaderUnitNode[] | WotrShadowLeaderUnitNode[];
     let leadership: number;
@@ -374,24 +371,23 @@ export class WotrRegionsComponent {
     };
   }
 
-  private regionToArmyUnitNodes (region: WotrRegion):  [WotrArmyUnitNode[], number, number] {
+  private regionToArmyUnitNodes (armyUnits: WotrArmyUnit[]):  [WotrArmyUnitNode[], number, number] {
     let nRegulars = 0;
     let nElites = 0;
-    for (const unit of region.armyUnits) {
+    for (const unit of armyUnits) {
       switch (unit.type) {
         case "regular": nRegulars += unit.quantity; break;
         case "elite": nElites += unit.quantity; break;
       }
     }
-
-    const armyUnits = [...region.armyUnits];
-    armyUnits.sort ((a, b) => {
+    const sortedArmyUnits = [...armyUnits];
+    sortedArmyUnits.sort ((a, b) => {
       return a.type === "elite" ? 1 : -1;
     });
-    const unitNodes: WotrArmyUnitNode[] = armyUnits.slice (0, 2).map (armyUnit => ({
+    const unitNodes: WotrArmyUnitNode[] = sortedArmyUnits.slice (0, 2).map (armyUnit => ({
       unitType: armyUnit.type,
-      nationId: armyUnit.nationId,
-      image: this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nationId),
+      nationId: armyUnit.nation,
+      image: this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nation),
       svgX: 0, svgY: 0
     }));
     return [unitNodes, nRegulars, nElites];
@@ -401,16 +397,20 @@ export class WotrRegionsComponent {
     let leadership = 0;
     const leaders: (WotrCompanion | WotrNationId)[] = [];
 
-    region.leaders.forEach (leader => {
-      leadership += leader.quantity;
-      leaders.push (leader.nationId);
-    });
+    if (region.units.leaders) {
+      region.units.leaders.forEach (leader => {
+        leadership += leader.quantity;
+        leaders.push (leader.nation);
+      });
+    }
 
-    region.companions.forEach (companionId => {
-      const companion = this.companionById ()[companionId];
-      leadership += companion.leadership;
-      leaders.push (companion);
-    });
+    if (region.units.companions) {
+      region.units.companions.forEach (companionId => {
+        const companion = this.companionById ()[companionId];
+        leadership += companion.leadership;
+        leaders.push (companion);
+      });
+    }
 
     leaders.sort ((a, b) => this.compareFreePeopleLeaders (a, b));
     const unitNodes = leaders.slice (0, 2).map<WotrFreePeopleLeaderUnitNode> (leader => {
@@ -426,15 +426,17 @@ export class WotrRegionsComponent {
   private regionToShadowLeaderUnitNodes (region: WotrRegion): [WotrShadowLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrMinion | "nazgul")[] = [];
-    if (region.nNazgul) {
-      leadership += region.nNazgul;
+    if (region.units.nNazgul) {
+      leadership += region.units.nNazgul;
       leaders.push ("nazgul");
     }
-    region.minions.forEach (minionId => {
-      const minion = this.minionById ()[minionId];
-      leadership += minion.leadership;
-      leaders.push (minion);
-    });
+    if (region.units.minions) {
+      region.units.minions.forEach (minionId => {
+        const minion = this.minionById ()[minionId];
+        leadership += minion.leadership;
+        leaders.push (minion);
+      });
+    }
     leaders.sort ((a, b) => this.compareShadowLeaders (a, b));
     const unitNodes = leaders.slice (0, 2).map<WotrShadowLeaderUnitNode> (leader => {
       if (leader === "nazgul") {
@@ -453,8 +455,8 @@ export class WotrRegionsComponent {
       freeGroups.push ({ units: [{ unitType: "fellowship", image: this.assets.getFellowshipImage (), svgX: 0, svgY: 0 }], nUnits: 1, svgX: 0, svgY: 0 });
     }
 
-    if (region.armyUnits.length) {
-      const armyFront = region.armyUnits[0].frontId;
+    if (region.units.armyUnits?.length) {
+      const armyFront = region.units.armyUnits[0].front;
       let freeUnits: WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
       let nUnits: number;
       switch (armyFront) {
@@ -473,9 +475,10 @@ export class WotrRegionsComponent {
   }
 
   private regionToFreePeopleFreeUnitNodes (region: WotrRegion): [WotrFreePeopleFreeUnitNode[], number] {
+    if (!region.units.companions) { return [[], 0]; }
     let nUnits = 0;
-    const freeUnits = region.companions.map (companionId => this.companionById ()[companionId]);
-    nUnits = region.companions.length;
+    const freeUnits = region.units.companions.map (companionId => this.companionById ()[companionId]);
+    nUnits = region.units.companions.length;
     freeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
     const unitNodes = freeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
       unitType: "companion", companion: freeUnit.id,
@@ -487,10 +490,12 @@ export class WotrRegionsComponent {
   private regionToShadowFreeUnitNodes (region: WotrRegion): [WotrShadowFreeUnitNode[], number] {
     let nUnits = 0;
     const freeUnits: (WotrMinion | "nazgul")[] = [];
-    nUnits += region.minions.length;
-    region.minions.forEach (minionId => freeUnits.push (this.minionById ()[minionId]));
-    if (region.nNazgul) {
-      nUnits += region.nNazgul;
+    if (region.units.minions) {
+      nUnits += region.units.minions.length;
+      region.units.minions.forEach (minionId => freeUnits.push (this.minionById ()[minionId]));
+    }
+    if (region.units.nNazgul) {
+      nUnits += region.units.nNazgul;
       freeUnits.push ("nazgul");
     }
     freeUnits.sort ((a, b) => this.compareShadowFreeUnits (a, b));

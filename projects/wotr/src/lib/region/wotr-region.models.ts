@@ -1,7 +1,6 @@
-import { WotrCompanionId } from "../companion/wotr-companion.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
-import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation.models";
+import { WotrNationId } from "../nation/wotr-nation.models";
+import { WotrUnits } from "../unit/wotr-unit-actions";
 
 export type WotrRegionId =
   "forlindon" | "north-ered-luin" | "ered-luin" | "grey-havens" | "harlindon" | "tower-hills" |
@@ -31,24 +30,8 @@ export interface WotrRegion {
   neighbors: WotrNeighbor[];
   fortification: boolean;
   settlement: WotrSettlentType | null;
-  armyUnits: WotrRegionArmyUnit[];
-  leaders: WotrRegionLeaderUnit[];
-  nNazgul: number;
-  companions: WotrCompanionId[];
-  minions: WotrMinionId[];
+  units: WotrUnits;
   fellowship: boolean;
-  underSiegeFrontId: WotrFrontId | null;
-}
-
-export interface WotrRegionArmyUnit {
-  nationId: WotrNationId;
-  frontId: WotrFrontId;
-  type: WotrArmyUnitType;
-  quantity: number;
-}
-
-export interface WotrRegionLeaderUnit {
-  nationId: WotrNationId;
-  type: "leader";
-  quantity: number;
+  underSiege?: boolean; // only if stronghold
+  controlledBy?: WotrFrontId; // only if settlement
 }

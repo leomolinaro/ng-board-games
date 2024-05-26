@@ -107,7 +107,7 @@ export class WotrGameFlowService {
 
   private async victoryCheck (roundNumber: number) {
     this.logStore.logPhase (6);
-    return roundNumber < 6;
+    return true;
   }
 
   private getNextResolutionFrontId (frontId: WotrFrontId, story: WotrStory): WotrFrontId | null {

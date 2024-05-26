@@ -9,8 +9,7 @@ export interface WotrFellowshipProgress { type: "fellowship-progress" }
 export function moveFelloswhip (): WotrFellowshipProgress { return { type: "fellowship-progress" }; }
 export interface WotrFellowshipCorruption { type: "fellowship-corruption"; quantity: number }
 export function corruptFellowship (quantity: number): WotrFellowshipCorruption { return { type: "fellowship-corruption", quantity }; }
-export interface WotrFellowhipHeal { type: "fellowship-heal"; quantity: number }
-export function healFellowship (quantity: number): WotrFellowhipHeal { return { type: "fellowship-heal", quantity }; }
+export function healFellowship (quantity: number): WotrFellowshipCorruption { return { type: "fellowship-corruption", quantity: -quantity }; }
 export interface WotrFellowshipHide { type: "fellowship-hide" }
 export function hideFellowship (): WotrFellowshipHide { return { type: "fellowship-hide" }; }
 export interface WotrFellowshipReveal { type: "fellowship-reveal"; region: WotrRegionId }

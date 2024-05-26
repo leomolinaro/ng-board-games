@@ -4,9 +4,7 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrMinionAction } from "./wotr-minion-actions";
 import { WotrMinionStore } from "./wotr-minion.store";
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrMinionActionsService {
 
   private minionStore = inject (WotrMinionStore);
@@ -14,11 +12,11 @@ export class WotrMinionActionsService {
 
   getActionAppliers (): WotrActionApplierMap<WotrMinionAction> {
     return {
-      "minion-elimination": (action, front) => {
+      "minion-elimination": async (action, front) => {
         for (const minionId of action.minions) {
           const minion = this.minionStore.minion (minionId);
           if (minion.status === "inPlay") {
-            const region = this.regionStore.regions ().find (r => r.minions.includes (minionId));
+            const region = this.regionStore.regions ().find (r => r.units.minions?.includes (minionId));
             if (region) {
               this.regionStore.removeMinionFromRegion (minionId, region.id);
             }
@@ -26,19 +24,19 @@ export class WotrMinionActionsService {
           this.minionStore.setEliminated (minionId);
         }
       },
-      "minion-movement": (action, front) => {
+      "minion-movement": async (action, front) => {
         for (const minionId of action.minions) {
           this.regionStore.removeMinionFromRegion (minionId, action.fromRegion);
           this.regionStore.addMinionToRegion (minionId, action.toRegion);
         }
       },
-      "minion-play": (action, front) => {
+      "minion-play": async (action, front) => {
         for (const minionId of action.minions) {
           this.minionStore.setInPlay (minionId);
           this.regionStore.addMinionToRegion (minionId, action.region);
         }
       },
-      "nazgul-movement": (action, front) => {
+      "nazgul-movement": async (action, front) => {
         this.regionStore.removeNazgulFromRegion (action.nNazgul, action.fromRegion);
         this.regionStore.addNazgulToRegion (action.nNazgul, action.toRegion);
       },

@@ -11,6 +11,7 @@ export class WotrHuntLogsService {
     return {
       "hunt-allocation": (action, front, f) => [f.player (front), ` allocates ${this.nDice (action.quantity)} in the Hunt Box`],
       "hunt-roll": (action, front, f) => [f.player (front), ` rolls ${this.dice (action.dice)} for the hunt`],
+      "hunt-re-roll": (action, front, f) => [f.player (front), ` re-rolls ${this.dice (action.dice)} for the hunt`],
       "hunt-tile-add": (action, front, f) => [f.player (front), " adds ", f.huntTile (action.tile), " hunt tile to the Mordor Track"],
       "hunt-tile-draw": (action, front, f) => [f.player (front), " draws ", f.huntTile (action.tile), " hunt tile"],
     };

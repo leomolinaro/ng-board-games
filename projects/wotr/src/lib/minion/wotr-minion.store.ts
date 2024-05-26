@@ -17,6 +17,7 @@ export class WotrMinionStore {
   minionById = computed (() => this.state ().map);
   minions = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
   minion (minionId: WotrMinionId): WotrMinion { return this.state ().map[minionId]; }
+  isInPlay (minionId: WotrMinionId): boolean { return this.state ().map[minionId].status === "inPlay"; }
 
   init (): WotrMinionState {
     return {

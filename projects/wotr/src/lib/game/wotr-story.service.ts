@@ -1,28 +1,27 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
-import { delay, firstValueFrom, from, of } from "rxjs";
-import { WotrArmyNotRetreatIntoSiege, WotrArmyRetreatIntoSiege } from "../army/wotr-army-actions";
-import { WotrBattleStore } from "../battle/wotr-battle.store";
-import { WotrCombatCardChoose, WotrCombatCardChooseNot } from "../battle/wotr-combat-actions";
+import { firstValueFrom, from } from "rxjs";
+import { WotrArmyNotRetreatIntoSiege, WotrArmyRetreatIntoSiege, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrActionApplier } from "../commons/wotr-action-applier";
-import { WotrActionEffect } from "../commons/wotr-effect-getter";
 import { WotrCompanionElimination, WotrCompanionRandom } from "../companion/wotr-companion-actions";
-import { WotrFellowshipCorruption } from "../fellowship/wotr-fellowship-actions";
+import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
+import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
-import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerService } from "../player/wotr-player.service";
+import { WotrUnits } from "../unit/wotr-unit-actions";
+import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteService } from "./wotr-remote.service";
 import { WotrAction, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
-import { WotrGameStore } from "./wotr-game.store";
 import { WotrUiStore } from "./wotr-ui.store";
 
 export interface WotrStoryTask {
@@ -41,8 +40,6 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   private ui = inject (WotrUiStore);
   private remote = inject (WotrRemoteService);
   private frontStore = inject (WotrFrontStore);
-  private battleStore = inject (WotrBattleStore);
-  private huntStore = inject (WotrHuntStore);
   protected override auth = inject (BgAuthService);
   protected override aiPlayer = inject (WotrPlayerAiService);
   protected override localPlayer = inject (WotrPlayerLocalService);
@@ -56,9 +53,9 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     this.actionAppliers = actionAppliers;
   }
 
-  private actionEffects!: Record<WotrAction["type"], WotrActionEffect<WotrAction>>;
-  registerActionEffects (effectGetters: Record<WotrAction["type"], WotrActionEffect<WotrAction>>) {
-    this.actionEffects = effectGetters;
+  private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
+  registerCardEffects (cardEffects: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>) {
+    this.cardEffects = cardEffects;
   }
 
   protected override getGameId () { return this.store.getGameId (); }
@@ -74,13 +71,15 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   protected override cancelChange$ () { return this.ui.cancelChange$ (); }
   
   private async executeTask<R extends WotrStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
-    return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))).pipe (delay (50)));
+    await new Promise (resolve => { setTimeout (resolve, 10); });
+    return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))));
   }
   private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrStory[]> {
+    await new Promise (resolve => { setTimeout (resolve, 10); });
     return firstValueFrom (super.executeTasks$ (tasks.map (t => ({
       playerId: t.playerId,
       task$: p => from (t.task (p))
-    }))).pipe (delay (50)));
+    }))));
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {
@@ -98,9 +97,13 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
       front => ({ playerId: front, task: getTask (front) })
     ));
     let index = 0;
+    const toReturn: Record<WotrFrontId, WotrStory> = { } as any;
     for (const frontId of this.frontStore.frontIds ()) {
-      await this.applyStory (stories[index++], frontId);
+      const story = stories[index++];
+      await this.applyStory (story, frontId);
+      toReturn[frontId] = story;
     }
+    return toReturn;
   }
 
   private async story (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<WotrStory>) {
@@ -116,7 +119,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     throw unexpectedStory (story, actionTypes.join (" or "));
   }
 
-  private findAction<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A {
+  findAction<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A {
     const actions = this.assertActionsStory (story);
     const foundAction = actions.find (a => actionTypes.includes (a.type)) as A;
     if (foundAction) { return foundAction; }
@@ -130,70 +133,63 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   private storyAppliers: WotrStoryApplierMap = {
     phase: async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     battle: async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front, "battle");
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     hunt: async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front, "hunt");
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     die: async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
       this.frontStore.removeActionDie (story.die, front);
     },
     "die-card": async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
+      const cardEffect = this.cardEffects[story.card];
+      if (cardEffect) { await cardEffect ({ front, story }); }
       this.frontStore.discardCards ([story.card], front);
       this.frontStore.removeActionDie (story.die, front);
     },
     "reaction-card": async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     "reaction-combat-card": async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     "reaction-character": async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
     },
     token: async (story, front) => {
-      story.actions.forEach (action => {
-        this.applyAction (action, front);
+      for (const action of story.actions) {
         this.logStore.logAction (action, story, front);
-      });
-      await this.actionsEffect (story.actions, story, front);
+        await this.applyAction (action, front);
+      }
       this.frontStore.removeActionToken (story.token, front);
     },
     "die-pass": async (story, front) => { this.logStore.logStory (story, front); },
@@ -207,18 +203,10 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     await (this.storyAppliers[story.type] as any) (story, front);
   }
 
-  private applyAction (action: WotrAction, frontId: WotrFrontId) {
-    this.actionAppliers[action.type] (action, frontId);
-  }
-
-  private async actionEffect (action: WotrAction, story: WotrStory, front: WotrFrontId) {
-    return this.actionEffects[action.type]?. (action, front) || of (void 0);
-  }
-
-  private async actionsEffect (actions: WotrAction[], story: WotrStory, front: WotrFrontId) {
-    for (const action of actions) {
-      await this.actionEffect (action, story, front);
-    }
+  private async applyAction (action: WotrAction, frontId: WotrFrontId) {
+    const actionApplier = this.actionAppliers[action.type];
+    if (!actionApplier) { return; }
+    await actionApplier (action, frontId);
   }
 
   async firstPhaseDrawCards (): Promise<void> {
@@ -243,10 +231,21 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return action.dice;
   }
 
+  async reRollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.story (front, p => p.reRollHuntDice! ());
+    const action = this.findAction<WotrHuntReRoll> (story, "hunt-re-roll");
+    return action.dice;
+  }
+
   async drawHuntTile (front: WotrFrontId): Promise<WotrHuntTileId> {
     const story = await this.story (front, p => p.drawHuntTile! ());
     const action = this.findAction<WotrHuntTileDraw> (story, "hunt-tile-draw");
     return action.tile;
+  }
+
+  async revealFellowship (front: WotrFrontId): Promise<void> {
+    const story = await this.story (front, p => p.revealFellowship! ());
+    this.findAction<WotrFellowshipReveal> (story, "fellowship-reveal");
   }
 
   async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCompanionElimination | WotrCompanionRandom)[]> {
@@ -271,6 +270,21 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   async activateTableCard (cardId: WotrCardId, front: WotrFrontId): Promise<WotrStory> {
     return this.story (front, p => p.activateTableCard! (cardId));
+  }
+
+  async forfeitLeadership (front: WotrFrontId): Promise<WotrUnits> {
+    const story = await this.story (front, p => p.forfeitLeadership! ());
+    const action = this.findAction<WotrLeaderForfeit> (story, "leader-forfeit");
+    return action.leaders;
+  }
+
+  async activateCharacter (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
+    const story = await this.story (front, p => p.activateCharacter! (characterId));
+    switch (story.type) {
+      case "reaction-character": return story.actions;
+      case "reaction-character-skip": return false;
+      default: throw unexpectedStory (story, (" character activation or not"));
+    }
   }
 
   async activateCombatCard (cardId: WotrCardId, front: WotrFrontId): Promise<false | WotrAction[]> {
@@ -300,8 +314,32 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     }
   }
 
-  async rollCombatDice (): Promise<void> {
-    await this.parallelStories (f => p => p.rollCombatDice! ());
+  async rollCombatDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.story (front, p => p.rollCombatDice! ());
+    const action = this.findAction<WotrCombatRoll> (story, "combat-roll");
+    return action.dice;
+  }
+
+  async reRollCombatDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.story (front, p => p.reRollCombatDice! ());
+    const action = this.findAction<WotrCombatReRoll> (story, "combat-re-roll");
+    return action.dice;
+  }
+
+  async parallelRollCombatDice (): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
+    const stories = await this.parallelStories (f => p => p.rollCombatDice! ());
+    return {
+      "free-peoples": this.findAction<WotrCombatRoll> (stories["free-peoples"], "combat-roll").dice,
+      shadow: this.findAction<WotrCombatRoll> (stories.shadow, "combat-roll").dice,
+    };
+  }
+
+  async parallelReRollCombatDice (): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
+    const stories = await this.parallelStories (f => p => p.reRollCombatDice! ());
+    return {
+      "free-peoples": this.findAction<WotrCombatReRoll> (stories["free-peoples"], "combat-re-roll").dice,
+      shadow: this.findAction<WotrCombatReRoll> (stories.shadow, "combat-re-roll").dice,
+    };
   }
 
   async chooseCasualties (front: WotrFrontId): Promise<WotrStory> {
@@ -311,6 +349,5 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   async battleAdvance (front: WotrFrontId): Promise<WotrStory> {
     return this.story (front, p => p.battleAdvance! ());
   }
-
 
 }

@@ -64,35 +64,36 @@ export class WotrRegionDialogComponent implements OnInit {
 
   ngOnInit () {
     const d = this.data;
-    d.region.armyUnits.forEach (armyUnit => {
-      const image = this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nationId);
+    const units = d.region.units;
+    units.armyUnits?.forEach (armyUnit => {
+      const image = this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nation);
       this.unitNodes.push ({
-        id: armyUnit.nationId + "_" + armyUnit.type,
+        id: armyUnit.nation + "_" + armyUnit.type,
         label: armyUnit.type === "regular"
-          ? d.nationById[armyUnit.nationId].regularLabel
-          : d.nationById[armyUnit.nationId].eliteLabel,
+          ? d.nationById[armyUnit.nation].regularLabel
+          : d.nationById[armyUnit.nation].eliteLabel,
         quantity: armyUnit.quantity,
         ...this.scale (image)
       });
     });
-    d.region.leaders.forEach (leader => {
-      const image = this.assets.getLeaderImage (leader.nationId);
+    units.leaders?.forEach (leader => {
+      const image = this.assets.getLeaderImage (leader.nation);
       this.unitNodes.push ({
-        id: leader.nationId + "_leader",
-        label: d.nationById[leader.nationId].leaderLabel!,
+        id: leader.nation + "_leader",
+        label: d.nationById[leader.nation].leaderLabel!,
         quantity: leader.quantity,
         ...this.scale (image)
       });
     });
-    if (d.region.nNazgul) {
+    if (units.nNazgul) {
       const image = this.assets.getNazgulImage ();
-      this.unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: d.region.nNazgul, ...this.scale (image) });
+      this.unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: units.nNazgul, ...this.scale (image) });
     }
-    d.region.companions.forEach (companion => {
+    units.companions?.forEach (companion => {
       const image = this.assets.getCompanionImage (companion);
       this.unitNodes.push ({ id: companion, label: d.companionById[companion].name, quantity: 1, ...this.scale (image) });
     });
-    d.region.minions.forEach (minion => {
+    units.minions?.forEach (minion => {
       const image = this.assets.getMinionImage (minion);
       this.unitNodes.push ({ id: minion, label: d.minionById[minion].name, quantity: 1, ...this.scale (image) });
     });

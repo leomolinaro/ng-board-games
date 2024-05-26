@@ -3,25 +3,33 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrArmyEffectsService } from "../army/wotr-army-effects.service";
+import { WotrActionDieActionsService } from "../action-die/wotr-action-die-actions.service";
+import { WotrBattleActionsService } from "../battle/wotr-battle-actions.service";
 import { WotrBattleFlowService } from "../battle/wotr-battle-flow.service";
-import { WotrCompanionEffectsService } from "../companion/wotr-companion-effects.service";
+import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
+import { WotrCardActionsService } from "../card/wotr-card-actions.service";
+import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
+import { WotrCompanionActionsService } from "../companion/wotr-companion-actions.service";
 import { WotrCompanionStore } from "../companion/wotr-companion.store";
 import { stories as exampleStories } from "../examples/very-late-minions";
-import { WotrFellowshipEffectsService } from "../fellowship/wotr-fellowship-effects.service";
+import { WotrFellowshipActionsService } from "../fellowship/wotr-fellowship-actions.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrMinionActionsService } from "../minion/wotr-minion-actions.service";
 import { WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.service";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrUnitActionsService } from "../unit/wotr-unit-actions.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
-import { WotrGameActionService } from "./wotr-game-action.service";
+import { WotrGameActionsService } from "./wotr-game-actions.service";
 import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
@@ -58,14 +66,24 @@ import { WotrUiStore } from "./wotr-ui.store";
   providers: [
     WotrGameStore,
     WotrStoryService,
+    
     WotrGameFlowService,
-    WotrGameActionService,
-    WotrHuntFlowService,
     WotrBattleFlowService,
+    WotrHuntFlowService,
 
-    WotrFellowshipEffectsService,
-    WotrCompanionEffectsService,
-    WotrArmyEffectsService,
+    WotrActionDieActionsService,
+    WotrCardActionsService,
+    WotrBattleActionsService,
+    WotrCombatCardsService,
+    WotrCompanionActionsService,
+    WotrFellowshipActionsService,
+    WotrHuntActionsService,
+    WotrMinionActionsService,
+    WotrPoliticalActionsService,
+    WotrUnitActionsService,
+    WotrGameActionsService,
+
+    WotrCardEffectsService,
 
     WotrPlayerAiService,
     WotrPlayerLocalService,
@@ -90,6 +108,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private auth = inject (BgAuthService);
   private story = inject (WotrStoryService);
   private flow = inject (WotrGameFlowService);
+  private cardEffects = inject (WotrCardEffectsService);
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 
@@ -111,10 +130,11 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   // @ViewChild (WotrBoardComponent) boardComponent!: WotrBoardComponent;
 
-  private gameActionService = inject (WotrGameActionService);
+  private gameActionsService = inject (WotrGameActionsService);
 
   async ngOnInit () {
-    this.gameActionService.registerActions ();
+    this.gameActionsService.registerActions ();
+    this.cardEffects.registerCardEffects ();
     const [game, players, stories] = await Promise.all ([
       this.remote.getGame (this.gameId),
       this.remote.getPlayers (this.gameId, (ref) => ref.orderBy ("sort")),

@@ -82,7 +82,7 @@ export class WotrExampleButton implements OnDestroy {
       switchMap (game => forkJoin ([
         this.insertRealPlayer$ ("FP", "free-peoples", 1, user, game.id),
         this.insertRealPlayer$ ("S", "shadow", 2, user, game.id),
-        ...stories.slice (0, 80).map (story => {
+        ...stories.map (story => {
           const storyId = getStoryId (story.time, story.playerId);
           return this.remote.insertStory$ (storyId, story, game.id);
         })

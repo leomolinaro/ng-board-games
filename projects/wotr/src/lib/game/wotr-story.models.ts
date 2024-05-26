@@ -2,26 +2,23 @@ import { BgStoryDoc } from "@leobg/commons";
 import { WotrActionDieAction, rollActionDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
-import { WotrArmyAction } from "../army/wotr-army-actions";
-import { WotrCombatAction } from "../battle/wotr-combat-actions";
+import { WotrBattleAction } from "../battle/wotr-battle-actions";
 import { WotrCardAction } from "../card/wotr-card-actions";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCompanionAction } from "../companion/wotr-companion-actions";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
 import { WotrFellowshipAction } from "../fellowship/wotr-fellowship-actions";
-import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntAction } from "../hunt/wotr-hunt-actions";
 import { WotrMinionAction } from "../minion/wotr-minion-actions";
-import { WotrMinionId } from "../minion/wotr-minion.models";
-import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPoliticalAction } from "../nation/wotr-political-actions";
+import { WotrUnitAction } from "../unit/wotr-unit-actions";
 
 export interface WotrPhaseStory { type: "phase"; actions: WotrAction[] }
 export interface WotrBattleStory { type: "battle"; actions: WotrAction[] }
 export interface WotrHuntStory { type: "hunt"; actions: WotrAction[] }
-export interface WotrDieStory { type: "die"; die: WotrActionDie; actions: WotrAction[] }
-export interface WotrDieCardStory { type: "die-card"; die: WotrActionDie; card: WotrCardId; actions: WotrAction[] }
+export interface WotrDieStory { type: "die"; die: WotrActionDie; elvenRing?: WotrElvenRing; actions: WotrAction[] }
+export interface WotrDieCardStory { type: "die-card"; die: WotrActionDie; elvenRing?: WotrElvenRing; card: WotrCardId; actions: WotrAction[] }
 export interface WotrPassStory { type: "die-pass" }
 export interface WotrTokenStory { type: "token"; token: WotrActionToken; actions: WotrAction[] }
 export interface WotrSkipTokensStory { type: "token-skip" }
@@ -51,19 +48,9 @@ export type WotrAction =
   WotrActionDieAction |
   WotrCompanionAction |
   WotrMinionAction |
-  WotrArmyAction |
+  WotrUnitAction |
   WotrPoliticalAction |
-  WotrCombatAction;
-
-export interface WotrArmy {
-  minions?: WotrMinionId[];
-  companions?: WotrCompanionId[];
-  units: {
-    quantity: number;
-    type: WotrArmyUnitType | "leader" | "nazgul";
-    nation: WotrNationId;
-  }[];
-}
+  WotrBattleAction;
 
 export class WotrFrontStoryComposer {
   constructor (private front: WotrFrontId, private time: number) { }
@@ -83,8 +70,17 @@ export class WotrFrontStoryComposer {
   pass (): WotrStoryDoc & WotrPassStory { return { type: "die-pass", ...this.story () }; }
   protected actionDie (die: WotrActionDie, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, actions, ...this.story () }; }
   
+  characterElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("character", elvenRing, ...actions); }
+  eventElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("event", elvenRing, ...actions); }
+  musterElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("muster", elvenRing, ...actions); }
+  musterArmyElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("muster-army", elvenRing, ...actions); }
+  armyElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("army", elvenRing, ...actions); }
+  protected actionElvenRingDie (die: WotrActionDie, elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, elvenRing, actions, ...this.story () }; }
+
   eventDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("event", card, ...actions); }
   characterDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("character", card, ...actions); }
+  musterDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("muster", card, ...actions); }
+  armyDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("army", card, ...actions); }
   musterArmyDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("muster-army", card, ...actions); }
   protected actionDieCard (die: WotrActionDie, card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return { type: "die-card", die, card: labelToCardId (card), actions, ...this.story () }; }
 

@@ -12,6 +12,7 @@ export class WotrFellowshipStore {
   state!: Signal<WotrFellowship>;
 
   isRevealed () { return this.state ().status === "revealed"; }
+  guide () { return this.state ().guide; }
 
   init (): WotrFellowship {
     return {
