@@ -7,7 +7,7 @@ import { WotrArmyUnitType, WotrNationId, frontOfNation } from "../nation/wotr-na
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrUnitAction } from "./wotr-unit-actions";
+import { WotrUnitAction, WotrUnits } from "./wotr-unit-actions";
 
 @Injectable ()
 export class WotrUnitActionsService {
@@ -21,36 +21,7 @@ export class WotrUnitActionsService {
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
     return {
       "army-movement": async (action, front) => {
-        if (action.army.minions) {
-          for (const minion of action.army.minions) {
-            this.regionStore.removeMinionFromRegion (minion, action.fromRegion);
-            this.regionStore.addMinionToRegion (minion, action.toRegion);
-          }
-        }
-        if (action.army.companions) {
-          for (const companion of action.army.companions) {
-            this.regionStore.removeCompanionFromRegion (companion, action.fromRegion);
-            this.regionStore.addCompanionToRegion (companion, action.toRegion);
-          }
-        }
-        if (action.army.leaders) {
-          for (const leader of action.army.leaders) {
-            this.regionStore.removeLeadersFromRegion (leader.nation, leader.quantity, action.fromRegion);
-            this.regionStore.addLeadersToRegion (leader.nation, leader.quantity, action.toRegion);
-          }
-        }
-        if (action.army.nNazgul) {
-          this.regionStore.removeNazgulFromRegion (action.army.nNazgul, action.fromRegion);
-          this.regionStore.addNazgulToRegion (action.army.nNazgul, action.toRegion);
-        }
-        if (action.army.armyUnits) {
-          for (const unit of action.army.armyUnits) {
-            const unitUtil = this.unitUtil (unit.type);
-            const frontId = frontOfNation (unit.nation);
-            unitUtil.removeFromRegion (unit.quantity, unit.nation, action.fromRegion);
-            unitUtil.addToRegion (unit.quantity, frontId, unit.nation, action.toRegion);
-          }
-        }
+        this.moveArmy (action.army, action.fromRegion, action.toRegion);
         const region = this.regionStore.region (action.toRegion);
         if (region.nationId) {
           const nationOfRegion = this.nationStore.nation (region.nationId);
@@ -91,6 +62,33 @@ export class WotrUnitActionsService {
         this.regionStore.addNazgulToRegion (action.quantity, action.region);
       },
     };
+  }
+
+  moveArmy (army: WotrUnits, fromRegion: WotrRegionId, toRegion: WotrRegionId) {
+    if (army.characters) {
+      for (const character of army.characters) {
+        this.regionStore.removeCharacterFromRegion (character, fromRegion);
+        this.regionStore.addCharacterToRegion (character, toRegion);
+      }
+    }
+    if (army.leaders) {
+      for (const leader of army.leaders) {
+        this.regionStore.removeLeadersFromRegion (leader.nation, leader.quantity, fromRegion);
+        this.regionStore.addLeadersToRegion (leader.nation, leader.quantity, toRegion);
+      }
+    }
+    if (army.nNazgul) {
+      this.regionStore.removeNazgulFromRegion (army.nNazgul, fromRegion);
+      this.regionStore.addNazgulToRegion (army.nNazgul, toRegion);
+    }
+    if (army.armyUnits) {
+      for (const unit of army.armyUnits) {
+        const unitUtil = this.unitUtil (unit.type);
+        const frontId = frontOfNation (unit.nation);
+        unitUtil.removeFromRegion (unit.quantity, unit.nation, fromRegion);
+        unitUtil.addToRegion (unit.quantity, frontId, unit.nation, toRegion);
+      }
+    }
   }
 
   private unitUtil (unitType: WotrArmyUnitType) {

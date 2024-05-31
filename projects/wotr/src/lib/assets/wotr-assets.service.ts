@@ -2,10 +2,9 @@ import { Injectable } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation.models";
 
 const BASE_PATH = "assets/wotr";
@@ -27,8 +26,7 @@ export class WotrAssetsService {
 
   private init () {
     this.initNations ();
-    this.initCompanions ();
-    this.initMinions ();
+    this.initCharacters ();
   }
 
   getMapSlotsPath (): string { return `${BASE_PATH}/wotr-map-slots.json`; }
@@ -86,26 +84,21 @@ export class WotrAssetsService {
   private NAZGUL: WotrUnitImage = this.unitImage ("nazgul", 42, 67);
   getNazgulImage () { return this.NAZGUL; }
 
-  private COMPANION_BY_ID: Record<WotrCompanionId, WotrUnitImage> = { } as any;
-  getCompanionImage (companionId: WotrCompanionId) { return this.COMPANION_BY_ID[companionId]; }
-  private initCompanions () {
-    this.COMPANION_BY_ID["gandalf-the-grey"] = this.unitImage ("gandalf-the-grey", 31, 55);
-    this.COMPANION_BY_ID.strider = this.unitImage ("strider", 31, 47);
-    this.COMPANION_BY_ID.boromir = this.unitImage ("boromir", 30, 44);
-    this.COMPANION_BY_ID.legolas = this.unitImage ("legolas", 28, 45);
-    this.COMPANION_BY_ID.gimli = this.unitImage ("gimli", 33, 38);
-    this.COMPANION_BY_ID.meriadoc = this.unitImage ("merry", 29, 33);
-    this.COMPANION_BY_ID.peregrin = this.unitImage ("pippin", 30, 36);
-    this.COMPANION_BY_ID.aragorn = this.unitImage ("aragorn", 30, 48);
-    this.COMPANION_BY_ID["gandalf-the-white"] = this.unitImage ("gandalf-the-white", 31, 55);
-  }
-
-  private MINION_BY_ID: Record<WotrMinionId, WotrUnitImage> = { } as any;
-  getMinionImage (minionId: WotrMinionId) { return this.MINION_BY_ID[minionId]; }
-  private initMinions () {
-    this.MINION_BY_ID.saruman = this.unitImage ("saruman", 53, 44);
-    this.MINION_BY_ID["the-witch-king"] = this.unitImage ("witch-king", 57, 44);
-    this.MINION_BY_ID["the-mouth-of-sauron"] = this.unitImage ("mouth", 43, 41);
+  private CHARACTER_BY_ID: Record<WotrCharacterId, WotrUnitImage> = { } as any;
+  getCharacterImage (characterId: WotrCharacterId) { return this.CHARACTER_BY_ID[characterId]; }
+  private initCharacters () {
+    this.CHARACTER_BY_ID["gandalf-the-grey"] = this.unitImage ("gandalf-the-grey", 31, 55);
+    this.CHARACTER_BY_ID.strider = this.unitImage ("strider", 31, 47);
+    this.CHARACTER_BY_ID.boromir = this.unitImage ("boromir", 30, 44);
+    this.CHARACTER_BY_ID.legolas = this.unitImage ("legolas", 28, 45);
+    this.CHARACTER_BY_ID.gimli = this.unitImage ("gimli", 33, 38);
+    this.CHARACTER_BY_ID.meriadoc = this.unitImage ("merry", 29, 33);
+    this.CHARACTER_BY_ID.peregrin = this.unitImage ("pippin", 30, 36);
+    this.CHARACTER_BY_ID.aragorn = this.unitImage ("aragorn", 30, 48);
+    this.CHARACTER_BY_ID["gandalf-the-white"] = this.unitImage ("gandalf-the-white", 31, 55);
+    this.CHARACTER_BY_ID.saruman = this.unitImage ("saruman", 53, 44);
+    this.CHARACTER_BY_ID["the-witch-king"] = this.unitImage ("witch-king", 57, 44);
+    this.CHARACTER_BY_ID["the-mouth-of-sauron"] = this.unitImage ("mouth", 43, 41);
   }
 
   private FELLOWSHIP: WotrUnitImage = this.unitImage ("fellowship", 31, 31);

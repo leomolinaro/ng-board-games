@@ -1,6 +1,6 @@
 import { Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCharacterId, WotrCompanionId } from "../companion/wotr-character.models";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 
 @Injectable ({
@@ -31,7 +31,7 @@ export class WotrFellowshipStore {
   changeCorruption (delta: number) { this.update ("changeCorruption", state => ({ ...state, corruption: state.corruption + delta })); }
   hide () { this.update ("hide", state => ({ ...state, status: "hidden" })); }
   reveal () { this.update ("reveal", state => ({ ...state, status: "revealed", progress: 0 })); }
-  removeCompanion (companionId: WotrCompanionId) {
+  removeCompanion (companionId: WotrCharacterId) {
     this.update ("removeCompanion", state => ({
       ...state,
       companions: immutableUtil.listRemoveFirst (c => c === companionId, state.companions)

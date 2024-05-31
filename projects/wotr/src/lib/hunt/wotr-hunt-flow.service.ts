@@ -1,7 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -12,9 +11,8 @@ export class WotrHuntFlowService {
 
   private storyService = inject (WotrStoryService);
   private regionStore = inject (WotrRegionStore);
-  private fellowshipStore = inject (WotrFellowshipStore);
   private huntStore = inject (WotrHuntStore);
-  private companionStore = inject (WotrCompanionStore);
+  private characterStore = inject (WotrCharacterStore);
   private logStore = inject (WotrLogStore);
 
   async resolveHunt () {
@@ -61,7 +59,7 @@ export class WotrHuntFlowService {
     if (region.settlement === "stronghold" && region.controlledBy === "shadow") {
       nReRolls++;
     }
-    if (region.units.nNazgul || region.units.minions?.includes ("the-witch-king")) {
+    if (region.units.nNazgul || region.units.characters?.includes ("the-witch-king")) {
       nReRolls++;
     }
     if (region.units.armyUnits?.some (armyUnit => armyUnit.front === "shadow")) {
@@ -76,9 +74,9 @@ export class WotrHuntFlowService {
     for (const action of actions) {
       switch (action.type) {
         case "fellowship-corruption": absorbedDamage += action.quantity; break;
-        case "companion-elimination": {
-          for (const companionId of action.companions) {
-            absorbedDamage += this.companionStore.companion (companionId).level;
+        case "character-elimination": {
+          for (const companionId of action.characters) {
+            absorbedDamage += this.characterStore.character (companionId).level;
           }
           break;
         }

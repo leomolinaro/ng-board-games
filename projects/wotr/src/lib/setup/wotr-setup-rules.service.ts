@@ -3,7 +3,7 @@ import { arrayUtil } from "@leobg/commons/utils";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card.models";
 import { WotrCardService } from "../card/wotr-card.service";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCompanionId } from "../companion/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";

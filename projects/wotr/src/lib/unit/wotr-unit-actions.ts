@@ -1,6 +1,5 @@
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 
@@ -28,15 +27,13 @@ export function regular (nation: WotrNationId, quantity: number = 1) { return ne
 export function elite (nation: WotrNationId, quantity: number = 1) { return new WotrArmyUnitsComposer ("elite", nation, quantity); }
 export function leader (nation: WotrNationId, quantity: number = 1) { return new WotrLeaderComposer (nation, quantity); }
 export function nazgul (quantity: number = 1) { return new WotrNazgulComposer (quantity); }
-export function companion (...companions: WotrCompanionId[]) { return new WotrCompanionComposer (companions); }
-export function minion (...minions: WotrMinionId[]) { return new WotrMinionComposer (minions); }
+export function character (...characters: WotrCharacterId[]) { return new WotrCharacterComposer (characters); }
 
 export interface WotrUnits {
   armyUnits?: WotrArmyUnit[];
   leaders?: WotrLeader[];
   nNazgul?: number;
-  companions?: WotrCompanionId[];
-  minions?: WotrMinionId[];
+  characters?: WotrCharacterId[];
 }
 
 export interface WotrArmyUnit {
@@ -72,11 +69,7 @@ class WotrNazgulComposer implements WotrUnitComposer {
   addTo (a: WotrUnits) { if (!a.nNazgul) { a.nNazgul = 0; } a.nNazgul += this.quantity; }
   recruited () { return { quantity: this.quantity }; }
 }
-class WotrCompanionComposer implements WotrUnitComposer {
-  constructor (private companions: WotrCompanionId[]) { }
-  addTo (a: WotrUnits) { if (!a.companions) { a.companions = []; } this.companions.forEach (m => a.companions!.push (m)); }
-}
-class WotrMinionComposer implements WotrUnitComposer {
-  constructor (private minions: WotrMinionId[]) { }
-  addTo (a: WotrUnits) { if (!a.minions) { a.minions = []; } this.minions.forEach (m => a.minions!.push (m)); }
+class WotrCharacterComposer implements WotrUnitComposer {
+  constructor (private characters: WotrCharacterId[]) { }
+  addTo (a: WotrUnits) { if (!a.characters) { a.characters = []; } this.characters.forEach (m => a.characters!.push (m)); }
 }

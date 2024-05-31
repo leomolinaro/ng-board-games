@@ -1,6 +1,5 @@
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrStory } from "../game/wotr-story.models";
 
 export interface WotrPlayerService {
@@ -13,14 +12,15 @@ export interface WotrPlayerService {
   drawHuntTile? (): Promise<WotrStory>;
   absorbHuntDamage? (): Promise<WotrStory>;
   revealFellowship? (): Promise<WotrStory>;
+  separateCompanions? (): Promise<WotrStory>;
   changeGuide? (): Promise<WotrStory>;
   actionResolution? (): Promise<WotrStory>;
   activateTableCard? (cardId: WotrCardId): Promise<WotrStory>;
   activateCombatCard? (cardId: WotrCardId): Promise<WotrStory>;
-  activateCharacter? (characterId: WotrCharacterId): Promise<WotrStory>;
+  activateCharacterAbility? (characterId: WotrCharacterId): Promise<WotrStory>;
   forfeitLeadership? (): Promise<WotrStory>;
-  activateCompanion? (companionId: WotrCompanionId): Promise<WotrStory>;
   wantRetreatIntoSiege? (): Promise<WotrStory>;
+  wantRetreat? (): Promise<WotrStory>;
   chooseCombatCard? (): Promise<WotrStory>;
   rollCombatDice? (): Promise<WotrStory>;
   reRollCombatDice? (): Promise<WotrStory>;

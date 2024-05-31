@@ -4,16 +4,14 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
-import { WotrCompanion, WotrCompanionId } from "../companion/wotr-companion.models";
-import { WotrMinion, WotrMinionId } from "../minion/wotr-minion.models";
+import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrRegion } from "./wotr-region.models";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
   nationById: Record<WotrNationId, WotrNation>;
-  companionById: Record<WotrCompanionId, WotrCompanion>;
-  minionById: Record<WotrMinionId, WotrMinion>;
+  characterById: Record<WotrCharacterId, WotrCharacter>;
 }
 
 interface UnitNode {
@@ -89,13 +87,9 @@ export class WotrRegionDialogComponent implements OnInit {
       const image = this.assets.getNazgulImage ();
       this.unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: units.nNazgul, ...this.scale (image) });
     }
-    units.companions?.forEach (companion => {
-      const image = this.assets.getCompanionImage (companion);
-      this.unitNodes.push ({ id: companion, label: d.companionById[companion].name, quantity: 1, ...this.scale (image) });
-    });
-    units.minions?.forEach (minion => {
-      const image = this.assets.getMinionImage (minion);
-      this.unitNodes.push ({ id: minion, label: d.minionById[minion].name, quantity: 1, ...this.scale (image) });
+    units.characters?.forEach (character => {
+      const image = this.assets.getCharacterImage (character);
+      this.unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
     });
     if (d.region.fellowship) {
       const image = this.assets.getFellowshipImage ();

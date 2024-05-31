@@ -1,4 +1,4 @@
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCompanionId } from "../companion/wotr-character.models";
 
 export interface WotrFellowship {
   status: "hidden" | "revealed";

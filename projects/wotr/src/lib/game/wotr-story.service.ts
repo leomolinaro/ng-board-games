@@ -1,13 +1,13 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { firstValueFrom, from } from "rxjs";
-import { WotrArmyNotRetreatIntoSiege, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
+import { WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrActionApplier } from "../commons/wotr-action-applier";
-import { WotrCompanionElimination, WotrCompanionRandom } from "../companion/wotr-companion-actions";
+import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../companion/wotr-character-actions";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
@@ -248,11 +248,16 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     this.findAction<WotrFellowshipReveal> (story, "fellowship-reveal");
   }
 
-  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCompanionElimination | WotrCompanionRandom)[]> {
+  async separateCompanions (front: WotrFrontId): Promise<void> {
+    const story = await this.story (front, p => p.separateCompanions! ());
+    this.findAction<WotrCompanionSeparation> (story, "companion-separation");
+  }
+
+  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom)[]> {
     const story = await this.story (front, p => p.absorbHuntDamage! ());
-    const actions = this.filterActions<WotrFellowshipCorruption | WotrCompanionElimination | WotrCompanionRandom> (
+    const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom> (
       story,
-      "fellowship-corruption", "companion-elimination", "companion-random");
+      "fellowship-corruption", "character-elimination", "companion-random");
     return actions;
   }
 
@@ -278,8 +283,8 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return action.leaders;
   }
 
-  async activateCharacter (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
-    const story = await this.story (front, p => p.activateCharacter! (characterId));
+  async activateCharacterAbility (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
+    const story = await this.story (front, p => p.activateCharacterAbility! (characterId));
     switch (story.type) {
       case "reaction-character": return story.actions;
       case "reaction-character-skip": return false;
@@ -302,6 +307,15 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     switch (action.type) {
       case "army-retreat-into-siege": return true;
       case "army-not-retreat-into-siege": return false;
+    }
+  }
+
+  async wantRetreat (front: WotrFrontId): Promise<boolean> {
+    const story = await this.story (front, p => p.wantRetreat! ());
+    const action = this.findAction<WotrArmyRetreat | WotrArmyNotRetreat> (story, "army-retreat", "army-not-retreat");
+    switch (action.type) {
+      case "army-retreat": return true;
+      case "army-not-retreat": return false;
     }
   }
 

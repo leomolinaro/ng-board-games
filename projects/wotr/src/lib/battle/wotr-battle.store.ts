@@ -1,6 +1,6 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrUnits } from "../unit/wotr-unit-actions";
 import { WotrBattle } from "./wotr-battle.models";
@@ -17,7 +17,7 @@ export class WotrBattleStore {
 
   battle = computed (() => this.state ());
   battleInProgress = computed (() => !!this.state ());
-  isMinionInRetroguard (minion: WotrMinionId) { return this.state ()?.retroguard?.minions?.includes (minion); }
+  isCharacterInRetroguard (character: WotrCharacterId) { return this.state ()?.retroguard?.characters?.includes (character); }
 
   init (): WotrBattleState {
     return null;

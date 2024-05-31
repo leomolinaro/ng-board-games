@@ -1,8 +1,7 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
 import { WotrArmyUnitType, WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrUnits } from "../unit/wotr-unit-actions";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region.models";
@@ -22,6 +21,7 @@ export class WotrRegionStore {
 
   regions = computed (() => { const s = this.state (); return s.ids.map (id => s.map[id]); });
   region (regionId: WotrRegionId): WotrRegion { return this.state ().map[regionId]; }
+  isCharacterInRegion (character: WotrCharacterId, regionId: WotrRegionId) { return this.region (regionId).units.characters?.includes (character); }
 
   init (): WotrRegionState {
     return {
@@ -176,8 +176,6 @@ export class WotrRegionStore {
     return region;
   }
 
-  isMinionInRegion (minion: WotrMinionId, regionId: WotrRegionId) { return this.region (regionId).units.minions?.includes (minion); }
-
   private updateRegion (actionName: string, regionId: WotrRegionId, updater: (a: WotrRegion) => WotrRegion) {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater (s.map[regionId]) } }));
   }
@@ -299,27 +297,15 @@ export class WotrRegionStore {
     }));
   }
 
-  addMinionToRegion (minionId: WotrMinionId, regionId: WotrRegionId) {
-    this.updateUnits ("addMinionToRegion", regionId, units => ({
-      ...units, minions: immutableUtil.listPush ([minionId], units.minions || [])
+  addCharacterToRegion (characterId: WotrCharacterId, regionId: WotrRegionId) {
+    this.updateUnits ("addCharacterToRegion", regionId, units => ({
+      ...units, characters: immutableUtil.listPush ([characterId], units.characters || [])
     }));
   }
 
-  removeMinionFromRegion (minionId: WotrMinionId, regionId: WotrRegionId) {
-    this.updateUnits ("removeMinionFromRegion", regionId, units => ({
-      ...units, minions: immutableUtil.listRemoveFirst (m => m === minionId, units.minions || [])
-    }));
-  }
-
-  addCompanionToRegion (companionId: WotrCompanionId, regionId: WotrRegionId) {
-    this.updateUnits ("addCompanionToRegion", regionId, units => ({
-      ...units, companions: immutableUtil.listPush ([companionId], units.companions || [])
-    }));
-  }
-
-  removeCompanionFromRegion (companionId: WotrCompanionId, regionId: WotrRegionId) {
-    this.updateUnits ("removeCompanionFromRegion", regionId, units => ({
-      ...units, companions: immutableUtil.listRemoveFirst (m => m === companionId, units.companions || [])
+  removeCharacterFromRegion (characterId: WotrCharacterId, regionId: WotrRegionId) {
+    this.updateUnits ("removeCharacterFromRegion", regionId, units => ({
+      ...units, characters: immutableUtil.listRemoveFirst (c => c === characterId, units.characters || [])
     }));
   }
 

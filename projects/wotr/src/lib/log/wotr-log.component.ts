@@ -5,14 +5,12 @@ import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
 import { WotrFragmentCreator } from "../commons/wotr-action-log";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameActionLogsService } from "../game/wotr-game-action-logs.service";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
-import { WotrMinionId } from "../minion/wotr-minion.models";
-import { WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPhase } from "../player/wotr-phase.models";
@@ -109,8 +107,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
   private actionLogs = inject (WotrGameActionLogsService);
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
-  private companionStore = inject (WotrCompanionStore);
-  private minionStore = inject (WotrMinionStore);
+  private characterStore = inject (WotrCharacterStore);
 
   log = input.required<WotrLog> ();
   debugBreakpoint = input.required<boolean> ();
@@ -150,6 +147,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
           else { parsed.push (f); }
         }
         if ("card" in l.story) { parsed.push (this.string (", using "), this.card (cardToLabel (l.story.card))); }
+        if ("character" in l.story) { parsed.push (this.string (", using "), this.character (l.story.character), this.string ("'s ability")); }
         if ("die" in l.story) { parsed.push (this.string (" "), this.die (l.story.die, l.front)); }
         if ("token" in l.story) { parsed.push (this.string (" "), this.token (l.story.token, l.front)); }
         return parsed;
@@ -177,14 +175,9 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
     return { type: "card", label };
   }
 
-  companion (companionId: WotrCompanionId): WotrLogStringFragment {
-    const companion = this.companionStore.companion (companionId);
+  character (characterId: WotrCharacterId): WotrLogStringFragment {
+    const companion = this.characterStore.character (characterId);
     return { type: "string", label: companion.name };
-  }
-
-  minion (minionId: WotrMinionId): WotrLogStringFragment {
-    const minion = this.minionStore.minion (minionId);
-    return { type: "string", label: minion.name };
   }
 
   player (front: WotrFrontId): WotrLogPlayerFragment {

@@ -1,12 +1,10 @@
 import { getCard } from "../card/wotr-card.models";
-import { WotrCompanionId } from "../companion/wotr-companion.models";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrMinionId } from "../minion/wotr-minion.models";
-import { WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUnit, WotrLeader, WotrUnits } from "../unit/wotr-unit-actions";
 import { WotrArmyAttack } from "./wotr-battle-actions";
@@ -24,10 +22,9 @@ export class WotrCombatRound {
     defenderId: WotrFrontId,
     private battleStore: WotrBattleStore,
     private combatCards: WotrCombatCardsService,
-    private companionStore: WotrCompanionStore,
+    private characterStore: WotrCharacterStore,
     private frontStore: WotrFrontStore,
     private logStore: WotrLogStore,
-    private minionStore: WotrMinionStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
   ) {
@@ -89,7 +86,12 @@ export class WotrCombatRound {
       }
     } else {
       const wantContinueBattle = await this.storyService.wantContinueBattle (this.attacker.id);
-      continueBattle = wantContinueBattle;
+      if (wantContinueBattle && !attackedRegion.underSiege) { // && defender can retreat
+        const wantRetreat = await this.storyService.wantRetreat (this.defender.id);
+        continueBattle = !wantRetreat;
+      } else {
+        continueBattle = true;
+      }
     }
 
     await this.checkSorcerer ();
@@ -222,12 +224,11 @@ export class WotrCombatRound {
     if (units.armyUnits) { leadership += this.getArmyUnitsLeadership (units.armyUnits.filter (a => a.front === front)); }
     if (front === "free-peoples") {
       if (units.leaders) { leadership += this.getLeadersLeadership (units.leaders); }
-      if (units.companions) { leadership += this.getCompanionsLeadership (units.companions); }
     }
     if (front === "shadow") {
       if (units.nNazgul) { leadership += this.getNazgulLeadership (units.nNazgul); }
-      if (units.minions) { leadership += this.getMinionsLeadership (units.minions); }
     }
+    if (units.characters) { leadership += this.getCharactersLeadership (units.characters, front); }
     return leadership;
   }
 
@@ -255,7 +256,7 @@ export class WotrCombatRound {
     return armyUnits.reduce ((l, armyUnit) => {
       if (armyUnit.type === "elite" &&
         armyUnit.nation === "isengard" &&
-        this.minionStore.isInPlay ("saruman")) {
+        this.characterStore.isInPlay ("saruman")) {
         return l + 1;
       }
       return l;
@@ -270,13 +271,15 @@ export class WotrCombatRound {
     return nNazgul;
   }
 
-  private getCompanionsLeadership (companions: WotrCompanionId[]) {
-    return companions.reduce ((l, companion) => l + this.companionStore.companion (companion).leadership, 0);
+  private getCharactersLeadership (characters: WotrCharacterId[], front: WotrFrontId) {
+    return characters.reduce ((l, characterId) => {
+      const character = this.characterStore.character (characterId);
+      if (character.front === front) {
+        return l + this.characterStore.character (characterId).leadership;
+      }
+      return l;
+    }, 0);
 
-  }
-
-  private getMinionsLeadership (minions: WotrMinionId[]) {
-    return minions.reduce ((l, minion) => l + this.minionStore.minion (minion).leadership, 0);
   }
 
   private getNRollSuccesses (roll: WotrCombatDie[], combatFront: WotrCombatFront) {
@@ -318,18 +321,14 @@ export class WotrCombatRound {
   }
 
   private async checkSorcerer () {
-    if (this.isMinionInBattle ("the-witch-king") && this.round === 1 && this.shadow.combatCard) {
-      await this.storyService.activateCharacter ("the-witch-king", "shadow");
+    if (this.isCharacterInBattle ("the-witch-king") && this.round === 1 && this.shadow.combatCard) {
+      await this.storyService.activateCharacterAbility ("the-witch-king", "shadow");
     }
   }
 
-  private isMinionInBattle (minion: WotrMinionId) {
-    if (this.attacker.id === "shadow") {
-      if (this.battleStore.isMinionInRetroguard (minion)) { return false; }
-      return this.regionStore.isMinionInRegion (minion, this.action.fromRegion);
-    } else {
-      return this.regionStore.isMinionInRegion (minion, this.action.toRegion);
-    }
+  private isCharacterInBattle (character: WotrCharacterId) {
+    if (this.battleStore.isCharacterInRetroguard (character)) { return false; }
+    return this.regionStore.isCharacterInRegion (character, this.action.fromRegion);
   }
 
 }

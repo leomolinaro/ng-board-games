@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
@@ -18,7 +18,7 @@ export class WotrGameFlowService {
   private logStore = inject (WotrLogStore);
   private regionStore = inject (WotrRegionStore);
   private nationStore = inject (WotrNationStore);
-  private companionStore = inject (WotrCompanionStore);
+  private companionStore = inject (WotrCharacterStore);
   private fellowshipStore = inject (WotrFellowshipStore);
   private huntStore = inject (WotrHuntStore);
 

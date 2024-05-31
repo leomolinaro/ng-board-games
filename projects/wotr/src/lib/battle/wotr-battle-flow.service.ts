@@ -1,11 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCard } from "../card/wotr-card.models";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrUnits } from "../unit/wotr-unit-actions";
 import { WotrArmyAttack } from "./wotr-battle-actions";
@@ -19,11 +18,10 @@ export class WotrBattleFlowService {
 
   battleStore = inject (WotrBattleStore);
   combatCards = inject (WotrCombatCardsService);
-  companionStore = inject (WotrCompanionStore);
+  companionStore = inject (WotrCharacterStore);
   frontStore = inject (WotrFrontStore);
   logStore = inject (WotrLogStore);
   regionStore = inject (WotrRegionStore);
-  minionStore = inject (WotrMinionStore);
   storyService = inject (WotrStoryService);
 
   async resolveBattle (action: WotrArmyAttack, attackerId: WotrFrontId) {
@@ -38,7 +36,6 @@ export class WotrBattleFlowService {
       this.companionStore,
       this.frontStore,
       this.logStore,
-      this.minionStore,
       this.regionStore,
       this.storyService,
     );
@@ -60,10 +57,9 @@ export class WotrBattle {
     private attackerId: WotrFrontId,
     private battleStore: WotrBattleStore,
     private combatCards: WotrCombatCardsService,
-    private companionStore: WotrCompanionStore,
+    private companionStore: WotrCharacterStore,
     private frontStore: WotrFrontStore,
     private logStore: WotrLogStore,
-    private minionStore: WotrMinionStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
   ) {
@@ -86,7 +82,6 @@ export class WotrBattle {
         this.companionStore,
         this.frontStore,
         this.logStore,
-        this.minionStore,
         this.regionStore,
         this.storyService,
       );

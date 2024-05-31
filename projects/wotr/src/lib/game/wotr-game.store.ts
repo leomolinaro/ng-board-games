@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil } from "@leobg/commons/utils";
 import { WotrBattleState, WotrBattleStore } from "../battle/wotr-battle.store";
-import { WotrCompanionState, WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterState, WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -11,7 +11,6 @@ import { WotrFrontState, WotrFrontStore } from "../front/wotr-front.store";
 import { WotrHuntState, WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLog } from "../log/wotr-log.models";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrMinionState, WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrNationState, WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrRegionState, WotrRegionStore } from "../region/wotr-region.store";
@@ -26,8 +25,7 @@ export interface WotrGameState {
   frontState: WotrFrontState;
   regionState: WotrRegionState;
   nationState: WotrNationState;
-  companionState: WotrCompanionState;
-  minionState: WotrMinionState;
+  companionState: WotrCharacterState;
   fellowship: WotrFellowship;
   hunt: WotrHuntState;
   logs: WotrLog[];
@@ -41,8 +39,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     frontStore: WotrFrontStore,
     regionStore: WotrRegionStore,
     nationStore: WotrNationStore,
-    companionStore: WotrCompanionStore,
-    minionStore: WotrMinionStore,
+    companionStore: WotrCharacterStore,
     fellowshipStore: WotrFellowshipStore,
     huntStore: WotrHuntStore,
     logStore: WotrLogStore,
@@ -59,7 +56,6 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       regionState: regionStore.init (),
       nationState: nationStore.init (),
       companionState: companionStore.init (),
-      minionState: minionStore.init (),
       fellowship: fellowshipStore.init (),
       hunt: huntStore.init (),
       logs: logStore.init (),
@@ -73,8 +69,6 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     nationStore.state = toSignal (this.select$ (s => s.nationState), { requireSync: true });
     companionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, companionState: updater (s.companionState) }));
     companionStore.state = toSignal (this.select$ (s => s.companionState), { requireSync: true });
-    minionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, minionState: updater (s.minionState) }));
-    minionStore.state = toSignal (this.select$ (s => s.minionState), { requireSync: true });
     fellowshipStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, fellowship: updater (s.fellowship) }));
     fellowshipStore.state = toSignal (this.select$ (s => s.fellowship), { requireSync: true });
     huntStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, hunt: updater (s.hunt) }));

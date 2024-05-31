@@ -5,12 +5,11 @@ import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrBattleAction } from "../battle/wotr-battle-actions";
 import { WotrCardAction } from "../card/wotr-card-actions";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCompanionAction } from "../companion/wotr-companion-actions";
+import { WotrCharacterAction } from "../companion/wotr-character-actions";
+import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFellowshipAction } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntAction } from "../hunt/wotr-hunt-actions";
-import { WotrMinionAction } from "../minion/wotr-minion-actions";
 import { WotrPoliticalAction } from "../nation/wotr-political-actions";
 import { WotrUnitAction } from "../unit/wotr-unit-actions";
 
@@ -46,8 +45,7 @@ export type WotrAction =
   WotrFellowshipAction |
   WotrHuntAction |
   WotrActionDieAction |
-  WotrCompanionAction |
-  WotrMinionAction |
+  WotrCharacterAction |
   WotrUnitAction |
   WotrPoliticalAction |
   WotrBattleAction;

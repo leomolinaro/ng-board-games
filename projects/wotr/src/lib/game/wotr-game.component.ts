@@ -9,8 +9,8 @@ import { WotrBattleFlowService } from "../battle/wotr-battle-flow.service";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
 import { WotrCardActionsService } from "../card/wotr-card-actions.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
-import { WotrCompanionActionsService } from "../companion/wotr-companion-actions.service";
-import { WotrCompanionStore } from "../companion/wotr-companion.store";
+import { WotrCharacterActionsService } from "../companion/wotr-character-actions.service";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { stories as exampleStories } from "../examples/very-late-minions";
 import { WotrFellowshipActionsService } from "../fellowship/wotr-fellowship-actions.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
@@ -19,8 +19,6 @@ import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrMinionActionsService } from "../minion/wotr-minion-actions.service";
-import { WotrMinionStore } from "../minion/wotr-minion.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.service";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
@@ -51,11 +49,9 @@ import { WotrUiStore } from "./wotr-ui.store";
       [freePeoplesNations]="nationStore.freePeoplesNations ()"
       [nationById]="nationStore.nationById ()"
       [nations]="nationStore.nations ()"
-      [companions]="companionStore.companions ()"
-      [companionById]="companionStore.companionById ()"
+      [characters]="characterStore.characters ()"
+      [characterById]="characterStore.characterById ()"
       [shadowNations]="nationStore.shadowNations ()"
-      [minions]="minionStore.minions ()"
-      [minionById]="minionStore.minionById ()"
       [logs]="logStore.state ()"
       [message]="ui.message$ | async"
       (playerSelect)="ui.setCurrentPlayer ($event)">
@@ -75,10 +71,9 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrCardActionsService,
     WotrBattleActionsService,
     WotrCombatCardsService,
-    WotrCompanionActionsService,
+    WotrCharacterActionsService,
     WotrFellowshipActionsService,
     WotrHuntActionsService,
-    WotrMinionActionsService,
     WotrPoliticalActionsService,
     WotrUnitActionsService,
     WotrGameActionsService,
@@ -96,8 +91,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected store = inject (WotrGameStore);
   protected frontStore = inject (WotrFrontStore);
   protected regionStore = inject (WotrRegionStore);
-  protected companionStore = inject (WotrCompanionStore);
-  protected minionStore = inject (WotrMinionStore);
+  protected characterStore = inject (WotrCharacterStore);
   protected nationStore = inject (WotrNationStore);
   protected huntStore = inject (WotrHuntStore);
   protected fellowshipStore = inject (WotrFellowshipStore);

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, V
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
-import { WotrCompanion, WotrCompanionId } from "../../../companion/wotr-companion.models";
+import { WotrCharacter, WotrCharacterId } from "../../../companion/wotr-character.models";
 import { WotrFellowship } from "../../../fellowship/wotr-fellowhip.models";
 import { WotrFellowshipBoxComponent } from "../../../fellowship/wotr-fellowship-box.component";
 import { WotrFellowshipTrackComponent } from "../../../fellowship/wotr-fellowship-track.component";
@@ -12,7 +12,6 @@ import { WotrFront } from "../../../front/wotr-front.models";
 import { WotrTableCardsComponent } from "../../../front/wotr-table-card-boxes.component";
 import { WotrHuntBoxComponent } from "../../../hunt/wotr-hunt-box.component";
 import { WotrHuntState } from "../../../hunt/wotr-hunt.store";
-import { WotrMinion, WotrMinionId } from "../../../minion/wotr-minion.models";
 import { WotrNation } from "../../../nation/wotr-nation.models";
 import { WotrPoliticalTrackComponent } from "../../../nation/wotr-political-track.component";
 import { WotrRegion, WotrRegionId } from "../../../region/wotr-region.models";
@@ -47,7 +46,7 @@ const GRID_STEP = 10;
           [attr.xlink:href]="mapImageSource">
         </image>
         <svg:g wotrRegions [regions]="regions ()"
-          [companionById]="companionById ()" [minionById]="minionById ()"
+          [characterById]="characterById ()"
           (regionClick)="regionClick.next ($event)"></svg:g>
         <svg:g wotrPoliticalTrack [nations]="nations ()"></svg:g>
         <svg:g wotrHuntBox [hunt]="hunt ()"></svg:g>
@@ -78,8 +77,7 @@ export class WotrMapComponent {
   freePeoples = input.required<WotrFront> ();
   shadow = input.required<WotrFront> ();
   fellowship = input.required<WotrFellowship[]> ();
-  companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
-  minionById = input.required<Record<WotrMinionId, WotrMinion>> ();
+  characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
 
   // @Input () validRegions: WotrRegionId[] | null = null;
 

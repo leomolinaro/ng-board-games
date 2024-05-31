@@ -8,7 +8,7 @@ import { WotrActionToken } from "../../action-token/wotr-action-token.models";
 import { WotrAssetsService } from "../../assets/wotr-assets.service";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
-import { WotrCompanion, WotrCompanionId } from "../../companion/wotr-companion.models";
+import { WotrCharacter, WotrCharacterId } from "../../companion/wotr-character.models";
 import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
 import { WotrFront, WotrFrontId } from "../../front/wotr-front.models";
@@ -16,7 +16,6 @@ import { WotrHuntAreaComponent } from "../../hunt/wotr-hunt-area.component";
 import { WotrHuntState } from "../../hunt/wotr-hunt.store";
 import { WotrLog } from "../../log/wotr-log.models";
 import { WotrLogsComponent } from "../../log/wotr-logs.component";
-import { WotrMinion, WotrMinionId } from "../../minion/wotr-minion.models";
 import { WotrNation, WotrNationId } from "../../nation/wotr-nation.models";
 import { WotrPlayer } from "../../player/wotr-player.models";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
@@ -49,10 +48,8 @@ export class WotrBoardComponent {
   freePeoplesNations = input.required<WotrNation[]> ();
   shadowNations = input.required<WotrNation[]> ();
   nationById = input.required<Record<WotrNationId, WotrNation>> ();
-  companions = input.required<WotrCompanion[]> ();
-  companionById = input.required<Record<WotrCompanionId, WotrCompanion>> ();
-  minions = input.required<WotrMinion[]> ();
-  minionById = input.required<Record<WotrMinionId, WotrMinion>> ();
+  characters = input.required<WotrCharacter[]> ();
+  characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
   logs = input.required<WotrLog[]> ();
   message = input<string> ();
   currentPlayer = input<WotrPlayer> ();
@@ -139,8 +136,7 @@ export class WotrBoardComponent {
         data: {
           region,
           nationById: this.nationById (),
-          companionById: this.companionById (),
-          minionById: this.minionById ()
+          characterById: this.characterById (),
         },
         panelClass: "mat-typography",
       }

@@ -6,6 +6,7 @@ import { WotrCombatDie } from "./wotr-combat-die.models";
 export type WotrBattleAction =
   WotrArmyAttack |
   WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege |
+  WotrArmyRetreat | WotrArmyNotRetreat |
   WotrBattleContinue | WotrBattleCease | WotrLeaderForfeit |
   WotrCombatCardChoose | WotrCombatCardChooseNot | WotrCombatRoll | WotrCombatReRoll;
 
@@ -21,6 +22,10 @@ export interface WotrBattleContinue { type: "battle-continue"; region: WotrRegio
 export function continueBattle (region: WotrRegionId): WotrBattleContinue { return { type: "battle-continue", region }; }
 export interface WotrBattleCease { type: "battle-cease"; region: WotrRegionId }
 export function ceaseBattle (region: WotrRegionId): WotrBattleCease { return { type: "battle-cease", region }; }
+export interface WotrArmyRetreat { type: "army-retreat"; fromRegion: WotrRegionId; toRegion: WotrRegionId }
+export function retreat (fromRegion: WotrRegionId, toRegion: WotrRegionId): WotrArmyRetreat { return { type: "army-retreat", fromRegion, toRegion }; }
+export interface WotrArmyNotRetreat { type: "army-not-retreat"; region: WotrRegionId }
+export function notRetreat (region: WotrRegionId): WotrArmyNotRetreat { return { type: "army-not-retreat", region }; }
 
 export interface WotrCombatCardChoose { type: "combat-card-choose"; card: WotrCardId }
 export function combatCard (card: WotrCardLabel): WotrCombatCardChoose { return { type: "combat-card-choose", card: labelToCardId (card) }; }

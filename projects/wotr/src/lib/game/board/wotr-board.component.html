@@ -9,8 +9,7 @@
     [freePeoples]="freePeoples ()"
     [shadow]="shadow ()"
     [fellowship]="fellowship ()"
-    [companionById]="companionById ()"
-    [minionById]="minionById ()"
+    [characterById]="characterById ()"
     (regionClick)="onRegionClick ($event)">
   </wotr-map>
   <div class="wotr-toolbar">{{ message () }}</div>
@@ -22,8 +21,7 @@
           <wotr-front-area
             [front]="front"
             [nations]="front.id === 'free-peoples' ? freePeoplesNations () : shadowNations ()"
-            [companions]="front.id === 'free-peoples' ? companions () : undefined"
-            [minions]="front.id === 'shadow' ? minions () : undefined"
+            [characters]="characters ()"
             (cardClick)="onPreviewCardClick ($event, front)">
           </wotr-front-area>
         </mat-tab>

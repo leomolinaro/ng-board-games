@@ -31,8 +31,6 @@ export interface WotrNation {
 }
 
 export type WotrArmyUnitType = "regular" | "elite";
-export type WotrFreePeopleLeaderUnitType = "leader" | "companion";
-export type WotrShadowLeaderUnitType = "nazgul" | "minion";
 export type WotrFreeUnitType = "nazgul" | "companion" | "minion" | "fellowship";
 export type WotrFreeGenericUnitType = WotrArmyUnitType | "leader";
 export type WotrGenericUnitType = WotrArmyUnitType | "leader" | "nazgul";

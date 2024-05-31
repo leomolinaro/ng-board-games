@@ -37,6 +37,15 @@ export class WotrCardEffectsService {
       if (huntTile.reveal) {
         await this.storyService.revealFellowship ("free-peoples");
       }
+    },
+    "The Breaking of the Fellowship": async params => {
+      const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
+      const huntTile = this.huntStore.huntTile (action.tile);
+      if (huntTile.eye || huntTile.type === "free-people-special") { return; }
+      const damage = huntTile.quantity!; // TODO shelob die
+      if (damage) {
+        await this.storyService.separateCompanions ("free-peoples");
+      }
     }
   };
 
