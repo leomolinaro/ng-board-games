@@ -8,8 +8,9 @@ export type WotrUnitAction =
   WotrLeaderRecruitment | WotrLeaderElimination |
   WotrNazgulRecruitment | WotrNazgulElimination;
 
-export interface WotrArmyMovement { type: "army-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrUnits }
+export interface WotrArmyMovement { type: "army-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army?: WotrUnits }
 export function moveArmy (fromRegion: WotrRegionId, toRegion: WotrRegionId, ...comp: WotrUnitComposer[]): WotrArmyMovement { return { type: "army-movement", fromRegion, toRegion, army: composeUnits (...comp) }; }
+export function moveAllArmy (fromRegion: WotrRegionId, toRegion: WotrRegionId): WotrArmyMovement { return { type: "army-movement", fromRegion, toRegion }; }
 export interface WotrArmyUnitRecruitment { type: "army-unit-recruitment"; region: WotrRegionId; unitType: WotrArmyUnitType; quantity: number; nation: WotrNationId }
 export function recruitArmyUnit (region: WotrRegionId, comp: WotrArmyUnitsComposer): WotrArmyUnitRecruitment { return { type: "army-unit-recruitment", region, ...comp.recruited () }; }
 export interface WotrArmyUnitElimination { type: "army-unit-elimination"; region: WotrRegionId; unitType: WotrArmyUnitType; quantity: number; nation: WotrNationId }

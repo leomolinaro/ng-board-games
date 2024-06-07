@@ -54,7 +54,9 @@ import { WotrUiStore } from "./wotr-ui.store";
       [shadowNations]="nationStore.shadowNations ()"
       [logs]="logStore.state ()"
       [message]="ui.message$ | async"
-      (playerSelect)="ui.setCurrentPlayer ($event)">
+      (playerSelect)="ui.setCurrentPlayer ($event)"
+      (replayNext)="onReplayNext ($event)"
+      (replayLast)="onReplayLast ()">
     </wotr-board>
   `,
   styles: [""],
@@ -179,6 +181,10 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy () {}
+
+  onReplayNext (nStories: number) { this.story.nextReplay (nStories); }
+
+  onReplayLast () { this.story.lastReplay (); }
 
 }
 

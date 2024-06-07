@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
-import { firstValueFrom, from } from "rxjs";
+import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
@@ -69,17 +69,43 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayer (playerId); }
   protected override currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
   protected override cancelChange$ () { return this.ui.cancelChange$ (); }
+
+  private nReplayStories = 0;
+  private replayToLastStory = false;
+  private $replayCall = new Subject<void> ();
   
   private async executeTask<R extends WotrStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
-    await new Promise (resolve => { setTimeout (resolve, 10); });
+    await this.replayCall ();
     return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))));
   }
+
   private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrStory[]> {
-    await new Promise (resolve => { setTimeout (resolve, 10); });
+    await this.replayCall ();
     return firstValueFrom (super.executeTasks$ (tasks.map (t => ({
       playerId: t.playerId,
       task$: p => from (t.task (p))
     }))));
+  }
+
+  private async replayCall () {
+    if (this.storyDocs?.length) {
+      if (!this.replayToLastStory && this.nReplayStories <= 0) { await firstValueFrom (this.$replayCall); }
+    } else {
+      this.nReplayStories = 0;
+      this.replayToLastStory = false;
+    }
+    await new Promise (resolve => { setTimeout (resolve, 10); });
+    this.nReplayStories--;
+  }
+
+  nextReplay (nReplayStories: number) {
+    this.nReplayStories = nReplayStories;
+    this.$replayCall.next ();
+  }
+
+  lastReplay () {
+    this.replayToLastStory = true;
+    this.$replayCall.next ();
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {

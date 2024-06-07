@@ -21,11 +21,12 @@ import { WotrPlayer } from "../../player/wotr-player.models";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
 import { WotrRegion, WotrRegionId } from "../../region/wotr-region.models";
 import { WotrMapComponent } from "./map/wotr-map.component";
+import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 
 @Component ({
   selector: "wotr-board",
   standalone: true,
-  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, WotrFrontAreaComponent, WotrHuntAreaComponent, BgTransformPipe],
+  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, WotrFrontAreaComponent, WotrHuntAreaComponent, BgTransformPipe, WotrReplayButtonComponent],
   templateUrl: "./wotr-board.component.html",
   styleUrls: ["./wotr-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -94,6 +95,9 @@ export class WotrBoardComponent {
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
   @Output () testClick = new EventEmitter<void> ();
+
+  @Output () replayNext = new EventEmitter<number> ();
+  @Output () replayLast = new EventEmitter<void> ();
 
   protected actionDieImage: BgTransformFn<WotrActionDie, string, WotrFrontId> = (actionDie, frontId) => this.assets.getActionDieImage (actionDie, frontId);
   protected actionTokenImage: BgTransformFn<WotrActionToken, string, WotrFrontId> = (actionToken, frontId) => this.assets.getActionTokenImage (actionToken, frontId);

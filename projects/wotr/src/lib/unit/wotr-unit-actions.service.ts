@@ -21,7 +21,9 @@ export class WotrUnitActionsService {
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
     return {
       "army-movement": async (action, front) => {
-        this.moveArmy (action.army, action.fromRegion, action.toRegion);
+        const fromRegion = this.regionStore.region (action.fromRegion);
+        const army = action.army || fromRegion.units;
+        this.moveArmy (army, action.fromRegion, action.toRegion);
         const region = this.regionStore.region (action.toRegion);
         if (region.nationId) {
           const nationOfRegion = this.nationStore.nation (region.nationId);

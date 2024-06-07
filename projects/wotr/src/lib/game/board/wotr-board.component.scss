@@ -81,6 +81,17 @@ $area-background: #151515;
     // box-shadow: widget-shadow(white);
     grid-area: logs;
     background-color: $area-background;
+    
+    position: relative;
+    .wotr-replay-buttons {
+      position: absolute;
+      background-color: $area-background;
+      right: 0;
+      @include golden-padding(1vmin);
+      z-index: 1;
+      margin-right: 2vmin;
+    }
+
   }
   .wotr-action-dice-box {
     @include golden-padding(1vmin);

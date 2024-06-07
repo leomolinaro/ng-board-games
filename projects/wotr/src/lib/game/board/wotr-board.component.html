@@ -46,6 +46,7 @@
     }
   </div>
   <div class="wotr-logs">
+    <wotr-replay-buttons class="wotr-replay-buttons" (replayNext)="replayNext.next ($event)" (replayLast)="replayLast.next ()"></wotr-replay-buttons>
     <wotr-logs [logs]="logs ()"></wotr-logs>
   </div>
     <!-- [nationStates]="nationStates"
