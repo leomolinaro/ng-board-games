@@ -365,7 +365,17 @@ export const stories: WotrStoryDoc[] = [
   s ().huntStory (drawHuntTile ("2r")),
   fp ().characterReaction ("gollum", corruptFellowship (1), revealFellowship ("morannon")),
   s ().huntStory (drawHuntTile ("er")),
-  fp ().huntStory (corruptFellowship (1))
+  fp ().huntStory (corruptFellowship (1)),
+  s ().musterArmyDie (
+    moveAllArmy ("dol-amroth", "lamedon"),
+    moveAllArmy ("north-rhun", "east-rhun")
+  ),
+  fp ().pass (),
+  s ().musterArmyDie (attack ("east-rhun", "iron-hills", regular ("southrons", 5), elite ("southrons", 3))),
+  s ().battleStory (noCombatCard ()),
+  fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
+  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveAllArmy ("iron-hills", "vale-of-the-carnen")),
+  s ().battleStory (moveAllArmy ("east-rhun", "iron-hills"))
 
 ];
 

@@ -26,6 +26,7 @@ export interface WotrCardsDialogData {
       width: 100%;
       height: 100%;
       display: flex;
+      flex-direction: row-reverse;
       justify-content: center;
       align-items: center;
     }
@@ -36,13 +37,13 @@ export interface WotrCardsDialogData {
       width: 192px;
       background-color: #17141d;
       border-radius: 10px;
-      box-shadow: -1rem 0 3rem #000;
+      box-shadow: 1rem 0 3rem #000;
       transition: 0.4s ease-out;
       position: relative;
-      left: 0px;
+      right: 0px;
     }
 
-    .card:not(:first-child) {
+    .card:not(:last-child) {
         margin-left: -50px;
     }
 
@@ -54,7 +55,7 @@ export interface WotrCardsDialogData {
     .card:hover, .card.selected {
       & ~ .card {
         position: relative;
-        left: 50px;
+        right: 50px;
         transition: 0.4s ease-out;
       }
     }
@@ -67,7 +68,7 @@ export class WotrCardsDialogComponent {
   private data = inject<WotrCardsDialogData> (MAT_DIALOG_DATA);
   private assets = inject (WotrAssetsService);
 
-  protected cardIds = this.data.cardIds;
+  protected cardIds = this.data.cardIds.slice ().reverse ();
   protected selectedCardId: WotrCardId | null = this.data.selectedCardId;
   protected cardImage: BgTransformFn<WotrCardId, string> = cardId => this.assets.getCardImage (cardId);
 
