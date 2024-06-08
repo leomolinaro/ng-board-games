@@ -96,6 +96,7 @@ export class WotrAssetsService {
     this.CHARACTER_BY_ID.peregrin = this.unitImage ("pippin", 30, 36);
     this.CHARACTER_BY_ID.aragorn = this.unitImage ("aragorn", 30, 48);
     this.CHARACTER_BY_ID["gandalf-the-white"] = this.unitImage ("gandalf-the-white", 31, 55);
+    this.CHARACTER_BY_ID.gollum = this.unitImage ("gollum", 28, 35);
     this.CHARACTER_BY_ID.saruman = this.unitImage ("saruman", 53, 44);
     this.CHARACTER_BY_ID["the-witch-king"] = this.unitImage ("witch-king", 57, 44);
     this.CHARACTER_BY_ID["the-mouth-of-sauron"] = this.unitImage ("mouth", 43, 41);

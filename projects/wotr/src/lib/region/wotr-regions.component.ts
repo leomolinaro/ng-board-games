@@ -8,7 +8,7 @@ import { WotrCharacter, WotrCharacterId, WotrCompanionId, WotrMinionId } from ".
 import { WotrMapSlotsGeneratorService } from "../game/board/map/wotr-map-slots-generator.service";
 import { WotrMapPoint, WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrArmyUnitType, WotrFreeUnitType, WotrNationId } from "../nation/wotr-nation.models";
-import { WotrArmyUnit } from "../unit/wotr-unit-actions";
+import { WotrArmy, WotrFreeUnits } from "../unit/wotr-unit.models";
 import { WotrRegion, WotrRegionId } from "./wotr-region.models";
 
 interface WotrRegionNode {
@@ -112,7 +112,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
                 [attr.width]="armyUnit.image.width" [attr.height]="armyUnit.image.height"
                 [attr.x]="armyUnit.svgX" [attr.y]="armyUnit.svgY"
                 transform="scale(0.8, 0.8)"
-                [attr.xlink:href]="armyUnit.image.source"/> 
+                [attr.xlink:href]="armyUnit.image.source"/>
             }
             @for (leaderUnit of regionNode.army.leaderUnits; track $index; ) {
               <svg:image
@@ -335,17 +335,17 @@ export class WotrRegionsComponent {
   }
 
   private equalsRegionUnits (a: WotrRegion, b: WotrRegion) {
-    if (a.units !== b.units) { return false; }
+    if (a.army !== b.army) { return false; }
     if (a.fellowship !== b.fellowship) { return false; }
     return true;
   }
 
   private regionToArmyNode (region: WotrRegion): WotrArmyNode | null {
-    if (!region.units.armyUnits?.length) { return null; }
+    if (!region.army) { return null; }
 
-    const armyFront = region.units.armyUnits[0].front;
+    const armyFront = region.army.front;
 
-    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region.units.armyUnits);
+    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region.army);
 
     let leaderUnits: WotrLeaderUnitNode[];
     let leadership: number;
@@ -363,25 +363,34 @@ export class WotrRegionsComponent {
     };
   }
 
-  private regionToArmyUnitNodes (armyUnits: WotrArmyUnit[]):  [WotrArmyUnitNode[], number, number] {
-    let nRegulars = 0;
-    let nElites = 0;
-    for (const unit of armyUnits) {
-      switch (unit.type) {
-        case "regular": nRegulars += unit.quantity; break;
-        case "elite": nElites += unit.quantity; break;
-      }
+  private regionToArmyUnitNodes (army: WotrArmy):  [WotrArmyUnitNode[], number, number] {
+    const nRegulars = army.regulars?.reduce ((n, unit) => n + unit.quantity, 0) || 0;
+    const nElites = army.elites?.reduce ((n, unit) => n + unit.quantity, 0) || 0;
+    
+    const unitNodes: WotrArmyUnitNode[] = [];
+    const nEliteNodes = army.elites ? Math.min (2, army.elites.length) : 0;
+    const nRegularNodes = army.regulars ? Math.min (2 - nEliteNodes, army.regulars.length) : 0;
+
+    for (let i = 0; i < nEliteNodes; i++) {
+      const nationId = army.elites![i].nation;
+      unitNodes.push ({
+        unitType: "elite",
+        nationId: nationId,
+        image: this.assets.getArmyUnitImage ("elite", nationId),
+        svgX: 0, svgY: 0
+      });
     }
-    const sortedArmyUnits = [...armyUnits];
-    sortedArmyUnits.sort ((a, b) => {
-      return a.type === "elite" ? 1 : -1;
-    });
-    const unitNodes: WotrArmyUnitNode[] = sortedArmyUnits.slice (0, 2).map (armyUnit => ({
-      unitType: armyUnit.type,
-      nationId: armyUnit.nation,
-      image: this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nation),
-      svgX: 0, svgY: 0
-    }));
+
+    for (let i = 0; i < nRegularNodes; i++) {
+      const nationId = army.regulars![i].nation;
+      unitNodes.push ({
+        unitType: "regular",
+        nationId: nationId,
+        image: this.assets.getArmyUnitImage ("regular", nationId),
+        svgX: 0, svgY: 0
+      });
+    }
+    
     return [unitNodes, nRegulars, nElites];
   }
 
@@ -389,15 +398,15 @@ export class WotrRegionsComponent {
     let leadership = 0;
     const leaders: (WotrCharacter | WotrNationId)[] = [];
 
-    if (region.units.leaders) {
-      region.units.leaders.forEach (leader => {
+    if (region.army?.leaders) {
+      region.army.leaders.forEach (leader => {
         leadership += leader.quantity;
         leaders.push (leader.nation);
       });
     }
 
-    if (region.units.characters) {
-      region.units.characters.forEach (characterId => {
+    if (region.army?.characters) {
+      region.army.characters.forEach (characterId => {
         const character = this.characterById ()[characterId];
         if (character.front === "free-peoples") {
           leadership += character.leadership;
@@ -420,12 +429,12 @@ export class WotrRegionsComponent {
   private regionToShadowLeaderUnitNodes (region: WotrRegion): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCharacter | "nazgul")[] = [];
-    if (region.units.nNazgul) {
-      leadership += region.units.nNazgul;
+    if (region.army?.nNazgul) {
+      leadership += region.army.nNazgul;
       leaders.push ("nazgul");
     }
-    if (region.units.characters) {
-      region.units.characters.forEach (characterId => {
+    if (region.army?.characters) {
+      region.army.characters.forEach (characterId => {
         const character = this.characterById ()[characterId];
         leadership += character.leadership;
         leaders.push (character);
@@ -449,60 +458,49 @@ export class WotrRegionsComponent {
       freeGroups.push ({ units: [{ unitType: "fellowship", image: this.assets.getFellowshipImage (), svgX: 0, svgY: 0 }], nUnits: 1, svgX: 0, svgY: 0 });
     }
 
-    if (region.units.armyUnits?.length) {
-      const armyFront = region.units.armyUnits[0].front;
-      let freeUnits: WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
-      let nUnits: number;
-      switch (armyFront) {
-        case "free-peoples": [freeUnits, nUnits] = this.regionToShadowFreeUnitNodes (region); break;
-        case "shadow": [freeUnits, nUnits] = this.regionToFreePeopleFreeUnitNodes (region); break;
-      }
-      if (freeUnits.length) { freeGroups.push ({ units: freeUnits, nUnits, svgX: 0, svgY: 0 }); }
-    } else {
-      const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes (region);
+    if (region.freeUnits) {
+      const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes (region.freeUnits);
       if (fpFreeUnits.length) { freeGroups.push ({ units: fpFreeUnits, nUnits: fpNUnits, svgX: 0, svgY: 0 }); }
-      const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes (region);
+      const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes (region.freeUnits);
       if (sFreeUnits.length) { freeGroups.push ({ units: sFreeUnits, nUnits: sNUnits, svgX: 0, svgY: 0 }); }
     }
 
     return freeGroups;
   }
 
-  private regionToFreePeopleFreeUnitNodes (region: WotrRegion): [WotrFreePeopleFreeUnitNode[], number] {
-    if (!region.units.characters) { return [[], 0]; }
-    let nUnits = 0;
-    const freeUnits: WotrCharacter[] = [];
-    region.units.characters?.forEach (characterId => {
+  private regionToFreePeopleFreeUnitNodes (freeUnits: WotrFreeUnits): [WotrFreePeopleFreeUnitNode[], number] {
+    const fpFreeUnits: WotrCharacter[] = [];
+    freeUnits.characters?.forEach (characterId => {
       const character = this.characterById ()[characterId];
       if (character.front === "free-peoples") {
-        nUnits++;
-        freeUnits.push (character);
+        fpFreeUnits.push (character);
       }
     });
-    freeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
-    const unitNodes = freeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
+    const nUnits = fpFreeUnits.length;
+    fpFreeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
+    const unitNodes = fpFreeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
       unitType: "companion", character: freeUnit.id,
       image: this.assets.getCharacterImage (freeUnit.id), svgX: 0, svgY: 0
     }));
     return [unitNodes, nUnits];
   }
 
-  private regionToShadowFreeUnitNodes (region: WotrRegion): [WotrShadowFreeUnitNode[], number] {
+  private regionToShadowFreeUnitNodes (freeUnits: WotrFreeUnits): [WotrShadowFreeUnitNode[], number] {
     let nUnits = 0;
-    const freeUnits: (WotrCharacter | "nazgul")[] = [];
-    region.units.characters?.forEach (characterId => {
+    const sFreeUnits: (WotrCharacter | "nazgul")[] = [];
+    freeUnits.characters?.forEach (characterId => {
       const character = this.characterById ()[characterId];
       if (character.front === "shadow") {
         nUnits++;
-        freeUnits.push (character);
+        sFreeUnits.push (character);
       }
     });
-    if (region.units.nNazgul) {
-      nUnits += region.units.nNazgul;
-      freeUnits.push ("nazgul");
+    if (freeUnits.nNazgul) {
+      nUnits += freeUnits.nNazgul;
+      sFreeUnits.push ("nazgul");
     }
-    freeUnits.sort ((a, b) => this.compareShadowFreeUnits (a, b));
-    const unitNodes = freeUnits.slice (0, 2).map<WotrShadowFreeUnitNode> (freeUnit => {
+    sFreeUnits.sort ((a, b) => this.compareShadowFreeUnits (a, b));
+    const unitNodes = sFreeUnits.slice (0, 2).map<WotrShadowFreeUnitNode> (freeUnit => {
       if (freeUnit === "nazgul") {
         return { unitType: "nazgul", character: null, image: this.assets.getNazgulImage (), svgX: 0, svgY: 0 };
       } else {

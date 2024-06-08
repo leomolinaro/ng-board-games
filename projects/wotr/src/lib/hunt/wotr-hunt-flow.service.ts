@@ -1,10 +1,19 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrHuntTileId } from "./wotr-hunt.models";
 import { WotrHuntStore } from "./wotr-hunt.store";
+
+interface WotrHuntTileResolutionOptions {
+  nSuccesses?: number;
+  ignoreEyeTile?: true;
+  ignoreFreePeopleSpecialTile?: true;
+}
 
 @Injectable ()
 export class WotrHuntFlowService {
@@ -14,6 +23,7 @@ export class WotrHuntFlowService {
   private huntStore = inject (WotrHuntStore);
   private characterStore = inject (WotrCharacterStore);
   private logStore = inject (WotrLogStore);
+  private fellowshipStore = inject (WotrFellowshipStore);
 
   async resolveHunt () {
     if (!this.huntStore.hasHuntDice ()) { return; }
@@ -28,15 +38,51 @@ export class WotrHuntFlowService {
     }
     if (!nSuccesses) { return; }
     const huntTileId = await this.storyService.drawHuntTile ("shadow");
+    await this.resolveHuntTile (huntTileId, {
+      nSuccesses
+    });
+  }
+
+  async resolveHuntTile (huntTileId: WotrHuntTileId, options: WotrHuntTileResolutionOptions) {
     const huntTile = this.huntStore.huntTile (huntTileId);
-    let damage = huntTile.eye ? nSuccesses : huntTile.quantity!; // TODO shelob die
+    if (options.ignoreEyeTile && huntTile.eye) { return; }
+    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special") { return; }
+    let damage = huntTile.eye ? options.nSuccesses! : huntTile.quantity!;
+
+    const wasRevealed = this.fellowshipStore.isRevealed ();
+
+    let doReveal = false;
+    if (huntTile.reveal && !wasRevealed) {
+      if (this.fellowshipStore.guide () !== "gollum" || huntTile.type !== "standard" || huntTile.quantity == null) {
+        doReveal = true;
+      }
+    }
+
+    let isRelealing = doReveal;
     while (damage > 0) {
-      const absorbedDamage = await this.absorbHuntDamage ();
+      const { absorbedDamage, gollumRevealing } = await this.absorbHuntDamage ();
       damage -= absorbedDamage;
+      if (gollumRevealing && !wasRevealed) { isRelealing = true; }
     }
-    if (huntTile.reveal) {
-      await this.storyService.revealFellowship ("free-peoples");
+
+    if (isRelealing) {
+      const fromRegion = this.regionStore.getFellowshipRegion ();
+      if (doReveal) { await this.storyService.revealFellowship ("free-peoples"); }
+      const toRegion = this.regionStore.getFellowshipRegion ();
+      if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
+        const newHuntTileId = await this.storyService.drawHuntTile ("shadow");
+        this.resolveHuntTile (newHuntTileId, options);
+      }
     }
+  }
+
+  private revealedThroughShadowStronghold (fromRegionId: WotrRegionId, toRegionId: WotrRegionId) {
+    const fromRegion = this.regionStore.region (fromRegionId);
+    const toRegion = this.regionStore.region (toRegionId);
+    if (fromRegion.controlledBy === "shadow" && fromRegion.settlement === "stronghold") { return true; }
+    if (toRegion.controlledBy === "shadow" && toRegion.settlement === "stronghold") { return true; }
+    // TODO attraverso
+    return false;
   }
 
   private getNSuccesses (huntRoll: WotrCombatDie[]) {
@@ -52,24 +98,18 @@ export class WotrHuntFlowService {
   private getNReRolls (huntRoll: WotrCombatDie[], nRollSuccesses: number): number {
     const nFailures = huntRoll.length - nRollSuccesses;
     if (!nFailures) { return 0; }
-    // const fellowship = this.fellowshipStore.state ();
     const regionId = this.regionStore.getFellowshipRegion ();
     const region = this.regionStore.region (regionId);
     let nReRolls = 0;
-    if (region.settlement === "stronghold" && region.controlledBy === "shadow") {
-      nReRolls++;
-    }
-    if (region.units.nNazgul || region.units.characters?.includes ("the-witch-king")) {
-      nReRolls++;
-    }
-    if (region.units.armyUnits?.some (armyUnit => armyUnit.front === "shadow")) {
-      nReRolls++;
-    }
+    if (region.settlement === "stronghold" && region.controlledBy === "shadow") { nReRolls++; }
+    if (this.regionStore.isNazgulInRegion (regionId)) { nReRolls++; }
+    if (this.regionStore.isArmyInRegion ("shadow", regionId)) { nReRolls++; }
     return Math.min (nReRolls, nFailures);
   }
 
-  async absorbHuntDamage () {
+  async absorbHuntDamage (): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
+    let gollumRevealing = false;
     const actions = await this.storyService.absorbHuntDamage ("free-peoples");
     for (const action of actions) {
       switch (action.type) {
@@ -80,9 +120,19 @@ export class WotrHuntFlowService {
           }
           break;
         }
+        case "fellowship-reveal": {
+          if (this.fellowshipStore.guide () === "gollum") {
+            absorbedDamage += 1;
+            gollumRevealing = true;
+          }
+        }
       }
     }
-    return absorbedDamage;
+    if (gollumRevealing) {
+      return { absorbedDamage, gollumRevealing };
+    } else {
+      return { absorbedDamage };
+    }
   }
 
 }

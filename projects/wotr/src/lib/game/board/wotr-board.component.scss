@@ -51,6 +51,7 @@ $area-background: #151515;
 
     mat-tab-group {
       overflow: auto;
+      height: 100%;
       ::ng-deep {
         .mat-mdc-tab-header {
           --mdc-secondary-navigation-tab-container-height: 25px;

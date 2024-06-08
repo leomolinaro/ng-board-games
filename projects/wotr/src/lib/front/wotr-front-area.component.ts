@@ -42,7 +42,7 @@ import { WotrFront } from "./wotr-front.models";
               <img [src]="nation.id | bgTransform:nazgulImage" matTooltip="Nazgul"/>
             }
           }
-          @for (character of characters (); track character.id) {
+          @for (character of frontCharacters (); track character.id) {
             @if (character.status === "available") {
               <img [src]="character.id | bgTransform:characterImage" [matTooltip]="character.name"/>
             }
@@ -62,7 +62,7 @@ import { WotrFront } from "./wotr-front.models";
               <img [src]="nation.id | bgTransform:leaderImage" [matTooltip]="nation.leaderLabel"/>
             }
           }
-          @for (character of characters (); track character.id) {
+          @for (character of frontCharacters (); track character.id) {
             @if (character.status === "eliminated") {
               <img [src]="character.id | bgTransform:characterImage" [matTooltip]="character.name"/>
             }
@@ -114,6 +114,10 @@ export class WotrFrontAreaComponent {
   front = input.required<WotrFront> ();
   nations = input.required<WotrNation[]> ();
   characters = input<WotrCharacter[]> ();
+  frontCharacters = computed (() => {
+    const front = this.front ();
+    return this.characters ()?.filter (c => c.front === front.id);
+  });
 
   @Output () cardClick = new EventEmitter<WotrCardId> ();
 

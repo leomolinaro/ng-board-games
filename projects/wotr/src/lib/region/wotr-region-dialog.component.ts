@@ -6,6 +6,7 @@ import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils"
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
+import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrRegion } from "./wotr-region.models";
 
 export interface WotrRegionDialogData {
@@ -58,43 +59,57 @@ export class WotrRegionDialogComponent implements OnInit {
   protected data = inject<WotrRegionDialogData> (MAT_DIALOG_DATA);
   private assets = inject (WotrAssetsService);
 
-  protected unitNodes: UnitNode[] = [];
+  protected unitNodes!: UnitNode[];
 
   ngOnInit () {
+    const army = this.data.region.army;
+    this.unitNodes = this.armyToUnitNodes (army);
+  }
+
+  private armyToUnitNodes (army: WotrArmy | undefined): UnitNode[] {
+    if (!army) { return []; }
     const d = this.data;
-    const units = d.region.units;
-    units.armyUnits?.forEach (armyUnit => {
-      const image = this.assets.getArmyUnitImage (armyUnit.type, armyUnit.nation);
-      this.unitNodes.push ({
-        id: armyUnit.nation + "_" + armyUnit.type,
-        label: armyUnit.type === "regular"
-          ? d.nationById[armyUnit.nation].regularLabel
-          : d.nationById[armyUnit.nation].eliteLabel,
+    const unitNodes: UnitNode[] = [];
+    army.regulars?.forEach (armyUnit => {
+      const image = this.assets.getArmyUnitImage ("regular", armyUnit.nation);
+      unitNodes.push ({
+        id: armyUnit.nation + "_regular",
+        label: d.nationById[armyUnit.nation].regularLabel,
         quantity: armyUnit.quantity,
         ...this.scale (image)
       });
     });
-    units.leaders?.forEach (leader => {
+    army.elites?.forEach (armyUnit => {
+      const image = this.assets.getArmyUnitImage ("elite", armyUnit.nation);
+      unitNodes.push ({
+        id: armyUnit.nation + "_elite",
+        label: d.nationById[armyUnit.nation].eliteLabel,
+        quantity: armyUnit.quantity,
+        ...this.scale (image)
+      });
+    });
+    army.leaders?.forEach (leader => {
       const image = this.assets.getLeaderImage (leader.nation);
-      this.unitNodes.push ({
+      unitNodes.push ({
         id: leader.nation + "_leader",
         label: d.nationById[leader.nation].leaderLabel!,
         quantity: leader.quantity,
         ...this.scale (image)
       });
     });
-    if (units.nNazgul) {
+    if (army.nNazgul) {
       const image = this.assets.getNazgulImage ();
-      this.unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: units.nNazgul, ...this.scale (image) });
+      unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: army.nNazgul, ...this.scale (image) });
     }
-    units.characters?.forEach (character => {
+    army.characters?.forEach (character => {
       const image = this.assets.getCharacterImage (character);
-      this.unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
+      unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
     });
     if (d.region.fellowship) {
       const image = this.assets.getFellowshipImage ();
-      this.unitNodes.push ({ id: "fellowship", label: "Fellowship", quantity: 1, ...this.scale (image) });
+      unitNodes.push ({ id: "fellowship", label: "Fellowship", quantity: 1, ...this.scale (image) });
     }
+    return unitNodes;
   }
 
   private scale (image: WotrUnitImage): WotrUnitImage {

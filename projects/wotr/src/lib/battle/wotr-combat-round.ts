@@ -6,7 +6,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUnit, WotrLeader, WotrUnits } from "../unit/wotr-unit-actions";
+import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrCombatFront } from "./wotr-battle-flow.service";
 import { WotrBattleStore } from "./wotr-battle.store";
@@ -47,13 +47,18 @@ export class WotrCombatRound {
   endBattle = false;
 
   private attackingRegion () { return this.regionStore.region (this.action.fromRegion); }
+  private attackingArmy () { return this.attackingRegion ().army!; }
+  private attackedArmy () {
+    const attackedRegion = this.attackedRegion ();
+    return attackedRegion.underSiegeArmy || attackedRegion.army!;
+  }
   private attackedRegion () { return this.regionStore.region (this.action.toRegion); }
   private battle () { return this.battleStore.battle ()!; }
 
   async resolve (): Promise<boolean> {
     const attackedRegion = this.attackedRegion ();
     const hasStronghold = attackedRegion.settlement === "stronghold";
-    if (hasStronghold && !attackedRegion.underSiege) {
+    if (hasStronghold && !attackedRegion.underSiegeArmy) {
       const retreatIntoSiege = await this.storyService.wantRetreatIntoSiege (this.defender.id);
       if (retreatIntoSiege) {
         await this.storyService.battleAdvance (this.attacker.id); // TODO controllare se avanza
@@ -77,20 +82,29 @@ export class WotrCombatRound {
     }
 
     let continueBattle = false;
+    let attackerWon = false;
     if (this.isDefenderDefeated ()) {
+      attackerWon = true;
+    } else {
+      const wantContinueBattle = await this.storyService.wantContinueBattle (this.attacker.id);
+      if (wantContinueBattle && !attackedRegion.underSiegeArmy) { // TODO && defender can retreat
+        const wantRetreat = await this.storyService.wantRetreat (this.defender.id);
+        if (wantRetreat) {
+          attackerWon = true;
+        } else {
+          continueBattle = true;
+        }
+      } else {
+        continueBattle = true;
+      }
+    }
+
+    if (attackerWon) {
       if (this.action.toRegion !== this.action.fromRegion) {
         await this.storyService.battleAdvance (this.attacker.id);
       }
       if (this.attackedRegion ().settlement) {
         this.regionStore.setControlledBy (this.attacker.id, this.action.toRegion); // TODO controllare se avanza
-      }
-    } else {
-      const wantContinueBattle = await this.storyService.wantContinueBattle (this.attacker.id);
-      if (wantContinueBattle && !attackedRegion.underSiege) { // && defender can retreat
-        const wantRetreat = await this.storyService.wantRetreat (this.defender.id);
-        continueBattle = !wantRetreat;
-      } else {
-        continueBattle = true;
       }
     }
 
@@ -101,7 +115,7 @@ export class WotrCombatRound {
 
   private isDefenderDefeated () {
     const region = this.attackedRegion ();
-    const hasDefenderArmy = region.units.armyUnits?.some (armyUnit => armyUnit.front === this.defender.id);
+    const hasDefenderArmy = region.army?.front === this.defender.id || region.underSiegeArmy?.front === this.defender.id;
     return !hasDefenderArmy;
   }
 
@@ -194,68 +208,44 @@ export class WotrCombatRound {
   private getHitPoints (combatFront: WotrCombatFront): number {
     if (combatFront.isAttacker) {
       const retroguard = this.battle ().retroguard;
-      const retroguardLeadership = retroguard ? this.getUnitsHitPoints (retroguard, this.attacker.id) : 0;
-      const armyLeadership = this.getUnitsHitPoints (this.attackingRegion ().units, combatFront.id);
+      const retroguardLeadership = retroguard ? this.getUnitsHitPoints (retroguard) : 0;
+      const armyLeadership = this.getUnitsHitPoints (this.attackingArmy ());
       return armyLeadership - retroguardLeadership;
     } else {
-      return this.getUnitsHitPoints (this.attackedRegion ().units, combatFront.id);
+      return this.getUnitsHitPoints (this.attackedArmy ());
     }
   }
 
-  private getUnitsHitPoints (units: WotrUnits, front: WotrFrontId) {
+  private getUnitsHitPoints (army: WotrArmy) {
     let damagePoints = 0;
-    if (units.armyUnits) { damagePoints += this.getArmyUnitsHitPoints (units.armyUnits.filter (a => a.front === front)); }
+    damagePoints += army.regulars?.reduce ((d, r) => d + r.quantity, 0) || 0;
+    damagePoints += army.elites?.reduce ((d, r) => d + r.quantity * 2, 0) || 0;
     return damagePoints;
   }
 
   private getLeadership (combatFront: WotrCombatFront): number {
     if (combatFront.isAttacker) {
       const retroguard = this.battle ().retroguard;
-      const retroguardLeadership = retroguard ? this.getUnitsLeadership (retroguard, this.attacker.id) : 0;
-      const armyLeadership = this.getUnitsLeadership (this.attackingRegion ().units, combatFront.id);
+      const retroguardLeadership = retroguard ? this.getArmyLeadership (retroguard) : 0;
+      const armyLeadership = this.getArmyLeadership (this.attackingArmy ());
       return armyLeadership - retroguardLeadership;
     } else {
-      return this.getUnitsLeadership (this.attackedRegion ().units, combatFront.id);
+      return this.getArmyLeadership (this.attackedArmy ());
     }
   }
 
-  private getUnitsLeadership (units: WotrUnits, front: WotrFrontId) {
+  private getArmyLeadership (army: WotrArmy) {
     let leadership = 0;
-    if (units.armyUnits) { leadership += this.getArmyUnitsLeadership (units.armyUnits.filter (a => a.front === front)); }
-    if (front === "free-peoples") {
-      if (units.leaders) { leadership += this.getLeadersLeadership (units.leaders); }
-    }
-    if (front === "shadow") {
-      if (units.nNazgul) { leadership += this.getNazgulLeadership (units.nNazgul); }
-    }
-    if (units.characters) { leadership += this.getCharactersLeadership (units.characters, front); }
+    if (army.elites) { leadership += this.getEliteUnitsLeadership (army.elites); }
+    if (army.leaders) { leadership += this.getLeadersLeadership (army.leaders); }
+    if (army.nNazgul) { leadership += this.getNazgulLeadership (army.nNazgul); }
+    if (army.characters) { leadership += this.getCharactersLeadership (army.characters); }
     return leadership;
   }
 
-  // private getArmyLeadership (army: WotrArmy) {
-  //   let leadership = 0;
-  //   leadership += this.getArmyUnitsLeadership (army.units);
-  //   leadership += this.getLeadersLeadership (army.leaders);
-  //   leadership += this.getCompanionsLeadership (army.companions);
-  //   leadership += this.getNazgulLeadership (retroguard.nNazgul);
-  //   leadership += this.getMinionsLeadership (retroguard.minions);
-  //   return leadership;
-  // }
-
-  private getArmyUnitsHitPoints (armyUnits: WotrArmyUnit[]) {
-    return armyUnits.reduce ((d, armyUnit) => {
-      switch (armyUnit.type) {
-        case "regular": return d + armyUnit.quantity;
-        case "elite": return d + armyUnit.quantity * 2;
-      }
-      return d;
-    }, 0);
-  }
-
-  private getArmyUnitsLeadership (armyUnits: WotrArmyUnit[]) {
-    return armyUnits.reduce ((l, armyUnit) => {
-      if (armyUnit.type === "elite" &&
-        armyUnit.nation === "isengard" &&
+  private getEliteUnitsLeadership (elites: WotrNationUnit[]) {
+    return elites.reduce ((l, armyUnit) => {
+      if (armyUnit.nation === "isengard" &&
         this.characterStore.isInPlay ("saruman")) {
         return l + 1;
       }
@@ -263,7 +253,7 @@ export class WotrCombatRound {
     }, 0);
   }
 
-  private getLeadersLeadership (leaders: WotrLeader[]) {
+  private getLeadersLeadership (leaders: WotrNationUnit[]) {
     return leaders.length;
   }
 
@@ -271,15 +261,10 @@ export class WotrCombatRound {
     return nNazgul;
   }
 
-  private getCharactersLeadership (characters: WotrCharacterId[], front: WotrFrontId) {
+  private getCharactersLeadership (characters: WotrCharacterId[]) {
     return characters.reduce ((l, characterId) => {
-      const character = this.characterStore.character (characterId);
-      if (character.front === front) {
-        return l + this.characterStore.character (characterId).leadership;
-      }
-      return l;
+      return l + this.characterStore.character (characterId).leadership;
     }, 0);
-
   }
 
   private getNRollSuccesses (roll: WotrCombatDie[], combatFront: WotrCombatFront) {
@@ -304,7 +289,7 @@ export class WotrCombatRound {
     if (combatFront.isAttacker) {
       const region = this.attackedRegion ();
       if ((region.fortification || region.settlement === "city") && this.round === 1) { return 6; }
-      if (region.underSiege) { return 6; } // TODO non sempre
+      if (region.underSiegeArmy) { return 6; } // TODO non sempre
     }
     return 5;
   }

@@ -125,22 +125,21 @@ export class WotrGameFlowService {
       this.frontStore.setStrategyDeck (d.strategyDeck, d.front);
     }
     for (const r of setup.regions) {
-      const frontId = this.nationStore.nation (r.nation).front;
       if (r.nRegulars) {
         this.nationStore.removeRegularsFromReinforcements (r.nRegulars, r.nation);
-        this.regionStore.addRegularsToRegion (r.nation, frontId, r.nRegulars, r.region);
+        this.regionStore.addRegularsToArmy (r.nRegulars, r.nation, r.region);
       }
       if (r.nElites) {
         this.nationStore.removeElitesFromReinforcements (r.nElites, r.nation);
-        this.regionStore.addElitesToRegion (r.nation, frontId, r.nElites, r.region);
+        this.regionStore.addElitesToArmy (r.nElites, r.nation, r.region);
       }
       if (r.nLeaders) {
         this.nationStore.removeLeadersFromReinforcements (r.nLeaders, r.nation);
-        this.regionStore.addLeadersToRegion (r.nation, r.nLeaders, r.region);
+        this.regionStore.addLeadersToArmy (r.nLeaders, r.nation, r.region);
       }
       if (r.nNazgul) {
         this.nationStore.removeNazgulFromReinforcements (r.nNazgul);
-        this.regionStore.addNazgulToRegion (r.nNazgul, r.region);
+        this.regionStore.addNazgulToArmy (r.nNazgul, r.region);
       }
     }
     for (const nationSetup of setup.nations) {

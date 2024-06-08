@@ -6,7 +6,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrUnits } from "../unit/wotr-unit-actions";
+import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatCardsService } from "./wotr-combat-cards.service";
@@ -43,7 +43,7 @@ export class WotrBattleFlowService {
     this.battleStore.endBattle ();
   }
 
-  private getRetroguard (): WotrUnits | null {
+  private getRetroguard (): WotrArmy | null {
     // TODO
     return null;
   }

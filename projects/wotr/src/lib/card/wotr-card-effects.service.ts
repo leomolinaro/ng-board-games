@@ -28,15 +28,10 @@ export class WotrCardEffectsService {
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
     "Isildur's Bane": async params => {
       const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
-      const huntTile = this.huntStore.huntTile (action.tile);
-      if (huntTile.eye || huntTile.type === "free-people-special") { return; }
-      const damage = huntTile.quantity!; // TODO shelob die
-      if (damage) {
-        await this.huntFlow.absorbHuntDamage ();
-      }
-      if (huntTile.reveal) {
-        await this.storyService.revealFellowship ("free-peoples");
-      }
+      this.huntFlow.resolveHuntTile (action.tile, {
+        ignoreEyeTile: true,
+        ignoreFreePeopleSpecialTile: true
+      });
     },
     "The Breaking of the Fellowship": async params => {
       const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");

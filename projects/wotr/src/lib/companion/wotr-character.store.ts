@@ -24,6 +24,7 @@ export class WotrCharacterStore {
       ids: [
         "gandalf-the-grey", "strider", "boromir", "legolas",
         "gimli", "meriadoc", "peregrin", "aragorn", "gandalf-the-white",
+        "gollum",
         "saruman", "the-mouth-of-sauron", "the-witch-king"
       ],
       map: {
@@ -36,6 +37,7 @@ export class WotrCharacterStore {
         peregrin: this.initCompanion ("peregrin", "Peregrin", 1, 1),
         aragorn: this.initCompanion ("aragorn", "Aragorn", 3, 2),
         "gandalf-the-white": this.initCompanion ("gandalf-the-white", "Gandalf the White", 3, 1),
+        gollum: this.initCompanion ("gollum", "Gollum", 0, 0),
         saruman: this.initMinion ("saruman", "Saruman", 0, 1),
         "the-mouth-of-sauron": this.initMinion ("the-mouth-of-sauron", "The Mouth of Sauron", 3, 2),
         "the-witch-king": this.initMinion ("the-witch-king", "The Witch King", -1, 2),

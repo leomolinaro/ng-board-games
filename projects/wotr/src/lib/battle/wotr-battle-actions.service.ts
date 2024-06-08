@@ -21,13 +21,12 @@ export class WotrBattleActionsService {
         await this.battleFlow.resolveBattle (action, front);
       },
       "army-retreat-into-siege": async (action, front) => {
-        this.regionStore.setUnderSiege (this.battleStore.battle ()!.region);
+        this.regionStore.moveArmyIntoSiege (action.region);
       },
       "army-not-retreat-into-siege": async (action, front) => { /*empty*/ },
       "army-retreat": async (action, front) => {
-        const units = this.regionStore.region (action.fromRegion).units;
-        this.unitActions.moveArmy (units, action.fromRegion, action.toRegion);
-        this.regionStore.setUnderSiege (this.battleStore.battle ()!.region);
+        const army = this.regionStore.region (action.fromRegion).army!;
+        this.unitActions.moveArmy (army, action.fromRegion, action.toRegion);
       },
       "army-not-retreat": async (action, front) => { /*empty*/ },
       "leader-forfeit": async (action, front) => { /*empty*/ },

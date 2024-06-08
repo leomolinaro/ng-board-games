@@ -1,6 +1,6 @@
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
-import { WotrUnits } from "../unit/wotr-unit-actions";
+import { WotrArmy, WotrFreeUnits } from "../unit/wotr-unit.models";
 
 export type WotrRegionId =
   "forlindon" | "north-ered-luin" | "ered-luin" | "grey-havens" | "harlindon" | "tower-hills" |
@@ -25,13 +25,14 @@ export type WotrSettlentType = "town" | "city" | "stronghold";
 export interface WotrRegion {
   id: WotrRegionId;
   name: string;
-  nationId: WotrNationId | null;
+  nationId?: WotrNationId;
   seaside: boolean;
   neighbors: WotrNeighbor[];
-  fortification: boolean;
-  settlement: WotrSettlentType | null;
-  units: WotrUnits;
+  fortification?: true;
+  settlement?: WotrSettlentType;
+  army?: WotrArmy;
+  freeUnits?: WotrFreeUnits;
+  underSiegeArmy?: WotrArmy;
   fellowship: boolean;
-  underSiege?: boolean; // only if stronghold
   controlledBy?: WotrFrontId; // only if settlement
 }

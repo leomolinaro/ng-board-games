@@ -18,7 +18,7 @@ import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerService } from "../player/wotr-player.service";
-import { WotrUnits } from "../unit/wotr-unit-actions";
+import { WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteService } from "./wotr-remote.service";
 import { WotrAction, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
@@ -279,11 +279,11 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     this.findAction<WotrCompanionSeparation> (story, "companion-separation");
   }
 
-  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom)[]> {
+  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal)[]> {
     const story = await this.story (front, p => p.absorbHuntDamage! ());
-    const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom> (
+    const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal> (
       story,
-      "fellowship-corruption", "character-elimination", "companion-random");
+      "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal");
     return actions;
   }
 
@@ -303,7 +303,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return this.story (front, p => p.activateTableCard! (cardId));
   }
 
-  async forfeitLeadership (front: WotrFrontId): Promise<WotrUnits> {
+  async forfeitLeadership (front: WotrFrontId): Promise<WotrLeaderUnits> {
     const story = await this.story (front, p => p.forfeitLeadership! ());
     const action = this.findAction<WotrLeaderForfeit> (story, "leader-forfeit");
     return action.leaders;

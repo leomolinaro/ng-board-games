@@ -26,8 +26,8 @@ export class WotrFellowshipActionsService {
       "fellowship-hide": async (action, front) => { this.fellowhipStore.hide (); },
       "fellowship-progress": async (action, front) => {
         this.fellowhipStore.increaseProgress ();
-        this.huntStore.addFellowshipDie ();
         await this.huntFlow.resolveHunt ();
+        this.huntStore.addFellowshipDie ();
       },
       "fellowship-reveal": async (action, front) => {
         this.regionStore.moveFellowshipToRegion (action.region);

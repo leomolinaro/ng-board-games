@@ -1,6 +1,7 @@
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrUnitComposer, WotrUnits, composeUnits } from "../unit/wotr-unit-actions";
+import { WotrUnitComposer, composeArmy } from "../unit/wotr-unit-actions";
+import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrCombatDie } from "./wotr-combat-die.models";
 
 export type WotrBattleAction =
@@ -10,10 +11,10 @@ export type WotrBattleAction =
   WotrBattleContinue | WotrBattleCease | WotrLeaderForfeit |
   WotrCombatCardChoose | WotrCombatCardChooseNot | WotrCombatRoll | WotrCombatReRoll;
 
-export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrUnits }
-export function attack (fromRegion: WotrRegionId, toRegion: WotrRegionId, ...comp: WotrUnitComposer[]): WotrArmyAttack { return { type: "army-attack", fromRegion, toRegion, army: composeUnits (...comp) }; }
-export interface WotrLeaderForfeit { type: "leader-forfeit"; leaders: WotrUnits }
-export function forfeitLeadership (...comp: WotrUnitComposer[]): WotrLeaderForfeit { return { type: "leader-forfeit", leaders: composeUnits (...comp) }; }
+export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrArmy }
+export function attack (fromRegion: WotrRegionId, toRegion: WotrRegionId, ...comp: WotrUnitComposer[]): WotrArmyAttack { return { type: "army-attack", fromRegion, toRegion, army: composeArmy (comp) }; }
+export interface WotrLeaderForfeit { type: "leader-forfeit"; leaders: WotrLeaderUnits }
+export function forfeitLeadership (...comp: WotrUnitComposer[]): WotrLeaderForfeit { return { type: "leader-forfeit", leaders: composeLeaders (comp) }; }
 export interface WotrArmyRetreatIntoSiege { type: "army-retreat-into-siege"; region: WotrRegionId }
 export function retreatIntoSiege (region: WotrRegionId): WotrArmyRetreatIntoSiege { return { type: "army-retreat-into-siege", region }; }
 export interface WotrArmyNotRetreatIntoSiege { type: "army-not-retreat-into-siege"; region: WotrRegionId }
@@ -35,3 +36,9 @@ export interface WotrCombatRoll { type: "combat-roll"; dice: WotrCombatDie[] }
 export function rollCombatDice (...dice: WotrCombatDie[]): WotrCombatRoll { return { type: "combat-roll", dice }; }
 export interface WotrCombatReRoll { type: "combat-re-roll"; dice: WotrCombatDie[] }
 export function reRollCombatDice (...dice: WotrCombatDie[]): WotrCombatReRoll { return { type: "combat-re-roll", dice }; }
+
+export function composeLeaders (comp: WotrUnitComposer[]): WotrLeaderUnits {
+  const a: WotrLeaderUnits = { };
+  comp.forEach (c => c.addTo (a));
+  return a;
+}
