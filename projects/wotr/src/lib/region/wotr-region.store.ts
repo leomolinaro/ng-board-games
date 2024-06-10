@@ -1,10 +1,12 @@
-import { Injectable, Signal, computed } from "@angular/core";
+import { Injectable, Signal, computed, inject } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { isArray } from "projects/commons/utils/src/lib/types.util";
 import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
-import { WotrArmy, WotrFreeUnits } from "../unit/wotr-unit.models";
+import { WotrArmyUtil } from "../unit/wotr-army-util.service";
+import { WotrArmy, WotrFreeUnits, WotrUnits } from "../unit/wotr-unit.models";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region.models";
 
 export interface WotrRegionState {
@@ -16,6 +18,9 @@ export interface WotrRegionState {
   providedIn: "root"
 })
 export class WotrRegionStore {
+
+  private armyUtil = inject (WotrArmyUtil);
+  private characterStore = inject (WotrCharacterStore);
 
   update!: (actionName: string, updater: (a: WotrRegionState) => WotrRegionState) => void;
   state!: Signal<WotrRegionState>;
@@ -191,31 +196,24 @@ export class WotrRegionStore {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater (s.map[regionId]) } }));
   }
 
-  private updateArmy (actionName: string, regionId: WotrRegionId | [WotrRegionId, "underSiege"], updater: (a: WotrArmy | undefined) => WotrArmy) {
+  private updateArmy (actionName: string, regionId: WotrRegionId | [WotrRegionId, "underSiege"], updater: (a: WotrArmy | undefined) => (WotrArmy | undefined)) {
     if (isArray (regionId)) {
       this.updateRegion (actionName, regionId[0], region => {
         const { underSiegeArmy, ...restRegion } = region;
         const newArmy = updater (underSiegeArmy);
-        if (this.isEmptyArmy (newArmy)) { return restRegion; }
-        return { ...restRegion, underSiegeArmy: newArmy };
+        return newArmy ? { ...restRegion, underSiegeArmy: newArmy } : restRegion;
       });
+      this.joinNazgulToArmy (regionId[0]);
+      this.joinCharactersToArmy (regionId[0]);
     } else {
       this.updateRegion (actionName, regionId, region => {
         const { army, ...restRegion } = region;
         const newArmy = updater (army);
-        if (this.isEmptyArmy (newArmy)) { return restRegion; }
-        return { ...restRegion, army: newArmy };
+        return newArmy ? { ...restRegion, army: newArmy } : restRegion;
       });
+      this.joinNazgulToArmy (regionId);
+      this.joinCharactersToArmy (regionId);
     }
-  }
-
-  private isEmptyArmy (army: WotrArmy) {
-    if (army.regulars?.length) { return false; }
-    if (army.elites?.length) { return false; }
-    if (army.characters?.length) { return false; }
-    if (army.leaders?.length) { return false; }
-    if (army.nNazgul) { return false; }
-    return true;
   }
 
   private updateFreeUnits (actionName: string, regionId: WotrRegionId, updater: (a: WotrFreeUnits | undefined) => WotrFreeUnits) {
@@ -230,84 +228,59 @@ export class WotrRegionStore {
   }
 
   addRegularsToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addRegularsToArmy", regionId, army => this.addUnitsTo (army, "regulars", nation, quantity));
+    this.updateArmy ("addRegularsToArmy", regionId, army => this.armyUtil.addRegulars (quantity, nation, army));
   }
 
   removeRegularsFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeRegularsFromArmy", regionId, army => this.removeUnitsFrom (army, "regulars", nation, quantity));
+    this.updateArmy ("removeRegularsFromArmy", regionId, army => this.armyUtil.removeRegulars (quantity, nation, army));
   }
 
   addElitesToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addElitesToArmy", regionId, army => this.addUnitsTo (army, "elites", nation, quantity));
+    this.updateArmy ("addElitesToArmy", regionId, army => this.armyUtil.addElites (quantity, nation, army));
   }
 
-  removeElitesFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeElitesFromArmy", regionId, army => this.removeUnitsFrom (army, "elites", nation, quantity));
-  }
-
-  addLeadersToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addLeadersToArmy", regionId, army => this.addUnitsTo (army, "leaders", nation, quantity));
-  }
-
-  removeLeadersFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeLeadersFromArmy", regionId, army => this.removeUnitsFrom (army, "leaders", nation, quantity));
-  }
-
-  private addUnitsTo (army: WotrArmy | undefined, unitKey: "regulars" | "elites" | "leaders", nation: WotrNationId, quantity: number): WotrArmy {
-    if (!army) { army = { front: frontOfNation (nation) }; }
-    const units = army[unitKey];
-    if (units) {
-      const index = units.findIndex ((u) => u.nation === nation);
-      if (index >= 0) {
-        const unit = units[index];
-        return {
-          ...army,
-          [unitKey]: immutableUtil.listReplaceByIndex (index, { ...unit, quantity: unit.quantity + quantity }, units),
-        };
-      } else {
-        return {
-          ...army,
-          [unitKey]: immutableUtil.listPush ([{ nation, quantity }], units),
-        };
+  private joinNazgulToArmy (regionId: WotrRegionId) {
+    const region = this.region (regionId);
+    if (region.army?.front === "shadow") {
+      const nNazgul = region.freeUnits?.nNazgul;
+      if (nNazgul) {
+        this.removeNazgulFromFreeUnits (nNazgul, regionId);
+        this.addNazgulToArmy (nNazgul, regionId);
       }
-    } else {
-      return {
-        ...army,
-        [unitKey]: [{ nation, quantity }],
-      };
     }
   }
 
-  private removeUnitsFrom (army: WotrArmy | undefined, unitKey: "regulars" | "elites" | "leaders", nation: WotrNationId, quantity: number): WotrArmy {
-    if (!army) { throw new Error ("removeArmyUnitsFromArmy"); }
-    const { [unitKey]: units, ...restArmy } = army;
-    if (!units) { throw new Error ("removeArmyUnitsFromArmy"); }
-    const index = units.findIndex ((u) => u.nation === nation);
-    if (index < 0) { throw new Error ("removeArmyUnitsFromArmy"); }
-    const unit = units[index];
-    const newQuantity = unit.quantity - quantity;
-    if (newQuantity < 0) { throw new Error ("removeArmyUnitsFromArmy"); }
-    const newUnits = newQuantity
-      ? immutableUtil.listReplaceByIndex (index, { ...unit, quantity: newQuantity }, units)
-      : immutableUtil.listRemoveByIndex (index, units);
-    return {
-      ...restArmy,
-      [unitKey]: newUnits
-    };
+  private joinCharactersToArmy (regionId: WotrRegionId) {
+    const region = this.region (regionId);
+    if (!region.army?.front) { return; }
+    const characters = region.freeUnits?.characters;
+    characters?.forEach (characterId => {
+      const character = this.characterStore.character (characterId);
+      if (character.front === region.army?.front) {
+        this.removeCharacterFromFreeUnits (characterId, regionId);
+        this.addCharacterToArmy (characterId, regionId);
+      }
+    });
+  }
+
+  removeElitesFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
+    this.updateArmy ("removeElitesFromArmy", regionId, army => this.armyUtil.removeElites (quantity, nation, army));
+  }
+
+  addLeadersToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
+    this.updateArmy ("addLeadersToArmy", regionId, army => this.armyUtil.addLeaders (quantity, nation, army));
+  }
+
+  removeLeadersFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
+    this.updateArmy ("removeLeadersFromArmy", regionId, army => this.armyUtil.removeLeaders (quantity, nation, army));
   }
 
   addNazgulToArmy (quantity: number, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addNazgulToArmy", regionId, army => {
-      if (!army) { army = { front: "shadow" }; }
-      return { ...army, nNazgul: (army.nNazgul || 0) + quantity };
-    });
+    this.updateArmy ("addNazgulToArmy", regionId, army => this.armyUtil.addNazgul (quantity, army));
   }
 
   removeNazgulFromArmy (quantity: number, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeNazgulFromArmy", regionId, army => {
-      if (!army) { throw new Error ("removeNazgulFromArmy"); }
-      return { ...army, nNazgul: (army.nNazgul || 0) - quantity };
-    });
+    this.updateArmy ("removeNazgulFromArmy", regionId, army => this.armyUtil.removeNazgul (quantity, army));
   }
 
   addNazgulToFreeUnits (quantity: number, regionId: WotrRegionId) {
@@ -325,17 +298,49 @@ export class WotrRegionStore {
   }
 
   addCharacterToArmy (characterId: WotrCharacterId, regionId: WotrRegionId) {
-    this.updateArmy ("addCharacterToArmy", regionId, army => {
-      if (!army) { throw new Error ("addCharacterToArmy"); }
-      return { ...army, characters: immutableUtil.listPush ([characterId], army.characters || []) }
-    });
+    this.updateArmy ("addCharacterToArmy", regionId, army => this.armyUtil.addCharacter (characterId, army));
   }
 
   removeCharacterFromArmy (characterId: WotrCharacterId, regionId: WotrRegionId) {
-    this.updateArmy ("removeCharacterFromArmy", regionId, army => {
-      if (!army?.characters) { throw new Error ("removeCharacterFromArmy"); }
-      return { ...army, characters: immutableUtil.listRemoveFirst (c => c === characterId, army.characters || []) };
-    });
+    this.updateArmy ("removeCharacterFromArmy", regionId, army => this.armyUtil.removeCharacter (characterId, army));
+  }
+
+  moveArmy (fromRegionId: WotrRegionId, toRegionId: WotrRegionId, leftUnits?: WotrUnits) {
+    const fromRegion = this.region (fromRegionId);
+    const toRegion = this.region (toRegionId);
+    const fromArmy = fromRegion.army;
+    const movingArmy = this.armyUtil.splitUnits (fromArmy, leftUnits);
+    if (leftUnits && this.armyUtil.hasArmyUnits (leftUnits)) {
+      this.updateArmy ("moveArmy", fromRegionId, () => this.armyUtil.unitsToArmy (leftUnits));
+    } else {
+      this.updateArmy ("moveArmy", fromRegionId, () => leftUnits as any);
+      this.freeNazgulFromArmy (fromRegionId);
+      this.freeCharactersFromArmy (fromRegionId);
+    }
+
+    const toArmy = toRegion.army;
+    const mergedArmy = this.armyUtil.mergeArmies (toArmy, movingArmy);
+    this.updateArmy ("moveArmy", toRegionId, () => mergedArmy);
+  }
+
+  private freeNazgulFromArmy (regionId: WotrRegionId) {
+    const region = this.region (regionId);
+    const army = region.army;
+    if (army?.nNazgul && !this.armyUtil.hasArmyUnits (army)) {
+      this.removeNazgulFromArmy (army.nNazgul, regionId);
+      this.addNazgulToFreeUnits (army.nNazgul, regionId);
+    }
+  }
+
+  private freeCharactersFromArmy (regionId: WotrRegionId) {
+    const region = this.region (regionId);
+    const army = region.army;
+    if (army?.characters && !this.armyUtil.hasArmyUnits (army)) {
+      for (const character of army.characters) {
+        this.removeCharacterFromArmy (character, regionId);
+        this.addCharacterToFreeUnits (character, regionId);
+      }
+    }
   }
 
   addCharacterToFreeUnits (characterId: WotrCharacterId, regionId: WotrRegionId) {

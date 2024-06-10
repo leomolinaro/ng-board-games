@@ -23,7 +23,7 @@ export class WotrBattleStore {
     return null;
   }
 
-  startBattle (region: WotrRegionId, retroguard: WotrArmy | null) { this.update ("startBattle", s => ({ region, retroguard })); }
+  startBattle (region: WotrRegionId, retroguard?: WotrArmy) { this.update ("startBattle", s => ({ region, retroguard })); }
   addAttackerCombatCard (card: WotrCardId) { this.update ("addAttackerCombatCard", s => ({ ...s!, attackerCombatCard: card })); }
   addDefenderCombatCard (card: WotrCardId) { this.update ("addDefenderCombatCard", s => ({ ...s!, defenderCombatCard: card })); }
   endBattle () { this.update ("endBattle", s => (null)); }

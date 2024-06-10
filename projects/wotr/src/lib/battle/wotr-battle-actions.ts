@@ -1,7 +1,7 @@
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
+import { frontOfNation } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrUnitComposer, composeArmy } from "../unit/wotr-unit-actions";
-import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit.models";
+import { WotrArmy, WotrLeaderUnits, WotrUnitComposer } from "../unit/wotr-unit.models";
 import { WotrCombatDie } from "./wotr-combat-die.models";
 
 export type WotrBattleAction =
@@ -11,8 +11,17 @@ export type WotrBattleAction =
   WotrBattleContinue | WotrBattleCease | WotrLeaderForfeit |
   WotrCombatCardChoose | WotrCombatCardChooseNot | WotrCombatRoll | WotrCombatReRoll;
 
-export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; army: WotrArmy }
-export function attack (fromRegion: WotrRegionId, toRegion: WotrRegionId, ...comp: WotrUnitComposer[]): WotrArmyAttack { return { type: "army-attack", fromRegion, toRegion, army: composeArmy (comp) }; }
+export interface WotrArmyAttack { type: "army-attack"; fromRegion: WotrRegionId; toRegion: WotrRegionId; retroguard?: WotrArmy }
+// eslint-disable-next-line @typescript-eslint/no-shadow
+export function attack (fromRegion: WotrRegionId, toRegion: WotrRegionId, retroguard?: WotrArmy): WotrArmyAttack { return { type: "army-attack", fromRegion, toRegion, retroguard }; }
+export function retroguard (...comp: WotrUnitComposer[]): WotrArmy { return composeArmy (comp); }
+
+function composeArmy (comp: WotrUnitComposer[]): WotrArmy {
+  const a: Omit<WotrArmy, "front"> = comp.reduce ((units, u) => u.addTo (units), { });
+  const front = a.regulars?.length ? frontOfNation (a.regulars[0].nation) : frontOfNation (a.elites![0].nation);
+  return { ...a, front };
+}
+
 export interface WotrLeaderForfeit { type: "leader-forfeit"; leaders: WotrLeaderUnits }
 export function forfeitLeadership (...comp: WotrUnitComposer[]): WotrLeaderForfeit { return { type: "leader-forfeit", leaders: composeLeaders (comp) }; }
 export interface WotrArmyRetreatIntoSiege { type: "army-retreat-into-siege"; region: WotrRegionId }

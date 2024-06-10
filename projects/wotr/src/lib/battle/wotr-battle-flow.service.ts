@@ -6,7 +6,6 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatCardsService } from "./wotr-combat-cards.service";
@@ -26,7 +25,7 @@ export class WotrBattleFlowService {
 
   async resolveBattle (action: WotrArmyAttack, attackerId: WotrFrontId) {
     this.logStore.logBattleResolution ();
-    const retroguard = this.getRetroguard ();
+    const retroguard = action.retroguard;
     this.battleStore.startBattle (action.toRegion, retroguard);
     const battle = new WotrBattle (
       action,
@@ -41,11 +40,6 @@ export class WotrBattleFlowService {
     );
     await battle.resolve ();
     this.battleStore.endBattle ();
-  }
-
-  private getRetroguard (): WotrArmy | null {
-    // TODO
-    return null;
   }
 
 }

@@ -4,7 +4,7 @@ import { WotrArmy } from "../unit/wotr-unit.models";
 
 export interface WotrBattle {
   region: WotrRegionId;
-  retroguard: WotrArmy | null;
+  retroguard?: WotrArmy;
   attackerCombatCard?: WotrCardId;
   defenderCombatCard?: WotrCardId;
 }
