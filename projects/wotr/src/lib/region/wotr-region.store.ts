@@ -1,6 +1,5 @@
 import { Injectable, Signal, computed, inject } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { isArray } from "projects/commons/utils/src/lib/types.util";
 import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -196,24 +195,24 @@ export class WotrRegionStore {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater (s.map[regionId]) } }));
   }
 
-  private updateArmy (actionName: string, regionId: WotrRegionId | [WotrRegionId, "underSiege"], updater: (a: WotrArmy | undefined) => (WotrArmy | undefined)) {
-    if (isArray (regionId)) {
-      this.updateRegion (actionName, regionId[0], region => {
-        const { underSiegeArmy, ...restRegion } = region;
-        const newArmy = updater (underSiegeArmy);
-        return newArmy ? { ...restRegion, underSiegeArmy: newArmy } : restRegion;
-      });
-      this.joinNazgulToArmy (regionId[0]);
-      this.joinCharactersToArmy (regionId[0]);
-    } else {
-      this.updateRegion (actionName, regionId, region => {
-        const { army, ...restRegion } = region;
-        const newArmy = updater (army);
-        return newArmy ? { ...restRegion, army: newArmy } : restRegion;
-      });
-      this.joinNazgulToArmy (regionId);
-      this.joinCharactersToArmy (regionId);
-    }
+  private updateArmy (actionName: string, regionId: WotrRegionId, updater: (a: WotrArmy | undefined) => (WotrArmy | undefined)) {
+    this.updateRegion (actionName, regionId, region => {
+      const { army, ...restRegion } = region;
+      const newArmy = updater (army);
+      return newArmy ? { ...restRegion, army: newArmy } : restRegion;
+    });
+    this.joinNazgulToArmy (regionId);
+    this.joinCharactersToArmy (regionId);
+  }
+
+  private updateArmyUnderSiege (actionName: string, regionId: WotrRegionId, updater: (a: WotrArmy | undefined) => (WotrArmy | undefined)) {
+    this.updateRegion (actionName, regionId, region => {
+      const { underSiegeArmy, ...restRegion } = region;
+      const newArmy = updater (underSiegeArmy);
+      return newArmy ? { ...restRegion, underSiegeArmy: newArmy } : restRegion;
+    });
+    this.joinNazgulToArmy (regionId);
+    this.joinCharactersToArmy (regionId);
   }
 
   private updateFreeUnits (actionName: string, regionId: WotrRegionId, updater: (a: WotrFreeUnits | undefined) => WotrFreeUnits) {
@@ -225,18 +224,6 @@ export class WotrRegionStore {
       ) { return restRegion; }
       return { ...restRegion, freeUnits: newFreeUnits };
     });
-  }
-
-  addRegularsToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addRegularsToArmy", regionId, army => this.armyUtil.addRegulars (quantity, nation, army));
-  }
-
-  removeRegularsFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeRegularsFromArmy", regionId, army => this.armyUtil.removeRegulars (quantity, nation, army));
-  }
-
-  addElitesToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addElitesToArmy", regionId, army => this.armyUtil.addElites (quantity, nation, army));
   }
 
   private joinNazgulToArmy (regionId: WotrRegionId) {
@@ -262,26 +249,23 @@ export class WotrRegionStore {
       }
     });
   }
-
-  removeElitesFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeElitesFromArmy", regionId, army => this.armyUtil.removeElites (quantity, nation, army));
-  }
-
-  addLeadersToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addLeadersToArmy", regionId, army => this.armyUtil.addLeaders (quantity, nation, army));
-  }
-
-  removeLeadersFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeLeadersFromArmy", regionId, army => this.armyUtil.removeLeaders (quantity, nation, army));
-  }
-
-  addNazgulToArmy (quantity: number, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("addNazgulToArmy", regionId, army => this.armyUtil.addNazgul (quantity, army));
-  }
-
-  removeNazgulFromArmy (quantity: number, regionId: WotrRegionId | [WotrRegionId, "underSiege"]) {
-    this.updateArmy ("removeNazgulFromArmy", regionId, army => this.armyUtil.removeNazgul (quantity, army));
-  }
+  addRegularsToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("addRegularsToArmy", regionId, army => this.armyUtil.addRegulars (quantity, nation, army)); }
+  removeRegularsFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("removeRegularsFromArmy", regionId, army => this.armyUtil.removeRegulars (quantity, nation, army)); }
+  addElitesToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("addElitesToArmy", regionId, army => this.armyUtil.addElites (quantity, nation, army)); }
+  removeElitesFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("removeElitesFromArmy", regionId, army => this.armyUtil.removeElites (quantity, nation, army)); }
+  addLeadersToArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("addLeadersToArmy", regionId, army => this.armyUtil.addLeaders (quantity, nation, army)); }
+  removeLeadersFromArmy (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmy ("removeLeadersFromArmy", regionId, army => this.armyUtil.removeLeaders (quantity, nation, army)); }
+  addNazgulToArmy (quantity: number, regionId: WotrRegionId) { this.updateArmy ("addNazgulToArmy", regionId, army => this.armyUtil.addNazgul (quantity, army)); }
+  removeNazgulFromArmy (quantity: number, regionId: WotrRegionId) { this.updateArmy ("removeNazgulFromArmy", regionId, army => this.armyUtil.removeNazgul (quantity, army)); }
+  
+  addRegularsToArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("addRegularsToArmyUnderSiege", regionId, army => this.armyUtil.addRegulars (quantity, nation, army)); }
+  removeRegularsFromArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("removeRegularsFromArmyUnderSiege", regionId, army => this.armyUtil.removeRegulars (quantity, nation, army)); }
+  addElitesToArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("addElitesToArmyUnderSiege", regionId, army => this.armyUtil.addElites (quantity, nation, army)); }
+  removeElitesFromArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("removeElitesFromArmyUnderSiege", regionId, army => this.armyUtil.removeElites (quantity, nation, army)); }
+  addLeadersToArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("addLeadersToArmyUnderSiege", regionId, army => this.armyUtil.addLeaders (quantity, nation, army)); }
+  removeLeadersFromArmyUnderSiege (quantity: number, nation: WotrNationId, regionId: WotrRegionId) { this.updateArmyUnderSiege ("removeLeadersFromArmyUnderSiege", regionId, army => this.armyUtil.removeLeaders (quantity, nation, army)); }
+  addNazgulToArmyUnderSiege (quantity: number, regionId: WotrRegionId) { this.updateArmyUnderSiege ("addNazgulToArmyUnderSiege", regionId, army => this.armyUtil.addNazgul (quantity, army)); }
+  removeNazgulFromArmyUnderSiege (quantity: number, regionId: WotrRegionId) { this.updateArmyUnderSiege ("removeNazgulFromArmyUnderSiege", regionId, army => this.armyUtil.removeNazgul (quantity, army)); }
 
   addNazgulToFreeUnits (quantity: number, regionId: WotrRegionId) {
     this.updateFreeUnits ("addNazgulToFreeUnits", regionId, freeUnits => {

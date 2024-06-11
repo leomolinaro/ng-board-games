@@ -1,11 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionApplierMap } from "../commons/wotr-action-applier";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtil } from "./wotr-army-util.service";
 import { WotrUnitAction } from "./wotr-unit-actions";
 
 @Injectable ()
@@ -13,8 +11,6 @@ export class WotrUnitActionsService {
 
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
-  private characterStore = inject (WotrCharacterStore);
-  private armyUtil = inject (WotrArmyUtil);
 
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
     return {
@@ -87,7 +83,7 @@ export class WotrUnitActionsService {
 
   private addRegularsToRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.addRegularsToArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.addRegularsToArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.addRegularsToArmy (quantity, nation, region.id);
     }
@@ -95,7 +91,7 @@ export class WotrUnitActionsService {
 
   private removeRegularsFromRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.removeRegularsFromArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.removeRegularsFromArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.removeRegularsFromArmy (quantity, nation, region.id);
     }
@@ -103,7 +99,7 @@ export class WotrUnitActionsService {
 
   private addElitesToRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.addElitesToArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.addElitesToArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.addElitesToArmy (quantity, nation, region.id);
     }
@@ -111,7 +107,7 @@ export class WotrUnitActionsService {
 
   private removeElitesFromRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.removeElitesFromArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.removeElitesFromArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.removeElitesFromArmy (quantity, nation, region.id);
     }
@@ -119,7 +115,7 @@ export class WotrUnitActionsService {
 
   private addLeadersToRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.addLeadersToArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.addLeadersToArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.addLeadersToArmy (quantity, nation, region.id);
     }
@@ -127,7 +123,7 @@ export class WotrUnitActionsService {
 
   private removeLeadersFromRegion (quantity: number, nation: WotrNationId, region: WotrRegion) {
     if (region.underSiegeArmy?.front === frontOfNation (nation)) {
-      this.regionStore.removeLeadersFromArmy (quantity, nation, [region.id, "underSiege"]);
+      this.regionStore.removeLeadersFromArmyUnderSiege (quantity, nation, region.id);
     } else {
       this.regionStore.removeLeadersFromArmy (quantity, nation, region.id);
     }
@@ -135,7 +131,7 @@ export class WotrUnitActionsService {
 
   private addNazgulToRegion (quantity: number, region: WotrRegion) {
     if (region.underSiegeArmy?.front === "shadow") {
-      this.regionStore.addNazgulToArmy (quantity, [region.id, "underSiege"]);
+      this.regionStore.addNazgulToArmyUnderSiege (quantity, region.id);
     } else if (region.army?.front === "shadow") {
       this.regionStore.addNazgulToArmy (quantity, region.id);
     } else {
@@ -145,7 +141,7 @@ export class WotrUnitActionsService {
 
   private removeNazgulFromRegion (quantity: number, region: WotrRegion) {
     if (region.underSiegeArmy?.front === "shadow") {
-      this.regionStore.removeNazgulFromArmy (quantity, [region.id, "underSiege"]);
+      this.regionStore.removeNazgulFromArmyUnderSiege (quantity, region.id);
     } else if (region.army?.front === "shadow") {
       this.regionStore.removeNazgulFromArmy (quantity, region.id);
     } else {
