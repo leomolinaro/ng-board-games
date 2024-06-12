@@ -6,7 +6,7 @@ import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils"
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
-import { WotrArmy } from "../unit/wotr-unit.models";
+import { WotrUnits } from "../unit/wotr-unit.models";
 import { WotrRegion } from "./wotr-region.models";
 
 export interface WotrRegionDialogData {
@@ -62,15 +62,17 @@ export class WotrRegionDialogComponent implements OnInit {
   protected unitNodes!: UnitNode[];
 
   ngOnInit () {
-    const army = this.data.region.army;
-    this.unitNodes = this.armyToUnitNodes (army);
+    const region = this.data.region;
+    this.unitNodes = this.unitsToUnitNodes (region.army);
+    this.unitNodes = this.unitNodes.concat (this.unitsToUnitNodes (region.underSiegeArmy));
+    this.unitNodes = this.unitNodes.concat (this.unitsToUnitNodes (region.freeUnits));
   }
 
-  private armyToUnitNodes (army: WotrArmy | undefined): UnitNode[] {
-    if (!army) { return []; }
+  private unitsToUnitNodes (units: WotrUnits | undefined): UnitNode[] {
+    if (!units) { return []; }
     const d = this.data;
     const unitNodes: UnitNode[] = [];
-    army.regulars?.forEach (armyUnit => {
+    units.regulars?.forEach (armyUnit => {
       const image = this.assets.getArmyUnitImage ("regular", armyUnit.nation);
       unitNodes.push ({
         id: armyUnit.nation + "_regular",
@@ -79,7 +81,7 @@ export class WotrRegionDialogComponent implements OnInit {
         ...this.scale (image)
       });
     });
-    army.elites?.forEach (armyUnit => {
+    units.elites?.forEach (armyUnit => {
       const image = this.assets.getArmyUnitImage ("elite", armyUnit.nation);
       unitNodes.push ({
         id: armyUnit.nation + "_elite",
@@ -88,7 +90,7 @@ export class WotrRegionDialogComponent implements OnInit {
         ...this.scale (image)
       });
     });
-    army.leaders?.forEach (leader => {
+    units.leaders?.forEach (leader => {
       const image = this.assets.getLeaderImage (leader.nation);
       unitNodes.push ({
         id: leader.nation + "_leader",
@@ -97,11 +99,11 @@ export class WotrRegionDialogComponent implements OnInit {
         ...this.scale (image)
       });
     });
-    if (army.nNazgul) {
+    if (units.nNazgul) {
       const image = this.assets.getNazgulImage ();
-      unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: army.nNazgul, ...this.scale (image) });
+      unitNodes.push ({ id: "nazgul", label: "Nazgul", quantity: units.nNazgul, ...this.scale (image) });
     }
-    army.characters?.forEach (character => {
+    units.characters?.forEach (character => {
       const image = this.assets.getCharacterImage (character);
       unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
     });

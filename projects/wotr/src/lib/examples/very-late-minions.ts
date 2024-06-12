@@ -367,7 +367,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().characterReaction ("gollum", corruptFellowship (1), revealFellowship ("morannon")),
   s ().huntStory (drawHuntTile ("er")),
   fp ().huntStory (corruptFellowship (1)),
-  s ().musterArmyDie (
+  s ().armyDie (
     moveArmy ("dol-amroth", "lamedon"),
     moveArmy ("north-rhun", "east-rhun")
   ),
@@ -376,8 +376,77 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (noCombatCard ()),
   fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
   fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmy ("iron-hills", "vale-of-the-carnen")),
-  s ().battleStory (moveArmy ("east-rhun", "iron-hills"))
-
+  s ().battleStory (moveArmy ("east-rhun", "iron-hills")),
+  fp ().pass (),
+  s ().musterArmyDie (attack ("iron-hills", "erebor")),
+  fp ().battleStory (retreatIntoSiege ("erebor")),
+  s ().battleStory (moveArmy ("iron-hills", "erebor")),
+  fp ().eventDieCard ("Bilbo's Song", healFellowship (2)),
+  s ().musterDie (playCharacter ("minas-morgul", "the-mouth-of-sauron")),
+  fp ().eventDieCard ("Mithril Coat and Sting", playCardOnTable ("Mithril Coat and Sting")),
+  s ().characterDie (
+    moveCharacters ("minas-morgul", "pelargir", "the-mouth-of-sauron"),
+    moveCharacters ("folde", "lorien", "the-witch-king"),
+    moveNazgul ("old-forest-road", "lorien"),
+    moveNazgul ("southern-rhovanion", "lorien"),
+    moveNazgul ("noman-lands", "erebor"),
+  ),
+  // Turn 9 56:34
+  fp (time).phaseStory (drawCards ("Smeagol Helps Nice Master", "A Power too Great")),
+  s ().phaseStory (
+    drawCards ("Cruel Weather", "Many Kings to the Service of Mordor"),
+    discardCards ("The Nazgul Strike", "Orcs Multiplying Again")
+  ),
+  s ().huntAllocation (1),
+  s (time).rollActionDice ("event", "muster", "eye", "army", "eye", "army", "character", "event", "muster-army"),
+  fp ().rollActionDice ("muster-army", "will-of-the-west", "character", "will-of-the-west"),
+  fp ().characterDie (hideFellowship ()),
+  s ().armyDie (attack ("lorien", "lorien")),
+  s ().battleStory (combatCard ("Cruel Weather")),
+  fp ().battleStory (combatCard ("Fear! Fire! Foes!")),
+  s ().cardReaction ("Cruel Weather", forfeitLeadership (nazgul (2))),
+  s (time).battleStory (rollCombatDice (6, 6, 1, 4, 6)),
+  fp ().battleStory (rollCombatDice (3, 1, 6, 4)),
+  s (time).battleStory (reRollCombatDice (3, 1)),
+  fp ().battleStory (reRollCombatDice (4)),
+  s ().battleStory (eliminateRegularUnit ("lorien", "isengard")),
+  fp ().battleStory (
+    eliminateEliteUnit ("lorien", "elves", 2),
+    recruitRegularUnit ("lorien", "elves", 2)
+  ),
+  s ().battleStory (
+    continueBattle ("lorien"),
+    eliminateEliteUnit ("lorien", "sauron"),
+    recruitRegularUnit ("lorien", "sauron")
+  ),
+  s ().characterReaction ("the-witch-king", drawCards ("On, On They Went")),
+  s ().battleStory (combatCard ("Musterings of Long-planned War")),
+  fp ().battleStory (noCombatCard ()),
+  s (time).battleStory (rollCombatDice (2, 6, 3, 1, 2)),
+  fp ().battleStory (rollCombatDice (4, 5, 2, 6)),
+  s (time).battleStory (reRollCombatDice (6, 2, 2, 3)),
+  fp ().battleStory (reRollCombatDice (4)),
+  s ().battleStory (
+    eliminateRegularUnit ("lorien", "isengard", 3),
+    eliminateRegularUnit ("lorien", "sauron")
+  ),
+  fp ().battleStory (eliminateEliteUnit ("lorien", "elves")),
+  s ().battleStory (
+    continueBattle ("lorien"),
+    eliminateEliteUnit ("lorien", "sauron"),
+    recruitRegularUnit ("lorien", "sauron")
+  ),
+  s ().battleStory (combatCard ("Many Kings to the Service of Mordor")),
+  fp ().battleStory (combatCard ("A Power too Great")),
+  s (time).battleStory (rollCombatDice (6, 3, 2, 4, 5)),
+  fp ().battleStory (rollCombatDice (6, 4, 1)),
+  s (time).battleStory (reRollCombatDice (2, 6, 3, 3)),
+  fp ().battleStory (reRollCombatDice (1)),
+  s ().battleStory (eliminateEliteUnit ("lorien", "sauron")),
+  fp ().battleStory (
+    eliminateRegularUnit ("lorien", "elves", 3),
+    eliminateLeader ("lorien", "elves")
+  )
 ];
 
 export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];

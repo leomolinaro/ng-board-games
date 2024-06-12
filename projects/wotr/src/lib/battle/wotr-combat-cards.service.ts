@@ -31,7 +31,9 @@ export class WotrCombatCardsService {
     "Brave Stand": async params => { throw new Error ("TODO"); },
     Charge: async params => { throw new Error ("TODO"); },
     Confusion: async params => { throw new Error ("TODO"); },
-    "Cruel as Death": async params => { throw new Error ("TODO"); },
+    "Cruel as Death": async params => {
+      const leaders = await this.storyService.forfeitLeadership (params.front);
+    },
     "Daring Defiance": async params => { throw new Error ("TODO"); },
     Daylight: async params => {
       params.shadow.maxNDice = 3;
@@ -43,23 +45,31 @@ export class WotrCombatCardsService {
       params.freePeoples.leaderModifiers.push (2);
     },
     "Delivery of Orthanc": async params => { throw new Error ("TODO"); },
-    "Desperate Battle": async params => { throw new Error ("TODO"); },
+    "Desperate Battle": async params => {
+      params.shadow.combatModifiers.push (1);
+      params.shadow.leaderModifiers.push (1);
+      params.freePeoples.combatModifiers.push (1);
+      params.freePeoples.leaderModifiers.push (1);
+    },
     "Dread and Despair": async params => {
       const leaders = await this.storyService.forfeitLeadership (params.front);
-      
     },
     "Durin's Bane": async params => { throw new Error ("TODO"); },
     "Ents' Rage": async params => { throw new Error ("TODO"); },
     "Fateful Strike": async params => { throw new Error ("TODO"); },
     "Foul Stench": async params => { throw new Error ("TODO"); },
-    "Great Host": async params => { throw new Error ("TODO"); },
+    "Great Host": async params => {
+      // TODO
+    },
     "Heroic Death": async params => { throw new Error ("TODO"); },
     "Huorn-dark": async params => { throw new Error ("TODO"); },
     "It is a Gift": async params => { throw new Error ("TODO"); },
     "Mighty Attack": async params => { throw new Error ("TODO"); },
     Mumakil: async params => { throw new Error ("TODO"); },
     "Nameless Wood": async params => { throw new Error ("TODO"); },
-    "No Quarter": async params => { throw new Error ("TODO"); },
+    "No Quarter": async params => {
+      // TODO
+    },
     "One for the Dark Lord": async params => { throw new Error ("TODO"); },
     Onslaught: async params => { throw new Error ("TODO"); },
     "Relentless Assault": async params => { throw new Error ("TODO"); },
@@ -69,7 +79,9 @@ export class WotrCombatCardsService {
       if (r) { params.combatRound.endBattle = true; }
     },
     "Servant of the Secret Fire": async params => { throw new Error ("TODO"); },
-    "Shield-Wall": async params => { throw new Error ("TODO"); },
+    "Shield-Wall": async params => {
+      // TODO
+    },
     "Sudden Strike": async params => { throw new Error ("TODO"); },
     "Swarm of Bats": async params => { throw new Error ("TODO"); },
     "They are Terrible": async params => { throw new Error ("TODO"); },

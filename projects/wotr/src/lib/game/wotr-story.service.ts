@@ -94,7 +94,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
       this.nReplayStories = 0;
       this.replayToLastStory = false;
     }
-    await new Promise (resolve => { setTimeout (resolve, 10); });
+    await new Promise (resolve => { setTimeout (resolve, 1); });
     this.nReplayStories--;
   }
 

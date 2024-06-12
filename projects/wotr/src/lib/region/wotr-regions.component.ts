@@ -107,14 +107,14 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
         }
         @if (regionNode.army) {
           <svg:svg style="overflow: visible;" [attr.x]="regionNode.army.svgX" [attr.y]="regionNode.army.svgY">
-            @for (armyUnit of regionNode.army.armyUnits; track $index; ) {
+            @for (armyUnit of regionNode.army.armyUnits; track $index) {
               <svg:image
                 [attr.width]="armyUnit.image.width" [attr.height]="armyUnit.image.height"
                 [attr.x]="armyUnit.svgX" [attr.y]="armyUnit.svgY"
                 transform="scale(0.8, 0.8)"
                 [attr.xlink:href]="armyUnit.image.source"/>
             }
-            @for (leaderUnit of regionNode.army.leaderUnits; track $index; ) {
+            @for (leaderUnit of regionNode.army.leaderUnits; track $index) {
               <svg:image
                 [attr.width]="leaderUnit.image.width" [attr.height]="leaderUnit.image.height"
                 [attr.x]="leaderUnit.svgX" [attr.y]="leaderUnit.svgY"
@@ -130,7 +130,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
         }
         @for (freeGroup of regionNode.freeGroups; track $index) {
           <svg:svg style="overflow: visible;" [attr.x]="freeGroup.svgX" [attr.y]="freeGroup.svgY">
-            @for (freeUnit of freeGroup.units; track $index; ) {
+            @for (freeUnit of freeGroup.units; track $index) {
               <svg:image
                 [attr.width]="freeUnit.image.width" [attr.height]="freeUnit.image.height"
                 [attr.x]="freeUnit.svgX" [attr.y]="freeUnit.svgY"
