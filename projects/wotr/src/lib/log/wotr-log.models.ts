@@ -22,6 +22,8 @@ export interface WotrLogStory {
 export interface WotrLogPhase { type: "phase"; phase: WotrPhase }
 export interface WotrLogBattleResolution { type: "battle-resolution" }
 export interface WotrLogHuntResolution { type: "hunt-resolution" }
+export interface WotrLogRevealInMordor { type: "reveal-in-mordor" }
+export interface WotrLogMoveInMordor { type: "move-in-mordor" }
 export interface WotrLogCombatCard { type: "combat-card"; card: WotrCardId; front: WotrFrontId; during: "battle" }
 
 export type WotrLog =
@@ -33,4 +35,6 @@ export type WotrLog =
 | WotrLogPhase
 | WotrLogBattleResolution
 | WotrLogHuntResolution
-| WotrLogCombatCard;
+| WotrLogCombatCard
+| WotrLogRevealInMordor
+| WotrLogMoveInMordor;

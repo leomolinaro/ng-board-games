@@ -2,6 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { WotrCard, WotrCardCombatLabel } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrArmyUtil } from "../unit/wotr-army-util.service";
 import { WotrCombatFront } from "./wotr-battle-flow.service";
 import { WotrCombatRound } from "./wotr-combat-round";
 
@@ -18,6 +20,8 @@ export interface WotrCombatCardParams {
 export class WotrCombatCardsService {
 
   private storyService = inject (WotrStoryService);
+  private regionStore = inject (WotrRegionStore);
+  private armyUtil = inject (WotrArmyUtil);
 
   async combatCardReaction (params: WotrCombatCardParams): Promise<void> {
     return this.combatCardEffects[params.card.combatLabel] (params);
@@ -59,7 +63,14 @@ export class WotrCombatCardsService {
     "Fateful Strike": async params => { throw new Error ("TODO"); },
     "Foul Stench": async params => { throw new Error ("TODO"); },
     "Great Host": async params => {
-      // TODO
+      const attackedArmy = params.combatRound.attackedArmy ();
+      const attackingArmy = params.combatRound.attackingArmy ();
+      const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits (attackedArmy) : 0;
+      const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits (attackingArmy) : 0;
+      if ((params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
+        (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)) {
+        await this.storyService.chooseCasualties ("free-peoples");
+      }
     },
     "Heroic Death": async params => { throw new Error ("TODO"); },
     "Huorn-dark": async params => { throw new Error ("TODO"); },
@@ -72,7 +83,11 @@ export class WotrCombatCardsService {
     },
     "One for the Dark Lord": async params => { throw new Error ("TODO"); },
     Onslaught: async params => { throw new Error ("TODO"); },
-    "Relentless Assault": async params => { throw new Error ("TODO"); },
+    "Relentless Assault": async params => {
+      const casualties = await this.storyService.chooseCasualties ("shadow");
+      const hits = casualties.reduce ((h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2), 0);
+      if (hits) { params.shadow.combatModifiers.push (hits); }
+    },
     Scouts: async params => {
       const r = await this.storyService.activateCombatCard (params.card.id, params.front);
       // eslint-disable-next-line require-atomic-updates
@@ -85,7 +100,9 @@ export class WotrCombatCardsService {
     "Sudden Strike": async params => { throw new Error ("TODO"); },
     "Swarm of Bats": async params => { throw new Error ("TODO"); },
     "They are Terrible": async params => { throw new Error ("TODO"); },
-    Valour: async params => { throw new Error ("TODO"); },
+    Valour: async params => {
+      params.freePeoples.combatModifiers.push (1);
+    },
     "We Come to Kill": async params => { throw new Error ("TODO"); },
     "Words of Power": async params => { throw new Error ("TODO"); },
   };

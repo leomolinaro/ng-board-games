@@ -70,7 +70,17 @@ export class WotrGameFlowService {
     if (!this.fellowshipStore.isRevealed ()) {
       await this.story.wantDeclareFellowship ("free-peoples");
     }
+    this.checkMoveToMordorTrack ();
     return true;
+  }
+
+  private checkMoveToMordorTrack () {
+    const fellowshipRegion = this.regionStore.getFellowshipRegion ();
+    if (fellowshipRegion === "morannon" || fellowshipRegion === "minas-morgul") {
+      this.fellowshipStore.moveOnMordorTrack ();
+      this.huntStore.moveDrawnEyeTilesToAvailable ();
+      this.huntStore.moveReadyTilesToAvailable ();
+    }
   }
 
   private async huntAllocation () {

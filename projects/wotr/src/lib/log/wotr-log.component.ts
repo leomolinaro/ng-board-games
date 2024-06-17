@@ -147,7 +147,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
           else { parsed.push (f); }
         }
         if ("card" in l.story) { parsed.push (this.string (", using "), this.card (cardToLabel (l.story.card))); }
-        if ("character" in l.story) { parsed.push (this.string (", using "), this.character (l.story.character), this.string ("'s ability")); }
+        if ("character" in l.story && l.story.character) { parsed.push (this.string (", using "), this.character (l.story.character), this.string ("'s ability")); }
         if ("die" in l.story) { parsed.push (this.string (" "), this.die (l.story.die, l.front)); }
         if ("token" in l.story) { parsed.push (this.string (" "), this.token (l.story.token, l.front)); }
         return parsed;
@@ -163,6 +163,8 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
         return [];
       }
       case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
+      case "reveal-in-mordor": return [this.string ("The fellowship is revealed on the Mordor Track")];
+      case "move-in-mordor": return [this.string ("The fellowship moves on the Mordor Track")];
       // default: throw new Error (`Log type ${l.type} not managed`);
     }
   });

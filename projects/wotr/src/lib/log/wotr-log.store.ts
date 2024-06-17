@@ -28,6 +28,8 @@ export class WotrLogStore {
   logPhase (phase: WotrPhase) { this.addLog ("logPhase", { type: "phase", phase: phase }); }
   logBattleResolution () { this.addLog ("logBattleResolution", { type: "battle-resolution" }); }
   logHuntResolution () { this.addLog ("logHuntResolution", { type: "hunt-resolution" }); }
+  logRevealInMordor () { this.addLog ("logRevealInMordor", { type: "reveal-in-mordor" }); }
+  logMoveInMordor () { this.addLog ("logMoveInMordor", { type: "move-in-mordor" }); }
   
   logCombatCard (card: WotrCardId, front: WotrFrontId) { this.addLog ("logCombatCard", { type: "combat-card", card, front, during: "battle" }); }
 

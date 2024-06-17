@@ -1,7 +1,7 @@
 import { Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../companion/wotr-character.models";
-import { WotrFellowship } from "./wotr-fellowhip.models";
+import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip.models";
 
 @Injectable ({
   providedIn: "root"
@@ -13,6 +13,7 @@ export class WotrFellowshipStore {
 
   isRevealed () { return this.state ().status === "revealed"; }
   guide () { return this.state ().guide; }
+  isOnMordorTrack () { return this.state ().mordorTrack != null; }
 
   init (): WotrFellowship {
     return {
@@ -36,6 +37,10 @@ export class WotrFellowshipStore {
       ...state,
       companions: immutableUtil.listRemoveFirst (c => c === companionId, state.companions)
     }));
+  }
+
+  moveOnMordorTrack () {
+    this.update ("moveOnMordorTrack", state => ({ ...state, mordorTrack: state.mordorTrack == null ? 0 : (state.mordorTrack + 1) as WotrMordorTrack }));
   }
 
 }

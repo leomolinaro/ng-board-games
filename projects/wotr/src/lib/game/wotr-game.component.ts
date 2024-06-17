@@ -24,6 +24,7 @@ import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.se
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
+import { WotrRegionActionsService } from "../region/wotr-region-actions.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrUnitActionsService } from "../unit/wotr-unit-actions.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
@@ -77,6 +78,7 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrFellowshipActionsService,
     WotrHuntActionsService,
     WotrPoliticalActionsService,
+    WotrRegionActionsService,
     WotrUnitActionsService,
     WotrGameActionsService,
 

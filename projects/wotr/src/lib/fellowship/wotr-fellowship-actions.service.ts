@@ -25,9 +25,14 @@ export class WotrFellowshipActionsService {
       "fellowship-guide": async (action, front) => { this.fellowhipStore.setGuide (action.companion); },
       "fellowship-hide": async (action, front) => { this.fellowhipStore.hide (); },
       "fellowship-progress": async (action, front) => {
-        this.fellowhipStore.increaseProgress ();
-        await this.huntFlow.resolveHunt ();
-        this.huntStore.addFellowshipDie ();
+        if (this.fellowhipStore.isOnMordorTrack ()) {
+          await this.huntFlow.resolveHunt ();
+          this.huntStore.addFellowshipDie ();
+        } else {
+          this.fellowhipStore.increaseProgress ();
+          await this.huntFlow.resolveHunt ();
+          this.huntStore.addFellowshipDie ();
+        }
       },
       "fellowship-reveal": async (action, front) => {
         this.regionStore.moveFellowshipToRegion (action.region);

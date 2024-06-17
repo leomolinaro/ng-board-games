@@ -6,6 +6,7 @@ import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrRegionChoose } from "../region/wotr-region-actions";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card.models";
 
 export interface WotrCardParams {
@@ -26,6 +27,11 @@ export class WotrCardEffectsService {
   private huntFlow = inject (WotrHuntFlowService);
 
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
+    "Dreadful Spells": async params => {
+      this.storyService.findAction<WotrRegionChoose> (params.story, "region-choose");
+      await this.storyService.rollCombatDice ("shadow");
+      await this.storyService.chooseCasualties ("free-peoples");
+    },
     "Isildur's Bane": async params => {
       const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
       this.huntFlow.resolveHuntTile (action.tile, {

@@ -6,7 +6,7 @@ import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrHuntTileId } from "./wotr-hunt.models";
+import { WotrHuntTile, WotrHuntTileId } from "./wotr-hunt.models";
 import { WotrHuntStore } from "./wotr-hunt.store";
 
 interface WotrHuntTileResolutionOptions {
@@ -26,6 +26,14 @@ export class WotrHuntFlowService {
   private fellowshipStore = inject (WotrFellowshipStore);
 
   async resolveHunt () {
+    if (this.fellowshipStore.isOnMordorTrack ()) {
+      await this.resolveHuntOnMordorTrack ();
+    } else {
+      await this.resolveStandardHunt ();
+    }
+  }
+
+  private async resolveStandardHunt () {
     if (!this.huntStore.hasHuntDice ()) { return; }
     this.logStore.logHuntResolution ();
     const huntRoll = await this.storyService.rollHuntDice ("shadow");
@@ -43,10 +51,23 @@ export class WotrHuntFlowService {
     });
   }
 
-  async resolveHuntTile (huntTileId: WotrHuntTileId, options: WotrHuntTileResolutionOptions) {
+  private async resolveHuntOnMordorTrack () {
+    this.logStore.logHuntResolution ();
+    const nSuccesses = this.huntStore.getNTotalDice ();
+    const huntTileId = await this.storyService.drawHuntTile ("shadow");
+    const huntTile = await this.resolveHuntTile (huntTileId, {
+      nSuccesses
+    });
+    if (!huntTile.stop) {
+      this.logStore.logMoveInMordor ();
+      this.fellowshipStore.moveOnMordorTrack ();
+    }
+  }
+
+  async resolveHuntTile (huntTileId: WotrHuntTileId, options: WotrHuntTileResolutionOptions): Promise<WotrHuntTile> {
     const huntTile = this.huntStore.huntTile (huntTileId);
-    if (options.ignoreEyeTile && huntTile.eye) { return; }
-    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special") { return; }
+    if (options.ignoreEyeTile && huntTile.eye) { return huntTile; }
+    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special") { return huntTile; }
     let damage = huntTile.eye ? options.nSuccesses! : huntTile.quantity!;
 
     const wasRevealed = this.fellowshipStore.isRevealed ();
@@ -58,22 +79,28 @@ export class WotrHuntFlowService {
       }
     }
 
-    let isRelealing = doReveal;
+    let isRevealing = doReveal;
     while (damage > 0) {
       const { absorbedDamage, gollumRevealing } = await this.absorbHuntDamage ();
       damage -= absorbedDamage;
-      if (gollumRevealing && !wasRevealed) { isRelealing = true; }
+      if (gollumRevealing && !wasRevealed) { isRevealing = true; }
     }
 
-    if (isRelealing) {
-      const fromRegion = this.regionStore.getFellowshipRegion ();
-      if (doReveal) { await this.storyService.revealFellowship ("free-peoples"); }
-      const toRegion = this.regionStore.getFellowshipRegion ();
-      if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
-        const newHuntTileId = await this.storyService.drawHuntTile ("shadow");
-        this.resolveHuntTile (newHuntTileId, options);
+    if (isRevealing) {
+      if (this.fellowshipStore.isOnMordorTrack ()) {
+        this.logStore.logRevealInMordor ();
+        this.fellowshipStore.reveal ();
+      } else {
+        const fromRegion = this.regionStore.getFellowshipRegion ();
+        if (doReveal) { await this.storyService.revealFellowship ("free-peoples"); }
+        const toRegion = this.regionStore.getFellowshipRegion ();
+        if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
+          const newHuntTileId = await this.storyService.drawHuntTile ("shadow");
+          this.resolveHuntTile (newHuntTileId, options);
+        }
       }
     }
+    return huntTile;
   }
 
   private revealedThroughShadowStronghold (fromRegionId: WotrRegionId, toRegionId: WotrRegionId) {

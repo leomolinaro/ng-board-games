@@ -6,6 +6,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrArmyUtil } from "../unit/wotr-army-util.service";
 import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrCombatFront } from "./wotr-battle-flow.service";
@@ -27,6 +28,7 @@ export class WotrCombatRound {
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
+    private armyUtil: WotrArmyUtil,
   ) {
     this.attacker = new WotrCombatFront (attackerId, true);
     this.defender = new WotrCombatFront (defenderId, false);
@@ -37,28 +39,36 @@ export class WotrCombatRound {
       this.shadow = this.defender;
       this.freePeoples = this.attacker;
     }
+    this.siegeBattle = !!this.attackedRegion ().underSiegeArmy;
   }
 
   attacker: WotrCombatFront;
   defender: WotrCombatFront;
   shadow: WotrCombatFront;
   freePeoples: WotrCombatFront;
+  siegeBattle: boolean;
 
   endBattle = false;
 
   private attackingRegion () { return this.regionStore.region (this.action.fromRegion); }
-  private attackingArmy () { return this.attackingRegion ().army!; }
-  private attackedArmy () {
+  attackingArmy () {
+    if (this.action.retroguard) {
+      return this.armyUtil.splitUnits (this.attackingRegion ().army, this.action.retroguard)!;
+    } else {
+      return this.attackingRegion ().army!;
+    }
+  }
+  attackedArmy () {
     const attackedRegion = this.attackedRegion ();
-    return attackedRegion.underSiegeArmy || attackedRegion.army!;
+    return this.siegeBattle ? attackedRegion.underSiegeArmy : attackedRegion.army;
   }
   private attackedRegion () { return this.regionStore.region (this.action.toRegion); }
   private battle () { return this.battleStore.battle ()!; }
 
   async resolve (): Promise<boolean> {
-    const attackedRegion = this.attackedRegion ();
+    let attackedRegion = this.attackedRegion ();
     const hasStronghold = attackedRegion.settlement === "stronghold";
-    if (hasStronghold && !attackedRegion.underSiegeArmy) {
+    if (hasStronghold && !this.siegeBattle) {
       const retreatIntoSiege = await this.storyService.wantRetreatIntoSiege (this.defender.id);
       if (retreatIntoSiege) {
         await this.storyService.battleAdvance (this.attacker.id); // TODO controllare se avanza
@@ -87,7 +97,8 @@ export class WotrCombatRound {
       attackerWon = true;
     } else {
       const wantContinueBattle = await this.storyService.wantContinueBattle (this.attacker.id);
-      if (wantContinueBattle && !attackedRegion.underSiegeArmy) { // TODO && defender can retreat
+      attackedRegion = this.attackedRegion ();
+      if (wantContinueBattle && !this.siegeBattle) { // TODO && defender can retreat
         const wantRetreat = await this.storyService.wantRetreat (this.defender.id);
         if (wantRetreat) {
           attackerWon = true;
@@ -216,7 +227,8 @@ export class WotrCombatRound {
     }
   }
 
-  private getUnitsHitPoints (army: WotrArmy) {
+  private getUnitsHitPoints (army: WotrArmy | undefined) {
+    if (!army) { return 0; }
     let damagePoints = 0;
     damagePoints += army.regulars?.reduce ((d, r) => d + r.quantity, 0) || 0;
     damagePoints += army.elites?.reduce ((d, r) => d + r.quantity * 2, 0) || 0;
@@ -234,7 +246,8 @@ export class WotrCombatRound {
     }
   }
 
-  private getArmyLeadership (army: WotrArmy) {
+  private getArmyLeadership (army: WotrArmy | undefined) {
+    if (!army) { return 0; }
     let leadership = 0;
     if (army.elites) { leadership += this.getEliteUnitsLeadership (army.elites); }
     if (army.leaders) { leadership += this.getLeadersLeadership (army.leaders); }

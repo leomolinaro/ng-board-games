@@ -18,6 +18,7 @@ import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerService } from "../player/wotr-player.service";
+import { WotrEliteUnitElimination, WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
 import { WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteService } from "./wotr-remote.service";
@@ -382,8 +383,13 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     };
   }
 
-  async chooseCasualties (front: WotrFrontId): Promise<WotrStory> {
-    return this.story (front, p => p.chooseCasualties! ());
+  async chooseCasualties (front: WotrFrontId): Promise<(WotrRegularUnitElimination | WotrEliteUnitElimination)[]> {
+    const story = await this.story (front, p => p.chooseCasualties! ());
+    const actions = this.filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination> (
+      story,
+      "regular-unit-elimination", "elite-unit-elimination"
+    );
+    return actions;
   }
 
   async battleAdvance (front: WotrFrontId): Promise<WotrStory> {

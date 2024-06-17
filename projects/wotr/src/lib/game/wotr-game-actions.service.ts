@@ -6,6 +6,7 @@ import { WotrCharacterActionsService } from "../companion/wotr-character-actions
 import { WotrFellowshipActionsService } from "../fellowship/wotr-fellowship-actions.service";
 import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
 import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.service";
+import { WotrRegionActionsService } from "../region/wotr-region-actions.service";
 import { WotrUnitActionsService } from "../unit/wotr-unit-actions.service";
 import { WotrStoryService } from "./wotr-story.service";
 
@@ -22,6 +23,7 @@ export class WotrGameActionsService {
   private armyActions = inject (WotrUnitActionsService);
   private politicalActions = inject (WotrPoliticalActionsService);
   private battleActions = inject (WotrBattleActionsService);
+  private regionActions = inject (WotrRegionActionsService);
 
   registerActions () {
     this.storyService.registerActions ({
@@ -33,6 +35,7 @@ export class WotrGameActionsService {
       ...this.armyActions.getActionAppliers (),
       ...this.politicalActions.getActionAppliers (),
       ...this.battleActions.getActionAppliers (),
+      ...this.regionActions.getActionAppliers (),
     } as any);
   }
 

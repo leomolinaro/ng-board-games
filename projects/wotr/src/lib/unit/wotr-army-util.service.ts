@@ -114,6 +114,13 @@ export class WotrArmyUtil {
     return false;
   }
 
+  getNArmyUnits (units: WotrUnits) {
+    let n = 0;
+    if (units.regulars?.length) { n += units.regulars.reduce ((count, u) => count + u.quantity, 0); }
+    if (units.elites?.length) { n += units.elites.reduce ((count, u) => count + u.quantity, 0); }
+    return n;
+  }
+
   unitsToArmy (units: WotrUnits): WotrArmy {
     return {
       front: units.regulars?.length ? frontOfNation (units.regulars[0].nation) : frontOfNation (units.elites![0].nation),

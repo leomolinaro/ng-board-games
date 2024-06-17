@@ -11,6 +11,7 @@ import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hide
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-political-actions";
+import { targetRegion } from "../region/wotr-region-actions";
 import { eliminateEliteUnit, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmy, moveNazgul, recruitEliteUnit, recruitRegularUnit } from "../unit/wotr-unit-actions";
 import { character, elite, nazgul, regular } from "../unit/wotr-unit.models";
 
@@ -446,7 +447,71 @@ export const stories: WotrStoryDoc[] = [
   fp ().battleStory (
     eliminateRegularUnit ("lorien", "elves", 3),
     eliminateLeader ("lorien", "elves")
-  )
+  ),
+  fp ().willOfTheWestDie (moveFelloswhip ()),
+  s ().huntStory (drawHuntTile ("er")),
+  fp ().huntStory (corruptFellowship (3)),
+  s ().characterDie (
+    moveNazgul ("lorien", "erebor", 3),
+    moveCharacters ("lorien", "erebor", "the-witch-king"),
+    moveCharacters ("pelargir", "lamedon", "the-mouth-of-sauron")
+  ),
+  fp ().pass (),
+  s ().eventDieCard ("Dreadful Spells", targetRegion ("erebor")),
+  s ().cardReaction ("Dreadful Spells", rollCombatDice (5, 2, 6, 3, 3)),
+  fp ().cardReaction ("Dreadful Spells",
+    eliminateEliteUnit ("erebor", "dwarves", 2),
+    recruitRegularUnit ("erebor", "dwarves", 2)
+  ),
+  fp ().willOfTheWestDie (hideFellowship ()),
+  s ().eventDieCard ("On, On They Went", addHuntTile ("r3s")),
+  fp ().pass (),
+  s ().armyDie (attack ("lamedon", "pelargir")),
+  s ().battleStory (noCombatCard ()),
+  fp ().battleStory (noCombatCard ()),
+  s (time).battleStory (rollCombatDice (4, 1, 4, 3, 1)),
+  fp ().battleStory (rollCombatDice (3)),
+  s ().battleStory (reRollCombatDice (3)),
+  s ().battleStory (continueBattle ("pelargir")),
+  fp ().battleStory (retreat ("pelargir", "lossarnach")),
+  s ().battleStory (moveArmy ("lamedon", "pelargir")),
+  fp ().pass (),
+  s ().musterAbilityDie ("the-mouth-of-sauron",
+    moveArmy ("dale", "erebor", leftUnits (regular ("sauron", 7))),
+    moveArmy ("minas-morgul", "south-ithilien")
+  ),
+  fp ().musterArmyElvenRingDie ("nenya", moveFelloswhip ()),
+  s ().huntStory (drawHuntTile ("b0")),
+  s ().musterArmyDie (attack ("erebor", "erebor")),
+  s ().battleStory (combatCard ("A New Power is Rising")),
+  fp ().battleStory (combatCard ("Thranduil's Archers")),
+  s (time).battleStory (rollCombatDice (3, 2, 5, 3, 4)),
+  fp ().battleStory (rollCombatDice (6, 6, 6, 3, 2)),
+  s (time).battleStory (reRollCombatDice (3, 3, 6, 5, 6)),
+  fp ().battleStory (reRollCombatDice (2, 2)),
+  s ().battleStory (
+    eliminateRegularUnit ("erebor", "southrons"),
+    eliminateEliteUnit ("erebor", "sauron")
+  ),
+  fp ().battleStory (eliminateEliteUnit ("erebor", "north")),
+  fp ().cardReaction ("A New Power is Rising", eliminateRegularUnit ("erebor", "north")),
+  s ().battleStory (
+    continueBattle ("erebor"),
+    eliminateEliteUnit ("erebor", "southrons"),
+    recruitRegularUnit ("erebor", "southrons")
+  ),
+  s ().characterReaction ("the-witch-king", drawCards ("The King is Revealed")),
+  s ().battleStory (combatCard ("The King is Revealed")),
+  fp ().battleStory (noCombatCard ()),
+  s ().combatCardReaction ("The King is Revealed", eliminateRegularUnit ("erebor", "southrons", 2)),
+  s (time).battleStory (rollCombatDice (5, 2, 1, 5, 5)),
+  // end not in the video
+  fp ().battleStory (rollCombatDice (1, 1, 1)),
+  fp ().battleStory (reRollCombatDice (1, 1)),
+  fp ().battleStory (
+    eliminateRegularUnit ("erebor", "dwarves", 3),
+    eliminateLeader ("erebor", "dwarves"),
+    eliminateLeader ("erebor", "north"))
 ];
 
 export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];

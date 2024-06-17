@@ -10,7 +10,7 @@ export class WotrActionDieLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrActionDieAction> {
     return {
-      "action-dice-discard": (action, front, f) => [f.player (front), ` discards ${this.dice (action.dice)}`],
+      "action-dice-discard": (action, front, f) => [f.player (front), " discards ", f.player (action.front), ` ${this.dice (action.dice)}`],
       "action-roll": (action, front, f) => [f.player (front), ` rolls ${this.dice (action.dice)}`],
       "action-die-skip": (action, front, f) => [f.player (front), ` skips ${this.dice ([action.die])}`],
     };

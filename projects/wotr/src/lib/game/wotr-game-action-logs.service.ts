@@ -8,6 +8,7 @@ import { WotrFellowshipLogsService } from "../fellowship/wotr-fellowship-logs.se
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntLogsService } from "../hunt/wotr-hunt-logs.service";
 import { WotrPoliticalLogsService } from "../nation/wotr-political-logs.service";
+import { WotrRegionLogsService } from "../region/wotr-region-logs.service";
 import { WotrUnitLogsService } from "../unit/wotr-units-logs.service";
 import { WotrAction } from "./wotr-story.models";
 
@@ -25,6 +26,7 @@ export class WotrGameActionLogsService {
     ...inject (WotrUnitLogsService).getActionLoggers (),
     ...inject (WotrPoliticalLogsService).getActionLoggers (),
     ...inject (WotrBattleLogsService).getActionLoggers (),
+    ...inject (WotrRegionLogsService).getActionLoggers (),
   } as any;
 
   getLogFragments<F> (action: WotrAction, front: WotrFrontId, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {

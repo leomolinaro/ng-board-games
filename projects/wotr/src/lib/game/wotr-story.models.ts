@@ -11,12 +11,13 @@ import { WotrFellowshipAction } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntAction } from "../hunt/wotr-hunt-actions";
 import { WotrPoliticalAction } from "../nation/wotr-political-actions";
+import { WotrRegionAction } from "../region/wotr-region-actions";
 import { WotrUnitAction } from "../unit/wotr-unit-actions";
 
 export interface WotrPhaseStory { type: "phase"; actions: WotrAction[] }
 export interface WotrBattleStory { type: "battle"; actions: WotrAction[] }
 export interface WotrHuntStory { type: "hunt"; actions: WotrAction[] }
-export interface WotrDieStory { type: "die"; die: WotrActionDie; elvenRing?: WotrElvenRing; actions: WotrAction[] }
+export interface WotrDieStory { type: "die"; die: WotrActionDie; elvenRing?: WotrElvenRing; character?: WotrCharacterId; actions: WotrAction[] }
 export interface WotrDieCardStory { type: "die-card"; die: WotrActionDie; elvenRing?: WotrElvenRing; card: WotrCardId; actions: WotrAction[] }
 export interface WotrPassStory { type: "die-pass" }
 export interface WotrTokenStory { type: "token"; token: WotrActionToken; actions: WotrAction[] }
@@ -48,7 +49,8 @@ export type WotrAction =
   WotrCharacterAction |
   WotrUnitAction |
   WotrPoliticalAction |
-  WotrBattleAction;
+  WotrBattleAction |
+  WotrRegionAction;
 
 export class WotrFrontStoryComposer {
   constructor (private front: WotrFrontId, private time: number) { }
@@ -74,6 +76,9 @@ export class WotrFrontStoryComposer {
   musterArmyElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("muster-army", elvenRing, ...actions); }
   armyElvenRingDie (elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionElvenRingDie ("army", elvenRing, ...actions); }
   protected actionElvenRingDie (die: WotrActionDie, elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, elvenRing, actions, ...this.story () }; }
+  
+  musterAbilityDie (character: WotrCharacterId, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionAbilityDie ("muster", character, ...actions); }
+  protected actionAbilityDie (die: WotrActionDie, character: WotrCharacterId, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, character, actions, ...this.story () }; }
 
   eventDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("event", card, ...actions); }
   characterDieCard (card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("character", card, ...actions); }

@@ -6,6 +6,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrArmyUtil } from "../unit/wotr-army-util.service";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatCardsService } from "./wotr-combat-cards.service";
@@ -22,6 +23,7 @@ export class WotrBattleFlowService {
   logStore = inject (WotrLogStore);
   regionStore = inject (WotrRegionStore);
   storyService = inject (WotrStoryService);
+  armyUtil = inject (WotrArmyUtil);
 
   async resolveBattle (action: WotrArmyAttack, attackerId: WotrFrontId) {
     this.logStore.logBattleResolution ();
@@ -37,6 +39,7 @@ export class WotrBattleFlowService {
       this.logStore,
       this.regionStore,
       this.storyService,
+      this.armyUtil
     );
     await battle.resolve ();
     this.battleStore.endBattle ();
@@ -56,6 +59,7 @@ export class WotrBattle {
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
+    private armyUtil: WotrArmyUtil,
   ) {
     this.defenderId = oppositeFront (attackerId);
   }
@@ -78,6 +82,7 @@ export class WotrBattle {
         this.logStore,
         this.regionStore,
         this.storyService,
+        this.armyUtil
       );
       continueBattle = await combatRound.resolve ();
       round++;

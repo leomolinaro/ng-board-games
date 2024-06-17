@@ -23,6 +23,7 @@ export class WotrHuntStore {
 
   huntTile (huntTileId: WotrHuntTileId): WotrHuntTile { return this.state ().map[huntTileId]; }
   hasHuntDice (): boolean { return !!this.state ().nHuntDice; }
+  getNTotalDice (): number { return this.state ().nHuntDice + this.state ().nFreePeopleDice; }
 
   init (): WotrHuntState {
     return {
@@ -89,12 +90,36 @@ export class WotrHuntStore {
     }));
   }
 
-  prepareHuntTile (tile: WotrHuntTileId): void {
-    this.update ("prepareHuntTile", state => ({
+  moveAvailableTileToReady (tile: WotrHuntTileId): void {
+    this.update ("moveAvailableTileToReady", state => ({
       ...state,
       huntReady: immutableUtil.listPush ([tile], state.huntReady),
       huntAvailable: immutableUtil.listRemoveFirst (h => h === tile, state.huntAvailable),
     }));
+  }
+
+  moveAvailableTileToPool (tile: WotrHuntTileId): void {
+    this.update ("moveAvailableTileToPool", state => ({
+      ...state,
+      huntReady: immutableUtil.listPush ([tile], state.huntReady),
+      huntPool: immutableUtil.listRemoveFirst (h => h === tile, state.huntPool),
+    }));
+  }
+
+  moveDrawnEyeTilesToAvailable () {
+    this.update ("moveDrawnEyeTilesToAvailable", state => {
+      const eyeTiles = state.huntDrawn.filter (t => !!state.map[t].eye);
+      const newHuntDrawn = immutableUtil.listRemoveAll (t => !!state.map[t].eye, state.huntDrawn);
+      const newHuntPool = immutableUtil.listPush (eyeTiles, state.huntPool);
+      return { ...state, huntDrawn: newHuntDrawn, huntPool: newHuntPool };
+    });
+  }
+
+  moveReadyTilesToAvailable () {
+    this.update ("moveReadyTilesToAvailable", state => {
+      const newHuntPool = immutableUtil.listPush (state.huntAvailable, state.huntPool);
+      return { ...state, huntAvailable: [], huntPool: newHuntPool };
+    });
   }
 
 }
