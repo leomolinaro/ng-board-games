@@ -19,7 +19,6 @@ node_modules
 .angular
 .nx
 .vscode
-package-lock.json
 
 # profiling files
 chrome-profiler-events*.json
