@@ -3,10 +3,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, Signal, compu
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId, WotrCompanionId, WotrMinionId } from "../companion/wotr-character.models";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
-import { WotrMapPoint, WotrMapService } from "../game/board/map/wotr-map.service";
-import { WotrArmyUnitType, WotrFreeUnitType, WotrNationId } from "../nation/wotr-nation.models";
-import { WotrArmy, WotrFreeUnits } from "../unit/wotr-unit.models";
+import { WotrMapService } from "../game/board/map/wotr-map.service";
+import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation.models";
+import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrRegion, WotrRegionId } from "./wotr-region.models";
 
 interface WotrRegionNode {
@@ -14,8 +13,7 @@ interface WotrRegionNode {
   region: WotrRegion;
   path: string;
   tooltip: string;
-  army: WotrArmyNode | null;
-  freeGroups: WotrFreeGroupNode[];
+  army: WotrArmyNode;
 }
 
 interface WotrArmyNode {
@@ -51,49 +49,34 @@ interface WotrLeaderUnitNode {
   svgY: number;
 }
 
-interface WotrFreeGroupNode {
-  units: WotrFellowshipNode[] | WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
-  nUnits: number;
-  svgX: number;
-  svgY: number;
-}
-
-interface WotrFellowshipNode {
-  unitType: Extract<WotrFreeUnitType, "fellowship">;
-  image: WotrUnitImage;
-  svgX: number;
-  svgY: number;
-}
-
-interface WotrFreePeopleFreeUnitNode {
-  unitType: Extract<WotrFreeUnitType, "companion">;
-  character: WotrCharacterId;
-  image: WotrUnitImage;
-  svgX: number;
-  svgY: number;
-}
-
-interface WotrShadowFreeUnitNode {
-  unitType: Extract<WotrFreeUnitType, "minion" | "nazgul">;
-  character: WotrCharacterId | null;
-  image: WotrUnitImage;
-  svgX: number;
-  svgY: number;
-}
-
-const GRID_STEP = 10;
-
 const SORTED_COMPANIONS: WotrCompanionId[] = ["aragorn", "gandalf-the-white", "gandalf-the-grey", "strider", "legolas", "gimli", "boromir", "meriadoc", "peregrin"];
 const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-of-sauron"];
 
+const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
+  erebor: [0, 0],
+  "grey-havens": [1, 0],
+  rivendell: [2, 0],
+  "woodland-realm": [3, 0],
+  lorien: [4, 0],
+  "helms-deep": [5, 0],
+  "minas-tirith": [6, 0],
+  "dol-amroth": [7, 0],
+  "mount-gundabad": [0, 1],
+  moria: [1, 1],
+  "dol-guldur": [2, 1],
+  orthanc: [3, 1],
+  morannon: [4, 1],
+  "barad-dur": [5, 1],
+  "minas-morgul": [6, 1],
+  umbar: [7, 1]
+};
+
 @Component ({
-  selector: "[wotrRegion]",
+  selector: "[wotrStronghold]",
   standalone: true,
   imports: [MatTooltipModule, NgClass],
   template: `
     <svg:g>
-      <!-- [matTooltip]="regionNode.tooltip"
-      matTooltipClass="wotr-map-tooltip" -->
       @if (regionNode ().army!; as army) {
         <svg:svg style="overflow: visible;" [attr.x]="army.svgX" [attr.y]="army.svgY">
           @for (armyUnit of army.armyUnits; track $index) {
@@ -115,17 +98,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
             transform="scale(0.8, 0.8)">
             {{army.counters.nRegulars}}/{{army.counters.nElites}}/{{army.counters.leadership}}
           </svg:text>
-        </svg:svg>
-      }
-      @for (freeGroup of regionNode ().freeGroups; track $index) {
-        <svg:svg style="overflow: visible;" [attr.x]="freeGroup.svgX" [attr.y]="freeGroup.svgY">
-          @for (freeUnit of freeGroup.units; track $index) {
-            <svg:image
-              [attr.width]="freeUnit.image.width" [attr.height]="freeUnit.image.height"
-              [attr.x]="freeUnit.svgX" [attr.y]="freeUnit.svgY"
-              transform="scale(0.8, 0.8)"
-              [attr.xlink:href]="freeUnit.image.source"/>
-          }
         </svg:svg>
       }
       <svg:path
@@ -202,13 +174,12 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WotrRegionComponent {
+export class WotrStrongholdComponent {
 
   private mapService = inject (WotrMapService);
   private assets = inject (WotrAssetsService);
 
   region = input.required<WotrRegion> ();
-  fellowship = input.required<WotrFellowship | null> ();
   // @Input () validRegions: WotrRegionId[] | null = null;
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
 
@@ -220,14 +191,12 @@ export class WotrRegionComponent {
 
   regionNode: Signal<WotrRegionNode> = computed (() => {
     const region = this.region ();
-    const fellowhip = this.fellowship ();
-    const path = this.mapService.getRegionPath (region.id);
+    const path = this.mapService.getStrongholdPath (region.id)!;
     const node: WotrRegionNode = {
       id: region.id,
       region,
       path,
       army: this.regionToArmyNode (region),
-      freeGroups: this.regionToFreeGroups (region, fellowhip),
       tooltip: region.name
     };
     this.setNodeCoordinates (region.id, node);
@@ -235,13 +204,10 @@ export class WotrRegionComponent {
   });
 
   private setNodeCoordinates (regionId: WotrRegionId, node: WotrRegionNode) {
-    const nGroups = (node.army ? 1 : 0) + node.freeGroups.length;
-    let index = 0;
     const army = node.army;
     if (army) {
-      const point = this.getGroupNodePoint (index++, nGroups, regionId);
-      army.svgX = point.x * GRID_STEP;
-      army.svgY = point.y * GRID_STEP;
+      army.svgX = STRONGHOLD[regionId]![1] * 54 + 26;
+      army.svgY = STRONGHOLD[regionId]![0] * 54 + 155;
 
       let totalWidth = 0;
       let maxHeight = 0;
@@ -270,29 +236,12 @@ export class WotrRegionComponent {
         currY += 3;
       }
     }
-    for (const freeGroup of node.freeGroups) {
-      const point = this.getGroupNodePoint (index++, nGroups, regionId);
-      freeGroup.svgX = point.x * GRID_STEP;
-      freeGroup.svgY = point.y * GRID_STEP;
-      let currX = 0;
-      let currY = 0;
-      for (const freeUnit of freeGroup.units) {
-        freeUnit.svgX = currX;
-        freeUnit.svgY = currY - freeUnit.image.height;
-        currX -= 3;
-        currY += 3;
-      }
-      // freeGroup.svgX = point.x * GRID_STEP - 8;
-      // freeGroup.svgY = point.y * GRID_STEP - 8;
-    }
   }
 
-  private regionToArmyNode (region: WotrRegion): WotrArmyNode | null {
-    if (!region.army) { return null; }
+  private regionToArmyNode (region: WotrRegion): WotrArmyNode {
+    const armyFront = region.underSiegeArmy!.front;
 
-    const armyFront = region.army.front;
-
-    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region.army);
+    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes (region.underSiegeArmy!);
 
     let leaderUnits: WotrLeaderUnitNode[];
     let leadership: number;
@@ -398,65 +347,6 @@ export class WotrRegionComponent {
     return [unitNodes, leadership];
   }
 
-  private regionToFreeGroups (region: WotrRegion, fellowhip: WotrFellowship | null): WotrFreeGroupNode[] {
-    const freeGroups: WotrFreeGroupNode[] = [];
-
-    if (region.fellowship && fellowhip) {
-      freeGroups.push ({ units: [{ unitType: "fellowship", image: this.assets.getFellowshipImage (fellowhip.status === "revealed"), svgX: 0, svgY: 0 }], nUnits: 1, svgX: 0, svgY: 0 });
-    }
-
-    if (region.freeUnits) {
-      const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes (region.freeUnits);
-      if (fpFreeUnits.length) { freeGroups.push ({ units: fpFreeUnits, nUnits: fpNUnits, svgX: 0, svgY: 0 }); }
-      const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes (region.freeUnits);
-      if (sFreeUnits.length) { freeGroups.push ({ units: sFreeUnits, nUnits: sNUnits, svgX: 0, svgY: 0 }); }
-    }
-
-    return freeGroups;
-  }
-
-  private regionToFreePeopleFreeUnitNodes (freeUnits: WotrFreeUnits): [WotrFreePeopleFreeUnitNode[], number] {
-    const fpFreeUnits: WotrCharacter[] = [];
-    freeUnits.characters?.forEach (characterId => {
-      const character = this.characterById ()[characterId];
-      if (character.front === "free-peoples") {
-        fpFreeUnits.push (character);
-      }
-    });
-    const nUnits = fpFreeUnits.length;
-    fpFreeUnits.sort ((a, b) => this.compareFreePeopleFreeUnits (a, b));
-    const unitNodes = fpFreeUnits.slice (0, 2).map<WotrFreePeopleFreeUnitNode> (freeUnit => ({
-      unitType: "companion", character: freeUnit.id,
-      image: this.assets.getCharacterImage (freeUnit.id), svgX: 0, svgY: 0
-    }));
-    return [unitNodes, nUnits];
-  }
-
-  private regionToShadowFreeUnitNodes (freeUnits: WotrFreeUnits): [WotrShadowFreeUnitNode[], number] {
-    let nUnits = 0;
-    const sFreeUnits: (WotrCharacter | "nazgul")[] = [];
-    freeUnits.characters?.forEach (characterId => {
-      const character = this.characterById ()[characterId];
-      if (character.front === "shadow") {
-        nUnits++;
-        sFreeUnits.push (character);
-      }
-    });
-    if (freeUnits.nNazgul) {
-      nUnits += freeUnits.nNazgul;
-      sFreeUnits.push ("nazgul");
-    }
-    sFreeUnits.sort ((a, b) => this.compareShadowFreeUnits (a, b));
-    const unitNodes = sFreeUnits.slice (0, 2).map<WotrShadowFreeUnitNode> (freeUnit => {
-      if (freeUnit === "nazgul") {
-        return { unitType: "nazgul", character: null, image: this.assets.getNazgulImage (), svgX: 0, svgY: 0 };
-      } else {
-        return { unitType: "minion", character: freeUnit.id, image: this.assets.getCharacterImage (freeUnit.id), svgX: 0, svgY: 0 };
-      }
-    });
-    return [unitNodes, nUnits];
-  }
-
   private compareFreePeopleLeaders (a: WotrCharacter | WotrNationId, b: WotrCharacter | WotrNationId) {
     if (typeof a === "string") { return typeof b === "string" ? (a < b ? -1 : (a === b ? 0 : 1)) : 1; }
     if (typeof b === "string") { return -1; }
@@ -475,23 +365,6 @@ export class WotrRegionComponent {
       if (b.id === m) { return 1; }
     }
     return 0;
-  }
-
-  private compareFreePeopleFreeUnits (a: WotrCharacter, b: WotrCharacter) {
-    for (const c of SORTED_COMPANIONS) {
-      if (a.id === c) { return -1; }
-      if (b.id === c) { return 1; }
-    }
-    return 0;
-  }
-
-  private compareShadowFreeUnits (a: WotrCharacter | "nazgul", b: WotrCharacter | "nazgul") {
-    return this.compareShadowLeaders (a, b);
-  }
-
-  private getGroupNodePoint (groupIndex: number, nGroups: number, regionId: WotrRegionId): WotrMapPoint {
-    const slots = this.mapService.getRegionSlots (nGroups, regionId);
-    return slots[groupIndex];
   }
 
 }

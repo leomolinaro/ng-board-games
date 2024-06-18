@@ -77,6 +77,7 @@ export class WotrGameFlowService {
   private checkMoveToMordorTrack () {
     const fellowshipRegion = this.regionStore.getFellowshipRegion ();
     if (fellowshipRegion === "morannon" || fellowshipRegion === "minas-morgul") {
+      this.regionStore.removeFellowshipFromRegion ();
       this.fellowshipStore.moveOnMordorTrack ();
       this.huntStore.moveDrawnEyeTilesToAvailable ();
       this.huntStore.moveReadyTilesToAvailable ();

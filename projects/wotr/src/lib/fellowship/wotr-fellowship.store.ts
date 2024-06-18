@@ -21,7 +21,7 @@ export class WotrFellowshipStore {
       companions: [],
       progress: 0,
       corruption: 0,
-      guide: "gandalf-the-grey"
+      guide: "gandalf-the-grey",
     };
   }
 

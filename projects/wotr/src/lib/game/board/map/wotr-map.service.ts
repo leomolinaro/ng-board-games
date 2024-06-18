@@ -22,11 +22,13 @@ export class WotrMapService {
 
   private svgLoaded = false;
   private regionPaths!: { [id in WotrRegionId]: string };
+  private strongholdPaths!: Partial<{ [id in WotrRegionId]: string }>;
   private viewBox!: string;
   private width!: number;
   private regionSlots!: WotrRegionSlots;
 
   getRegionPath (regionId: WotrRegionId) { return this.regionPaths[regionId]; }
+  getStrongholdPath (regionId: WotrRegionId) { return this.strongholdPaths[regionId]; }
 
   getViewBox () { return this.viewBox; }
 
@@ -42,6 +44,7 @@ export class WotrMapService {
         this.viewBox = svg.getAttribute ("viewBox")!;
         this.width = +this.viewBox.split (" ")[2];
         this.regionPaths = this.getGroupPaths<WotrRegionId> ("wotr-regions", dom, pId => pId as WotrRegionId);
+        this.strongholdPaths = this.getGroupPaths<WotrRegionId> ("wotr-strongholds", dom, pId => pId.replace ("stronghold-", "") as WotrRegionId);
         this.svgLoaded = true;
         return true;
       })

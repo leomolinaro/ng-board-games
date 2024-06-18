@@ -4,13 +4,15 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
+import { WotrMordorTrackComponent } from "./wotr-mordor-track.component";
 import { WotrRegionComponent } from "./wotr-region.component";
 import { WotrRegion } from "./wotr-region.models";
+import { WotrStrongholdComponent } from "./wotr-stronghold.component";
 
 @Component ({
   selector: "[wotrRegions]",
   standalone: true,
-  imports: [MatTooltipModule, NgClass, WotrRegionComponent],
+  imports: [MatTooltipModule, NgClass, WotrRegionComponent, WotrMordorTrackComponent, WotrStrongholdComponent],
   template: `
     @for (point of testGridPoints; track point) {
       <svg:circle
@@ -23,10 +25,20 @@ import { WotrRegion } from "./wotr-region.models";
     @for (region of regions (); track region.id) {
       <svg:g wotrRegion
         [region]="region"
-        [fellowship]="fellowship ()"
+        [fellowship]="region.fellowship ? fellowship () : null"
         [characterById]="characterById ()"
         (regionClick)="onRegionClick (region)">
       </svg:g>
+      @if (region.settlement === 'stronghold' && region.underSiegeArmy) {
+        <svg:g wotrStronghold
+          [region]="region"
+          [characterById]="characterById ()"
+          (regionClick)="onStrongholdClick (region)">
+        </svg:g>
+      }
+    }
+    @if (fellowship ().mordorTrack != null) {
+      <svg:g wotrMordorTrack [fellowship]="fellowship ()"></svg:g>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +64,12 @@ export class WotrRegionsComponent {
   nSelectedUnits: Record<string, number> | null = null;
 
   onRegionClick (region: WotrRegion) {
+    // if (this.validRegions?.includes (regionNode.id)) {
+    this.regionClick.emit (region);
+    // }
+  }
+
+  onStrongholdClick (region: WotrRegion) {
     // if (this.validRegions?.includes (regionNode.id)) {
     this.regionClick.emit (region);
     // }

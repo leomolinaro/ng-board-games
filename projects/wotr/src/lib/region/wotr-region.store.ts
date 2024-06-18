@@ -145,7 +145,7 @@ export class WotrRegionStore {
         "western-mirkwood": this.initRegion ("western-mirkwood", "Western Mirkwood", null, false, null, ["northern-mirkwood", "woodland-realm", "old-forest-road", "carrock"], [], false),
         "northern-mirkwood": this.initRegion ("northern-mirkwood", "Northern Mirkwood", null, false, null, ["carrock", "western-mirkwood", "woodland-realm", "withered-heath"], [], false),
         "withered-heath": this.initRegion ("withered-heath", "Withered Heath", null, false, null, ["northern-mirkwood", "woodland-realm", "dale", "erebor"], [], false),
-        "woodland-realm": this.initRegion ("woodland-realm", "Woodland Realm", "elves", false, null, ["northern-mirkwood", "withered-heath", "dale", "old-forest-road", "western-mirkwood"], [], false),
+        "woodland-realm": this.initRegion ("woodland-realm", "Woodland Realm", "elves", false, "stronghold", ["northern-mirkwood", "withered-heath", "dale", "old-forest-road", "western-mirkwood"], [], false),
         dale: this.initRegion ("dale", "Dale", "north", false, "city", [], [], false),
         erebor: this.initRegion ("erebor", "Erebor", "dwarves", false, "stronghold", [], [], false),
         "iron-hills": this.initRegion ("iron-hills", "Iron Hills", "dwarves", false, "town", [], [], false),
@@ -366,6 +366,12 @@ export class WotrRegionStore {
   addFellowshipToRegion (regionId: WotrRegionId) {
     this.updateRegion ("addFellowshipToRegion", regionId, units => ({
       ...units, fellowship: true
+    }));
+  }
+
+  removeFellowshipFromRegion () {
+    this.updateRegion ("removeFellowshipFromRegion", this.getFellowshipRegion (), units => ({
+      ...units, fellowship: false
     }));
   }
 
