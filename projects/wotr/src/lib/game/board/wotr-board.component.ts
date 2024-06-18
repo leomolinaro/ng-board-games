@@ -141,6 +141,7 @@ export class WotrBoardComponent {
           region,
           nationById: this.nationById (),
           characterById: this.characterById (),
+          fellowship: this.fellowship ()
         },
         panelClass: "mat-typography",
       }

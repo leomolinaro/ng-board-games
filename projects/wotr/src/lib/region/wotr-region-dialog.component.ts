@@ -5,6 +5,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrUnits } from "../unit/wotr-unit.models";
 import { WotrRegion } from "./wotr-region.models";
@@ -13,6 +14,7 @@ export interface WotrRegionDialogData {
   region: WotrRegion;
   nationById: Record<WotrNationId, WotrNation>;
   characterById: Record<WotrCharacterId, WotrCharacter>;
+  fellowship: WotrFellowship;
 }
 
 interface UnitNode {
@@ -108,7 +110,7 @@ export class WotrRegionDialogComponent implements OnInit {
       unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
     });
     if (d.region.fellowship) {
-      const image = this.assets.getFellowshipImage ();
+      const image = this.assets.getFellowshipImage (this.data.fellowship.status === "revealed");
       unitNodes.push ({ id: "fellowship", label: "Fellowship", quantity: 1, ...this.scale (image) });
     }
     return unitNodes;

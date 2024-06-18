@@ -42,10 +42,11 @@ const GRID_STEP = 10;
       [attr.viewBox]="viewBox"
       preserveAspectRatio="xMidYMin">
       <svg:g #wotrMap [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }">
-        <image [attr.width]="mapWidth" 
+        <image [attr.width]="mapWidth"
           [attr.xlink:href]="mapImageSource">
         </image>
         <svg:g wotrRegions [regions]="regions ()"
+          [fellowship]="fellowship ()"
           [characterById]="characterById ()"
           (regionClick)="regionClick.next ($event)"></svg:g>
         <svg:g wotrPoliticalTrack [nations]="nations ()"></svg:g>

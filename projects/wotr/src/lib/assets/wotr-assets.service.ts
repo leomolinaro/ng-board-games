@@ -103,7 +103,8 @@ export class WotrAssetsService {
   }
 
   private FELLOWSHIP: WotrUnitImage = this.unitImage ("fellowship", 31, 31);
-  getFellowshipImage () { return this.FELLOWSHIP; }
+  private FELLOWSHIP_REVEALED: WotrUnitImage = this.unitImage ("fellowship-revealed", 47, 47);
+  getFellowshipImage (revealed: boolean) { return revealed ? this.FELLOWSHIP_REVEALED : this.FELLOWSHIP; }
 
   getCardPreviewImage (cardId: WotrCardId) { return `${BASE_PATH}/card-previews/${cardId}.png`; }
   getCardImage (cardId: WotrCardId) { return `${BASE_PATH}/cards/${cardId}.png`; }
