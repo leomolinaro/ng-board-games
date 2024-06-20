@@ -7,7 +7,7 @@ import { WotrCharacterLogsService } from "../companion/wotr-character-logs.servi
 import { WotrFellowshipLogsService } from "../fellowship/wotr-fellowship-logs.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntLogsService } from "../hunt/wotr-hunt-logs.service";
-import { WotrPoliticalLogsService } from "../nation/wotr-nation-logs.service";
+import { WotrNationLogsService } from "../nation/wotr-nation-logs.service";
 import { WotrRegionLogsService } from "../region/wotr-region-logs.service";
 import { WotrUnitLogsService } from "../unit/wotr-units-logs.service";
 import { WotrAction } from "./wotr-story.models";
@@ -24,13 +24,13 @@ export class WotrGameLogsService {
     ...inject (WotrActionDieLogsService).getActionLoggers (),
     ...inject (WotrCharacterLogsService).getActionLoggers (),
     ...inject (WotrUnitLogsService).getActionLoggers (),
-    ...inject (WotrPoliticalLogsService).getActionLoggers (),
+    ...inject (WotrNationLogsService).getActionLoggers (),
     ...inject (WotrBattleLogsService).getActionLoggers (),
     ...inject (WotrRegionLogsService).getActionLoggers (),
   } as any;
 
   private effectLoggers: Record<string, WotrEffectLogger<WotrAction>> = {
-    ...inject (WotrPoliticalLogsService).getActionLoggers (),
+    ...inject (WotrNationLogsService).getEffectLoggers (),
   } as any;
 
   getActionLogFragments<F> (action: WotrAction, front: WotrFrontId, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {

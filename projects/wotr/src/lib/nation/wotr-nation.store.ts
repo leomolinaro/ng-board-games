@@ -99,7 +99,7 @@ export class WotrNationStore {
   addLeadersToCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("leader", quantity, nationId); }
   removeLeadersFromCasualties (quantity: number, nationId: WotrNationId) { this.updateUnitCasualties ("leader", -quantity, nationId); }
 
-  setActive (active: boolean, nationId: WotrNationId) {
+  activate (active: boolean, nationId: WotrNationId) {
     this.updateNation ("setActive", nationId, nation => ({
       ...nation, active
     }));
@@ -111,7 +111,7 @@ export class WotrNationStore {
     }));
   }
 
-  advancePoliticalStep (quantity: number, nationId: WotrNationId) {
+  advance (quantity: number, nationId: WotrNationId) {
     this.updateNation ("advancePoliticalStep", nationId, nation => {
       let next: WotrPoliticalStep;
       for (let i = 0; i < quantity; i++) {

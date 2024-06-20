@@ -154,7 +154,7 @@ export class WotrGameFlowService {
       }
     }
     for (const nationSetup of setup.nations) {
-      this.nationStore.setActive (nationSetup.active, nationSetup.nation);
+      this.nationStore.activate (nationSetup.active, nationSetup.nation);
       this.nationStore.setPoliticalStep (nationSetup.politicalStep, nationSetup.nation);
     }
     this.frontStore.setActionTokens (setup.freePeopleTokens, "free-peoples");

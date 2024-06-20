@@ -1,6 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionApplierMap } from "../commons/wotr-action-applier";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -10,6 +11,7 @@ import { WotrUnitAction } from "./wotr-unit-actions";
 export class WotrUnitActionsService {
 
   private nationStore = inject (WotrNationStore);
+  private nationService = inject (WotrNationService);
   private regionStore = inject (WotrRegionStore);
 
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
@@ -20,7 +22,7 @@ export class WotrUnitActionsService {
         if (region.nationId) {
           const nationOfRegion = this.nationStore.nation (region.nationId);
           if (!nationOfRegion.active && nationOfRegion.front !== front) {
-            this.nationStore.setActive (true, region.nationId);
+            this.nationService.activate (region.nationId);
           }
         }
       },

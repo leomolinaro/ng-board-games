@@ -13,19 +13,19 @@ export class WotrNationService {
 
   getActionAppliers (): WotrActionApplierMap<WotrNationAction> {
     return {
-      "political-activation": async (action, front) => { this.nationStore.setActive (true, action.nation); },
-      "political-advance": async (action, front) => { this.nationStore.advancePoliticalStep (action.quantity, action.nation); },
+      "political-activation": async (action, front) => { this.nationStore.activate (true, action.nation); },
+      "political-advance": async (action, front) => { this.nationStore.advance (action.quantity, action.nation); },
     };
   }
 
-  politicalAdvance (quantity: number, nation: WotrNationId) {
+  advance (quantity: number, nation: WotrNationId) {
     this.logStore.logEffect ({ type: "political-advance", nation, quantity });
-    this.nationStore.advancePoliticalStep (quantity, nation);
+    this.nationStore.advance (quantity, nation);
   }
   
-  politicalActivation (nation: WotrNationId) {
+  activate (nation: WotrNationId) {
     this.logStore.logEffect ({ type: "political-activation", nation });
-    this.nationStore.setActive (true, nation);
+    this.nationStore.activate (true, nation);
   }
 
 }

@@ -5,7 +5,7 @@ import { WotrNationAction } from "./wotr-nation-actions";
 @Injectable ({
   providedIn: "root",
 })
-export class WotrPoliticalLogsService {
+export class WotrNationLogsService {
 
   getActionLoggers (): WotrActionLoggerMap<WotrNationAction> {
     return {
