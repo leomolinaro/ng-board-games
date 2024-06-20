@@ -34,6 +34,7 @@ export class WotrLogStore {
   logCombatCard (card: WotrCardId, front: WotrFrontId) { this.addLog ("logCombatCard", { type: "combat-card", card, front, during: "battle" }); }
 
   logAction (action: WotrAction, story: WotrStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog (`logAction [${action.type}]`, { type: "action", action, story, front, during }); }
+  logEffect (effect: WotrAction, during?: "battle" | "hunt") { this.addLog (`logEffect [${effect.type}]`, { type: "effect", effect, during }); }
   logStory (story: WotrStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog ("logStory", { type: "story", story, front, during }); }
 
   logEndGame () { this.addLog ("logEndGame", { type: "endGame" }); }

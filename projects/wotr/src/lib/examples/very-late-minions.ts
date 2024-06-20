@@ -10,7 +10,7 @@ import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacte
 import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
-import { advanceNation } from "../nation/wotr-political-actions";
+import { advanceNation } from "../nation/wotr-nation-actions";
 import { targetRegion } from "../region/wotr-region-actions";
 import { eliminateEliteUnit, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmy, moveNazgul, recruitEliteUnit, recruitRegularUnit } from "../unit/wotr-unit-actions";
 import { character, elite, nazgul, regular } from "../unit/wotr-unit.models";

@@ -10,7 +10,7 @@ import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFellowshipAction } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntAction } from "../hunt/wotr-hunt-actions";
-import { WotrPoliticalAction } from "../nation/wotr-political-actions";
+import { WotrNationAction } from "../nation/wotr-nation-actions";
 import { WotrRegionAction } from "../region/wotr-region-actions";
 import { WotrUnitAction } from "../unit/wotr-unit-actions";
 
@@ -48,7 +48,7 @@ export type WotrAction =
   WotrActionDieAction |
   WotrCharacterAction |
   WotrUnitAction |
-  WotrPoliticalAction |
+  WotrNationAction |
   WotrBattleAction |
   WotrRegionAction;
 

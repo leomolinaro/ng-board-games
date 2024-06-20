@@ -12,5 +12,7 @@ export interface WotrFragmentCreator<F> {
   huntTile (huntTile: WotrHuntTileId): F;
 }
 export type WotrActionLogger<A, F = any> = (action: A, front: WotrFrontId, f: WotrFragmentCreator<F>) => F[];
+export type WotrEffectLogger<E, F = any> = (effect: E, f: WotrFragmentCreator<F>) => F[];
 
 export type WotrActionLoggerMap<A extends { type: string }> = { [key in A["type"]]: WotrActionLogger<{ type: key } & A> };
+export type WotrEffectLoggerMap<E extends { type: string }> = { [key in E["type"]]: WotrEffectLogger<{ type: key } & E> };

@@ -5,7 +5,7 @@ import { WotrCardActionsService } from "../card/wotr-card-actions.service";
 import { WotrCharacterActionsService } from "../companion/wotr-character-actions.service";
 import { WotrFellowshipActionsService } from "../fellowship/wotr-fellowship-actions.service";
 import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
-import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.service";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionActionsService } from "../region/wotr-region-actions.service";
 import { WotrUnitActionsService } from "../unit/wotr-unit-actions.service";
 import { WotrStoryService } from "./wotr-story.service";
@@ -21,7 +21,7 @@ export class WotrGameActionsService {
   private actionDiceActions = inject (WotrActionDieActionsService);
   private companionActions = inject (WotrCharacterActionsService);
   private armyActions = inject (WotrUnitActionsService);
-  private politicalActions = inject (WotrPoliticalActionsService);
+  private politicalActions = inject (WotrNationService);
   private battleActions = inject (WotrBattleActionsService);
   private regionActions = inject (WotrRegionActionsService);
 

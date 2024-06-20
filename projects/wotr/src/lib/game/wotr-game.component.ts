@@ -19,8 +19,8 @@ import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrPoliticalActionsService } from "../nation/wotr-political-actions.service";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
@@ -77,7 +77,7 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrCharacterActionsService,
     WotrFellowshipActionsService,
     WotrHuntActionsService,
-    WotrPoliticalActionsService,
+    WotrNationService,
     WotrRegionActionsService,
     WotrUnitActionsService,
     WotrGameActionsService,

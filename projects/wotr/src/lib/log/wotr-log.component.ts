@@ -8,7 +8,7 @@ import { WotrFragmentCreator } from "../commons/wotr-action-log";
 import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameActionLogsService } from "../game/wotr-game-action-logs.service";
+import { WotrGameLogsService } from "../game/wotr-game-action-logs.service";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
@@ -104,7 +104,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
   
   private assets = inject (WotrAssetsService);
   private store = inject (WotrGameStore);
-  private actionLogs = inject (WotrGameActionLogsService);
+  private logService = inject (WotrGameLogsService);
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private characterStore = inject (WotrCharacterStore);
@@ -140,7 +140,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
       case "battle-resolution": return [this.string ("Battle Resolution")];
       case "hunt-resolution": return [this.string ("Hunt Resolution")];
       case "action": {
-        const fragments = this.actionLogs.getLogFragments<WotrLogFragment> (l.action, l.front, this);
+        const fragments = this.logService.getActionLogFragments<WotrLogFragment> (l.action, l.front, this);
         const parsed: WotrLogFragment[] = [];
         for (const f of fragments) {
           if (typeof f === "string") { parsed.push (this.string (f)); }
@@ -161,6 +161,15 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
           case "reaction-combat-card-skip": return [this.player (l.front), this.string (" skip "), this.card (combatCardToLabel (l.story.card))];
         }
         return [];
+      }
+      case "effect": {
+        const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
+        const parsed: WotrLogFragment[] = [];
+        for (const f of fragments) {
+          if (typeof f === "string") { parsed.push (this.string (f)); }
+          else { parsed.push (f); }
+        }
+        return parsed;
       }
       case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
       case "reveal-in-mordor": return [this.string ("The fellowship is revealed on the Mordor Track")];

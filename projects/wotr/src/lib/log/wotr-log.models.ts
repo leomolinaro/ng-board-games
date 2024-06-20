@@ -13,6 +13,11 @@ export interface WotrLogAction {
   story: WotrStory;
   during?: "battle" | "hunt";
 }
+export interface WotrLogEffect {
+  type: "effect";
+  effect: WotrAction;
+  during?: "battle" | "hunt";
+}
 export interface WotrLogStory {
   type: "story";
   front: WotrFrontId;
@@ -31,6 +36,7 @@ export type WotrLog =
 | WotrLogEndGame
 | WotrLogRound
 | WotrLogAction
+| WotrLogEffect
 | WotrLogStory
 | WotrLogPhase
 | WotrLogBattleResolution
