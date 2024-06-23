@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionLoggerMap } from "../commons/wotr-action-log";
+import { WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";

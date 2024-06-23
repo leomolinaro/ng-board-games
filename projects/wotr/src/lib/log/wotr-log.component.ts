@@ -4,7 +4,7 @@ import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
-import { WotrFragmentCreator } from "../commons/wotr-action-log";
+import { WotrFragmentCreator } from "../commons/wotr-action.models";
 import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";

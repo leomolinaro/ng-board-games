@@ -1,6 +1,6 @@
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrAction, WotrStory } from "../game/wotr-story.models";
+import { WotrGameAction, WotrStory } from "../game/wotr-story.models";
 import { WotrPhase } from "../player/wotr-phase.models";
 
 export interface WotrLogSetup { type: "setup" }
@@ -9,13 +9,13 @@ export interface WotrLogRound { type: "round"; roundNumber: number }
 export interface WotrLogAction {
   type: "action";
   front: WotrFrontId;
-  action: WotrAction;
+  action: WotrGameAction;
   story: WotrStory;
   during?: "battle" | "hunt";
 }
 export interface WotrLogEffect {
   type: "effect";
-  effect: WotrAction;
+  effect: WotrGameAction;
   during?: "battle" | "hunt";
 }
 export interface WotrLogStory {

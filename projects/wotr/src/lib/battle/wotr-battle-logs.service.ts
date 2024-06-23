@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { isCharacterCard } from "../card/wotr-card.models";
-import { WotrActionLoggerMap } from "../commons/wotr-action-log";
+import { WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrBattleAction } from "./wotr-battle-actions";
 
 @Injectable ({

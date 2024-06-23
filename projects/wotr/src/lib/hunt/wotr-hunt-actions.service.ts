@@ -1,12 +1,18 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap } from "../commons/wotr-action-applier";
+import { WotrActionApplierMap } from "../commons/wotr-action.models";
+import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt.store";
 
 @Injectable ()
 export class WotrHuntActionsService {
+  
+  constructor () {
+    this.actionService.registerActions (this.getActionAppliers () as any);
+  }
 
+  private actionService = inject (WotrActionService);
   private huntStore = inject (WotrHuntStore);
   private fellowshipStore = inject (WotrFellowshipStore);
 

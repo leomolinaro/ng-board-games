@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap } from "../commons/wotr-action-applier";
+import { WotrActionApplierMap } from "../commons/wotr-action.models";
+import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -8,7 +9,12 @@ import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable ()
 export class WotrFellowshipActionsService {
+  
+  constructor () {
+    this.actionService.registerActions (this.getActionAppliers () as any);
+  }
 
+  private actionService = inject (WotrActionService);
   private fellowhipStore = inject (WotrFellowshipStore);
   private regionStore = inject (WotrRegionStore);
   private huntStore = inject (WotrHuntStore);

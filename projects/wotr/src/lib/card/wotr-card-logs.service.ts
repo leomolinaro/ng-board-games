@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrActionLoggerMap } from "../commons/wotr-action-log";
+import { WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { oppositeFront } from "../front/wotr-front.models";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel } from "./wotr-card.models";
