@@ -4,20 +4,20 @@ import { WotrEvent, WotrEventConsumer } from "./wotr-event.models";
 @Injectable ()
 export class WotrEventService {
 
-  private registrations: Record<string, WotrEventConsumer[]> = { };
+  private registrations: Record<string, WotrEventConsumer<WotrEvent>[]> = { };
 
-  register (eventType: string, consumer: WotrEventConsumer) {
+  register<E extends WotrEvent> (eventType: E["type"], consumer: WotrEventConsumer<E>) {
     let eventConsumers = this.registrations[eventType];
     if (!eventConsumers) {
       eventConsumers = [];
       this.registrations[eventType] = eventConsumers;
     }
-    eventConsumers.push (consumer);
+    eventConsumers.push (consumer as any);
   }
 
-  deregister (eventType: string, consumerId: string) {
+  deregister<E extends WotrEvent> (eventType: E["type"], consumer: WotrEventConsumer<E>) {
     const eventConsumers = this.registrations[eventType];
-    const index = eventConsumers.findIndex (c => c.id === consumerId);
+    const index = eventConsumers.findIndex (c => c === consumer);
     eventConsumers.splice (index, 1);
   }
 
@@ -25,7 +25,7 @@ export class WotrEventService {
     const eventConsumers = this.registrations[event.type];
     if (eventConsumers) {
       for (const consumer of eventConsumers) {
-        await consumer.callback (event);
+        await consumer (event);
       }
     }
 

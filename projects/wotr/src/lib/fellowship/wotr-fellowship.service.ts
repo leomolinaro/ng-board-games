@@ -3,6 +3,7 @@ import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-actio
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
@@ -11,6 +12,7 @@ import { WotrFellowshipStore } from "./wotr-fellowship.store";
 export class WotrFellowshipService {
   
   private actionService = inject (WotrActionService);
+  private nationService = inject (WotrNationService);
   private fellowhipStore = inject (WotrFellowshipStore);
   private regionStore = inject (WotrRegionStore);
   private huntStore = inject (WotrHuntStore);

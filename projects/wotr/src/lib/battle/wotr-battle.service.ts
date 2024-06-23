@@ -2,6 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { isCharacterCard } from "../card/wotr-card.models";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrNationService } from "../nation/wotr-nation.service";
+import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrBattleAction } from "./wotr-battle-actions";
 import { WotrBattleFlowService } from "./wotr-battle-flow.service";
@@ -10,6 +12,8 @@ import { WotrBattleFlowService } from "./wotr-battle-flow.service";
 export class WotrBattleService {
   
   private actionService = inject (WotrActionService);
+  private nationService = inject (WotrNationService);
+  private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private battleFlow = inject (WotrBattleFlowService);
 
@@ -21,6 +25,7 @@ export class WotrBattleService {
     return {
       "army-attack": async (action, front) => {
         await this.battleFlow.resolveBattle (action, front);
+        this.nationService.checkNationActivationByAttack (action.toRegion);
       },
       "army-retreat-into-siege": async (action, front) => {
         this.regionStore.moveArmyIntoSiege (action.region);

@@ -18,9 +18,9 @@ export interface WotrFragmentCreator<F> {
 export type WotrActionLogger<A, F = any> = (action: A, front: WotrFrontId, f: WotrFragmentCreator<F>) => F[];
 export type WotrEffectLogger<E, F = any> = (effect: E, f: WotrFragmentCreator<F>) => F[];
 
-export type WotrActionLoggerMap<A extends { type: string }> = { [key in A["type"]]: WotrActionLogger<{ type: key } & A> };
-export type WotrEffectLoggerMap<E extends { type: string }> = { [key in E["type"]]: WotrEffectLogger<{ type: key } & E> };
+export type WotrActionLoggerMap<A extends WotrAction> = { [key in A["type"]]: WotrActionLogger<{ type: key } & A> };
+export type WotrEffectLoggerMap<E extends WotrAction> = { [key in E["type"]]: WotrEffectLogger<{ type: key } & E> };
 
-export type WotrActionApplier<A> = (action: A, front: WotrFrontId) => Promise<void>;
+export type WotrActionApplier<A extends WotrAction> = (action: A, front: WotrFrontId) => Promise<void>;
 
-export type WotrActionApplierMap<A extends { type: string }> = { [key in A["type"]]: WotrActionApplier<{ type: key } & A> };
+export type WotrActionApplierMap<A extends WotrAction> = { [key in A["type"]]: WotrActionApplier<{ type: key } & A> };

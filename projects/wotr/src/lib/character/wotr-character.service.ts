@@ -4,6 +4,7 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrCharacterAction } from "./wotr-character-actions";
@@ -14,6 +15,7 @@ import { WotrCharacterStore } from "./wotr-character.store";
 export class WotrCharacterService {
   
   private actionService = inject (WotrActionService);
+  private nationService = inject (WotrNationService);
   private characterStore = inject (WotrCharacterStore);
   private fellowshipStore = inject (WotrFellowshipStore);
   private regionStore = inject (WotrRegionStore);
@@ -33,6 +35,7 @@ export class WotrCharacterService {
           this.characterStore.setInPlay (characterId);
           this.addCharacterToRegion (character, region);
         }
+        this.nationService.checkNationActivationByCharacters (action.region, action.characters);
       },
       "character-movement": async (action, front) => {
         const fromRegion = this.regionStore.region (action.fromRegion);
@@ -42,6 +45,7 @@ export class WotrCharacterService {
           this.removeCharacterFromRegion (character, fromRegion);
           this.addCharacterToRegion (character, toRegion);
         }
+        this.nationService.checkNationActivationByCharacters (action.toRegion, action.characters);
       },
       "character-elimination": async (action, front) => {
         for (const characterId of action.characters) {
@@ -72,6 +76,7 @@ export class WotrCharacterService {
           const character = this.characterStore.character (companionId);
           this.addCharacterToRegion (character, toRegion);
         }
+        this.nationService.checkNationActivationByCharacters (action.toRegion, action.companions);
       }
     };
   }

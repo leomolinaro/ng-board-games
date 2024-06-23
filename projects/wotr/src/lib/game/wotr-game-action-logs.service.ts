@@ -3,7 +3,7 @@ import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCharacterService } from "../character/wotr-character.service";
-import { WotrActionLogger, WotrFragmentCreator } from "../commons/wotr-action.models";
+import { WotrActionLogger, WotrEffectLogger, WotrFragmentCreator } from "../commons/wotr-action.models";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntService } from "../hunt/wotr-hunt.service";
@@ -27,8 +27,16 @@ export class WotrGameLogsService {
     ...inject (WotrRegionService).getActionLoggers (),
   } as any;
 
+  private effectLoggers: Record<string, WotrEffectLogger<WotrGameAction>> = {
+    ...inject (WotrNationService).getEffectLoggers (),
+  } as any;
+
   getActionLogFragments<F> (action: WotrGameAction, front: WotrFrontId, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {
     return this.actionLoggers[action.type] (action, front, fragmentCreator);
+  }
+
+  getEffectLogFragments<F> (action: WotrGameAction, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {
+    return this.effectLoggers[action.type] (action, fragmentCreator);
   }
 
 }

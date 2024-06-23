@@ -162,19 +162,19 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
         }
         return [];
       }
-      // case "effect": {
-      //   const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
-      //   const parsed: WotrLogFragment[] = [];
-      //   for (const f of fragments) {
-      //     if (typeof f === "string") { parsed.push (this.string (f)); }
-      //     else { parsed.push (f); }
-      //   }
-      //   return parsed;
-      // }
+      case "effect": {
+        const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
+        const parsed: WotrLogFragment[] = [];
+        for (const f of fragments) {
+          if (typeof f === "string") { parsed.push (this.string (f)); }
+          else { parsed.push (f); }
+        }
+        return parsed;
+      }
       case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
       case "reveal-in-mordor": return [this.string ("The fellowship is revealed on the Mordor Track")];
       case "move-in-mordor": return [this.string ("The fellowship moves on the Mordor Track")];
-      default: throw new Error (`Unknown log type ${l.type}`);
+      default: throw new Error (`Unknown log type ${(l as any).type}`);
     }
   });
 

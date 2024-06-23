@@ -12,6 +12,7 @@ import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrEventService } from "../commons/wotr-event.service";
 import { stories as exampleStories } from "../examples/very-late-minions";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
@@ -32,7 +33,8 @@ import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameLogsService } from "./wotr-game-action-logs.service";
 import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
-import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
+import { WotrRemoteMockService } from "./wotr-remote-mock.service";
+import { WotrPlayerDoc } from "./wotr-remote.service";
 import { WotrStoryService } from "./wotr-story.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
@@ -83,6 +85,7 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrRegionService,
     WotrUnitService,
 
+    WotrEventService,
     WotrCardEffectsService,
     WotrGameLogsService,
 
@@ -103,7 +106,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected fellowshipStore = inject (WotrFellowshipStore);
   protected logStore = inject (WotrLogStore);
   protected ui = inject (WotrUiStore);
-  private remote = inject (WotrRemoteService);
+  private remote = inject (WotrRemoteMockService);
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
   private story = inject (WotrStoryService);

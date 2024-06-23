@@ -24,13 +24,7 @@ export class WotrUnitService {
     return {
       "army-movement": async (action, front) => {
         this.regionStore.moveArmy (action.fromRegion, action.toRegion, action.leftUnits);
-        const region = this.regionStore.region (action.toRegion);
-        if (region.nationId) {
-          const nationOfRegion = this.nationStore.nation (region.nationId);
-          if (!nationOfRegion.active && nationOfRegion.front !== front) {
-            this.nationService.activate (region.nationId);
-          }
-        }
+        this.nationService.checkNationActivationByArmyMovement (action.toRegion, front);
       },
       "nazgul-movement": async (action, front) => {
         const fromRegion = this.regionStore.region (action.fromRegion);

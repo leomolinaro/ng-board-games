@@ -1,10 +1,13 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { objectUtil } from "@leobg/commons/utils";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrAction, WotrActionApplier, WotrActionLogger, WotrFragmentCreator } from "./wotr-action.models";
+import { WotrEventService } from "./wotr-event.service";
 
 @Injectable ()
 export class WotrActionService {
+
+  private eventService = inject (WotrEventService);
 
   private actionAppliers: Map<string, WotrActionApplier<WotrAction>> = new Map ();
 
@@ -12,10 +15,15 @@ export class WotrActionService {
     objectUtil.forEachProp (actionAppliers, (actionType, actionApplier) => this.actionAppliers.set (actionType, actionApplier));
   }
 
+  registerAction<A extends WotrAction> (actionType: A["type"], actionApplier: WotrActionApplier<A>) {
+    this.actionAppliers.set (actionType, actionApplier as any);
+  }
+
   async applyAction (action: WotrAction, frontId: WotrFrontId) {
     const actionApplier = this.actionAppliers.get (action.type);
     if (!actionApplier) { throw new Error (`Unknown action ${action.type}`); }
     await actionApplier (action, frontId);
+    await this.eventService.publish (action);
   }
 
   private actionLoggers: Map<string, WotrActionLogger<WotrAction>> = new Map ();

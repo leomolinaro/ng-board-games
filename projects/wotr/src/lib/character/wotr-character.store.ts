@@ -1,4 +1,5 @@
 import { Injectable, Signal, computed } from "@angular/core";
+import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 
 export interface WotrCharacterState {
@@ -28,16 +29,16 @@ export class WotrCharacterStore {
         "saruman", "the-mouth-of-sauron", "the-witch-king"
       ],
       map: {
-        "gandalf-the-grey": this.initCompanion ("gandalf-the-grey", "Gandalf the Grey", 3, 1),
-        strider: this.initCompanion ("strider", "Strider", 3, 1),
-        boromir: this.initCompanion ("boromir", "Boromir", 2, 1),
-        legolas: this.initCompanion ("legolas", "Legolas", 2, 1),
-        gimli: this.initCompanion ("gimli", "Gimli", 2, 1),
-        meriadoc: this.initCompanion ("meriadoc", "Meriadoc", 1, 1),
-        peregrin: this.initCompanion ("peregrin", "Peregrin", 1, 1),
-        aragorn: this.initCompanion ("aragorn", "Aragorn", 3, 2),
-        "gandalf-the-white": this.initCompanion ("gandalf-the-white", "Gandalf the White", 3, 1),
-        gollum: this.initCompanion ("gollum", "Gollum", 0, 0),
+        "gandalf-the-grey": this.initCompanion ("gandalf-the-grey", "Gandalf the Grey", 3, 1, "all"),
+        strider: this.initCompanion ("strider", "Strider", 3, 1, "north"),
+        boromir: this.initCompanion ("boromir", "Boromir", 2, 1, "gondor"),
+        legolas: this.initCompanion ("legolas", "Legolas", 2, 1, "elves"),
+        gimli: this.initCompanion ("gimli", "Gimli", 2, 1, "dwarves"),
+        meriadoc: this.initCompanion ("meriadoc", "Meriadoc", 1, 1, "all"),
+        peregrin: this.initCompanion ("peregrin", "Peregrin", 1, 1, "all"),
+        aragorn: this.initCompanion ("aragorn", "Aragorn", 3, 2, "all"),
+        "gandalf-the-white": this.initCompanion ("gandalf-the-white", "Gandalf the White", 3, 1, "all"),
+        gollum: this.initCompanion ("gollum", "Gollum", 0, 0, null),
         saruman: this.initMinion ("saruman", "Saruman", 0, 1),
         "the-mouth-of-sauron": this.initMinion ("the-mouth-of-sauron", "The Mouth of Sauron", 3, 2),
         "the-witch-king": this.initMinion ("the-witch-king", "The Witch King", -1, 2),
@@ -47,9 +48,12 @@ export class WotrCharacterStore {
 
   private initCompanion (
     id: WotrCharacterId, name: string,
-    level: number, leadership: number
+    level: number, leadership: number,
+    activationNation: WotrNationId | "all" | null
   ): WotrCharacter {
-    return { id, name, level, leadership, status: "available", front: "free-peoples" };
+    const character: WotrCharacter = { id, name, level, leadership, status: "available", front: "free-peoples" };
+    if (activationNation) { character.activationNation = activationNation; }
+    return character;
   }
 
   private initMinion (
