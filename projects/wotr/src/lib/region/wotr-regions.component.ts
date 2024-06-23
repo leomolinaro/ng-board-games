@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrMordorTrackComponent } from "./wotr-mordor-track.component";

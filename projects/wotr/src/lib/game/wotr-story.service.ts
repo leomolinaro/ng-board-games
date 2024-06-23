@@ -5,9 +5,9 @@ import { WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrA
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../character/wotr-character-actions";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../companion/wotr-character-actions";
-import { WotrCharacterId } from "../companion/wotr-character.models";
 import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";

@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap } from "../commons/wotr-action.models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
@@ -7,22 +7,22 @@ import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrCharacterAction } from "./wotr-character-actions";
-import { WotrCharacter } from "./wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
 
 @Injectable ()
-export class WotrCharacterActionsService {
+export class WotrCharacterService {
   
-  constructor () {
-    this.actionService.registerActions (this.getActionAppliers () as any);
-  }
-
   private actionService = inject (WotrActionService);
   private characterStore = inject (WotrCharacterStore);
   private fellowshipStore = inject (WotrFellowshipStore);
   private regionStore = inject (WotrRegionStore);
   private frontStore = inject (WotrFrontStore);
   private storyService = inject (WotrStoryService);
+
+  init () {
+    this.actionService.registerActions (this.getActionAppliers () as any);
+  }
 
   getActionAppliers (): WotrActionApplierMap<WotrCharacterAction> {
     return {
@@ -96,6 +96,20 @@ export class WotrCharacterActionsService {
     if (this.frontStore.hasTableCard ("scha15", "shadow")) {
       await this.storyService.activateTableCard ("scha15", "shadow");
     }
+  }
+
+  getActionLoggers (): WotrActionLoggerMap<WotrCharacterAction> {
+    return {
+      "character-elimination": (action, front, f) => [f.player (front), " removes ", this.characters (action.characters)],
+      "character-movement": (action, front, f) => [f.player (front), " moves ", this.characters (action.characters), " to ", f.region (action.toRegion)],
+      "character-play": (action, front, f) => [f.player (front), " plays ", this.characters (action.characters), " in ", f.region (action.region)],
+      "companion-random": (action, front, f) => [f.player (front), " draws ", this.characters (action.companions), " randomly"],
+      "companion-separation": (action, front, f) => [f.player (front), " separates ", this.characters (action.companions), " from the fellowship"],
+    };
+  }
+
+  private characters (characters: WotrCharacterId[]) {
+    return characters.map (c => this.characterStore.character (c).name).join (", ");
   }
 
 }

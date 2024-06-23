@@ -1,12 +1,42 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { isCharacterCard } from "../card/wotr-card.models";
-import { WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrBattleAction } from "./wotr-battle-actions";
+import { WotrBattleFlowService } from "./wotr-battle-flow.service";
 
-@Injectable ({
-  providedIn: "root"
-})
-export class WotrBattleLogsService {
+@Injectable ()
+export class WotrBattleService {
+  
+  private actionService = inject (WotrActionService);
+  private regionStore = inject (WotrRegionStore);
+  private battleFlow = inject (WotrBattleFlowService);
+
+  init () {
+    this.actionService.registerActions (this.getActionAppliers () as any);
+  }
+
+  getActionAppliers (): WotrActionApplierMap<WotrBattleAction> {
+    return {
+      "army-attack": async (action, front) => {
+        await this.battleFlow.resolveBattle (action, front);
+      },
+      "army-retreat-into-siege": async (action, front) => {
+        this.regionStore.moveArmyIntoSiege (action.region);
+      },
+      "army-not-retreat-into-siege": async (action, front) => { /*empty*/ },
+      "army-retreat": async (action, front) => this.regionStore.moveArmy (action.fromRegion, action.toRegion),
+      "army-not-retreat": async (action, front) => { /*empty*/ },
+      "leader-forfeit": async (action, front) => { /*empty*/ },
+      "battle-continue": async (action, front) => { /*empty*/ },
+      "battle-cease": async (action, front) => { /*empty*/ },
+      "combat-card-choose": async (action, front) => { /*empty*/ },
+      "combat-card-choose-not": async (action, front) => { /*empty*/ },
+      "combat-roll": async (action, front) => { /*empty*/ },
+      "combat-re-roll": async (action, front) => { /*empty*/ },
+    };
+  }
 
   getActionLoggers (): WotrActionLoggerMap<WotrBattleAction> {
     return {

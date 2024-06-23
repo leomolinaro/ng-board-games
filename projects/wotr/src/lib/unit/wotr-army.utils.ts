@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrArmy, WotrUnits } from "./wotr-unit.models";
 
 @Injectable ({
   providedIn: "root"
 })
-export class WotrArmyUtil {
+export class WotrArmyUtils {
 
   addRegulars (quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy {
     return this.addUnits ("regulars", nation, quantity, army);

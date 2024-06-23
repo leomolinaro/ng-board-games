@@ -5,7 +5,7 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
 import { WotrMapComponent } from "../game/board/map/wotr-map.component";
 import { WotrLogsComponent } from "../log/wotr-logs.component";
 import { WotrArmyUnitType, WotrNation, WotrNationId } from "../nation/wotr-nation.models";

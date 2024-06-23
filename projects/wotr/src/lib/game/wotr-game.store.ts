@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil } from "@leobg/commons/utils";
 import { WotrBattleState, WotrBattleStore } from "../battle/wotr-battle.store";
-import { WotrCharacterState, WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterState, WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId } from "../front/wotr-front.models";

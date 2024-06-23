@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";

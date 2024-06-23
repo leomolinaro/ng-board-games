@@ -1,12 +1,12 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCard } from "../card/wotr-card.models";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtil } from "../unit/wotr-army-util.service";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatCardsService } from "./wotr-combat-cards.service";
@@ -23,7 +23,7 @@ export class WotrBattleFlowService {
   logStore = inject (WotrLogStore);
   regionStore = inject (WotrRegionStore);
   storyService = inject (WotrStoryService);
-  armyUtil = inject (WotrArmyUtil);
+  armyUtil = inject (WotrArmyUtils);
 
   async resolveBattle (action: WotrArmyAttack, attackerId: WotrFrontId) {
     this.logStore.logBattleResolution ();
@@ -59,7 +59,7 @@ export class WotrBattle {
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
-    private armyUtil: WotrArmyUtil,
+    private armyUtil: WotrArmyUtils,
   ) {
     this.defenderId = oppositeFront (attackerId);
   }

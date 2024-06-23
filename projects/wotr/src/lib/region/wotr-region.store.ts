@@ -1,10 +1,10 @@
 import { Injectable, Signal, computed, inject } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId } from "../companion/wotr-character.models";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
-import { WotrArmyUtil } from "../unit/wotr-army-util.service";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrFreeUnits, WotrUnits } from "../unit/wotr-unit.models";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region.models";
 
@@ -18,7 +18,7 @@ export interface WotrRegionState {
 })
 export class WotrRegionStore {
 
-  private armyUtil = inject (WotrArmyUtil);
+  private armyUtil = inject (WotrArmyUtils);
   private characterStore = inject (WotrCharacterStore);
 
   update!: (actionName: string, updater: (a: WotrRegionState) => WotrRegionState) => void;

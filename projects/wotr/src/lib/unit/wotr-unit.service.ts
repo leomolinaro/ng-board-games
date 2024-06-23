@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap } from "../commons/wotr-action.models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -9,16 +9,16 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrUnitAction } from "./wotr-unit-actions";
 
 @Injectable ()
-export class WotrUnitActionsService {
+export class WotrUnitService {
   
-  constructor () {
-    this.actionService.registerActions (this.getActionAppliers () as any);
-  }
-
   private actionService = inject (WotrActionService);
   private nationStore = inject (WotrNationStore);
   private nationService = inject (WotrNationService);
   private regionStore = inject (WotrRegionStore);
+
+  init () {
+    this.actionService.registerActions (this.getActionAppliers () as any);
+  }
 
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
     return {
@@ -155,6 +155,21 @@ export class WotrUnitActionsService {
     } else {
       this.regionStore.removeNazgulFromFreeUnits (quantity, region.id);
     }
+  }
+
+  getActionLoggers (): WotrActionLoggerMap<WotrUnitAction> {
+    return {
+      "army-movement": (action, front, f) => [f.player (front), " army moves from ", f.region (action.fromRegion), " to ", f.region (action.toRegion)],
+      "regular-unit-elimination": (action, front, f) => [f.player (front), " removes regular units from ", f.region (action.region)],
+      "regular-unit-recruitment": (action, front, f) => [f.player (front), " recruits regular units in ", f.region (action.region)],
+      "elite-unit-elimination": (action, front, f) => [f.player (front), " removes elite units from ", f.region (action.region)],
+      "elite-unit-recruitment": (action, front, f) => [f.player (front), " recruits elite units in ", f.region (action.region)],
+      "leader-elimination": (action, front, f) => [f.player (front), " removes leaders from ", f.region (action.region)],
+      "leader-recruitment": (action, front, f) => [f.player (front), " recruits leaders in ", f.region (action.region)],
+      "nazgul-elimination": (action, front, f) => [f.player (front), " removes nazgul from ", f.region (action.region)],
+      "nazgul-recruitment": (action, front, f) => [f.player (front), " recruits nazgul in ", f.region (action.region)],
+      "nazgul-movement": (action, front, f) => [f.player (front), ` moves ${action.nNazgul} Nazgul from `, f.region (action.fromRegion), " to ", f.region (action.toRegion)],
+    };
   }
 
 }

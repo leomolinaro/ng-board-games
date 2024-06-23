@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, V
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
-import { WotrCharacter, WotrCharacterId } from "../../../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character.models";
 import { WotrFellowship } from "../../../fellowship/wotr-fellowhip.models";
 import { WotrFellowshipBoxComponent } from "../../../fellowship/wotr-fellowship-box.component";
 import { WotrFellowshipTrackComponent } from "../../../fellowship/wotr-fellowship-track.component";

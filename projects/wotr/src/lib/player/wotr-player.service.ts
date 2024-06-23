@@ -1,5 +1,5 @@
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrStory } from "../game/wotr-story.models";
 
 export interface WotrPlayerService {

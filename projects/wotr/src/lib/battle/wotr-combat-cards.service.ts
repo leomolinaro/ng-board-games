@@ -3,7 +3,7 @@ import { WotrCard, WotrCardCombatLabel } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtil } from "../unit/wotr-army-util.service";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrCombatFront } from "./wotr-battle-flow.service";
 import { WotrCombatRound } from "./wotr-combat-round";
 
@@ -21,7 +21,7 @@ export class WotrCombatCardsService {
 
   private storyService = inject (WotrStoryService);
   private regionStore = inject (WotrRegionStore);
-  private armyUtil = inject (WotrArmyUtil);
+  private armyUtil = inject (WotrArmyUtils);
 
   async combatCardReaction (params: WotrCombatCardParams): Promise<void> {
     return this.combatCardEffects[params.card.combatLabel] (params);

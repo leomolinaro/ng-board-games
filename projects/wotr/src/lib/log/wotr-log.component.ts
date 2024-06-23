@@ -4,9 +4,9 @@ import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFragmentCreator } from "../commons/wotr-action.models";
-import { WotrCharacterId } from "../companion/wotr-character.models";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameLogsService } from "../game/wotr-game-action-logs.service";
 import { WotrGameStore } from "../game/wotr-game.store";
@@ -162,19 +162,19 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
         }
         return [];
       }
-      case "effect": {
-        const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
-        const parsed: WotrLogFragment[] = [];
-        for (const f of fragments) {
-          if (typeof f === "string") { parsed.push (this.string (f)); }
-          else { parsed.push (f); }
-        }
-        return parsed;
-      }
+      // case "effect": {
+      //   const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
+      //   const parsed: WotrLogFragment[] = [];
+      //   for (const f of fragments) {
+      //     if (typeof f === "string") { parsed.push (this.string (f)); }
+      //     else { parsed.push (f); }
+      //   }
+      //   return parsed;
+      // }
       case "combat-card": return [this.player (l.front), this.string (" plays "), this.card (combatCardToLabel (l.card))];
       case "reveal-in-mordor": return [this.string ("The fellowship is revealed on the Mordor Track")];
       case "move-in-mordor": return [this.string ("The fellowship moves on the Mordor Track")];
-      // default: throw new Error (`Log type ${l.type} not managed`);
+      default: throw new Error (`Unknown log type ${l.type}`);
     }
   });
 

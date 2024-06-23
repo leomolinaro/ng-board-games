@@ -2,7 +2,7 @@ import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, Signal, computed, inject, input } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
-import { WotrCharacter, WotrCharacterId, WotrCompanionId, WotrMinionId } from "../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId, WotrCompanionId, WotrMinionId } from "../character/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrMapPoint, WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrArmyUnitType, WotrFreeUnitType, WotrNationId } from "../nation/wotr-nation.models";

@@ -3,21 +3,21 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieService } from "../action-die/wotr-action-die-actions.service";
-import { WotrBattleActionsService } from "../battle/wotr-battle-actions.service";
+import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { WotrBattleFlowService } from "../battle/wotr-battle-flow.service";
+import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
-import { WotrCardActionsService } from "../card/wotr-card-actions.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
+import { WotrCardService } from "../card/wotr-card.service";
+import { WotrCharacterService } from "../character/wotr-character.service";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrCharacterActionsService } from "../companion/wotr-character-actions.service";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
 import { stories as exampleStories } from "../examples/very-late-minions";
-import { WotrFellowshipActionsService } from "../fellowship/wotr-fellowship-actions.service";
+import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrHuntActionsService } from "../hunt/wotr-hunt-actions.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
+import { WotrHuntService } from "../hunt/wotr-hunt.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -25,10 +25,11 @@ import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
-import { WotrRegionActionsService } from "../region/wotr-region-actions.service";
+import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrUnitActionsService } from "../unit/wotr-unit-actions.service";
+import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
+import { WotrGameLogsService } from "./wotr-game-action-logs.service";
 import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
@@ -72,17 +73,18 @@ import { WotrUiStore } from "./wotr-ui.store";
 
     WotrActionService,
     WotrActionDieService,
-    WotrCardActionsService,
-    WotrBattleActionsService,
+    WotrCardService,
+    WotrBattleService,
     WotrCombatCardsService,
-    WotrCharacterActionsService,
-    WotrFellowshipActionsService,
-    WotrHuntActionsService,
+    WotrCharacterService,
+    WotrFellowshipService,
+    WotrHuntService,
     WotrNationService,
-    WotrRegionActionsService,
-    WotrUnitActionsService,
+    WotrRegionService,
+    WotrUnitService,
 
     WotrCardEffectsService,
+    WotrGameLogsService,
 
     WotrPlayerAiService,
     WotrPlayerLocalService,
@@ -108,17 +110,17 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private flow = inject (WotrGameFlowService);
   private cardEffects = inject (WotrCardEffectsService);
 
-  private actionDieService = inject (WotrActionDieService);
-  private cardService = inject (WotrCardActionsService);
-  private battleService = inject (WotrBattleActionsService);
-  private combatCardsService = inject (WotrCombatCardsService);
-  private characterService = inject (WotrCharacterActionsService);
-  private fellowshipService = inject (WotrFellowshipActionsService);
-  private huntService = inject (WotrHuntActionsService);
-  private nationService = inject (WotrNationService);
-  private regionService = inject (WotrRegionActionsService);
-  private unitService = inject (WotrUnitActionsService);
-
+  constructor () {
+    inject (WotrActionDieService).init ();
+    inject (WotrCardService).init ();
+    inject (WotrBattleService).init ();
+    inject (WotrCharacterService).init ();
+    inject (WotrFellowshipService).init ();
+    inject (WotrHuntService).init ();
+    inject (WotrNationService).init ();
+    inject (WotrRegionService).init ();
+    inject (WotrUnitService).init ();
+  }
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 

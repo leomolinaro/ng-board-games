@@ -2,8 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card.models";
-import { WotrCardService } from "../card/wotr-card.service";
-import { WotrCompanionId } from "../companion/wotr-character.models";
+import { WotrCardUtils } from "../card/wotr-card.utils";
+import { WotrCompanionId } from "../character/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";
@@ -42,7 +42,7 @@ export interface WotrFellowshipSetup {
 })
 export class WotrSetupRulesService {
   
-  private cards = inject (WotrCardService);
+  private cards = inject (WotrCardUtils);
 
   getGameSetup (): WotrSetup {
     return {

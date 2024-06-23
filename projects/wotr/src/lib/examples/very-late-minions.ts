@@ -6,7 +6,7 @@ import { discardDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { attack, combatCard, continueBattle, forfeitLeadership, noCombatCard, reRollCombatDice, retreat, retreatIntoSiege, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
-import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacter, separateCompanions } from "../companion/wotr-character-actions";
+import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacter, separateCompanions } from "../character/wotr-character-actions";
 import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";

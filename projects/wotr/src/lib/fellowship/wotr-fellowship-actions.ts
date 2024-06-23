@@ -1,4 +1,4 @@
-import { WotrCompanionId } from "../companion/wotr-character.models";
+import { WotrCompanionId } from "../character/wotr-character.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 
 export interface WotrFellowshipDeclare { type: "fellowship-declare"; region: WotrRegionId }

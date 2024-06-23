@@ -1,6 +1,6 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrBattle } from "./wotr-battle.models";

@@ -1,6 +1,6 @@
 import { Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId, WotrCompanionId } from "../companion/wotr-character.models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.models";
 import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip.models";
 
 @Injectable ({

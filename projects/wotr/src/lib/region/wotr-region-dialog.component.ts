@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
-import { WotrCharacter, WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrUnits } from "../unit/wotr-unit.models";

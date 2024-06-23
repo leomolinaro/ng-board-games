@@ -1,4 +1,4 @@
-import { WotrCharacterId } from "../companion/wotr-character.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 

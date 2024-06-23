@@ -1,12 +1,12 @@
 import { getCard } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../companion/wotr-character.models";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtil } from "../unit/wotr-army-util.service";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
 import { WotrArmyAttack } from "./wotr-battle-actions";
 import { WotrCombatFront } from "./wotr-battle-flow.service";
@@ -28,7 +28,7 @@ export class WotrCombatRound {
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
     private storyService: WotrStoryService,
-    private armyUtil: WotrArmyUtil,
+    private armyUtil: WotrArmyUtils,
   ) {
     this.attacker = new WotrCombatFront (attackerId, true);
     this.defender = new WotrCombatFront (defenderId, false);

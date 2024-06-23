@@ -6,7 +6,7 @@ import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrActionDiceComponent } from "../../action-die/wotr-action-dice.component";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
-import { WotrCharacter, WotrCharacterId } from "../../companion/wotr-character.models";
+import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
 import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
 import { WotrFront, WotrFrontId } from "../../front/wotr-front.models";

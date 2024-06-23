@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrCharacterStore } from "../companion/wotr-character.store";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
