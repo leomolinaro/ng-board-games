@@ -27,32 +27,35 @@ export class WotrNationStore {
       fpNationIds: ["dwarves", "elves", "gondor", "north", "rohan"],
       sNationIds: ["isengard", "sauron", "southrons"],
       map: {
-        dwarves: this.initFreePeopleNation ("dwarves", "Dwarves", 5, 5, 4, "Dwarves regular", "Dwarves elite", "Dwarves leader"),
-        elves: this.initFreePeopleNation ("elves", "Elves", 5, 10, 4, "Elves regular", "Elves elite", "Elves leader"),
-        gondor: this.initFreePeopleNation ("gondor", "Gondor", 15, 5, 4, "Gondor regular", "Gondor elite", "Gondor leader"),
-        rohan: this.initFreePeopleNation ("rohan", "Rohan", 10, 5, 4, "Rohan regular", "Rohan elite", "Rohan leader"),
-        north: this.initFreePeopleNation ("north", "The North", 10, 5, 4, "Northern regular", "Northern elite", "Northern leader"),
-        isengard: this.initShadowNation ("isengard", "Isengard", 12, 6, 0, "Isengard regular", "Isengard elite"),
-        sauron: this.initShadowNation ("sauron", "Sauron", 36, 6, 8, "Sauron regular", "Sauron elite"),
-        southrons: this.initShadowNation ("southrons", "Southrons & Esterlings", 24, 6, 0, "Southrons & Esterlings regular", "Southrons & Esterlings elite"),
+        dwarves: this.initFreePeopleNation ("dwarves", "Dwarves", false, 3, 5, 5, 4, "Dwarves regular", "Dwarves elite", "Dwarves leader"),
+        elves: this.initFreePeopleNation ("elves", "Elves", true, 3, 5, 10, 4, "Elves regular", "Elves elite", "Elves leader"),
+        gondor: this.initFreePeopleNation ("gondor", "Gondor", false, 2, 15, 5, 4, "Gondor regular", "Gondor elite", "Gondor leader"),
+        rohan: this.initFreePeopleNation ("rohan", "Rohan", false, 3, 10, 5, 4, "Rohan regular", "Rohan elite", "Rohan leader"),
+        north: this.initFreePeopleNation ("north", "The North", false, 3, 10, 5, 4, "Northern regular", "Northern elite", "Northern leader"),
+        isengard: this.initShadowNation ("isengard", "Isengard", true, 1, 12, 6, 0, "Isengard regular", "Isengard elite"),
+        sauron: this.initShadowNation ("sauron", "Sauron", true, 1, 36, 6, 8, "Sauron regular", "Sauron elite"),
+        southrons: this.initShadowNation ("southrons", "Southrons & Esterlings", true, 2, 24, 6, 0, "Southrons & Esterlings regular", "Southrons & Esterlings elite"),
       }
     };
   }
 
   private initFreePeopleNation (
     id: WotrNationId, name: string,
+    active: boolean, politicalStep: WotrPoliticalStep,
     nRegulars: number, nElites: number, nLeaders: number,
     regularLabel: string, eliteLabel: string, leaderLabel: string
-  ): WotrNation { return this.initNation (id, name, "free-peoples", nRegulars, nElites, nLeaders, 0, regularLabel, eliteLabel, leaderLabel); }
+  ): WotrNation { return this.initNation (id, name, "free-peoples", active, politicalStep, nRegulars, nElites, nLeaders, 0, regularLabel, eliteLabel, leaderLabel); }
 
   private initShadowNation (
     id: WotrNationId, name: string,
+    active: boolean, politicalStep: WotrPoliticalStep,
     nRegulars: number, nElites: number, nNazgul: number,
     regularLabel: string, eliteLabel: string
-  ) { return this.initNation (id, name, "shadow", nRegulars, nElites, 0, nNazgul, regularLabel, eliteLabel, null); }
+  ) { return this.initNation (id, name, "shadow", active, politicalStep, nRegulars, nElites, 0, nNazgul, regularLabel, eliteLabel, null); }
 
   private initNation (
     id: WotrNationId, name: string, front: WotrFrontId,
+    active: boolean, politicalStep: WotrPoliticalStep,
     nRegulars: number, nElites: number, nLeaders: number, nNazgul: number,
     regularLabel: string, eliteLabel: string, leaderLabel: string | null
   ): WotrNation {
@@ -62,8 +65,8 @@ export class WotrNationStore {
       units: { regular: nRegulars, elite: nElites, leader: nLeaders,nazgul: nNazgul },
       reinforcements: { regular: nRegulars, elite: nElites, leader: nLeaders, nazgul: nNazgul },
       casualties: { regular: 0, elite: 0, leader: 0 },
-      active: false,
-      politicalStep: 3
+      active,
+      politicalStep
     };
   }
 

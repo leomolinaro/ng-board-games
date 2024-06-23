@@ -3,9 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, comput
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { WotrActionDie } from "../../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../../action-token/wotr-action-token.models";
-import { WotrAssetsService } from "../../assets/wotr-assets.service";
+import { WotrActionDiceComponent } from "../../action-die/wotr-action-dice.component";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
 import { WotrCharacter, WotrCharacterId } from "../../companion/wotr-character.models";
@@ -26,8 +24,54 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 @Component ({
   selector: "wotr-board",
   standalone: true,
-  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, WotrFrontAreaComponent, WotrHuntAreaComponent, BgTransformPipe, WotrReplayButtonComponent],
-  templateUrl: "./wotr-board.component.html",
+  imports: [NgIf, BgTransformPipe, MatTabsModule,
+    WotrMapComponent, WotrLogsComponent, WotrFrontAreaComponent,
+    WotrHuntAreaComponent, WotrReplayButtonComponent, WotrActionDiceComponent
+  ],
+  template: `
+    <div class="wotr-board">
+      <wotr-map
+        class="wotr-map"
+        #wotrMap
+        [regions]="regions ()"
+        [nations]="nations ()"
+        [hunt]="hunt ()"
+        [freePeoples]="freePeoples ()"
+        [shadow]="shadow ()"
+        [fellowship]="fellowship ()"
+        [characterById]="characterById ()"
+        (regionClick)="onRegionClick ($event)">
+      </wotr-map>
+      <div class="wotr-toolbar">{{ message () }}</div>
+      <div class="wotr-fronts">
+        <mat-tab-group>
+          @for (front of fronts (); track front.id) {
+            <mat-tab [label]="front.name + ' ' + (front.handCards | bgTransform:nChaCards) + ' / ' + (front.handCards | bgTransform:nStrCards)"
+              [labelClass]="front.id" [bodyClass]="front.id">
+              <wotr-front-area
+                [front]="front"
+                [nations]="front.id === 'free-peoples' ? freePeoplesNations () : shadowNations ()"
+                [characters]="characters ()"
+                (cardClick)="onPreviewCardClick ($event, front)">
+              </wotr-front-area>
+            </mat-tab>
+          }
+          <mat-tab label="Hunt">
+            <wotr-hunt-area
+              [hunt]="hunt ()">
+            </wotr-hunt-area>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <div class="wotr-action-dice-box">
+        <wotr-action-dice [fronts]="fronts ()"></wotr-action-dice>
+      </div>
+      <div class="wotr-logs">
+        <wotr-replay-buttons class="wotr-replay-buttons" (replayNext)="replayNext.next ($event)" (replayLast)="replayLast.next ()"></wotr-replay-buttons>
+        <wotr-logs [logs]="logs ()"></wotr-logs>
+      </div>
+    </div>
+  `,
   styleUrls: ["./wotr-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,7 +80,6 @@ export class WotrBoardComponent {
   // constructor (private bottomSheet: MatBottomSheet) {}
 
   private dialog = inject (MatDialog);
-  private assets = inject (WotrAssetsService);
 
   players = input.required<WotrPlayer[]> ();
   regions = input.required<WotrRegion[]> ();
@@ -98,9 +141,6 @@ export class WotrBoardComponent {
 
   @Output () replayNext = new EventEmitter<number> ();
   @Output () replayLast = new EventEmitter<void> ();
-
-  protected actionDieImage: BgTransformFn<WotrActionDie, string, WotrFrontId> = (actionDie, frontId) => this.assets.getActionDieImage (actionDie, frontId);
-  protected actionTokenImage: BgTransformFn<WotrActionToken, string, WotrFrontId> = (actionToken, frontId) => this.assets.getActionTokenImage (actionToken, frontId);
 
   summaryFixed = false;
   logsFixed = false;

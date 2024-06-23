@@ -38,8 +38,8 @@ const PSTEPWAR = PSTEP1 + PSTEP;
     @for (politicalNode of politicalNodes (); track politicalNode.id) {
       <svg:image
         transform="scale(0.8, 0.8)"
-        [attr.x]="politicalNode.svgX" [attr.y]="politicalNode.svgY" 
-        [attr.xlink:href]="politicalNode.image"/> 
+        [attr.x]="politicalNode.svgX" [attr.y]="politicalNode.svgY"
+        [attr.xlink:href]="politicalNode.image"/>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

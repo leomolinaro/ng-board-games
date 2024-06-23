@@ -17,24 +17,24 @@ import { WotrHuntState } from "./wotr-hunt.store";
     <mat-tab-group>
       <mat-tab label="Pool">
         <div class="tiles">
-          @for (tile of hunt ().huntPool; track tile) {
+          @for (tile of hunt ().huntPool; track $index) {
             <img class="tile-image" [src]="tile | bgTransform:tileImage"/>
           }
-          @for (tile of hunt ().huntReady; track tile) {
+          @for (tile of hunt ().huntReady; track $index) {
             <img class="tile-image disabled" [src]="tile | bgTransform:tileImage"/>
           }
         </div>
       </mat-tab>
       <mat-tab label="Drawn">
         <div class="tiles">
-          @for (tile of hunt ().huntDrawn; track tile) {
+          @for (tile of hunt ().huntDrawn; track $index) {
             <img class="tile-image" [src]="tile | bgTransform:tileImage"/>
           }
         </div>
       </mat-tab>
       <mat-tab label="Removed">
         <div class="tiles">
-          @for (tile of hunt ().huntRemoved; track tile) {
+          @for (tile of hunt ().huntRemoved; track $index) {
             <img class="tile-image" [src]="tile | bgTransform:tileImage"/>
           }
         </div>

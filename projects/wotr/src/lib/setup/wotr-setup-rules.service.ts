@@ -5,13 +5,12 @@ import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card.model
 import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCompanionId } from "../companion/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation.models";
+import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 
 export interface WotrSetup {
   regions: WotrRegionSetup[];
   fellowship: WotrFellowshipSetup;
-  nations: WotrNationSetup[];
   decks: WotrFrontDecksSetup[];
   freePeopleTokens: WotrActionToken[];
   shadowTokens: WotrActionToken[];
@@ -30,12 +29,6 @@ export interface WotrRegionSetup {
   nElites: number;
   nLeaders: number;
   nNazgul: number;
-}
-
-export interface WotrNationSetup {
-  nation: WotrNationId;
-  active: boolean;
-  politicalStep: WotrPoliticalStep;
 }
 
 export interface WotrFellowshipSetup {
@@ -91,16 +84,6 @@ export class WotrSetupRulesService {
         this.sRegionSetup ("south-rhun", "southrons", 3, 1, 0),
         this.sRegionSetup ("umbar", "southrons", 3, 0, 0),
       ],
-      nations: [
-        this.nationSetup ("dwarves", 3, false),
-        this.nationSetup ("north", 3, false),
-        this.nationSetup ("rohan", 3, false),
-        this.nationSetup ("elves", 3, true),
-        this.nationSetup ("gondor", 2, false),
-        this.nationSetup ("southrons", 2, true),
-        this.nationSetup ("isengard", 1, true),
-        this.nationSetup ("sauron", 1, true),
-      ],
       fellowship: {
         region: "rivendell",
         companions: ["gandalf-the-grey", "strider", "boromir", "legolas", "gimli", "meriadoc", "peregrin"],
@@ -124,10 +107,6 @@ export class WotrSetupRulesService {
         strategyDeck: arrayUtil.shuffle (this.cards.getAllShadowStrategyCardIds ()),
       }
     ];
-  }
-
-  private nationSetup (nation: WotrNationId, politicalStep: WotrPoliticalStep, active: boolean): WotrNationSetup {
-    return { nation, active, politicalStep };
   }
 
   private fpRegionSetup (region: WotrRegionId, nation: WotrNationId, nRegulars: number, nElites: number, nLeaders: number): WotrRegionSetup {

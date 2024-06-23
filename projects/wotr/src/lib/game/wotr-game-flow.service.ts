@@ -153,10 +153,6 @@ export class WotrGameFlowService {
         this.regionStore.addNazgulToArmy (r.nNazgul, r.region);
       }
     }
-    for (const nationSetup of setup.nations) {
-      this.nationStore.activate (nationSetup.active, nationSetup.nation);
-      this.nationStore.setPoliticalStep (nationSetup.politicalStep, nationSetup.nation);
-    }
     this.frontStore.setActionTokens (setup.freePeopleTokens, "free-peoples");
     this.frontStore.setActionTokens (setup.shadowTokens, "shadow");
     this.fellowshipStore.setCompanions (setup.fellowship.companions);
