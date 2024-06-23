@@ -5,6 +5,7 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
@@ -27,6 +28,7 @@ export class WotrCombatRound {
     private frontStore: WotrFrontStore,
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
+    private nationService: WotrNationService,
     private storyService: WotrStoryService,
     private armyUtil: WotrArmyUtils,
   ) {
@@ -116,6 +118,7 @@ export class WotrCombatRound {
       }
       if (this.attackedRegion ().settlement) {
         this.regionStore.setControlledBy (this.attacker.id, this.action.toRegion); // TODO controllare se avanza
+        this.nationService.checkNationAdvanceByCapture (this.action.toRegion);
       }
     }
 

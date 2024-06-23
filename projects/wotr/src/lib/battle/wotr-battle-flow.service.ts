@@ -5,6 +5,7 @@ import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmyAttack } from "./wotr-battle-actions";
@@ -22,6 +23,7 @@ export class WotrBattleFlowService {
   frontStore = inject (WotrFrontStore);
   logStore = inject (WotrLogStore);
   regionStore = inject (WotrRegionStore);
+  nationService = inject (WotrNationService);
   storyService = inject (WotrStoryService);
   armyUtil = inject (WotrArmyUtils);
 
@@ -38,6 +40,7 @@ export class WotrBattleFlowService {
       this.frontStore,
       this.logStore,
       this.regionStore,
+      this.nationService,
       this.storyService,
       this.armyUtil
     );
@@ -58,6 +61,7 @@ export class WotrBattle {
     private frontStore: WotrFrontStore,
     private logStore: WotrLogStore,
     private regionStore: WotrRegionStore,
+    private nationService: WotrNationService,
     private storyService: WotrStoryService,
     private armyUtil: WotrArmyUtils,
   ) {
@@ -81,6 +85,7 @@ export class WotrBattle {
         this.frontStore,
         this.logStore,
         this.regionStore,
+        this.nationService,
         this.storyService,
         this.armyUtil
       );

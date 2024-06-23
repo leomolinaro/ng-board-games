@@ -25,6 +25,7 @@ export class WotrBattleService {
 
   private async applyArmyAttack (action: WotrArmyAttack, front: WotrFrontId) {
     this.nationService.checkNationActivationByAttack (action.toRegion);
+    this.nationService.checkNationAdvanceByAttack (action.toRegion);
     await this.battleFlow.resolveBattle (action, front);
   }
 

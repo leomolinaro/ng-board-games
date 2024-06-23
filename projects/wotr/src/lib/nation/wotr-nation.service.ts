@@ -46,14 +46,37 @@ export class WotrNationService {
   }
 
   checkNationActivationByAttack (regionId: WotrRegionId) {
+    const nations = this.nationOfAttackedUnits (regionId);
+    for (const nationId of nations) {
+      const nation = this.nationStore.nation (nationId);
+      if (!nation.active) { this.activateNation (nationId); }
+    }
+  }
+
+  checkNationAdvanceByAttack (regionId: WotrRegionId) {
+    const nations = this.nationOfAttackedUnits (regionId);
+    for (const nationId of nations) {
+      const nation = this.nationStore.nation (nationId);
+      if (nation.politicalStep !== "atWar") { this.advanceNation (1, nationId); }
+    }
+  }
+
+  private nationOfAttackedUnits (regionId: WotrRegionId) {
     const region = this.regionStore.region (regionId);
     const defendingArmy = region.underSiegeArmy || region.army!;
     const nations = new Set<WotrNationId> ();
     defendingArmy.regulars?.forEach (r => nations.add (r.nation));
     defendingArmy.elites?.forEach (r => nations.add (r.nation));
-    for (const nationId of nations) {
-      const nation = this.nationStore.nation (nationId);
-      if (!nation.active) { this.activateNation (nationId); }
+    return nations;
+  }
+
+  checkNationAdvanceByCapture (regionId: WotrRegionId) {
+    const region = this.regionStore.region (regionId);
+    if (region.nationId) {
+      const nation = this.nationStore.nation (region.nationId);
+      if (nation.politicalStep !== "atWar") {
+        this.activateNation (region.nationId);
+      }
     }
   }
 
