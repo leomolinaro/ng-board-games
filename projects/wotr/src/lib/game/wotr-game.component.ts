@@ -4,7 +4,6 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
-import { WotrBattleFlowService } from "../battle/wotr-battle-flow.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
@@ -16,6 +15,7 @@ import { WotrEventService } from "../commons/wotr-event.service";
 import { stories as exampleStories } from "../examples/very-late-minions";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontService } from "../front/wotr-front.service";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntService } from "../hunt/wotr-hunt.service";
@@ -69,7 +69,6 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrStoryService,
     
     WotrGameFlowService,
-    WotrBattleFlowService,
     WotrHuntFlowService,
 
     WotrActionService,
@@ -83,6 +82,7 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrNationService,
     WotrRegionService,
     WotrUnitService,
+    WotrFrontService,
 
     WotrEventService,
     WotrCardEffectsService,

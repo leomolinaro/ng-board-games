@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, ViewChild, inject, input, isDevMode } from "@angular/core";
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, ViewChild, computed, inject, input, isDevMode } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
@@ -10,6 +10,7 @@ import { WotrDeckBoxesComponent } from "../../../front/wotr-deck-boxes.component
 import { WotrElvenRingsBoxComponent } from "../../../front/wotr-elven-rings-box.component";
 import { WotrFront } from "../../../front/wotr-front.models";
 import { WotrTableCardsComponent } from "../../../front/wotr-table-card-boxes.component";
+import { WotrVictoryPointsTrackComponent } from "../../../front/wotr-victory-points-track.component";
 import { WotrHuntBoxComponent } from "../../../hunt/wotr-hunt-box.component";
 import { WotrHuntState } from "../../../hunt/wotr-hunt.store";
 import { WotrNation } from "../../../nation/wotr-nation.models";
@@ -30,7 +31,8 @@ const GRID_STEP = 10;
     WotrPoliticalTrackComponent, WotrHuntBoxComponent,
     WotrFellowshipTrackComponent, WotrFellowshipBoxComponent,
     WotrElvenRingsBoxComponent,
-    WotrDeckBoxesComponent, WotrTableCardsComponent
+    WotrDeckBoxesComponent, WotrTableCardsComponent,
+    WotrVictoryPointsTrackComponent
   ],
   template: `
     <svg:svg bgSvg
@@ -58,6 +60,7 @@ const GRID_STEP = 10;
           [shadowElvenRings]="shadow ().elvenRings"></svg:g>
         <svg:g wotrDeckBoxes [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
         <svg:g wotrTableCards [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
+        <svg:g wotrVictoryPointsTrack [fronts]="fronts ()"></svg:g>
       </svg:g>
     </svg:svg>
     @if (isDevMode) {
@@ -79,6 +82,7 @@ export class WotrMapComponent {
   shadow = input.required<WotrFront> ();
   fellowship = input.required<WotrFellowship[]> ();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
+  fronts = computed (() => ([this.freePeoples (), this.shadow ()]));
 
   // @Input () validRegions: WotrRegionId[] | null = null;
 

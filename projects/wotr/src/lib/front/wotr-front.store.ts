@@ -48,7 +48,8 @@ export class WotrFrontStore {
       strategyDiscardPile: [],
       actionDice: [],
       actionTokens: [],
-      elvenRings
+      elvenRings,
+      victoryPoints: 0
     };
   }
 
@@ -151,6 +152,10 @@ export class WotrFrontStore {
       ...front,
       tableCards: immutableUtil.listRemoveFirst (c => c === card, front.tableCards)
     }));
+  }
+
+  setVictoryPoints (victoryPoints: number, front: WotrFrontId) {
+    this.updateFront ("setVictoryPoints", front, f => ({ ...f, victoryPoints }));
   }
 
 }

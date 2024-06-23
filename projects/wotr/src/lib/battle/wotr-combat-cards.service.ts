@@ -4,8 +4,8 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
-import { WotrCombatFront } from "./wotr-battle-flow.service";
-import { WotrCombatRound } from "./wotr-combat-round";
+import { WotrArmy } from "../unit/wotr-unit.models";
+import { WotrCombatFront, WotrCombatRound } from "./wotr-battle.models";
 
 export interface WotrCombatCardParams {
   front: WotrFrontId;
@@ -14,6 +14,8 @@ export interface WotrCombatCardParams {
   combatRound: WotrCombatRound;
   card: WotrCard;
   isAttacker: boolean;
+  attackedArmy: () => WotrArmy | undefined;
+  attackingArmy: () => WotrArmy | undefined;
 }
 
 @Injectable ()
@@ -63,8 +65,8 @@ export class WotrCombatCardsService {
     "Fateful Strike": async params => { throw new Error ("TODO"); },
     "Foul Stench": async params => { throw new Error ("TODO"); },
     "Great Host": async params => {
-      const attackedArmy = params.combatRound.attackedArmy ();
-      const attackingArmy = params.combatRound.attackingArmy ();
+      const attackedArmy = params.attackedArmy ();
+      const attackingArmy = params.attackingArmy ();
       const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits (attackedArmy) : 0;
       const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits (attackingArmy) : 0;
       if ((params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||

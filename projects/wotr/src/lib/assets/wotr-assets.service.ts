@@ -122,5 +122,12 @@ export class WotrAssetsService {
   getFellowshipProgressCounter (revealed: boolean) { return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? "back" : "front"}.png`; }
   getCorruptionCounter () { return `${BASE_PATH}/fellowship-counters/corruption-counter.png`; }
   getElvenRingImage (elvenRing: WotrElvenRing) { return `${BASE_PATH}/elven-rings/${elvenRing}.png`; }
+  getVictoryMarker (front: WotrFrontId, points: number) {
+    if (points <= 10) {
+      return `${BASE_PATH}/victory-markers/${front}.png`;
+    } else {
+      return `${BASE_PATH}/victory-markers/${front}-10.png`;
+    }
+  }
 
 }

@@ -17,6 +17,7 @@ export interface WotrFront {
   actionDice: WotrActionDie[];
   actionTokens: WotrActionToken[];
   elvenRings: WotrElvenRing[];
+  victoryPoints: number;
 }
 
 export function oppositeFront (front: WotrFrontId): WotrFrontId {
