@@ -33,7 +33,8 @@ export class BgAuthService {
     private cloud: BgCloudService
   ) {}
 
-  private $user = new BehaviorSubject<BgUser | null> (null);
+  // private $user = new BehaviorSubject<BgUser | null> (null);
+  private $user = new BehaviorSubject<BgUser | null> ({ email: "aaa" } as any);
   private setUser (user: BgUser | null) {
     this.$user.next (user);
   }

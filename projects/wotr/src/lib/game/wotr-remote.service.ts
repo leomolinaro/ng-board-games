@@ -9,22 +9,22 @@ export interface WotrGameDoc {
   owner: BgUser;
   online: boolean;
   state: "open" | "closed";
-} // WotrGameDoc
+}
 
 export interface AWotrPlayerDoc {
   id: WotrFrontId;
   name: string;
   sort: number;
-} // ABritPlayerDoc
+}
 
 export interface WotrAiPlayerDoc extends AWotrPlayerDoc {
   isAi: true;
-} // BritAiPlayerDoc
+}
 
 export interface WotrReadPlayerDoc extends AWotrPlayerDoc {
   isAi: false;
   controller: BgUser;
-} // BritReadPlayerDoc
+}
 
 export type WotrPlayerDoc = WotrAiPlayerDoc | WotrReadPlayerDoc;
 
@@ -60,4 +60,4 @@ export class WotrRemoteService {
   deleteStory$ (storyId: string, gameId: string) { return this.cloud.delete$ (storyId, this.stories (gameId)); }
   deleteStories$ (gameId: string) { return this.cloud.deleteAll$ (this.stories (gameId)); }
 
-} // BritRemoteService
+}

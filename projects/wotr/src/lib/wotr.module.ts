@@ -9,6 +9,8 @@ import { BgSvgModule } from "@leobg/commons";
 import { BgTransformPipe, NgLetDirective } from "@leobg/commons/utils";
 import { WotrMapService } from "./game/board/map/wotr-map.service";
 import { WotrGameComponent } from "./game/wotr-game.component";
+import { WotrRemoteMockService } from "./game/wotr-remote-mock.service";
+import { WotrRemoteService } from "./game/wotr-remote.service";
 import { WotrHomeComponent } from "./home/wotr-home.component";
 
 const gameResolvers = {
@@ -34,6 +36,9 @@ const routes: Routes = [
     MatIconModule,
     MatButtonModule,
     NgLetDirective
+  ],
+  providers: [
+    { provide: WotrRemoteService, useClass: WotrRemoteMockService }
   ]
 })
 export class WotrModule {}

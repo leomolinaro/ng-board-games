@@ -20,6 +20,7 @@ export class BgIfUserDirective {
     } else if (!condition && this.hasView) {
       this.viewContainer.clear ();
       this.hasView = false;
-    } // if - else
-  } // bgIfUser
-} // BgIfUserDirective
+    }
+  }
+  
+}
