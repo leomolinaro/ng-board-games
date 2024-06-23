@@ -20,6 +20,7 @@ export class WotrFellowshipService {
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrFellowshipAction> {
@@ -28,6 +29,7 @@ export class WotrFellowshipService {
       "fellowship-declare": async (action, front) => {
         this.regionStore.moveFellowshipToRegion (action.region);
         this.fellowhipStore.setProgress (0);
+        this.nationService.checkNationActivationByFellowshipDeclaration (action.region);
       },
       "fellowship-declare-not": async (action, front) => { /*empty*/ },
       "fellowship-guide": async (action, front) => { this.fellowhipStore.setGuide (action.companion); },
@@ -49,7 +51,7 @@ export class WotrFellowshipService {
     };
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrFellowshipAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrFellowshipAction> {
     return {
       "fellowship-corruption": (action, front, f) => [
         f.player (front),

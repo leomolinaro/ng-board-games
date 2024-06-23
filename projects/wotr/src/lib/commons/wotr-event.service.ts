@@ -28,7 +28,6 @@ export class WotrEventService {
         await consumer (event);
       }
     }
-
   }
 
 }

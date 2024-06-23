@@ -7,8 +7,8 @@ import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFragmentCreator } from "../commons/wotr-action.models";
+import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameLogsService } from "../game/wotr-game-action-logs.service";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
@@ -104,7 +104,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
   
   private assets = inject (WotrAssetsService);
   private store = inject (WotrGameStore);
-  private logService = inject (WotrGameLogsService);
+  private actionService = inject (WotrActionService);
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private characterStore = inject (WotrCharacterStore);
@@ -140,7 +140,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
       case "battle-resolution": return [this.string ("Battle Resolution")];
       case "hunt-resolution": return [this.string ("Hunt Resolution")];
       case "action": {
-        const fragments = this.logService.getActionLogFragments<WotrLogFragment> (l.action, l.front, this);
+        const fragments = this.actionService.getActionLogFragments<WotrLogFragment> (l.action, l.front, this);
         const parsed: WotrLogFragment[] = [];
         for (const f of fragments) {
           if (typeof f === "string") { parsed.push (this.string (f)); }
@@ -163,7 +163,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogFrag
         return [];
       }
       case "effect": {
-        const fragments = this.logService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
+        const fragments = this.actionService.getEffectLogFragments<WotrLogFragment> (l.effect, this);
         const parsed: WotrLogFragment[] = [];
         for (const f of fragments) {
           if (typeof f === "string") { parsed.push (this.string (f)); }

@@ -30,7 +30,6 @@ import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
-import { WotrGameLogsService } from "./wotr-game-action-logs.service";
 import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteMockService } from "./wotr-remote-mock.service";
@@ -87,7 +86,6 @@ import { WotrUiStore } from "./wotr-ui.store";
 
     WotrEventService,
     WotrCardEffectsService,
-    WotrGameLogsService,
 
     WotrPlayerAiService,
     WotrPlayerLocalService,

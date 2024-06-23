@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { objectUtil } from "@leobg/commons/utils";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrAction, WotrActionApplier, WotrActionLogger, WotrFragmentCreator } from "./wotr-action.models";
+import { WotrAction, WotrActionApplier, WotrActionLogger, WotrEffectLogger, WotrFragmentCreator } from "./wotr-action.models";
 import { WotrEventService } from "./wotr-event.service";
 
 @Injectable ()
@@ -21,8 +21,7 @@ export class WotrActionService {
 
   async applyAction (action: WotrAction, frontId: WotrFrontId) {
     const actionApplier = this.actionAppliers.get (action.type);
-    if (!actionApplier) { throw new Error (`Unknown action ${action.type}`); }
-    await actionApplier (action, frontId);
+    if (actionApplier) { await actionApplier (action, frontId); }
     await this.eventService.publish (action);
   }
 
@@ -37,5 +36,16 @@ export class WotrActionService {
     if (!actionLogger) { throw new Error (`Unknown action log ${action.type}`); }
     return actionLogger (action, front, fragmentCreator);
   }
+
+  private effectLoggers: Map<string, WotrEffectLogger<WotrAction>> = new Map ();
+
+  registerEffectLoggers (effectLoggers: Record<string, WotrEffectLogger<WotrAction>>) {
+    objectUtil.forEachProp (effectLoggers, (effectType, effectLogger) => this.effectLoggers.set (effectType, effectLogger));
+  }
+
+  getEffectLogFragments<F> (effect: WotrAction, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {
+    const effectLogger = this.effectLoggers.get (effect.type);
+    if (!effectLogger) { throw new Error (`Unknown effect log ${effect.type}`); }
+    return effectLogger (effect, fragmentCreator);  }
 
 }

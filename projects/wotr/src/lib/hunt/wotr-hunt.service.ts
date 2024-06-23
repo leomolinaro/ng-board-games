@@ -14,6 +14,7 @@ export class WotrHuntService {
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrHuntAction> {
@@ -32,7 +33,7 @@ export class WotrHuntService {
     };
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrHuntAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrHuntAction> {
     return {
       "hunt-allocation": (action, front, f) => [f.player (front), ` allocates ${this.nDice (action.quantity)} in the Hunt Box`],
       "hunt-roll": (action, front, f) => [f.player (front), ` rolls ${this.dice (action.dice)} for the hunt`],

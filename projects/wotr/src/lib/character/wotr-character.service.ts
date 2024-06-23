@@ -24,6 +24,7 @@ export class WotrCharacterService {
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrCharacterAction> {
@@ -103,7 +104,7 @@ export class WotrCharacterService {
     }
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrCharacterAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrCharacterAction> {
     return {
       "character-elimination": (action, front, f) => [f.player (front), " removes ", this.characters (action.characters)],
       "character-movement": (action, front, f) => [f.player (front), " moves ", this.characters (action.characters), " to ", f.region (action.toRegion)],

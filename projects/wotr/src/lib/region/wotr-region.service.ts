@@ -10,6 +10,7 @@ export class WotrRegionService {
   
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrRegionAction> {
@@ -18,7 +19,7 @@ export class WotrRegionService {
     };
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrRegionAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrRegionAction> {
     return {
       "region-choose": (action, front, f) => [f.player (front), " chooses ", f.region (action.region)],
     };

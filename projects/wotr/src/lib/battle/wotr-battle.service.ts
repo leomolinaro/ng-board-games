@@ -1,11 +1,11 @@
 import { Injectable, inject } from "@angular/core";
 import { isCharacterCard } from "../card/wotr-card.models";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationService } from "../nation/wotr-nation.service";
-import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrBattleAction } from "./wotr-battle-actions";
+import { WotrArmyAttack, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleAction } from "./wotr-battle-actions";
 import { WotrBattleFlowService } from "./wotr-battle-flow.service";
 
 @Injectable ()
@@ -13,37 +13,30 @@ export class WotrBattleService {
   
   private actionService = inject (WotrActionService);
   private nationService = inject (WotrNationService);
-  private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private battleFlow = inject (WotrBattleFlowService);
 
   init () {
-    this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerAction<WotrArmyAttack> ("army-attack", this.applyArmyAttack.bind (this));
+    this.actionService.registerAction<WotrArmyRetreatIntoSiege> ("army-retreat-into-siege", this.applyArmyRetreatIntoSiege.bind (this));
+    this.actionService.registerAction<WotrArmyRetreat> ("army-retreat", this.applyArmyRetreat.bind (this));
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
-  getActionAppliers (): WotrActionApplierMap<WotrBattleAction> {
-    return {
-      "army-attack": async (action, front) => {
-        await this.battleFlow.resolveBattle (action, front);
-        this.nationService.checkNationActivationByAttack (action.toRegion);
-      },
-      "army-retreat-into-siege": async (action, front) => {
-        this.regionStore.moveArmyIntoSiege (action.region);
-      },
-      "army-not-retreat-into-siege": async (action, front) => { /*empty*/ },
-      "army-retreat": async (action, front) => this.regionStore.moveArmy (action.fromRegion, action.toRegion),
-      "army-not-retreat": async (action, front) => { /*empty*/ },
-      "leader-forfeit": async (action, front) => { /*empty*/ },
-      "battle-continue": async (action, front) => { /*empty*/ },
-      "battle-cease": async (action, front) => { /*empty*/ },
-      "combat-card-choose": async (action, front) => { /*empty*/ },
-      "combat-card-choose-not": async (action, front) => { /*empty*/ },
-      "combat-roll": async (action, front) => { /*empty*/ },
-      "combat-re-roll": async (action, front) => { /*empty*/ },
-    };
+  private async applyArmyAttack (action: WotrArmyAttack, front: WotrFrontId) {
+    this.nationService.checkNationActivationByAttack (action.toRegion);
+    await this.battleFlow.resolveBattle (action, front);
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrBattleAction> {
+  private async applyArmyRetreatIntoSiege (action: WotrArmyRetreatIntoSiege) {
+    this.regionStore.moveArmyIntoSiege (action.region);
+  }
+
+  private async applyArmyRetreat (action: WotrArmyRetreat) {
+    this.regionStore.moveArmy (action.fromRegion, action.toRegion);
+  }
+
+  private getActionLoggers (): WotrActionLoggerMap<WotrBattleAction> {
     return {
       "army-attack": (action, front, f) => [f.player (front), " army in ", f.region (action.fromRegion), " attacks ", f.region (action.toRegion)],
       "army-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " retreat into siege"],

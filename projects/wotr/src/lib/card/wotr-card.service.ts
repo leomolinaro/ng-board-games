@@ -27,7 +27,7 @@ export class WotrCardService {
     };
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrCardAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrCardAction> {
     return {
       "card-discard": (action, front, f) => [f.player (front), ` discards ${this.nCards (action.cards)}`],
       "card-discard-from-table": (action, front, f) => [f.player (front), ` discards "${cardToLabel (action.card)}" from table`],

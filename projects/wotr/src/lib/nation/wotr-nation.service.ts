@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrActionLoggerMap, WotrEffectLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionApplier, WotrActionLoggerMap, WotrEffectLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrLogStore } from "../log/wotr-log.store";
@@ -21,17 +21,19 @@ export class WotrNationService {
   private characterStore = inject (WotrCharacterStore);
 
   init () {
-    this.actionService.registerAction<WotrPoliticalActivation> ("political-activation", this.applyPoliticalActivation.bind (this));
-    this.actionService.registerAction<WotrPoliticalAdvance> ("political-advance", this.applyPoliticalAdvance.bind (this));
+    this.actionService.registerAction<WotrPoliticalActivation> ("political-activation", this.politicalActivation);
+    this.actionService.registerAction<WotrPoliticalAdvance> ("political-advance", this.politicalAdvance);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+    this.actionService.registerEffectLoggers (this.getEffectLoggers () as any);
   }
 
-  private async applyPoliticalActivation (action: WotrPoliticalActivation) {
+  private politicalActivation: WotrActionApplier<WotrPoliticalActivation> = async (action) => {
     this.nationStore.activate (true, action.nation);
-  }
+  };
 
-  private async applyPoliticalAdvance (action: WotrPoliticalAdvance) {
+  private politicalAdvance: WotrActionApplier<WotrPoliticalAdvance> = async (action) => {
     this.nationStore.advance (action.quantity, action.nation);
-  }
+  };
 
   checkNationActivationByArmyMovement (regionId: WotrRegionId, armyFront: WotrFrontId) {
     const region = this.regionStore.region (regionId);
@@ -90,14 +92,14 @@ export class WotrNationService {
     this.nationStore.advance (quantity, nation);
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrNationAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrNationAction> {
     return {
       "political-activation": (action, front, f) => [f.player (front), " activates ", f.nation (action.nation)],
       "political-advance": (action, front, f) => [f.player (front), " advances ", f.nation (action.nation), " on the Political Track"],
     };
   }
 
-  getEffectLoggers (): WotrEffectLoggerMap<WotrNationAction> {
+  private getEffectLoggers (): WotrEffectLoggerMap<WotrNationAction> {
     return {
       "political-activation": (effect, f) => [f.nation (effect.nation), " is activated"],
       "political-advance": (effect, f) => [f.nation (effect.nation), " is advanced on the Political Track"],

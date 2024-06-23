@@ -13,6 +13,7 @@ export class WotrActionDieService {
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrActionDieAction> {
@@ -27,7 +28,7 @@ export class WotrActionDieService {
     };
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrActionDieAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrActionDieAction> {
     return {
       "action-dice-discard": (action, front, f) => [f.player (front), " discards ", f.player (action.front), ` ${this.dice (action.dice)}`],
       "action-roll": (action, front, f) => [f.player (front), ` rolls ${this.dice (action.dice)}`],

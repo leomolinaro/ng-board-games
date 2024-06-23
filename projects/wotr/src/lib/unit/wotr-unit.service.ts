@@ -18,6 +18,7 @@ export class WotrUnitService {
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
+    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
@@ -151,7 +152,7 @@ export class WotrUnitService {
     }
   }
 
-  getActionLoggers (): WotrActionLoggerMap<WotrUnitAction> {
+  private getActionLoggers (): WotrActionLoggerMap<WotrUnitAction> {
     return {
       "army-movement": (action, front, f) => [f.player (front), " army moves from ", f.region (action.fromRegion), " to ", f.region (action.toRegion)],
       "regular-unit-elimination": (action, front, f) => [f.player (front), " removes regular units from ", f.region (action.region)],
