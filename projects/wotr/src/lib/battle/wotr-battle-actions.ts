@@ -1,13 +1,14 @@
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { frontOfNation } from "../nation/wotr-nation.models";
 import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrArmy, WotrLeaderUnits, WotrUnitComposer } from "../unit/wotr-unit.models";
+import { WotrArmy, WotrLeaderUnits, WotrUnitComposer, WotrUnits } from "../unit/wotr-unit.models";
 import { WotrCombatDie } from "./wotr-combat-die.models";
 
 export type WotrBattleAction =
   WotrArmyAttack |
   WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege |
   WotrArmyRetreat | WotrArmyNotRetreat |
+  WotrArmyAdvance | WotrArmyNotAdvance |
   WotrBattleContinue | WotrBattleCease | WotrLeaderForfeit |
   WotrCombatCardChoose | WotrCombatCardChooseNot | WotrCombatRoll | WotrCombatReRoll;
 
@@ -32,10 +33,14 @@ export interface WotrBattleContinue { type: "battle-continue"; region: WotrRegio
 export function continueBattle (region: WotrRegionId): WotrBattleContinue { return { type: "battle-continue", region }; }
 export interface WotrBattleCease { type: "battle-cease"; region: WotrRegionId }
 export function ceaseBattle (region: WotrRegionId): WotrBattleCease { return { type: "battle-cease", region }; }
-export interface WotrArmyRetreat { type: "army-retreat"; fromRegion: WotrRegionId; toRegion: WotrRegionId }
-export function retreat (fromRegion: WotrRegionId, toRegion: WotrRegionId): WotrArmyRetreat { return { type: "army-retreat", fromRegion, toRegion }; }
+export interface WotrArmyRetreat { type: "army-retreat"; toRegion: WotrRegionId }
+export function retreat (toRegion: WotrRegionId): WotrArmyRetreat { return { type: "army-retreat", toRegion }; }
 export interface WotrArmyNotRetreat { type: "army-not-retreat"; region: WotrRegionId }
 export function notRetreat (region: WotrRegionId): WotrArmyNotRetreat { return { type: "army-not-retreat", region }; }
+export interface WotrArmyAdvance { type: "army-advance"; leftUnits?: WotrUnits }
+export function advanceArmy (leftUnits?: WotrUnits): WotrArmyAdvance { return { type: "army-advance", leftUnits }; }
+export interface WotrArmyNotAdvance { type: "army-not-advance"; region: WotrRegionId }
+export function notAdvanceArmy (region: WotrRegionId): WotrArmyNotAdvance { return { type: "army-not-advance", region }; }
 
 export interface WotrCombatCardChoose { type: "combat-card-choose"; card: WotrCardId }
 export function combatCard (card: WotrCardLabel): WotrCombatCardChoose { return { type: "combat-card-choose", card: labelToCardId (card) }; }

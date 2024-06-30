@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
-import { WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
+import { WotrArmyAdvance, WotrArmyNotAdvance, WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
@@ -383,8 +383,13 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return actions;
   }
 
-  async battleAdvance (front: WotrFrontId): Promise<WotrStory> {
-    return this.story (front, p => p.battleAdvance! ());
+  async battleAdvance (front: WotrFrontId): Promise<boolean> {
+    const story = await this.story (front, p => p.battleAdvance! ());
+    const action = this.findAction<WotrArmyAdvance | WotrArmyNotAdvance> (story, "army-advance", "army-not-advance");
+    switch (action.type) {
+      case "army-advance": return true;
+      case "army-not-advance": return false;
+    }
   }
 
   async wantContinueBattle (front: WotrFrontId): Promise<boolean> {

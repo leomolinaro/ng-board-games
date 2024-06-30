@@ -1,7 +1,7 @@
 // https://www.youtube.com/watch?v=6kDLffpqd9A&ab_channel=WaroftheRingChamp
 
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
-import { attack, combatCard, noCombatCard, reRollCombatDice, rollCombatDice } from "../battle/wotr-battle-actions";
+import { advanceArmy, attack, combatCard, noCombatCard, reRollCombatDice, retreat, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, playCharacter, separateCompanions } from "../character/wotr-character-actions";
 import { changeGuide, corruptFellowship, declareFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
@@ -80,8 +80,8 @@ export const stories: WotrStoryDoc[] = [
   s ().characterDie (attack ("northern-rhovanion", "old-forest-road")),
   s ().battleStory (noCombatCard ()),
   fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
-  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmies (armyMovement ("old-forest-road", "woodland-realm"))),
-  s ().battleStory (moveArmies (armyMovement ("northern-rhovanion", "old-forest-road"))),
+  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", retreat ("woodland-realm")),
+  s ().battleStory (advanceArmy ()),
   fp ().musterArmyAbilityDie ("strider", hideFellowship ()),
   s ().armyDie (moveArmies (armyMovement ("old-forest-road", "carrock", leftUnits (regular ("sauron", 8), elite ("sauron"), nazgul (1))), armyMovement ("near-harad", "umbar", leftUnits (regular ("southrons", 1))))),
   fp ().pass (),
@@ -93,7 +93,7 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (reRollCombatDice (1)),
   s ().battleStory (eliminateRegularUnit ("old-forest-road", "sauron")),
   fp ().combatCardReaction ("Stormcrow", eliminateRegularUnit ("dale", "north"), eliminateLeader ("dale", "north")),
-  s ().battleStory (moveArmies (armyMovement ("old-forest-road", "dale", leftUnits (regular ("sauron"))))),
+  s ().battleStory (advanceArmy (leftUnits (regular ("sauron")))),
   fp ().willOfTheWestDie (moveArmies (armyMovement ("iron-hills", "erebor"), armyMovement ("westemnet", "helms-deep"))),
   s ().eventDie (drawCards ("The Black Captain Commands")),
   fp ().willOfTheWestDie (moveFelloswhip ()),

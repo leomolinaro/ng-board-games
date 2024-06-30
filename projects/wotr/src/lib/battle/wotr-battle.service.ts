@@ -13,7 +13,7 @@ import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
-import { WotrArmyAttack, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleAction } from "./wotr-battle-actions";
+import { WotrArmyAdvance, WotrArmyAttack, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleAction } from "./wotr-battle-actions";
 import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle.models";
 import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatCardsService } from "./wotr-combat-cards.service";
@@ -38,6 +38,7 @@ export class WotrBattleService {
     this.actionService.registerAction<WotrArmyAttack> ("army-attack", this.applyArmyAttack.bind (this));
     this.actionService.registerAction<WotrArmyRetreatIntoSiege> ("army-retreat-into-siege", this.applyArmyRetreatIntoSiege.bind (this));
     this.actionService.registerAction<WotrArmyRetreat> ("army-retreat", this.applyArmyRetreat.bind (this));
+    this.actionService.registerAction<WotrArmyAdvance> ("army-advance", this.applyArmyAdvance.bind (this));
     this.actionService.registerActionLoggers (this.getActionLoggers () as any);
   }
 
@@ -52,7 +53,14 @@ export class WotrBattleService {
   }
 
   private async applyArmyRetreat (action: WotrArmyRetreat) {
-    this.regionStore.moveArmy (action.fromRegion, action.toRegion);
+    const battleRegion = this.battleStore.state ()!.action.toRegion;
+    this.regionStore.moveArmy (battleRegion, action.toRegion);
+  }
+
+  private async applyArmyAdvance (action: WotrArmyAdvance) {
+    const fromRegion = this.battleStore.state ()!.action.fromRegion;
+    const toRegion = this.battleStore.state ()!.action.toRegion;
+    this.regionStore.moveArmy (fromRegion, toRegion);
   }
 
   private getActionLoggers (): WotrActionLoggerMap<WotrBattleAction> {
@@ -60,8 +68,10 @@ export class WotrBattleService {
       "army-attack": (action, front, f) => [f.player (front), " army in ", f.region (action.fromRegion), " attacks ", f.region (action.toRegion)],
       "army-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " retreat into siege"],
       "army-not-retreat-into-siege": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " does not retreat into siege"],
-      "army-retreat": (action, front, f) => [f.player (front), " army in ", f.region (action.fromRegion), " retreat in ", f.region (action.toRegion)],
-      "army-not-retreat": (action, front, f) => [f.player (front), " army in ", f.region (action.region), " does not retreat"],
+      "army-retreat": (action, front, f) => [f.player (front), " retreats in ", f.region (action.toRegion)],
+      "army-not-retreat": (action, front, f) => [f.player (front), " does not retreat"],
+      "army-advance": (action, front, f) => [f.player (front), " advances into the attacked region"],
+      "army-not-advance": (action, front, f) => [f.player (front), " does not advance into the attacked region"],
       "battle-continue": (action, front, f) => [f.player (front), " continue battle in ", f.region (action.region)],
       "battle-cease": (action, front, f) => [f.player (front), " cease tha battle in ", f.region (action.region)],
       "leader-forfeit": (action, front, f) => [f.player (front), " forfeits TODO leadership"],
