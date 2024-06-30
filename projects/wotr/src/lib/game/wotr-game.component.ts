@@ -12,7 +12,6 @@ import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrEventService } from "../commons/wotr-event.service";
-import { stories as exampleStories } from "../examples/there-is-another-way";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontService } from "../front/wotr-front.service";
@@ -157,8 +156,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
         this.gameId,
         game.owner
       );
-      // this.story.setStoryDocs (stories);
-      this.story.setStoryDocs (exampleStories);
+      this.story.setStoryDocs (stories);
       await this.flow.game ();
       this.ui.updateUi ("End game", (s) => ({
         ...s,

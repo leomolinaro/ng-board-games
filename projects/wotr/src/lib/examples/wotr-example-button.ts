@@ -10,6 +10,7 @@ import { Observable, forkJoin, from, map, switchMap } from "rxjs";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerDoc, WotrReadPlayerDoc, WotrRemoteService } from "../game/wotr-remote.service";
 import { WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrExamplesService } from "./wotr-examples.service";
 
 interface WotrExampleGame {
   id: string;
@@ -52,14 +53,12 @@ export class WotrExampleButton implements OnDestroy {
   private auth = inject (BgAuthService);
   private router = inject (Router);
   private activatedRoute = inject (ActivatedRoute);
+  private examples = inject (WotrExamplesService);
 
   protected user = toSignal (this.auth.getUser$ ());
   protected isAdmin = computed (() => this.user ()?.email === "rhapsody.leo@gmail.com");
 
-  protected exampleGames: WotrExampleGame[] = [
-    { id: "very-late-minions", name: "Very Late Minions", loadStories: () => import ("./very-late-minions").then (e => e.stories) },
-    { id: "there-is-another-way", name: "There is Another Way", loadStories: () => import ("./there-is-another-way").then (e => e.stories) }
-  ];
+  protected exampleGames: WotrExampleGame[] = this.examples.getGames ();
 
   ngOnDestroy () { }
 

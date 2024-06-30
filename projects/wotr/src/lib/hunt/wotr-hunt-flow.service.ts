@@ -94,7 +94,7 @@ export class WotrHuntFlowService {
         this.fellowshipStore.reveal ();
       } else {
         const fromRegion = this.regionStore.getFellowshipRegion ();
-        if (doReveal) { await this.storyService.revealFellowship ("free-peoples"); }
+        if (doReveal) { await this.storyService.revealFellowship (); }
         const toRegion = this.regionStore.getFellowshipRegion ();
         if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
           const newHuntTileId = await this.storyService.drawHuntTile ("shadow");

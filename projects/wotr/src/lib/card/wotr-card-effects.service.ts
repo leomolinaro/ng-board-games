@@ -7,6 +7,8 @@ import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrRegionChoose } from "../region/wotr-region-actions";
+import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card.models";
 
 export interface WotrCardParams {
@@ -24,9 +26,19 @@ export class WotrCardEffectsService {
 
   private storyService = inject (WotrStoryService);
   private huntStore = inject (WotrHuntStore);
+  private regionStore = inject (WotrRegionStore);
   private huntFlow = inject (WotrHuntFlowService);
+  private armyUtil = inject (WotrArmyUtils);
 
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
+    "Nazgul Search": async params => {
+      const fellowshipRegionId = this.regionStore.getFellowshipRegion ();
+      const fellowshipRegion = this.regionStore.region (fellowshipRegionId);
+      if ((fellowshipRegion.army && this.armyUtil.hasNazgul (fellowshipRegion.army)) ||
+        (fellowshipRegion.freeUnits && this.armyUtil.hasNazgul (fellowshipRegion.freeUnits))) {
+        await this.storyService.revealFellowship ();
+      }
+    },
     "Dreadful Spells": async params => {
       this.storyService.findAction<WotrRegionChoose> (params.story, "region-choose");
       await this.storyService.rollCombatDice ("shadow");

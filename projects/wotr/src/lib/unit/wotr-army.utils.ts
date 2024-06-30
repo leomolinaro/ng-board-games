@@ -114,6 +114,12 @@ export class WotrArmyUtils {
     return false;
   }
 
+  hasNazgul (units: WotrUnits) {
+    if (units.nNazgul) { return true; }
+    if (units.characters && units.characters?.indexOf ("the-witch-king") >= 0) { return true; }
+    return false;
+  }
+
   getNArmyUnits (units: WotrUnits) {
     let n = 0;
     if (units.regulars?.length) { n += units.regulars.reduce ((count, u) => count + u.quantity, 0); }

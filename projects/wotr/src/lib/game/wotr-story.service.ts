@@ -261,8 +261,8 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return action.tile;
   }
 
-  async revealFellowship (front: WotrFrontId): Promise<void> {
-    const story = await this.story (front, p => p.revealFellowship! ());
+  async revealFellowship (): Promise<void> {
+    const story = await this.story ("free-peoples", p => p.revealFellowship! ());
     this.findAction<WotrFellowshipReveal> (story, "fellowship-reveal");
   }
 

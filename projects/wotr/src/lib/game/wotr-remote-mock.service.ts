@@ -1,6 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgCloudCollectionQuery, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
+import { WotrExamplesService } from "../examples/wotr-examples.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrStoryDoc } from "./wotr-story.models";
 
@@ -34,6 +35,8 @@ export type WotrPlayerDoc = WotrAiPlayerDoc | WotrReadPlayerDoc;
 })
 export class WotrRemoteMockService {
 
+  private examples = inject (WotrExamplesService);
+
   async getGame (gameId: string): Promise<WotrGameDoc> { return { id: "123", name: "test", state: "closed", online: false, owner: {  } as any }; }
   selectGames$ (queryFn?: BgCloudCollectionQuery<WotrGameDoc> | undefined): any { throw new Error ("Mock remote"); }
   insertGame$ (game: WotrGameDoc): Observable<WotrGameDoc> { throw new Error ("Mock remote"); }
@@ -50,7 +53,7 @@ export class WotrRemoteMockService {
   deletePlayer$ (playerId: string, gameId: string): any { throw new Error ("Mock remote"); }
   deletePlayers$ (gameId: string): any { throw new Error ("Mock remote"); }
 
-  async getStories (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined): Promise<WotrStoryDoc[]> { return []; }
+  async getStories (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined): Promise<WotrStoryDoc[]> { return this.examples.getGame (gameId)!.loadStories (); }
   getStory$ (storyId: number, gameId: string): any { throw new Error ("Mock remote"); }
   selectStories$ (gameId: string, queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined): any { throw new Error ("Mock remote"); }
   selectStory$ (storyId: string, gameId: string): any { throw new Error ("Mock remote"); }
