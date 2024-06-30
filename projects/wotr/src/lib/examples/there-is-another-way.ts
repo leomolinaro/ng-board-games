@@ -8,7 +8,7 @@ import { changeGuide, corruptFellowship, declareFellowship, hideFellowship, move
 import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
-import { eliminateLeader, eliminateRegularUnit, leftUnits, moveArmy } from "../unit/wotr-unit-actions";
+import { armyMovement, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmies } from "../unit/wotr-unit-actions";
 import { elite, nazgul, regular } from "../unit/wotr-unit.models";
 
 let time = 1;
@@ -24,7 +24,7 @@ export const stories: WotrStoryDoc[] = [
   s ().musterDie (advanceNation ("isengard")),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (4, 5)),
-  s ().characterDie (moveArmy ("barad-dur", "gorgoroth")),
+  s ().characterDie (moveArmies (armyMovement ("barad-dur", "gorgoroth"))),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (2, 6)),
   s ().huntStory (drawHuntTile ("3")),
@@ -32,24 +32,15 @@ export const stories: WotrStoryDoc[] = [
     eliminateCharacter ("gandalf-the-grey"),
     changeGuide ("strider")
   ),
-  s ().armyDie (
-    moveArmy ("gorgoroth", "morannon", leftUnits (regular ("sauron", 3))),
-    moveArmy ("north-dunland", "moria")
-  ),
-  fp ().musterArmyDie (
-    moveArmy ("edoras", "westemnet"),
-    moveArmy ("carrock", "old-forest-road")
-  ),
+  s ().armyDie (moveArmies (armyMovement ("gorgoroth", "morannon", leftUnits (regular ("sauron", 3))), armyMovement ("north-dunland", "moria"))),
+  fp ().musterArmyDie (moveArmies (armyMovement ("edoras", "westemnet"), armyMovement ("carrock", "old-forest-road"))),
   s ().musterArmyDie (playCharacter ("orthanc", "saruman")),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (6, 2)),
   s ().huntStory (drawHuntTile ("2r")),
   fp ().huntStory (corruptFellowship (2)),
   fp ().huntStory (revealFellowship ("goblins-gate")),
-  s ().musterArmyDie (
-    moveArmy ("moria", "dimrill-dale"),
-    moveArmy ("morannon", "dagorlad")
-  ),
+  s ().musterArmyDie (moveArmies (armyMovement ("moria", "dimrill-dale"), armyMovement ("morannon", "dagorlad"))),
   fp ().skipTokens (),
   // Turn 2 4:00
   s (time).phaseStory (drawCards ("Give it to Uss!", "Threats and Promises")),
@@ -60,20 +51,11 @@ export const stories: WotrStoryDoc[] = [
   fp ().musterAbilityDie ("strider", hideFellowship ()),
   s ().eventDie (drawCards ("The Shadow Lengthens")),
   fp ().willOfTheWestDie (playCharacter ("fangorn", "gandalf-the-white")),
-  s ().armyDie (
-    moveArmy ("dagorlad", "noman-lands"),
-    moveArmy ("far-harad", "near-harad")
-  ),
+  s ().armyDie (moveArmies (armyMovement ("dagorlad", "noman-lands"), armyMovement ("far-harad", "near-harad"))),
   fp ().pass (),
-  s ().armyDie (
-    moveArmy ("noman-lands", "southern-rhovanion"),
-    moveArmy ("dol-guldur", "north-anduin-vale")
-  ),
+  s ().armyDie (moveArmies (armyMovement ("noman-lands", "southern-rhovanion"), armyMovement ("dol-guldur", "north-anduin-vale"))),
   fp ().pass (),
-  s ().armyDie (
-    moveArmy ("southern-rhovanion", "northern-rhovanion"),
-    moveArmy ("north-anduin-vale", "dimrill-dale")
-  ),
+  s ().armyDie (moveArmies (armyMovement ("southern-rhovanion", "northern-rhovanion"), armyMovement ("north-anduin-vale", "dimrill-dale"))),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (3, 6)),
   s ().huntStory (drawHuntTile ("3")),
@@ -98,13 +80,10 @@ export const stories: WotrStoryDoc[] = [
   s ().characterDie (attack ("northern-rhovanion", "old-forest-road")),
   s ().battleStory (noCombatCard ()),
   fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
-  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmy ("old-forest-road", "woodland-realm")),
-  s ().battleStory (moveArmy ("northern-rhovanion", "old-forest-road")),
+  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmies (armyMovement ("old-forest-road", "woodland-realm"))),
+  s ().battleStory (moveArmies (armyMovement ("northern-rhovanion", "old-forest-road"))),
   fp ().musterArmyAbilityDie ("strider", hideFellowship ()),
-  s ().armyDie (
-    moveArmy ("old-forest-road", "carrock", leftUnits (regular ("sauron", 8), elite ("sauron"), nazgul (1))),
-    moveArmy ("near-harad", "umbar", leftUnits (regular ("southrons", 1)))
-  ),
+  s ().armyDie (moveArmies (armyMovement ("old-forest-road", "carrock", leftUnits (regular ("sauron", 8), elite ("sauron"), nazgul (1))), armyMovement ("near-harad", "umbar", leftUnits (regular ("southrons", 1))))),
   fp ().pass (),
   s ().characterDie (attack ("old-forest-road", "dale")),
   s ().battleStory (combatCard ("Stormcrow")),
@@ -114,11 +93,8 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (reRollCombatDice (1)),
   s ().battleStory (eliminateRegularUnit ("old-forest-road", "sauron")),
   fp ().combatCardReaction ("Stormcrow", eliminateRegularUnit ("dale", "north"), eliminateLeader ("dale", "north")),
-  s ().battleStory (moveArmy ("old-forest-road", "dale", leftUnits (regular ("sauron")))),
-  fp ().willOfTheWestDie (
-    moveArmy ("iron-hills", "erebor"),
-    moveArmy ("westemnet", "helms-deep")
-  ),
+  s ().battleStory (moveArmies (armyMovement ("old-forest-road", "dale", leftUnits (regular ("sauron"))))),
+  fp ().willOfTheWestDie (moveArmies (armyMovement ("iron-hills", "erebor"), armyMovement ("westemnet", "helms-deep"))),
   s ().eventDie (drawCards ("The Black Captain Commands")),
   fp ().willOfTheWestDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (1, 2)),
@@ -127,10 +103,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().huntStory (discardCardFromTable ("Axe and Bow")),
   s ().eventDieCard ("Balrog of Moria", playCardOnTable ("Balrog of Moria")),
   fp ().actionToken ("political-advance", advanceNation ("elves")),
-  s ().eventDieCard ("The Shadow Lengthens",
-    moveArmy ("south-rhun", "north-rhun"),
-    moveArmy ("nurn", "minas-morgul")
-  ),
+  s ().eventDieCard ("The Shadow Lengthens", moveArmies (armyMovement ("south-rhun", "north-rhun"), armyMovement ("nurn", "minas-morgul"))),
   fp ().willOfTheWestDie (advanceNation ("elves")),
   fp ().skipTokens (),
   // Turn 4 17:47

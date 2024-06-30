@@ -3,15 +3,17 @@ import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrUnitComposer, WotrUnits } from "./wotr-unit.models";
 
 export type WotrUnitAction =
-  WotrArmyMovement | WotrNazgulMovement |
+  WotrArmyMovements | WotrNazgulMovement |
   WotrRegularUnitRecruitment | WotrRegularUnitElimination |
   WotrEliteUnitRecruitment | WotrEliteUnitElimination |
   WotrLeaderRecruitment | WotrLeaderElimination |
   WotrNazgulRecruitment | WotrNazgulElimination;
 
-export interface WotrArmyMovement { type: "army-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; leftUnits?: WotrUnits }
+export interface WotrArmyMovements { type: "army-movements"; movements: WotrArmyMovement[] }
+export interface WotrArmyMovement { fromRegion: WotrRegionId; toRegion: WotrRegionId; leftUnits?: WotrUnits }
+export function moveArmies (...movements: WotrArmyMovement[]): WotrArmyMovements { return { type: "army-movements", movements }; }
 // eslint-disable-next-line @typescript-eslint/no-shadow
-export function moveArmy (fromRegion: WotrRegionId, toRegion: WotrRegionId, leftUnits?: WotrUnits): WotrArmyMovement { return { type: "army-movement", fromRegion, toRegion, leftUnits }; }
+export function armyMovement (fromRegion: WotrRegionId, toRegion: WotrRegionId, leftUnits?: WotrUnits): WotrArmyMovement { return { fromRegion, toRegion, leftUnits }; }
 export function leftUnits (...comp: WotrUnitComposer[]): WotrUnits { return comp.reduce ((units, u) => u.addTo (units), { }); }
 
 export interface WotrNazgulMovement { type: "nazgul-movement"; fromRegion: WotrRegionId; toRegion: WotrRegionId; nNazgul: number }

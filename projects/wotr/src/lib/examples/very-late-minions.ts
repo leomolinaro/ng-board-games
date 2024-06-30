@@ -12,7 +12,7 @@ import { WotrFreePeoplesStoryComposer, WotrShadowStoryComposer, WotrStoryDoc } f
 import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { targetRegion } from "../region/wotr-region-actions";
-import { eliminateEliteUnit, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmy, moveNazgul, recruitEliteUnit, recruitRegularUnit } from "../unit/wotr-unit-actions";
+import { armyMovement, eliminateEliteUnit, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmies, moveNazgul, recruitEliteUnit, recruitRegularUnit } from "../unit/wotr-unit-actions";
 import { character, elite, nazgul, regular } from "../unit/wotr-unit.models";
 
 let time = 1;
@@ -25,7 +25,7 @@ export const stories: WotrStoryDoc[] = [
   fp (time).rollActionDice ("character", "character", "muster-army", "muster"),
   s ().rollActionDice ("army", "character", "army", "character", "event", "eye"),
   fp ().pass (),
-  s ().characterDie (moveArmy ("barad-dur", "gorgoroth")),
+  s ().characterDie (moveArmies (armyMovement ("barad-dur", "gorgoroth"))),
   fp ().characterDie (moveFelloswhip ()),
   s ().phaseStory (rollHuntDice (1, 6)),
   s ().phaseStory (drawHuntTile ("3")),
@@ -35,17 +35,11 @@ export const stories: WotrStoryDoc[] = [
   s ().phaseStory (rollHuntDice (5, 2)),
   s ().phaseStory (drawHuntTile ("1")),
   fp ().phaseStory (corruptFellowship (1)),
-  s ().characterDie (moveArmy ("gorgoroth", "morannon", leftUnits (regular ("sauron", 3)))),
-  fp ().musterArmyDie (
-    moveArmy ("carrock", "old-forest-road"),
-    moveArmy ("edoras", "westemnet")),
-  s ().armyDie (
-    moveArmy ("dol-guldur", "north-anduin-vale", leftUnits (regular ("sauron", 1))),
-    moveArmy ("morannon", "dagorlad")),
+  s ().characterDie (moveArmies (armyMovement ("gorgoroth", "morannon", leftUnits (regular ("sauron", 3))))),
+  fp ().musterArmyDie (moveArmies (armyMovement ("carrock", "old-forest-road"), armyMovement ("edoras", "westemnet"))),
+  s ().armyDie (moveArmies (armyMovement ("dol-guldur", "north-anduin-vale", leftUnits (regular ("sauron", 1))), armyMovement ("morannon", "dagorlad"))),
   fp ().musterDie (advanceNation ("elves", 1)),
-  s ().armyDie (
-    moveArmy ("north-anduin-vale", "dimrill-dale"),
-    moveArmy ("dagorlad", "noman-lands")),
+  s ().armyDie (moveArmies (armyMovement ("north-anduin-vale", "dimrill-dale"), armyMovement ("dagorlad", "noman-lands"))),
   fp ().actionToken ("political-advance", advanceNation ("elves", 1)),
   fp ().skipTokens (),
   // Turn 2
@@ -68,17 +62,15 @@ export const stories: WotrStoryDoc[] = [
   fp ().musterArmyDie (hideFellowship ()),
   s ().eventDieCard ("Rage of the Dunledings",
     recruitRegularUnit ("moria", "isengard", 2),
-    moveArmy ("south-dunland", "moria"),
-    moveArmy ("north-dunland", "moria")),
+    moveArmies (armyMovement ("south-dunland", "moria"), armyMovement ("north-dunland", "moria"))
+  ),
   fp ().willOfTheWestDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (2, 6)),
   s ().huntStory (drawHuntTile ("3")),
   fp ().huntStory (chooseRandomCompanion ("strider")),
   fp ().huntStory (eliminateCharacter ("strider"), changeGuide ("legolas")),
   s ().cardReaction ("Worn with Sorrow and Toil", discardRandomCard ("The Ents Awake: Entmoot")),
-  s ().armyDie (
-    moveArmy ("moria", "dimrill-dale", leftUnits (regular ("sauron", 1))),
-    moveArmy ("noman-lands", "southern-rhovanion")),
+  s ().armyDie (moveArmies (armyMovement ("moria", "dimrill-dale", leftUnits (regular ("sauron", 1))), armyMovement ("noman-lands", "southern-rhovanion"))),
   fp ().skipTokens (),
   // Turn 3
   fp (time).phaseStory (drawCards ("Celeborn's Galadhrim", "Mithril Coat and Sting")),
@@ -91,9 +83,7 @@ export const stories: WotrStoryDoc[] = [
   s ().huntStory (rollHuntDice (1)),
   s ().musterDie (advanceNation ("sauron")),
   fp ().pass (),
-  s ().armyDie (
-    moveArmy ("southern-rhovanion", "northern-rhovanion"),
-    moveArmy ("far-harad", "near-harad")),
+  s ().armyDie (moveArmies (armyMovement ("southern-rhovanion", "northern-rhovanion"), armyMovement ("far-harad", "near-harad"))),
   fp ().eventDieCard ("Celeborn's Galadhrim",
     recruitEliteUnit ("lorien", "elves"),
     drawCards ("Riders of Theoden")),
@@ -107,7 +97,7 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (rollCombatDice (4, 2, 3, 4, 6)),
   s ().battleStory (eliminateRegularUnit ("northern-rhovanion", "sauron")),
   fp ().battleStory (eliminateRegularUnit ("old-forest-road", "north")),
-  s ().battleStory (moveArmy ("northern-rhovanion", "old-forest-road")),
+  s ().battleStory (moveArmies (armyMovement ("northern-rhovanion", "old-forest-road"))),
   fp ().actionToken ("draw-card", drawCards ("Thranduil's Archers")),
   s ().musterDie (advanceNation ("southrons")),
   fp ().musterArmyDie (advanceNation ("elves")),
@@ -122,7 +112,7 @@ export const stories: WotrStoryDoc[] = [
   fp ().musterDie (recruitEliteUnit ("woodland-realm", "elves")),
   s ().armyDie (attack ("dimrill-dale", "lorien")),
   fp ().battleStory (retreatIntoSiege ("lorien")),
-  s ().phaseStory (moveArmy ("dimrill-dale", "lorien")),
+  s ().phaseStory (moveArmies (armyMovement ("dimrill-dale", "lorien"))),
   fp ().musterArmyDie (recruitEliteUnit ("woodland-realm", "elves")),
   s ().eventDieCard ("Hill-trolls",
     eliminateRegularUnit ("lorien", "sauron", 2),
@@ -141,9 +131,7 @@ export const stories: WotrStoryDoc[] = [
   fp (time).rollActionDice ("muster", "will-of-the-west", "will-of-the-west", "character"),
   s ().rollActionDice ("muster", "muster-army", "event", "muster", "army", "character", "muster-army"),
   fp ().willOfTheWestDie (hideFellowship ()),
-  s ().armyDie (
-    moveArmy ("old-forest-road", "carrock", leftUnits (regular ("sauron", 7), elite ("sauron", 1), elite ("isengard", 1), nazgul (2))),
-    moveArmy ("near-harad", "umbar", leftUnits (regular ("southrons", 1)))),
+  s ().armyDie (moveArmies (armyMovement ("old-forest-road", "carrock", leftUnits (regular ("sauron", 7), elite ("sauron", 1), elite ("isengard", 1), nazgul (2))), armyMovement ("near-harad", "umbar", leftUnits (regular ("southrons", 1))))),
   fp ().musterDie (recruitEliteUnit ("dale", "north")),
   s ().eventDieCard ("The Day Without Dawn", discardDice ("free-peoples", "will-of-the-west")),
   fp ().pass (),
@@ -154,12 +142,12 @@ export const stories: WotrStoryDoc[] = [
   s ().musterArmyDie (attack ("old-forest-road", "dale")),
   s ().battleStory (noCombatCard ()),
   fp ().battleStory (combatCard ("The Red Arrow")),
-  fp ().combatCardReaction ("The Red Arrow", moveArmy ("dale", "erebor")),
-  s ().battleStory (moveArmy ("old-forest-road", "dale")),
+  fp ().combatCardReaction ("The Red Arrow", moveArmies (armyMovement ("dale", "erebor"))),
+  s ().battleStory (moveArmies (armyMovement ("old-forest-road", "dale"))),
   fp ().pass (),
   s ().musterArmyDieCard ("Corsairs of Umbar", attack ("umbar", "dol-amroth")),
   fp ().battleStory (retreatIntoSiege ("dol-amroth")),
-  s ().battleStory (moveArmy ("umbar", "dol-amroth", leftUnits (regular ("southrons", 1)))),
+  s ().battleStory (moveArmies (armyMovement ("umbar", "dol-amroth", leftUnits (regular ("southrons", 1))))),
   fp ().characterDie (moveFelloswhip ()),
   s ().characterDieCard ("The Black Captain Commands",
     moveCharacters ("dale", "dol-amroth", "the-witch-king"),
@@ -208,20 +196,14 @@ export const stories: WotrStoryDoc[] = [
     eliminateRegularUnit ("orthanc", "isengard", 2),
     recruitEliteUnit ("orthanc", "isengard", 2),
   ),
-  fp ().musterElvenRingDie ("narya",
-    moveArmy ("fords-of-isen", "helms-deep"),
-    moveArmy ("westemnet", "helms-deep")
-  ),
-  s ().armyDie (
-    moveArmy ("orthanc", "fords-of-isen", leftUnits (character ("saruman"))),
-    moveArmy ("south-rhun", "east-rhun")
-  ),
+  fp ().musterElvenRingDie ("narya", moveArmies (armyMovement ("fords-of-isen", "helms-deep"), armyMovement ("westemnet", "helms-deep"))),
+  s ().armyDie (moveArmies (armyMovement ("orthanc", "fords-of-isen", leftUnits (character ("saruman"))), armyMovement ("south-rhun", "east-rhun"))),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (2, 2)),
   s ().huntStory (reRollHuntDice (1)),
   s ().musterArmyDie (attack ("fords-of-isen", "helms-deep")),
   fp ().battleStory (retreatIntoSiege ("helms-deep")),
-  s ().battleStory (moveArmy ("fords-of-isen", "helms-deep")),
+  s ().battleStory (moveArmies (armyMovement ("fords-of-isen", "helms-deep"))),
   fp ().eventDieCard ("I Will Go Alone", separateCompanions ("druadan-forest", "boromir"), healFellowship (1)),
   s ().eventDieCard ("Isildur's Bane", drawHuntTile ("0r")),
   fp ().huntStory (revealFellowship ("southern-rhovanion")),
@@ -326,7 +308,7 @@ export const stories: WotrStoryDoc[] = [
   s (time).battleStory (rollCombatDice (6, 6, 6, 5, 6)),
   fp ().battleStory (rollCombatDice (4)),
   fp ().battleStory (eliminateRegularUnit ("westemnet", "rohan")),
-  s ().battleStory (moveArmy ("helms-deep", "westemnet", leftUnits (regular ("sauron", 1)))),
+  s ().battleStory (moveArmies (armyMovement ("helms-deep", "westemnet", leftUnits (regular ("sauron", 1))))),
   fp ().pass (),
   s ().musterDie (recruitEliteUnit ("north-rhun", "southrons")),
   fp ().pass (),
@@ -340,7 +322,7 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (reRollCombatDice (1, 1, 2)),
   s ().battleStory (continueBattle ("edoras")),
   fp ().battleStory (retreat ("edoras", "folde")),
-  s ().battleStory (moveArmy ("westemnet", "edoras")),
+  s ().battleStory (moveArmies (armyMovement ("westemnet", "edoras"))),
   // Turn 8 54:32
   fp (time).phaseStory (
     drawCards ("Horns of Gondor", "Fear! Fire! Foes!"),
@@ -359,7 +341,7 @@ export const stories: WotrStoryDoc[] = [
   s (time).battleStory (rollCombatDice (5, 6, 6, 5)),
   fp ().battleStory (rollCombatDice (2)),
   fp ().battleStory (eliminateRegularUnit ("folde", "rohan")),
-  s ().battleStory (moveArmy ("edoras", "folde")),
+  s ().battleStory (moveArmies (armyMovement ("edoras", "folde"))),
   fp ().characterDie (moveFelloswhip ()),
   s ().huntStory (rollHuntDice (5, 4, 1)),
   s ().huntStory (reRollHuntDice (1)), // missing in the video
@@ -367,20 +349,18 @@ export const stories: WotrStoryDoc[] = [
   fp ().characterReaction ("gollum", corruptFellowship (1), revealFellowship ("morannon")),
   s ().huntStory (drawHuntTile ("er")),
   fp ().huntStory (corruptFellowship (1)),
-  s ().armyDie (
-    moveArmy ("dol-amroth", "lamedon"),
-    moveArmy ("north-rhun", "east-rhun")
+  s ().armyDie (moveArmies (armyMovement ("dol-amroth", "lamedon"), armyMovement ("north-rhun", "east-rhun"))
   ),
   fp ().pass (),
   s ().musterArmyDie (attack ("east-rhun", "iron-hills")),
   s ().battleStory (noCombatCard ()),
   fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
-  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmy ("iron-hills", "vale-of-the-carnen")),
-  s ().battleStory (moveArmy ("east-rhun", "iron-hills")),
+  fp ().combatCardReaction ("Grimbeorn the Old, Son of Beorn", moveArmies (armyMovement ("iron-hills", "vale-of-the-carnen"))),
+  s ().battleStory (moveArmies (armyMovement ("east-rhun", "iron-hills"))),
   fp ().pass (),
   s ().musterArmyDie (attack ("iron-hills", "erebor")),
   fp ().battleStory (retreatIntoSiege ("erebor")),
-  s ().battleStory (moveArmy ("iron-hills", "erebor")),
+  s ().battleStory (moveArmies (armyMovement ("iron-hills", "erebor"))),
   fp ().eventDieCard ("Bilbo's Song", healFellowship (2)),
   s ().musterDie (playCharacter ("minas-morgul", "the-mouth-of-sauron")),
   fp ().eventDieCard ("Mithril Coat and Sting", playCardOnTable ("Mithril Coat and Sting")),
@@ -473,12 +453,9 @@ export const stories: WotrStoryDoc[] = [
   s ().battleStory (reRollCombatDice (3)),
   s ().battleStory (continueBattle ("pelargir")),
   fp ().battleStory (retreat ("pelargir", "lossarnach")),
-  s ().battleStory (moveArmy ("lamedon", "pelargir")),
+  s ().battleStory (moveArmies (armyMovement ("lamedon", "pelargir"))),
   fp ().pass (),
-  s ().musterAbilityDie ("the-mouth-of-sauron",
-    moveArmy ("dale", "erebor", leftUnits (regular ("sauron", 7))),
-    moveArmy ("minas-morgul", "south-ithilien")
-  ),
+  s ().musterAbilityDie ("the-mouth-of-sauron", moveArmies (armyMovement ("dale", "erebor", leftUnits (regular ("sauron", 7))), armyMovement ("minas-morgul", "south-ithilien"))),
   fp ().musterArmyElvenRingDie ("nenya", moveFelloswhip ()),
   s ().huntStory (drawHuntTile ("b0")),
   s ().musterArmyDie (attack ("erebor", "erebor")),

@@ -23,9 +23,11 @@ export class WotrUnitService {
 
   getActionAppliers (): WotrActionApplierMap<WotrUnitAction> {
     return {
-      "army-movement": async (action, front) => {
-        this.regionStore.moveArmy (action.fromRegion, action.toRegion, action.leftUnits);
-        this.nationService.checkNationActivationByArmyMovement (action.toRegion, front);
+      "army-movements": async (action, front) => {
+        for (const movement of action.movements) {
+          this.regionStore.moveArmy (movement.fromRegion, movement.toRegion, movement.leftUnits);
+          this.nationService.checkNationActivationByArmyMovement (movement.toRegion, front);
+        }
       },
       "nazgul-movement": async (action, front) => {
         const fromRegion = this.regionStore.region (action.fromRegion);
@@ -154,7 +156,14 @@ export class WotrUnitService {
 
   private getActionLoggers (): WotrActionLoggerMap<WotrUnitAction> {
     return {
-      "army-movement": (action, front, f) => [f.player (front), " army moves from ", f.region (action.fromRegion), " to ", f.region (action.toRegion)],
+      "army-movements": (action, front, f) => {
+        const firstMovement = action.movements[0];
+        const logs = [f.player (front), " moves one army from ", f.region (firstMovement.fromRegion), " to ", f.region (firstMovement.toRegion)];
+        for (let i = 1; i < action.movements.length; i++) {
+          logs.splice (logs.length, 0, " and one army from ", f.region (firstMovement.fromRegion), " to ", f.region (firstMovement.toRegion));
+        }
+        return logs;
+      },
       "regular-unit-elimination": (action, front, f) => [f.player (front), " removes regular units from ", f.region (action.region)],
       "regular-unit-recruitment": (action, front, f) => [f.player (front), " recruits regular units in ", f.region (action.region)],
       "elite-unit-elimination": (action, front, f) => [f.player (front), " removes elite units from ", f.region (action.region)],
