@@ -68,6 +68,10 @@ export class WotrRegionDialogComponent implements OnInit {
     this.unitNodes = this.unitsToUnitNodes (region.army);
     this.unitNodes = this.unitNodes.concat (this.unitsToUnitNodes (region.underSiegeArmy));
     this.unitNodes = this.unitNodes.concat (this.unitsToUnitNodes (region.freeUnits));
+    if (this.data.region.fellowship) {
+      const image = this.assets.getFellowshipImage (this.data.fellowship.status === "revealed");
+      this.unitNodes.push ({ id: "fellowship", label: "Fellowship", quantity: 1, ...this.scale (image) });
+    }
   }
 
   private unitsToUnitNodes (units: WotrUnits | undefined): UnitNode[] {
@@ -109,10 +113,6 @@ export class WotrRegionDialogComponent implements OnInit {
       const image = this.assets.getCharacterImage (character);
       unitNodes.push ({ id: character, label: d.characterById[character].name, quantity: 1, ...this.scale (image) });
     });
-    if (d.region.fellowship) {
-      const image = this.assets.getFellowshipImage (this.data.fellowship.status === "revealed");
-      unitNodes.push ({ id: "fellowship", label: "Fellowship", quantity: 1, ...this.scale (image) });
-    }
     return unitNodes;
   }
 
