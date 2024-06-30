@@ -3,6 +3,7 @@ import { ABgGameService, BgAuthService, unexpectedStory } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrArmyNotRetreat, WotrArmyNotRetreatIntoSiege, WotrArmyRetreat, WotrArmyRetreatIntoSiege, WotrBattleCease, WotrBattleContinue, WotrCombatCardChoose, WotrCombatCardChooseNot, WotrCombatReRoll, WotrCombatRoll, WotrLeaderForfeit } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../character/wotr-character-actions";
@@ -270,11 +271,11 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     this.findAction<WotrCompanionSeparation> (story, "companion-separation");
   }
 
-  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal)[]> {
+  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
     const story = await this.story (front, p => p.absorbHuntDamage! ());
-    const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal> (
+    const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable> (
       story,
-      "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal");
+      "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal", "card-discard-from-table");
     return actions;
   }
 

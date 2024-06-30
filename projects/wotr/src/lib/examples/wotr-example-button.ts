@@ -57,7 +57,8 @@ export class WotrExampleButton implements OnDestroy {
   protected isAdmin = computed (() => this.user ()?.email === "rhapsody.leo@gmail.com");
 
   protected exampleGames: WotrExampleGame[] = [
-    { id: "very-late-minion", name: "Very Late Minions", loadStories: () => import ("./very-late-minions").then (e => e.stories) }
+    { id: "very-late-minions", name: "Very Late Minions", loadStories: () => import ("./very-late-minions").then (e => e.stories) },
+    { id: "there-is-another-way", name: "There is Another Way", loadStories: () => import ("./there-is-another-way").then (e => e.stories) }
   ];
 
   ngOnDestroy () { }

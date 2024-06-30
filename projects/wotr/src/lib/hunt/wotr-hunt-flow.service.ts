@@ -1,5 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { cardToLabel } from "../card/wotr-card.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrStoryService } from "../game/wotr-story.service";
@@ -152,6 +154,20 @@ export class WotrHuntFlowService {
             absorbedDamage += 1;
             gollumRevealing = true;
           }
+          break;
+        }
+        case "companion-random": {
+          absorbedDamage += await this.checkTakeThemAlive (action.companions);
+          break;
+        }
+        case "card-discard-from-table": {
+          // const cardLabel =  as WotrCardLabel;
+          switch (cardToLabel (action.card)) {
+            case "Axe and Bow": {
+              absorbedDamage += 1;
+              break;
+            }
+          }
         }
       }
     }
@@ -160,6 +176,19 @@ export class WotrHuntFlowService {
     } else {
       return { absorbedDamage };
     }
+  }
+
+  private async checkTakeThemAlive (companions: WotrCharacterId[]): Promise<number> {
+    let absorbedDamage = 0;
+    for (const companion of companions) {
+      if (companion === "peregrin" || companion === "meriadoc") {
+        const actions = await this.storyService.activateCharacterAbility (companion, "free-peoples");
+        if (actions) {
+          absorbedDamage++;
+        }
+      }
+    }
+    return absorbedDamage;
   }
 
 }

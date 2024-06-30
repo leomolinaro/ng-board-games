@@ -36,7 +36,7 @@ export type WotrCardLabel =
   "Phial of Galadriel" |
   "Smeagol Helps Nice Master" |
   "Mithril Coat and Sting" |
-  "Axe and Box" |
+  "Axe and Bow" |
   "Horns of Gondor" |
   "Wizard's Staff" |
   "Athelas" |
@@ -95,7 +95,7 @@ export type WotrCardLabel =
   "The Breaking of the Fellowship" |
   "Worn with Sorrow and Toil" |
   "Flocks of Crebain" |
-  "A Balrog is Come!" |
+  "Balrog of Moria" |
   "The Lidless Eye" |
   "Dreadful Spells" |
   "Grond, Hammer of the Unnderworld" |
@@ -174,7 +174,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   fpcha03: { id: "fpcha03", label: "Phial of Galadriel", combatLabel: "It is a Gift", combatTiming: 3 },
   fpcha04: { id: "fpcha04", label: "Smeagol Helps Nice Master", combatLabel: "It is a Gift", combatTiming: 3 },
   fpcha05: { id: "fpcha05", label: "Mithril Coat and Sting", combatLabel: "Blade of Westernesse", combatTiming: 6 },
-  fpcha06: { id: "fpcha06", label: "Axe and Box", combatLabel: "Mighty Attack", combatTiming: 4 },
+  fpcha06: { id: "fpcha06", label: "Axe and Bow", combatLabel: "Mighty Attack", combatTiming: 4 },
   fpcha07: { id: "fpcha07", label: "Horns of Gondor", combatLabel: "Mighty Attack", combatTiming: 4 },
   fpcha08: { id: "fpcha08", label: "Wizard's Staff", combatLabel: "Servant of the Secret Fire", combatTiming: 3 },
   fpcha09: { id: "fpcha09", label: "Athelas", combatLabel: "Anduril", combatTiming: 4 },
@@ -233,7 +233,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   scha14: { id: "scha14", label: "The Breaking of the Fellowship", combatLabel: "Dread and Despair", combatTiming: 3 },
   scha15: { id: "scha15", label: "Worn with Sorrow and Toil", combatLabel: "Words of Power", combatTiming: 1 },
   scha16: { id: "scha16", label: "Flocks of Crebain", combatLabel: "They are Terrible", combatTiming: 4 },
-  scha17: { id: "scha17", label: "A Balrog is Come!", combatLabel: "Durin's Bane", combatTiming: 2 },
+  scha17: { id: "scha17", label: "Balrog of Moria", combatLabel: "Durin's Bane", combatTiming: 2 },
   scha18: { id: "scha18", label: "The Lidless Eye", combatLabel: "Words of Power", combatTiming: 1 },
   scha19: { id: "scha19", label: "Dreadful Spells", combatLabel: "Delivery of Orthanc", combatTiming: 3 },
   scha20: { id: "scha20", label: "Grond, Hammer of the Unnderworld", combatLabel: "Dread and Despair", combatTiming: 3 },
@@ -272,6 +272,6 @@ const CARD_BY_LABEL =
 
 export function labelToCardId (label: WotrCardLabel): WotrCardId { return CARD_BY_LABEL[label].id; }
 
-export function cardToLabel (cardId: WotrCardId): string { return CARD_BY_ID[cardId].label; }
+export function cardToLabel (cardId: WotrCardId): WotrCardLabel { return CARD_BY_ID[cardId].label; }
 export function combatCardToLabel (cardId: WotrCardId): string { return CARD_BY_ID[cardId].combatLabel; }
 export function getCard (cardId: WotrCardId): WotrCard { return CARD_BY_ID[cardId]; }

@@ -78,6 +78,7 @@ export class WotrFrontStoryComposer {
   protected actionElvenRingDie (die: WotrActionDie, elvenRing: WotrElvenRing, ...actions: WotrGameAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, elvenRing, actions, ...this.story () }; }
   
   musterAbilityDie (character: WotrCharacterId, ...actions: WotrGameAction[]): WotrStoryDoc & WotrDieStory { return this.actionAbilityDie ("muster", character, ...actions); }
+  musterArmyAbilityDie (character: WotrCharacterId, ...actions: WotrGameAction[]): WotrStoryDoc & WotrDieStory { return this.actionAbilityDie ("muster-army", character, ...actions); }
   protected actionAbilityDie (die: WotrActionDie, character: WotrCharacterId, ...actions: WotrGameAction[]): WotrStoryDoc & WotrDieStory { return { type: "die", die, character, actions, ...this.story () }; }
 
   eventDieCard (card: WotrCardLabel, ...actions: WotrGameAction[]): WotrStoryDoc & WotrDieCardStory { return this.actionDieCard ("event", card, ...actions); }

@@ -12,7 +12,7 @@ import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrEventService } from "../commons/wotr-event.service";
-import { stories as exampleStories } from "../examples/very-late-minions";
+import { stories as exampleStories } from "../examples/there-is-another-way";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontService } from "../front/wotr-front.service";
