@@ -118,6 +118,10 @@ export class WotrGameFlowService {
 
   private async victoryCheck (roundNumber: number) {
     this.logStore.logPhase (6);
+    const shadow = this.frontStore.shadowFront ();
+    if (shadow.victoryPoints >= 10) { return false; }
+    const freePeoples = this.frontStore.freePeoplesFront ();
+    if (freePeoples.victoryPoints >= 4) { return false; }
     return true;
   }
 

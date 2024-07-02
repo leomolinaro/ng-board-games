@@ -32,7 +32,7 @@ import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteMockService } from "./wotr-remote-mock.service";
-import { WotrPlayerDoc } from "./wotr-remote.service";
+import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
 import { WotrStoryService } from "./wotr-story.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
@@ -89,6 +89,7 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrPlayerAiService,
     WotrPlayerLocalService,
     WotrUiStore,
+    { provide: WotrRemoteService, useClass: WotrRemoteMockService }
   ]
 })
 @UntilDestroy
@@ -103,7 +104,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected fellowshipStore = inject (WotrFellowshipStore);
   protected logStore = inject (WotrLogStore);
   protected ui = inject (WotrUiStore);
-  private remote = inject (WotrRemoteMockService);
+  private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
   private story = inject (WotrStoryService);
