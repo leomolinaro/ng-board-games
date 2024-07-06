@@ -3,13 +3,15 @@ import { WotrActionDieAction, rollActionDice } from "../action-die/wotr-action-d
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrBattleAction } from "../battle/wotr-battle-actions";
+import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardAction } from "../card/wotr-card-actions";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrCharacterAction } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFellowshipAction } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
-import { WotrHuntAction } from "../hunt/wotr-hunt-actions";
+import { WotrHuntAction, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
+import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 import { WotrNationAction } from "../nation/wotr-nation-actions";
 import { WotrRegionAction } from "../region/wotr-region-actions";
 import { WotrUnitAction } from "../unit/wotr-unit-actions";
@@ -102,10 +104,14 @@ export class WotrFrontStoryComposer {
 export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("free-peoples", time); }
   willOfTheWestDie (...actions: WotrGameAction[]) { return this.actionDie ("will-of-the-west", ...actions); }
+  huntEffect (...actions: WotrGameAction[]) { return this.huntStory (...actions); }
 }
 export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("shadow", time); }
   huntAllocation (nDice: number) { return this.phaseStory ({ type: "hunt-allocation", quantity: nDice }); }
+  rollHuntDice (...dice: WotrCombatDie[]) { return this.huntStory (rollHuntDice (...dice)); }
+  reRollHuntDice (...dice: WotrCombatDie[]) { return this.huntStory (reRollHuntDice (...dice)); }
+  drawHuntTile (huntTile: WotrHuntTileId) { return this.huntStory (drawHuntTile (huntTile)); }
 }
 
 export class WotrStoriesBuilder {

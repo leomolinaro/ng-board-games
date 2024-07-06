@@ -6,7 +6,7 @@ import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-c
 import { chooseRandomCompanion, eliminateCharacter, playCharacter, separateCompanions } from "../character/wotr-character-actions";
 import { changeGuide, corruptFellowship, declareFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrStoriesBuilder, WotrStoryDoc } from "../game/wotr-story.models";
-import { addHuntTile, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
+import { addHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { armyMovement, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmies } from "../unit/wotr-unit-actions";
 import { elite, nazgul, regular } from "../unit/wotr-unit.models";
@@ -24,12 +24,12 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().pass (),
   b.s ().musterDie (advanceNation ("isengard")),
   b.fp ().characterDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (4, 5)),
+  b.s ().rollHuntDice (4, 5),
   b.s ().characterDie (moveArmies (armyMovement ("barad-dur", "gorgoroth"))),
   b.fp ().characterDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (2, 6)),
-  b.s ().huntStory (drawHuntTile ("3")),
-  b.fp ().huntStory (
+  b.s ().rollHuntDice (2, 6),
+  b.s ().drawHuntTile ("3"),
+  b.fp ().huntEffect (
     eliminateCharacter ("gandalf-the-grey"),
     changeGuide ("strider")
   ),
@@ -37,10 +37,10 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().musterArmyDie (moveArmies (armyMovement ("edoras", "westemnet"), armyMovement ("carrock", "old-forest-road"))),
   b.s ().musterArmyDie (playCharacter ("orthanc", "saruman")),
   b.fp ().characterDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (6, 2)),
-  b.s ().huntStory (drawHuntTile ("2r")),
-  b.fp ().huntStory (corruptFellowship (2)),
-  b.fp ().huntStory (revealFellowship ("goblins-gate")),
+  b.s ().rollHuntDice (6, 2),
+  b.s ().drawHuntTile ("2r"),
+  b.fp ().huntEffect (corruptFellowship (2)),
+  b.fp ().huntEffect (revealFellowship ("goblins-gate")),
   b.s ().musterArmyDie (moveArmies (armyMovement ("moria", "dimrill-dale"), armyMovement ("morannon", "dagorlad"))),
   b.fp ().skipTokens (),
   // Turn 2 4:00
@@ -58,11 +58,11 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().pass (),
   b.s ().armyDie (moveArmies (armyMovement ("southern-rhovanion", "northern-rhovanion"), armyMovement ("north-anduin-vale", "dimrill-dale"))),
   b.fp ().characterDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (3, 6)),
-  b.s ().huntStory (drawHuntTile ("3")),
-  b.fp ().huntStory (chooseRandomCompanion ("peregrin")),
+  b.s ().rollHuntDice (3, 6),
+  b.s ().drawHuntTile ("3"),
+  b.fp ().huntEffect (chooseRandomCompanion ("peregrin")),
   b.fp ().characterReaction ("peregrin", separateCompanions ("carrock", "peregrin")),
-  b.fp ().huntStory (corruptFellowship (2)),
+  b.fp ().huntEffect (corruptFellowship (2)),
   b.s ().musterDie (advanceNation ("sauron")),
   b.fp ().eventDieCard ("Axe and Bow", playCardOnTable ("Axe and Bow")),
   b.s ().eventDieCard ("Give it to Uss!", addHuntTile ("r1rs")),
@@ -75,9 +75,9 @@ export const stories: WotrStoryDoc[] = [
   b.sT ().rollActionDice ("event", "character", "event", "event", "eye", "army", "character"),
   b.fp ().rollActionDice ("muster-army", "will-of-the-west", "will-of-the-west", "will-of-the-west", "character"),
   b.fp ().characterDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (4, 6)),
-  b.s ().huntStory (drawHuntTile ("0r")),
-  b.fp ().huntStory (revealFellowship ("carrock")),
+  b.s ().rollHuntDice (4, 6),
+  b.s ().drawHuntTile ("0r"),
+  b.fp ().huntEffect (revealFellowship ("carrock")),
   b.s ().characterDie (attack ("northern-rhovanion", "old-forest-road")),
   b.s ().battleStory (noCombatCard ()),
   b.fp ().battleStory (combatCard ("Grimbeorn the Old, Son of Beorn")),
@@ -98,10 +98,10 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().willOfTheWestDie (moveArmies (armyMovement ("iron-hills", "erebor"), armyMovement ("westemnet", "helms-deep"))),
   b.s ().eventDie (drawCards ("The Black Captain Commands")),
   b.fp ().willOfTheWestDie (moveFelloswhip ()),
-  b.s ().huntStory (rollHuntDice (1, 2)),
-  b.s ().huntStory (reRollHuntDice (1, 6)),
-  b.s ().huntStory (drawHuntTile ("1")),
-  b.fp ().huntStory (discardCardFromTable ("Axe and Bow")),
+  b.s ().rollHuntDice (1, 2),
+  b.s ().reRollHuntDice (1, 6),
+  b.s ().drawHuntTile ("1"),
+  b.fp ().huntEffect (discardCardFromTable ("Axe and Bow")),
   b.s ().eventDieCard ("Balrog of Moria", playCardOnTable ("Balrog of Moria")),
   b.fp ().actionToken ("political-advance", advanceNation ("elves")),
   b.s ().eventDieCard ("The Shadow Lengthens", moveArmies (armyMovement ("south-rhun", "north-rhun"), armyMovement ("nurn", "minas-morgul"))),
