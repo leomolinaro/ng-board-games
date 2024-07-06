@@ -107,3 +107,11 @@ export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("shadow", time); }
   huntAllocation (nDice: number) { return this.phaseStory ({ type: "hunt-allocation", quantity: nDice }); }
 }
+
+export class WotrStoriesBuilder {
+  private time = 1;
+  fp () { return new WotrFreePeoplesStoryComposer (this.time++); }
+  s () { return new WotrShadowStoryComposer (this.time++); }
+  fpT () { return new WotrFreePeoplesStoryComposer (this.time); }
+  sT () { return new WotrShadowStoryComposer (this.time); }
+}
