@@ -1,9 +1,11 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrCharacterReactionStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -21,12 +23,24 @@ export class WotrCharacterService {
   private regionStore = inject (WotrRegionStore);
   private frontStore = inject (WotrFrontStore);
   private storyService = inject (WotrStoryService);
+  private logStore = inject (WotrLogStore);
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
     this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+    this.actionService.registerStory ("reaction-character", this.reactionCharacter);
+    this.actionService.registerStory ("reaction-character-skip", this.reactionCharacterSkip);
   }
 
+  private reactionCharacter: WotrStoryApplier<WotrCharacterReactionStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front);
+      await this.actionService.applyAction (action, front);
+    }
+  };
+
+  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterReactionStory> = async (story, front) => { this.logStore.logStory (story, front); };
+  
   getActionAppliers (): WotrActionApplierMap<WotrCharacterAction> {
     return {
       "character-play": async (action, front) => {

@@ -1,8 +1,10 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
+import { toObservable } from "@angular/core/rxjs-interop";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrPlayerStore } from "../player/wotr-player.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrGameStore } from "./wotr-game.store";
 
@@ -27,6 +29,8 @@ interface WotrUiState {
 @Injectable ()
 export class WotrUiStore extends BgStore<WotrUiState> {
   
+  private playerStore = inject (WotrPlayerStore);
+
   constructor (private game: WotrGameStore) {
     super ({
       currentPlayer: null,
@@ -105,11 +109,12 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
   selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
   message$ = this.select$ (s => s.message);
+  private playerMap$ = toObservable (this.playerStore.playerMap);
 
   selectCurrentPlayer$ () {
     return this.game.select$ (
       this.selectCurrentPlayerId$ (),
-      this.game.playerMap$,
+      this.playerMap$,
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   }
@@ -117,7 +122,7 @@ export class WotrUiStore extends BgStore<WotrUiState> {
   selectTurnPlayer$ () {
     return this.game.select$ (
       this.selectTurnPlayerId$ (),
-      this.game.playerMap$,
+      this.playerMap$,
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   }

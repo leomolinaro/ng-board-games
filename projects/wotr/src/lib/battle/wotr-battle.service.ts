@@ -2,11 +2,12 @@ import { Injectable, inject } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontService } from "../front/wotr-front.service";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrBattleStory, WotrCombatCardReactionStory, WotrSkipCombatCardReactionStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -40,7 +41,27 @@ export class WotrBattleService {
     this.actionService.registerAction<WotrArmyRetreat> ("army-retreat", this.applyArmyRetreat.bind (this));
     this.actionService.registerAction<WotrArmyAdvance> ("army-advance", this.applyArmyAdvance.bind (this));
     this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+    this.actionService.registerStory ("battle", this.battleStory);
+    this.actionService.registerStory ("reaction-combat-card", this.reactionCombatCard);
+    this.actionService.registerStory ("reaction-combat-card-skip", this.reactionCombatCardSkip);
   }
+
+  private battleStory: WotrStoryApplier<WotrBattleStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front, "battle");
+      await this.actionService.applyAction (action, front);
+    }
+  };
+
+  private reactionCombatCard: WotrStoryApplier<WotrCombatCardReactionStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front);
+      await this.actionService.applyAction (action, front);
+    }
+  };
+
+  private reactionCombatCardSkip: WotrStoryApplier<WotrSkipCombatCardReactionStory> = async (story, front) => { this.logStore.logStory (story, front, "battle"); };
+
 
   private async applyArmyAttack (action: WotrArmyAttack, front: WotrFrontId) {
     this.nationService.checkNationActivationByAttack (action.toRegion);

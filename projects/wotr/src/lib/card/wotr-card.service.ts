@@ -1,9 +1,12 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrCardReactionStory, WotrDieCardStory, WotrSkipCardReactionStory } from "../game/wotr-story.models";
+import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrCardAction } from "./wotr-card-actions";
+import { WotrCardParams } from "./wotr-card-effects.service";
 import { WotrCardId, cardToLabel } from "./wotr-card.models";
 
 @Injectable ()
@@ -11,11 +14,40 @@ export class WotrCardService {
   
   private actionService = inject (WotrActionService);
   private frontStore = inject (WotrFrontStore);
-  
+  private logStore = inject (WotrLogStore);
+
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
     this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+    this.actionService.registerStory ("die-card", this.dieCard);
+    this.actionService.registerStory ("reaction-card", this.reactionCard);
+    this.actionService.registerStory ("reaction-card-skip", this.reactionCardSkip);
   }
+
+  private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
+  registerCardEffects (cardEffects: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>) {
+    this.cardEffects = cardEffects;
+  }
+
+  private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front);
+      await this.actionService.applyAction (action, front);
+    }
+    const cardEffect = this.cardEffects[story.card];
+    if (cardEffect) { await cardEffect ({ front, story }); }
+    this.frontStore.discardCards ([story.card], front);
+    this.frontStore.removeActionDie (story.die, front);
+  };
+
+  private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front);
+      await this.actionService.applyAction (action, front);
+    }
+  };
+
+  private reactionCardSkip: WotrStoryApplier<WotrSkipCardReactionStory> = async (story, front) => { this.logStore.logStory (story, front); };
 
   getActionAppliers (): WotrActionApplierMap<WotrCardAction> {
     return {

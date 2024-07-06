@@ -13,15 +13,13 @@ import { WotrLog } from "../log/wotr-log.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationState, WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayer } from "../player/wotr-player.models";
+import { WotrPlayerState, WotrPlayerStore } from "../player/wotr-player.store";
 import { WotrRegionState, WotrRegionStore } from "../region/wotr-region.store";
 
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
-  players: {
-    map: Record<WotrFrontId, WotrPlayer>;
-    ids: WotrFrontId[];
-  };
+  players: WotrPlayerState;
   frontState: WotrFrontState;
   regionState: WotrRegionState;
   nationState: WotrNationState;
@@ -43,15 +41,13 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     fellowshipStore: WotrFellowshipStore,
     huntStore: WotrHuntStore,
     logStore: WotrLogStore,
+    playerStore: WotrPlayerStore,
     battleStore: WotrBattleStore
   ) {
     super ({
       gameId: "",
       gameOwner: null as any,
-      players: {
-        map: { } as any,
-        ids: []
-      },
+      players: playerStore.init (),
       frontState: frontStore.init (),
       regionState: regionStore.init (),
       nationState: nationStore.init (),
@@ -61,6 +57,8 @@ export class WotrGameStore extends BgStore<WotrGameState> {
       logs: logStore.init (),
       battle: battleStore.init ()
     }, "War of the Ring Game");
+    playerStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, players: updater (s.players) }));
+    playerStore.state = toSignal (this.select$ (s => s.players), { requireSync: true });
     frontStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, frontState: updater (s.frontState) }));
     frontStore.state = toSignal (this.select$ (s => s.frontState), { requireSync: true });
     regionStore.update = (actionName, updater) => this.update (actionName, s => ({ ...s, regionState: updater (s.regionState) }));
@@ -104,11 +102,7 @@ export class WotrGameStore extends BgStore<WotrGameState> {
     }
   }
 
-  playerMap$ = this.select$ (s => s.players.map);
-  players$ = this.select$ (this.select$ (s => s.players), (players) => players.ids.map (id => players.map[id]));
   getGameId (): string { return this.get (s => s.gameId); }
   getGameOwner (): BgUser { return this.get (s => s.gameOwner); }
-  getPlayers (): WotrPlayer[] { return this.get (s => s.players.ids.map (front => s.players.map[front])); }
-  getPlayer (id: WotrFrontId): WotrPlayer { return this.get (s => s.players.map[id]); }
 
 }

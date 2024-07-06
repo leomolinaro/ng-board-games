@@ -2,9 +2,9 @@ import { Injectable, Signal } from "@angular/core";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrPhase } from "../game-turn/wotr-phase.models";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrPhase } from "../player/wotr-phase.models";
-import { WotrLog } from "./wotr-log.models";
+import { WotrLog, WotrLogFragment } from "./wotr-log.models";
 
 export type WotrLogState = WotrLog[];
 
@@ -38,6 +38,8 @@ export class WotrLogStore {
   logEffect (effect: WotrAction, during?: "battle" | "hunt") { this.addLog (`logEffect [${effect.type}]`, { type: "effect", effect, during }); }
   logStory (story: WotrGameStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog ("logStory", { type: "story", story, front, during }); }
 
+  logV2 (...fragments: (string | WotrLogFragment)[]) { this.addLog ("logV2", { type: "v2", fragments }); }
+
   logEndGame () { this.addLog ("logEndGame", { type: "endGame" }); }
-  
+
 }

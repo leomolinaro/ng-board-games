@@ -4,6 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
+import { WotrActionTokenService } from "../action-token/wotr-action-token.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
@@ -16,6 +17,7 @@ import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontService } from "../front/wotr-front.service";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrGameTurnService } from "../game-turn/wotr-game-flow.service";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntService } from "../hunt/wotr-hunt.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
@@ -25,11 +27,11 @@ import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
+import { WotrPlayerStore } from "../player/wotr-player.store";
 import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
-import { WotrGameFlowService } from "./wotr-game-flow.service";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteMockService } from "./wotr-remote-mock.service";
 import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
@@ -42,7 +44,7 @@ import { WotrUiStore } from "./wotr-ui.store";
   imports: [WotrBoardComponent, AsyncPipe],
   template: `
     <wotr-board
-      [players]="store.players$ | async"
+      [players]="playerStore.players ()"
       [regions]="regionStore.regions ()"
       [freePeoples]="frontStore.freePeoplesFront ()"
       [shadow]="frontStore.shadowFront ()"
@@ -64,14 +66,16 @@ import { WotrUiStore } from "./wotr-ui.store";
   styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
+    // WotrLogStore,
     WotrGameStore,
     WotrStoryService,
     
-    WotrGameFlowService,
+    WotrGameTurnService,
     WotrHuntFlowService,
 
     WotrActionService,
     WotrActionDieService,
+    WotrActionTokenService,
     WotrCardService,
     WotrBattleService,
     WotrCombatCardsService,
@@ -98,6 +102,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected store = inject (WotrGameStore);
   protected frontStore = inject (WotrFrontStore);
   protected regionStore = inject (WotrRegionStore);
+  protected playerStore = inject (WotrPlayerStore);
   protected characterStore = inject (WotrCharacterStore);
   protected nationStore = inject (WotrNationStore);
   protected huntStore = inject (WotrHuntStore);
@@ -108,14 +113,16 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
   private story = inject (WotrStoryService);
-  private flow = inject (WotrGameFlowService);
+  private flow = inject (WotrGameTurnService);
   private cardEffects = inject (WotrCardEffectsService);
 
   constructor () {
     inject (WotrActionDieService).init ();
+    inject (WotrActionTokenService).init ();
     inject (WotrCardService).init ();
     inject (WotrBattleService).init ();
     inject (WotrCharacterService).init ();
+    inject (WotrGameTurnService).init ();
     inject (WotrFellowshipService).init ();
     inject (WotrHuntService).init ();
     inject (WotrNationService).init ();

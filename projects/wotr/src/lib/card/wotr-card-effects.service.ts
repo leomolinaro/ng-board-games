@@ -10,6 +10,7 @@ import { WotrRegionChoose } from "../region/wotr-region-actions";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card.models";
+import { WotrCardService } from "./wotr-card.service";
 
 export interface WotrCardParams {
   front: WotrFrontId;
@@ -29,6 +30,8 @@ export class WotrCardEffectsService {
   private regionStore = inject (WotrRegionStore);
   private huntFlow = inject (WotrHuntFlowService);
   private armyUtil = inject (WotrArmyUtils);
+  
+  private cardService = inject (WotrCardService);
 
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
     "Nazgul Search": async params => {
@@ -67,7 +70,7 @@ export class WotrCardEffectsService {
     objectUtil.forEachProp (this.cardEffects, (label, cardEffect) => {
       cardEffectsById[labelToCardId (label as WotrCardLabel)] = cardEffect;
     });
-    this.storyService.registerCardEffects (cardEffectsById);
+    this.cardService.registerCardEffects (cardEffectsById);
   }
 
 }
