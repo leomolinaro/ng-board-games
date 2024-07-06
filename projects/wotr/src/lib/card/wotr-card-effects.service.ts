@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { objectUtil } from "@leobg/commons/utils";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrStory } from "../game/wotr-story.models";
+import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
@@ -13,7 +13,7 @@ import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card.models";
 
 export interface WotrCardParams {
   front: WotrFrontId;
-  story: WotrStory;
+  story: WotrGameStory;
   // shadow: WotrCombatFront;
   // freePeoples: WotrCombatFront;
   // combatRound: WotrCombatRound;

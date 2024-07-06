@@ -29,6 +29,6 @@ export type WotrReactionStory =
   WotrCombatCardReactionStory | WotrSkipCombatCardReactionStory |
   WotrCharacterReactionStory | WotrSkipCharacterReactionStory;
 
-export type WotrStory = WotrFlowStory | WotrActionDieStory | WotrActionTokenStory | WotrReactionStory;
+export type WotrGameStory = WotrFlowStory | WotrActionDieStory | WotrActionTokenStory | WotrReactionStory;
 
-export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrStory>;
+export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;

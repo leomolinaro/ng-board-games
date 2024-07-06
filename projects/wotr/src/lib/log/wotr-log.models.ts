@@ -1,7 +1,7 @@
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrStory } from "../game/wotr-story.models";
+import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrPhase } from "../player/wotr-phase.models";
 
 export interface WotrLogSetup { type: "setup" }
@@ -11,7 +11,7 @@ export interface WotrLogAction {
   type: "action";
   front: WotrFrontId;
   action: WotrAction;
-  story: WotrStory;
+  story: WotrGameStory;
   during?: "battle" | "hunt";
 }
 export interface WotrLogEffect {
@@ -22,7 +22,7 @@ export interface WotrLogEffect {
 export interface WotrLogStory {
   type: "story";
   front: WotrFrontId;
-  story: WotrStory;
+  story: WotrGameStory;
   during?: "battle" | "hunt";
 }
 export interface WotrLogPhase { type: "phase"; phase: WotrPhase }

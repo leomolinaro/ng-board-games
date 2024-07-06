@@ -24,20 +24,20 @@ import { WotrEliteUnitElimination, WotrRegularUnitElimination } from "../unit/wo
 import { WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteService } from "./wotr-remote.service";
-import { WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
+import { WotrDieCardStory, WotrDieStory, WotrGameStory, WotrPassStory, WotrSkipTokensStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
 import { WotrUiStore } from "./wotr-ui.store";
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;
-  task: (playerService: WotrPlayerService) => Promise<WotrStory>;
+  task: (playerService: WotrPlayerService) => Promise<WotrGameStory>;
 }
 
 type WotrStoryApplier<S> = (story: S, front: WotrFrontId) => void;
 
-type WotrStoryApplierMap = { [key in WotrStory["type"]]: WotrStoryApplier<{ type: key } & WotrStory> };
+type WotrStoryApplierMap = { [key in WotrGameStory["type"]]: WotrStoryApplier<{ type: key } & WotrGameStory> };
 
 @Injectable ()
-export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, WotrStory, WotrPlayerService> {
+export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, WotrGameStory, WotrPlayerService> {
 
   private store = inject (WotrGameStore);
   private ui = inject (WotrUiStore);
@@ -73,12 +73,12 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   private replayToLastStory = false;
   private $replayCall = new Subject<void> ();
   
-  private async executeTask<R extends WotrStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
+  private async executeTask<R extends WotrGameStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
     await this.replayCall ();
     return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))));
   }
 
-  private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrStory[]> {
+  private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrGameStory[]> {
     await this.replayCall ();
     return firstValueFrom (super.executeTasks$ (tasks.map (t => ({
       playerId: t.playerId,
@@ -117,12 +117,12 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     }));
   }
 
-  private async parallelStories (getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrStory>) {
+  private async parallelStories (getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
     const stories = await this.executeTasks (this.frontStore.frontIds ().map (
       front => ({ playerId: front, task: getTask (front) })
     ));
     let index = 0;
-    const toReturn: Record<WotrFrontId, WotrStory> = { } as any;
+    const toReturn: Record<WotrFrontId, WotrGameStory> = { } as any;
     for (const frontId of this.frontStore.frontIds ()) {
       const story = stories[index++];
       await this.applyStory (story, frontId);
@@ -131,27 +131,27 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return toReturn;
   }
 
-  private async story<S extends WotrStory> (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<S>) {
+  private async story<S extends WotrGameStory> (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<S>) {
     const story = await this.executeTask (front, task);
     await this.applyStory (story, front);
     return story;
   }
 
-  private filterActions<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A[] {
+  private filterActions<A extends WotrAction> (story: WotrGameStory, ...actionTypes: A["type"][]): A[] {
     const actions = this.assertActionsStory (story);
     const foundActions = actions.filter (a => actionTypes.includes (a.type)) as A[];
     if (foundActions.length) { return foundActions; }
     throw unexpectedStory (story, actionTypes.join (" or "));
   }
 
-  findAction<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A {
+  findAction<A extends WotrAction> (story: WotrGameStory, ...actionTypes: A["type"][]): A {
     const actions = this.assertActionsStory (story);
     const foundAction = actions.find (a => actionTypes.includes (a.type)) as A;
     if (foundAction) { return foundAction; }
     throw unexpectedStory (story, actionTypes.join (" or "));
   }
 
-  private assertActionsStory (story: WotrStory): WotrAction[] {
+  private assertActionsStory (story: WotrGameStory): WotrAction[] {
     if ("actions" in story) { return story.actions; }
     throw unexpectedStory (story, "some actions");
   }
@@ -244,7 +244,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     "token-skip": async (story, front) => this.logStore.logStory (story, front),
   };
 
-  private async applyStory (story: WotrStory, front: WotrFrontId) {
+  private async applyStory (story: WotrGameStory, front: WotrFrontId) {
     await (this.storyAppliers[story.type] as any) (story, front);
   }
 
@@ -252,11 +252,11 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     await this.parallelStories (f => p => p.firstPhaseDrawCards! ());
   }
 
-  async wantDeclareFellowship (front: WotrFrontId): Promise<WotrStory> {
+  async wantDeclareFellowship (front: WotrFrontId): Promise<WotrGameStory> {
     return this.story (front, p => p.wantDeclareFellowship! ());
   }
 
-  async huntAllocation (front: WotrFrontId): Promise<WotrStory> {
+  async huntAllocation (front: WotrFrontId): Promise<WotrGameStory> {
     return this.story (front, p => p.huntAllocation! ());
   }
 
@@ -309,7 +309,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     }
   }
 
-  async activateTableCard (cardId: WotrCardId, front: WotrFrontId): Promise<WotrStory> {
+  async activateTableCard (cardId: WotrCardId, front: WotrFrontId): Promise<WotrGameStory> {
     return this.story (front, p => p.activateTableCard! (cardId));
   }
 

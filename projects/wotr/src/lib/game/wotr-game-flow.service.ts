@@ -8,7 +8,7 @@ import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrSetup, WotrSetupRulesService } from "../setup/wotr-setup-rules.service";
-import { WotrStory } from "./wotr-story.models";
+import { WotrGameStory } from "./wotr-story.models";
 import { WotrStoryService } from "./wotr-story.service";
 
 @Injectable ()
@@ -125,7 +125,7 @@ export class WotrGameFlowService {
     return true;
   }
 
-  private getNextResolutionFrontId (frontId: WotrFrontId, story: WotrStory): WotrFrontId | null {
+  private getNextResolutionFrontId (frontId: WotrFrontId, story: WotrGameStory): WotrFrontId | null {
     const otherFrontId = oppositeFront (frontId);
     if (this.frontStore.hasActionDice (otherFrontId)) { return otherFrontId; }
     if (this.frontStore.hasActionTokens (otherFrontId) && story.type !== "token-skip") { return otherFrontId; }
