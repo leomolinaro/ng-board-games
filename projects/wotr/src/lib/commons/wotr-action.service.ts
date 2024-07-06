@@ -46,6 +46,7 @@ export class WotrActionService {
   getEffectLogFragments<F> (effect: WotrAction, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {
     const effectLogger = this.effectLoggers.get (effect.type);
     if (!effectLogger) { throw new Error (`Unknown effect log ${effect.type}`); }
-    return effectLogger (effect, fragmentCreator);  }
+    return effectLogger (effect, fragmentCreator);
+  }
 
 }

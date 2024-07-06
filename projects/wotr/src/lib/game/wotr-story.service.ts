@@ -12,7 +12,7 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
+import { WotrHuntAllocation, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
@@ -130,7 +130,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return toReturn;
   }
 
-  private async story (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<WotrStory>) {
+  private async story<S extends WotrStory> (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<S>) {
     const story = await this.executeTask (front, task);
     await this.applyStory (story, front);
     return story;
@@ -168,7 +168,27 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
         await this.actionService.applyAction (action, front);
       }
     },
-    hunt: async (story, front) => {
+    "hunt-allocation": async (story, front) => {
+      const action: WotrHuntAllocation = { type: "hunt-allocation", quantity: story.quantity };
+      this.logStore.logAction (action, story, front, "hunt");
+      await this.actionService.applyAction (action, front);
+    },
+    "hunt-roll": async (story, front) => {
+      const action: WotrHuntRoll = { type: "hunt-roll", dice: story.dice };
+      this.logStore.logAction (action, story, front, "hunt");
+      await this.actionService.applyAction (action, front);
+    },
+    "hunt-re-roll": async (story, front) => {
+      const action: WotrHuntReRoll = { type: "hunt-re-roll", dice: story.dice };
+      this.logStore.logAction (action, story, front, "hunt");
+      await this.actionService.applyAction (action, front);
+    },
+    "hunt-tile-draw": async (story, front) => {
+      const action: WotrHuntTileDraw = { type: "hunt-tile-draw", tile: story.tile };
+      this.logStore.logAction (action, story, front, "hunt");
+      await this.actionService.applyAction (action, front);
+    },
+    "hunt-effect": async (story, front) => {
       for (const action of story.actions) {
         this.logStore.logAction (action, story, front, "hunt");
         await this.actionService.applyAction (action, front);
@@ -245,20 +265,17 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
 
   async rollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
     const story = await this.story (front, p => p.rollHuntDice! ());
-    const action = this.findAction<WotrHuntRoll> (story, "hunt-roll");
-    return action.dice;
+    return story.dice;
   }
 
   async reRollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
     const story = await this.story (front, p => p.reRollHuntDice! ());
-    const action = this.findAction<WotrHuntReRoll> (story, "hunt-re-roll");
-    return action.dice;
+    return story.dice;
   }
 
   async drawHuntTile (front: WotrFrontId): Promise<WotrHuntTileId> {
     const story = await this.story (front, p => p.drawHuntTile! ());
-    const action = this.findAction<WotrHuntTileDraw> (story, "hunt-tile-draw");
-    return action.tile;
+    return story.tile;
   }
 
   async revealFellowship (): Promise<void> {
@@ -271,8 +288,8 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     this.findAction<WotrCompanionSeparation> (story, "companion-separation");
   }
 
-  async absorbHuntDamage (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
-    const story = await this.story (front, p => p.absorbHuntDamage! ());
+  async huntEffect (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
+    const story = await this.story (front, p => p.huntEffect! ());
     const actions = this.filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable> (
       story,
       "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal", "card-discard-from-table");

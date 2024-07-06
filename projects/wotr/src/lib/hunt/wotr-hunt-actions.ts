@@ -1,4 +1,5 @@
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { WotrGameAction } from "../game/wotr-story.models";
 import { WotrHuntTileId } from "./wotr-hunt.models";
 
 export type WotrHuntAction = WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntTileAdd;
@@ -12,3 +13,10 @@ export interface WotrHuntTileDraw { type: "hunt-tile-draw"; tile: WotrHuntTileId
 export function drawHuntTile (tile: WotrHuntTileId): WotrHuntTileDraw { return { type: "hunt-tile-draw", tile }; }
 export interface WotrHuntTileAdd { type: "hunt-tile-add"; tile: WotrHuntTileId }
 export function addHuntTile (tile: WotrHuntTileId): WotrHuntTileAdd { return { type: "hunt-tile-add", tile }; }
+
+export interface WotrHuntEffectStory { type: "hunt-effect"; actions: WotrGameAction[] } // TODO WotrAction
+export interface WotrHuntAllocationStory { type: "hunt-allocation"; quantity: number }
+export interface WotrHuntRollStory { type: "hunt-roll"; dice: WotrCombatDie[] }
+export interface WotrHuntReRollStory { type: "hunt-re-roll"; dice: WotrCombatDie[] }
+export interface WotrHuntTileDrawStory { type: "hunt-tile-draw"; tile: WotrHuntTileId }
+export type WotrHuntStory = WotrHuntAllocationStory | WotrHuntRollStory | WotrHuntReRollStory | WotrHuntTileDrawStory | WotrHuntEffectStory;

@@ -139,7 +139,7 @@ export class WotrHuntFlowService {
   async absorbHuntDamage (): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
     let gollumRevealing = false;
-    const actions = await this.storyService.absorbHuntDamage ("free-peoples");
+    const actions = await this.storyService.huntEffect ("free-peoples");
     for (const action of actions) {
       switch (action.type) {
         case "fellowship-corruption": absorbedDamage += action.quantity; break;

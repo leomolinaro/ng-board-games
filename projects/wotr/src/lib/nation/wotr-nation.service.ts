@@ -106,12 +106,14 @@ export class WotrNationService {
   }
 
   private activateNation (nation: WotrNationId) {
-    this.logStore.logEffect ({ type: "political-activation", nation });
+    const action: WotrPoliticalActivation = { type: "political-activation", nation };
+    this.logStore.logEffect (action);
     this.nationStore.activate (true, nation);
   }
 
   advanceNation (quantity: number, nation: WotrNationId) {
-    this.logStore.logEffect ({ type: "political-advance", nation, quantity });
+    const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
+    this.logStore.logEffect (action);
     this.nationStore.advance (quantity, nation);
   }
 

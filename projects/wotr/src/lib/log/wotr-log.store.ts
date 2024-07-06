@@ -1,7 +1,8 @@
 import { Injectable, Signal } from "@angular/core";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameAction, WotrStory } from "../game/wotr-story.models";
+import { WotrStory } from "../game/wotr-story.models";
 import { WotrPhase } from "../player/wotr-phase.models";
 import { WotrLog } from "./wotr-log.models";
 
@@ -33,8 +34,8 @@ export class WotrLogStore {
   
   logCombatCard (card: WotrCardId, front: WotrFrontId) { this.addLog ("logCombatCard", { type: "combat-card", card, front, during: "battle" }); }
 
-  logAction (action: WotrGameAction, story: WotrStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog (`logAction [${action.type}]`, { type: "action", action, story, front, during }); }
-  logEffect (effect: WotrGameAction, during?: "battle" | "hunt") { this.addLog (`logEffect [${effect.type}]`, { type: "effect", effect, during }); }
+  logAction (action: WotrAction, story: WotrStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog (`logAction [${action.type}]`, { type: "action", action, story, front, during }); }
+  logEffect (effect: WotrAction, during?: "battle" | "hunt") { this.addLog (`logEffect [${effect.type}]`, { type: "effect", effect, during }); }
   logStory (story: WotrStory, front: WotrFrontId, during?: "battle" | "hunt") { this.addLog ("logStory", { type: "story", story, front, during }); }
 
   logEndGame () { this.addLog ("logEndGame", { type: "endGame" }); }
