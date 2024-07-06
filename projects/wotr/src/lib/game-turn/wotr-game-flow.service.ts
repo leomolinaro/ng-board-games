@@ -1,11 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrStoryApplier } from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameStory, WotrPhaseStory } from "../game/wotr-story.models";
+import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
@@ -23,21 +21,12 @@ export class WotrGameTurnService {
   private companionStore = inject (WotrCharacterStore);
   private fellowshipStore = inject (WotrFellowshipStore);
   private huntStore = inject (WotrHuntStore);
-  private actionService = inject (WotrActionService);
 
   private story = inject (WotrStoryService);
   private setupService = inject (WotrSetupRulesService);
 
   init () {
-    this.actionService.registerStory ("phase", this.phase);
   }
-
-  private phase: WotrStoryApplier<WotrPhaseStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logStore.logAction (action, story, front);
-      await this.actionService.applyAction (action, front);
-    }
-  };
 
   async game () {
     this.setup ();

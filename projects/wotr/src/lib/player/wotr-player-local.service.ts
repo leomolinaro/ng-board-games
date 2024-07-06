@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { WotrCardDraw } from "../card/wotr-card-actions";
 import { WotrGameStore } from "../game/wotr-game.store";
-import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrUiStore } from "../game/wotr-ui.store";
 import { WotrPlayerService } from "./wotr-player.service";
 
@@ -14,10 +13,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     // private rules: WotrRulesService,
   ) {}
 
-  async firstPhaseDrawCards (): Promise<WotrGameStory> {
+  async firstPhaseDrawCards (): Promise<WotrCardDraw> {
     return {
-      type: "phase",
-      actions: [{ type: "card-draw", cards: ["fpcha01"] } as WotrCardDraw]
+      type: "card-draw",
+      cards: ["fpcha01"]
     };
   }
   //   this.ui.updateUi ("asd", s => ({

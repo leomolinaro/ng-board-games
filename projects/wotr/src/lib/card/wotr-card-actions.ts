@@ -1,6 +1,7 @@
 import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card.models";
 
 export type WotrCardAction = WotrCardDraw | /* WotrCardDiscard | */ WotrCardPlayOnTable | WotrCardRandomDiscard | WotrCardDiscardFromTable;
+export type WotrCardStory = WotrCardDraw;
 
 function labelsToCardIds (labels: WotrCardLabel[]): WotrCardId[] { return labels.map (label => labelToCardId (label)); }
 export interface WotrCardDraw { type: "card-draw"; cards: WotrCardId[]; discarded?: WotrCardId[] }

@@ -343,8 +343,7 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().characterReaction ("gollum", corruptFellowship (1), revealFellowship ("morannon")),
   b.s ().drawHuntTile ("er"),
   b.fp ().huntEffect (corruptFellowship (1)),
-  b.s ().armyDie (moveArmies (armyMovement ("dol-amroth", "lamedon"), armyMovement ("north-rhun", "east-rhun"))
-  ),
+  b.s ().armyDie (moveArmies (armyMovement ("dol-amroth", "lamedon"), armyMovement ("north-rhun", "east-rhun"))),
   b.fp ().pass (),
   b.s ().musterArmyDie (attack ("east-rhun", "iron-hills")),
   b.s ().battleStory (noCombatCard ()),
