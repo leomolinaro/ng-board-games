@@ -8,6 +8,7 @@ import { WotrCardParams } from "../card/wotr-card-effects.service";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrAction } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -23,7 +24,7 @@ import { WotrEliteUnitElimination, WotrRegularUnitElimination } from "../unit/wo
 import { WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrRemoteService } from "./wotr-remote.service";
-import { WotrDieCardStory, WotrDieStory, WotrGameAction, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
+import { WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrStory, WotrStoryDoc, WotrTokenStory } from "./wotr-story.models";
 import { WotrUiStore } from "./wotr-ui.store";
 
 export interface WotrStoryTask {
@@ -136,21 +137,21 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return story;
   }
 
-  private filterActions<A extends WotrGameAction> (story: WotrStory, ...actionTypes: A["type"][]): A[] {
+  private filterActions<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A[] {
     const actions = this.assertActionsStory (story);
     const foundActions = actions.filter (a => actionTypes.includes (a.type)) as A[];
     if (foundActions.length) { return foundActions; }
     throw unexpectedStory (story, actionTypes.join (" or "));
   }
 
-  findAction<A extends WotrGameAction> (story: WotrStory, ...actionTypes: A["type"][]): A {
+  findAction<A extends WotrAction> (story: WotrStory, ...actionTypes: A["type"][]): A {
     const actions = this.assertActionsStory (story);
     const foundAction = actions.find (a => actionTypes.includes (a.type)) as A;
     if (foundAction) { return foundAction; }
     throw unexpectedStory (story, actionTypes.join (" or "));
   }
 
-  private assertActionsStory (story: WotrStory): WotrGameAction[] {
+  private assertActionsStory (story: WotrStory): WotrAction[] {
     if ("actions" in story) { return story.actions; }
     throw unexpectedStory (story, "some actions");
   }
@@ -318,7 +319,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     return action.leaders;
   }
 
-  async activateCharacterAbility (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrGameAction[]> {
+  async activateCharacterAbility (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
     const story = await this.story (front, p => p.activateCharacterAbility! (characterId));
     switch (story.type) {
       case "reaction-character": return story.actions;
@@ -327,7 +328,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
     }
   }
 
-  async activateCombatCard (cardId: WotrCardId, front: WotrFrontId): Promise<false | WotrGameAction[]> {
+  async activateCombatCard (cardId: WotrCardId, front: WotrFrontId): Promise<false | WotrAction[]> {
     const story = await this.story (front, p => p.activateCombatCard! (cardId));
     switch (story.type) {
       case "reaction-combat-card": return story.actions;

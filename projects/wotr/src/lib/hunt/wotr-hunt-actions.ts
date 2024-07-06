@@ -1,5 +1,5 @@
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrGameAction } from "../game/wotr-story.models";
+import { WotrAction } from "../commons/wotr-action.models";
 import { WotrHuntTileId } from "./wotr-hunt.models";
 
 export type WotrHuntAction = WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntTileAdd;
@@ -14,7 +14,7 @@ export function drawHuntTile (tile: WotrHuntTileId): WotrHuntTileDraw { return {
 export interface WotrHuntTileAdd { type: "hunt-tile-add"; tile: WotrHuntTileId }
 export function addHuntTile (tile: WotrHuntTileId): WotrHuntTileAdd { return { type: "hunt-tile-add", tile }; }
 
-export interface WotrHuntEffectStory { type: "hunt-effect"; actions: WotrGameAction[] } // TODO WotrAction
+export interface WotrHuntEffectStory { type: "hunt-effect"; actions: WotrAction[] }
 export interface WotrHuntAllocationStory { type: "hunt-allocation"; quantity: number }
 export interface WotrHuntRollStory { type: "hunt-roll"; dice: WotrCombatDie[] }
 export interface WotrHuntReRollStory { type: "hunt-re-roll"; dice: WotrCombatDie[] }

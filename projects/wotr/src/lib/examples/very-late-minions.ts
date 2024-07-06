@@ -8,12 +8,13 @@ import { advanceArmy, attack, combatCard, continueBattle, forfeitLeadership, noC
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacter, separateCompanions } from "../character/wotr-character-actions";
 import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
-import { WotrStoriesBuilder, WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { targetRegion } from "../region/wotr-region-actions";
 import { armyMovement, eliminateEliteUnit, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmies, moveNazgul, recruitEliteUnit, recruitRegularUnit } from "../unit/wotr-unit-actions";
 import { character, elite, nazgul, regular } from "../unit/wotr-unit.models";
+import { WotrStoriesBuilder } from "./wotr-story-builder";
 
 const b = new WotrStoriesBuilder ();
 
