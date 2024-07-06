@@ -4,8 +4,9 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrCardReactionStory, WotrDieCardStory, WotrSkipCardReactionStory } from "../game/wotr-story.models";
+import { playerLog } from "../log/wotr-log.models";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrCardAction } from "./wotr-card-actions";
+import { WotrCardAction, WotrCardDraw } from "./wotr-card-actions";
 import { WotrCardParams } from "./wotr-card-effects.service";
 import { WotrCardId, cardToLabel } from "./wotr-card.models";
 
@@ -22,6 +23,7 @@ export class WotrCardService {
     this.actionService.registerStory ("die-card", this.dieCard);
     this.actionService.registerStory ("reaction-card", this.reactionCard);
     this.actionService.registerStory ("reaction-card-skip", this.reactionCardSkip);
+    this.actionService.registerStory ("card-draw", this.cardDraw);
   }
 
   private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
@@ -40,6 +42,15 @@ export class WotrCardService {
     this.frontStore.removeActionDie (story.die, front);
   };
 
+  private cardDraw: WotrStoryApplier<WotrCardDraw> = async (story, front) => {
+    this.logStore.logV2 (playerLog (front), ` draws ${this.nCards (story.cards)}`);
+    this.frontStore.drawCards (story.cards, front);
+    if (story.discarded) {
+      this.logStore.logV2 (playerLog (front), ` discards ${this.nCards (story.discarded)}`);
+      this.frontStore.discardCards (story.discarded, front);
+    }
+  };
+
   private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction (action, story, front);
@@ -51,7 +62,7 @@ export class WotrCardService {
 
   getActionAppliers (): WotrActionApplierMap<WotrCardAction> {
     return {
-      "card-discard": async (action, front) => this.frontStore.discardCards (action.cards, front),
+      // "card-discard": async (action, front) => this.frontStore.discardCards (action.cards, front),
       "card-discard-from-table": async (action, front) => this.frontStore.discardCardFromTable (action.card, front),
       "card-draw": async (action, front) => this.frontStore.drawCards (action.cards, front),
       "card-play-on-table": async (action, front) => this.frontStore.playCardOnTable (action.card, front),
@@ -61,7 +72,7 @@ export class WotrCardService {
 
   private getActionLoggers (): WotrActionLoggerMap<WotrCardAction> {
     return {
-      "card-discard": (action, front, f) => [f.player (front), ` discards ${this.nCards (action.cards)}`],
+      // "card-discard": (action, front, f) => [f.player (front), ` discards ${this.nCards (action.cards)}`],
       "card-discard-from-table": (action, front, f) => [f.player (front), ` discards "${cardToLabel (action.card)}" from table`],
       "card-draw": (action, front, f) => [f.player (front), ` draws ${this.nCards (action.cards)}`],
       "card-play-on-table": (action, front, f) => [f.player (front), ` plays "${cardToLabel (action.card)}" on table`],

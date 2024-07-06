@@ -1,9 +1,11 @@
 import { BgStoryDoc } from "@leobg/commons";
+import { WotrActionDieStory } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
+import { WotrFellowshipStory } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrHuntStory } from "../hunt/wotr-hunt-actions";
 
@@ -21,14 +23,18 @@ export interface WotrSkipCombatCardReactionStory { type: "reaction-combat-card-s
 export interface WotrCharacterReactionStory { type: "reaction-character"; character: WotrCharacterId; actions: WotrAction[] }
 export interface WotrSkipCharacterReactionStory { type: "reaction-character-skip"; character: WotrCharacterId }
 
-export type WotrFlowStory = WotrPhaseStory | WotrBattleStory | WotrHuntStory;
-export type WotrActionDieStory = WotrDieStory | WotrDieCardStory | WotrPassStory;
+export type WotrFlowStory = WotrPhaseStory | WotrBattleStory;
 export type WotrActionTokenStory = WotrTokenStory | WotrSkipTokensStory;
 export type WotrReactionStory =
   WotrCardReactionStory | WotrSkipCardReactionStory |
   WotrCombatCardReactionStory | WotrSkipCombatCardReactionStory |
   WotrCharacterReactionStory | WotrSkipCharacterReactionStory;
 
-export type WotrGameStory = WotrFlowStory | WotrActionDieStory | WotrActionTokenStory | WotrReactionStory;
+export type WotrGameStory =
+  WotrFlowStory | WotrActionTokenStory | WotrReactionStory |
+  WotrDieStory | WotrDieCardStory | WotrPassStory |
+  WotrActionDieStory |
+  WotrHuntStory |
+  WotrFellowshipStory;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;

@@ -59,6 +59,7 @@ export interface WotrLogCardFragment { type: "card"; label: string }
 export interface WotrLogPlayerFragment { type: "player"; front: WotrFrontId }
 export function playerLog (front: WotrFrontId): WotrLogPlayerFragment { return { type: "player", front }; }
 export interface WotrLogRegionFragment { type: "region"; region: WotrRegionId }
+export function regionLog (region: WotrRegionId): WotrLogRegionFragment { return { type: "region", region }; }
 export interface WotrLogNationFragment { type: "nation"; nation: WotrNationId }
 export interface WotrLogDieFragment { type: "die"; die: WotrActionDie; front: WotrFrontId }
 export interface WotrLogTokenFragment { type: "token"; token: WotrActionToken; front: WotrFrontId }

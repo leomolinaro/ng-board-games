@@ -1,23 +1,41 @@
-import { rollActionDice } from "../action-die/wotr-action-die-actions";
+import { WotrActionRoll } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { WotrCardDiscard, WotrCardDraw } from "../card/wotr-card-actions";
 import { WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
+import { WotrFellowshipDeclare, WotrFellowshipDeclareNot } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
-import { WotrBattleStory, WotrCardReactionStory, WotrCharacterReactionStory, WotrCombatCardReactionStory, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrPhaseStory, WotrSkipCardReactionStory, WotrSkipCharacterReactionStory, WotrSkipCombatCardReactionStory, WotrSkipTokensStory, WotrStoryDoc, WotrTokenStory } from "../game/wotr-story.models";
+import { WotrBattleStory, WotrCardReactionStory, WotrCharacterReactionStory, WotrCombatCardReactionStory, WotrDieCardStory, WotrDieStory, WotrPassStory, WotrSkipCardReactionStory, WotrSkipCharacterReactionStory, WotrSkipCombatCardReactionStory, WotrSkipTokensStory, WotrStoryDoc, WotrTokenStory } from "../game/wotr-story.models";
 import { WotrHuntAllocation, WotrHuntEffect, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
+import { WotrRegionId } from "../region/wotr-region.models";
 
 export class WotrFrontStoryComposer {
   constructor (private front: WotrFrontId, private time: number) { }
   
   protected story () { return { time: this.time, playerId: this.front }; }
 
-  phaseStory (...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory { return { type: "phase", actions, ...this.story () }; }
-  rollActionDice (...dice: WotrActionDie[]): WotrStoryDoc { return this.phaseStory (rollActionDice (dice)); }
+  rollActionDice (...dice: WotrActionDie[]): WotrStoryDoc & WotrActionRoll { return { type: "action-roll", dice, ...this.story () }; }
   battleStory (...actions: WotrAction[]): WotrStoryDoc & WotrBattleStory { return { type: "battle", actions, ...this.story () }; }
+
+  drawCards (card1: WotrCardLabel): WotrStoryDoc & WotrCardDraw;
+  drawCards (card1: WotrCardLabel, card2: WotrCardLabel): WotrStoryDoc & WotrCardDraw;
+  drawCards (card1: WotrCardLabel, discarded: WotrCardDiscard): WotrStoryDoc & WotrCardDraw;
+  drawCards (card1: WotrCardLabel, card2: WotrCardLabel, discarded: WotrCardDiscard): WotrStoryDoc & WotrCardDraw;
+  drawCards (...args: (WotrCardLabel | WotrCardDiscard)[]): WotrCardDraw {
+    const drawCardAction: WotrCardDraw = { type: "card-draw", cards: [] };
+    for (const arg of args) {
+      if (typeof arg === "string") {
+        drawCardAction.cards.push (labelToCardId (arg));
+      } else {
+        drawCardAction.discarded = arg.cards;
+      }
+    }
+    return { ...drawCardAction, ...this.story () };
+  }
 
   characterDie (...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionDie ("character", ...actions); }
   eventDie (...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionDie ("event", ...actions); }
@@ -60,6 +78,8 @@ export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("free-peoples", time); }
   willOfTheWestDie (...actions: WotrAction[]) { return this.actionDie ("will-of-the-west", ...actions); }
   huntEffect (...actions: WotrAction[]): WotrStoryDoc & WotrHuntEffect { return { type: "hunt-effect", actions, ...this.story () }; }
+  notDeclareFellowship (): WotrStoryDoc & WotrFellowshipDeclareNot { return { type: "fellowship-declare-not", ...this.story () }; }
+  declareFellowship (region: WotrRegionId): WotrStoryDoc & WotrFellowshipDeclare { return { type: "fellowship-declare", region, ...this.story () }; }
 }
 export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("shadow", time); }
