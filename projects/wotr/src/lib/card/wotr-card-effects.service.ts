@@ -1,7 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 import { objectUtil } from "@leobg/commons/utils";
+import { WotrCombatRoll } from "../battle/wotr-battle-actions";
+import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameStory } from "../game/wotr-story.models";
+import { WotrGameStory, findAction } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
@@ -33,34 +35,40 @@ export class WotrCardEffectsService {
   
   private cardService = inject (WotrCardService);
 
+  private async rollCombatDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.storyService.story (front, p => p.rollCombatDice! ());
+    const action = findAction<WotrCombatRoll> (story, "combat-roll");
+    return action.dice;
+  }
+
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
     "Nazgul Search": async params => {
       const fellowshipRegionId = this.regionStore.getFellowshipRegion ();
       const fellowshipRegion = this.regionStore.region (fellowshipRegionId);
       if ((fellowshipRegion.army && this.armyUtil.hasNazgul (fellowshipRegion.army)) ||
         (fellowshipRegion.freeUnits && this.armyUtil.hasNazgul (fellowshipRegion.freeUnits))) {
-        await this.storyService.revealFellowship ();
+        await this.huntFlow.revealFellowship ();
       }
     },
     "Dreadful Spells": async params => {
-      this.storyService.findAction<WotrRegionChoose> (params.story, "region-choose");
-      await this.storyService.rollCombatDice ("shadow");
-      await this.storyService.chooseCasualties ("free-peoples");
+      findAction<WotrRegionChoose> (params.story, "region-choose");
+      await this.rollCombatDice ("shadow");
+      await this.storyService.story ("free-peoples", p => p.chooseCasualties! ());
     },
     "Isildur's Bane": async params => {
-      const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
+      const action = findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
       this.huntFlow.resolveHuntTile (action.tile, {
         ignoreEyeTile: true,
         ignoreFreePeopleSpecialTile: true
       });
     },
     "The Breaking of the Fellowship": async params => {
-      const action = this.storyService.findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
+      const action = findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
       const huntTile = this.huntStore.huntTile (action.tile);
       if (huntTile.eye || huntTile.type === "free-people-special") { return; }
       const damage = huntTile.quantity!; // TODO shelob die
       if (damage) {
-        await this.storyService.separateCompanions ("free-peoples");
+        await this.huntFlow.separateCompanions ("free-peoples");
       }
     }
   };

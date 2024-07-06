@@ -1,12 +1,15 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrFrontId } from "../front/wotr-front.models";
+import { filterActions } from "../game/wotr-story.models";
+import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrUnitAction } from "./wotr-unit-actions";
+import { WotrEliteUnitElimination, WotrRegularUnitElimination, WotrUnitAction } from "./wotr-unit-actions";
 
 @Injectable ()
 export class WotrUnitService {
@@ -15,6 +18,7 @@ export class WotrUnitService {
   private nationStore = inject (WotrNationStore);
   private nationService = inject (WotrNationService);
   private regionStore = inject (WotrRegionStore);
+  private storyService = inject (WotrStoryService);
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
@@ -174,6 +178,15 @@ export class WotrUnitService {
       "nazgul-recruitment": (action, front, f) => [f.player (front), " recruits nazgul in ", f.region (action.region)],
       "nazgul-movement": (action, front, f) => [f.player (front), ` moves ${action.nNazgul} Nazgul from `, f.region (action.fromRegion), " to ", f.region (action.toRegion)],
     };
+  }
+
+  async chooseCasualties (front: WotrFrontId) {
+    const story = await this.storyService.story (front, p => p.chooseCasualties! ());
+    const actions = filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination> (
+      story,
+      "regular-unit-elimination", "elite-unit-elimination"
+    );
+    return actions;
   }
 
 }

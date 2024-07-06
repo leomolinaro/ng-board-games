@@ -1,9 +1,15 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
+import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card.models";
+import { WotrCharacterElimination, WotrCompanionRandom, WotrCompanionSeparation } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
+import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../front/wotr-front.models";
+import { filterActions, findAction } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionId } from "../region/wotr-region.models";
@@ -24,6 +30,7 @@ export class WotrHuntFlowService {
   private regionStore = inject (WotrRegionStore);
   private huntStore = inject (WotrHuntStore);
   private characterStore = inject (WotrCharacterStore);
+  private characterService = inject (WotrCharacterService);
   private logStore = inject (WotrLogStore);
   private fellowshipStore = inject (WotrFellowshipStore);
 
@@ -38,16 +45,16 @@ export class WotrHuntFlowService {
   private async resolveStandardHunt () {
     if (!this.huntStore.hasHuntDice ()) { return; }
     this.logStore.logHuntResolution ();
-    const huntRoll = await this.storyService.rollHuntDice ("shadow");
+    const huntRoll = await this.rollHuntDice ("shadow");
     let nSuccesses = this.getNSuccesses (huntRoll);
     const nReRolls = this.getNReRolls (huntRoll, nSuccesses);
     if (nReRolls) {
-      const huntReRoll = await this.storyService.reRollHuntDice ("shadow");
+      const huntReRoll = await this.reRollHuntDice ("shadow");
       const nReRollSuccesses = this.getNSuccesses (huntReRoll);
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) { return; }
-    const huntTileId = await this.storyService.drawHuntTile ("shadow");
+    const huntTileId = await this.drawHuntTile ("shadow");
     await this.resolveHuntTile (huntTileId, {
       nSuccesses
     });
@@ -56,7 +63,7 @@ export class WotrHuntFlowService {
   private async resolveHuntOnMordorTrack () {
     this.logStore.logHuntResolution ();
     const nSuccesses = this.huntStore.getNTotalDice ();
-    const huntTileId = await this.storyService.drawHuntTile ("shadow");
+    const huntTileId = await this.drawHuntTile ("shadow");
     const huntTile = await this.resolveHuntTile (huntTileId, {
       nSuccesses
     });
@@ -94,10 +101,10 @@ export class WotrHuntFlowService {
         this.fellowshipStore.reveal ();
       } else {
         const fromRegion = this.regionStore.getFellowshipRegion ();
-        if (doReveal) { await this.storyService.revealFellowship (); }
+        if (doReveal) { await this.revealFellowship (); }
         const toRegion = this.regionStore.getFellowshipRegion ();
         if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
-          const newHuntTileId = await this.storyService.drawHuntTile ("shadow");
+          const newHuntTileId = await this.drawHuntTile ("shadow");
           this.resolveHuntTile (newHuntTileId, options);
         }
       }
@@ -139,7 +146,7 @@ export class WotrHuntFlowService {
   async absorbHuntDamage (): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
     let gollumRevealing = false;
-    const actions = await this.storyService.huntEffect ("free-peoples");
+    const actions = await this.huntEffect ("free-peoples");
     for (const action of actions) {
       switch (action.type) {
         case "fellowship-corruption": absorbedDamage += action.quantity; break;
@@ -178,17 +185,50 @@ export class WotrHuntFlowService {
     }
   }
 
+  async huntEffect (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
+    const story = await this.storyService.story (front, p => p.huntEffect! ());
+    const actions = filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable> (
+      story,
+      "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal", "card-discard-from-table");
+    return actions;
+  }
+
   private async checkTakeThemAlive (companions: WotrCharacterId[]): Promise<number> {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await this.storyService.activateCharacterAbility (companion, "free-peoples");
+        const actions = await this.characterService.activateCharacterAbility (companion, "free-peoples");
         if (actions) {
           absorbedDamage++;
         }
       }
     }
     return absorbedDamage;
+  }
+
+  async rollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.storyService.story (front, p => p.rollHuntDice! ());
+    return story.dice;
+  }
+
+  async reRollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
+    const story = await this.storyService.story (front, p => p.reRollHuntDice! ());
+    return story.dice;
+  }
+
+  async drawHuntTile (front: WotrFrontId): Promise<WotrHuntTileId> {
+    const story = await this.storyService.story (front, p => p.drawHuntTile! ());
+    return story.tile;
+  }
+
+  async revealFellowship (): Promise<void> {
+    const story = await this.storyService.story ("free-peoples", p => p.revealFellowship! ());
+    findAction<WotrFellowshipReveal> (story, "fellowship-reveal");
+  }
+
+  async separateCompanions (front: WotrFrontId): Promise<void> {
+    const story = await this.storyService.story (front, p => p.separateCompanions! ());
+    findAction<WotrCompanionSeparation> (story, "companion-separation");
   }
 
 }

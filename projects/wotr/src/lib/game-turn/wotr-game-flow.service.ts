@@ -1,9 +1,10 @@
 import { Injectable, inject } from "@angular/core";
+import { unexpectedStory } from "@leobg/commons";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameStory } from "../game/wotr-story.models";
+import { WotrDieCardStory, WotrDieStory, WotrGameStory, WotrPassStory, WotrSkipTokensStory, WotrTokenStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
@@ -22,7 +23,7 @@ export class WotrGameTurnService {
   private fellowshipStore = inject (WotrFellowshipStore);
   private huntStore = inject (WotrHuntStore);
 
-  private story = inject (WotrStoryService);
+  private storyService = inject (WotrStoryService);
   private setupService = inject (WotrSetupRulesService);
 
   init () {
@@ -64,14 +65,14 @@ export class WotrGameTurnService {
   private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    await this.story.firstPhaseDrawCards ();
+    await this.firstPhaseDrawCards ();
     return true;
   }
 
   private async fellowshipPhase () {
     this.logStore.logPhase (2);
     if (!this.fellowshipStore.isRevealed ()) {
-      await this.story.wantDeclareFellowship ("free-peoples");
+      await this.wantDeclareFellowship ("free-peoples");
     }
     this.checkMoveToMordorTrack ();
     return true;
@@ -89,13 +90,13 @@ export class WotrGameTurnService {
 
   private async huntAllocation () {
     this.logStore.logPhase (3);
-    await this.story.huntAllocation ("shadow");
+    await this.storyService.story ("shadow", p => p.huntAllocation! ());
     return true;
   }
 
   private async actionRoll () {
     this.logStore.logPhase (4);
-    await this.story.rollActionDice ();
+    await this.rollActionDice ();
     this.eyeResultsToHuntBox ();
     return true;
   }
@@ -113,10 +114,22 @@ export class WotrGameTurnService {
     this.logStore.logPhase (5);
     let front: WotrFrontId | null = "free-peoples";
     do {
-      const story = await this.story.actionResolution (front);
+      const story = await this.chooseAction (front);
       front = this.getNextResolutionFrontId (front, story);
     } while (front);
     return true;
+  }
+
+  async chooseAction (front: WotrFrontId): Promise<WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory> {
+    const story = await this.storyService.story (front, p => p.actionResolution! ());
+    switch (story.type) {
+      case "die":
+      case "die-card":
+      case "die-pass":
+      case "token":
+      case "token-skip": return story;
+      default: throw unexpectedStory (story, "die or token");
+    }
   }
 
   private async victoryCheck (roundNumber: number) {
@@ -135,6 +148,18 @@ export class WotrGameTurnService {
     if (this.frontStore.hasActionDice (frontId)) { return frontId; }
     if (this.frontStore.hasActionTokens (frontId) && story.type !== "token-skip") { return frontId; }
     return null;
+  }
+
+  async firstPhaseDrawCards (): Promise<void> {
+    await this.storyService.parallelStories (f => p => p.firstPhaseDrawCards! ());
+  }
+
+  async wantDeclareFellowship (front: WotrFrontId): Promise<WotrGameStory> {
+    return this.storyService.story (front, p => p.wantDeclareFellowship! ());
+  }
+
+  async rollActionDice (): Promise<void> {
+    await this.storyService.parallelStories (f => p => p.rollActionDice! ());
   }
 
   private applySetup (setup: WotrSetup) {

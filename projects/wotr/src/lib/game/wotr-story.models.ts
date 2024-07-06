@@ -1,4 +1,4 @@
-import { BgStoryDoc } from "@leobg/commons";
+import { BgStoryDoc, unexpectedStory } from "@leobg/commons";
 import { WotrActionDieStory } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
@@ -37,3 +37,22 @@ export type WotrGameStory =
   WotrFellowshipStory;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;
+
+export function filterActions<A extends WotrAction> (story: WotrGameStory, ...actionTypes: A["type"][]): A[] {
+  const actions = assertActionsStory (story);
+  const foundActions = actions.filter (a => actionTypes.includes (a.type)) as A[];
+  if (foundActions.length) { return foundActions; }
+  throw unexpectedStory (story, actionTypes.join (" or "));
+}
+
+export function findAction<A extends WotrAction> (story: WotrGameStory, ...actionTypes: A["type"][]): A {
+  const actions = assertActionsStory (story);
+  const foundAction = actions.find (a => actionTypes.includes (a.type)) as A;
+  if (foundAction) { return foundAction; }
+  throw unexpectedStory (story, actionTypes.join (" or "));
+}
+
+export function assertActionsStory (story: WotrGameStory): WotrAction[] {
+  if ("actions" in story) { return story.actions; }
+  throw unexpectedStory (story, "some actions");
+}

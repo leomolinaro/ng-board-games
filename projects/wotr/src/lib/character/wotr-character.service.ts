@@ -1,9 +1,12 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
+import { unexpectedStory } from "@leobg/commons";
+import { WotrCardId } from "../card/wotr-card.models";
+import { WotrAction, WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrCharacterReactionStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
+import { WotrCharacterReactionStory, WotrGameStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -114,9 +117,14 @@ export class WotrCharacterService {
 
   private async checkWornWithSorrowAndToil () {
     if (this.frontStore.hasTableCard ("scha15", "shadow")) {
-      await this.storyService.activateTableCard ("scha15", "shadow");
+      await this.activateTableCard ("scha15", "shadow");
     }
   }
+
+  async activateTableCard (cardId: WotrCardId, front: WotrFrontId): Promise<WotrGameStory> {
+    return this.storyService.story (front, p => p.activateTableCard! (cardId));
+  }
+
 
   private getActionLoggers (): WotrActionLoggerMap<WotrCharacterAction> {
     return {
@@ -130,6 +138,15 @@ export class WotrCharacterService {
 
   private characters (characters: WotrCharacterId[]) {
     return characters.map (c => this.characterStore.character (c).name).join (", ");
+  }
+
+  async activateCharacterAbility (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
+    const story = await this.storyService.story (front, p => p.activateCharacterAbility! (characterId));
+    switch (story.type) {
+      case "reaction-character": return story.actions;
+      case "reaction-character-skip": return false;
+      default: throw unexpectedStory (story, (" character activation or not"));
+    }
   }
 
 }
