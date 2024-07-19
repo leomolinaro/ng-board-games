@@ -2,17 +2,16 @@ import { WotrActionRoll } from "../action-die/wotr-action-die-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrHuntAllocation, WotrHuntEffect, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 
 export interface WotrPlayerService {
   firstPhase? (): Promise<WotrGameStory>;
   fellowshipPhase? (): Promise<WotrGameStory>;
-  allocateHuntDice? (): Promise<WotrHuntAllocation>;
+  huntAllocationPhase? (): Promise<WotrGameStory>;
   rollActionDice? (): Promise<WotrActionRoll>;
-  rollHuntDice? (): Promise<WotrHuntRoll>;
-  reRollHuntDice? (): Promise<WotrHuntReRoll>;
-  drawHuntTile? (): Promise<WotrHuntTileDraw>;
-  huntEffect? (): Promise<WotrHuntEffect>;
+  rollHuntDice? (): Promise<WotrGameStory>;
+  reRollHuntDice? (): Promise<WotrGameStory>;
+  drawHuntTile? (): Promise<WotrGameStory>;
+  huntEffect? (): Promise<WotrGameStory>;
   revealFellowship? (): Promise<WotrGameStory>;
   separateCompanions? (): Promise<WotrGameStory>;
 

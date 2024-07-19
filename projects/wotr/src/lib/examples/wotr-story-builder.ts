@@ -7,7 +7,7 @@ import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
 import { WotrBattleStory, WotrCardReactionStory, WotrCharacterReactionStory, WotrCombatCardReactionStory, WotrDieCardStory, WotrDieStory, WotrHuntStory, WotrPassStory, WotrPhaseStory, WotrSkipCardReactionStory, WotrSkipCharacterReactionStory, WotrSkipCombatCardReactionStory, WotrSkipTokensStory, WotrStoryDoc, WotrTokenStory } from "../game/wotr-story.models";
-import { WotrHuntAllocation, WotrHuntEffect, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
+import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 
 export class WotrFrontStoryComposer {
@@ -60,14 +60,14 @@ export class WotrFrontStoryComposer {
 export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("free-peoples", time); }
   willOfTheWestDie (...actions: WotrAction[]) { return this.actionDie ("will-of-the-west", ...actions); }
-  huntEffect (...actions: WotrAction[]): WotrStoryDoc & WotrHuntEffect { return { type: "hunt-effect", actions, ...this.story () }; }
+  huntEffect (...actions: WotrAction[]): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions, ...this.story () }; }
 }
 export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
   constructor (time: number) { super ("shadow", time); }
-  huntAllocation (nDice: number): WotrStoryDoc & WotrHuntAllocation { return { type: "hunt-allocation", quantity: nDice, ...this.story () }; }
-  rollHuntDice (...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntRoll { return { type: "hunt-roll", dice, ...this.story () }; }
-  reRollHuntDice (...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntReRoll { return { type: "hunt-re-roll", dice, ...this.story () }; }
-  drawHuntTile (tile: WotrHuntTileId): WotrStoryDoc & WotrHuntTileDraw { return { type: "hunt-tile-draw", tile, ...this.story () }; }
+  huntAllocation (nDice: number): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions: [allocateHuntDice (nDice)], ...this.story () }; }
+  rollHuntDice (...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions: [rollHuntDice (...dice)], ...this.story () }; }
+  reRollHuntDice (...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions: [reRollHuntDice (...dice)], ...this.story () }; }
+  drawHuntTile (tile: WotrHuntTileId): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions: [drawHuntTile (tile)], ...this.story () }; }
 }
 
 export class WotrStoriesBuilder {

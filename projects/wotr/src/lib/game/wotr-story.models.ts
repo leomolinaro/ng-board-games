@@ -6,7 +6,6 @@ import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
-import { WotrHuntAllocation, WotrHuntEffect, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 
 export interface WotrPhaseStory { type: "phase"; actions: WotrAction[] }
 export interface WotrBattleStory { type: "battle"; actions: WotrAction[] }
@@ -32,9 +31,9 @@ export type WotrGameStory =
   WotrPhaseStory | WotrBattleStory | WotrHuntStory |
   WotrTokenStory | WotrSkipTokensStory | WotrReactionStory |
   WotrDieStory | WotrDieCardStory | WotrPassStory |
-  WotrActionDieStory |
-  // TO REMOVE:
-  WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntEffect;
+  WotrActionDieStory /*|
+   // TO REMOVE:
+  WotrHuntEffect */;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;
 

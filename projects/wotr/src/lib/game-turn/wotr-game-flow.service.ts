@@ -101,7 +101,7 @@ export class WotrGameTurnService {
 
   private async huntAllocation () {
     this.logStore.logPhase (3);
-    await this.storyService.story ("shadow", p => p.allocateHuntDice! ());
+    await this.storyService.story ("shadow", p => p.huntAllocationPhase! ());
     return true;
   }
 

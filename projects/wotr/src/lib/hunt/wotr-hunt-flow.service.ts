@@ -14,6 +14,7 @@ import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntTile, WotrHuntTileId } from "./wotr-hunt.models";
 import { WotrHuntStore } from "./wotr-hunt.store";
 
@@ -208,17 +209,20 @@ export class WotrHuntFlowService {
 
   async rollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
     const story = await this.storyService.story (front, p => p.rollHuntDice! ());
-    return story.dice;
+    const huntRoll = findAction<WotrHuntRoll> (story, "hunt-roll");
+    return huntRoll.dice;
   }
 
   async reRollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
     const story = await this.storyService.story (front, p => p.reRollHuntDice! ());
-    return story.dice;
+    const huntReRoll = findAction<WotrHuntReRoll> (story, "hunt-re-roll");
+    return huntReRoll.dice;
   }
 
   async drawHuntTile (front: WotrFrontId): Promise<WotrHuntTileId> {
     const story = await this.storyService.story (front, p => p.drawHuntTile! ());
-    return story.tile;
+    const drawHuntTile = findAction<WotrHuntTileDraw> (story, "hunt-tile-draw");
+    return drawHuntTile.tile;
   }
 
   async revealFellowship (): Promise<void> {
