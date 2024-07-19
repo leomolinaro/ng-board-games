@@ -7,7 +7,7 @@ import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { advanceArmy, attack, combatCard, continueBattle, forfeitLeadership, noCombatCard, reRollCombatDice, retreat, retreatIntoSiege, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacter, separateCompanions } from "../character/wotr-character-actions";
-import { changeGuide, corruptFellowship, healFellowship, hideFellowship, moveFelloswhip, revealFellowship } from "../fellowship/wotr-fellowship-actions";
+import { changeGuide, corruptFellowship, declareFellowship, healFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
@@ -20,9 +20,9 @@ const b = new WotrStoriesBuilder ();
 
 export const stories: WotrStoryDoc[] = [
   // Turn 1
-  b.fpT ().drawCards ("The Power of Tom Bombadil", "Elven Cloaks"),
-  b.s ().drawCards ("The Day Without Dawn", "Worn with Sorrow and Toil"),
-  b.fp ().notDeclareFellowship (),
+  b.fpT ().phaseStory (drawCards ("The Power of Tom Bombadil", "Elven Cloaks")),
+  b.s ().phaseStory (drawCards ("The Day Without Dawn", "Worn with Sorrow and Toil")),
+  b.fp ().phaseStory (notDeclareFellowship ()),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("character", "character", "muster-army", "muster"),
   b.s ().rollActionDice ("army", "character", "army", "character", "event", "eye"),
@@ -45,9 +45,9 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().actionToken ("political-advance", advanceNation ("elves", 1)),
   b.fp ().skipTokens (),
   // Turn 2
-  b.fpT ().drawCards ("The Ents Awake: Entmoot", "Kindred of Glorfindel"),
-  b.s ().drawCards ("Return to Valinor", "Nazgul Search"),
-  b.fp ().notDeclareFellowship (),
+  b.fpT ().phaseStory (drawCards ("The Ents Awake: Entmoot", "Kindred of Glorfindel")),
+  b.s ().phaseStory (drawCards ("Return to Valinor", "Nazgul Search")),
+  b.fp ().phaseStory (notDeclareFellowship ()),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("muster-army", "character", "event", "will-of-the-west"),
   b.s ().rollActionDice ("event", "muster-army", "event", "army", "event"),
@@ -75,9 +75,9 @@ export const stories: WotrStoryDoc[] = [
   b.s ().armyDie (moveArmies (armyMovement ("moria", "dimrill-dale", leftUnits (regular ("sauron", 1))), armyMovement ("noman-lands", "southern-rhovanion"))),
   b.fp ().skipTokens (),
   // Turn 3
-  b.fpT ().drawCards ("Celeborn's Galadhrim", "Mithril Coat and Sting"),
-  b.s ().drawCards ("Half-orcs and Goblin-men", "Wormtongue"),
-  b.fp ().notDeclareFellowship (),
+  b.fpT ().phaseStory (drawCards ("Celeborn's Galadhrim", "Mithril Coat and Sting")),
+  b.s ().phaseStory (drawCards ("Half-orcs and Goblin-men", "Wormtongue")),
+  b.fp ().phaseStory (notDeclareFellowship ()),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("will-of-the-west", "muster-army", "character", "event"),
   b.s ().rollActionDice ("muster", "muster", "event", "event", "muster-army", "army"),
@@ -106,8 +106,8 @@ export const stories: WotrStoryDoc[] = [
   b.s ().eventDieCard ("Half-orcs and Goblin-men", recruitEliteUnit ("old-forest-road", "isengard")),
   b.fp ().willOfTheWestDie (recruitEliteUnit ("woodland-realm", "elves")),
   // Turn 4
-  b.sT ().drawCards ("Isildur's Bane", "Hill-trolls"),
-  b.fp ().drawCards ("The Ents Awake: Huorns", "The Red Arrow"),
+  b.sT ().phaseStory (drawCards ("Isildur's Bane", "Hill-trolls")),
+  b.fp ().phaseStory (drawCards ("The Ents Awake: Huorns", "The Red Arrow")),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("muster", "muster-army", "muster-army", "will-of-the-west"),
   b.s ().rollActionDice ("eye", "eye", "eye", "event", "muster-army", "army"),
@@ -123,8 +123,8 @@ export const stories: WotrStoryDoc[] = [
   b.s ().musterArmyDie (advanceNation ("southrons")),
   b.fp ().willOfTheWestDie (advanceNation ("north")),
   // Turn 5
-  b.fpT ().drawCards ("I Will Go Alone", "The Last Battle", discardCards ("Kindred of Glorfindel", "The Ents Awake: Huorns")),
-  b.s ().drawCards ("The Black Captain Commands", "Corsairs of Umbar", discardCards ("Wormtongue")),
+  b.fpT ().phaseStory (drawCards ("I Will Go Alone", "The Last Battle"), discardCards ("Kindred of Glorfindel", "The Ents Awake: Huorns")),
+  b.s ().phaseStory (drawCards ("The Black Captain Commands", "Corsairs of Umbar"), discardCards ("Wormtongue")),
   b.s ().huntAllocation (0),
   b.fpT ().rollActionDice ("muster", "will-of-the-west", "will-of-the-west", "character"),
   b.s ().rollActionDice ("muster", "muster-army", "event", "muster", "army", "character", "muster-army"),
@@ -161,9 +161,9 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().battleStory (eliminateRegularUnit ("dol-amroth", "gondor", 3)),
   b.s ().characterReaction ("the-witch-king", drawCards ("Orcs Multiplying Again")),
   // Turn 6 30:00
-  b.fpT ().drawCards ("There and Back Again", "Grimbeorn the Old, Son of Beorn"),
-  b.s ().drawCards ("Grond, Hammer of the Unnderworld", "Shadows on the Misty Mountains"),
-  b.fp ().declareFellowship ("old-forest-road"),
+  b.fpT ().phaseStory (drawCards ("There and Back Again", "Grimbeorn the Old, Son of Beorn")),
+  b.s ().phaseStory (drawCards ("Grond, Hammer of the Unnderworld", "Shadows on the Misty Mountains")),
+  b.fp ().phaseStory (declareFellowship ("old-forest-road")),
   b.s ().huntAllocation (1),
   b.sT ().rollActionDice ("eye", "muster", "army", "event", "muster", "muster", "character", "muster-army"),
   b.fp ().rollActionDice ("character", "event", "character", "muster"),
@@ -206,8 +206,8 @@ export const stories: WotrStoryDoc[] = [
   b.s ().eventDieCard ("Isildur's Bane", drawHuntTile ("0r")),
   b.fp ().huntEffect (revealFellowship ("southern-rhovanion")),
   // Turn 7 42:05
-  b.sT ().drawCards ("The Nazgul Strike", "Olog-hai"),
-  b.fp ().drawCards ("Bilbo's Song", "Paths of the Woses", discardCards ("Paths of the Woses")),
+  b.sT ().phaseStory (drawCards ("The Nazgul Strike", "Olog-hai")),
+  b.fp ().phaseStory (drawCards ("Bilbo's Song", "Paths of the Woses"), discardCards ("Paths of the Woses")),
   b.s ().huntAllocation (1),
   b.sT ().rollActionDice ("event", "character", "muster", "muster", "event", "character", "muster", "army"),
   b.fp ().rollActionDice ("character", "character", "muster", "character"),
@@ -320,9 +320,9 @@ export const stories: WotrStoryDoc[] = [
   b.fp ().battleStory (retreat ("folde")),
   b.s ().battleStory (advanceArmy ()),
   // Turn 8 54:32
-  b.fpT ().drawCards ("Horns of Gondor", "Fear! Fire! Foes!", discardCards ("Horns of Gondor")),
-  b.s ().drawCards ("Dreadful Spells", "Musterings of Long-planned War"),
-  b.fp ().notDeclareFellowship (),
+  b.fpT ().phaseStory (drawCards ("Horns of Gondor", "Fear! Fire! Foes!"), discardCards ("Horns of Gondor")),
+  b.s ().phaseStory (drawCards ("Dreadful Spells", "Musterings of Long-planned War")),
+  b.fp ().phaseStory (notDeclareFellowship ()),
   b.s ().huntAllocation (1),
   b.sT ().rollActionDice ("eye", "army", "muster-army", "army", "muster-army", "character", "eye", "muster"),
   b.fp ().rollActionDice ("event", "character", "character", "event"),
@@ -365,8 +365,8 @@ export const stories: WotrStoryDoc[] = [
     moveNazgul ("noman-lands", "erebor"),
   ),
   // Turn 9 56:34
-  b.fpT ().drawCards ("Smeagol Helps Nice Master", "A Power too Great"),
-  b.s ().drawCards ("Cruel Weather", "Many Kings to the Service of Mordor", discardCards ("The Nazgul Strike", "Orcs Multiplying Again")),
+  b.fpT ().phaseStory (drawCards ("Smeagol Helps Nice Master", "A Power too Great")),
+  b.s ().phaseStory (drawCards ("Cruel Weather", "Many Kings to the Service of Mordor"), discardCards ("The Nazgul Strike", "Orcs Multiplying Again")),
   b.s ().huntAllocation (1),
   b.sT ().rollActionDice ("event", "muster", "eye", "army", "eye", "army", "character", "event", "muster-army"),
   b.fp ().rollActionDice ("muster-army", "will-of-the-west", "character", "will-of-the-west"),

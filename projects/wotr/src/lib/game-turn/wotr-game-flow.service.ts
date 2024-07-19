@@ -1,10 +1,12 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCharacterStore } from "../character/wotr-character.store";
+import { WotrStoryApplier } from "../commons/wotr-action.models";
+import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrDieCardStory, WotrDieStory, WotrGameStory, WotrPassStory, WotrSkipTokensStory, WotrTokenStory } from "../game/wotr-story.models";
+import { WotrDieCardStory, WotrDieStory, WotrGameStory, WotrPassStory, WotrPhaseStory, WotrSkipTokensStory, WotrTokenStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
@@ -22,12 +24,21 @@ export class WotrGameTurnService {
   private companionStore = inject (WotrCharacterStore);
   private fellowshipStore = inject (WotrFellowshipStore);
   private huntStore = inject (WotrHuntStore);
+  private actionService = inject (WotrActionService);
 
   private storyService = inject (WotrStoryService);
   private setupService = inject (WotrSetupRulesService);
 
   init () {
+    this.actionService.registerStory ("phase", this.phaseStory);
   }
+
+  private phaseStory: WotrStoryApplier<WotrPhaseStory> = async (story, front) => {
+    for (const action of story.actions) {
+      this.logStore.logAction (action, story, front, "battle");
+      await this.actionService.applyAction (action, front);
+    }
+  };
 
   async game () {
     this.setup ();
@@ -65,7 +76,7 @@ export class WotrGameTurnService {
   private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    await this.storyService.parallelStories (f => p => p.drawCards! (2));
+    await this.storyService.parallelStories (f => p => p.firstPhase! ());
     return true;
   }
 
@@ -151,7 +162,7 @@ export class WotrGameTurnService {
   }
 
   async wantDeclareFellowship (front: WotrFrontId): Promise<WotrGameStory> {
-    return this.storyService.story (front, p => p.declareFellowship! ());
+    return this.storyService.story (front, p => p.fellowshipPhase! ());
   }
 
   async rollActionDice (): Promise<void> {

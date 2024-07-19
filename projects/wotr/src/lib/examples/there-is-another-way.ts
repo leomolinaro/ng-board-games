@@ -4,7 +4,7 @@ import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { advanceArmy, attack, combatCard, noCombatCard, reRollCombatDice, retreat, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, playCharacter, separateCompanions } from "../character/wotr-character-actions";
-import { changeGuide, corruptFellowship, hideFellowship, moveFelloswhip, revealFellowship } from "../fellowship/wotr-fellowship-actions";
+import { changeGuide, corruptFellowship, declareFellowship, hideFellowship, moveFelloswhip, notDeclareFellowship, revealFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
@@ -16,9 +16,9 @@ const b = new WotrStoriesBuilder ();
 
 export const stories: WotrStoryDoc[] = [
   // Turn 1
-  b.fpT ().drawCards ("Swords in Eriador", "Challenge of the King"),
-  b.s ().drawCards ("Return to Valinor", "Balrog of Moria"),
-  b.fp ().notDeclareFellowship (),
+  b.fpT ().phaseStory (drawCards ("Swords in Eriador", "Challenge of the King")),
+  b.s ().phaseStory (drawCards ("Return to Valinor", "Balrog of Moria")),
+  b.fp ().phaseStory (notDeclareFellowship ()),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("character", "muster-army", "character", "character"),
   b.s ().rollActionDice ("muster-army", "muster-army", "muster", "character", "army", "eye"),
@@ -45,8 +45,8 @@ export const stories: WotrStoryDoc[] = [
   b.s ().musterArmyDie (moveArmies (armyMovement ("moria", "dimrill-dale"), armyMovement ("morannon", "dagorlad"))),
   b.fp ().skipTokens (),
   // Turn 2 4:00
-  b.sT ().drawCards ("Give it to Uss!", "Threats and Promises"),
-  b.fp ().drawCards ("Axe and Bow", "Grimbeorn the Old, Son of Beorn"),
+  b.sT ().phaseStory (drawCards ("Give it to Uss!", "Threats and Promises")),
+  b.fp ().phaseStory (drawCards ("Axe and Bow", "Grimbeorn the Old, Son of Beorn")),
   b.s ().huntAllocation (1),
   b.fpT ().rollActionDice ("event", "muster", "character", "will-of-the-west"),
   b.s ().rollActionDice ("army", "event", "eye", "army", "muster", "army", "event"),
@@ -69,9 +69,9 @@ export const stories: WotrStoryDoc[] = [
   b.s ().eventDieCard ("Give it to Uss!", addHuntTile ("r1rs")),
   b.fp ().skipTokens (),
   // Turn 3 6:57
-  b.sT ().drawCards ("Lure of the Ring", "Stormcrow"),
-  b.fp ().drawCards ("The Ents Awake: Treebeard", "Kindred of Glorfindel"),
-  b.fp ().declareFellowship ("old-ford"),
+  b.sT ().phaseStory (drawCards ("Lure of the Ring", "Stormcrow")),
+  b.fp ().phaseStory (drawCards ("The Ents Awake: Treebeard", "Kindred of Glorfindel")),
+  b.fp ().phaseStory (declareFellowship ("old-ford")),
   b.s ().huntAllocation (1),
   b.sT ().rollActionDice ("event", "character", "event", "event", "eye", "army", "character"),
   b.fp ().rollActionDice ("muster-army", "will-of-the-west", "will-of-the-west", "will-of-the-west", "character"),

@@ -7,7 +7,7 @@ export class WotrPlayerAiService implements WotrPlayerService {
 
   constructor (private game: WotrGameStore) {}
 
-  async drawCards (): Promise<never> {
+  async firstPhase (): Promise<never> {
     throw new Error ("Method not implemented.");
   }
 

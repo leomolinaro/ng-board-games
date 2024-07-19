@@ -15,4 +15,3 @@ export interface WotrHuntTileAdd { type: "hunt-tile-add"; tile: WotrHuntTileId }
 export function addHuntTile (tile: WotrHuntTileId): WotrHuntTileAdd { return { type: "hunt-tile-add", tile }; }
 
 export interface WotrHuntEffect { type: "hunt-effect"; actions: WotrAction[] }
-export type WotrHuntStory = WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntEffect;

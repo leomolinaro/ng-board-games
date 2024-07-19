@@ -2,15 +2,15 @@ import { BgStoryDoc, unexpectedStory } from "@leobg/commons";
 import { WotrActionDieStory } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
-import { WotrCardStory } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFellowshipStory } from "../fellowship/wotr-fellowship-actions";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
-import { WotrHuntStory } from "../hunt/wotr-hunt-actions";
+import { WotrHuntAllocation, WotrHuntEffect, WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 
+export interface WotrPhaseStory { type: "phase"; actions: WotrAction[] }
 export interface WotrBattleStory { type: "battle"; actions: WotrAction[] }
+export interface WotrHuntStory { type: "hunt"; actions: WotrAction[] }
 export interface WotrDieStory { type: "die"; die: WotrActionDie; elvenRing?: WotrElvenRing; character?: WotrCharacterId; actions: WotrAction[] }
 export interface WotrDieCardStory { type: "die-card"; die: WotrActionDie; elvenRing?: WotrElvenRing; card: WotrCardId; actions: WotrAction[] }
 export interface WotrPassStory { type: "die-pass" }
@@ -29,12 +29,12 @@ export type WotrReactionStory =
   WotrCharacterReactionStory | WotrSkipCharacterReactionStory;
 
 export type WotrGameStory =
-  WotrBattleStory | WotrTokenStory | WotrSkipTokensStory | WotrReactionStory |
+  WotrPhaseStory | WotrBattleStory | WotrHuntStory |
+  WotrTokenStory | WotrSkipTokensStory | WotrReactionStory |
   WotrDieStory | WotrDieCardStory | WotrPassStory |
-  WotrCardStory |
   WotrActionDieStory |
-  WotrHuntStory |
-  WotrFellowshipStory;
+  // TO REMOVE:
+  WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntEffect;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;
 
