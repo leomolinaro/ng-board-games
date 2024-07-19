@@ -18,4 +18,4 @@ export interface WotrFellowshipGuide { type: "fellowship-guide"; companion: Wotr
 export function changeGuide (companion: WotrCompanionId): WotrFellowshipGuide { return { type: "fellowship-guide", companion }; }
 
 export type WotrFellowshipAction = WotrFellowshipProgress | WotrFellowshipCorruption | WotrFellowshipHide | WotrFellowshipReveal | WotrFellowshipGuide;
-export type WotrFellowshipStory = WotrFellowshipDeclare | WotrFellowshipDeclareNot;
+export type WotrFellowshipStory = WotrFellowshipDeclare | WotrFellowshipDeclareNot | WotrFellowshipReveal;

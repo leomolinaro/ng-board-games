@@ -13,7 +13,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     // private rules: WotrRulesService,
   ) {}
 
-  async firstPhaseDrawCards (): Promise<WotrCardDraw> {
+  async drawCards (): Promise<WotrCardDraw> {
     return {
       type: "card-draw",
       cards: ["fpcha01"]

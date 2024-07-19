@@ -65,7 +65,7 @@ export class WotrGameTurnService {
   private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    await this.firstPhaseDrawCards ();
+    await this.storyService.parallelStories (f => p => p.drawCards! (2));
     return true;
   }
 
@@ -90,7 +90,7 @@ export class WotrGameTurnService {
 
   private async huntAllocation () {
     this.logStore.logPhase (3);
-    await this.storyService.story ("shadow", p => p.huntAllocation! ());
+    await this.storyService.story ("shadow", p => p.allocateHuntDice! ());
     return true;
   }
 
@@ -150,12 +150,8 @@ export class WotrGameTurnService {
     return null;
   }
 
-  async firstPhaseDrawCards (): Promise<void> {
-    await this.storyService.parallelStories (f => p => p.firstPhaseDrawCards! ());
-  }
-
   async wantDeclareFellowship (front: WotrFrontId): Promise<WotrGameStory> {
-    return this.storyService.story (front, p => p.wantDeclareFellowship! ());
+    return this.storyService.story (front, p => p.declareFellowship! ());
   }
 
   async rollActionDice (): Promise<void> {
