@@ -1,4 +1,4 @@
-import { WotrActionRoll } from "../action-die/wotr-action-die-actions";
+import { rollActionDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
@@ -15,9 +15,9 @@ export class WotrFrontStoryComposer {
   
   protected story () { return { time: this.time, playerId: this.front }; }
 
-  rollActionDice (...dice: WotrActionDie[]): WotrStoryDoc & WotrActionRoll { return { type: "action-roll", dice, ...this.story () }; }
-  battleStory (...actions: WotrAction[]): WotrStoryDoc & WotrBattleStory { return { type: "battle", actions, ...this.story () }; }
   phaseStory (...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory { return { type: "phase", actions, ...this.story () }; }
+  rollActionDice (...dice: WotrActionDie[]): WotrStoryDoc & WotrPhaseStory { return this.phaseStory (rollActionDice (...dice)); }
+  battleStory (...actions: WotrAction[]): WotrStoryDoc & WotrBattleStory { return { type: "battle", actions, ...this.story () }; }
   huntStory (...actions: WotrAction[]): WotrStoryDoc & WotrHuntStory { return { type: "hunt", actions, ...this.story () }; }
 
   characterDie (...actions: WotrAction[]): WotrStoryDoc & WotrDieStory { return this.actionDie ("character", ...actions); }

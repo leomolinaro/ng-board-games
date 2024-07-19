@@ -1,5 +1,4 @@
 import { BgStoryDoc, unexpectedStory } from "@leobg/commons";
-import { WotrActionDieStory } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
 import { WotrCardId } from "../card/wotr-card.models";
@@ -30,10 +29,7 @@ export type WotrReactionStory =
 export type WotrGameStory =
   WotrPhaseStory | WotrBattleStory | WotrHuntStory |
   WotrTokenStory | WotrSkipTokensStory | WotrReactionStory |
-  WotrDieStory | WotrDieCardStory | WotrPassStory |
-  WotrActionDieStory /*|
-   // TO REMOVE:
-  WotrHuntEffect */;
+  WotrDieStory | WotrDieCardStory | WotrPassStory;
 
 export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;
 
