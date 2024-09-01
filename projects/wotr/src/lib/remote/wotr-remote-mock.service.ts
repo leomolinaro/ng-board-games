@@ -1,34 +1,9 @@
 import { Injectable, inject } from "@angular/core";
-import { BgCloudCollectionQuery, BgUser } from "@leobg/commons";
+import { BgCloudCollectionQuery } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { WotrExamplesService } from "../examples/wotr-examples.service";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrStoryDoc } from "./wotr-story.models";
-
-export interface WotrGameDoc {
-  id: string;
-  name: string;
-  owner: BgUser;
-  online: boolean;
-  state: "open" | "closed";
-}
-
-export interface AWotrPlayerDoc {
-  id: WotrFrontId;
-  name: string;
-  sort: number;
-}
-
-export interface WotrAiPlayerDoc extends AWotrPlayerDoc {
-  isAi: true;
-}
-
-export interface WotrReadPlayerDoc extends AWotrPlayerDoc {
-  isAi: false;
-  controller: BgUser;
-}
-
-export type WotrPlayerDoc = WotrAiPlayerDoc | WotrReadPlayerDoc;
+import { WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrGameDoc, WotrPlayerDoc } from "./wotr-remote.models";
 
 @Injectable ({
   providedIn: "root"

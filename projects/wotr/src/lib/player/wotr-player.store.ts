@@ -23,6 +23,7 @@ export class WotrPlayerStore {
   }
 
   playerMap = computed (() => this.state ().map);
+  playerIds = computed (() => this.state ().ids);
   players = computed (() => this.state ().ids.map (id => this.state ().map[id]));
   player (id: WotrFrontId): WotrPlayer { return this.state ().map[id]; }
 

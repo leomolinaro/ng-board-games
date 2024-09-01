@@ -9,8 +9,8 @@ import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerService } from "../player/wotr-player.service";
 import { WotrPlayerStore } from "../player/wotr-player.store";
+import { WotrRemoteService } from "../remote/wotr-remote.service";
 import { WotrGameStore } from "./wotr-game.store";
-import { WotrRemoteService } from "./wotr-remote.service";
 import { WotrGameStory, WotrStoryDoc } from "./wotr-story.models";
 import { WotrUiStore } from "./wotr-ui.store";
 
@@ -42,10 +42,10 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   protected override endTemporaryState () { this.store.endTemporaryState (); }
   protected override insertStoryDoc$ (storyId: string, story: WotrStoryDoc, gameId: string) { return this.remote.insertStory$ (storyId, story, gameId); }
   protected override selectStoryDoc$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
-  protected override getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
-  protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayer (playerId); }
+  protected override getCurrentPlayerId () { return this.ui.currentPlayerId (); }
+  protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayerId (playerId); }
   protected override currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
-  protected override cancelChange$ () { return this.ui.cancelChange$ (); }
+  protected override cancelChange$ () { return from (this.ui.cancel.get ()); }
 
   private nReplayStories = 0;
   private replayToLastStory = false;
@@ -86,9 +86,9 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {
-    this.ui.updateUi ("Reset UI", (s) => ({
+    this.ui.updateUi (s => ({
       ...s,
-      turnPlayer: turnPlayer,
+      turnPlayerId: turnPlayer,
       ...this.ui.resetUi (),
       canCancel: false,
       message: `${this.playerStore.player (turnPlayer).name} is thinking...`,

@@ -20,12 +20,12 @@ $area-background: #151515;
   // grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
   // grid-template-rows: 80px 2fr 3fr 80px;
   grid-template-areas:
-    'toolbar actionDiceBox'
+    'map toolbar'
     'map actionDiceBox'
-    'map fronts'
+    'map fronts '
     'map logs ';
   grid-template-columns: minmax(50%, 1fr) minmax(150px, 500px);
-  grid-template-rows: 40px fit-content(100px) 1fr 1fr;
+  grid-template-rows: fit-content(100px) fit-content(100px) 1fr 1fr;
   grid-gap: 10px;
   padding-bottom: 10px;
   > * {

@@ -25,6 +25,8 @@ export class WotrFrontStore {
   hasActionDice (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionDice.length; }
   hasActionTokens (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionTokens.length; }
   front (id: WotrFrontId) { return this.state ().map[id]; }
+  characterDeck (id: WotrFrontId) { return this.state ().map[id].characterDeck; }
+  strategyDeck (id: WotrFrontId) { return this.state ().map[id].strategyDeck; }
   hasTableCard (cardId: WotrCardId, frontId: WotrFrontId) { return !!this.state ().map[frontId].tableCards.includes (cardId); }
 
   init (): WotrFrontState {

@@ -1,9 +1,10 @@
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameStory } from "../game/wotr-story.models";
 
 export interface WotrPlayerService {
-  firstPhase? (): Promise<WotrGameStory>;
+  firstPhase? (front: WotrFrontId): Promise<WotrGameStory>;
   fellowshipPhase? (): Promise<WotrGameStory>;
   huntAllocationPhase? (): Promise<WotrGameStory>;
   rollActionDice? (): Promise<WotrGameStory>;

@@ -6,13 +6,8 @@ import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { WotrExampleButton } from "../examples/wotr-example-button";
 import { WotrFrontId } from "../front/wotr-front.models";
-import {
-  AWotrPlayerDoc,
-  WotrAiPlayerDoc,
-  WotrPlayerDoc,
-  WotrReadPlayerDoc,
-  WotrRemoteService,
-} from "../game/wotr-remote.service";
+import { AWotrPlayerDoc, WotrAiPlayerDoc, WotrPlayerDoc, WotrReadPlayerDoc } from "../remote/wotr-remote.models";
+import { WotrRemoteService } from "../remote/wotr-remote.service";
 
 @Component ({
   selector: "wotr-home",

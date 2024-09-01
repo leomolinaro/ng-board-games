@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { Auth, GoogleAuthProvider, signInWithPopup, User, user } from "@angular/fire/auth";
+import { Auth, user as fireUser, GoogleAuthProvider, signInWithPopup, User } from "@angular/fire/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, first, map, switchMap } from "rxjs/operators";
 import { BgCloudService } from "../cloud/bg-cloud.service";
@@ -27,14 +27,13 @@ interface IBgAuthProvider {
 })
 export class BgAuthService {
   
-  constructor (
-    public googleProvider: BgGoogleAuthProvider,
-    public guestProvider: BgGuestAuthProvider,
-    private cloud: BgCloudService
-  ) {}
+  private googleProvider = inject (BgGoogleAuthProvider);
+  private guestProvider = inject (BgGuestAuthProvider);
+  private cloud = inject (BgCloudService);
 
-  // private $user = new BehaviorSubject<BgUser | null> (null);
-  private $user = new BehaviorSubject<BgUser | null> ({ email: "aaa" } as any);
+  private $user = new BehaviorSubject<BgUser | null> (null);
+  // TO MOCK
+  // private $user = new BehaviorSubject<BgUser | null> ({ email: "rhapsody.leo@gmail.com" } as any);
   private setUser (user: BgUser | null) {
     this.$user.next (user);
   }
@@ -148,7 +147,7 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
   }
 
   autoSignIn$ (): Observable<BgUser | null> {
-    return user (this.auth).pipe (
+    return fireUser (this.auth).pipe (
       first (),
       map ((authUser) => this.googleUserToBgUser (authUser))
     );

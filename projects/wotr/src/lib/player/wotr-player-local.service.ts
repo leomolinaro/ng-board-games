@@ -1,4 +1,8 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
+import { drawCardIds } from "../card/wotr-card-actions";
+import { WotrCardId } from "../card/wotr-card.models";
+import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrUiStore } from "../game/wotr-ui.store";
@@ -7,13 +11,42 @@ import { WotrPlayerService } from "./wotr-player.service";
 @Injectable ()
 export class WotrPlayerLocalService implements WotrPlayerService {
 
-  constructor (
-    private game: WotrGameStore,
-    private ui: WotrUiStore,
-    // private rules: WotrRulesService,
-  ) {}
+  private game = inject (WotrGameStore);
+  private front = inject (WotrFrontStore);
+  private ui = inject (WotrUiStore);
 
-  async firstPhase (): Promise<WotrGameStory> {
+  async firstPhase (front: WotrFrontId): Promise<WotrGameStory> {
+    this.ui.updateUi (s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayerId: front,
+      message: `[${front}] Draw cards`,
+      canConfirm: true
+    }));
+    await this.ui.confirm.get ();
+
+    const characterDeck = this.front.characterDeck (front);
+    const strategyDeck = this.front.strategyDeck (front);
+
+    const drawnCards: WotrCardId[] = [];
+    if (characterDeck.length) { drawnCards.push (characterDeck[0]); }
+    if (strategyDeck.length) { drawnCards.push (strategyDeck[0]); }
+
+    this.front.drawCards (drawnCards, front);
+
+    this.ui.updateUi (s => ({
+      ...s,
+      ...this.ui.resetUi (),
+      turnPlayerId: front,
+      message: `[${front}] Continue`,
+      canConfirm: true
+    }));
+    await this.ui.confirm.get ();
+
+    return { type: "phase", actions: [drawCardIds (...drawnCards)] };
+  }
+
+  async separateCompanions (): Promise<WotrGameStory> {
     return null as any;
     // return {
     //   type: "phase",

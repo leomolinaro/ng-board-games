@@ -12,11 +12,10 @@ export * from "./lib/bg-times.pipe";
 export * from "./lib/bg-transform.pipe";
 export * from "./lib/ng.util";
 export * from "./lib/rxjs.util";
+export * from "./lib/ui-event";
 export {
-  BgReduxDevtools,
-  BgStore,
-  arrayUtil,
-  debounceSync,
+  arrayUtil, BgReduxDevtools,
+  BgStore, debounceSync,
   downloadUtil,
   immutableUtil,
   objectUtil,

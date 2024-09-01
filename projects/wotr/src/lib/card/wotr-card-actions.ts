@@ -5,6 +5,7 @@ export type WotrCardAction = WotrCardDraw | WotrCardDiscard | WotrCardPlayOnTabl
 function labelsToCardIds (labels: WotrCardLabel[]): WotrCardId[] { return labels.map (label => labelToCardId (label)); }
 export interface WotrCardDraw { type: "card-draw"; cards: WotrCardId[] }
 export function drawCards (...cards: WotrCardLabel[]): WotrCardDraw { return { type: "card-draw", cards: labelsToCardIds (cards) }; }
+export function drawCardIds (...cards: WotrCardId[]): WotrCardDraw { return { type: "card-draw", cards }; }
 export interface WotrCardDiscard { type: "card-discard"; cards: WotrCardId[] }
 export function discardCards (...cards: WotrCardLabel[]): WotrCardDiscard { return { type: "card-discard", cards: labelsToCardIds (cards) }; }
 export interface WotrCardPlayOnTable { type: "card-play-on-table"; card: WotrCardId }

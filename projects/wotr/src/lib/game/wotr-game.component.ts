@@ -30,11 +30,11 @@ import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerStore } from "../player/wotr-player.store";
 import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrPlayerDoc } from "../remote/wotr-remote.models";
+import { WotrRemoteService } from "../remote/wotr-remote.service";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameStore } from "./wotr-game.store";
-import { WotrRemoteMockService } from "./wotr-remote-mock.service";
-import { WotrPlayerDoc, WotrRemoteService } from "./wotr-remote.service";
 import { WotrStoryService } from "./wotr-story.service";
 import { WotrUiStore } from "./wotr-ui.store";
 
@@ -57,8 +57,13 @@ import { WotrUiStore } from "./wotr-ui.store";
       [characterById]="characterStore.characterById ()"
       [shadowNations]="nationStore.shadowNations ()"
       [logs]="logStore.state ()"
-      [message]="ui.message$ | async"
-      (playerSelect)="ui.setCurrentPlayer ($event)"
+      [currentPlayer]="ui.currentPlayer ()"
+      [message]="ui.message ()"
+      [canCancel]="ui.canCancel ()"
+      [canPass]="ui.canPass ()"
+      [canConfirm]="ui.canConfirm ()"
+      (confirm)="ui.confirm.emit ()"
+      (currentPlayerChange)="ui.setCurrentPlayerId ($event?.id || null)"
       (replayNext)="onReplayNext ($event)"
       (replayLast)="onReplayLast ()">
     </wotr-board>
@@ -92,8 +97,7 @@ import { WotrUiStore } from "./wotr-ui.store";
 
     WotrPlayerAiService,
     WotrPlayerLocalService,
-    WotrUiStore,
-    { provide: WotrRemoteService, useClass: WotrRemoteMockService }
+    WotrUiStore
   ]
 })
 @UntilDestroy
@@ -166,7 +170,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
       );
       this.story.setStoryDocs (stories);
       await this.flow.game ();
-      this.ui.updateUi ("End game", (s) => ({
+      this.ui.updateUi (s => ({
         ...s,
         ...this.ui.resetUi (),
         canCancel: false,

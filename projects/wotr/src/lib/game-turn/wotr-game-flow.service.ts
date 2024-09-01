@@ -76,7 +76,7 @@ export class WotrGameTurnService {
   private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    await this.storyService.parallelStories (f => p => p.firstPhase! ());
+    await this.storyService.parallelStories (f => p => p.firstPhase! (f));
     return true;
   }
 
