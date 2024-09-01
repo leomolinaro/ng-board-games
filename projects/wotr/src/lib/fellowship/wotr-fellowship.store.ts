@@ -3,6 +3,16 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.models";
 import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip.models";
 
+export function initialeState (): WotrFellowship {
+  return {
+    status: "hidden",
+    companions: [],
+    progress: 0,
+    corruption: 0,
+    guide: "gandalf-the-grey",
+  };
+}
+
 @Injectable ({
   providedIn: "root"
 })
@@ -14,16 +24,6 @@ export class WotrFellowshipStore {
   isRevealed () { return this.state ().status === "revealed"; }
   guide () { return this.state ().guide; }
   isOnMordorTrack () { return this.state ().mordorTrack != null; }
-
-  init (): WotrFellowship {
-    return {
-      status: "hidden",
-      companions: [],
-      progress: 0,
-      corruption: 0,
-      guide: "gandalf-the-grey",
-    };
-  }
 
   setCompanions (companions: WotrCompanionId[]) { this.update ("setCompanions", state => ({ ...state, companions })); }
   setGuide (guide: WotrCompanionId) { this.update ("setGuide", state => ({ ...state, guide })); }

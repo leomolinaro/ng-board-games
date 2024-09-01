@@ -8,6 +8,10 @@ import { WotrLog, WotrLogFragment } from "./wotr-log.models";
 
 export type WotrLogState = WotrLog[];
 
+export function initialeState (): WotrLogState {
+  return [];
+}
+
 @Injectable ({
   providedIn: "root"
 })
@@ -16,10 +20,6 @@ export class WotrLogStore {
   update!: (actionName: string, updater: (a: WotrLogState) => WotrLogState) => void;
   state!: Signal<WotrLogState>;
 
-  init (): WotrLogState {
-    return [];
-  }
-  
   private addLog (actionName: string, log: WotrLog) {
     return this.update (actionName, s => ([...s, log]));
   }

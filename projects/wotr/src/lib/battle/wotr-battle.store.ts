@@ -5,6 +5,10 @@ import { WotrBattle } from "./wotr-battle.models";
 
 export type WotrBattleState = WotrBattle | null;
 
+export function initialeState (): WotrBattleState {
+  return null;
+}
+
 @Injectable ({
   providedIn: "root"
 })
@@ -16,10 +20,6 @@ export class WotrBattleStore {
   battle = computed (() => this.state ());
   battleInProgress = computed (() => !!this.state ());
   isCharacterInRetroguard (character: WotrCharacterId) { return this.state ()?.retroguard?.characters?.includes (character); }
-
-  init (): WotrBattleState {
-    return null;
-  }
 
   startBattle (battle: WotrBattle) { this.update ("startBattle", s => battle); }
   addAttackerCombatCard (card: WotrCardId) { this.update ("addAttackerCombatCard", s => ({ ...s!, attackerCombatCard: card })); }

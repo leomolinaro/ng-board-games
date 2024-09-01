@@ -10,6 +10,32 @@ export interface WotrFrontState {
   map: Record<WotrFrontId, WotrFront>;
 }
 
+export function initialState (): WotrFrontState {
+  return {
+    ids: ["free-peoples", "shadow"],
+    map: {
+      "free-peoples": initialFront ("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
+      shadow: initialFront ("shadow", "Shadow", []),
+    }
+  };
+}
+
+function initialFront (id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]): WotrFront {
+  return {
+    id, name,
+    characterDeck: [],
+    strategyDeck: [],
+    handCards: [],
+    tableCards: [],
+    characterDiscardPile: [],
+    strategyDiscardPile: [],
+    actionDice: [],
+    actionTokens: [],
+    elvenRings,
+    victoryPoints: 0
+  };
+}
+
 @Injectable ({
   providedIn: "root"
 })
@@ -28,32 +54,6 @@ export class WotrFrontStore {
   characterDeck (id: WotrFrontId) { return this.state ().map[id].characterDeck; }
   strategyDeck (id: WotrFrontId) { return this.state ().map[id].strategyDeck; }
   hasTableCard (cardId: WotrCardId, frontId: WotrFrontId) { return !!this.state ().map[frontId].tableCards.includes (cardId); }
-
-  init (): WotrFrontState {
-    return {
-      ids: ["free-peoples", "shadow"],
-      map: {
-        "free-peoples": this.initFront ("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
-        shadow: this.initFront ("shadow", "Shadow", []),
-      }
-    };
-  }
-  
-  private initFront (id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]): WotrFront {
-    return {
-      id, name,
-      characterDeck: [],
-      strategyDeck: [],
-      handCards: [],
-      tableCards: [],
-      characterDiscardPile: [],
-      strategyDiscardPile: [],
-      actionDice: [],
-      actionTokens: [],
-      elvenRings,
-      victoryPoints: 0
-    };
-  }
 
   private updateFront (actionName: string, frontId: WotrFrontId, updater: (a: WotrFront) => WotrFront) {
     this.update (actionName, s => ({ ...s, map: { ...s.map, [frontId]: updater (s.map[frontId]) } }));

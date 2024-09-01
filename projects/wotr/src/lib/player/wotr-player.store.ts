@@ -7,6 +7,13 @@ export interface WotrPlayerState {
   ids: WotrFrontId[];
 }
 
+export function initialState (): WotrPlayerState {
+  return {
+    map: { } as any,
+    ids: []
+  };
+}
+
 @Injectable ({
   providedIn: "root"
 })
@@ -14,13 +21,6 @@ export class WotrPlayerStore {
 
   update!: (actionName: string, updater: (a: WotrPlayerState) => WotrPlayerState) => void;
   state!: Signal<WotrPlayerState>;
-
-  init (): WotrPlayerState {
-    return {
-      map: { } as any,
-      ids: []
-    };
-  }
 
   playerMap = computed (() => this.state ().map);
   playerIds = computed (() => this.state ().ids);
