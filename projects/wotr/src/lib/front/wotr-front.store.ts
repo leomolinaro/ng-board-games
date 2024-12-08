@@ -36,9 +36,7 @@ function initialFront (id: WotrFrontId, name: string, elvenRings: WotrElvenRing[
   };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrFrontStore {
 
   update!: (actionName: string, updater: (a: WotrFrontState) => WotrFrontState) => void;

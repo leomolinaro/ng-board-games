@@ -41,9 +41,7 @@ export function initialeState (): WotrHuntState {
   };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrHuntStore {
 
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;

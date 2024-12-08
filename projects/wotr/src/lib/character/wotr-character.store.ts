@@ -50,9 +50,7 @@ function initialMinion (
   return { id, name, level, leadership, status: "available", front: "shadow" };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrCharacterStore {
 
   update!: (actionName: string, updater: (a: WotrCharacterState) => WotrCharacterState) => void;

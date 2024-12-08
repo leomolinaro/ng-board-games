@@ -12,9 +12,7 @@ export function initialeState (): WotrLogState {
   return [];
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrLogStore {
 
   update!: (actionName: string, updater: (a: WotrLogState) => WotrLogState) => void;

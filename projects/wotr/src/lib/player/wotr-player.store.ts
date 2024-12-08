@@ -14,9 +14,7 @@ export function initialState (): WotrPlayerState {
   };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrPlayerStore {
 
   update!: (actionName: string, updater: (a: WotrPlayerState) => WotrPlayerState) => void;

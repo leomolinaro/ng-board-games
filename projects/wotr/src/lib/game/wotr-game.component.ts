@@ -6,6 +6,7 @@ import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { WotrActionTokenService } from "../action-token/wotr-action-token.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
+import { WotrBattleStore } from "../battle/wotr-battle.store";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
 import { WotrCardService } from "../card/wotr-card.service";
@@ -32,6 +33,7 @@ import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayerDoc } from "../remote/wotr-remote.models";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
+import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameStore } from "./wotr-game.store";
@@ -41,7 +43,9 @@ import { WotrUiStore } from "./wotr-ui.store";
 @Component ({
   selector: "wotr-game",
   standalone: true,
-  imports: [WotrBoardComponent, AsyncPipe],
+  imports: [
+    WotrBoardComponent
+  ],
   template: `
     <wotr-board
       [players]="playerStore.players ()"
@@ -71,33 +75,37 @@ import { WotrUiStore } from "./wotr-ui.store";
   styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    // WotrLogStore,
+    WotrActionDieService,
+    WotrActionService,
+    WotrActionTokenService,
+    WotrBattleService,
+    WotrBattleStore,
+    WotrCardEffectsService,
+    WotrCardService,
+    WotrCharacterService,
+    WotrCharacterStore,
+    WotrCombatCardsService,
+    WotrEventService,
+    WotrFellowshipService,
+    WotrFellowshipStore,
+    WotrFrontService,
+    WotrFrontStore,
     WotrGameStore,
-    WotrStoryService,
-    
     WotrGameTurnService,
     WotrHuntFlowService,
-
-    WotrActionService,
-    WotrActionDieService,
-    WotrActionTokenService,
-    WotrCardService,
-    WotrBattleService,
-    WotrCombatCardsService,
-    WotrCharacterService,
-    WotrFellowshipService,
     WotrHuntService,
+    WotrHuntStore,
+    WotrLogStore,
     WotrNationService,
-    WotrRegionService,
-    WotrUnitService,
-    WotrFrontService,
-
-    WotrEventService,
-    WotrCardEffectsService,
-
+    WotrNationStore,
     WotrPlayerAiService,
     WotrPlayerLocalService,
-    WotrUiStore
+    WotrPlayerStore,
+    WotrRegionService,
+    WotrRegionStore,
+    WotrStoryService,
+    WotrUiStore,
+    WotrUnitService
   ]
 })
 @UntilDestroy

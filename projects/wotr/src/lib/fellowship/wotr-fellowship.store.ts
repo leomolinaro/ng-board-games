@@ -13,9 +13,7 @@ export function initialeState (): WotrFellowship {
   };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrFellowshipStore {
 
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;

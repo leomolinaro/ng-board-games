@@ -7,7 +7,9 @@ interface WotrExampleGame {
   loadStories: () => Promise<WotrStoryDoc[]>;
 }
 
-@Injectable ({ providedIn: "root" })
+@Injectable ({
+  providedIn: "root"
+})
 export class WotrExamplesService {
 
   private exampleGames: WotrExampleGame[] = [

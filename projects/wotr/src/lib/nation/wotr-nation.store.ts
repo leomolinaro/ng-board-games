@@ -56,9 +56,7 @@ function initialNation (
   };
 }
 
-@Injectable ({
-  providedIn: "root"
-})
+@Injectable ()
 export class WotrNationStore {
 
   update!: (actionName: string, updater: (a: WotrNationState) => WotrNationState) => void;
