@@ -4,12 +4,13 @@ import { WotrCardId } from "../card/wotr-card.models";
 import { WotrAction, WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrCharacterReactionStory, WotrGameStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../player/wotr-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrCharacterAction } from "./wotr-character-actions";
@@ -25,8 +26,10 @@ export class WotrCharacterService {
   private fellowshipStore = inject (WotrFellowshipStore);
   private regionStore = inject (WotrRegionStore);
   private frontStore = inject (WotrFrontStore);
-  private storyService = inject (WotrStoryService);
   private logStore = inject (WotrLogStore);
+
+  private freePeoples = inject (WotrFreePeoplesPlayer);
+  private shadow = inject (WotrShadowPlayer);
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
@@ -117,12 +120,12 @@ export class WotrCharacterService {
 
   private async checkWornWithSorrowAndToil () {
     if (this.frontStore.hasTableCard ("scha15", "shadow")) {
-      await this.activateTableCard ("scha15", "shadow");
+      await this.activateTableCard ("scha15", this.shadow);
     }
   }
 
-  async activateTableCard (cardId: WotrCardId, front: WotrFrontId): Promise<WotrGameStory> {
-    return this.storyService.story (front, p => p.activateTableCard! (cardId));
+  async activateTableCard (cardId: WotrCardId, player: WotrPlayer): Promise<WotrGameStory> {
+    return player.activateTableCard (cardId);
   }
 
 
@@ -140,8 +143,8 @@ export class WotrCharacterService {
     return characters.map (c => this.characterStore.character (c).name).join (", ");
   }
 
-  async activateCharacterAbility (characterId: WotrCharacterId, front: WotrFrontId): Promise<false | WotrAction[]> {
-    const story = await this.storyService.story (front, p => p.activateCharacterAbility! (characterId));
+  async activateCharacterAbility (characterId: WotrCharacterId, player: WotrPlayer): Promise<false | WotrAction[]> {
+    const story = await player.activateCharacterAbility (characterId);
     switch (story.type) {
       case "reaction-character": return story.actions;
       case "reaction-character-skip": return false;

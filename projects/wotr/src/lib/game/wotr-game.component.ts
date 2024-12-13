@@ -1,4 +1,3 @@
-import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
@@ -25,20 +24,22 @@ import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrAllPlayers } from "../player/wotr-all-players";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
+import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info.models";
+import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
-import { AWotrPlayer, WotrPlayer } from "../player/wotr-player.models";
-import { WotrPlayerStore } from "../player/wotr-player.store";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayerDoc } from "../remote/wotr-remote.models";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
-import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
+import { WotrGameUiStore } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrStoryService } from "./wotr-story.service";
-import { WotrUiStore } from "./wotr-ui.store";
 
 @Component ({
   selector: "wotr-game",
@@ -48,7 +49,7 @@ import { WotrUiStore } from "./wotr-ui.store";
   ],
   template: `
     <wotr-board
-      [players]="playerStore.players ()"
+      [players]="playerInfoStore.players ()"
       [regions]="regionStore.regions ()"
       [freePeoples]="frontStore.freePeoplesFront ()"
       [shadow]="frontStore.shadowFront ()"
@@ -99,12 +100,15 @@ import { WotrUiStore } from "./wotr-ui.store";
     WotrNationService,
     WotrNationStore,
     WotrPlayerAiService,
+    WotrAllPlayers,
+    WotrShadowPlayer,
+    WotrFreePeoplesPlayer,
     WotrPlayerLocalService,
-    WotrPlayerStore,
+    WotrPlayerInfoStore,
     WotrRegionService,
     WotrRegionStore,
     WotrStoryService,
-    WotrUiStore,
+    WotrGameUiStore,
     WotrUnitService
   ]
 })
@@ -114,13 +118,13 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   protected store = inject (WotrGameStore);
   protected frontStore = inject (WotrFrontStore);
   protected regionStore = inject (WotrRegionStore);
-  protected playerStore = inject (WotrPlayerStore);
+  protected playerInfoStore = inject (WotrPlayerInfoStore);
   protected characterStore = inject (WotrCharacterStore);
   protected nationStore = inject (WotrNationStore);
   protected huntStore = inject (WotrHuntStore);
   protected fellowshipStore = inject (WotrFellowshipStore);
   protected logStore = inject (WotrLogStore);
-  protected ui = inject (WotrUiStore);
+  protected ui = inject (WotrGameUiStore);
   private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
@@ -172,31 +176,31 @@ export class WotrGameComponent implements OnInit, OnDestroy {
     if (game) {
       const user = this.auth.getUser ();
       this.store.initGameState (
-        players.map ((p) => this.playerDocToPlayer (p, user)),
+        players.map ((p) => this.playerDocToPlayerInfo (p, user)),
         this.gameId,
         game.owner
       );
       this.story.setStoryDocs (stories);
       await this.flow.game ();
-      this.ui.updateUi (s => ({
-        ...s,
-        ...this.ui.resetUi (),
-        canCancel: false,
-      }));
+      // this.ui.updateUi (s => ({
+      //   ...s,
+      //   ...this.ui.resetUi (),
+      //   // canCancel: false,
+      // }));
     }
   }
   
-  private playerDocToPlayer (playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayer {
+  private playerDocToPlayerInfo (playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayerInfo {
     if (playerDoc.isAi) {
       return {
-        ...this.playerDocToAPlayerInit (playerDoc),
+        ...this.playerDocToAPlayerInfo (playerDoc),
         isAi: true,
         isLocal: false,
         isRemote: false,
       };
     } else {
       return {
-        ...this.playerDocToAPlayerInit (playerDoc),
+        ...this.playerDocToAPlayerInfo (playerDoc),
         isAi: false,
         controller: playerDoc.controller,
         isLocal: user.id === playerDoc.controller.id,
@@ -205,7 +209,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private playerDocToAPlayerInit (playerDoc: WotrPlayerDoc): AWotrPlayer {
+  private playerDocToAPlayerInfo (playerDoc: WotrPlayerDoc): AWotrPlayerInfo {
     return {
       id: playerDoc.id,
       name: playerDoc.name,

@@ -13,7 +13,7 @@ import { WotrPhase } from "../game-turn/wotr-phase.models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrPlayerStore } from "../player/wotr-player.store";
+import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrLog, WotrLogCardFragment, WotrLogFragment, WotrLogStringFragment } from "./wotr-log.models";
@@ -107,7 +107,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogPars
   private nationStore = inject (WotrNationStore);
   private regionStore = inject (WotrRegionStore);
   private characterStore = inject (WotrCharacterStore);
-  private playerStore = inject (WotrPlayerStore);
+  private playerInfoStore = inject (WotrPlayerInfoStore);
   
   log = input.required<WotrLog> ();
   debugBreakpoint = input.required<boolean> ();
@@ -229,7 +229,7 @@ export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogPars
   }
 
   player (front: WotrFrontId): WotrLogParsedPlayerFragment {
-    const player = this.playerStore.player (front);
+    const player = this.playerInfoStore.player (front);
     return { type: "player", label: player.name, front };
   }
 

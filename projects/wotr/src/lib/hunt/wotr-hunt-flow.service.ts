@@ -8,10 +8,12 @@ import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontId } from "../front/wotr-front.models";
 import { filterActions, findAction } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrAllPlayers } from "../player/wotr-all-players";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../player/wotr-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
@@ -27,13 +29,16 @@ interface WotrHuntTileResolutionOptions {
 @Injectable ()
 export class WotrHuntFlowService {
 
-  private storyService = inject (WotrStoryService);
   private regionStore = inject (WotrRegionStore);
   private huntStore = inject (WotrHuntStore);
   private characterStore = inject (WotrCharacterStore);
   private characterService = inject (WotrCharacterService);
   private logStore = inject (WotrLogStore);
   private fellowshipStore = inject (WotrFellowshipStore);
+
+  private allPlayers = inject (WotrAllPlayers);
+  private freePeoples = inject (WotrFreePeoplesPlayer);
+  private shadow = inject (WotrShadowPlayer);
 
   async resolveHunt () {
     if (this.fellowshipStore.isOnMordorTrack ()) {
@@ -46,16 +51,16 @@ export class WotrHuntFlowService {
   private async resolveStandardHunt () {
     if (!this.huntStore.hasHuntDice ()) { return; }
     this.logStore.logHuntResolution ();
-    const huntRoll = await this.rollHuntDice ("shadow");
+    const huntRoll = await this.rollHuntDice (this.shadow);
     let nSuccesses = this.getNSuccesses (huntRoll);
     const nReRolls = this.getNReRolls (huntRoll, nSuccesses);
     if (nReRolls) {
-      const huntReRoll = await this.reRollHuntDice ("shadow");
+      const huntReRoll = await this.reRollHuntDice (this.shadow);
       const nReRollSuccesses = this.getNSuccesses (huntReRoll);
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) { return; }
-    const huntTileId = await this.drawHuntTile ("shadow");
+    const huntTileId = await this.drawHuntTile (this.shadow);
     await this.resolveHuntTile (huntTileId, {
       nSuccesses
     });
@@ -64,7 +69,7 @@ export class WotrHuntFlowService {
   private async resolveHuntOnMordorTrack () {
     this.logStore.logHuntResolution ();
     const nSuccesses = this.huntStore.getNTotalDice ();
-    const huntTileId = await this.drawHuntTile ("shadow");
+    const huntTileId = await this.drawHuntTile (this.shadow);
     const huntTile = await this.resolveHuntTile (huntTileId, {
       nSuccesses
     });
@@ -105,7 +110,7 @@ export class WotrHuntFlowService {
         if (doReveal) { await this.revealFellowship (); }
         const toRegion = this.regionStore.getFellowshipRegion ();
         if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
-          const newHuntTileId = await this.drawHuntTile ("shadow");
+          const newHuntTileId = await this.drawHuntTile (this.shadow);
           this.resolveHuntTile (newHuntTileId, options);
         }
       }
@@ -147,7 +152,7 @@ export class WotrHuntFlowService {
   async absorbHuntDamage (): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
     let gollumRevealing = false;
-    const actions = await this.huntEffect ("free-peoples");
+    const actions = await this.huntEffect (this.freePeoples);
     for (const action of actions) {
       switch (action.type) {
         case "fellowship-corruption": absorbedDamage += action.quantity; break;
@@ -186,8 +191,8 @@ export class WotrHuntFlowService {
     }
   }
 
-  async huntEffect (front: WotrFrontId): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
-    const story = await this.storyService.story (front, p => p.huntEffect! ());
+  async huntEffect (player: WotrPlayer): Promise<(WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable)[]> {
+    const story = await player.huntEffect ();
     const actions = filterActions<WotrFellowshipCorruption | WotrCharacterElimination | WotrCompanionRandom | WotrFellowshipReveal | WotrCardDiscardFromTable> (
       story,
       "fellowship-corruption", "character-elimination", "companion-random", "fellowship-reveal", "card-discard-from-table");
@@ -198,7 +203,7 @@ export class WotrHuntFlowService {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await this.characterService.activateCharacterAbility (companion, "free-peoples");
+        const actions = await this.characterService.activateCharacterAbility (companion, this.freePeoples);
         if (actions) {
           absorbedDamage++;
         }
@@ -207,31 +212,31 @@ export class WotrHuntFlowService {
     return absorbedDamage;
   }
 
-  async rollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
-    const story = await this.storyService.story (front, p => p.rollHuntDice! ());
+  async rollHuntDice (player: WotrPlayer): Promise<WotrCombatDie[]> {
+    const story = await player.rollHuntDice ();
     const huntRoll = findAction<WotrHuntRoll> (story, "hunt-roll");
     return huntRoll.dice;
   }
 
-  async reRollHuntDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
-    const story = await this.storyService.story (front, p => p.reRollHuntDice! ());
+  async reRollHuntDice (player: WotrPlayer): Promise<WotrCombatDie[]> {
+    const story = await player.reRollHuntDice ();
     const huntReRoll = findAction<WotrHuntReRoll> (story, "hunt-re-roll");
     return huntReRoll.dice;
   }
 
-  async drawHuntTile (front: WotrFrontId): Promise<WotrHuntTileId> {
-    const story = await this.storyService.story (front, p => p.drawHuntTile! ());
+  async drawHuntTile (player: WotrPlayer): Promise<WotrHuntTileId> {
+    const story = await player.drawHuntTile ();
     const drawHuntTile = findAction<WotrHuntTileDraw> (story, "hunt-tile-draw");
     return drawHuntTile.tile;
   }
 
   async revealFellowship (): Promise<void> {
-    const story = await this.storyService.story ("free-peoples", p => p.revealFellowship! ());
+    const story = await this.freePeoples.revealFellowship ();
     findAction<WotrFellowshipReveal> (story, "fellowship-reveal");
   }
 
-  async separateCompanions (front: WotrFrontId): Promise<void> {
-    const story = await this.storyService.story (front, p => p.separateCompanions! ());
+  async separateCompanions (player: WotrPlayer): Promise<void> {
+    const story = await player.separateCompanions ();
     findAction<WotrCompanionSeparation> (story, "companion-separation");
   }
 

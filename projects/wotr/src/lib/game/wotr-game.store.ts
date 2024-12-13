@@ -12,14 +12,14 @@ import { initialeState as huntInitialeState, WotrHuntState, WotrHuntStore } from
 import { WotrLog } from "../log/wotr-log.models";
 import { initialeState as lognitialeState, WotrLogStore } from "../log/wotr-log.store";
 import { initialeState as nationInitialeState, WotrNationState, WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrPlayer } from "../player/wotr-player.models";
-import { initialState as playerInitialStore, WotrPlayerState, WotrPlayerStore } from "../player/wotr-player.store";
+import { WotrPlayerInfo } from "../player/wotr-player-info.models";
+import { initialState as playerInitialStore, WotrPlayerInfoState, WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { initialeState as regionInitialeState, WotrRegionState, WotrRegionStore } from "../region/wotr-region.store";
 
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
-  players: WotrPlayerState;
+  players: WotrPlayerInfoState;
   frontState: WotrFrontState;
   regionState: WotrRegionState;
   nationState: WotrNationState;
@@ -59,12 +59,12 @@ export class WotrGameStore extends signalStore (
     fellowshipStore: WotrFellowshipStore,
     huntStore: WotrHuntStore,
     logStore: WotrLogStore,
-    playerStore: WotrPlayerStore,
+    playerInfoStore: WotrPlayerInfoStore,
     battleStore: WotrBattleStore
   ) {
     super ();
-    playerStore.update = (actionName, updater) => patchState (this, s => ({ ...s, players: updater (s.players) }));
-    playerStore.state = this.players;
+    playerInfoStore.update = (actionName, updater) => patchState (this, s => ({ ...s, players: updater (s.players) }));
+    playerInfoStore.state = this.players;
     frontStore.update = (actionName, updater) => patchState (this, s => ({ ...s, frontState: updater (s.frontState) }));
     frontStore.state = this.frontState;
     regionStore.update = (actionName, updater) => patchState (this, s => ({ ...s, regionState: updater (s.regionState) }));
@@ -83,13 +83,13 @@ export class WotrGameStore extends signalStore (
     battleStore.state = this.battle;
   }
 
-  initGameState (players: WotrPlayer[], gameId: string, gameOwner: BgUser) {
+  initGameState (players: WotrPlayerInfo[], gameId: string, gameOwner: BgUser) {
     patchState (this, s => ({
       ...s,
       gameId: gameId,
       gameOwner: gameOwner,
       players: {
-        map: arrayUtil.toMap (players, p => p.id) as Record<WotrFrontId, WotrPlayer>,
+        map: arrayUtil.toMap (players, p => p.id) as Record<WotrFrontId, WotrPlayerInfo>,
         ids: players.map (p => p.id)
       }
     }));

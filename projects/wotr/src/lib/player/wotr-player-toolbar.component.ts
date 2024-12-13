@@ -4,7 +4,7 @@ import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { BgAuthService } from "@leobg/commons";
 import { BgTransformPipe } from "@leobg/commons/utils";
 import { WotrPlayerBadgeComponent } from "./wotr-player-badge.component";
-import { WotrPlayer } from "./wotr-player.models";
+import { WotrPlayerInfo } from "./wotr-player-info.models";
 
 @Component ({
   selector: "wotr-player-toolbar",
@@ -58,21 +58,21 @@ export class WotrPlayerToolbarComponent {
   canConfirm = input.required<boolean> ();
   canPass = input.required<boolean> ();
   canCancel = input.required<boolean> ();
-  currentPlayer = input.required<WotrPlayer | null> ();
-  players = input.required<WotrPlayer[]> ();
+  currentPlayer = input.required<WotrPlayerInfo | null> ();
+  players = input.required<WotrPlayerInfo[]> ();
 
   selectablePlayers = computed (() => {
     const currentPlayerId = this.currentPlayer ()?.id;
     return this.players ().filter (p => !p.isAi && currentPlayerId !== p.id && p.controller.id === this.authService.getUser ().id);
   });
 
-  currentPlayerChange = output<WotrPlayer | null> ();
+  currentPlayerChange = output<WotrPlayerInfo | null> ();
   confirm = output<void> ();
 
   // otherPlayers = computed (() => {
   //   const currentPlayerId = this.currentPlayerId ();
-  //   const playerIds = this.playerStore.playerIds ();
-  //   const playerMap = this.playerStore.playerMap ();
+  //   const playerIds = this.playerInfoStore.playerIds ();
+  //   const playerMap = this.playerInfoStore.playerMap ();
   //   if (currentPlayerId) {
   //     const n = playerIds.length;
   //     const toReturn: WotrPlayer[] = [];

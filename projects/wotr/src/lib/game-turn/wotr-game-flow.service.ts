@@ -4,13 +4,16 @@ import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
+import { oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrDieCardStory, WotrDieStory, WotrGameStory, WotrPassStory, WotrPhaseStory, WotrSkipTokensStory, WotrTokenStory } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrAllPlayers } from "../player/wotr-all-players";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../player/wotr-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrSetup, WotrSetupRulesService } from "../setup/wotr-setup-rules.service";
 
@@ -26,7 +29,10 @@ export class WotrGameTurnService {
   private huntStore = inject (WotrHuntStore);
   private actionService = inject (WotrActionService);
 
-  private storyService = inject (WotrStoryService);
+  private allPlayers = inject (WotrAllPlayers);
+  private freePeoples = inject (WotrFreePeoplesPlayer);
+  private shadow = inject (WotrShadowPlayer);
+  
   private setupService = inject (WotrSetupRulesService);
 
   init () {
@@ -76,14 +82,14 @@ export class WotrGameTurnService {
   private async firstPhase () {
     this.logStore.logPhase (1);
     this.huntStore.resetHuntBox ();
-    await this.storyService.parallelStories (f => p => p.firstPhase! (f));
+    await this.allPlayers.firstPhase ();
     return true;
   }
 
   private async fellowshipPhase () {
     this.logStore.logPhase (2);
     if (!this.fellowshipStore.isRevealed ()) {
-      await this.wantDeclareFellowship ("free-peoples");
+      await this.freePeoples.fellowshipPhase ();
     }
     this.checkMoveToMordorTrack ();
     return true;
@@ -101,7 +107,7 @@ export class WotrGameTurnService {
 
   private async huntAllocation () {
     this.logStore.logPhase (3);
-    await this.storyService.story ("shadow", p => p.huntAllocationPhase! ());
+    await this.shadow.huntAllocationPhase ();
     return true;
   }
 
@@ -123,16 +129,16 @@ export class WotrGameTurnService {
 
   private async actionResolution () {
     this.logStore.logPhase (5);
-    let front: WotrFrontId | null = "free-peoples";
+    let player: WotrPlayer | null = this.freePeoples;
     do {
-      const story = await this.chooseAction (front);
-      front = this.getNextResolutionFrontId (front, story);
-    } while (front);
+      const story = await this.chooseAction (player);
+      player = this.getNextResolutionFrontId (player, story);
+    } while (player);
     return true;
   }
 
-  async chooseAction (front: WotrFrontId): Promise<WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory> {
-    const story = await this.storyService.story (front, p => p.actionResolution! ());
+  async chooseAction (player: WotrPlayer): Promise<WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory> {
+    const story = await player.actionResolution ();
     switch (story.type) {
       case "die":
       case "die-card":
@@ -152,21 +158,17 @@ export class WotrGameTurnService {
     return true;
   }
 
-  private getNextResolutionFrontId (frontId: WotrFrontId, story: WotrGameStory): WotrFrontId | null {
-    const otherFrontId = oppositeFront (frontId);
-    if (this.frontStore.hasActionDice (otherFrontId)) { return otherFrontId; }
-    if (this.frontStore.hasActionTokens (otherFrontId) && story.type !== "token-skip") { return otherFrontId; }
-    if (this.frontStore.hasActionDice (frontId)) { return frontId; }
-    if (this.frontStore.hasActionTokens (frontId) && story.type !== "token-skip") { return frontId; }
+  private getNextResolutionFrontId (player: WotrPlayer, story: WotrGameStory): WotrPlayer | null {
+    const otherPlayer = oppositeFront (player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
+    if (this.frontStore.hasActionDice (otherPlayer.frontId)) { return otherPlayer; }
+    if (this.frontStore.hasActionTokens (otherPlayer.frontId) && story.type !== "token-skip") { return otherPlayer; }
+    if (this.frontStore.hasActionDice (player.frontId)) { return player; }
+    if (this.frontStore.hasActionTokens (player.frontId) && story.type !== "token-skip") { return player; }
     return null;
   }
 
-  async wantDeclareFellowship (front: WotrFrontId): Promise<WotrGameStory> {
-    return this.storyService.story (front, p => p.fellowshipPhase! ());
-  }
-
   async rollActionDice (): Promise<void> {
-    await this.storyService.parallelStories (f => p => p.rollActionDice! ());
+    await this.allPlayers.rollActionDice ();
   }
 
   private applySetup (setup: WotrSetup) {

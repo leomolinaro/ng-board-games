@@ -3,9 +3,9 @@ import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrUiStore } from "../game/wotr-ui.store";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable ()
@@ -13,36 +13,18 @@ export class WotrPlayerLocalService implements WotrPlayerService {
 
   private game = inject (WotrGameStore);
   private front = inject (WotrFrontStore);
-  private ui = inject (WotrUiStore);
+  private ui = inject (WotrGameUiStore);
 
   async firstPhase (front: WotrFrontId): Promise<WotrGameStory> {
-    this.ui.updateUi (s => ({
-      ...s,
-      ...this.ui.resetUi (),
-      turnPlayerId: front,
-      message: `[${front}] Draw cards`,
-      canConfirm: true
-    }));
-    await this.ui.confirm.get ();
-
+    await this.ui.askConfirm (front, "Draw cards");
     const characterDeck = this.front.characterDeck (front);
     const strategyDeck = this.front.strategyDeck (front);
-
     const drawnCards: WotrCardId[] = [];
     if (characterDeck.length) { drawnCards.push (characterDeck[0]); }
     if (strategyDeck.length) { drawnCards.push (strategyDeck[0]); }
-
     this.front.drawCards (drawnCards, front);
-
-    this.ui.updateUi (s => ({
-      ...s,
-      ...this.ui.resetUi (),
-      turnPlayerId: front,
-      message: `[${front}] Continue`,
-      canConfirm: true
-    }));
-    await this.ui.confirm.get ();
-
+    await this.ui.askConfirm (front, "Continue");
+    // this.ui.resetUi (front);
     return { type: "phase", actions: [drawCardIds (...drawnCards)] };
   }
 

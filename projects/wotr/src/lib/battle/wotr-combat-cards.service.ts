@@ -4,7 +4,9 @@ import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card.mod
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { findAction } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../player/wotr-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit.models";
 import { WotrUnitService } from "../unit/wotr-unit.service";
@@ -25,16 +27,18 @@ export interface WotrCombatCardParams {
 @Injectable ()
 export class WotrCombatCardsService {
 
-  private storyService = inject (WotrStoryService);
   private unitService = inject (WotrUnitService);
   private armyUtil = inject (WotrArmyUtils);
+
+  private freePeoples = inject (WotrFreePeoplesPlayer);
+  private shadow = inject (WotrShadowPlayer);
 
   async combatCardReaction (params: WotrCombatCardParams): Promise<void> {
     return this.combatCardEffects[params.card.combatLabel] (params);
   }
 
-  private async activateCombatCard (cardId: WotrCardId, front: WotrFrontId): Promise<false | WotrAction[]> {
-    const story = await this.storyService.story (front, p => p.activateCombatCard! (cardId));
+  private async activateCombatCard (cardId: WotrCardId, player: WotrPlayer): Promise<false | WotrAction[]> {
+    const story = await player.activateCombatCard! (cardId);
     switch (story.type) {
       case "reaction-combat-card": return story.actions;
       case "reaction-combat-card-skip": return false;
@@ -42,8 +46,8 @@ export class WotrCombatCardsService {
     }
   }
 
-  async forfeitLeadership (front: WotrFrontId): Promise<WotrLeaderUnits> {
-    const story = await this.storyService.story (front, p => p.forfeitLeadership! ());
+  async forfeitLeadership (player: WotrPlayer): Promise<WotrLeaderUnits> {
+    const story = await player.forfeitLeadership ();
     const action = findAction<WotrLeaderForfeit> (story, "leader-forfeit");
     return action.leaders;
   }
@@ -57,7 +61,7 @@ export class WotrCombatCardsService {
     Charge: async params => { throw new Error ("TODO"); },
     Confusion: async params => { throw new Error ("TODO"); },
     "Cruel as Death": async params => {
-      const leaders = await this.forfeitLeadership (params.front);
+      await this.forfeitLeadership (this.shadow);
     },
     "Daring Defiance": async params => { throw new Error ("TODO"); },
     Daylight: async params => {
@@ -77,7 +81,7 @@ export class WotrCombatCardsService {
       params.freePeoples.leaderModifiers.push (1);
     },
     "Dread and Despair": async params => {
-      const leaders = await this.forfeitLeadership (params.front);
+      await this.forfeitLeadership (this.shadow);
     },
     "Durin's Bane": async params => { throw new Error ("TODO"); },
     "Ents' Rage": async params => { throw new Error ("TODO"); },
@@ -90,7 +94,7 @@ export class WotrCombatCardsService {
       const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits (attackingArmy) : 0;
       if ((params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
         (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)) {
-        await this.unitService.chooseCasualties ("free-peoples");
+        await this.unitService.chooseCasualties (this.freePeoples);
       }
     },
     "Heroic Death": async params => { throw new Error ("TODO"); },
@@ -105,12 +109,12 @@ export class WotrCombatCardsService {
     "One for the Dark Lord": async params => { throw new Error ("TODO"); },
     Onslaught: async params => { throw new Error ("TODO"); },
     "Relentless Assault": async params => {
-      const casualties = await this.unitService.chooseCasualties ("shadow");
+      const casualties = await this.unitService.chooseCasualties (this.shadow);
       const hits = casualties.reduce ((h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2), 0);
       if (hits) { params.shadow.combatModifiers.push (hits); }
     },
     Scouts: async params => {
-      const r = await this.activateCombatCard (params.card.id, params.front);
+      const r = await this.activateCombatCard (params.card.id, this.freePeoples);
       // eslint-disable-next-line require-atomic-updates
       if (r) { params.combatRound.endBattle = true; }
     },

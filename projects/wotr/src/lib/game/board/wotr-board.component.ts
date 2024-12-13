@@ -15,8 +15,8 @@ import { WotrHuntState } from "../../hunt/wotr-hunt.store";
 import { WotrLog } from "../../log/wotr-log.models";
 import { WotrLogsComponent } from "../../log/wotr-logs.component";
 import { WotrNation, WotrNationId } from "../../nation/wotr-nation.models";
+import { WotrPlayerInfo } from "../../player/wotr-player-info.models";
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
-import { WotrPlayer } from "../../player/wotr-player.models";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
 import { WotrRegion, WotrRegionId } from "../../region/wotr-region.models";
 import { WotrMapComponent } from "./map/wotr-map.component";
@@ -91,7 +91,7 @@ export class WotrBoardComponent {
 
   private dialog = inject (MatDialog);
 
-  players = input.required<WotrPlayer[]> ();
+  players = input.required<WotrPlayerInfo[]> ();
   regions = input.required<WotrRegion[]> ();
   nations = input.required<WotrNation[]> ();
   freePeoples = input.required<WotrFront> ();
@@ -106,7 +106,7 @@ export class WotrBoardComponent {
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
   logs = input.required<WotrLog[]> ();
   message = input<string> ();
-  currentPlayer = input.required<WotrPlayer | null> ();
+  currentPlayer = input.required<WotrPlayerInfo | null> ();
 
   protected nChaCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0);
   protected nStrCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0);
@@ -129,7 +129,7 @@ export class WotrBoardComponent {
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
 
 
-  currentPlayerChange = output<WotrPlayer | null> ();
+  currentPlayerChange = output<WotrPlayerInfo | null> ();
   // buildingSelect = output<BaronyBuilding> ();
   regionClick = output<WotrRegionId> ();
   // unitClick = output<WotrRegionUnit> ();

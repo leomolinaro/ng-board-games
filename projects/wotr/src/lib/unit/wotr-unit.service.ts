@@ -1,12 +1,11 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFrontId } from "../front/wotr-front.models";
 import { filterActions } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrPlayer } from "../player/wotr-player";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrEliteUnitElimination, WotrRegularUnitElimination, WotrUnitAction } from "./wotr-unit-actions";
@@ -18,7 +17,6 @@ export class WotrUnitService {
   private nationStore = inject (WotrNationStore);
   private nationService = inject (WotrNationService);
   private regionStore = inject (WotrRegionStore);
-  private storyService = inject (WotrStoryService);
 
   init () {
     this.actionService.registerActions (this.getActionAppliers () as any);
@@ -180,8 +178,8 @@ export class WotrUnitService {
     };
   }
 
-  async chooseCasualties (front: WotrFrontId) {
-    const story = await this.storyService.story (front, p => p.chooseCasualties! ());
+  async chooseCasualties (player: WotrPlayer) {
+    const story = await player.chooseCasualties ();
     const actions = filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination> (
       story,
       "regular-unit-elimination", "elite-unit-elimination"

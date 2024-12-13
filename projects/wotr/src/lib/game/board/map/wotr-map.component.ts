@@ -63,9 +63,9 @@ const GRID_STEP = 10;
         <svg:g wotrVictoryPointsTrack [fronts]="fronts ()"></svg:g>
       </svg:g>
     </svg:svg>
-    @if (isDevMode) {
+    <!-- @if (isDevMode) {
       <button style="position: absolute; bottom: 0; left: 0;" (click)="calculateSlots ()">Calculate slots</button>
-    }
+    } -->
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -4,10 +4,12 @@ import { WotrCombatRoll } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameStory, findAction } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../player/wotr-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../region/wotr-region-actions";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
@@ -27,7 +29,8 @@ export interface WotrCardParams {
 @Injectable ()
 export class WotrCardEffectsService {
 
-  private storyService = inject (WotrStoryService);
+  private freePeoples = inject (WotrFreePeoplesPlayer);
+  private shadow = inject (WotrShadowPlayer);
   private huntStore = inject (WotrHuntStore);
   private regionStore = inject (WotrRegionStore);
   private huntFlow = inject (WotrHuntFlowService);
@@ -35,8 +38,8 @@ export class WotrCardEffectsService {
   
   private cardService = inject (WotrCardService);
 
-  private async rollCombatDice (front: WotrFrontId): Promise<WotrCombatDie[]> {
-    const story = await this.storyService.story (front, p => p.rollCombatDice! ());
+  private async rollCombatDice (player: WotrPlayer): Promise<WotrCombatDie[]> {
+    const story = await player.rollCombatDice ();
     const action = findAction<WotrCombatRoll> (story, "combat-roll");
     return action.dice;
   }
@@ -52,8 +55,8 @@ export class WotrCardEffectsService {
     },
     "Dreadful Spells": async params => {
       findAction<WotrRegionChoose> (params.story, "region-choose");
-      await this.rollCombatDice ("shadow");
-      await this.storyService.story ("free-peoples", p => p.chooseCasualties! ());
+      await this.rollCombatDice (this.shadow);
+      await this.freePeoples.chooseCasualties ();
     },
     "Isildur's Bane": async params => {
       const action = findAction<WotrHuntTileDraw> (params.story, "hunt-tile-draw");
@@ -68,7 +71,7 @@ export class WotrCardEffectsService {
       if (huntTile.eye || huntTile.type === "free-people-special") { return; }
       const damage = huntTile.quantity!; // TODO shelob die
       if (damage) {
-        await this.huntFlow.separateCompanions ("free-peoples");
+        await this.huntFlow.separateCompanions (this.freePeoples);
       }
     }
   };

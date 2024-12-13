@@ -1,12 +1,13 @@
 import { NgClass } from "@angular/common";
 import { Component, input } from "@angular/core";
-import { BgTransformPipe } from "@leobg/commons/utils";
-import { WotrPlayer } from "./wotr-player.models";
+import { WotrPlayerInfo } from "./wotr-player-info.models";
 
 @Component ({
   selector: "wotr-player-badge",
   standalone: true,
-  imports: [BgTransformPipe, NgClass],
+  imports: [
+    NgClass
+  ],
   template: `
     <div class="badge"
       [ngClass]="{
@@ -23,10 +24,15 @@ import { WotrPlayer } from "./wotr-player.models";
       width: 20px;
       height: 20px;
       padding: 4px;
-      text-align: center;
       background: #fff;
       color: white;
-      // line-height: 1;
+
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      // text-align: center;
 
       &.free-peoples {
         background: $blue;
@@ -39,6 +45,6 @@ import { WotrPlayer } from "./wotr-player.models";
 })
 export class WotrPlayerBadgeComponent {
 
-  player = input.required<WotrPlayer | null> ();
+  player = input.required<WotrPlayerInfo | null> ();
 
 }

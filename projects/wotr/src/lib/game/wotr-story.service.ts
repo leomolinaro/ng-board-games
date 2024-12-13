@@ -5,14 +5,14 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
+import { WotrPlayerInfo } from "../player/wotr-player-info.models";
+import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
-import { WotrPlayer } from "../player/wotr-player.models";
 import { WotrPlayerService } from "../player/wotr-player.service";
-import { WotrPlayerStore } from "../player/wotr-player.store";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
+import { WotrGameUiStore } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrGameStory, WotrStoryDoc } from "./wotr-story.models";
-import { WotrUiStore } from "./wotr-ui.store";
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;
@@ -20,13 +20,13 @@ export interface WotrStoryTask {
 }
 
 @Injectable ()
-export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, WotrGameStory, WotrPlayerService> {
+export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo, WotrGameStory, WotrPlayerService> {
 
   private store = inject (WotrGameStore);
-  private ui = inject (WotrUiStore);
+  private ui = inject (WotrGameUiStore);
   private remote = inject (WotrRemoteService);
   private frontStore = inject (WotrFrontStore);
-  private playerStore = inject (WotrPlayerStore);
+  private playerInfoStore = inject (WotrPlayerInfoStore);
   protected override auth = inject (BgAuthService);
   protected override aiPlayer = inject (WotrPlayerAiService);
   protected override localPlayer = inject (WotrPlayerLocalService);
@@ -36,7 +36,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   setStoryDocs (storyDocs: WotrStoryDoc[]) { this.storyDocs = storyDocs; }
 
   protected override getGameId () { return this.store.getGameId (); }
-  protected override getPlayer (playerId: WotrFrontId) { return this.playerStore.player (playerId); }
+  protected override getPlayer (playerId: WotrFrontId) { return this.playerInfoStore.player (playerId); }
   protected override getGameOwner () { return this.store.getGameOwner (); }
   protected override startTemporaryState () { this.store.startTemporaryState (); }
   protected override endTemporaryState () { this.store.endTemporaryState (); }
@@ -86,13 +86,13 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayer, Wo
   }
 
   protected override resetUi (turnPlayer: WotrFrontId) {
-    this.ui.updateUi (s => ({
-      ...s,
-      turnPlayerId: turnPlayer,
-      ...this.ui.resetUi (),
-      canCancel: false,
-      message: `${this.playerStore.player (turnPlayer).name} is thinking...`,
-    }));
+    // this.ui.updateUi (s => ({
+    //   ...s,
+    //   // turnPlayerId: turnPlayer,
+    //   // ...this.ui.resetUi (),
+    //   // canCancel: false,
+    //   // message: `${this.playerInfoStore.player (turnPlayer).name} is thinking...`,
+    // }));
   }
 
   async parallelStories (getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
