@@ -62,7 +62,7 @@ import { WotrStoryService } from "./wotr-story.service";
       [characterById]="characterStore.characterById ()"
       [shadowNations]="nationStore.shadowNations ()"
       [logs]="logStore.state ()"
-      [currentPlayer]="ui.currentPlayer ()"
+      [currentPlayerId]="ui.currentPlayerId ()"
       [message]="ui.message ()"
       [canCancel]="ui.canCancel ()"
       [canPass]="ui.canPass ()"

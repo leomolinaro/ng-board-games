@@ -2,17 +2,17 @@ import { NgClass } from "@angular/common";
 import { Component, computed, inject, input, output } from "@angular/core";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { BgAuthService } from "@leobg/commons";
-import { BgTransformPipe } from "@leobg/commons/utils";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerBadgeComponent } from "./wotr-player-badge.component";
 import { WotrPlayerInfo } from "./wotr-player-info.models";
 
 @Component ({
   selector: "wotr-player-toolbar",
   standalone: true,
-  imports: [BgTransformPipe, NgClass, MatMenuTrigger, MatMenu, MatMenuItem, WotrPlayerBadgeComponent],
+  imports: [NgClass, MatMenuTrigger, MatMenu, MatMenuItem, WotrPlayerBadgeComponent],
   template: `
     <wotr-player-badge
-      [player]="currentPlayer ()"
+      [playerId]="currentPlayerId ()"
       [ngClass]="{
         'can-change-player': !!selectablePlayers ().length
       }"
@@ -21,7 +21,7 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
     <mat-menu #selectablePlayersMenu="matMenu">
       @for (player of selectablePlayers (); track player.id) {
         <div mat-menu-item (click)="currentPlayerChange.emit (player)">
-          <wotr-player-badge [player]="player"></wotr-player-badge>
+          <wotr-player-badge [playerId]="player.id"></wotr-player-badge>
         </div>
       }
     </mat-menu>
@@ -58,11 +58,11 @@ export class WotrPlayerToolbarComponent {
   canConfirm = input.required<boolean> ();
   canPass = input.required<boolean> ();
   canCancel = input.required<boolean> ();
-  currentPlayer = input.required<WotrPlayerInfo | null> ();
+  currentPlayerId = input.required<WotrFrontId | null> ();
   players = input.required<WotrPlayerInfo[]> ();
 
   selectablePlayers = computed (() => {
-    const currentPlayerId = this.currentPlayer ()?.id;
+    const currentPlayerId = this.currentPlayerId ();
     return this.players ().filter (p => !p.isAi && currentPlayerId !== p.id && p.controller.id === this.authService.getUser ().id);
   });
 

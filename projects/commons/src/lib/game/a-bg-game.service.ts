@@ -1,4 +1,4 @@
-import { EMPTY, NEVER, Observable, expand, filter, finalize, first, forkJoin, last, map, of, race, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, defer, expand, filter, finalize, first, forkJoin, last, map, of, race, switchMap, tap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -59,6 +59,11 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract insertStoryDoc$ (storyId: string, storyDoc: BgStoryDoc<Pid, St>, gameId: string): Observable<unknown>;
   protected abstract selectStoryDoc$ (storyId: string, gameId: string): Observable<BgStoryDoc<Pid, St> | undefined>;
 
+  private isRemotePlayer (playerId: string) {
+    const player = this.getPlayer (playerId);
+    return player.isRemote;
+  }
+
   private isLocalPlayer (playerId: string) {
     const user = this.auth.getUser ();
     const player = this.getPlayer (playerId);
@@ -99,11 +104,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     }
   }
 
-  private getLocalStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
-    const playerService = this.getPlayerService (playerId);
-    if (!playerService) { return NEVER; }
+  private getLocalStory$<R extends St> (time: number, playerId: Pid, task$: () => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
     this.startTemporaryState ();
-    return task$ (playerService).pipe (
+    return task$ ().pipe (
       switchMap (story => {
         const storyDoc: BgStoryDoc<Pid, R> = { ...story, time, playerId };
         const storyId = getStoryId (storyDoc.time, playerId);
@@ -113,7 +116,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  private getRemoteStory$<R extends St> (time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R> | null> {
+  private getRemoteStory$<R extends St> (time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R>> {
     const storyId = getStoryId (time, playerId);
     return this.selectStoryDoc$ (storyId, this.getGameId ()).pipe (
       filter (storyDoc => !!storyDoc),
@@ -122,25 +125,35 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  private getStory$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
-    this.resetUi (playerId);
-    return race (
-      this.getLocalStory$ (time, playerId, task$),
-      this.getRemoteStory$<R> (time, playerId),
-      this.currentPlayerChange$ ().pipe (map (() => null)),
-      this.cancelChange$ ().pipe (map (() => null))
-    );
+  private getLocalStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
+    return defer (() => {
+      this.resetUi (playerId);
+      const playerService = this.getPlayerService (playerId);
+      if (playerService) {
+        return race (
+          this.getLocalStory$ (time, playerId, () => task$ (playerService)),
+          this.currentPlayerChange$ ().pipe (map (() => null)),
+          this.cancelChange$ ().pipe (map (() => null))
+        );
+      } else {
+        return this.currentPlayerChange$ ().pipe (map (() => null));
+      }
+    });
   }
 
   private getStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
-    return this.getStory$ (time, playerId, task$).pipe (
-      expand (storyDoc => {
-        if (storyDoc) { return EMPTY; }
-        return this.getStory$ (time, playerId, task$);
-      }),
-      last (),
-      map (story => story!)
-    );
+    if (this.isRemotePlayer (playerId)) {
+      return this.getRemoteStory$<R> (time, playerId);
+    } else {
+      return this.getLocalStoryWrap$ (time, playerId, task$).pipe (
+        expand (storyDoc => {
+          if (storyDoc) { return EMPTY; }
+          return this.getLocalStoryWrap$ (time, playerId, task$);
+        }),
+        last (),
+        map (story => story!)
+      );
+    }
   }
 
   protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {

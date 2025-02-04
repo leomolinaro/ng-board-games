@@ -1,6 +1,6 @@
 import { NgClass } from "@angular/common";
 import { Component, input } from "@angular/core";
-import { WotrPlayerInfo } from "./wotr-player-info.models";
+import { WotrFrontId } from "../front/wotr-front.models";
 
 @Component ({
   selector: "wotr-player-badge",
@@ -11,10 +11,11 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
   template: `
     <div class="badge"
       [ngClass]="{
-        'free-peoples': player ()?.id === 'free-peoples',
-        'shadow': player ()?.id === 'shadow'
+        'free-peoples': playerId () === 'free-peoples',
+        'shadow': playerId () === 'shadow'
       }">
-      @if (player (); as c) { {{ c.name }} } @else { - }
+      <!-- @if (player (); as c) { {{ c.name }} } @else { - } -->
+      @if (playerId (); as p) { {{ p === "free-peoples" ? "F" : "S" }} } @else { - }
     </div>
   `,
   styles: [`
@@ -45,6 +46,6 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
 })
 export class WotrPlayerBadgeComponent {
 
-  player = input.required<WotrPlayerInfo | null> ();
+  playerId = input.required<WotrFrontId | null> ();
 
 }

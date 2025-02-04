@@ -9,7 +9,7 @@ import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-c
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
 import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
-import { WotrFront } from "../../front/wotr-front.models";
+import { WotrFront, WotrFrontId } from "../../front/wotr-front.models";
 import { WotrHuntAreaComponent } from "../../hunt/wotr-hunt-area.component";
 import { WotrHuntState } from "../../hunt/wotr-hunt.store";
 import { WotrLog } from "../../log/wotr-log.models";
@@ -44,7 +44,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
       </wotr-map>
       <wotr-player-toolbar
         class="wotr-toolbar"
-        [currentPlayer]="currentPlayer ()"
+        [currentPlayerId]="currentPlayerId ()"
         [players]="players ()"
         [message]="message ()"
         [canConfirm]="canConfirm ()"
@@ -106,7 +106,7 @@ export class WotrBoardComponent {
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
   logs = input.required<WotrLog[]> ();
   message = input<string> ();
-  currentPlayer = input.required<WotrPlayerInfo | null> ();
+  currentPlayerId = input.required<WotrFrontId | null> ();
 
   protected nChaCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0);
   protected nStrCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0);

@@ -9,7 +9,7 @@ export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
   public abstract frontId: WotrFrontId;
 
-  firstPhase (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.firstPhase! (this.frontId)); }
+  firstPhase (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.firstPhase! (this)); }
   fellowshipPhase (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.fellowshipPhase! ()); }
   huntAllocationPhase (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.huntAllocationPhase! ()); }
   rollActionDice (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.rollActionDice! ()); }
@@ -36,3 +36,4 @@ export abstract class WotrPlayer {
   wantContinueBattle (): Promise<WotrGameStory> { return this.storyService.story (this.frontId, p => p.wantContinueBattle! ()); }
 
 }
+

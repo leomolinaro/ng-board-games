@@ -1,4 +1,4 @@
-import { Injectable, Signal, computed, inject } from "@angular/core";
+import { Injectable, computed, inject } from "@angular/core";
 import { toObservable } from "@angular/core/rxjs-interop";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
@@ -6,19 +6,26 @@ import { first, skip } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
-import { WotrPlayerUiState } from "../player/wotr-player-ui.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrGameStore } from "./wotr-game.store";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
-  localPlayers: Partial<Record<WotrFrontId, WotrPlayerUiState>>;
-  // turnPlayerId: WotrFrontId;
-  // canCancel: boolean;
-  // message: string | null;
-  // validRegions: WotrRegionId[] | null;
-  // canPass: boolean;
-  // canConfirm: boolean;
+  canCancel: boolean;
+  message: string | null;
+  validRegions: WotrRegionId[] | null;
+  canPass: boolean;
+  canConfirm: boolean;
+}
+
+export interface WotrPlayerUiState {
+  
+}
+
+export function initialState (): WotrPlayerUiState {
+  return {
+    
+  };
 }
 
 @Injectable ()
@@ -26,22 +33,21 @@ export class WotrGameUiStore extends signalStore (
   { protectedState: false },
   withState<WotrGameUiState> ({
     currentPlayerId: null,
-    localPlayers: { }
+    canCancel: false,
+    message: null,
+    validRegions: null,
+    canPass: false,
+    canConfirm: false
   })
 ) {
   
   private playerInfoStore = inject (WotrPlayerInfoStore);
   private game = inject (WotrGameStore);
 
-  private currentPlayerUi: Signal<WotrPlayerUiState | null> = computed (() => {
-    const currentPlayerId = this.currentPlayerId ();
-    if (!currentPlayerId) { return null; }
-    return this.localPlayers ()?.[currentPlayerId] || null;
-  });
-  canPass = computed (() => this.currentPlayerUi ()?.canPass || false);
-  canCancel = computed (() => this.currentPlayerUi ()?.canCancel || false);
-  canConfirm = computed (() => this.currentPlayerUi ()?.canConfirm || false);
-  message = computed (() => this.currentPlayerUi ()?.message || "");
+  // canPass = computed (() => this.currentPlayerUi ()?.canPass || false);
+  // canCancel = computed (() => this.currentPlayerUi ()?.canCancel || false);
+  // canConfirm = computed (() => this.currentPlayerUi ()?.canConfirm || false);
+  // message = computed (() => this.currentPlayerUi ()?.message || "");
 
   // validRegions = toSignal (this.select$ ((s) => s.validRegions), { requireSync: true });
   // canPass = toSignal (this.select$ ((s) => s.canPass), { requireSync: true });
@@ -95,18 +101,10 @@ export class WotrGameUiStore extends signalStore (
     // }));
   }
 
-  async askConfirm (front: WotrFrontId, message: string) {
-    this.updatePlayer (front, s => ({
-      ...s,
-      message,
-      canConfirm: true
-    }));
+  async askConfirm (message: string) {
+    this.updateUi (s => ({ ...s, message, canConfirm: true }));
     await this.confirm.get ();
-    this.updatePlayer (front, s => ({
-      ...s,
-      message: null,
-      canConfirm: false
-    }));
+    this.updateUi (s => ({ ...s, message: null, canConfirm: false }));
   }
 
   resetUi (): Partial<WotrGameUiState> {

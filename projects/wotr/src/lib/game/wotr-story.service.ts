@@ -26,7 +26,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   private ui = inject (WotrGameUiStore);
   private remote = inject (WotrRemoteService);
   private frontStore = inject (WotrFrontStore);
-  private playerInfoStore = inject (WotrPlayerInfoStore);
+  private playerStore = inject (WotrPlayerInfoStore);
   protected override auth = inject (BgAuthService);
   protected override aiPlayer = inject (WotrPlayerAiService);
   protected override localPlayer = inject (WotrPlayerLocalService);
@@ -36,7 +36,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   setStoryDocs (storyDocs: WotrStoryDoc[]) { this.storyDocs = storyDocs; }
 
   protected override getGameId () { return this.store.getGameId (); }
-  protected override getPlayer (playerId: WotrFrontId) { return this.playerInfoStore.player (playerId); }
+  protected override getPlayer (playerId: WotrFrontId) { return this.playerStore.player (playerId); }
   protected override getGameOwner () { return this.store.getGameOwner (); }
   protected override startTemporaryState () { this.store.startTemporaryState (); }
   protected override endTemporaryState () { this.store.endTemporaryState (); }
@@ -91,7 +91,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
     //   // turnPlayerId: turnPlayer,
     //   // ...this.ui.resetUi (),
     //   // canCancel: false,
-    //   // message: `${this.playerInfoStore.player (turnPlayer).name} is thinking...`,
+    //   // message: `${this.playerStore.player (turnPlayer).name} is thinking...`,
     // }));
   }
 
