@@ -57,6 +57,7 @@ export interface BgRoomDialogOutput {
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class BgHomeRoomDialogComponent<Pid extends string> implements OnInit, OnDestroy {

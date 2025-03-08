@@ -13,6 +13,7 @@ import { SimpleChanges } from "@leobg/commons/utils";
   templateUrl: "./barony-knights-selector.component.html",
   styleUrls: ["./barony-knights-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyKnightsSelectorComponent implements OnChanges {
   constructor () {}

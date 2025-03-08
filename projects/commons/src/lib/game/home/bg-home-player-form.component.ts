@@ -93,6 +93,7 @@ import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BgHomePlayerFormComponent {
 

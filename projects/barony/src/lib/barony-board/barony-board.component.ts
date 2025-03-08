@@ -9,6 +9,7 @@ import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, Barony
   templateUrl: "./barony-board.component.html",
   styleUrls: ["./barony-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class BaronyBoardComponent implements OnChanges, OnDestroy {

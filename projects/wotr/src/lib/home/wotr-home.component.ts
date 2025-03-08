@@ -11,7 +11,6 @@ import { WotrRemoteService } from "../remote/wotr-remote.service";
 
 @Component ({
   selector: "wotr-home",
-  standalone: true,
   imports: [BgHomeModule, WotrExampleButton],
   template: `
     <bg-home [config]="config"></bg-home>
@@ -34,7 +33,7 @@ import { WotrRemoteService } from "../remote/wotr-remote.service";
       left: 50px;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrHomeComponent {
 

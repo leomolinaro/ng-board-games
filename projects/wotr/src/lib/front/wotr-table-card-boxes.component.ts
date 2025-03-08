@@ -16,7 +16,6 @@ const YSTEP = 47;
 
 @Component ({
   selector: "[wotrTableCards]",
-  standalone: true,
   imports: [],
   template: `
     @for (tableCardNode of tableCardNodes (); track tableCardNode.id) {
@@ -32,7 +31,7 @@ const YSTEP = 47;
       fill: white;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrTableCardsComponent {
 

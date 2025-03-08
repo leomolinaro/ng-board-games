@@ -73,7 +73,6 @@ const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
 
 @Component ({
   selector: "[wotrStronghold]",
-  standalone: true,
   imports: [MatTooltipModule, NgClass],
   template: `
     <svg:g>
@@ -172,7 +171,7 @@ const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
       fill: white;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrStrongholdComponent {
 

@@ -38,7 +38,7 @@ export class WotrCombatCardsService {
   }
 
   private async activateCombatCard (cardId: WotrCardId, player: WotrPlayer): Promise<false | WotrAction[]> {
-    const story = await player.activateCombatCard! (cardId);
+    const story = await player.activateCombatCard (cardId);
     switch (story.type) {
       case "reaction-combat-card": return story.actions;
       case "reaction-combat-card-skip": return false;

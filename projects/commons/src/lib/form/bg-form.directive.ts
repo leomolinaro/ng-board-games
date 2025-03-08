@@ -30,6 +30,7 @@ export interface BgFieldConfig<V, E> {
 
 @Directive ({
   selector: "[bgForm]",
+  standalone: false
 })
 export class BgFormDirective<E> implements OnChanges {
   constructor () {}
@@ -106,6 +107,7 @@ export class BgFormDirective<E> implements OnChanges {
 
 @Directive ({
   selector: "input[bgField]",
+  standalone: false
 })
 export class BgInputFieldDirective<V, E>
 implements OnInit, OnDestroy, BgFieldDirective<V, E>
@@ -156,6 +158,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 
 @Directive ({
   selector: "mat-select[bgField]",
+  standalone: false
 })
 @UntilDestroy
 export class BgSelectFieldDirective<V, E>
@@ -192,6 +195,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 
 @Directive ({
   selector: "mat-radio-group[bgField]",
+  standalone: false
 })
 @UntilDestroy
 export class BgRadioFieldDirective<V, E>
@@ -228,6 +232,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 
 @Directive ({
   selector: "mat-checkbox[bgField]",
+  standalone: false
 })
 @UntilDestroy
 export class BgCheckboxFieldDirective<E>

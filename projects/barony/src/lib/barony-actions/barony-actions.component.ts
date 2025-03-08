@@ -15,6 +15,7 @@ import { BaronyAction } from "../barony-models";
   templateUrl: "./barony-actions.component.html",
   styleUrls: ["./barony-actions.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyActionsComponent implements OnChanges {
   constructor () {}

@@ -1,4 +1,4 @@
-import { NgClass, NgSwitch, NgSwitchCase } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, Signal, computed, inject, input, isDevMode } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionToken } from "../action-token/wotr-action-token.models";
@@ -39,8 +39,7 @@ export type WotrLogParsedFragment =
 
 @Component ({
   selector: "wotr-log",
-  standalone: true,
-  imports: [NgClass, NgSwitch, NgSwitchCase],
+  imports: [NgClass],
   template: `
     <div class="log"
       [ngClass]="{
@@ -98,7 +97,7 @@ export type WotrLogParsedFragment =
       height: 16px;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrLogComponent implements OnInit, WotrFragmentCreator<WotrLogParsedFragment> {
   

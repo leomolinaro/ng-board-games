@@ -20,7 +20,6 @@ const S_Y = 808;
 
 @Component ({
   selector: "[wotrDeckBoxes]",
-  standalone: true,
   imports: [],
   template: `
     @for (deckBoxNode of deckBoxNodes (); track deckBoxNode.id) {
@@ -36,7 +35,7 @@ const S_Y = 808;
       fill: white;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrDeckBoxesComponent {
 

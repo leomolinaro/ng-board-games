@@ -1,47 +1,48 @@
-import { Component, Inject, Injectable } from '@angular/core';
+import { Component, Inject, Injectable } from "@angular/core";
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+} from "@angular/material/dialog";
+import { Observable } from "rxjs";
 
-@Injectable()
+@Injectable ()
 export class TlsmMessageService {
-  constructor(private dialog: MatDialog) {}
+  constructor (private dialog: MatDialog) {}
 
-  public alert(message: string, tokenSource: string) {
-    this.dialog.open(TlsmMessageDialog, {
-      width: '400px',
+  public alert (message: string, tokenSource: string) {
+    this.dialog.open (TlsmMessageDialog, {
+      width: "400px",
       data: { message: message, tokenSource: tokenSource },
     });
   } // alert
 
-  public confirm(
+  public confirm (
     message: string,
     tokenSource: string,
     confirm: string
   ): Observable<boolean> {
-    let dialogRef = this.dialog.open(TlsmMessageDialog, {
-      width: '400px',
+    const dialogRef = this.dialog.open (TlsmMessageDialog, {
+      width: "400px",
       data: { message: message, tokenSource: tokenSource, confirm: confirm },
     });
-    return dialogRef.afterClosed();
+    return dialogRef.afterClosed ();
   } // alert
 } // TlsmMessageService
 
-@Component({
-  selector: 'tlsm-message-dialog',
-  templateUrl: 'tlsm-message-dialog.html',
+@Component ({
+  selector: "tlsm-message-dialog",
+  templateUrl: "tlsm-message-dialog.html",
+  standalone: false
 })
 export class TlsmMessageDialog {
   tokenSource: string;
   message: string;
   confirm: string;
 
-  constructor(
+  constructor (
     public dialogRef: MatDialogRef<TlsmMessageDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject (MAT_DIALOG_DATA) public data: any
   ) {
     this.tokenSource = data.tokenSource;
     this.message = data.message;

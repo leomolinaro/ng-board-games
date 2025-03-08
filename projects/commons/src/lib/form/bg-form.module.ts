@@ -1,12 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { NgModule } from "@angular/core";
 import {
   BgCheckboxFieldDirective,
   BgFormDirective,
   BgInputFieldDirective,
   BgRadioFieldDirective,
   BgSelectFieldDirective,
-} from './bg-form.directive';
+} from "./bg-form.directive";
 
 const components = [
   BgFormDirective,
@@ -16,7 +16,7 @@ const components = [
   BgCheckboxFieldDirective,
 ];
 
-@NgModule({
+@NgModule ({
   declarations: [...components],
   exports: [...components],
   imports: [CommonModule],

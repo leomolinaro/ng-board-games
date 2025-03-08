@@ -88,7 +88,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
 
 @Component ({
   selector: "[wotrRegion]",
-  standalone: true,
   imports: [MatTooltipModule, NgClass],
   template: `
     <svg:g>
@@ -200,7 +199,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
       fill: white;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrRegionComponent {
 

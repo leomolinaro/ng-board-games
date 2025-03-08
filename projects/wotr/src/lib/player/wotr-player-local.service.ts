@@ -14,7 +14,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private ui = inject (WotrGameUiStore);
 
   async firstPhase (player: WotrPlayer): Promise<WotrGameStory> {
-    console.log ("player", player)
+    console.log ("player", player);
     await this.ui.askConfirm ("Draw cards");
     const characterDeck = this.front.characterDeck (player.frontId);
     const strategyDeck = this.front.strategyDeck (player.frontId);

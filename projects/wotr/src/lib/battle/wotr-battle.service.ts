@@ -403,7 +403,7 @@ export class WotrBattleService {
 
   private async chooseFrontCasualties (combatFront: WotrCombatFront, oppositeCombatFront: WotrCombatFront) {
     if (oppositeCombatFront.nTotalHits) {
-      const story = await combatFront.player.chooseCasualties! ();
+      const story = await combatFront.player.chooseCasualties ();
       const actions = filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination> (
         story,
         "regular-unit-elimination", "elite-unit-elimination"

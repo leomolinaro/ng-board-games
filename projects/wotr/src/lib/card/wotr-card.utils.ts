@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Injectable } from "@angular/core";
 import { WotrCardNumber, WotrFreePeopleCharacterCardId, WotrFreePeopleStrategyCardId, WotrShadowCharacterCardId, WotrShadowStrategyCardId } from "./wotr-card.models";
 

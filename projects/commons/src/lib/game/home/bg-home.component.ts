@@ -22,6 +22,7 @@ export interface BgHomeConfig<Pid extends string> {
   templateUrl: "./bg-home.component.html",
   styleUrls: ["./bg-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {

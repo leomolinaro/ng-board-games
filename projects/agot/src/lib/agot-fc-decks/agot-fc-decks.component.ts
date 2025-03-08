@@ -22,6 +22,7 @@ interface AgotFcDeck {
   templateUrl: "./agot-fc-decks.component.html",
   styleUrls: ["./agot-fc-decks.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class AgotFcDecksComponent implements OnInit, OnDestroy {

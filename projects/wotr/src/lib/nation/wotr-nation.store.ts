@@ -48,7 +48,7 @@ function initialNation (
   return {
     id, name, front,
     regularLabel, eliteLabel, leaderLabel,
-    units: { regular: nRegulars, elite: nElites, leader: nLeaders,nazgul: nNazgul },
+    units: { regular: nRegulars, elite: nElites, leader: nLeaders, nazgul: nNazgul },
     reinforcements: { regular: nRegulars, elite: nElites, leader: nLeaders, nazgul: nNazgul },
     casualties: { regular: 0, elite: 0, leader: 0 },
     active,

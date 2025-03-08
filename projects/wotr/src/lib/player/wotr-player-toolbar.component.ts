@@ -8,7 +8,6 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
 
 @Component ({
   selector: "wotr-player-toolbar",
-  standalone: true,
   imports: [NgClass, MatMenuTrigger, MatMenu, MatMenuItem, WotrPlayerBadgeComponent],
   template: `
     <wotr-player-badge

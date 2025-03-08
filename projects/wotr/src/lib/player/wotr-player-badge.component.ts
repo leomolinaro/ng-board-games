@@ -4,7 +4,6 @@ import { WotrFrontId } from "../front/wotr-front.models";
 
 @Component ({
   selector: "wotr-player-badge",
-  standalone: true,
   imports: [
     NgClass
   ],

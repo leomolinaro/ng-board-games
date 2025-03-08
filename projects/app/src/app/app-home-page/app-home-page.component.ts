@@ -52,6 +52,7 @@ import { AppGamesService } from "../app-games.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class AppHomePageComponent implements OnInit, OnDestroy {

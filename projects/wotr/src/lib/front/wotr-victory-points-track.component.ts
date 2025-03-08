@@ -16,7 +16,6 @@ const OFFSET = 5;
 
 @Component ({
   selector: "[wotrVictoryPointsTrack]",
-  standalone: true,
   imports: [],
   template: `
     @for (victoryMarkerNode of victoryMarkerNodes (); track victoryMarkerNode.id) {
@@ -26,7 +25,7 @@ const OFFSET = 5;
         [attr.xlink:href]="victoryMarkerNode.image"/>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrVictoryPointsTrackComponent {
 

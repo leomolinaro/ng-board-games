@@ -9,7 +9,7 @@ import {
   Output,
   TrackByFunction,
   ViewChild,
-  isDevMode,
+  isDevMode, OnInit,
 } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
@@ -100,8 +100,9 @@ const GRID_STEP = 20;
   templateUrl: "./brit-map.component.html",
   styleUrls: ["./brit-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
-export class BritMapComponent implements OnChanges {
+export class BritMapComponent implements OnChanges, OnInit {
 
   constructor (
     private mapService: BritMapService,

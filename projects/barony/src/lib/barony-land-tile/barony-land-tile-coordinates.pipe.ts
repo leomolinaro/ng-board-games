@@ -1,26 +1,27 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { BaronyLandCoordinates } from '../barony-models';
+import { Pipe, PipeTransform } from "@angular/core";
+import { BaronyLandCoordinates } from "../barony-models";
 
-const sqrt3Half = Math.sqrt(3) / 2.0;
+const sqrt3Half = Math.sqrt (3) / 2.0;
 const half = 0.5;
 const one = 1.0;
 const oneHalf = 1.5;
-const sqrt3 = Math.sqrt(3);
+const sqrt3 = Math.sqrt (3);
 
 const scaleForGap = 1.02;
 
-@Pipe({
-  name: 'baronyLandTileCoordinates',
+@Pipe ({
+  name: "baronyLandTileCoordinates",
+  standalone: false
 })
 export class BaronyLandCoordinatesPipe implements PipeTransform {
-  transform(
+  transform (
     c: BaronyLandCoordinates,
-    to: 'hexagon' | 'center-x' | 'center-y',
+    to: "hexagon" | "center-x" | "center-y",
     translate?: number
   ): string {
     switch (to) {
-      case 'hexagon': {
-        const center = hexToCartesian(c);
+      case "hexagon": {
+        const center = hexToCartesian (c);
 
         const p1x = center.x - sqrt3Half;
         const p6x = p1x;
@@ -38,30 +39,30 @@ export class BaronyLandCoordinatesPipe implements PipeTransform {
 
         return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y} ${p6x},${p6y}`;
       } // case
-      case 'center-x': {
+      case "center-x": {
         if (translate) {
-          return hexToCartesian(c).x + translate + '';
+          return hexToCartesian (c).x + translate + "";
         } else {
-          return hexToCartesian(c).x + '';
+          return hexToCartesian (c).x + "";
         } // if - else
       } // case
-      case 'center-y': {
+      case "center-y": {
         if (translate) {
-          return hexToCartesian(c).y + translate + '';
+          return hexToCartesian (c).y + translate + "";
         } else {
-          return hexToCartesian(c).y + '';
+          return hexToCartesian (c).y + "";
         } // if - else
       } // case
     } // switch
   } // transform
 } // BaronyLandCoordinatesPipe
 
-export function hexToCartesian(hex: { x: number; y: number }): {
+export function hexToCartesian (hex: { x: number; y: number }): {
   x: number;
   y: number;
 } {
   const radius =
-    (Math.abs(hex.x) + Math.abs(hex.y) + Math.abs(hex.x + hex.y)) / 2;
+    (Math.abs (hex.x) + Math.abs (hex.y) + Math.abs (hex.x + hex.y)) / 2;
   return {
     x: (sqrt3 * hex.x + sqrt3Half * hex.y) * scaleForGap,
     y: oneHalf * hex.y * scaleForGap,

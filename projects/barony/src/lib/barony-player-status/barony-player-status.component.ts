@@ -36,6 +36,7 @@ interface BaronyResourceNode {
   templateUrl: "./barony-player-status.component.html",
   styleUrls: ["./barony-player-status.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
 

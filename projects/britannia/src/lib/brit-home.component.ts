@@ -16,7 +16,6 @@ import {
 
 @Component ({
   selector: "brit-home",
-  standalone: true,
   imports: [BgHomeModule],
   template: `
     <bg-home [config]="config"></bg-home>
@@ -39,7 +38,7 @@ import {
       }
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BritHomeComponent {
 

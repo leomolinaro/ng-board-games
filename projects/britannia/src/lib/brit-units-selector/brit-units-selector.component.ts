@@ -45,6 +45,7 @@ import { SimpleChanges } from "@leobg/commons/utils";
   `,
   styleUrls: ["./brit-units-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritUnitsSelectorComponent implements OnChanges {
   constructor () {}

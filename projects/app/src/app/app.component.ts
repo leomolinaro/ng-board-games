@@ -2,7 +2,6 @@ import { Component } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 
 @Component ({
-  standalone: true,
   imports: [RouterOutlet],
   selector: "app-root",
   template: `
@@ -14,7 +13,7 @@ import { RouterOutlet } from "@angular/router";
     .bg-app {
       min-height: 100%;
     }
-  `,
+  `
 })
 export class AppComponent {
   title = "app";

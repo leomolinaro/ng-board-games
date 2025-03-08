@@ -106,7 +106,7 @@ export function group<T, K extends number | string, V = T> (array: T[], getKey: 
       groupList = [];
       map[key] = groupList;
     }
-    groupList.push (getValue! (e));
+    groupList.push (getValue (e));
   });
   return map;
 }

@@ -32,7 +32,6 @@ const PSTEPWAR = PSTEP1 + PSTEP;
 
 @Component ({
   selector: "[wotrPoliticalTrack]",
-  standalone: true,
   imports: [BgSvgModule, MatTooltipModule],
   template: `
     @for (politicalNode of politicalNodes (); track politicalNode.id) {
@@ -42,7 +41,7 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         [attr.xlink:href]="politicalNode.image"/>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrPoliticalTrackComponent {
 

@@ -43,6 +43,7 @@ import { BgArcheoGame } from "../bg-proto-game.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BgHomeArcheoGameFormComponent {
 

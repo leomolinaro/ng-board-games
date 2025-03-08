@@ -3,6 +3,7 @@ import { BgAuthService, BgUser } from "./bg-auth.service";
 
 @Pipe ({
   name: "bgIfUser",
+  standalone: false
 })
 export class BgIfUserPipe implements PipeTransform {
   constructor (private authService: BgAuthService) {}

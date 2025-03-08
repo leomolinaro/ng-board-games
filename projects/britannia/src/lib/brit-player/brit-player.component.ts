@@ -40,6 +40,7 @@ interface BritNationNode {
   templateUrl: "./brit-player.component.html",
   styleUrls: ["./brit-player.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritPlayerComponent implements OnInit {
   constructor (

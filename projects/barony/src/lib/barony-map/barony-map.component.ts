@@ -20,6 +20,7 @@ import {
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyMapComponent implements OnChanges {
   constructor () {}

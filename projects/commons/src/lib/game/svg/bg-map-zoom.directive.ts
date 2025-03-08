@@ -24,6 +24,7 @@ interface BgMapZoomRefreshParams {
 @Component ({
   selector: "svg[bgSvg]",
   template: "<ng-content></ng-content>",
+  standalone: false
 })
 export class BgSvgComponent {
   constructor (public elementRef: ElementRef<SVGSVGElement>) {}
@@ -38,6 +39,7 @@ export class BgSvgComponent {
 
 @Directive ({
   selector: "[bgMapZoom]",
+  standalone: false
 })
 export class BgMapZoomDirective implements OnInit {
 

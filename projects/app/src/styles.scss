@@ -1,4 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+@use './styles/material.scss';
+@use './styles/layout.scss';
+@use './styles/scroll-bars.scss';
+@use './styles/buttons.scss';
 
 h1,
 h2,
@@ -12,8 +16,3 @@ h6 {
 p {
   margin: 0;
 }
-
-@import './styles/material.scss';
-@import './styles/layout.scss';
-@import './styles/scroll-bars.scss';
-@import './styles/buttons.scss';

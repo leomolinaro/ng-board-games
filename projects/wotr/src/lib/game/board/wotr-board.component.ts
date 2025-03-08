@@ -1,4 +1,3 @@
-import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input, output } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
@@ -24,8 +23,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 
 @Component ({
   selector: "wotr-board",
-  standalone: true,
-  imports: [NgIf, BgTransformPipe, MatTabsModule,
+  imports: [BgTransformPipe, MatTabsModule,
     WotrMapComponent, WotrLogsComponent, WotrFrontAreaComponent,
     WotrHuntAreaComponent, WotrReplayButtonComponent, WotrActionDiceComponent, WotrPlayerToolbarComponent],
   template: `
@@ -83,7 +81,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
     </div>
   `,
   styleUrls: ["./wotr-board.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrBoardComponent {
 

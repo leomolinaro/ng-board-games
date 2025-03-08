@@ -53,6 +53,7 @@ import { BgMapZoomDirective } from "./bg-map-zoom.directive";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BgMapZoomButtonsComponent implements OnInit {
 

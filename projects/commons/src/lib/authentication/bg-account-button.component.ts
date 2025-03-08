@@ -62,6 +62,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class BgAccountButtonComponent implements OnInit, OnDestroy {

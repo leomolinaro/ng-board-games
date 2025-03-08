@@ -17,6 +17,7 @@ import { AgotDraftService } from "./agot-draft.service";
   templateUrl: "./agot-draft.component.html",
   styleUrls: ["./agot-draft.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 @UntilDestroy
 export class AgotDraftComponent implements OnInit, OnDestroy {

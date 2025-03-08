@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -28,8 +27,7 @@ interface UnitNode {
 
 @Component ({
   selector: "wotr-region-dialog",
-  standalone: true,
-  imports: [BgTransformPipe, NgClass, MatTooltipModule],
+  imports: [BgTransformPipe, MatTooltipModule],
   template: `
     <h1>{{ data.region.name }}</h1>
     <div>
@@ -44,17 +42,17 @@ interface UnitNode {
     </div>
   `,
   styles: [`
-    @import "wotr-variables";
+    @use "wotr-variables" as wotr;
 
     :host {
       background-color: #151515;
       color: white;
       display: flex;
       flex-direction: column;
-      @include golden-padding(1vmin);
+      @include wotr.golden-padding(1vmin);
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrRegionDialogComponent implements OnInit {
   

@@ -12,6 +12,7 @@ import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./
   templateUrl: "./brit-board.component.html",
   styleUrls: ["./brit-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritBoardComponent {
   constructor (private bottomSheet: MatBottomSheet) {}

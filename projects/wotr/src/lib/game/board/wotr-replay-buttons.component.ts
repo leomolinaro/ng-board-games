@@ -4,7 +4,6 @@ import { MatIcon } from "@angular/material/icon";
 
 @Component ({
   selector: "wotr-replay-buttons",
-  standalone: true,
   imports: [MatIcon, MatRipple],
   template: `
     <div>
@@ -18,7 +17,7 @@ import { MatIcon } from "@angular/material/icon";
       cursor: pointer;
     }
 
-  `,
+  `
 })
 export class WotrReplayButtonComponent {
 

@@ -45,6 +45,7 @@ interface BaronyCounterNode {
     </svg>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyScoreboardComponent implements OnChanges {
   constructor () {}

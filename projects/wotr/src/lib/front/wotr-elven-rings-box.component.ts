@@ -22,7 +22,6 @@ const Y0 = 18;
 
 @Component ({
   selector: "[wotrElvenRingsBox]",
-  standalone: true,
   imports: [NgClass],
   template: `
     @for (elvenRingNode of elvenRingNodes (); track elvenRingNode.id) {
@@ -47,7 +46,7 @@ const Y0 = 18;
       }
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrElvenRingsBoxComponent {
 

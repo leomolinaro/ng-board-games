@@ -12,7 +12,6 @@ export interface WotrCardsDialogData {
 
 @Component ({
   selector: "wotr-cards-dialog",
-  standalone: true,
   imports: [BgTransformPipe, NgClass],
   template: `
     @for (cardId of cardIds; track cardId) {
@@ -61,7 +60,7 @@ export interface WotrCardsDialogData {
     }
 
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrCardsDialogComponent {
   

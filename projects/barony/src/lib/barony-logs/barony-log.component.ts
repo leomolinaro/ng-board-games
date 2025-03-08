@@ -88,6 +88,7 @@ type BaronyLogFragment =
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyLogComponent implements OnChanges {
   constructor (private game: BaronyGameStore) {}

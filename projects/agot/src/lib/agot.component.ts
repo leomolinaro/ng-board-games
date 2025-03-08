@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from "@angular/core";
+import { CommonModule } from "@angular/common";
 
-@Component({
-  selector: 'lib-agot',
-  standalone: true,
+@Component ({
+  selector: "lib-agot",
   imports: [CommonModule],
-  template: `<p>agot works!</p>`,
-  styles: ``,
+  template: "<p>agot works!</p>",
+  styles: ""
 })
 export class AgotComponent {}

@@ -7,7 +7,6 @@ const DEBUG_LOG_INDEXES = "wotr.debugLogIndex";
 
 @Component ({
   selector: "wotr-logs",
-  standalone: true,
   imports: [WotrLogComponent],
   template: `
     @for (log of logs (); let i = $index; track i) {
@@ -22,7 +21,7 @@ const DEBUG_LOG_INDEXES = "wotr.debugLogIndex";
       color: white;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrLogsComponent implements OnChanges, OnInit {
   

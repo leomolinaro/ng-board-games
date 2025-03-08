@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
@@ -11,8 +10,7 @@ import { WotrStrongholdComponent } from "./wotr-stronghold.component";
 
 @Component ({
   selector: "[wotrRegions]",
-  standalone: true,
-  imports: [MatTooltipModule, NgClass, WotrRegionComponent, WotrMordorTrackComponent, WotrStrongholdComponent],
+  imports: [MatTooltipModule, WotrRegionComponent, WotrMordorTrackComponent, WotrStrongholdComponent],
   template: `
     @for (point of testGridPoints; track point) {
       <svg:circle
@@ -41,7 +39,7 @@ import { WotrStrongholdComponent } from "./wotr-stronghold.component";
       <svg:g wotrMordorTrack [fellowship]="fellowship ()"></svg:g>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrRegionsComponent {
 

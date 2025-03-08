@@ -18,7 +18,6 @@ interface WotrExampleGame {
 
 @Component ({
   selector: "wotr-example-button",
-  standalone: true,
   imports: [MatFabButton, MatIcon, MatMenuModule],
   template: `
     @if (isAdmin ()) {
@@ -42,7 +41,7 @@ interface WotrExampleGame {
       left: 50px;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
 export class WotrExampleButton implements OnDestroy {

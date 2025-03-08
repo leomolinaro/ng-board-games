@@ -21,7 +21,6 @@ const GUIDE_Y = 100;
 
 @Component ({
   selector: "[wotrFellowshipBox]",
-  standalone: true,
   imports: [],
   template: `
     @for (companionNode of companionNodes (); track companionNode.id) {
@@ -35,7 +34,7 @@ const GUIDE_Y = 100;
       [attr.x]="guideNode ().svgX" [attr.y]="guideNode ().svgY"
       [attr.xlink:href]="guideNode ().image"/>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrFellowshipBoxComponent {
 

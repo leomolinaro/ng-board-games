@@ -1,21 +1,20 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map, mapTo, tap } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, forkJoin, Observable } from "rxjs";
+import { map, mapTo, tap } from "rxjs/operators";
 import {
   AgotCard,
   AgotFaction,
   AgotPack,
   AgotPackCode,
   AgotType,
-  AgotTypeCode,
-} from '../agot.models';
-import { AgotHttpService } from './agot-http.service';
+} from "../agot.models";
+import { AgotHttpService } from "./agot-http.service";
 
-@Injectable({
-  providedIn: 'root',
+@Injectable ({
+  providedIn: "root",
 })
 export class AgotDataService {
-  constructor(private http: AgotHttpService) {}
+  constructor (private http: AgotHttpService) {}
 
   private cards: AgotCard[] | null = null;
   private cardMap: Record<string, AgotCard> = {};
@@ -68,82 +67,82 @@ export class AgotDataService {
     LMHR: true,
   }; // officialPackCodes
 
-  private $factions = new BehaviorSubject<AgotFaction[]>([]);
-  private $packs = new BehaviorSubject<AgotPack[]>([]);
-  private $types = new BehaviorSubject<AgotType[]>([]);
+  private $factions = new BehaviorSubject<AgotFaction[]> ([]);
+  private $packs = new BehaviorSubject<AgotPack[]> ([]);
+  private $types = new BehaviorSubject<AgotType[]> ([]);
 
-  getFactions$() {
-    return this.$factions.asObservable();
+  getFactions$ () {
+    return this.$factions.asObservable ();
   }
-  getPacks$(options?: { onlyOfficial: boolean }) {
+  getPacks$ (options?: { onlyOfficial: boolean }) {
     return this.$packs
-      .asObservable()
-      .pipe(map((p) => this.filterPacks(p, options)));
+      .asObservable ()
+      .pipe (map ((p) => this.filterPacks (p, options)));
   }
-  getTypes$() {
-    return this.$types.asObservable();
+  getTypes$ () {
+    return this.$types.asObservable ();
   }
 
-  getCards(options?: { onlyOfficial: boolean }) {
-    return this.filterCards(this.cards!, options);
+  getCards (options?: { onlyOfficial: boolean }) {
+    return this.filterCards (this.cards!, options);
   }
-  getPacks(options?: { onlyOfficial: boolean }) {
-    return this.filterPacks(this.$packs.getValue(), options);
+  getPacks (options?: { onlyOfficial: boolean }) {
+    return this.filterPacks (this.$packs.getValue (), options);
   }
-  getCard(cardCode: string) {
+  getCard (cardCode: string) {
     return this.cardMap[cardCode];
   }
-  getFactions() {
-    return this.$factions.getValue();
+  getFactions () {
+    return this.$factions.getValue ();
   }
 
   // getPacks (options?: { onlyOfficial: boolean }) { this.$packs.._getNow () }
 
-  private filterCards(cards: AgotCard[], options?: { onlyOfficial: boolean }) {
+  private filterCards (cards: AgotCard[], options?: { onlyOfficial: boolean }) {
     if (options) {
       if (options.onlyOfficial) {
-        return cards.filter((c) => this.officialPackCodes[c.pack_code]);
+        return cards.filter ((c) => this.officialPackCodes[c.pack_code]);
       } // if
     } // if
     return cards;
   } // filterPacks
 
-  private filterPacks(packs: AgotPack[], options?: { onlyOfficial: boolean }) {
+  private filterPacks (packs: AgotPack[], options?: { onlyOfficial: boolean }) {
     if (options) {
       if (options.onlyOfficial) {
-        return packs.filter((p) => this.officialPackCodes[p.code]);
+        return packs.filter ((p) => this.officialPackCodes[p.code]);
       } // if
     } // if
     return packs;
   } // filterPacks
 
-  load$(): Observable<void> {
-    return forkJoin([
-      this.http.getPacks().pipe(tap((packs) => this.$packs.next(packs))),
-      this.http.getCards().pipe(
-        tap((cards) => {
+  load$ (): Observable<void> {
+    return forkJoin ([
+      this.http.getPacks ().pipe (tap ((packs) => this.$packs.next (packs))),
+      this.http.getCards ().pipe (
+        tap ((cards) => {
           const factions: AgotFaction[] = [];
           const factionIds: { [code: string]: boolean } = {};
           const types: AgotType[] = [];
           const typeIds: { [code: string]: boolean } = {};
-          cards.forEach((card) => {
+          cards.forEach ((card) => {
             const factionCode = card.faction_code;
             if (!factionIds[factionCode]) {
               factionIds[factionCode] = true;
-              factions.push({ code: factionCode, name: card.faction_name });
+              factions.push ({ code: factionCode, name: card.faction_name });
             } // if
-            const typeCode = card.type_code as AgotTypeCode;
+            const typeCode = card.type_code;
             if (!typeIds[typeCode]) {
               typeIds[typeCode] = true;
-              types.push({ code: typeCode, name: card.type_name });
+              types.push ({ code: typeCode, name: card.type_name });
             } // if
             this.cardMap[card.code] = card;
           });
-          this.$factions.next(factions);
-          this.$types.next(types);
+          this.$factions.next (factions);
+          this.$types.next (types);
           this.cards = cards;
         })
       ),
-    ]).pipe(mapTo(void 0));
+    ]).pipe (mapTo (void 0));
   } // load
 } // AgotDataService

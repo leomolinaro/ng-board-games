@@ -43,7 +43,6 @@ import { WotrStoryService } from "./wotr-story.service";
 
 @Component ({
   selector: "wotr-game",
-  standalone: true,
   imports: [
     WotrBoardComponent
   ],

@@ -19,7 +19,6 @@ const NPERROW = 4;
 
 @Component ({
   selector: "[wotrHuntBox]",
-  standalone: true,
   imports: [],
   template: `
     @for (huntDieNode of huntDieNodes (); track huntDieNode.id) {
@@ -29,7 +28,7 @@ const NPERROW = 4;
         [attr.xlink:href]="huntDieNode.image"/>
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrHuntBoxComponent {
 

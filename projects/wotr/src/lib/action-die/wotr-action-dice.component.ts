@@ -7,7 +7,6 @@ import { WotrActionDie } from "./wotr-action-die.models";
 
 @Component ({
   selector: "wotr-action-dice",
-  standalone: true,
   imports: [BgTransformPipe],
   template: `
     @for (front of fronts (); track front.id) {
@@ -26,7 +25,7 @@ import { WotrActionDie } from "./wotr-action-die.models";
       display: flex;
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrActionDiceComponent {
 

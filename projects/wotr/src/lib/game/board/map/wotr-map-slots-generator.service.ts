@@ -90,7 +90,7 @@ export class WotrMapSlotsGeneratorService {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       if (regionPoints.innerPoints.length < MAX_SLOTS) {
-        console.log (region, regionPoints)
+        console.log (region, regionPoints);
       }
       const points = regionPoints.innerPoints;
       const outerPoints: WotrMapPoint[] = [];

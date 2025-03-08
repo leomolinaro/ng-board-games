@@ -188,7 +188,6 @@ export class WotrRegionStore {
     const region = this.region (regionId);
     return region.army?.front === frontId;
   }
-
   
 
   private updateRegion (actionName: string, regionId: WotrRegionId, updater: (a: WotrRegion) => WotrRegion) {
@@ -330,7 +329,7 @@ export class WotrRegionStore {
   addCharacterToFreeUnits (characterId: WotrCharacterId, regionId: WotrRegionId) {
     this.updateFreeUnits ("addCharacterToFreeUnits", regionId, freeunits => {
       if (!freeunits) { freeunits = { }; }
-      return { ...freeunits, characters: immutableUtil.listPush ([characterId], freeunits.characters || []) }
+      return { ...freeunits, characters: immutableUtil.listPush ([characterId], freeunits.characters || []) };
     });
   }
 

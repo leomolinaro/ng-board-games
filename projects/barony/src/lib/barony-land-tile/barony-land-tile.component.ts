@@ -33,6 +33,7 @@ interface BaronyPawnNode {
   templateUrl: "./barony-land-tile.component.html",
   styleUrls: ["./barony-land-tile.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyLandComponent implements OnChanges {
   constructor () {}

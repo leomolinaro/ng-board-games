@@ -1,18 +1,13 @@
-import { NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, input } from "@angular/core";
 import { MatTabsModule } from "@angular/material/tabs";
-import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
-import { WotrMapComponent } from "../game/board/map/wotr-map.component";
-import { WotrLogsComponent } from "../log/wotr-logs.component";
 import { WotrHuntTileId } from "./wotr-hunt.models";
 import { WotrHuntState } from "./wotr-hunt.store";
 
 @Component ({
   selector: "wotr-hunt-area",
-  standalone: true,
-  imports: [NgIf, WotrMapComponent, MatTabsModule, WotrLogsComponent, BgTransformPipe, MatTooltip],
+  imports: [MatTabsModule, BgTransformPipe],
   template: `
     <mat-tab-group>
       <mat-tab label="Pool">
@@ -74,7 +69,7 @@ import { WotrHuntState } from "./wotr-hunt.store";
       }
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrHuntAreaComponent {
 

@@ -106,6 +106,7 @@ type BritLogFragment =
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritLogComponent implements OnChanges {
   constructor (private components: BritComponentsService) {}

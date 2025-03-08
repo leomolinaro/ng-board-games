@@ -13,6 +13,7 @@ import { BaronyBuilding, BaronyPlayer } from "../barony-models";
   templateUrl: "./barony-buildings-selector.component.html",
   styleUrls: ["./barony-buildings-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyBuildingsSelectorComponent implements OnChanges {
   constructor () {}

@@ -60,6 +60,7 @@ import { BritUiStore } from "./brit-ui.store";
     BritPlayerLocalService,
     BritGameService,
   ],
+  standalone: false
 })
 @UntilDestroy
 export class BritGameComponent implements OnInit, OnDestroy {

@@ -23,6 +23,7 @@ import { BaronyLog } from "../barony-models";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BaronyLogsComponent implements OnChanges {
 

@@ -1,34 +1,34 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 export interface IBgProcess<C> {
-  readonly type: 'process';
+  readonly type: "process";
   start(context: C): IBgProcessStep<C>;
 } // IBgProcess
 
 export interface IBgSubProcess<C> {
-  readonly type: 'sub-process';
+  readonly type: "sub-process";
   start(context: C): IBgProcessStep<C>;
   next(context: C): IBgProcessStep<C>;
   readonly parent: IBgSubProcess<C> | IBgProcess<C>;
 } // IBgSubProcess
 
 export interface IBgProcessTask<C> {
-  readonly type: 'task';
+  readonly type: "task";
   next(context: C): IBgProcessStep<C>;
   readonly parent: IBgProcess<C> | IBgSubProcess<C>;
 } // IBgProcessTask
 
 export interface IBgProcessParallelSplit<C> {
-  readonly type: 'parallel-split';
+  readonly type: "parallel-split";
   getSteps(): IBgProcessStep<C>[];
 } // IBgGatewayParallelSplit
 
 export interface IBgProcessParallelJoin {
-  readonly type: 'parallel-join';
+  readonly type: "parallel-join";
 } // IBgProcessParallelJoin
 
 export interface IBgProcessEndEvent {
-  readonly type: 'end-event';
+  readonly type: "end-event";
 } // IBgProcessEndEvent
 
 export type IBgProcessStep<C> =
@@ -38,72 +38,72 @@ export type IBgProcessStep<C> =
   | IBgProcessParallelJoin
   | IBgProcessEndEvent;
 
-export const BG_PROCESS_END_EVENT: IBgProcessEndEvent = { type: 'end-event' };
+export const BG_PROCESS_END_EVENT: IBgProcessEndEvent = { type: "end-event" };
 export const BG_PROCESS_PARALLEL_JOIN: IBgProcessParallelJoin = {
-  type: 'parallel-join',
+  type: "parallel-join",
 };
 
-@Injectable({
-  providedIn: 'root',
+@Injectable ({
+  providedIn: "root",
 })
 /** @deprecated */
 export class BgProcessService {
-  constructor() {}
+  constructor () {}
 
-  startProcess<C>(flow: IBgProcess<C>, context: C): IBgProcessTask<C>[] {
-    const flowStep = flow.start(context);
-    return this.getTasks(flowStep, flow, context);
+  startProcess<C> (flow: IBgProcess<C>, context: C): IBgProcessTask<C>[] {
+    const flowStep = flow.start (context);
+    return this.getTasks (flowStep, flow, context);
   } // startProcess
 
-  resolveTask<C>(task: IBgProcessTask<C>, context: C): IBgProcessTask<C>[] {
-    const nextStep = task.next(context);
+  resolveTask<C> (task: IBgProcessTask<C>, context: C): IBgProcessTask<C>[] {
+    const nextStep = task.next (context);
     const parentStep = task.parent;
-    const newTasks = this.getTasks(nextStep, parentStep, context);
+    const newTasks = this.getTasks (nextStep, parentStep, context);
     return newTasks;
   } // resolveTask
 
-  private getTasks<C>(
+  private getTasks<C> (
     flowStep: IBgProcessStep<C>,
     parentStep: IBgSubProcess<C> | IBgProcess<C>,
     context: C
   ): IBgProcessTask<C>[] {
     const tasks: IBgProcessTask<C>[] = [];
-    this.appendTasks(flowStep, parentStep, tasks, context);
+    this.appendTasks (flowStep, parentStep, tasks, context);
     return tasks;
   } // getTasks
 
-  private appendTasks<C>(
+  private appendTasks<C> (
     step: IBgProcessStep<C>,
     parentStep: IBgSubProcess<C> | IBgProcess<C>,
     appendTasks: IBgProcessTask<C>[],
     context: C
   ): void {
     switch (step.type) {
-      case 'parallel-split': {
-        const parallelSteps = step.getSteps();
-        parallelSteps.forEach((s) =>
-          this.appendTasks(s, parentStep, appendTasks, context)
+      case "parallel-split": {
+        const parallelSteps = step.getSteps ();
+        parallelSteps.forEach ((s) =>
+          this.appendTasks (s, parentStep, appendTasks, context)
         );
         break;
       } // case
-      case 'sub-process': {
-        const startChildStep = step.start(context);
-        this.appendTasks(startChildStep, step, appendTasks, context);
+      case "sub-process": {
+        const startChildStep = step.start (context);
+        this.appendTasks (startChildStep, step, appendTasks, context);
         break;
       } // case
-      case 'parallel-join':
+      case "parallel-join":
         break;
-      case 'task':
-        appendTasks.push(step);
+      case "task":
+        appendTasks.push (step);
         break;
-      case 'end-event': {
+      case "end-event": {
         switch (parentStep.type) {
-          case 'process':
+          case "process":
             break;
-          case 'sub-process': {
-            const nextFlowStep = parentStep.next(context);
+          case "sub-process": {
+            const nextFlowStep = parentStep.next (context);
             const grandParentStep = parentStep.parent;
-            this.appendTasks(
+            this.appendTasks (
               nextFlowStep,
               grandParentStep,
               appendTasks,

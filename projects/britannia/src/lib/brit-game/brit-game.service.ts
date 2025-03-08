@@ -106,7 +106,7 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
         if (data.nInfantries) {
           return this.executeTask$ (playerId, (p) => p.armyPlacement$ (data.nInfantries, nationId, playerId)).pipe (
             map ((armyPlacement) => {
-              const infantryPlacement: { areaId: BritLandAreaId; quantity: number; }[] = [];
+              const infantryPlacement: { areaId: BritLandAreaId; quantity: number }[] = [];
               for (const ip of armyPlacement.infantryPlacement) {
                 infantryPlacement.push (
                   typeof ip === "object" ? ip : { areaId: ip, quantity: 1 }

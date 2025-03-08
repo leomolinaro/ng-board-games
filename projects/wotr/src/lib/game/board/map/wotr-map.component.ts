@@ -24,7 +24,6 @@ const GRID_STEP = 10;
 
 @Component ({
   selector: "wotr-map",
-  standalone: true,
   imports: [
     BgSvgModule,
     WotrRegionsComponent,
@@ -67,7 +66,7 @@ const GRID_STEP = 10;
       <button style="position: absolute; bottom: 0; left: 0;" (click)="calculateSlots ()">Calculate slots</button>
     } -->
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrMapComponent {
 

@@ -3,13 +3,13 @@ import {
   Component,
   Inject,
   OnInit,
-} from '@angular/core';
+} from "@angular/core";
 import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
-} from '@angular/material/bottom-sheet';
-import { BritAssetsService } from '../brit-assets.service';
-import { BritAreaUnit } from '../brit-game-state.models';
+} from "@angular/material/bottom-sheet";
+import { BritAssetsService } from "../brit-assets.service";
+import { BritAreaUnit } from "../brit-game-state.models";
 
 export interface BritUnitsSelectorSheetInput {
   unit: BritAreaUnit;
@@ -17,8 +17,8 @@ export interface BritUnitsSelectorSheetInput {
   maxQuantity: number;
 } // BritUnitsSelectorSheetInput
 
-@Component({
-  selector: 'brit-unit-number-selection-sheet',
+@Component ({
+  selector: "brit-unit-number-selection-sheet",
   template: `
     <brit-units-selector
       [imageSource]="imageSource"
@@ -31,33 +31,34 @@ export interface BritUnitsSelectorSheetInput {
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
-  constructor(
+  constructor (
     private bottomSheetRef: MatBottomSheetRef<
-      BritUnitsSelectorSheetComponent,
-      number
+    BritUnitsSelectorSheetComponent,
+    number
     >,
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: BritUnitsSelectorSheetInput,
+    @Inject (MAT_BOTTOM_SHEET_DATA) public data: BritUnitsSelectorSheetInput,
     private assetsService: BritAssetsService
   ) {}
 
   imageSource!: string;
   quantity!: number;
 
-  ngOnInit() {
+  ngOnInit () {
     this.quantity = this.data.quantity;
-    this.imageSource = this.assetsService.getUnitImageSourceByType(
+    this.imageSource = this.assetsService.getUnitImageSourceByType (
       this.data.unit.type,
       this.data.unit.nationId
     );
   } // ngOnInit
 
-  onCloseClick() {
-    this.bottomSheetRef.dismiss();
+  onCloseClick () {
+    this.bottomSheetRef.dismiss ();
   } // onCloseClick
 
-  onConfirm() {
-    this.bottomSheetRef.dismiss(this.quantity);
+  onConfirm () {
+    this.bottomSheetRef.dismiss (this.quantity);
   } // onConfirm
 } // BritUnitsSelectorSheetComponent

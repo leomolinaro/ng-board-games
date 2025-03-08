@@ -23,6 +23,7 @@ import { BritLog } from "../brit-game-state.models";
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class BritLogsComponent implements OnChanges {
   constructor (private elementRef: ElementRef) {}

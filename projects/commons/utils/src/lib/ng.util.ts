@@ -272,13 +272,13 @@ function asyncEventDecorator (
         ) => Observable<any> =
           $loading && !config?.suppressLoading
             ? (originalObservable$) => {
-              $loading!.next ($loading!.getValue () + 1);
+              $loading.next ($loading.getValue () + 1);
               return originalObservable$.pipe (
                 catchError ((e) => {
                   console.error (e);
                   return EMPTY;
                 }),
-                finalize (() => $loading!.next ($loading!.getValue () - 1))
+                finalize (() => $loading.next ($loading.getValue () - 1))
               );
             }
             : (originalObservable$) => {

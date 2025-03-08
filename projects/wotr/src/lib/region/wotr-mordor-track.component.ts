@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
@@ -24,8 +23,7 @@ const MORDOR_TRACK_ATTR_Y = {
 
 @Component ({
   selector: "[wotrMordorTrack]",
-  standalone: true,
-  imports: [MatTooltipModule, NgClass],
+  imports: [MatTooltipModule],
   template: `
     <svg:g>
       <svg:image
@@ -35,7 +33,7 @@ const MORDOR_TRACK_ATTR_Y = {
         [attr.xlink:href]="image ().source"/>
     </svg:g>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrMordorTrackComponent {
 

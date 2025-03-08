@@ -3,6 +3,7 @@ import { BgAuthService, BgUser } from "./bg-auth.service";
 
 @Directive ({
   selector: "[bgIfUser]",
+  standalone: false
 })
 export class BgIfUserDirective {
   constructor (

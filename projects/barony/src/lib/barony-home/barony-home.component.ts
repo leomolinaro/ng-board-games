@@ -15,7 +15,6 @@ import { getRandomLands } from "./barony-initializer";
 
 @Component ({
   selector: "barony-home",
-  standalone: true,
   imports: [BgHomeModule],
   template: `
     <bg-home [config]="config"></bg-home>
@@ -46,7 +45,7 @@ import { getRandomLands } from "./barony-initializer";
       }
     }
   `],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaronyHomeComponent implements OnInit {
   constructor (

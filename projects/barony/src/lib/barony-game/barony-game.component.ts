@@ -33,6 +33,7 @@ import { BaronyUiStore } from "./barony-ui.store";
     BaronyPlayerLocalService,
     BaronyGameService,
   ],
+  standalone: false
 })
 @UntilDestroy
 export class BaronyGameComponent implements OnInit, OnDestroy {

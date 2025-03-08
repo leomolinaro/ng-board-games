@@ -17,7 +17,6 @@ const CORRUPTION_Y = 25;
 
 @Component ({
   selector: "[wotrFellowshipTrack]",
-  standalone: true,
   imports: [],
   template: `
     <svg:image
@@ -29,7 +28,7 @@ const CORRUPTION_Y = 25;
       [attr.x]="corruptionNode ().svgX" [attr.y]="corruptionNode ().svgY"
       [attr.xlink:href]="corruptionNode ().image"/>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrFellowshipTrackComponent {
 
