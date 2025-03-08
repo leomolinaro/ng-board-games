@@ -14,7 +14,7 @@ import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { BgTransformPipe } from "@leobg/commons/utils";
-import { BgAuthModule } from "../../authentication";
+
 import { BgFormModule } from "../../form";
 import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
 import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
@@ -24,19 +24,12 @@ import { BgHomeComponent } from "./bg-home.component";
 const components = [BgHomeComponent];
 
 @NgModule ({
-  declarations: [
-    ...components,
-    BgHomeRoomDialogComponent,
-    BgHomePlayerFormComponent,
-    BgHomeArcheoGameFormComponent,
-  ],
   exports: [
     ...components,
     BgHomePlayerFormComponent, // TODO rimuovere
   ],
   imports: [
     CommonModule,
-    BgAuthModule,
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
@@ -52,6 +45,10 @@ const components = [BgHomeComponent];
     MatDialogModule,
     MatCheckboxModule,
     MatTableModule,
-  ],
+    ...components,
+    BgHomeRoomDialogComponent,
+    BgHomePlayerFormComponent,
+    BgHomeArcheoGameFormComponent,
+],
 })
 export class BgHomeModule {}

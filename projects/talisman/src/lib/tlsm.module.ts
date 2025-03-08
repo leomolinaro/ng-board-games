@@ -23,11 +23,6 @@ const routes: Routes = [
 ];
 
 @NgModule ({
-  declarations: [
-    TlsmDragonScalesComponent,
-    TlsmMessageDialog,
-    TlsmDragonCardComponent,
-  ],
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
@@ -42,7 +37,10 @@ const routes: Routes = [
     MatSnackBarModule,
     MatDialogModule,
     MatGridListModule,
-    BgTimesPipe
+    BgTimesPipe,
+    TlsmDragonScalesComponent,
+    TlsmMessageDialog,
+    TlsmDragonCardComponent
   ],
   providers: [TlsmMessageService],
 })

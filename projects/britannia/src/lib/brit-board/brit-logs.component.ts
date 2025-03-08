@@ -7,6 +7,8 @@ import {
 } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritLog } from "../brit-game-state.models";
+import { NgFor } from "@angular/common";
+import { BritLogComponent } from "./brit-log.component";
 
 @Component ({
   selector: "brit-logs",
@@ -23,7 +25,7 @@ import { BritLog } from "../brit-game-state.models";
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgFor, BritLogComponent]
 })
 export class BritLogsComponent implements OnChanges {
   constructor (private elementRef: ElementRef) {}

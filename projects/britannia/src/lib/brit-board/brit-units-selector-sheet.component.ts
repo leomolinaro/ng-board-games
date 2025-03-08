@@ -10,6 +10,7 @@ import {
 } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritAreaUnit } from "../brit-game-state.models";
+import { BritUnitsSelectorComponent } from "../brit-units-selector/brit-units-selector.component";
 
 export interface BritUnitsSelectorSheetInput {
   unit: BritAreaUnit;
@@ -31,7 +32,7 @@ export interface BritUnitsSelectorSheetInput {
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BritUnitsSelectorComponent]
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
   constructor (

@@ -12,8 +12,7 @@ const components = [
 ];
 
 @NgModule ({
-  declarations: [...components],
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, ...components],
   exports: [...components],
 })
 export class BgSvgModule {}

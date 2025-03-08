@@ -3,13 +3,24 @@ import { MatDialog } from "@angular/material/dialog";
 import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
 import { of, switchMap } from "rxjs";
 import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
+import { BaronyMapComponent } from "../barony-map/barony-map.component";
+import { NgIf, NgFor, NgClass } from "@angular/common";
+import { BaronyKnightsSelectorComponent } from "../barony-knights-selector/barony-knights-selector.component";
+import { BaronyBuildingsSelectorComponent } from "../barony-buildings-selector/barony-buildings-selector.component";
+import { BaronyResourcesSelectorComponent } from "../barony-resources-selector/barony-resources-selector.component";
+import { BaronyActionsComponent } from "../barony-actions/barony-actions.component";
+import { BaronyPlayerStatusComponent } from "../barony-player-status/barony-player-status.component";
+import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
+import { BaronyScoreboardComponent } from "../barony-scoreboard.component";
+import { BaronyLogsComponent } from "../barony-logs/barony-logs.component";
+import { BaronyEndGameComponent } from "../barony-end-game/barony-end-game.component";
 
 @Component ({
   selector: "barony-board",
   templateUrl: "./barony-board.component.html",
   styleUrls: ["./barony-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BaronyMapComponent, NgIf, BaronyKnightsSelectorComponent, BaronyBuildingsSelectorComponent, BaronyResourcesSelectorComponent, BaronyActionsComponent, NgFor, BaronyPlayerStatusComponent, BgMapZoomButtonsComponent, BaronyScoreboardComponent, BaronyLogsComponent, NgClass, BaronyEndGameComponent]
 })
 @UntilDestroy
 export class BaronyBoardComponent implements OnChanges, OnDestroy {

@@ -1,9 +1,16 @@
 import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, TrackByFunction } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
 import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { filter, map, tap } from "rxjs/operators";
 import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { NgFor, NgClass, AsyncPipe } from "@angular/common";
+import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
+import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
+import { MatButton } from "@angular/material/button";
+import { BgIfUserPipe } from "../../authentication/bg-if-user.pipe";
+import { BgTransformPipe } from "../../../../utils/src/lib/bg-transform.pipe";
 
 export interface BgRoomDialogInput<Pid extends string> {
   protoGame: BgProtoGame;
@@ -57,7 +64,7 @@ export interface BgRoomDialogOutput {
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatDialogTitle, CdkScrollable, MatDialogContent, NgFor, BgHomePlayerFormComponent, NgClass, BgIfUserDirective, MatDialogActions, MatButton, AsyncPipe, BgIfUserPipe, BgTransformPipe]
 })
 @UntilDestroy
 export class BgHomeRoomDialogComponent<Pid extends string> implements OnInit, OnDestroy {

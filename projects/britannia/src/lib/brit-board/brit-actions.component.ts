@@ -7,6 +7,7 @@ import {
   Output,
   SimpleChanges,
 } from "@angular/core";
+import { NgClass, NgIf } from "@angular/common";
 
 @Component ({
   selector: "brit-actions",
@@ -91,7 +92,7 @@ import {
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgIf]
 })
 export class BritActionsComponent implements OnChanges {
   constructor () {}

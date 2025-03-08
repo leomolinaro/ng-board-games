@@ -7,6 +7,8 @@ import {
 } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyLog } from "../barony-models";
+import { NgFor } from "@angular/common";
+import { BaronyLogComponent } from "./barony-log.component";
 
 @Component ({
   selector: "barony-logs",
@@ -23,7 +25,7 @@ import { BaronyLog } from "../barony-models";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgFor, BaronyLogComponent]
 })
 export class BaronyLogsComponent implements OnChanges {
 

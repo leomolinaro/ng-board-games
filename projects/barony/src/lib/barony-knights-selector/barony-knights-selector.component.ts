@@ -7,13 +7,14 @@ import {
   Output,
 } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { NgClass } from "@angular/common";
 
 @Component ({
   selector: "barony-knights-selector",
   templateUrl: "./barony-knights-selector.component.html",
   styleUrls: ["./barony-knights-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass]
 })
 export class BaronyKnightsSelectorComponent implements OnChanges {
   constructor () {}

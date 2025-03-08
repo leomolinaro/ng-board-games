@@ -18,6 +18,7 @@ import {
   BritLog,
   BritPlayer,
 } from "../brit-game-state.models";
+import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
 
 interface BritLogStringFragment {
   type: "string";
@@ -106,7 +107,7 @@ type BritLogFragment =
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
 })
 export class BritLogComponent implements OnChanges {
   constructor (private components: BritComponentsService) {}

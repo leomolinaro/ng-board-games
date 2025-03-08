@@ -9,6 +9,9 @@ import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotFactionCode, agotAgendaCode as agenda } from "../agot.models";
+import { MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow } from "@angular/material/table";
+import { AsyncPipe } from "@angular/common";
+import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
 
 interface AgotFcDeck {
   name: string;
@@ -22,7 +25,7 @@ interface AgotFcDeck {
   templateUrl: "./agot-fc-decks.component.html",
   styleUrls: ["./agot-fc-decks.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow, AsyncPipe, BgTransformPipe]
 })
 @UntilDestroy
 export class AgotFcDecksComponent implements OnInit, OnDestroy {

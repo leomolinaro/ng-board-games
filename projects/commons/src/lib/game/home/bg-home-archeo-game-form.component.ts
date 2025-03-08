@@ -8,6 +8,10 @@ import {
 } from "@angular/core";
 import { BgFieldConfig } from "../../form";
 import { BgArcheoGame } from "../bg-proto-game.service";
+import { BgFormDirective, BgInputFieldDirective, BgRadioFieldDirective } from "../../form/bg-form.directive";
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatRadioGroup, MatRadioButton } from "@angular/material/radio";
 
 @Component ({
   selector: "bg-home-archeo-game-form",
@@ -43,7 +47,7 @@ import { BgArcheoGame } from "../bg-proto-game.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BgFormDirective, MatFormField, MatLabel, BgInputFieldDirective, MatInput, MatRadioGroup, BgRadioFieldDirective, MatRadioButton]
 })
 export class BgHomeArcheoGameFormComponent {
 

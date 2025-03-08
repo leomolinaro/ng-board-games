@@ -22,7 +22,6 @@ const routes: Routes = [
 ];
 
 @NgModule ({
-  declarations: [AgotDraftComponent, AgotCardGridComponent],
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
@@ -37,7 +36,8 @@ const routes: Routes = [
     MatCheckboxModule,
     MatSliderModule,
     FormsModule,
-    NgLetDirective
+    NgLetDirective,
+    AgotDraftComponent, AgotCardGridComponent
   ],
 })
 export class AgotDraftModule {}

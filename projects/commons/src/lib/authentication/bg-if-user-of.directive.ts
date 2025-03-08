@@ -1,10 +1,7 @@
 import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
 import { BgAuthService, BgUser } from "./bg-auth.service";
 
-@Directive ({
-  selector: "[bgIfUser]",
-  standalone: false
-})
+@Directive ({ selector: "[bgIfUser]" })
 export class BgIfUserDirective {
   constructor (
     private templateRef: TemplateRef<any>,

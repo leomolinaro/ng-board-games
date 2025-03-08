@@ -15,7 +15,8 @@ import {
   BaronyPawn,
   BaronyPawnType,
 } from "../barony-models";
-import { hexToCartesian } from "./barony-land-tile-coordinates.pipe";
+import { hexToCartesian, BaronyLandCoordinatesPipe } from "./barony-land-tile-coordinates.pipe";
+import { NgClass, NgIf, NgFor } from "@angular/common";
 
 interface BaronyPawnNode {
   type: BaronyPawnType;
@@ -33,7 +34,7 @@ interface BaronyPawnNode {
   templateUrl: "./barony-land-tile.component.html",
   styleUrls: ["./barony-land-tile.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgIf, NgFor, BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
   constructor () {}

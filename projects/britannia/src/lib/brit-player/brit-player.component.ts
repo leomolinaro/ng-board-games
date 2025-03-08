@@ -13,6 +13,8 @@ import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritPlayer } from "../brit-game-state.models";
+import { NgClass, NgFor } from "@angular/common";
+import { MatTooltip } from "@angular/material/tooltip";
 
 // interface BritPawnNode {
 //   source: string;
@@ -40,7 +42,7 @@ interface BritNationNode {
   templateUrl: "./brit-player.component.html",
   styleUrls: ["./brit-player.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgFor, MatTooltip]
 })
 export class BritPlayerComponent implements OnInit {
   constructor (

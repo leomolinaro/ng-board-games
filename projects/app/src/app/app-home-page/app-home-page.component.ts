@@ -7,6 +7,10 @@ import {
 import { BgAuthService } from "@leobg/commons";
 import { SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { AppGamesService } from "../app-games.service";
+import { MatToolbar } from "@angular/material/toolbar";
+import { BgAccountButtonComponent } from "../../../../commons/src/lib/authentication/bg-account-button.component";
+import { NgFor } from "@angular/common";
+import { RouterLink } from "@angular/router";
 
 @Component ({
   selector: "app-home-page",
@@ -52,7 +56,7 @@ import { AppGamesService } from "../app-games.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatToolbar, BgAccountButtonComponent, NgFor, RouterLink]
 })
 @UntilDestroy
 export class AppHomePageComponent implements OnInit, OnDestroy {

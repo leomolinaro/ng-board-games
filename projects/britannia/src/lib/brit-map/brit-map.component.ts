@@ -32,6 +32,11 @@ import {
 } from "../brit-game-state.models";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
+import { NgIf, NgFor, NgClass } from "@angular/common";
+import { BgSvgComponent as BgSvgComponent_1, BgMapZoomDirective as BgMapZoomDirective_1 } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
+import { MatTooltip } from "@angular/material/tooltip";
+import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
+import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
 
 interface BritAreaNode {
   id: BritAreaId;
@@ -100,7 +105,7 @@ const GRID_STEP = 20;
   templateUrl: "./brit-map.component.html",
   styleUrls: ["./brit-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgIf, BgSvgComponent_1, BgMapZoomDirective_1, NgFor, NgClass, MatTooltip, NgLetDirective, BgTransformPipe]
 })
 export class BritMapComponent implements OnChanges, OnInit {
 

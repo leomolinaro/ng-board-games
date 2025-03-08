@@ -5,6 +5,7 @@ import {
   OnInit,
 } from "@angular/core";
 import { BgMapZoomDirective } from "./bg-map-zoom.directive";
+import { MatIconButton } from "@angular/material/button";
 
 @Component ({
   selector: "bg-map-zoom-buttons",
@@ -53,7 +54,7 @@ import { BgMapZoomDirective } from "./bg-map-zoom.directive";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatIconButton]
 })
 export class BgMapZoomButtonsComponent implements OnInit {
 

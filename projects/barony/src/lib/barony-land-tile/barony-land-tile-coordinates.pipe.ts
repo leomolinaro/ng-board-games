@@ -9,10 +9,7 @@ const sqrt3 = Math.sqrt (3);
 
 const scaleForGap = 1.02;
 
-@Pipe ({
-  name: "baronyLandTileCoordinates",
-  standalone: false
-})
+@Pipe ({ name: "baronyLandTileCoordinates" })
 export class BaronyLandCoordinatesPipe implements PipeTransform {
   transform (
     c: BaronyLandCoordinates,

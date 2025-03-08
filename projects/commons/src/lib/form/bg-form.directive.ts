@@ -28,10 +28,7 @@ export interface BgFieldConfig<V, E> {
   valueSetter?: (value: V, entity: E) => Partial<E>;
 } // BgFieldConfig
 
-@Directive ({
-  selector: "[bgForm]",
-  standalone: false
-})
+@Directive ({ selector: "[bgForm]" })
 export class BgFormDirective<E> implements OnChanges {
   constructor () {}
 
@@ -105,10 +102,7 @@ export class BgFormDirective<E> implements OnChanges {
   } // unregisterField
 } // BgFormDirective
 
-@Directive ({
-  selector: "input[bgField]",
-  standalone: false
-})
+@Directive ({ selector: "input[bgField]" })
 export class BgInputFieldDirective<V, E>
 implements OnInit, OnDestroy, BgFieldDirective<V, E>
 {
@@ -156,10 +150,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
   } // onBlur
 } // BgInputFieldDirective
 
-@Directive ({
-  selector: "mat-select[bgField]",
-  standalone: false
-})
+@Directive ({ selector: "mat-select[bgField]" })
 @UntilDestroy
 export class BgSelectFieldDirective<V, E>
 implements OnInit, OnDestroy, BgFieldDirective<V, E>
@@ -193,10 +184,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
   } // setValue
 } // BgSelectFieldDirective
 
-@Directive ({
-  selector: "mat-radio-group[bgField]",
-  standalone: false
-})
+@Directive ({ selector: "mat-radio-group[bgField]" })
 @UntilDestroy
 export class BgRadioFieldDirective<V, E>
 implements OnInit, OnDestroy, BgFieldDirective<V, E>
@@ -230,10 +218,7 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
   } // setValue
 } // BgRadioFieldDirective
 
-@Directive ({
-  selector: "mat-checkbox[bgField]",
-  standalone: false
-})
+@Directive ({ selector: "mat-checkbox[bgField]" })
 @UntilDestroy
 export class BgCheckboxFieldDirective<E>
 implements OnInit, OnDestroy, BgFieldDirective<boolean, E>

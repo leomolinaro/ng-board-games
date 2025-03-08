@@ -1,10 +1,9 @@
 import { Component, Inject, Injectable } from "@angular/core";
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from "@angular/material/dialog";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
 import { Observable } from "rxjs";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { NgIf } from "@angular/common";
+import { MatButton } from "@angular/material/button";
 
 @Injectable ()
 export class TlsmMessageService {
@@ -33,7 +32,7 @@ export class TlsmMessageService {
 @Component ({
   selector: "tlsm-message-dialog",
   templateUrl: "tlsm-message-dialog.html",
-  standalone: false
+  imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, NgIf, MatButton, MatDialogClose]
 })
 export class TlsmMessageDialog {
   tokenSource: string;

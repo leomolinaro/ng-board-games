@@ -14,13 +14,16 @@ import {
   BaronyLandCoordinates,
   landCoordinatesToId,
 } from "../barony-models";
+import { BgSvgComponent, BgMapZoomDirective as BgMapZoomDirective_1 } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
+import { NgFor } from "@angular/common";
+import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.component";
 
 @Component ({
   selector: "barony-map",
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BgSvgComponent, BgMapZoomDirective_1, NgFor, BaronyLandComponent]
 })
 export class BaronyMapComponent implements OnChanges {
   constructor () {}

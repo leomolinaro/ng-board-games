@@ -20,6 +20,8 @@ import { BaronyGameStore } from "./barony-game.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
 import { BaronyUiStore } from "./barony-ui.store";
+import { BaronyBoardComponent } from "../barony-board/barony-board.component";
+import { AsyncPipe } from "@angular/common";
 
 @Component ({
   selector: "barony-game",
@@ -33,7 +35,7 @@ import { BaronyUiStore } from "./barony-ui.store";
     BaronyPlayerLocalService,
     BaronyGameService,
   ],
-  standalone: false
+  imports: [BaronyBoardComponent, AsyncPipe]
 })
 @UntilDestroy
 export class BaronyGameComponent implements OnInit, OnDestroy {

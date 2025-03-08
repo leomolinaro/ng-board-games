@@ -9,13 +9,14 @@ import {
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
+import { NgClass, NgFor } from "@angular/common";
 
 @Component ({
   selector: "barony-actions",
   templateUrl: "./barony-actions.component.html",
   styleUrls: ["./barony-actions.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgFor]
 })
 export class BaronyActionsComponent implements OnChanges {
   constructor () {}

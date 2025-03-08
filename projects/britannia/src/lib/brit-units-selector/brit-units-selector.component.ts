@@ -7,6 +7,7 @@ import {
   Output,
 } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { NgClass } from "@angular/common";
 
 @Component ({
   selector: "brit-units-selector",
@@ -45,7 +46,7 @@ import { SimpleChanges } from "@leobg/commons/utils";
   `,
   styleUrls: ["./brit-units-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass]
 })
 export class BritUnitsSelectorComponent implements OnChanges {
   constructor () {}

@@ -6,6 +6,15 @@ import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
 import { BgAuthService } from "../../authentication";
 import { BgArcheoGame, BgBoardGame, BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
 import { BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-home-room-dialog.component";
+import { MatToolbar } from "@angular/material/toolbar";
+import { BgAccountButtonComponent } from "../../authentication/bg-account-button.component";
+import { NgIf, AsyncPipe } from "@angular/common";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow } from "@angular/material/table";
+import { MatIconButton, MatFabButton, MatButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
+import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
 
 export interface BgHomeConfig<Pid extends string> {
   boardGame: BgBoardGame;
@@ -22,7 +31,7 @@ export interface BgHomeConfig<Pid extends string> {
   templateUrl: "./bg-home.component.html",
   styleUrls: ["./bg-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatToolbar, BgAccountButtonComponent, NgIf, MatProgressBar, MatTable, MatColumnDef, MatCellDef, MatCell, MatIconButton, MatIcon, BgIfUserDirective, MatRowDef, MatRow, MatFabButton, BgHomeArcheoGameFormComponent, MatButton, AsyncPipe]
 })
 @UntilDestroy
 export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {

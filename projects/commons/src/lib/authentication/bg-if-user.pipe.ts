@@ -1,10 +1,7 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { BgAuthService, BgUser } from "./bg-auth.service";
 
-@Pipe ({
-  name: "bgIfUser",
-  standalone: false
-})
+@Pipe ({ name: "bgIfUser" })
 export class BgIfUserPipe implements PipeTransform {
   constructor (private authService: BgAuthService) {}
 

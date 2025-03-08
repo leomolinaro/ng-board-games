@@ -28,7 +28,14 @@ const routes: Routes = [
 ];
 
 @NgModule ({
-  declarations: [
+  imports: [
+    CommonModule,
+    RouterModule.forChild (routes),
+    BgTransformPipe,
+    BgSvgModule,
+    BaronyHomeComponent,
+    MatIconModule,
+    MatTableModule,
     BaronyBoardComponent,
     BaronyMapComponent,
     BaronyLandCoordinatesPipe,
@@ -43,15 +50,6 @@ const routes: Routes = [
     BaronyGameComponent,
     BaronyEndGameComponent,
     BaronyScoreboardComponent,
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild (routes),
-    BgTransformPipe,
-    BgSvgModule,
-    BaronyHomeComponent,
-    MatIconModule,
-    MatTableModule,
   ],
   providers: [
     // BaronyGameResolver

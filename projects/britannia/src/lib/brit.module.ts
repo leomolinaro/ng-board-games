@@ -44,18 +44,6 @@ const routes: Routes = [
 ];
 
 @NgModule ({
-  declarations: [
-    BritGameComponent,
-    BritBoardComponent,
-    BritMapComponent,
-    BritPlayerComponent,
-    BritNationCardSheetComponent,
-    BritUnitsSelectorSheetComponent,
-    BritUnitsSelectorComponent,
-    BritLogsComponent,
-    BritLogComponent,
-    BritActionsComponent,
-  ],
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
@@ -66,7 +54,17 @@ const routes: Routes = [
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
-    NgLetDirective
+    NgLetDirective,
+    BritGameComponent,
+    BritBoardComponent,
+    BritMapComponent,
+    BritPlayerComponent,
+    BritNationCardSheetComponent,
+    BritUnitsSelectorSheetComponent,
+    BritUnitsSelectorComponent,
+    BritLogsComponent,
+    BritLogComponent,
+    BritActionsComponent
   ],
   providers: [BritAreaPathResolver],
 })

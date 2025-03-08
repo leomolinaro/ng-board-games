@@ -6,13 +6,19 @@ import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritAreaLeader, BritAreaState, BritAreaUnit, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./brit-units-selector-sheet.component";
+import { BritMapComponent } from "../brit-map/brit-map.component";
+import { NgIf, NgFor, NgClass } from "@angular/common";
+import { BritActionsComponent } from "./brit-actions.component";
+import { BritPlayerComponent } from "../brit-player/brit-player.component";
+import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
+import { BritLogsComponent } from "./brit-logs.component";
 
 @Component ({
   selector: "brit-board",
   templateUrl: "./brit-board.component.html",
   styleUrls: ["./brit-board.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BritMapComponent, NgIf, BritActionsComponent, NgFor, BritPlayerComponent, BgMapZoomButtonsComponent, BritLogsComponent, NgClass]
 })
 export class BritBoardComponent {
   constructor (private bottomSheet: MatBottomSheet) {}

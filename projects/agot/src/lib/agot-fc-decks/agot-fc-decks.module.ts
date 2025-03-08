@@ -11,12 +11,12 @@ const routes: Routes = [
 ];
 
 @NgModule ({
-  declarations: [AgotFcDecksComponent],
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
     MatTableModule,
-    BgTransformPipe
+    BgTransformPipe,
+    AgotFcDecksComponent
   ],
 })
 export class AgotFcPacksModule {}

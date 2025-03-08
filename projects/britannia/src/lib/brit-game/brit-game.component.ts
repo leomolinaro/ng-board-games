@@ -13,6 +13,7 @@ import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
 import { BritUiStore } from "./brit-ui.store";
+import { AsyncPipe } from "@angular/common";
 
 @Component ({
   selector: "brit-game",
@@ -60,7 +61,7 @@ import { BritUiStore } from "./brit-ui.store";
     BritPlayerLocalService,
     BritGameService,
   ],
-  standalone: false
+  imports: [BritBoardComponent, AsyncPipe]
 })
 @UntilDestroy
 export class BritGameComponent implements OnInit, OnDestroy {

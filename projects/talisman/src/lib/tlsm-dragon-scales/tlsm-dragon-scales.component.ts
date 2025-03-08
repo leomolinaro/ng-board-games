@@ -1,12 +1,23 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from "@angular/core";
-import { FormArray, FormControl, FormGroup, Validators } from "@angular/forms";
-import { MatSidenav } from "@angular/material/sidenav";
+import { FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatSidenav, MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
 import {
   AskTokenResolver,
   CompleteTokenResolver,
 } from "./services/tlsm-draw.service";
 import { TlsmMessageService } from "./services/tlsm-message.service";
 import { TlsmStore } from "./tlsm-store";
+import { NgIf, NgFor, NgStyle, AsyncPipe } from "@angular/common";
+import { MatMiniFabButton, MatButton, MatIconButton, MatFabButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatInput } from "@angular/material/input";
+import { MatToolbar } from "@angular/material/toolbar";
+import { TlsmDragonCardComponent } from "./tlsm-dragon-card/tlsm-dragon-card.component";
+import { MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardActions } from "@angular/material/card";
+import { MatList, MatListItem } from "@angular/material/list";
+import { MatLine } from "@angular/material/core";
+import { MatGridList, MatGridTile } from "@angular/material/grid-list";
 
 @Component ({
   selector: "tlsm-dragon-scales",
@@ -14,7 +25,7 @@ import { TlsmStore } from "./tlsm-store";
   styleUrls: ["./tlsm-dragon-scales.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TlsmStore],
-  standalone: false
+  imports: [MatSidenavContainer, MatSidenav, NgIf, FormsModule, ReactiveFormsModule, MatMiniFabButton, MatIcon, NgFor, MatFormField, MatInput, MatButton, MatIconButton, MatSuffix, MatSidenavContent, NgStyle, MatToolbar, TlsmDragonCardComponent, MatCard, MatCardHeader, MatCardTitle, MatList, MatListItem, MatLine, MatCardContent, MatGridList, MatGridTile, MatCardActions, MatFabButton, AsyncPipe]
 })
 export class TlsmDragonScalesComponent {
   constructor (private store: TlsmStore, messager: TlsmMessageService) {

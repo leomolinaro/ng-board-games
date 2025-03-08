@@ -7,13 +7,14 @@ import {
   Output,
 } from "@angular/core";
 import { BaronyResourceType } from "../barony-models";
+import { NgFor } from "@angular/common";
 
 @Component ({
   selector: "barony-resources-selector",
   templateUrl: "./barony-resources-selector.component.html",
   styleUrls: ["./barony-resources-selector.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgFor]
 })
 export class BaronyResourcesSelectorComponent implements OnChanges {
   constructor () {}

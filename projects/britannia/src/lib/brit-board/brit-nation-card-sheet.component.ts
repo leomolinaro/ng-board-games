@@ -13,6 +13,9 @@ import { BritAssetsService } from "../brit-assets.service";
 import { BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritNationState } from "../brit-game-state.models";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { NgFor } from "@angular/common";
 
 interface BritUnitNode {
   imageSource: string;
@@ -78,7 +81,7 @@ interface BritUnitNode {
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [MatIconButton, MatIcon, NgFor]
 })
 export class BritNationCardSheetComponent implements OnInit {
   constructor (

@@ -14,6 +14,7 @@ import {
   BaronyPawnType,
   BaronyPlayer,
 } from "../barony-models";
+import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
 
 interface BaronyLogStringFragment {
   type: "string";
@@ -88,7 +89,7 @@ type BaronyLogFragment =
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
 })
 export class BaronyLogComponent implements OnChanges {
   constructor (private game: BaronyGameStore) {}

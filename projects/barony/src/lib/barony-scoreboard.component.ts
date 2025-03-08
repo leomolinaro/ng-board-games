@@ -6,6 +6,8 @@ import {
 } from "@angular/core";
 import { SimpleChanges, objectUtil } from "@leobg/commons/utils";
 import { BaronyColor, BaronyPlayer } from "./barony-models";
+import { BgSvgComponent } from "../../../commons/src/lib/game/svg/bg-map-zoom.directive";
+import { NgFor } from "@angular/common";
 
 interface BaronyCounterNode {
   color: BaronyColor;
@@ -45,7 +47,7 @@ interface BaronyCounterNode {
     </svg>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [BgSvgComponent, NgFor]
 })
 export class BaronyScoreboardComponent implements OnChanges {
   constructor () {}

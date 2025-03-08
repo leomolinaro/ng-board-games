@@ -8,6 +8,11 @@ import { Router } from "@angular/router";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { switchMap } from "rxjs/operators";
 import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
+import { NgIf, AsyncPipe } from "@angular/common";
+import { MatIconButton, MatButton } from "@angular/material/button";
+import { MatMenuTrigger, MatMenu, MatMenuItem } from "@angular/material/menu";
+import { MatIcon } from "@angular/material/icon";
+import { MatDivider } from "@angular/material/divider";
 
 @Component ({
   selector: "bg-account-button",
@@ -62,7 +67,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgIf, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatDivider, MatMenuItem, MatButton, AsyncPipe]
 })
 @UntilDestroy
 export class BgAccountButtonComponent implements OnInit, OnDestroy {

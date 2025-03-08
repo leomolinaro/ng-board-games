@@ -11,13 +11,26 @@ import { map, tap } from "rxjs/operators";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
 import { AgotDraftService } from "./agot-draft.service";
+import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
+import { MatSidenavContainer, MatSidenav, MatSidenavContent } from "@angular/material/sidenav";
+import { MatToolbar } from "@angular/material/toolbar";
+import { NgIf, NgFor, AsyncPipe } from "@angular/common";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelActionRow, MatExpansionPanelHeader, MatExpansionPanelTitle } from "@angular/material/expansion";
+import { MatSlider, MatSliderThumb } from "@angular/material/slider";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { FormsModule } from "@angular/forms";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
+import { MatSelectionList, MatListOption } from "@angular/material/list";
+import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
 
 @Component ({
   selector: "agot-draft",
   templateUrl: "./agot-draft.component.html",
   styleUrls: ["./agot-draft.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgLetDirective, MatSidenavContainer, MatSidenav, MatToolbar, NgIf, MatProgressBar, MatAccordion, MatExpansionPanel, MatSlider, MatSliderThumb, MatCheckbox, FormsModule, MatExpansionPanelActionRow, MatButton, MatExpansionPanelHeader, MatExpansionPanelTitle, MatIcon, MatSelectionList, NgFor, MatListOption, MatSidenavContent, MatIconButton, AgotCardGridComponent, AsyncPipe]
 })
 @UntilDestroy
 export class AgotDraftComponent implements OnInit, OnDestroy {

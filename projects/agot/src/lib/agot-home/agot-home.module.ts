@@ -7,11 +7,11 @@ import { AgotHomeComponent } from "./agot-home.component";
 const routes: Routes = [{ path: "", component: AgotHomeComponent }];
 
 @NgModule ({
-  declarations: [AgotHomeComponent],
   imports: [
     CommonModule,
     RouterModule.forChild (routes),
     MatToolbarModule,
+    AgotHomeComponent,
   ],
 })
 export class AgotHomeModule {}

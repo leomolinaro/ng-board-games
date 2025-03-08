@@ -17,8 +17,7 @@ const components = [
 ];
 
 @NgModule ({
-  declarations: [...components],
   exports: [...components],
-  imports: [CommonModule],
+  imports: [CommonModule, ...components],
 })
 export class BgFormModule {}

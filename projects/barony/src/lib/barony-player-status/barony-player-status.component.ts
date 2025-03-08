@@ -16,6 +16,7 @@ import {
   BaronyPlayer,
   BaronyResourceType,
 } from "../barony-models";
+import { NgClass, NgFor } from "@angular/common";
 
 interface BaronyPawnNode {
   source: string;
@@ -36,7 +37,7 @@ interface BaronyResourceNode {
   templateUrl: "./barony-player-status.component.html",
   styleUrls: ["./barony-player-status.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: false
+  imports: [NgClass, NgFor]
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
 
