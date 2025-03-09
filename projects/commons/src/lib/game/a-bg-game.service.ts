@@ -4,18 +4,16 @@ import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 interface ABgPlayer<Id extends string> {
   id: Id;
   name: string;
+  isRemote: boolean;
+  isLocal: boolean;
 }
 
 export interface BgAiPlayer<Id extends string> extends ABgPlayer<Id> {
   isAi: true;
-  isRemote: false;
-  isLocal: false;
 }
 
 export interface BgRealPlayer<Id extends string> extends ABgPlayer<Id> {
   isAi: false;
-  isRemote: boolean;
-  isLocal: boolean;
   controller: BgUser;
 }
 
@@ -127,7 +125,6 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 
   private getLocalStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
     return defer (() => {
-      this.resetUi (playerId);
       const playerService = this.getPlayerService (playerId);
       if (playerService) {
         return race (
@@ -143,11 +140,14 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 
   private getStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
     if (this.isRemotePlayer (playerId)) {
+      this.resetUi (playerId);
       return this.getRemoteStory$<R> (time, playerId);
     } else {
+      this.resetUi (playerId);
       return this.getLocalStoryWrap$ (time, playerId, task$).pipe (
         expand (storyDoc => {
           if (storyDoc) { return EMPTY; }
+          this.resetUi (playerId);
           return this.getLocalStoryWrap$ (time, playerId, task$);
         }),
         last (),

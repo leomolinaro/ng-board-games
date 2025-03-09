@@ -19,8 +19,8 @@ export interface ABaronyPlayer {
 
 interface BaronyAiPlayer extends ABaronyPlayer, BgAiPlayer<BaronyColor> {
   isAi: true;
-  isRemote: false;
-  isLocal: false;
+  isRemote: boolean;
+  isLocal: boolean;
 }
 
 interface BaronyRealPlayer extends ABaronyPlayer, BgRealPlayer<BaronyColor> {

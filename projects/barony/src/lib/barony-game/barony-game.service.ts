@@ -199,7 +199,7 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
         if (game && baronyMap) {
           const user = this.auth.getUser ();
           this.gameStore.setInitialState (
-            players.map ((p) => this.playerDocToPlayerInit (p, user)),
+            players.map ((p) => this.playerDocToPlayerInit (p, user, game.owner.id === user.id)),
             baronyMap.lands.map ((l) => {
               const x = l.x;
               const y = l.y;
@@ -223,14 +223,15 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
 
   private playerDocToPlayerInit (
     playerDoc: BaronyPlayerDoc,
-    user: BgUser
+    user: BgUser,
+    isOwner: boolean
   ): BaronyPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit (playerDoc),
         isAi: true,
-        isLocal: false,
-        isRemote: false,
+        isLocal: isOwner,
+        isRemote: !isOwner,
       };
     } else {
       return {
