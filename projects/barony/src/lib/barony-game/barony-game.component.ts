@@ -1,3 +1,4 @@
+import { AsyncPipe } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,8 +6,9 @@ import {
   OnInit,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
-import { tap } from "rxjs/operators";
+import { UntilDestroy } from "@leobg/commons/utils";
+import { firstValueFrom } from "rxjs";
+import { BaronyBoardComponent } from "../barony-board/barony-board.component";
 import {
   BaronyAction,
   BaronyBuilding,
@@ -14,14 +16,11 @@ import {
   BaronyPlayer,
   BaronyResourceType,
 } from "../barony-models";
-import { BaronyStoryDoc } from "../barony-remote.service";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyGameStore } from "./barony-game.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
 import { BaronyPlayerLocalService } from "./barony-player-local.service";
 import { BaronyUiStore } from "./barony-ui.store";
-import { BaronyBoardComponent } from "../barony-board/barony-board.component";
-import { AsyncPipe } from "@angular/common";
 
 @Component ({
   selector: "barony-game",
@@ -39,6 +38,7 @@ import { AsyncPipe } from "@angular/common";
 })
 @UntilDestroy
 export class BaronyGameComponent implements OnInit, OnDestroy {
+  
   constructor (
     private game: BaronyGameStore,
     private ui: BaronyUiStore,
@@ -64,16 +64,10 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
   canCancel$ = this.ui.selectCanCancel$ ();
   maxNumberOfKnights$ = this.ui.selectMaxNumberOfKnights$ ();
 
-  @SingleEvent ()
-  ngOnInit () {
-    return this.gameService.loadGame$ (this.gameId)
-      .pipe (tap ((stories) => this.listenToGame (stories)));
+  async ngOnInit () {
+    const stories = await firstValueFrom (this.gameService.loadGame$ (this.gameId));
+    await this.gameService.game (stories);
   } // ngOnInit
-
-  @ChangeListener ()
-  private listenToGame (stories: BaronyStoryDoc[]) {
-    return this.gameService.game$ (stories);
-  } // listenToGame
 
   ngOnDestroy () {} // ngOnDestroy
 
