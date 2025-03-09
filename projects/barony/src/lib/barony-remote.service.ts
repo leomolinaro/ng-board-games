@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgStoryDoc, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { BaronyColor, BaronyLandType, BaronyStory } from "./barony-models";
@@ -42,7 +42,8 @@ export type BaronyStoryDoc = BgStoryDoc<BaronyColor, BaronyStory>;
   providedIn: "root",
 })
 export class BaronyRemoteService {
-  constructor (private cloud: BgCloudService) {}
+  
+  private cloud = inject (BgCloudService);
 
   private games () { return this.cloud.collection<BaronyGameDoc> ("barony-games"); }
   getGame$ (gameId: string) { return this.cloud.get$ (gameId, this.games ()); }

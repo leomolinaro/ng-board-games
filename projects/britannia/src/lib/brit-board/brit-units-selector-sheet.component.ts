@@ -1,12 +1,7 @@
+import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import {
-  ChangeDetectionStrategy,
-  Component,
-  Inject,
-  OnInit,
-} from "@angular/core";
-import {
-  MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
+  MatBottomSheetRef,
 } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritAreaUnit } from "../brit-game-state.models";
@@ -35,14 +30,10 @@ export interface BritUnitsSelectorSheetInput {
   imports: [BritUnitsSelectorComponent]
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
-  constructor (
-    private bottomSheetRef: MatBottomSheetRef<
-    BritUnitsSelectorSheetComponent,
-    number
-    >,
-    @Inject (MAT_BOTTOM_SHEET_DATA) public data: BritUnitsSelectorSheetInput,
-    private assetsService: BritAssetsService
-  ) {}
+  
+  private bottomSheetRef = inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>> (MatBottomSheetRef);
+  data = inject<BritUnitsSelectorSheetInput> (MAT_BOTTOM_SHEET_DATA);
+  private assetsService = inject (BritAssetsService);
 
   imageSource!: string;
   quantity!: number;

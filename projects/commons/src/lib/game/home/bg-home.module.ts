@@ -49,6 +49,6 @@ const components = [BgHomeComponent];
     BgHomeRoomDialogComponent,
     BgHomePlayerFormComponent,
     BgHomeArcheoGameFormComponent,
-],
+  ],
 })
 export class BgHomeModule {}

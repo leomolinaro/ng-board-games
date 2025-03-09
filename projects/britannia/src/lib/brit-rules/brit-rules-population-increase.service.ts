@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BritArea, BritAreaId, BritLandArea, BritLandAreaId, BritNationId, BritPopulation, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritGameState } from "../brit-game-state.models";
@@ -13,8 +13,8 @@ export interface BritPopulationIncreaseData {
   providedIn: "root",
 })
 export class BritRulesPopulationIncreaseService {
-
-  constructor (private components: BritComponentsService) {}
+  
+  private components = inject (BritComponentsService);
 
   private NON_DIFFICULT_TERRAIN_STACKING_LIMIT = 3;
   private DIFFICULT_TERRAIN_STACKING_LIMIT = 2;

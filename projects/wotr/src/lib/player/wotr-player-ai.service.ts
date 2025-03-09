@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable ()
 export class WotrPlayerAiService implements WotrPlayerService {
-
-  constructor (private game: WotrGameStore) {}
+  
+  private game = inject (WotrGameStore);
 
   async firstPhase (): Promise<never> {
     throw new Error ("Method not implemented.");

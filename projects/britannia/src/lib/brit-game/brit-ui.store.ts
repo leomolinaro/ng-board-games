@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgStore } from "@leobg/commons/utils";
 import { Observable, Subject } from "rxjs";
 import { first, skip } from "rxjs/operators";
@@ -26,7 +26,10 @@ interface BritUiState {
 
 @Injectable ()
 export class BritUiStore extends BgStore<BritUiState> {
-  constructor (private game: BritGameStore) {
+  
+  private game = inject (BritGameStore);
+
+  constructor () {
     super (
       {
         currentPlayer: null,

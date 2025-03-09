@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
@@ -12,7 +12,8 @@ import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
   providedIn: "root",
 })
 export class BritRulesMovementService {
-  constructor (private components: BritComponentsService) {}
+  
+  private components = inject (BritComponentsService);
 
   getValidUnitsForMovement (
     nationId: BritNationId,

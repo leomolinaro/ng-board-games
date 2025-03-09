@@ -1,18 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  TrackByFunction,
-  ViewChild,
-  isDevMode, OnInit,
-} from "@angular/core";
+import { NgClass, NgFor, NgIf } from "@angular/common";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, TrackByFunction, ViewChild, inject, isDevMode } from "@angular/core";
+import { MatTooltip } from "@angular/material/tooltip";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
+import { BgMapZoomDirective as BgMapZoomDirective_1, BgSvgComponent as BgSvgComponent_1 } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
+import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
+import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
 import { BritAssetsService } from "../brit-assets.service";
 import {
   BritArea,
@@ -32,11 +25,6 @@ import {
 } from "../brit-game-state.models";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
-import { NgIf, NgFor, NgClass } from "@angular/common";
-import { BgSvgComponent as BgSvgComponent_1, BgMapZoomDirective as BgMapZoomDirective_1 } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
-import { MatTooltip } from "@angular/material/tooltip";
-import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
-import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
 
 interface BritAreaNode {
   id: BritAreaId;
@@ -108,14 +96,12 @@ const GRID_STEP = 20;
   imports: [NgIf, BgSvgComponent_1, BgMapZoomDirective_1, NgFor, NgClass, MatTooltip, NgLetDirective, BgTransformPipe]
 })
 export class BritMapComponent implements OnChanges, OnInit {
-
-  constructor (
-    private mapService: BritMapService,
-    private slotsGeneratorService: BritMapSlotsGeneratorService,
-    private assetsService: BritAssetsService,
-    private components: BritComponentsService,
-    private cd: ChangeDetectorRef
-  ) { }
+  
+  private mapService = inject (BritMapService);
+  private slotsGeneratorService = inject (BritMapSlotsGeneratorService);
+  private assetsService = inject (BritAssetsService);
+  private components = inject (BritComponentsService);
+  private cd = inject (ChangeDetectorRef);
 
   @Input () areaStates!: Record<BritAreaId, BritAreaState>;
   @Input () nationStates!: Record<BritNationId, BritNationState>;

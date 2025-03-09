@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Observable, of, race } from "rxjs";
 import { map, mapTo, switchMap } from "rxjs/operators";
 import {
@@ -24,7 +24,9 @@ import { BaronyUiStore } from "./barony-ui.store";
 
 @Injectable ()
 export class BaronyPlayerLocalService {
-  constructor (private game: BaronyGameStore, private ui: BaronyUiStore) {}
+  
+  private game = inject (BaronyGameStore);
+  private ui = inject (BaronyUiStore);
 
   setupPlacement$ (playerId: BaronyColor): Observable<BaronySetupPlacement> {
     return this.chooseLandForSetupPlacement$ (playerId).pipe (

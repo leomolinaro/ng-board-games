@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { forN } from "@leobg/commons/utils";
 import { EMPTY, Observable, expand, last, map, mapTo, race, switchMap } from "rxjs";
 import { BritAreaId, BritColor, BritLandAreaId, BritNationId } from "../brit-components.models";
@@ -12,13 +12,11 @@ import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
 export class BritPlayerLocalService implements BritPlayerService {
-
-  constructor (
-    private game: BritGameStore,
-    private ui: BritUiStore,
-    private rules: BritRulesService,
-    private components: BritComponentsService
-  ) {}
+  
+  private game = inject (BritGameStore);
+  private ui = inject (BritUiStore);
+  private rules = inject (BritRulesService);
+  private components = inject (BritComponentsService);
 
   armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritArmyPlacement> {
     const placement: BritArmyPlacement = {

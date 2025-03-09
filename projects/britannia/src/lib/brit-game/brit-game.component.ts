@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AsyncPipe } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
@@ -13,7 +14,6 @@ import { BritGameStore } from "./brit-game.store";
 import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
 import { BritUiStore } from "./brit-ui.store";
-import { AsyncPipe } from "@angular/common";
 
 @Component ({
   selector: "brit-game",
@@ -65,15 +65,15 @@ import { AsyncPipe } from "@angular/common";
 })
 @UntilDestroy
 export class BritGameComponent implements OnInit, OnDestroy {
-  constructor (
-    private components: BritComponentsService,
-    private game: BritGameStore,
-    private ui: BritUiStore,
-    private remote: BritRemoteService,
-    private route: ActivatedRoute,
-    private authService: BgAuthService,
-    private gameService: BritGameService
-  ) {}
+  
+  private components = inject (BritComponentsService);
+  private game = inject (BritGameStore);
+  private ui = inject (BritUiStore);
+  private remote = inject (BritRemoteService);
+  private route = inject (ActivatedRoute);
+  private authService = inject (BgAuthService);
+  private gameService = inject (BritGameService);
+
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
 

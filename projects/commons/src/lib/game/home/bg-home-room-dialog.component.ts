@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, TrackByFunction } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from "@angular/material/dialog";
+import { CdkScrollable } from "@angular/cdk/scrolling";
+import { AsyncPipe, NgClass, NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, TrackByFunction, inject } from "@angular/core";
+import { MatButton } from "@angular/material/button";
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from "@angular/material/dialog";
 import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { filter, map, tap } from "rxjs/operators";
-import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
-import { CdkScrollable } from "@angular/cdk/scrolling";
-import { NgFor, NgClass, AsyncPipe } from "@angular/common";
-import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
-import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
-import { MatButton } from "@angular/material/button";
-import { BgIfUserPipe } from "../../authentication/bg-if-user.pipe";
 import { BgTransformPipe } from "../../../../utils/src/lib/bg-transform.pipe";
+import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
+import { BgIfUserPipe } from "../../authentication/bg-if-user.pipe";
+import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
+import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
 
 export interface BgRoomDialogInput<Pid extends string> {
   protoGame: BgProtoGame;
@@ -68,12 +68,10 @@ export interface BgRoomDialogOutput {
 })
 @UntilDestroy
 export class BgHomeRoomDialogComponent<Pid extends string> implements OnInit, OnDestroy {
-
-  constructor (
-    private dialogRef: MatDialogRef<BgHomeRoomDialogComponent<Pid>, BgRoomDialogOutput>,
-    @Inject (MAT_DIALOG_DATA) private input: BgRoomDialogInput<Pid>,
-    private protoGameService: BgProtoGameService
-  ) {}
+  
+  private dialogRef = inject<MatDialogRef<BgHomeRoomDialogComponent<Pid>, BgRoomDialogOutput>> (MatDialogRef);
+  private input = inject<BgRoomDialogInput<Pid>> (MAT_DIALOG_DATA);
+  private protoGameService = inject (BgProtoGameService);
 
   onlineGame = this.input.protoGame.online;
   game = this.input.protoGame;

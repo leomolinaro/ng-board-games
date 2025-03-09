@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   CanActivate,
@@ -10,7 +10,9 @@ import { BgAuthService } from "./bg-auth.service";
 
 @Injectable ({ providedIn: "root" })
 export class BgRootGuard implements CanActivate {
-  constructor (private authService: BgAuthService, public router: Router) {}
+  
+  private authService = inject (BgAuthService);
+  router = inject (Router);
 
   canActivate (
     route: ActivatedRouteSnapshot,

@@ -1,18 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { AsyncPipe, NgIf } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatDivider } from "@angular/material/divider";
+import { MatIcon } from "@angular/material/icon";
+import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { Router } from "@angular/router";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { switchMap } from "rxjs/operators";
 import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
-import { NgIf, AsyncPipe } from "@angular/common";
-import { MatIconButton, MatButton } from "@angular/material/button";
-import { MatMenuTrigger, MatMenu, MatMenuItem } from "@angular/material/menu";
-import { MatIcon } from "@angular/material/icon";
-import { MatDivider } from "@angular/material/divider";
 
 @Component ({
   selector: "bg-account-button",
@@ -71,7 +66,9 @@ import { MatDivider } from "@angular/material/divider";
 })
 @UntilDestroy
 export class BgAccountButtonComponent implements OnInit, OnDestroy {
-  constructor (private authService: BgAuthService, private router: Router) {}
+  
+  private authService = inject (BgAuthService);
+  private router = inject (Router);
 
   user$ = this.authService.getUser$ ();
 

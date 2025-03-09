@@ -1,16 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { MatToolbar } from "@angular/material/toolbar";
+import { RouterLink } from "@angular/router";
 import { BgAuthService } from "@leobg/commons";
 import { SingleEvent, UntilDestroy } from "@leobg/commons/utils";
-import { AppGamesService } from "../app-games.service";
-import { MatToolbar } from "@angular/material/toolbar";
 import { BgAccountButtonComponent } from "../../../../commons/src/lib/authentication/bg-account-button.component";
-import { NgFor } from "@angular/common";
-import { RouterLink } from "@angular/router";
+import { AppGamesService } from "../app-games.service";
 
 @Component ({
   selector: "app-home-page",
@@ -60,11 +55,9 @@ import { RouterLink } from "@angular/router";
 })
 @UntilDestroy
 export class AppHomePageComponent implements OnInit, OnDestroy {
-  
-  constructor (
-    private authService: BgAuthService,
-    private gamesService: AppGamesService
-  ) {}
+
+  private authService = inject (BgAuthService);
+  private gamesService = inject (AppGamesService);
 
   games = this.gamesService.getGames ();
 

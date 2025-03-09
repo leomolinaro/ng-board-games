@@ -1,17 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { AsyncPipe } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { MatCell, MatCellDef, MatColumnDef, MatRow, MatRowDef, MatTable } from "@angular/material/table";
 import { BgTransformFn, Loading, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
+import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotFactionCode, agotAgendaCode as agenda } from "../agot.models";
-import { MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow } from "@angular/material/table";
-import { AsyncPipe } from "@angular/common";
-import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
 
 interface AgotFcDeck {
   name: string;
@@ -29,7 +24,8 @@ interface AgotFcDeck {
 })
 @UntilDestroy
 export class AgotFcDecksComponent implements OnInit, OnDestroy {
-  constructor (private data: AgotDataService) {}
+
+  private data = inject (AgotDataService);
 
   deckColumns: string[] = ["faction", "name"];
   decks: AgotFcDeck[] = [

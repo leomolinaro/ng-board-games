@@ -1,13 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Directive,
-  ElementRef,
-  HostBinding,
-  HostListener,
-  Input,
-  OnInit,
-} from "@angular/core";
+import { ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, Input, OnInit, inject } from "@angular/core";
 
 const MOVE_STEP = 30;
 const ZOOM_STEP = 0.2;
@@ -26,7 +17,8 @@ interface BgMapZoomRefreshParams {
   template: "<ng-content></ng-content>"
 })
 export class BgSvgComponent {
-  constructor (public elementRef: ElementRef<SVGSVGElement>) {}
+  elementRef = inject<ElementRef<SVGSVGElement>> (ElementRef);
+
 
   createSVGPoint () {
     return this.elementRef.nativeElement.createSVGPoint ();
@@ -38,12 +30,10 @@ export class BgSvgComponent {
 
 @Directive ({ selector: "[bgMapZoom]" })
 export class BgMapZoomDirective implements OnInit {
-
-  constructor (
-    private bgSvg: BgSvgComponent,
-    private cd: ChangeDetectorRef,
-    private elementRef: ElementRef<SVGGElement>
-  ) {}
+  
+  private bgSvg = inject (BgSvgComponent);
+  private cd = inject (ChangeDetectorRef);
+  private elementRef = inject<ElementRef<SVGGElement>> (ElementRef);
 
   @Input ("bgMapZoom") config!: {
     translateX?: number;

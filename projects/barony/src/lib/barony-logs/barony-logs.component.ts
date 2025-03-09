@@ -1,13 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-} from "@angular/core";
+import { NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyLog } from "../barony-models";
-import { NgFor } from "@angular/common";
 import { BaronyLogComponent } from "./barony-log.component";
 
 @Component ({
@@ -28,8 +22,8 @@ import { BaronyLogComponent } from "./barony-log.component";
   imports: [NgFor, BaronyLogComponent]
 })
 export class BaronyLogsComponent implements OnChanges {
-
-  constructor (private elementRef: ElementRef) {}
+  
+  private elementRef = inject (ElementRef);
 
   @Input () logs!: BaronyLog[];
 

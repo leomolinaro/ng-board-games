@@ -1,29 +1,24 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { AsyncPipe, NgFor, NgIf } from "@angular/common";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatCheckbox } from "@angular/material/checkbox";
+import { MatAccordion, MatExpansionPanel, MatExpansionPanelActionRow, MatExpansionPanelHeader, MatExpansionPanelTitle } from "@angular/material/expansion";
+import { MatIcon } from "@angular/material/icon";
+import { MatListOption, MatSelectionList } from "@angular/material/list";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import { MatSidenav, MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
+import { MatSlider, MatSliderThumb } from "@angular/material/slider";
+import { MatToolbar } from "@angular/material/toolbar";
 import { Loading, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
+import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
-import { AgotDraftService } from "./agot-draft.service";
-import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
-import { MatSidenavContainer, MatSidenav, MatSidenavContent } from "@angular/material/sidenav";
-import { MatToolbar } from "@angular/material/toolbar";
-import { NgIf, NgFor, AsyncPipe } from "@angular/common";
-import { MatProgressBar } from "@angular/material/progress-bar";
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelActionRow, MatExpansionPanelHeader, MatExpansionPanelTitle } from "@angular/material/expansion";
-import { MatSlider, MatSliderThumb } from "@angular/material/slider";
-import { MatCheckbox } from "@angular/material/checkbox";
-import { FormsModule } from "@angular/forms";
-import { MatButton, MatIconButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { MatSelectionList, MatListOption } from "@angular/material/list";
 import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
+import { AgotDraftService } from "./agot-draft.service";
 
 @Component ({
   selector: "agot-draft",
@@ -34,11 +29,9 @@ import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component
 })
 @UntilDestroy
 export class AgotDraftComponent implements OnInit, OnDestroy {
-  constructor (
-    private breakpointObserver: BreakpointObserver,
-    public data: AgotDataService,
-    public draft: AgotDraftService
-  ) {}
+  private breakpointObserver = inject (BreakpointObserver);
+  data = inject (AgotDataService);
+  draft = inject (AgotDraftService);
 
   nCards = 30;
   duplicates = false;

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, BgUser } from "@leobg/commons";
 import { Observable, firstValueFrom, forkJoin } from "rxjs";
 import { map } from "rxjs/operators";
@@ -43,14 +43,12 @@ interface BaronyTurnOutput {
 @Injectable ()
 export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer, BaronyStory, ABaronyPlayerService> {
   
-  constructor (
-    private gameStore: BaronyGameStore,
-    protected aiPlayer: BaronyPlayerAiService,
-    protected localPlayer: BaronyPlayerLocalService,
-    protected auth: BgAuthService,
-    private ui: BaronyUiStore,
-    private remote: BaronyRemoteService
-  ) { super (); }
+  private gameStore = inject (BaronyGameStore);
+  protected aiPlayer = inject (BaronyPlayerAiService);
+  protected localPlayer = inject (BaronyPlayerLocalService);
+  protected auth = inject (BgAuthService);
+  private ui = inject (BaronyUiStore);
+  private remote = inject (BaronyRemoteService);
 
   protected storyDocs: BaronyStoryDoc[] | null = null;
 

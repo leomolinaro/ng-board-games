@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { AgotUtilityService } from "../agot-services/agot-utility.service";
-import { MatToolbar } from "@angular/material/toolbar";
 import { NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { MatToolbar } from "@angular/material/toolbar";
 import { RouterLink } from "@angular/router";
+import { AgotUtilityService } from "../agot-services/agot-utility.service";
 
 @Component ({
   selector: "agot-home",
@@ -12,7 +12,8 @@ import { RouterLink } from "@angular/router";
   imports: [MatToolbar, NgFor, RouterLink]
 })
 export class AgotHomeComponent {
-  constructor (private agotUtilityService: AgotUtilityService) {}
+  
+  private agotUtilityService = inject (AgotUtilityService);
 
   utilities = this.agotUtilityService.getUtilities ();
 } // AgotHomeComponent

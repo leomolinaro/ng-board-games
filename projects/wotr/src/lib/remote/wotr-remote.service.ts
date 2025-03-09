@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService } from "@leobg/commons";
 import { WotrStoryDoc } from "../game/wotr-story.models";
 import { WotrGameDoc, WotrPlayerDoc } from "./wotr-remote.models";
@@ -7,8 +7,8 @@ import { WotrGameDoc, WotrPlayerDoc } from "./wotr-remote.models";
   providedIn: "root"
 })
 export class WotrRemoteService {
-
-  constructor (private cloud: BgCloudService) {}
+  
+  private cloud = inject (BgCloudService);
 
   private games () { return this.cloud.collection<WotrGameDoc> ("wotr-games"); }
   async getGame (gameId: string) { return this.cloud.get (gameId, this.games ()); }

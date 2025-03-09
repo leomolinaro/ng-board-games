@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, forkJoin, Observable } from "rxjs";
 import { map, mapTo, tap } from "rxjs/operators";
 import {
@@ -14,7 +14,8 @@ import { AgotHttpService } from "./agot-http.service";
   providedIn: "root",
 })
 export class AgotDataService {
-  constructor (private http: AgotHttpService) {}
+  
+  private http = inject (AgotHttpService);
 
   private cards: AgotCard[] | null = null;
   private cardMap: Record<string, AgotCard> = {};

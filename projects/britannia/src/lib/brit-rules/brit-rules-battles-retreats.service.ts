@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BritLandAreaId, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritGameState } from "../brit-game-state.models";
@@ -7,7 +7,8 @@ import { BritGameState } from "../brit-game-state.models";
   providedIn: "root",
 })
 export class BritRulesBattlesRetreatsService {
-  constructor (private components: BritComponentsService) {}
+  
+  private components = inject (BritComponentsService);
 
   hasBattlesToResolve (nationId: BritNationId, state: BritGameState) {
     for (const landId of this.components.LAND_AREA_IDS) {

@@ -1,13 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-} from "@angular/core";
+import { NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritLog } from "../brit-game-state.models";
-import { NgFor } from "@angular/common";
 import { BritLogComponent } from "./brit-log.component";
 
 @Component ({
@@ -28,7 +22,8 @@ import { BritLogComponent } from "./brit-log.component";
   imports: [NgFor, BritLogComponent]
 })
 export class BritLogsComponent implements OnChanges {
-  constructor (private elementRef: ElementRef) {}
+  
+  private elementRef = inject (ElementRef);
 
   @Input () logs!: BritLog[];
 

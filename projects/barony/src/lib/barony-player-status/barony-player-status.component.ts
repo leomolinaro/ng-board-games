@@ -1,12 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  TrackByFunction,
-} from "@angular/core";
+import { NgClass, NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction, inject } from "@angular/core";
 import { BgAuthService } from "@leobg/commons";
 import { BooleanInput, SimpleChanges } from "@leobg/commons/utils";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../barony-constants";
@@ -16,7 +9,6 @@ import {
   BaronyPlayer,
   BaronyResourceType,
 } from "../barony-models";
-import { NgClass, NgFor } from "@angular/common";
 
 interface BaronyPawnNode {
   source: string;
@@ -40,8 +32,8 @@ interface BaronyResourceNode {
   imports: [NgClass, NgFor]
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
-
-  constructor (private authService: BgAuthService) {}
+  
+  private authService = inject (BgAuthService);
 
   @Input () player!: BaronyPlayer;
   @Input () @BooleanInput () currentPlayer: boolean = false;

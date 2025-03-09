@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { AsyncPipe, NgFor, NgIf, NgStyle } from "@angular/common";
+import { Component, Input, OnInit, inject } from "@angular/core";
+import { MatCard, MatCardAvatar, MatCardHeader, MatCardTitle } from "@angular/material/card";
 import { Observable } from "rxjs";
-import { IDragon, TlsmDragonId, TlsmStore } from "../tlsm-store";
-import { NgIf, NgStyle, NgFor, AsyncPipe } from "@angular/common";
-import { MatCard, MatCardHeader, MatCardAvatar, MatCardTitle } from "@angular/material/card";
 import { BgTimesPipe } from "../../../../../commons/utils/src/lib/bg-times.pipe";
+import { IDragon, TlsmDragonId, TlsmStore } from "../tlsm-store";
 
 @Component ({
   selector: "tlsm-dragon-card",
@@ -12,7 +12,8 @@ import { BgTimesPipe } from "../../../../../commons/utils/src/lib/bg-times.pipe"
   imports: [NgIf, MatCard, MatCardHeader, MatCardAvatar, NgStyle, MatCardTitle, NgFor, AsyncPipe, BgTimesPipe]
 })
 export class TlsmDragonCardComponent implements OnInit {
-  constructor (private store: TlsmStore) {}
+  
+  private store = inject (TlsmStore);
 
   @Input () dragonId!: TlsmDragonId;
   dragon$!: Observable<IDragon>;

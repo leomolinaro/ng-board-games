@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Injectable, NgModule } from "@angular/core";
+import { Injectable, NgModule, inject } from "@angular/core";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
@@ -23,7 +23,8 @@ import { BritUnitsSelectorComponent } from "./brit-units-selector/brit-units-sel
 
 @Injectable ()
 export class BritAreaPathResolver implements Resolve<any> {
-  constructor (private mapService: BritMapService) {}
+  
+  private mapService = inject (BritMapService);
 
   resolve (): Observable<any> {
     return forkJoin ([

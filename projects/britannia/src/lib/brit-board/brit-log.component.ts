@@ -1,9 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-} from "@angular/core";
+import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
+import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import {
   BritArea,
@@ -18,7 +14,6 @@ import {
   BritLog,
   BritPlayer,
 } from "../brit-game-state.models";
-import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
 
 interface BritLogStringFragment {
   type: "string";
@@ -110,7 +105,8 @@ type BritLogFragment =
   imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
 })
 export class BritLogComponent implements OnChanges {
-  constructor (private components: BritComponentsService) {}
+  
+  private components = inject (BritComponentsService);
 
   @Input () log!: BritLog;
 

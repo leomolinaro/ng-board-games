@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs";
 import { BritColor, BritNationId } from "../brit-components.models";
 import { BritArmyMovements, BritArmyPlacement, BritBattleInitiation } from "../brit-story.models";
@@ -7,8 +7,8 @@ import { BritPlayerService } from "./brit-player.service";
 
 @Injectable ()
 export class BritPlayerAiService implements BritPlayerService {
-
-  constructor (private game: BritGameStore) {}
+  
+  private game = inject (BritGameStore);
 
   armyPlacement$ (nInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritArmyPlacement> {
     throw new Error ("Method not implemented.");

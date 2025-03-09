@@ -1,9 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-} from "@angular/core";
+import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
+import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyGameStore } from "../barony-game/barony-game.store";
 import {
@@ -14,7 +10,6 @@ import {
   BaronyPawnType,
   BaronyPlayer,
 } from "../barony-models";
-import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
 
 interface BaronyLogStringFragment {
   type: "string";
@@ -92,7 +87,8 @@ type BaronyLogFragment =
   imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
 })
 export class BaronyLogComponent implements OnChanges {
-  constructor (private game: BaronyGameStore) {}
+  
+  private game = inject (BaronyGameStore);
 
   @Input () log!: BaronyLog;
 

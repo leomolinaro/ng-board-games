@@ -1,13 +1,14 @@
-import { Component, Inject, Injectable } from "@angular/core";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogTitle, MatDialogContent, MatDialogActions, MatDialogClose } from "@angular/material/dialog";
-import { Observable } from "rxjs";
 import { CdkScrollable } from "@angular/cdk/scrolling";
 import { NgIf } from "@angular/common";
+import { Component, Injectable, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from "@angular/material/dialog";
+import { Observable } from "rxjs";
 
 @Injectable ()
 export class TlsmMessageService {
-  constructor (private dialog: MatDialog) {}
+  private dialog = inject (MatDialog);
+
 
   public alert (message: string, tokenSource: string) {
     this.dialog.open (TlsmMessageDialog, {
@@ -35,16 +36,20 @@ export class TlsmMessageService {
   imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, NgIf, MatButton, MatDialogClose]
 })
 export class TlsmMessageDialog {
+  
+  dialogRef = inject<MatDialogRef<TlsmMessageDialog>> (MatDialogRef);
+  data = inject (MAT_DIALOG_DATA);
+
   tokenSource: string;
   message: string;
   confirm: string;
 
-  constructor (
-    public dialogRef: MatDialogRef<TlsmMessageDialog>,
-    @Inject (MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor () {
+    const data = this.data;
+
     this.tokenSource = data.tokenSource;
     this.message = data.message;
     this.confirm = data.confirm;
   } // constructor
+  
 } // TlsmMessageDialog

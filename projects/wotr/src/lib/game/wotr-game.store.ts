@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
@@ -50,18 +50,18 @@ export class WotrGameStore extends signalStore (
     backupState: null
   })
 ) {
-  
-  constructor (
-    frontStore: WotrFrontStore,
-    regionStore: WotrRegionStore,
-    nationStore: WotrNationStore,
-    characterStore: WotrCharacterStore,
-    fellowshipStore: WotrFellowshipStore,
-    huntStore: WotrHuntStore,
-    logStore: WotrLogStore,
-    playerInfoStore: WotrPlayerInfoStore,
-    battleStore: WotrBattleStore
-  ) {
+
+  constructor () {
+    const frontStore = inject (WotrFrontStore);
+    const regionStore = inject (WotrRegionStore);
+    const nationStore = inject (WotrNationStore);
+    const characterStore = inject (WotrCharacterStore);
+    const fellowshipStore = inject (WotrFellowshipStore);
+    const huntStore = inject (WotrHuntStore);
+    const logStore = inject (WotrLogStore);
+    const playerInfoStore = inject (WotrPlayerInfoStore);
+    const battleStore = inject (WotrBattleStore);
+
     super ();
     playerInfoStore.update = (actionName, updater) => patchState (this, s => ({ ...s, players: updater (s.players) }));
     playerInfoStore.state = this.players;

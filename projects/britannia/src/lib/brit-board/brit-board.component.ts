@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from "@angular/core";
+import { NgClass, NgFor, NgIf } from "@angular/common";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction, inject } from "@angular/core";
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
+import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import { BritAreaLeader, BritAreaState, BritAreaUnit, BritLog, BritNationState, BritPlayer } from "../brit-game-state.models";
+import { BritMapComponent } from "../brit-map/brit-map.component";
+import { BritPlayerComponent } from "../brit-player/brit-player.component";
+import { BritActionsComponent } from "./brit-actions.component";
+import { BritLogsComponent } from "./brit-logs.component";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
 import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./brit-units-selector-sheet.component";
-import { BritMapComponent } from "../brit-map/brit-map.component";
-import { NgIf, NgFor, NgClass } from "@angular/common";
-import { BritActionsComponent } from "./brit-actions.component";
-import { BritPlayerComponent } from "../brit-player/brit-player.component";
-import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
-import { BritLogsComponent } from "./brit-logs.component";
 
 @Component ({
   selector: "brit-board",
@@ -21,7 +21,8 @@ import { BritLogsComponent } from "./brit-logs.component";
   imports: [BritMapComponent, NgIf, BritActionsComponent, NgFor, BritPlayerComponent, BgMapZoomButtonsComponent, BritLogsComponent, NgClass]
 })
 export class BritBoardComponent {
-  constructor (private bottomSheet: MatBottomSheet) {}
+  
+  private bottomSheet = inject (MatBottomSheet);
 
   @Input () areaStates!: Record<BritAreaId, BritAreaState>;
   @Input () nationStates!: Record<BritNationId, BritNationState>;

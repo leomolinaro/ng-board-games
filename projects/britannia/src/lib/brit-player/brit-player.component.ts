@@ -1,20 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  TrackByFunction,
-} from "@angular/core";
+import { NgClass, NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TrackByFunction, inject } from "@angular/core";
+import { MatTooltip } from "@angular/material/tooltip";
 import { BgAuthService } from "@leobg/commons";
 import { BooleanInput } from "@leobg/commons/utils";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritPlayer } from "../brit-game-state.models";
-import { NgClass, NgFor } from "@angular/common";
-import { MatTooltip } from "@angular/material/tooltip";
 
 // interface BritPawnNode {
 //   source: string;
@@ -45,11 +37,10 @@ interface BritNationNode {
   imports: [NgClass, NgFor, MatTooltip]
 })
 export class BritPlayerComponent implements OnInit {
-  constructor (
-    private authService: BgAuthService,
-    private assetsService: BritAssetsService,
-    private components: BritComponentsService
-  ) {}
+  
+  private authService = inject (BgAuthService);
+  private assetsService = inject (BritAssetsService);
+  private components = inject (BritComponentsService);
 
   @Input () player!: BritPlayer;
   @Input () @BooleanInput () currentPlayer: boolean = false;

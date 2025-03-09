@@ -1,16 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Directive,
-  EventEmitter,
-  Host,
-  HostBinding,
-  HostListener,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output
-} from "@angular/core";
+import { ChangeDetectorRef, Directive, EventEmitter, HostBinding, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, inject } from "@angular/core";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatRadioGroup } from "@angular/material/radio";
 import { MatSelect } from "@angular/material/select";
@@ -104,12 +92,10 @@ export class BgFormDirective<E> implements OnChanges {
 
 @Directive ({ selector: "input[bgField]" })
 export class BgInputFieldDirective<V, E>
-implements OnInit, OnDestroy, BgFieldDirective<V, E>
-{
-  constructor (
-    private form: BgFormDirective<E>,
-    private cd: ChangeDetectorRef
-  ) {}
+implements OnInit, OnDestroy, BgFieldDirective<V, E> {
+  
+  private form = inject<BgFormDirective<E>> (BgFormDirective);
+  private cd = inject (ChangeDetectorRef);
 
   @Input ("bgField") field: keyof E | "" = "";
   @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
@@ -153,12 +139,10 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 @Directive ({ selector: "mat-select[bgField]" })
 @UntilDestroy
 export class BgSelectFieldDirective<V, E>
-implements OnInit, OnDestroy, BgFieldDirective<V, E>
-{
-  constructor (
-    private form: BgFormDirective<E>,
-    @Host () private matSelect: MatSelect
-  ) {}
+implements OnInit, OnDestroy, BgFieldDirective<V, E> {
+  
+  private form = inject<BgFormDirective<E>> (BgFormDirective);
+  private matSelect = inject (MatSelect, { host: true });
 
   @Input ("bgField") field: keyof E | "" = "";
   @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
@@ -187,12 +171,10 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 @Directive ({ selector: "mat-radio-group[bgField]" })
 @UntilDestroy
 export class BgRadioFieldDirective<V, E>
-implements OnInit, OnDestroy, BgFieldDirective<V, E>
-{
-  constructor (
-    private form: BgFormDirective<E>,
-    @Host () private matRadioGroup: MatRadioGroup
-  ) {}
+implements OnInit, OnDestroy, BgFieldDirective<V, E> {
+  
+  private form = inject<BgFormDirective<E>> (BgFormDirective);
+  private matRadioGroup = inject (MatRadioGroup, { host: true });
 
   @Input ("bgField") field: keyof E | "" = "";
   @Input ("bgFieldConfig") config: BgFieldConfig<V, E> | null = null;
@@ -221,12 +203,10 @@ implements OnInit, OnDestroy, BgFieldDirective<V, E>
 @Directive ({ selector: "mat-checkbox[bgField]" })
 @UntilDestroy
 export class BgCheckboxFieldDirective<E>
-implements OnInit, OnDestroy, BgFieldDirective<boolean, E>
-{
-  constructor (
-    private form: BgFormDirective<E>,
-    @Host () private matCheckbox: MatCheckbox
-  ) {}
+implements OnInit, OnDestroy, BgFieldDirective<boolean, E> {
+  
+  private form = inject<BgFormDirective<E>> (BgFormDirective);
+  private matCheckbox = inject (MatCheckbox, { host: true });
 
   @Input ("bgField") field: keyof E | "" = "";
   @Input ("bgFieldConfig") config: BgFieldConfig<boolean, E> | null = null;

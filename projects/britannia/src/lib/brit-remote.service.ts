@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgCloudCollectionQuery, BgCloudService, BgStoryDoc, BgUser } from "@leobg/commons";
 import { Observable } from "rxjs";
 import { BritColor } from "./brit-components.models";
@@ -35,8 +35,8 @@ export type BritStoryDoc = BgStoryDoc<BritColor, BritStory>;
   providedIn: "root"
 })
 export class BritRemoteService {
-
-  constructor (private cloud: BgCloudService) {}
+  
+  private cloud = inject (BgCloudService);
 
   private games () { return this.cloud.collection<BritGameDoc> ("brit-games"); }
   getGame$ (gameId: string) { return this.cloud.get$ (gameId, this.games ()); }

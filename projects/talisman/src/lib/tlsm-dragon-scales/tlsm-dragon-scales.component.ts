@@ -1,23 +1,23 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from "@angular/core";
-import { FormArray, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { AsyncPipe, NgFor, NgIf, NgStyle } from "@angular/common";
+import { ChangeDetectionStrategy, Component, ViewChild, inject } from "@angular/core";
+import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { MatButton, MatFabButton, MatIconButton, MatMiniFabButton } from "@angular/material/button";
+import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from "@angular/material/card";
+import { MatLine } from "@angular/material/core";
+import { MatFormField, MatSuffix } from "@angular/material/form-field";
+import { MatGridList, MatGridTile } from "@angular/material/grid-list";
+import { MatIcon } from "@angular/material/icon";
+import { MatInput } from "@angular/material/input";
+import { MatList, MatListItem } from "@angular/material/list";
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
+import { MatToolbar } from "@angular/material/toolbar";
 import {
   AskTokenResolver,
   CompleteTokenResolver,
 } from "./services/tlsm-draw.service";
 import { TlsmMessageService } from "./services/tlsm-message.service";
-import { TlsmStore } from "./tlsm-store";
-import { NgIf, NgFor, NgStyle, AsyncPipe } from "@angular/common";
-import { MatMiniFabButton, MatButton, MatIconButton, MatFabButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { MatFormField, MatSuffix } from "@angular/material/form-field";
-import { MatInput } from "@angular/material/input";
-import { MatToolbar } from "@angular/material/toolbar";
 import { TlsmDragonCardComponent } from "./tlsm-dragon-card/tlsm-dragon-card.component";
-import { MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardActions } from "@angular/material/card";
-import { MatList, MatListItem } from "@angular/material/list";
-import { MatLine } from "@angular/material/core";
-import { MatGridList, MatGridTile } from "@angular/material/grid-list";
+import { TlsmStore } from "./tlsm-store";
 
 @Component ({
   selector: "tlsm-dragon-scales",
@@ -28,7 +28,12 @@ import { MatGridList, MatGridTile } from "@angular/material/grid-list";
   imports: [MatSidenavContainer, MatSidenav, NgIf, FormsModule, ReactiveFormsModule, MatMiniFabButton, MatIcon, NgFor, MatFormField, MatInput, MatButton, MatIconButton, MatSuffix, MatSidenavContent, NgStyle, MatToolbar, TlsmDragonCardComponent, MatCard, MatCardHeader, MatCardTitle, MatList, MatListItem, MatLine, MatCardContent, MatGridList, MatGridTile, MatCardActions, MatFabButton, AsyncPipe]
 })
 export class TlsmDragonScalesComponent {
-  constructor (private store: TlsmStore, messager: TlsmMessageService) {
+  
+  private store = inject (TlsmStore);
+
+  constructor () {
+    const store = this.store;
+    const messager = inject (TlsmMessageService);
     this.completeTokenResolver = new CompleteTokenResolver (store, messager);
     this.askTokenResolver = new AskTokenResolver (store, messager);
   } // constructor

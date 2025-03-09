@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgUser } from "../authentication/bg-auth.service";
 import { BgCloudCollectionQuery, BgCloudService } from "../cloud/bg-cloud.service";
 
@@ -33,7 +33,8 @@ export type BgProtoPlayerType = "user" | "open" | "closed" | "ai";
   providedIn: "root",
 })
 export class BgProtoGameService {
-  constructor (private cloud: BgCloudService) {}
+  
+  private cloud = inject (BgCloudService);
 
   private protoGames () {
     return this.cloud.collection<BgProtoGame> ("proto-games");

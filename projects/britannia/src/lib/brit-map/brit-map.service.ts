@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import {
@@ -32,11 +32,9 @@ const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
   providedIn: "root",
 })
 export class BritMapService {
-
-  constructor (
-    private http: HttpClient,
-    private components: BritComponentsService
-  ) {}
+  
+  private http = inject (HttpClient);
+  private components = inject (BritComponentsService);
 
   private svgLoaded = false;
   private areaPaths!: { [id in BritAreaId]: string };

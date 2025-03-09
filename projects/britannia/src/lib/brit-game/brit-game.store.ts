@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
 import { BritAreaId, BritColor, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation, BritRoundId, BritUnitType } from "../brit-components.models";
@@ -8,8 +8,12 @@ import { BritArmyMovement, BritArmyMovements } from "../brit-story.models";
 
 @Injectable ()
 export class BritGameStore extends BgStore<BritGameState> {
+  
+  private components: BritComponentsService;
 
-  constructor (private components: BritComponentsService) {
+  constructor () {
+    const components = inject (BritComponentsService);
+
     super (
       {
         gameId: "",
@@ -31,6 +35,8 @@ export class BritGameStore extends BgStore<BritGameState> {
       },
       "Britannia Game"
     );
+  
+    this.components = components;
   } // constructor
 
   initGameState (players: BritPlayer[], gameId: string, gameOwner: BgUser) {

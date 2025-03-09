@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
@@ -48,11 +48,11 @@ import { getRandomLands } from "./barony-initializer";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BaronyHomeComponent implements OnInit {
-  constructor (
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private gameService: BaronyRemoteService
-  ) {}
+  
+  private router = inject (Router);
+  private activatedRoute = inject (ActivatedRoute);
+  private gameService = inject (BaronyRemoteService);
+
 
   config: BgHomeConfig<BaronyColor> = {
     boardGame: "barony",

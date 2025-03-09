@@ -1,21 +1,15 @@
+import { NgFor } from "@angular/common";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
 import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Inject,
-  OnInit,
-} from "@angular/core";
-import {
-  MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA,
+  MatBottomSheetRef,
 } from "@angular/material/bottom-sheet";
+import { MatIconButton } from "@angular/material/button";
+import { MatIcon } from "@angular/material/icon";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritNationState } from "../brit-game-state.models";
-import { MatIconButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { NgFor } from "@angular/common";
 
 interface BritUnitNode {
   imageSource: string;
@@ -84,16 +78,15 @@ interface BritUnitNode {
   imports: [MatIconButton, MatIcon, NgFor]
 })
 export class BritNationCardSheetComponent implements OnInit {
-  constructor (
-    private bottomSheetRef: MatBottomSheetRef<
-    BritNationCardSheetComponent,
-    void
-    >,
-    @Inject (MAT_BOTTOM_SHEET_DATA) public data: [BritNationId, BritNationState],
-    private assetsService: BritAssetsService,
-    private components: BritComponentsService,
-    private cd: ChangeDetectorRef
-  ) {}
+  
+  private bottomSheetRef = inject<MatBottomSheetRef<BritNationCardSheetComponent, void>> (MatBottomSheetRef);
+  data = inject<[
+    BritNationId,
+    BritNationState
+  ]> (MAT_BOTTOM_SHEET_DATA);
+  private assetsService = inject (BritAssetsService);
+  private components = inject (BritComponentsService);
+  private cd = inject (ChangeDetectorRef);
 
   nationCardImageSource!: string;
   unitNodes!: BritUnitNode[];

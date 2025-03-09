@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { forEach, forN } from "@leobg/commons/utils";
 import { Observable, of } from "rxjs";
@@ -17,17 +17,15 @@ import { BritUiStore } from "./brit-ui.store";
 
 @Injectable ()
 export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritStory, BritPlayerService> {
-
-  constructor (
-    private rules: BritRulesService,
-    private game: BritGameStore,
-    private ui: BritUiStore,
-    protected auth: BgAuthService,
-    private remoteService: BritRemoteService,
-    protected aiPlayer: BritPlayerAiService,
-    protected localPlayer: BritPlayerLocalService,
-    private components: BritComponentsService
-  ) { super (); }
+  
+  private rules = inject (BritRulesService);
+  private game = inject (BritGameStore);
+  private ui = inject (BritUiStore);
+  protected auth = inject (BgAuthService);
+  private remoteService = inject (BritRemoteService);
+  protected aiPlayer = inject (BritPlayerAiService);
+  protected localPlayer = inject (BritPlayerLocalService);
+  private components = inject (BritComponentsService);
 
   protected storyDocs: BritStoryDoc[] | null = null;
 

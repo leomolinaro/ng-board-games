@@ -1,10 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
@@ -39,12 +34,10 @@ import { BaronyUiStore } from "./barony-ui.store";
 @UntilDestroy
 export class BaronyGameComponent implements OnInit, OnDestroy {
   
-  constructor (
-    private game: BaronyGameStore,
-    private ui: BaronyUiStore,
-    private route: ActivatedRoute,
-    private gameService: BaronyGameService
-  ) {}
+  private game = inject (BaronyGameStore);
+  private ui = inject (BaronyUiStore);
+  private route = inject (ActivatedRoute);
+  private gameService = inject (BaronyGameService);
 
   private gameId = this.route.snapshot.paramMap.get ("gameId") as string;
 
@@ -71,28 +64,13 @@ export class BaronyGameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy () {} // ngOnDestroy
 
-  onPlayerSelect (player: BaronyPlayer) {
-    this.ui.setCurrentPlayer (player.id);
-  }
-  onBuildingSelect (building: BaronyBuilding) {
-    this.ui.buildingChange (building);
-  }
-  onLandTileClick (landTile: BaronyLand) {
-    this.ui.landTileChange (landTile);
-  }
-  onActionClick (action: BaronyAction) {
-    this.ui.actionChange (action);
-  }
-  onPassClick () {
-    this.ui.passChange ();
-  }
-  onCancelClick () {
-    this.ui.cancelChange ();
-  }
-  onKnightsConfirm (numberOfKnights: number) {
-    this.ui.numberOfKnightsChange (numberOfKnights);
-  }
-  onResourceSelect (resource: BaronyResourceType) {
-    this.ui.resourceChange (resource);
-  }
+  onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
+  onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
+  onLandTileClick (landTile: BaronyLand) { this.ui.landTileChange (landTile); }
+  onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
+  onPassClick () { this.ui.passChange (); }
+  onCancelClick () { this.ui.cancelChange (); }
+  onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
+  onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
+  
 } // BaronyGameComponent

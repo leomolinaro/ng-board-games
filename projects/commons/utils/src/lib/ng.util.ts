@@ -1,4 +1,4 @@
-import { Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from "@angular/core";
+import { Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef, inject } from "@angular/core";
 import { BehaviorSubject, EMPTY, MonoTypeOperatorFunction, Observable, Subject, catchError, concatMap, debounceTime, exhaustMap, filter, finalize, map, mergeMap, of, switchMap, takeUntil } from "rxjs";
 
 const destroyUsedSymbol = Symbol ("__destroyUsed");
@@ -28,10 +28,9 @@ export interface NgLetContext<T> {
   standalone: true
 })
 export class NgLetDirective<T> implements OnInit {
-  constructor (
-    private vcr: ViewContainerRef,
-    private templateRef: TemplateRef<NgLetContext<T>>
-  ) {}
+  
+  private vcr = inject (ViewContainerRef);
+  private templateRef = inject<TemplateRef<NgLetContext<T>>> (TemplateRef);
 
   private context: NgLetContext<T> = {
     $implicit: null,

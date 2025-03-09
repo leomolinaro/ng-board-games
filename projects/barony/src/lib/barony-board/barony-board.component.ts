@@ -1,19 +1,19 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, TemplateRef, ViewChild } from "@angular/core";
+import { NgClass, NgFor, NgIf } from "@angular/common";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, TemplateRef, ViewChild, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
 import { of, switchMap } from "rxjs";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
-import { BaronyMapComponent } from "../barony-map/barony-map.component";
-import { NgIf, NgFor, NgClass } from "@angular/common";
-import { BaronyKnightsSelectorComponent } from "../barony-knights-selector/barony-knights-selector.component";
-import { BaronyBuildingsSelectorComponent } from "../barony-buildings-selector/barony-buildings-selector.component";
-import { BaronyResourcesSelectorComponent } from "../barony-resources-selector/barony-resources-selector.component";
-import { BaronyActionsComponent } from "../barony-actions/barony-actions.component";
-import { BaronyPlayerStatusComponent } from "../barony-player-status/barony-player-status.component";
 import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
-import { BaronyScoreboardComponent } from "../barony-scoreboard.component";
-import { BaronyLogsComponent } from "../barony-logs/barony-logs.component";
+import { BaronyActionsComponent } from "../barony-actions/barony-actions.component";
+import { BaronyBuildingsSelectorComponent } from "../barony-buildings-selector/barony-buildings-selector.component";
 import { BaronyEndGameComponent } from "../barony-end-game/barony-end-game.component";
+import { BaronyKnightsSelectorComponent } from "../barony-knights-selector/barony-knights-selector.component";
+import { BaronyLogsComponent } from "../barony-logs/barony-logs.component";
+import { BaronyMapComponent } from "../barony-map/barony-map.component";
+import { BaronyAction, BaronyBuilding, BaronyLand, BaronyLandCoordinates, BaronyLog, BaronyPlayer, BaronyResourceType } from "../barony-models";
+import { BaronyPlayerStatusComponent } from "../barony-player-status/barony-player-status.component";
+import { BaronyResourcesSelectorComponent } from "../barony-resources-selector/barony-resources-selector.component";
+import { BaronyScoreboardComponent } from "../barony-scoreboard.component";
 
 @Component ({
   selector: "barony-board",
@@ -24,7 +24,8 @@ import { BaronyEndGameComponent } from "../barony-end-game/barony-end-game.compo
 })
 @UntilDestroy
 export class BaronyBoardComponent implements OnChanges, OnDestroy {
-  constructor (private matDialog: MatDialog) {}
+
+  private matDialog = inject (MatDialog);
 
   @Input () lands!: BaronyLand[];
   @Input () logs!: BaronyLog[];
