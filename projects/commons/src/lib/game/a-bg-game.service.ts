@@ -1,4 +1,4 @@
-import { EMPTY, Observable, defer, expand, filter, finalize, first, forkJoin, last, map, of, race, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, defer, expand, filter, finalize, first, firstValueFrom, forkJoin, from, last, map, of, race, switchMap, tap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -154,6 +154,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
         map (story => story!)
       );
     }
+  }
+
+  protected executeTask<R extends St> (playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Promise<R> {
+    return firstValueFrom (this.executeTask$ (playerId, p => from (task (p))));
   }
 
   protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {

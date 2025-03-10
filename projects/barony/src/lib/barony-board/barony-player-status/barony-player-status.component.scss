@@ -1,10 +1,10 @@
-@import 'barony-variables';
+@use 'barony-variables' as barony;
 
 .b-player-card {
-  @include golden-padding(2vmin);
-  font-size: $font-size-players;
+  @include barony.golden-padding(2vmin);
+  font-size: barony.$font-size-players;
   color: white;
-  background-color: $surface;
+  background-color: barony.$surface;
   .b-player-header {
     display: flex;
     .b-player-icon {
@@ -34,54 +34,54 @@
     }
   }
   &.is-red {
-    box-shadow: widget-shadow($red-light);
+    box-shadow: barony.widget-shadow(barony.$red-light);
     .b-player-icon,
     .b-player-score-icon,
     .b-player-type-icon {
-      color: $red;
+      color: barony.$red;
     }
-    &.is-local:not(.is-current):hover {
-      box-shadow: widget-shadow-hover($red-light);
+    &.is-local:not(.is-current):not(.is-ai):hover {
+      box-shadow: barony.widget-shadow-hover(barony.$red-light);
     }
     // background-color: $red-light;
   }
   &.is-yellow {
-    box-shadow: widget-shadow($yellow-light);
+    box-shadow: barony.widget-shadow(barony.$yellow-light);
     .b-player-icon,
     .b-player-score-icon,
     .b-player-type-icon {
-      color: $yellow;
+      color: barony.$yellow;
     }
-    &.is-local:not(.is-current):hover {
-      box-shadow: widget-shadow-hover($yellow-light);
+    &.is-local:not(.is-current):not(.is-ai):hover {
+      box-shadow: barony.widget-shadow-hover(barony.$yellow-light);
     }
     // background-color: $yellow-light;
   }
   &.is-green {
-    box-shadow: widget-shadow($green-light);
+    box-shadow: barony.widget-shadow(barony.$green-light);
     .b-player-icon,
     .b-player-score-icon,
     .b-player-type-icon {
-      color: $green;
+      color: barony.$green;
     }
-    &.is-local:not(.is-current):hover {
-      box-shadow: widget-shadow-hover($green-light);
+    &.is-local:not(.is-current):not(.is-ai):hover {
+      box-shadow: barony.widget-shadow-hover(barony.$green-light);
     }
     // background-color: $green-light;
   }
   &.is-blue {
-    box-shadow: widget-shadow($blue-light);
+    box-shadow: barony.widget-shadow(barony.$blue-light);
     .b-player-icon,
     .b-player-score-icon,
     .b-player-type-icon {
-      color: $blue;
+      color: barony.$blue;
     }
-    &.is-local:not(.is-current):hover {
-      box-shadow: widget-shadow-hover($blue-light);
+    &.is-local:not(.is-current):not(.is-ai):hover {
+      box-shadow: barony.widget-shadow-hover(barony.$blue-light);
     }
     // background-color: $blue-light;
   }
-  &.is-local:not(.is-current) {
+  &.is-local:not(.is-current):not(.is-ai) {
     cursor: pointer;
   }
   &.is-remote,

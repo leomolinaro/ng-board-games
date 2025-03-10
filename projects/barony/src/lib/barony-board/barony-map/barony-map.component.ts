@@ -1,3 +1,4 @@
+import { NgFor } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,15 +8,13 @@ import {
   Output,
   ViewChild,
 } from "@angular/core";
-import { BgMapZoomDirective } from "@leobg/commons";
+import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import {
   BaronyLand,
   BaronyLandCoordinates,
   landCoordinatesToId,
-} from "../barony-models";
-import { BgSvgComponent, BgMapZoomDirective as BgMapZoomDirective_1 } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
-import { NgFor } from "@angular/common";
+} from "../../barony-models";
 import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.component";
 
 @Component ({
@@ -23,7 +22,7 @@ import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.compon
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BgSvgComponent, BgMapZoomDirective_1, NgFor, BaronyLandComponent]
+  imports: [BgSvgComponent, BgMapZoomDirective, NgFor, BaronyLandComponent]
 })
 export class BaronyMapComponent implements OnChanges {
   constructor () {}

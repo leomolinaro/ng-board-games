@@ -1,7 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService, BgUser } from "@leobg/commons";
-import { Observable, firstValueFrom, forkJoin } from "rxjs";
-import { map } from "rxjs/operators";
+import { from } from "rxjs";
 import {
   ABaronyPlayer,
   BaronyColor,
@@ -27,8 +26,8 @@ import * as baronyRules from "./barony-rules";
 import { BaronyUiStore } from "./barony-ui.store";
 
 interface ABaronyPlayerService {
-  setupPlacement$(playerId: BaronyColor): Observable<BaronySetupPlacement>;
-  turn$(playerId: BaronyColor): Observable<BaronyTurn>;
+  setupPlacement (playerId: BaronyColor): Promise<BaronySetupPlacement>;
+  turn (playerId: BaronyColor): Promise<BaronyTurn>;
 }
 
 interface BaronyRoundOutput {
@@ -93,17 +92,14 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
   }
 
   private async setupPlacement (player: BaronyColor) {
-    const result = await firstValueFrom (this.executeTask$ (player, (p) => p.setupPlacement$ (player)));
+    const result = await this.executeTask (player, p => p.setupPlacement (player));
     this.gameStore.applySetup (result.land, player);
     this.gameStore.logSetupPlacement (result.land, player);
   }
 
-  private async turn (
-    player: BaronyColor,
-    lastRound: boolean
-  ): Promise<BaronyTurnOutput> {
+  private async turn (player: BaronyColor, lastRound: boolean): Promise<BaronyTurnOutput> {
     this.gameStore.logTurn (player);
-    const result = await firstValueFrom (this.executeTask$ (player, (p) => p.turn$ (player)));
+    const result = await this.executeTask (player, (p) => p.turn (player));
     switch (result.action) {
       case "recruitment": this.recruitment (result.numberOfKnights, result.land, player); break;
       case "construction": this.construction (result.constructions, player); break;
@@ -119,11 +115,7 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     return { lastRound: lastRound };
   }
 
-  private recruitment (
-    numberOfKnights: number,
-    landTileCoordinates: BaronyLandCoordinates,
-    player: BaronyColor
-  ) {
+  private recruitment (numberOfKnights: number, landTileCoordinates: BaronyLandCoordinates, player: BaronyColor) {
     for (let i = 0; i < numberOfKnights; i++) {
       this.gameStore.applyRecruitment (landTileCoordinates, player);
       this.gameStore.logRecuitment (landTileCoordinates, player);
@@ -173,10 +165,10 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
   protected insertStoryDoc$ (storyId: string, story: BaronyStoryDoc, gameId: string) { return this.remote.insertStory$ (storyId, story, gameId); }
   protected selectStoryDoc$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
 
-  protected getCurrentPlayerId () { return this.ui.getCurrentPlayerId (); }
+  protected getCurrentPlayerId () { return this.ui.currentPlayer (); }
   protected setCurrentPlayer (playerId: BaronyColor) { this.ui.setCurrentPlayer (playerId); }
   protected currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
-  protected cancelChange$ () { return this.ui.cancelChange$ (); }
+  protected cancelChange$ () { return from (this.ui.cancelSelect.get ()); }
 
   protected resetUi (player: BaronyColor) {
     this.ui.updateUi ("Reset UI", (s) => ({
@@ -188,44 +180,37 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     }));
   }
 
-  loadGame$ (gameId: string) {
-    return forkJoin ([
-      this.remote.getGame$ (gameId),
-      this.remote.getPlayers$ (gameId, (ref) => ref.orderBy ("sort")),
-      this.remote.getMap$ (gameId),
-      this.remote.getStories$ (gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
-    ]).pipe (
-      map (([game, players, baronyMap, stories]) => {
-        if (game && baronyMap) {
-          const user = this.auth.getUser ();
-          this.gameStore.setInitialState (
-            players.map ((p) => this.playerDocToPlayerInit (p, user, game.owner.id === user.id)),
-            baronyMap.lands.map ((l) => {
-              const x = l.x;
-              const y = l.y;
-              const z = -1 * (x + y);
-              const coordinates: BaronyLandCoordinates = { x, y, z };
-              return {
-                id: landCoordinatesToId (coordinates),
-                coordinates: coordinates,
-                type: l.type,
-                pawns: [],
-              };
-            }),
-            gameId,
-            game.owner
-          );
-        }
-        return stories;
-      })
-    );
+  async loadGame (gameId: string) {
+    const [game, players, baronyMap, stories] = await Promise.all ([
+      this.remote.getGame (gameId),
+      this.remote.getPlayers (gameId, (ref) => ref.orderBy ("sort")),
+      this.remote.getMap (gameId),
+      this.remote.getStories (gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
+    ]);
+    if (game && baronyMap) {
+      const user = this.auth.getUser ();
+      this.gameStore.setInitialState (
+        players.map ((p) => this.playerDocToPlayerInit (p, user, game.owner.id === user.id)),
+        baronyMap.lands.map ((l) => {
+          const x = l.x;
+          const y = l.y;
+          const z = -1 * (x + y);
+          const coordinates: BaronyLandCoordinates = { x, y, z };
+          return {
+            id: landCoordinatesToId (coordinates),
+            coordinates: coordinates,
+            type: l.type,
+            pawns: [],
+          };
+        }),
+        gameId,
+        game.owner
+      );
+    }
+    return stories;
   }
 
-  private playerDocToPlayerInit (
-    playerDoc: BaronyPlayerDoc,
-    user: BgUser,
-    isOwner: boolean
-  ): BaronyPlayer {
+  private playerDocToPlayerInit (playerDoc: BaronyPlayerDoc, user: BgUser, isOwner: boolean): BaronyPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit (playerDoc),

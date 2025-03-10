@@ -1,4 +1,4 @@
-@import 'bg-variables';
+@use 'bg-variables' as bg;
 
 .b-land-tile {
   &.is-active {
@@ -9,7 +9,7 @@
   }
   .b-land-tile-polygon {
     stroke-width: 0.035px;
-    stroke: $background;
+    stroke: bg.$background;
   }
   .b-land-tile-active-signal {
     cursor: pointer;

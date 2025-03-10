@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyGameStore } from "../barony-game/barony-game.store";
@@ -48,18 +48,26 @@ type BaronyLogFragment =
       [ngClass]="{
         'b-log-title': log.type === 'setup' || log.type === 'turn'
       }">
-      <ng-container
-        *ngFor="let fragment of fragments"
-        [ngSwitch]="fragment.type">
-        <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
-        <a *ngSwitchCase="'player'"
-          [ngClass]="'is-' + $any(fragment).player.color">{{ fragment.label }}</a>
-        <a *ngSwitchCase="'land'"
-          [ngClass]="'is-' + $any(fragment).land.type">{{ fragment.label }}</a>
-        <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a>
-      </ng-container>
+      @for (fragment of fragments; track fragment) {
+        @switch (fragment.type) {
+          @case ('string') {
+            <span>{{ fragment.label }}</span>
+          }
+          @case ('player') {
+            <a
+            [ngClass]="'is-' + $any(fragment).player.color">{{ fragment.label }}</a>
+          }
+          @case ('land') {
+            <a
+            [ngClass]="'is-' + $any(fragment).land.type">{{ fragment.label }}</a>
+          }
+          @case ('pawn') {
+            <a>{{ fragment.label }}</a>
+          }
+        }
+      }
     </div>
-  `,
+    `,
   styles: [`
     @import 'barony-variables';
 
@@ -84,7 +92,7 @@ type BaronyLogFragment =
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
+  imports: [NgClass]
 })
 export class BaronyLogComponent implements OnChanges {
   

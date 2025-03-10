@@ -51,9 +51,9 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   private replayToLastStory = false;
   private $replayCall = new Subject<void> ();
   
-  private async executeTask<R extends WotrGameStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
+  private async executeTask2<R extends WotrGameStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
     await this.replayCall ();
-    return firstValueFrom (super.executeTask$ (playerId, p => from (task (p))));
+    return super.executeTask (playerId, p => task (p));
   }
 
   private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrGameStory[]> {
@@ -110,7 +110,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   }
 
   async story<S extends WotrGameStory> (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<S>) {
-    const story = await this.executeTask (front, task);
+    const story = await this.executeTask2 (front, task);
     await this.applyStory (story, front);
     return story;
   }

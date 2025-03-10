@@ -10,10 +10,7 @@
   <div class="b-board-widgets-layer">
     <div
       *ngIf="message"
-      [class]="
-        'b-board-instructions-widget' +
-        (turnPlayer ? ' is-' + turnPlayer.id : '')
-      ">
+      [class]="'b-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
       <div class="b-board-instructions">{{ message }}</div>
       <barony-knights-selector
         *ngIf="maxNumberOfKnights"

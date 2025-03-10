@@ -1,3 +1,4 @@
+import { NgFor } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,9 +6,8 @@ import {
   OnChanges,
 } from "@angular/core";
 import { SimpleChanges, objectUtil } from "@leobg/commons/utils";
-import { BaronyColor, BaronyPlayer } from "./barony-models";
-import { BgSvgComponent } from "../../../commons/src/lib/game/svg/bg-map-zoom.directive";
-import { NgFor } from "@angular/common";
+import { BgSvgComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
+import { BaronyColor, BaronyPlayer } from "../barony-models";
 
 interface BaronyCounterNode {
   color: BaronyColor;
@@ -32,8 +32,8 @@ interface BaronyCounterNode {
         <svg:image
           [attr.width]="1000"
           preserveAspectRatio="xMinYMin"
-          xlink:href="assets/barony/scoreboard.jpg"
-        ></svg:image>
+          xlink:href="assets/barony/scoreboard.jpg">
+        </svg:image>
         <svg:image
           *ngFor="let counterNode of counterNodes; trackBy: counterTrackBy"
           [attr.width]="counterWidth"
@@ -41,8 +41,8 @@ interface BaronyCounterNode {
           preserveAspectRatio="none"
           [attr.xlink:href]="counterNode.href"
           [attr.x]="counterNode.x"
-          [attr.y]="counterNode.y"
-        ></svg:image>
+          [attr.y]="counterNode.y">
+        </svg:image>
       </svg:g>
     </svg>
   `,

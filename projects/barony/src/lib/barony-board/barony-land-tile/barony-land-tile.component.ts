@@ -1,3 +1,4 @@
+import { NgClass, NgFor, NgIf } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,9 +15,8 @@ import {
   BaronyLandType,
   BaronyPawn,
   BaronyPawnType,
-} from "../barony-models";
-import { hexToCartesian, BaronyLandCoordinatesPipe } from "./barony-land-tile-coordinates.pipe";
-import { NgClass, NgIf, NgFor } from "@angular/common";
+} from "../../barony-models";
+import { BaronyLandCoordinatesPipe, hexToCartesian } from "./barony-land-tile-coordinates.pipe";
 
 interface BaronyPawnNode {
   type: BaronyPawnType;

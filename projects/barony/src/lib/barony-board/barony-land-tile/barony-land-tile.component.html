@@ -4,14 +4,13 @@
     'is-active': active,
     'is-disabled': disabled
   }"
-  (click)="onLandTileClick()"
->
+  (click)="onLandTileClick()">
   <svg:polygon
     class="b-land-tile-polygon"
     [attr.id]="coordinates.x + ' ' + coordinates.y + ' ' + coordinates.z"
     [attr.points]="coordinates | baronyLandTileCoordinates : 'hexagon'"
-    [attr.fill]="'url(\'#' + type + '\')'"
-  ></svg:polygon>
+    [attr.fill]="'url(\'#' + type + '\')'">
+  </svg:polygon>
 
   <svg:circle
     *ngIf="active"
@@ -21,8 +20,7 @@
     [attr.r]="activeCircleRadius"
     stroke="black"
     stroke-width="0.03"
-    fill="transparent"
-  />
+    fill="transparent"/>
 
   <svg:image
     *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
@@ -31,16 +29,15 @@
     preserveAspectRatio="none"
     [attr.xlink:href]="pawnNode.href"
     [attr.x]="pawnNode.x"
-    [attr.y]="pawnNode.y"
-  ></svg:image>
+    [attr.y]="pawnNode.y">
+  </svg:image>
 
   <ng-container *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy">
     <svg:text
       class="b-land-tile-pawn-quantity"
       *ngIf="pawnNode.quantity > 1"
       [attr.x]="pawnNode.xText"
-      [attr.y]="pawnNode.yText"
-    >
+      [attr.y]="pawnNode.yText">
       {{ pawnNode.quantity }}
     </svg:text>
   </ng-container>

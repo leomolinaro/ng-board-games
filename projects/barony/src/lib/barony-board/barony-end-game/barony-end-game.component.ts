@@ -1,16 +1,16 @@
+import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
-import { BARONY_RESOURCE_TYPES } from "../barony-constants";
-import { BaronyPlayer, BaronyResourceType } from "../barony-models";
-import { MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow } from "@angular/material/table";
-import { NgIf, NgFor, NgClass } from "@angular/common";
-import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
+import { MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable } from "@angular/material/table";
+import { BgTransformPipe } from "../../../../../commons/utils/src/lib/bg-transform.pipe";
+import { BARONY_RESOURCE_TYPES } from "../../barony-constants";
+import { BaronyPlayer, BaronyResourceType } from "../../barony-models";
 
 @Component ({
   selector: "barony-end-game",
   templateUrl: "./barony-end-game.component.html",
   styleUrls: ["./barony-end-game.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, NgIf, NgFor, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgClass, BgTransformPipe]
+  imports: [MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, NgClass, BgTransformPipe]
 })
 export class BaronyEndGameComponent {
   constructor () {}

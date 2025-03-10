@@ -1,6 +1,5 @@
 import { Injectable, inject } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
-import { Observable, of } from "rxjs";
 import {
   BaronyColor,
   BaronyConstruction,
@@ -24,16 +23,16 @@ export class BaronyPlayerAiService {
 
   private game = inject (BaronyGameStore);
 
-  setupPlacement$ (playerId: BaronyColor): Observable<BaronySetupPlacement> {
+  async setupPlacement (playerId: BaronyColor): Promise<BaronySetupPlacement> {
     const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
     const land = randomUtil.getRandomElement (validLands);
-    return of<BaronySetupPlacement> ({
+    return {
       type: "setupPlacement",
       land: land.coordinates,
-    });
+    };
   }
 
-  turn$ (playerId: BaronyColor): Observable<BaronyTurn> {
+  async turn (playerId: BaronyColor): Promise<BaronyTurn> {
     const validActions = baronyRules.getValidActions (playerId, this.game);
     const action = randomUtil.getRandomElement (validActions);
     switch (action) {
@@ -41,11 +40,11 @@ export class BaronyPlayerAiService {
         const validLands = baronyRules.getValidLandsForRecruitment (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
         const maxKnights = baronyRules.getMaxKnightForRecruitment (land.coordinates, playerId, this.game);
-        return of<BaronyTurnRectruitment> ({
+        return <BaronyTurnRectruitment> {
           action: "recruitment",
           land: land.coordinates,
           numberOfKnights: maxKnights,
-        });
+        };
       }
       case "movement": {
         const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (playerId, this.game);
@@ -60,15 +59,15 @@ export class BaronyPlayerAiService {
           );
           const sourceLand2 = randomUtil.getRandomElement (validSourceLands2);
           const secondMovement = this.executeMovement (sourceLand2, playerId);
-          return of<BaronyTurnMovement> ({
+          return <BaronyTurnMovement> {
             action: "movement",
             movements: [firstMovement, secondMovement],
-          });
+          };
         } else {
-          return of<BaronyTurnMovement> ({
+          return <BaronyTurnMovement> {
             action: "movement",
             movements: [firstMovement],
-          });
+          };
         }
       }
       case "construction": {
@@ -84,15 +83,15 @@ export class BaronyPlayerAiService {
           this.game.applyConstruction (construction, playerId);
           validConstruction = baronyRules.isConstructionValid (playerId, this.game);
         } while (validConstruction);
-        return of<BaronyTurnConstruction> ({
+        return <BaronyTurnConstruction> {
           action: "construction",
           constructions: constructions,
-        });
+        };
       }
       case "newCity": {
         const validLands = baronyRules.getValidLandsForNewCity (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
-        return of<BaronyTurnNewCity> ({
+        return <BaronyTurnNewCity> ({
           action: "newCity",
           land: land.coordinates,
         });
@@ -100,10 +99,10 @@ export class BaronyPlayerAiService {
       case "expedition": {
         const validLands = baronyRules.getValidLandsForExpedition (playerId, this.game);
         const land = randomUtil.getRandomElement (validLands);
-        return of<BaronyTurnExpedition> ({
+        return <BaronyTurnExpedition> {
           action: "expedition",
           land: land.coordinates,
-        });
+        };
       }
       case "nobleTitle": {
         const resources: BaronyResourceType[] = [];
@@ -129,10 +128,10 @@ export class BaronyPlayerAiService {
             resources.push ("mountain");
           }
         }
-        return of<BaronyTurnNobleTitle> ({
+        return <BaronyTurnNobleTitle> {
           action: "nobleTitle",
           discardedResources: resources,
-        });
+        };
       }
     }
     throw new Error ("TODO");

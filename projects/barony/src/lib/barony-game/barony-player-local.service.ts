@@ -1,6 +1,4 @@
 import { Injectable, inject } from "@angular/core";
-import { Observable, of, race } from "rxjs";
-import { map, mapTo, switchMap } from "rxjs/operators";
 import {
   BaronyAction,
   BaronyColor,
@@ -28,81 +26,64 @@ export class BaronyPlayerLocalService {
   private game = inject (BaronyGameStore);
   private ui = inject (BaronyUiStore);
 
-  setupPlacement$ (playerId: BaronyColor): Observable<BaronySetupPlacement> {
-    return this.chooseLandForSetupPlacement$ (playerId).pipe (
-      map<BaronyLand, BaronySetupPlacement> (landTile => ({
-        type: "setupPlacement",
-        land: landTile.coordinates,
-      }))
-    );
-  } // setupPlacement$
+  async setupPlacement (playerId: BaronyColor): Promise<BaronySetupPlacement> {
+    const landTile = await this.chooseLandForSetupPlacement (playerId);
+    return <BaronySetupPlacement> {
+      type: "setupPlacement",
+      land: landTile.coordinates,
+    };
+  }
 
-  turn$ (playerId: BaronyColor): Observable<BaronyTurn> {
-    return this.chooseAction$ (playerId).pipe (
-      switchMap ((action) => {
-        switch (action) {
-          case "recruitment": {
-            return this.chooseRectruitment$ (playerId).pipe (
-              map<
-              { land: BaronyLand; numberOfKnights: number },
-              BaronyTurnRectruitment
-              > ((result) => ({
-                action: "recruitment",
-                land: result.land.coordinates,
-                numberOfKnights: result.numberOfKnights,
-              }))
-            );
-          } // case
-          case "movement": {
-            return this.chooseMovements$ (playerId).pipe (
-              map<BaronyMovement[], BaronyTurnMovement> ((movements) => ({
-                action: "movement",
-                movements: movements,
-              }))
-            );
-          } // case
-          case "construction": {
-            return this.chooseConstructions$ (playerId, null).pipe (
-              map<BaronyConstruction[], BaronyTurnConstruction> (
-                (constructions) => ({
-                  action: "construction",
-                  constructions: constructions,
-                })
-              )
-            );
-          } // case
-          case "newCity": {
-            return this.chooseNewCity$ (playerId).pipe (
-              map<BaronyLand, BaronyTurnNewCity> ((land) => ({
-                action: "newCity",
-                land: land.coordinates,
-              }))
-            );
-          } // case
-          case "expedition": {
-            return this.chooseExpedition$ (playerId).pipe (
-              map<BaronyLand, BaronyTurnExpedition> ((land) => ({
-                action: "expedition",
-                land: land.coordinates,
-              }))
-            );
-          } // case
-          case "nobleTitle": {
-            return this.chooseNobleTitle$ (playerId).pipe (
-              map<BaronyResourceType[], BaronyTurnNobleTitle> ((resources) => ({
-                action: "nobleTitle",
-                discardedResources: resources,
-              }))
-            );
-          } // case
-          default:
-            throw new Error ("TODO");
-        } // switch
-      })
-    );
-  } // turn$
+  async turn (playerId: BaronyColor): Promise<BaronyTurn> {
+    const action = await this.chooseAction (playerId);
+    switch (action) {
+      case "recruitment": {
+        const result = await this.chooseRectruitment (playerId);
+        return {
+          action: "recruitment",
+          land: result.land.coordinates,
+          numberOfKnights: result.numberOfKnights,
+        } as BaronyTurnRectruitment;
+      }
+      case "movement": {
+        const movements = await this.chooseMovements (playerId);
+        return {
+          action: "movement",
+          movements: movements,
+        } as BaronyTurnMovement
+      }
+      case "construction": {
+        const constructions = await this.chooseConstructions (playerId, null);
+        return {
+          constructions: constructions,
+        } as BaronyTurnConstruction;
+      }
+      case "newCity": {
+        const land = await this.chooseNewCity (playerId);
+        return {
+          action: "newCity",
+          land: land.coordinates,
+        } as BaronyTurnNewCity;
+      }
+      case "expedition": {
+        const land = await this.chooseExpedition (playerId);
+        return {
+          action: "expedition",
+          land: land.coordinates,
+        } as BaronyTurnExpedition;
+      }
+      case "nobleTitle": {
+        const resources = await this.chooseNobleTitle (playerId);
+        return {
+          action: "nobleTitle",
+          discardedResources: resources,
+        } as BaronyTurnNobleTitle;
+      }
+      default: throw new Error ("TODO");
+    }
+  }
 
-  private chooseLandForSetupPlacement$ (player: BaronyColor): Observable<BaronyLand> {
+  private chooseLandForSetupPlacement (player: BaronyColor): Promise<BaronyLand> {
     const validLands = baronyRules.getValidLandsForSetupPlacement (this.game);
     this.ui.updateUi ("Choose land for setup placement", (s) => ({
       ...s,
@@ -111,10 +92,10 @@ export class BaronyPlayerLocalService {
       message: "Place a city and a knight.",
       validLands: validLands.map ((land) => land.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseLandForSetupPlacement$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseAction$ (player: BaronyColor): Observable<BaronyAction> {
+  private chooseAction (player: BaronyColor): Promise<BaronyAction> {
     const validActions = baronyRules.getValidActions (player, this.game);
     this.ui.updateUi ("Choose action", (s) => ({
       ...s,
@@ -123,181 +104,99 @@ export class BaronyPlayerLocalService {
       message: "Choose an action to perform.",
       validActions: validActions,
     }));
-    return this.ui.actionChange$ ();
-  } // chooseAction$
+    return this.ui.actionSelect.get ();
+  }
 
-  private chooseRectruitment$ (
-    player: BaronyColor
-  ): Observable<{ land: BaronyLand; numberOfKnights: number }> {
-    return this.chooseLandForRecruitment$ (player).pipe (
-      switchMap ((land) =>
-        this.chooseNumberOfKnightsForRecruitment$ (
-          land.coordinates,
-          player
-        ).pipe (
-          map ((numberOfKnights) => ({
-            land: land,
-            numberOfKnights: numberOfKnights,
-          }))
-        )
-      )
-    );
-  } // chooseRectruitment$
+  private async chooseRectruitment (player: BaronyColor): Promise<{ land: BaronyLand; numberOfKnights: number }> {
+    const land = await this.chooseLandForRecruitment (player);
+    const numberOfKnights = await this.chooseNumberOfKnightsForRecruitment (land.coordinates, player);
+    return { land, numberOfKnights };
+  }
 
-  private chooseLandForRecruitment$ (player: BaronyColor): Observable<BaronyLand> {
-    const validLands = baronyRules.getValidLandsForRecruitment (
-      player,
-      this.game
-    );
+  private chooseLandForRecruitment (player: BaronyColor): Promise<BaronyLand> {
+    const validLands = baronyRules.getValidLandsForRecruitment (player, this.game);
     this.ui.updateUi ("Choose land for recruitment", (s) => ({
       ...s,
       ...this.ui.resetUi (),
       message: "Choose a land tile to recruit on.",
       validLands: validLands.map ((lt) => lt.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseLandForRecruitment$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseNumberOfKnightsForRecruitment$ (
-    land: BaronyLandCoordinates,
-    player: BaronyColor
-  ): Observable<number> {
-    const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment (
-      land,
-      player,
-      this.game
-    );
+  private chooseNumberOfKnightsForRecruitment (land: BaronyLandCoordinates, player: BaronyColor): Promise<number> {
+    const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment (land, player, this.game);
     this.ui.updateUi ("Choose number of knights for recruitment", (s) => ({
       ...s,
       ...this.ui.resetUi (),
       message: "Choose the number of knights to recruit.",
       maxNumberOfKnights: maxNumberOfKnights,
     }));
-    return this.ui.numberOfKnightsChange$ ();
-  } // chooseNumberOfKnightsForRecruitment$
+    return this.ui.numberOfKnightsSelect.get ();
+  }
 
-  private chooseMovements$ (player: BaronyColor): Observable<BaronyMovement[]> {
-    return this.chooseFirstMovement$ (player).pipe (
-      switchMap ((firstMovement) => {
-        this.game.applyMovement (firstMovement, player);
-        if (
-          baronyRules.isSecondMovementValid (player, firstMovement, this.game)
-        ) {
-          return this.chooseSecondMovement$ (player, firstMovement).pipe (
-            map ((secondMovement) => {
-              if (secondMovement) {
-                return [firstMovement, secondMovement];
-              } else {
-                return [firstMovement];
-              } // if - else
-            })
-          );
-        } else {
-          return of ([firstMovement]);
-        } // if - else
-      })
-    );
-  } // chooseMovements$
+  private async chooseMovements (player: BaronyColor): Promise<BaronyMovement[]> {
+    const firstMovement = await this.chooseFirstMovement (player);
+    this.game.applyMovement (firstMovement, player);
+    if (baronyRules.isSecondMovementValid (player, firstMovement, this.game)) {
+      const secondMovement = await this.chooseSecondMovement (player, firstMovement);
+      if (secondMovement) {
+        return [firstMovement, secondMovement];
+      } else {
+        return [firstMovement];
+      }
+    } else {
+      return [firstMovement];
+    }
+  }
 
-  private chooseFirstMovement$ (player: BaronyColor): Observable<BaronyMovement> {
-    return this.chooseLandSourceForFirstMovement$ (player).pipe (
-      switchMap ((movementSource) =>
-        this.chooseMovementTargetAndConflict$ (
-          movementSource.coordinates,
-          player
-        )
-      )
-    );
-  } // chooseFirstMovement$
+  private async chooseFirstMovement (player: BaronyColor): Promise<BaronyMovement> {
+    const movementSource = await this.chooseLandSourceForFirstMovement (player);
+    return this.chooseMovementTargetAndConflict (movementSource.coordinates, player);
+  }
 
-  private chooseSecondMovement$ (
-    player: BaronyColor,
-    firstMovement: BaronyMovement
-  ): Observable<BaronyMovement | null> {
-    return this.chooseLandSourceOrPassForSecondMovement$ (
-      player,
-      firstMovement
-    ).pipe (
-      switchMap ((movementSource) => {
-        if (movementSource) {
-          return this.chooseMovementTargetAndConflict$ (
-            movementSource.coordinates,
-            player
-          );
-        } else {
-          return of (null);
-        } // if - else
-      })
-    );
-  } // chooseSecondMovement$
+  private async chooseSecondMovement (player: BaronyColor, firstMovement: BaronyMovement): Promise<BaronyMovement | null> {
+    const movementSource = await this.chooseLandSourceOrPassForSecondMovement (player, firstMovement);
+    if (movementSource) {
+      return this.chooseMovementTargetAndConflict (movementSource.coordinates, player);
+    } else {
+      return null;
+    }
+  }
 
-  private chooseMovementTargetAndConflict$ (
-    movementSource: BaronyLandCoordinates,
-    player: BaronyColor
-  ): Observable<BaronyMovement> {
-    return this.chooseLandTargetForMovement$ (movementSource, player).pipe (
-      switchMap ((movementTarget) => {
-        if (
-          baronyRules.isConflict (movementTarget.coordinates, player, this.game)
-        ) {
-          if (
-            baronyRules.isVillageBeingDestroyed (
-              movementTarget.coordinates,
-              player,
-              this.game
-            )
-          ) {
-            const villagePlayer = baronyRules.getVillageDestroyedPlayer (
-              movementTarget.coordinates,
-              player,
-              this.game
-            );
-            if (
-              baronyRules.hasResourcesToTakeForVillageDestruction (
-                villagePlayer.id,
-                this.game
-              )
-            ) {
-              return this.chooseResourceForVillageDestruction$ (
-                player,
-                villagePlayer.id
-              ).pipe (
-                map ((resource) => ({
-                  fromLand: movementSource,
-                  toLand: movementTarget.coordinates,
-                  conflict: true,
-                  gainedResource: resource,
-                }))
-              );
-            } // if
-          } // if
-          return of ({
+  private async chooseMovementTargetAndConflict (movementSource: BaronyLandCoordinates, player: BaronyColor): Promise<BaronyMovement> {
+    const movementTarget = await this.chooseLandTargetForMovement (movementSource, player);
+    if (baronyRules.isConflict (movementTarget.coordinates, player, this.game)) {
+      if (baronyRules.isVillageBeingDestroyed (movementTarget.coordinates, player, this.game)) {
+        const villagePlayer = baronyRules.getVillageDestroyedPlayer (movementTarget.coordinates, player, this.game);
+        if (baronyRules.hasResourcesToTakeForVillageDestruction (villagePlayer.id, this.game)) {
+          const resource = await this.chooseResourceForVillageDestruction (player, villagePlayer.id);
+          return {
             fromLand: movementSource,
             toLand: movementTarget.coordinates,
             conflict: true,
-            gainedResource: null,
-          });
-        } else {
-          return of ({
-            fromLand: movementSource,
-            toLand: movementTarget.coordinates,
-            conflict: false,
-            gainedResource: null,
-          });
-        } // if - else
-      }) // switchMap
-    );
-  } // chooseMovementTargetAndConflict$
+            gainedResource: resource,
+          };
+        }
+      }
+      return {
+        fromLand: movementSource,
+        toLand: movementTarget.coordinates,
+        conflict: true,
+        gainedResource: null,
+      };
+    } else {
+      return {
+        fromLand: movementSource,
+        toLand: movementTarget.coordinates,
+        conflict: false,
+        gainedResource: null,
+      };
+    }
+  }
 
-  private chooseResourceForVillageDestruction$ (
-    player: BaronyColor,
-    villagePlayer: BaronyColor
-  ): Observable<BaronyResourceType> {
-    const validResourcesForVillageDestruction =
-      baronyRules.getValidResourcesForVillageDestruction (
-        villagePlayer,
-        this.game
-      );
+  private chooseResourceForVillageDestruction (player: BaronyColor, villagePlayer: BaronyColor): Promise<BaronyResourceType> {
+    const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction (villagePlayer, this.game);
     this.ui.updateUi ("Choose resource for village destruction", (s) => ({
       ...s,
       ...this.ui.resetUi (),
@@ -307,34 +206,22 @@ export class BaronyPlayerLocalService {
         resources: validResourcesForVillageDestruction,
       },
     }));
-    return this.ui.resourceChange$ ();
-  } // chooseResourceForVillageDestruction$
+    return this.ui.resourceSelect.get ();
+  }
 
-  private chooseLandSourceForFirstMovement$ (
-    player: BaronyColor
-  ): Observable<BaronyLand> {
-    const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (
-      player,
-      this.game
-    );
+  private chooseLandSourceForFirstMovement (player: BaronyColor): Promise<BaronyLand> {
+    const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement (player, this.game);
     this.ui.updateUi ("Choose land source for first movement", (s) => ({
       ...s,
       ...this.ui.resetUi (),
       message: "Choose a land tile to move a knight from.",
       validLands: validSourceLands.map ((lt) => lt.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseLandSourceForFirstMovement$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseLandSourceOrPassForSecondMovement$ (
-    player: BaronyColor,
-    firstMovement: BaronyMovement
-  ): Observable<BaronyLand | null> {
-    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement (
-      player,
-      firstMovement,
-      this.game
-    );
+  private chooseLandSourceOrPassForSecondMovement (player: BaronyColor, firstMovement: BaronyMovement): Promise<BaronyLand | void> {
+    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement (player, firstMovement, this.game);
     this.ui.updateUi ("Choose land source or pass for second movement", (s) => ({
       ...s,
       ...this.ui.resetUi (),
@@ -342,13 +229,13 @@ export class BaronyPlayerLocalService {
       validLands: validSourceLands.map ((lt) => lt.coordinates),
       canPass: true,
     }));
-    return race (this.ui.landChange$ (), this.ui.passChange$ ().pipe (mapTo (null)));
-  } // chooseLandTileSourceOrPassForSecondMovement$
+    return Promise.race ([
+      this.ui.landSelect.get (),
+      this.ui.passSelect.get ()
+    ]);
+  }
 
-  private chooseLandTargetForMovement$ (
-    movementSource: BaronyLandCoordinates,
-    player: BaronyColor
-  ): Observable<BaronyLand> {
+  private chooseLandTargetForMovement (movementSource: BaronyLandCoordinates, player: BaronyColor): Promise<BaronyLand> {
     const validSourceLands = baronyRules.getValidTargetLandsForMovement (
       movementSource,
       player,
@@ -360,77 +247,50 @@ export class BaronyPlayerLocalService {
       message: "Choose a land tile to move a knight to.",
       validLands: validSourceLands.map ((lt) => lt.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseLandTargetForMovement$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseConstructions$ (
-    player: BaronyColor,
-    prevConstructions: BaronyConstruction[] | null
-  ): Observable<BaronyConstruction[]> {
+  private async chooseConstructions (player: BaronyColor, prevConstructions: BaronyConstruction[] | null): Promise<BaronyConstruction[]> {
     if (prevConstructions) {
-      return this.chooseConstructionOrPass$ (player).pipe (
-        switchMap ((construction) => {
-          if (construction) {
-            this.game.applyConstruction (construction, player);
-            const constructions = [...prevConstructions, construction];
-            if (baronyRules.isConstructionValid (player, this.game)) {
-              return this.chooseConstructions$ (player, constructions);
-            } else {
-              return of (constructions);
-            } // if - else
-          } else {
-            return of (prevConstructions);
-          } // if - else
-        })
-      );
+      const construction = await this.chooseConstructionOrPass (player);
+      if (construction) {
+        this.game.applyConstruction (construction, player);
+        const constructions = [...prevConstructions, construction];
+        if (baronyRules.isConstructionValid (player, this.game)) {
+          return this.chooseConstructions (player, constructions);
+        } else {
+          return constructions;
+        }
+      } else {
+        return prevConstructions;
+      }
     } else {
-      return this.chooseConstruction$ (player, false).pipe (
-        switchMap ((construction) => {
-          const constructions = [construction];
-          this.game.applyConstruction (construction, player);
-          if (baronyRules.isConstructionValid (player, this.game)) {
-            return this.chooseConstructions$ (player, constructions);
-          } else {
-            return of (constructions);
-          } // if - else
-        })
-      );
-    } // if - else
-  } // chooseConstructions$
+      const construction = await this.chooseConstruction (player, false);
+      const constructions = [construction];
+      this.game.applyConstruction (construction, player);
+      if (baronyRules.isConstructionValid (player, this.game)) {
+        return this.chooseConstructions (player, constructions);
+      } else {
+        return constructions;
+      }
+    }
+  }
 
-  private chooseConstructionOrPass$ (
-    player: BaronyColor
-  ): Observable<BaronyConstruction | null> {
-    return race (
-      this.chooseConstruction$ (player, true),
-      this.ui.passChange$ ().pipe (mapTo (null))
-    );
-  } // chooseConstructionOrPass$
+  private chooseConstructionOrPass (player: BaronyColor): Promise<BaronyConstruction | void> {
+    return Promise.race ([
+      this.chooseConstruction (player, true),
+      this.ui.passSelect.get ()
+    ]);
+  }
 
-  private chooseConstruction$ (
-    player: BaronyColor,
-    orPass: boolean
-  ): Observable<BaronyConstruction> {
-    return this.chooseLandForConstruction$ (player, orPass).pipe (
-      switchMap ((land) =>
-        this.chooseBuildingForConstruction$ (player, orPass).pipe (
-          map<"stronghold" | "village", BaronyConstruction> ((building) => ({
-            building: building,
-            land: land.coordinates,
-          }))
-        )
-      )
-    );
-  } // chooseConstruction$
+  private async chooseConstruction (player: BaronyColor, orPass: boolean): Promise<BaronyConstruction> {
+    const land = await this.chooseLandForConstruction (player, orPass);
+    const building = await this.chooseBuildingForConstruction (player, orPass);
+    return { building, land: land.coordinates };
+  }
 
-  private chooseLandForConstruction$ (
-    player: BaronyColor,
-    orPass: boolean
-  ): Observable<BaronyLand> {
-    const validLands = baronyRules.getValidLandsForConstruction (
-      player,
-      this.game
-    );
+  private chooseLandForConstruction (player: BaronyColor, orPass: boolean): Promise<BaronyLand> {
+    const validLands = baronyRules.getValidLandsForConstruction (player, this.game);
     this.ui.updateUi ("Choose land for construction", (s) => ({
       ...s,
       ...this.ui.resetUi (),
@@ -440,17 +300,11 @@ export class BaronyPlayerLocalService {
       validLands: validLands.map ((lt) => lt.coordinates),
       canPass: orPass,
     }));
-    return this.ui.landChange$ ();
-  } // chooseLandForConstruction$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseBuildingForConstruction$ (
-    player: BaronyColor,
-    orPass: boolean
-  ): Observable<"stronghold" | "village"> {
-    const validBuildings = baronyRules.getValidBuildingsForConstruction (
-      player,
-      this.game
-    );
+  private chooseBuildingForConstruction (player: BaronyColor, orPass: boolean): Promise<"stronghold" | "village"> {
+    const validBuildings = baronyRules.getValidBuildingsForConstruction (player, this.game);
     this.ui.updateUi ("Choose building for construction", (s) => ({
       ...s,
       ...this.ui.resetUi (),
@@ -460,67 +314,50 @@ export class BaronyPlayerLocalService {
       validBuildings: validBuildings,
       canPass: orPass,
     }));
-    return this.ui.buildingChange$ ();
-  } // chooseBuildingForConstruction$
+    return this.ui.buildingSelect.get ();
+  }
 
-  private chooseNewCity$ (player: BaronyColor): Observable<BaronyLand> {
-    const validLandsForNewCity = baronyRules.getValidLandsForNewCity (
-      player,
-      this.game
-    );
+  private chooseNewCity (player: BaronyColor): Promise<BaronyLand> {
+    const validLandsForNewCity = baronyRules.getValidLandsForNewCity (player, this.game);
     this.ui.updateUi ("Choose new city", (s) => ({
       ...s,
       ...this.ui.resetUi (),
       message: "Choose a land tile to build a new city.",
       validLands: validLandsForNewCity.map ((l) => l.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseNewCity$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseExpedition$ (player: BaronyColor): Observable<BaronyLand> {
-    const validLandsForExpedition = baronyRules.getValidLandsForExpedition (
-      player,
-      this.game
-    );
+  private chooseExpedition (player: BaronyColor): Promise<BaronyLand> {
+    const validLandsForExpedition = baronyRules.getValidLandsForExpedition (player, this.game);
     this.ui.updateUi ("Choose expedition", (s) => ({
       ...s,
       ...this.ui.resetUi (),
       message: "Choose a land tile for the expedition.",
       validLands: validLandsForExpedition.map ((l) => l.coordinates),
     }));
-    return this.ui.landChange$ ();
-  } // chooseExpedition$
+    return this.ui.landSelect.get ();
+  }
 
-  private chooseNobleTitle$ (player: BaronyColor): Observable<BaronyResourceType[]> {
-    return this.chooseResourcesForNobleTitle$ (player, [], 0);
-  } // chooseNobleTitle$
+  private chooseNobleTitle (player: BaronyColor): Promise<BaronyResourceType[]> {
+    return this.chooseResourcesForNobleTitle (player, [], 0);
+  }
 
-  private chooseResourcesForNobleTitle$ (
-    player: BaronyColor,
-    resources: BaronyResourceType[],
-    sum: number
-  ): Observable<BaronyResourceType[]> {
-    return this.chooseResourceForNobleTitle$ (player, sum).pipe (
-      switchMap ((resource) => {
-        const resoucePoints = baronyRules.getResourcePoints (resource);
-        sum += resoucePoints;
-        resources.push (resource);
-        this.game.discardResource (resource, player);
-        if (sum < 15) {
-          return this.chooseResourcesForNobleTitle$ (player, resources, sum);
-        } else {
-          return of (resources);
-        } // if - else
-      })
-    );
-  } // chooseResourcesForNobleTitle$
+  private async chooseResourcesForNobleTitle (player: BaronyColor, resources: BaronyResourceType[], sum: number): Promise<BaronyResourceType[]> {
+    const resource = await this.chooseResourceForNobleTitle (player, sum);
+    const resoucePoints = baronyRules.getResourcePoints (resource);
+    sum += resoucePoints;
+    resources.push (resource);
+    this.game.discardResource (resource, player);
+    if (sum < 15) {
+      return this.chooseResourcesForNobleTitle (player, resources, sum);
+    } else {
+      return resources;
+    }
+  }
 
-  private chooseResourceForNobleTitle$ (
-    player: BaronyColor,
-    sum: number
-  ): Observable<BaronyResourceType> {
-    const validResourcesForNobleTitle =
-      baronyRules.getValidResourcesForNobleTitle (player, this.game);
+  private async chooseResourceForNobleTitle (player: BaronyColor, sum: number): Promise<BaronyResourceType> {
+    const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle (player, this.game);
     this.ui.updateUi ("Choose resource for noble title", (s) => ({
       ...s,
       ...this.ui.resetUi (),
@@ -530,6 +367,6 @@ export class BaronyPlayerLocalService {
         resources: validResourcesForNobleTitle,
       },
     }));
-    return this.ui.resourceChange$ ();
-  } // chooseResourceForNobleTitle$
-} // BaronyPlayerLocalService
+    return this.ui.resourceSelect.get ();
+  }
+}

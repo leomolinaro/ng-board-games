@@ -1,3 +1,4 @@
+
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,14 +8,41 @@ import {
   Output,
 } from "@angular/core";
 import { BaronyResourceType } from "../barony-models";
-import { NgFor } from "@angular/common";
 
 @Component ({
   selector: "barony-resources-selector",
-  templateUrl: "./barony-resources-selector.component.html",
-  styleUrls: ["./barony-resources-selector.component.scss"],
+  template: `
+    <div class="b-resources-selector-container">
+      @for (resource of resources; track resource) {
+        <div
+          class="b-resource-image"
+          (click)="onResourceClick(resource)">
+          <img [src]="'assets/barony/resources/' + resource + '.png'" />
+        </div>
+      }
+    </div>
+  `,
+  styles: `
+    .b-resources-selector-container {
+      height: 12vh;
+      display: flex;
+      justify-content: space-evenly;
+      .b-resource-image {
+        height: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+        & > img {
+          height: 100%;
+          &:hover {
+            opacity: 0.7;
+          }
+        }
+        cursor: pointer;
+      }
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgFor]
+  imports: []
 })
 export class BaronyResourcesSelectorComponent implements OnChanges {
   constructor () {}

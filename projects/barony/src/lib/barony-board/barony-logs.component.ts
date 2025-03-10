@@ -1,4 +1,4 @@
-import { NgFor } from "@angular/common";
+
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyLog } from "../barony-models";
@@ -7,7 +7,9 @@ import { BaronyLogComponent } from "./barony-log.component";
 @Component ({
   selector: "barony-logs",
   template: `
-    <barony-log *ngFor="let log of logs" [log]="log"></barony-log>
+    @for (log of logs; track log) {
+      <barony-log [log]="log"></barony-log>
+    }
   `,
   styles: [`
     :host {
@@ -19,7 +21,7 @@ import { BaronyLogComponent } from "./barony-log.component";
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgFor, BaronyLogComponent]
+  imports: [BaronyLogComponent]
 })
 export class BaronyLogsComponent implements OnChanges {
   

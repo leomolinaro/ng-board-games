@@ -1,3 +1,4 @@
+import { NgClass, NgFor } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,12 +10,73 @@ import {
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
-import { NgClass, NgFor } from "@angular/common";
 
 @Component ({
   selector: "barony-actions",
-  templateUrl: "./barony-actions.component.html",
-  styleUrls: ["./barony-actions.component.scss"],
+  template: `
+    <div class="b-actions">
+      <button
+        class="b-action b-cancel"
+        [ngClass]="{
+          'is-active': canCancel,
+          'is-disabled': !canCancel
+        }"
+        (click)="onCancelClick()">
+        {{ labels.cancel }}
+      </button>
+      <button
+        class="b-action b-pass"
+        [ngClass]="{
+          'is-active': canPass,
+          'is-disabled': !canPass
+        }"
+        (click)="onPassClick()">
+        {{ labels.pass }}
+      </button>
+      <button
+        *ngFor="let action of actions"
+        class="b-action"
+          [ngClass]="{
+            'is-active': isValid ? isValid[action] : false,
+            'is-disabled': isValid ? !isValid[action] : true
+          }"
+          (click)="onActionClick(action)">
+        {{ $any(labels)[action] }}
+      </button>
+    </div>
+  `,
+  styles: `
+    @use 'barony-variables' as barony;
+
+    .b-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      grid-gap: 2vmin;
+      font-size: barony.$font-size-actions;
+      .b-action {
+        &.b-cancel {
+          grid-column-start: 2;
+        }
+        padding: 2vmin;
+        box-shadow: barony.$widget-shadow;
+        color: white;
+        background-color: barony.$surface;
+        border: 0;
+        outline: none;
+        &.is-active {
+          cursor: pointer;
+          &:hover {
+            box-shadow: barony.$widget-shadow-hover;
+          }
+        }
+        &.is-disabled {
+          opacity: 0.5;
+          cursor: no-drop;
+        }
+      }
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, NgFor]
 })

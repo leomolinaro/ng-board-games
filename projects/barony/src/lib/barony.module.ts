@@ -5,21 +5,21 @@ import { MatTableModule } from "@angular/material/table";
 import { RouterModule, Routes } from "@angular/router";
 import { BgSvgModule } from "@leobg/commons";
 import { BgTransformPipe } from "@leobg/commons/utils";
-import { BaronyActionsComponent } from "./barony-actions/barony-actions.component";
+import { BaronyActionsComponent } from "./barony-board/barony-actions.component";
 import { BaronyBoardComponent } from "./barony-board/barony-board.component";
-import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector/barony-buildings-selector.component";
-import { BaronyEndGameComponent } from "./barony-end-game/barony-end-game.component";
+import { BaronyBuildingsSelectorComponent } from "./barony-board/barony-buildings-selector.component";
+import { BaronyEndGameComponent } from "./barony-board/barony-end-game/barony-end-game.component";
+import { BaronyKnightsSelectorComponent } from "./barony-board/barony-knights-selector.component";
+import { BaronyLandCoordinatesPipe } from "./barony-board/barony-land-tile/barony-land-tile-coordinates.pipe";
+import { BaronyLandComponent } from "./barony-board/barony-land-tile/barony-land-tile.component";
+import { BaronyLogComponent } from "./barony-board/barony-log.component";
+import { BaronyLogsComponent } from "./barony-board/barony-logs.component";
+import { BaronyMapComponent } from "./barony-board/barony-map/barony-map.component";
+import { BaronyPlayerStatusComponent } from "./barony-board/barony-player-status/barony-player-status.component";
+import { BaronyResourcesSelectorComponent } from "./barony-board/barony-resources-selector.component";
+import { BaronyScoreboardComponent } from "./barony-board/barony-scoreboard.component";
 import { BaronyGameComponent } from "./barony-game/barony-game.component";
 import { BaronyHomeComponent } from "./barony-home/barony-home.component";
-import { BaronyKnightsSelectorComponent } from "./barony-knights-selector/barony-knights-selector.component";
-import { BaronyLandCoordinatesPipe } from "./barony-land-tile/barony-land-tile-coordinates.pipe";
-import { BaronyLandComponent } from "./barony-land-tile/barony-land-tile.component";
-import { BaronyLogComponent } from "./barony-logs/barony-log.component";
-import { BaronyLogsComponent } from "./barony-logs/barony-logs.component";
-import { BaronyMapComponent } from "./barony-map/barony-map.component";
-import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
-import { BaronyResourcesSelectorComponent } from "./barony-resources-selector/barony-resources-selector.component";
-import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
 
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
