@@ -66,7 +66,7 @@ import { WotrStoryService } from "./wotr-story.service";
       [canCancel]="ui.canCancel ()"
       [canPass]="ui.canPass ()"
       [canConfirm]="ui.canConfirm ()"
-      (confirm)="ui.confirm.emit ()"
+      (confirm)="ui.confirmSelect.emit ()"
       (currentPlayerChange)="ui.setCurrentPlayerId ($event?.id || null)"
       (replayNext)="onReplayNext ($event)"
       (replayLast)="onReplayLast ()">

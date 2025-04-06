@@ -4,8 +4,8 @@ import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrPlayer } from "./wotr-player";
 
 export interface WotrPlayerService {
-  firstPhase? (player: WotrPlayer): Promise<WotrGameStory>;
-  fellowshipPhase? (): Promise<WotrGameStory>;
+  firstPhase (player: WotrPlayer): Promise<WotrGameStory>;
+  fellowshipPhase (): Promise<WotrGameStory>;
   huntAllocationPhase? (): Promise<WotrGameStory>;
   rollActionDice? (): Promise<WotrGameStory>;
   rollHuntDice? (): Promise<WotrGameStory>;

@@ -1,4 +1,4 @@
-import { EMPTY, Observable, defer, expand, filter, finalize, first, firstValueFrom, forkJoin, from, last, map, of, race, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, expand, filter, first, firstValueFrom, last, map, of, race, tap } from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -21,9 +21,14 @@ type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
 
-export interface BgStoryTask<Pid extends string, St, PlSrv> {
+export interface BgStoryTask$<Pid extends string, St, PlSrv> {
   playerId: Pid;
   task$: (playerService: PlSrv) => Observable<St>;
+}
+
+export interface BgStoryTask<Pid extends string, St, PlSrv> {
+  playerId: Pid;
+  task: (playerService: PlSrv) => Promise<St>;
 }
 
 export function unexpectedStory<St> (actualStoryDoc: St, expected: string) {
@@ -45,9 +50,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract getGameId (): string;
   protected abstract getPlayer (playerId: string): Pl;
   protected abstract getGameOwner (): BgUser;
-  protected abstract getCurrentPlayerId (): string | null;
+  protected abstract getCurrentPlayerId (): Pid | null;
   protected abstract setCurrentPlayer (playerId: string): void;
-  protected abstract currentPlayerChange$ (): Observable<string | null>;
+  protected abstract currentPlayerChange$ (): Observable<unknown>;
   protected abstract cancelChange$ (): Observable<void>;
 
   protected abstract startTemporaryState (): void;
@@ -102,16 +107,20 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     }
   }
 
-  private getLocalStory$<R extends St> (time: number, playerId: Pid, task$: () => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
+  private async getLocalStory<R extends St> (time: number, playerId: Pid, task: () => Promise<R>): Promise<R | null> {
+    console.log ("getLocalStory", getStoryId (time, playerId));
     this.startTemporaryState ();
-    return task$ ().pipe (
-      switchMap (story => {
-        const storyDoc: BgStoryDoc<Pid, R> = { ...story, time, playerId };
-        const storyId = getStoryId (storyDoc.time, playerId);
-        return this.insertStoryDoc$ (storyId, storyDoc, this.getGameId ()).pipe (map (() => storyDoc));
-      }),
-      finalize (() => this.endTemporaryState ())
-    );
+    const story = await task ();
+    await this.insertStory (story, time, playerId);
+    this.endTemporaryState ();
+    return story;
+  }
+
+  private async insertStory (story: St, time: number, playerId: Pid) {
+    const storyDoc: BgStoryDoc<Pid, St> = { ...story, time, playerId };
+    const storyId = getStoryId (storyDoc.time, playerId);
+    await firstValueFrom (this.insertStoryDoc$ (storyId, storyDoc, this.getGameId ()));
+    return storyDoc;
   }
 
   private getRemoteStory$<R extends St> (time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R>> {
@@ -123,32 +132,30 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     );
   }
 
-  private getLocalStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<BgStoryDoc<Pid, R> | null> {
-    return defer (() => {
-      const playerService = this.getPlayerService (playerId);
-      if (playerService) {
-        return race (
-          this.getLocalStory$ (time, playerId, () => task$ (playerService)),
-          this.currentPlayerChange$ ().pipe (map (() => null)),
-          this.cancelChange$ ().pipe (map (() => null))
-        );
-      } else {
-        return this.currentPlayerChange$ ().pipe (map (() => null));
-      }
-    });
+  private getLocalStoryWrap$<R extends St> (time: number, playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Observable<R | null> {
+    const playerService = this.getPlayerService (playerId);
+    if (playerService) {
+      return race (
+        this.getLocalStory (time, playerId, () => task (playerService)),
+        this.currentPlayerChange$ ().pipe (map (() => null)),
+        this.cancelChange$ ().pipe (map (() => null)),
+      );
+    } else {
+      return this.currentPlayerChange$ ().pipe (map (() => null));
+    }
   }
 
-  private getStoryWrap$<R extends St> (time: number, playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
+  private getStoryWrap$<R extends St> (time: number, playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Observable<R> {
     if (this.isRemotePlayer (playerId)) {
       this.resetUi (playerId);
       return this.getRemoteStory$<R> (time, playerId);
     } else {
       this.resetUi (playerId);
-      return this.getLocalStoryWrap$ (time, playerId, task$).pipe (
+      return this.getLocalStoryWrap$ (time, playerId, task).pipe (
         expand (storyDoc => {
           if (storyDoc) { return EMPTY; }
           this.resetUi (playerId);
-          return this.getLocalStoryWrap$ (time, playerId, task$);
+          return this.getLocalStoryWrap$ (time, playerId, task);
         }),
         last (),
         map (story => story!)
@@ -157,10 +164,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   }
 
   protected executeTask<R extends St> (playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Promise<R> {
-    return firstValueFrom (this.executeTask$ (playerId, p => from (task (p))));
+    return firstValueFrom (this.executeTask$ (playerId, p => task (p)));
   }
 
-  protected executeTask$<R extends St> (playerId: Pid, task$: (playerService: PlSrv) => Observable<R>): Observable<R> {
+  private executeTask$<R extends St> (playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Observable<R> {
     const time = this.storyTime + 1;
     this.autoRefreshCurrentPlayer (playerId);
     if (this.storyDocs?.length) {
@@ -170,43 +177,95 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
       if (storyDoc.playerId !== playerId) { throw unexpectedStory (storyDoc, `player ${playerId}`); }
       return of (storyDoc as R);
     }
-    return this.getStoryWrap$<R> (time, playerId, task$).pipe (
+    return this.getStoryWrap$ (time, playerId, task).pipe (
       tap (() => this.storyTime = time)
     );
   }
 
-  protected executeTasks$ (tasks: BgStoryTask<Pid, St, PlSrv>[]): Observable<St[]> {
+  protected async executeTasks (tasks: BgStoryTask<Pid, St, PlSrv>[]): Promise<St[]> {
     const time = this.storyTime + 1;
-    tasks.find (task => this.autoRefreshCurrentPlayer (task.playerId));
 
-    const storyDocByPlayer = new Map<Pid, BgStoryDoc<Pid, St>> ();
+    const storyDocByPlayer = new Map<Pid, St> ();
+    const pastStoryDocByPlayer = new Map<Pid, BgStoryDoc<Pid, St>> ();
     let i = 0;
     while (this.storyDocs?.length && i < tasks.length) {
       const storyDoc = this.storyDocs.shift ()!;
-      storyDocByPlayer.set (storyDoc.playerId, storyDoc);
+      pastStoryDocByPlayer.set (storyDoc.playerId, storyDoc);
       i++;
     }
 
-    const storyDoc$s: Observable<St>[] = [];
+    const remoteTasks: BgStoryTask<Pid, St, PlSrv>[] = [];
+    const localTasks: BgStoryTask<Pid, St, PlSrv>[] = [];
+    const aiTasks: BgStoryTask<Pid, St, PlSrv>[] = [];
     for (const task of tasks) {
-      const storyDoc = storyDocByPlayer.get (task.playerId);
+      const storyDoc = pastStoryDocByPlayer.get (task.playerId);
       if (storyDoc) {
-        storyDocByPlayer.delete (task.playerId);
-        storyDoc$s.push (of (storyDoc));
+        pastStoryDocByPlayer.delete (task.playerId);
+        storyDocByPlayer.set (task.playerId, storyDoc);
         if (storyDoc.time !== time) { throw unexpectedStory (storyDoc, `time ${time}`); }
       } else {
-        storyDoc$s.push (this.getStoryWrap$ (time, task.playerId, task.task$));
+        if (this.isLocalPlayer (task.playerId)) {
+          localTasks.push (task);
+        } else if (this.isAiPlayer (task.playerId) && this.isOwnerUser ()) {
+          aiTasks.push (task);
+        } else {
+          remoteTasks.push (task);
+        }
       }
     }
 
-    if (storyDocByPlayer.size) {
-      const next = storyDocByPlayer.values ().next ();
+    if (pastStoryDocByPlayer.size) {
+      const next = pastStoryDocByPlayer.values ().next ();
       throw unexpectedStory (next, `player be ${tasks.map (t => t.playerId).join (" or ")}`);
     }
 
-    return forkJoin (storyDoc$s).pipe (
-      tap (() => this.storyTime = time)
-    );
+    for (const aiTask of aiTasks) {
+      this.resetUi (aiTask.playerId);
+      const playerService = this.getPlayerService (aiTask.playerId)!;
+      const story = await (aiTask.task (playerService));
+      await this.insertStory (story, time, aiTask.playerId);
+      storyDocByPlayer.set (aiTask.playerId, story);
+    }
+
+    while (localTasks.length) {
+      let playerId = this.getCurrentPlayerId ();
+      let task: BgStoryTask<Pid, St, PlSrv>;
+      const taskIndex = localTasks.findIndex (t => t.playerId === playerId);
+      if (taskIndex >= 0) {
+        task = localTasks.splice (taskIndex, 1)[0];
+      } else {
+        task = localTasks.shift ()!;
+        playerId = task.playerId;
+        this.autoRefreshCurrentPlayer (playerId);
+      }
+      const playerService = this.getPlayerService (playerId!)!;
+      this.resetUi (playerId!);
+      const story = await firstValueFrom (race (
+        this.getLocalStory (time, playerId!, () => task.task (playerService)),
+        this.currentPlayerChange$ ().pipe (map (() => null)),
+        this.cancelChange$ ().pipe (map (() => null)),
+      ));
+      if (story) {
+        storyDocByPlayer.set (task.playerId, story);
+      } else {
+        localTasks.push (task);
+      }
+    }
+
+    for (const remoteTask of remoteTasks) {
+      this.resetUi (remoteTask.playerId);
+      const story = await firstValueFrom (this.getRemoteStory$ (time, remoteTask.playerId));
+      storyDocByPlayer.set (remoteTask.playerId, story);
+    }
+
+    const storyDocs: St[] = [];
+    for (const task of tasks) {
+      const story = storyDocByPlayer.get (task.playerId)!;
+      storyDocs.push (story);
+    }
+
+    this.storyTime = time;
+    return storyDocs;
   }
 
 }

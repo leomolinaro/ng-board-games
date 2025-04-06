@@ -1,7 +1,7 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { forEach, forN } from "@leobg/commons/utils";
-import { Observable, of } from "rxjs";
+import { firstValueFrom, from, Observable, of } from "rxjs";
 import { map, switchMap, tap } from "rxjs/operators";
 import { BritColor, BritLandAreaId, BritNationId, BritRoundId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
@@ -102,8 +102,8 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
     switch (data.type) {
       case "infantry-placement": {
         if (data.nInfantries) {
-          return this.executeTask$ (playerId, (p) => p.armyPlacement$ (data.nInfantries, nationId, playerId)).pipe (
-            map ((armyPlacement) => {
+          return from (this.executeTask (playerId, p => firstValueFrom (p.armyPlacement$ (data.nInfantries, nationId, playerId)))).pipe (
+            map (armyPlacement => {
               const infantryPlacement: { areaId: BritLandAreaId; quantity: number }[] = [];
               for (const ip of armyPlacement.infantryPlacement) {
                 infantryPlacement.push (
@@ -136,7 +136,7 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
 
   private movementPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("movement");
-    return this.executeTask$ (playerId, (p) => p.armyMovements$ (nationId, playerId)).pipe (
+    return from (this.executeTask (playerId, p => firstValueFrom (p.armyMovements$ (nationId, playerId)))).pipe (
       map ((armyMovements) => {
         if (armyMovements.movements?.length) {
           this.game.applyArmyMovements (armyMovements, true);
@@ -152,7 +152,7 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
   private battlesRetreatsPhase$ (nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase ("battlesRetreats");
     if (this.rules.battlesRetreats.hasBattlesToResolve (nationId, this.game.get ())) {
-      return this.executeTask$ (playerId, (p) => p.battleInitiation$ (nationId, playerId)).pipe (
+      return from (this.executeTask (playerId, p => firstValueFrom (p.battleInitiation$ (nationId, playerId)))).pipe (
         map ((battleInitiation) => {
           console.log ("battleInitiation", battleInitiation);
           return void 0;

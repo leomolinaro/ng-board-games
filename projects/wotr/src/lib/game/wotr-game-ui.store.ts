@@ -1,8 +1,6 @@
 import { Injectable, computed, inject } from "@angular/core";
-import { toObservable } from "@angular/core/rxjs-interop";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
-import { first, skip } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
@@ -75,13 +73,12 @@ export class WotrGameUiStore extends signalStore (
   //   }
   // });
 
-  pass = uiEvent<void> ();
-  confirm = uiEvent<void> ();
-  cancel = uiEvent<void> ();
-  selectRegion = uiEvent<WotrRegionId> ();
-
-  _currentPlayerChange$ = toObservable (this.currentPlayerId).pipe (skip (1), first ());
-  currentPlayerChange$ () { return this._currentPlayerChange$; }
+  passSelect = uiEvent<void> ();
+  continueSelect = uiEvent<void> ();
+  confirmSelect = uiEvent<boolean> ();
+  cancelSelect = uiEvent<void> ();
+  regionSelect = uiEvent<WotrRegionId> ();
+  playerSelect = uiEvent<WotrFrontId | null> ();
 
   private updateUi<
     S extends WotrGameUiState & {
@@ -101,10 +98,24 @@ export class WotrGameUiStore extends signalStore (
     // }));
   }
 
-  async askConfirm (message: string) {
+  async askContinue (message: string): Promise<void> {
     this.updateUi (s => ({ ...s, message, canConfirm: true }));
-    await this.confirm.get ();
+    await this.continueSelect.get ();
     this.updateUi (s => ({ ...s, message: null, canConfirm: false }));
+  }
+
+  async askConfirm (message: string): Promise<boolean> {
+    this.updateUi (s => ({ ...s, message, canConfirm: true }));
+    const confirm = await this.confirmSelect.get ();
+    this.updateUi (s => ({ ...s, message: null, canConfirm: false }));
+    return confirm;
+  }
+
+  async askRegion (validRegions: WotrRegionId[]): Promise<WotrRegionId> {
+    this.updateUi (s => ({ ...s, message: "Select a region", validRegions }));
+    const region = await this.regionSelect.get ();
+    this.updateUi (s => ({ ...s, message: null, validRegions: null }));
+    return region;
   }
 
   resetUi (): Partial<WotrGameUiState> {
@@ -131,11 +142,8 @@ export class WotrGameUiStore extends signalStore (
   // }
 
   setCurrentPlayerId (playerId: WotrFrontId | null) {
+    this.playerSelect.emit (playerId);
     patchState (this, { currentPlayerId: playerId });
-    // this.updateUi ((s) => ({
-    //   ...s,
-    //   currentPlayerId: playerId,
-    // }));
   }
   
 }

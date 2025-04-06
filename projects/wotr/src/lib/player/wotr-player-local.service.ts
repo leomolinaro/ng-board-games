@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
+import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
@@ -14,17 +15,23 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private ui = inject (WotrGameUiStore);
 
   async firstPhase (player: WotrPlayer): Promise<WotrGameStory> {
-    console.log ("player", player);
-    await this.ui.askConfirm ("Draw cards");
+    await this.ui.askContinue ("Draw cards");
     const characterDeck = this.front.characterDeck (player.frontId);
     const strategyDeck = this.front.strategyDeck (player.frontId);
     const drawnCards: WotrCardId[] = [];
     if (characterDeck.length) { drawnCards.push (characterDeck[0]); }
     if (strategyDeck.length) { drawnCards.push (strategyDeck[0]); }
     this.front.drawCards (drawnCards, player.frontId);
-    await this.ui.askConfirm ("Continue");
-    // this.ui.resetUi (front);
+    await this.ui.askContinue ("Continue");
     return { type: "phase", actions: [drawCardIds (...drawnCards)] };
+  }
+
+  async fellowshipPhase (): Promise<WotrGameStory> {
+    const declare = await this.ui.askConfirm ("Do you want to declare the fellowship?");
+    if (!declare) { return { type: "phase", actions: [notDeclareFellowship ()] }; }
+    const validRegions = [];
+    const region = await this.ui.askRegion (validRegions);
+    return { type: "phase", actions: [declareFellowship (region)] };
   }
 
   async separateCompanions (): Promise<WotrGameStory> {

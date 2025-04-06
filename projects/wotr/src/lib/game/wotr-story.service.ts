@@ -44,24 +44,21 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   protected override selectStoryDoc$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
   protected override getCurrentPlayerId () { return this.ui.currentPlayerId (); }
   protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayerId (playerId); }
-  protected override currentPlayerChange$ () { return this.ui.currentPlayerChange$ (); }
-  protected override cancelChange$ () { return from (this.ui.cancel.get ()); }
+  protected override currentPlayerChange$ () { return from (this.ui.playerSelect.get ()); }
+  protected override cancelChange$ () { return from (this.ui.cancelSelect.get ()); }
 
   private nReplayStories = 0;
   private replayToLastStory = false;
   private $replayCall = new Subject<void> ();
   
-  private async executeTask2<R extends WotrGameStory> (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<R>): Promise<R> {
+  private async executeTask2 (playerId: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<WotrGameStory>): Promise<WotrGameStory> {
     await this.replayCall ();
     return super.executeTask (playerId, p => task (p));
   }
 
-  private async executeTasks (tasks: WotrStoryTask[]): Promise<WotrGameStory[]> {
+  private async executeTasks2 (tasks: WotrStoryTask[]): Promise<WotrGameStory[]> {
     await this.replayCall ();
-    return firstValueFrom (super.executeTasks$ (tasks.map (t => ({
-      playerId: t.playerId,
-      task$: p => from (t.task (p))
-    }))));
+    return super.executeTasks (tasks);
   }
 
   private async replayCall () {
@@ -96,7 +93,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   }
 
   async parallelStories (getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
-    const stories = await this.executeTasks (this.frontStore.frontIds ().map (
+    const stories = await this.executeTasks2 (this.frontStore.frontIds ().map (
       front => ({ playerId: front, task: getTask (front) })
     ));
     let index = 0;
@@ -109,7 +106,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
     return toReturn;
   }
 
-  async story<S extends WotrGameStory> (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<S>) {
+  async story (front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
     const story = await this.executeTask2 (front, task);
     await this.applyStory (story, front);
     return story;
