@@ -49,34 +49,6 @@ import { WotrStoryService } from "./wotr-story.service";
   ],
   template: `
     <wotr-board
-      [players]="playerInfoStore.players ()"
-      [regions]="regionStore.regions ()"
-      [freePeoples]="frontStore.freePeoplesFront ()"
-      [shadow]="frontStore.shadowFront ()"
-      [hunt]="huntStore.state ()"
-      [fellowship]="fellowshipStore.state ()"
-      [freePeoplesNations]="nationStore.freePeoplesNations ()"
-      [nationById]="nationStore.nationById ()"
-      [nations]="nationStore.nations ()"
-      [characters]="characterStore.characters ()"
-      [characterById]="characterStore.characterById ()"
-      [shadowNations]="nationStore.shadowNations ()"
-      [logs]="logStore.state ()"
-      [currentPlayerId]="ui.currentPlayerId ()"
-      [message]="ui.message ()"
-      [canCancel]="ui.canCancel ()"
-      [canPass]="ui.canPass ()"
-      [canInputQuantity]="ui.canInputQuantity ()"
-      [canConfirm]="ui.canConfirm ()"
-      [canContinue]="ui.canContinue ()"
-      [validRegions]="ui.validRegions ()"
-      [validActionFront]="ui.validActionFront ()"
-      (regionSelect)="ui.region.emit ($event)"
-      (actionSelect)="ui.action.emit ($event)"
-      (confirm)="ui.confirm.emit ($event)"
-      (continue)="ui.continue.emit ()"
-      (inputQuantity)="ui.inputQuantity.emit ($event)"
-      (currentPlayerChange)="ui.setCurrentPlayerId ($event?.id || null)"
       (replayNext)="onReplayNext ($event)"
       (replayLast)="onReplayLast ()">
     </wotr-board>
@@ -125,15 +97,6 @@ import { WotrStoryService } from "./wotr-story.service";
 export class WotrGameComponent implements OnInit, OnDestroy {
 
   protected store = inject (WotrGameStore);
-  protected frontStore = inject (WotrFrontStore);
-  protected regionStore = inject (WotrRegionStore);
-  protected playerInfoStore = inject (WotrPlayerInfoStore);
-  protected characterStore = inject (WotrCharacterStore);
-  protected nationStore = inject (WotrNationStore);
-  protected huntStore = inject (WotrHuntStore);
-  protected fellowshipStore = inject (WotrFellowshipStore);
-  protected logStore = inject (WotrLogStore);
-  protected ui = inject (WotrGameUiStore);
   private remote = inject (WotrRemoteService);
   private route = inject (ActivatedRoute);
   private auth = inject (BgAuthService);
@@ -156,24 +119,6 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   }
 
   private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
-
-  // // endGame$ = this.game.selectEndGame$ ();
-
-  // turnPlayer$ = this.ui.selectTurnPlayer$ ();
-  // currentPlayer$ = this.ui.selectCurrentPlayer$ ();
-  // // players$ = this.ui.selectPlayers$ ();
-  // message$ = this.ui.selectMessage$ ();
-  // validRegions$ = this.ui.selectValidRegions$ ();
-  // validUnits$ = this.ui.selectValidUnits$ ();
-  // selectedUnits$ = this.ui.selectSelectedUnits$ ();
-  // // validActions$ = this.ui.selectValidActions$ ();
-  // // validBuildings$ = this.ui.selectValidBuildings$ ();
-  // // validResources$ = this.ui.selectValidResources$ ();
-  // canPass$ = this.ui.selectCanPass$ ();
-  // canConfirm$ = this.ui.selectCanContinue$ ();
-  // canCancel$ = this.ui.selectCanCancel$ ();
-
-  // @ViewChild (WotrBoardComponent) boardComponent!: WotrBoardComponent;
 
   async ngOnInit () {
     this.cardEffects.registerCardEffects ();

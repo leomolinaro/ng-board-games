@@ -1,26 +1,27 @@
-import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject, input, output } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, output } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
 import { WotrActionDiceComponent } from "../../action/wotr-action-dice.component";
-import { WotrActionDieOrToken } from "../../action/wotr-action.models";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
-import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
-import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
+import { WotrCharacterStore } from "../../character/wotr-character.store";
+import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship.store";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
-import { WotrFront, WotrFrontId } from "../../front/wotr-front.models";
+import { WotrFront } from "../../front/wotr-front.models";
+import { WotrFrontStore } from "../../front/wotr-front.store";
 import { WotrHuntAreaComponent } from "../../hunt/wotr-hunt-area.component";
-import { WotrHuntState } from "../../hunt/wotr-hunt.store";
-import { WotrLog } from "../../log/wotr-log.models";
+import { WotrHuntStore } from "../../hunt/wotr-hunt.store";
+import { WotrLogStore } from "../../log/wotr-log.store";
 import { WotrLogsComponent } from "../../log/wotr-logs.component";
-import { WotrNation, WotrNationId } from "../../nation/wotr-nation.models";
-import { WotrPlayerInfo } from "../../player/wotr-player-info.models";
+import { WotrNationStore } from "../../nation/wotr-nation.store";
+import { WotrPlayerInfoStore } from "../../player/wotr-player-info.store";
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
-import { WotrRegion, WotrRegionId } from "../../region/wotr-region.models";
-import { WotrGameUiInputQuantity } from "../wotr-game-ui.store";
+import { WotrRegion } from "../../region/wotr-region.models";
+import { WotrRegionStore } from "../../region/wotr-region.store";
+import { WotrGameUiStore } from "../wotr-game-ui.store";
 import { WotrMapComponent } from "./map/wotr-map.component";
 import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 
@@ -42,30 +43,30 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
       <wotr-map
         class="wotr-map"
         #wotrMap
-        [regions]="regions ()"
+        [regions]="regionStore.regions ()"
         [nations]="nations ()"
-        [hunt]="hunt ()"
+        [hunt]="huntStore.state ()"
         [freePeoples]="freePeoples ()"
         [shadow]="shadow ()"
-        [fellowship]="fellowship ()"
+        [fellowship]="fellowshipStore.state ()"
         [characterById]="characterById ()"
-        [validRegions]="validRegions ()"
+        [validRegions]="ui.validRegions ()"
         (regionClick)="onRegionClick ($event)">
       </wotr-map>
       <wotr-player-toolbar
         class="wotr-toolbar"
-        [currentPlayerId]="currentPlayerId ()"
-        [players]="players ()"
-        [message]="message ()"
-        [canConfirm]="canConfirm ()"
-        [canContinue]="canContinue ()"
-        [canPass]="canPass ()"
-        [canCancel]="canCancel ()"
-        [canInputQuantity]="canInputQuantity ()"
-        (currentPlayerChange)="currentPlayerChange.emit ($event)"
-        (confirm)="confirm.emit ($event)"
-        (continue)="continue.emit ()"
-        (inputQuantity)="inputQuantity.emit ($event)">
+        [currentPlayerId]="ui.currentPlayerId ()"
+        [players]="playerInfoStore.players ()"
+        [message]="ui.message ()"
+        [canConfirm]="ui.canConfirm ()"
+        [canContinue]="ui.canContinue ()"
+        [canPass]="ui.canPass ()"
+        [canCancel]="ui.canCancel ()"
+        [canInputQuantity]="ui.canInputQuantity ()"
+        (currentPlayerChange)="ui.setCurrentPlayerId ($event?.id || null)"
+        (confirm)="ui.confirm.emit ($event)"
+        (continue)="ui.continue.emit ()"
+        (inputQuantity)="ui.inputQuantity.emit ($event)">
       </wotr-player-toolbar>
       <div class="wotr-fronts">
         <mat-tab-group>
@@ -82,7 +83,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
           }
           <mat-tab label="Hunt">
             <wotr-hunt-area
-              [hunt]="hunt ()">
+              [hunt]="huntStore.state ()">
             </wotr-hunt-area>
           </mat-tab>
         </mat-tab-group>
@@ -90,13 +91,15 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
       <div class="wotr-action-dice-box">
         <wotr-action-dice
           [fronts]="fronts ()"
-          [validActionFront]="validActionFront ()"
-          (actionSelect)="actionSelect.emit ($event)">
+          [validActionFront]="ui.validActionFront ()"
+          (actionSelect)="ui.action.emit ($event)">
         </wotr-action-dice>
       </div>
       <div class="wotr-logs">
         <wotr-replay-buttons class="wotr-replay-buttons" (replayNext)="replayNext.emit ($event)" (replayLast)="replayLast.emit ()"></wotr-replay-buttons>
-        <wotr-logs [logs]="logs ()"></wotr-logs>
+        <wotr-logs
+          [logs]="logStore.state ()">
+        </wotr-logs>
       </div>
     </div>
   `,
@@ -105,67 +108,32 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 })
 export class WotrBoardComponent {
 
-  // constructor (private bottomSheet: MatBottomSheet) {}
-
   private dialog = inject (MatDialog);
 
-  players = input.required<WotrPlayerInfo[]> ();
-  regions = input.required<WotrRegion[]> ();
-  nations = input.required<WotrNation[]> ();
-  freePeoples = input.required<WotrFront> ();
-  shadow = input.required<WotrFront> ();
-  fronts = computed (() => ([this.freePeoples (), this.shadow ()]));
-  hunt = input.required<WotrHuntState> ();
-  fellowship = input.required<WotrFellowship> ();
-  freePeoplesNations = input.required<WotrNation[]> ();
-  shadowNations = input.required<WotrNation[]> ();
-  nationById = input.required<Record<WotrNationId, WotrNation>> ();
-  characters = input.required<WotrCharacter[]> ();
-  characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
-  logs = input.required<WotrLog[]> ();
-  message = input<string> ();
-  currentPlayerId = input.required<WotrFrontId | null> ();
+  protected playerInfoStore = inject (WotrPlayerInfoStore);
+  protected regionStore = inject (WotrRegionStore);
+  protected frontStore = inject (WotrFrontStore);
+  protected huntStore = inject (WotrHuntStore);
+  protected characterStore = inject (WotrCharacterStore);
+  protected fellowshipStore = inject (WotrFellowshipStore);
+  protected nationStore = inject (WotrNationStore);
+  protected logStore = inject (WotrLogStore);
+  protected ui = inject (WotrGameUiStore);
+
+  protected freePeoples = this.frontStore.freePeoplesFront;
+  protected shadow = this.frontStore.shadowFront;
+  protected fronts = computed (() => ([this.freePeoples (), this.shadow ()]));
+
+  protected characters = this.characterStore.characters;
+  protected characterById = this.characterStore.characterById;
+
+  protected freePeoplesNations = this.nationStore.freePeoplesNations;
+  protected nationById = this.nationStore.nationById;
+  protected nations = this.nationStore.nations;
+  protected shadowNations = this.nationStore.shadowNations;
 
   protected nChaCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0);
   protected nStrCards: BgTransformFn<WotrCardId[], number> = handCards => handCards.reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0);
-  // computed (() => this.freePeopleFront ().handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0));
-  // protected freePeopleNChaCards = computed (() => this.freePeopleFront ().handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0));
-  // protected freePeopleNStrCards = computed (() => this.freePeopleFront ().handCards.reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0));
-  // protected shadowNChaCards = computed (() => this.shadowFront ().handCards.reduce ((count, card) => isCharacterCard (card) ? (count + 1) : count, 0));
-  // protected shadowNStrCards = computed (() => this.shadowFront ().handCards.reduce ((count, card) => isStrategyCard (card) ? (count + 1) : count, 0));
-
-
-  // @Input () turnPlayer: WotrPlayer | null = null;
-  // validRegions = input.required<WotrRegionId[] | null> ();
-  canPass = input.required<boolean> ({ transform: booleanAttribute as any });
-  canConfirm = input.required<boolean> ({ transform: booleanAttribute as any });
-  canContinue = input.required<boolean> ({ transform: booleanAttribute as any });
-  canCancel = input.required<boolean> ({ transform: booleanAttribute as any });
-  canInputQuantity = input.required<WotrGameUiInputQuantity | false> ();
-  validRegions = input<WotrRegionId[] | null> ();
-  validActionFront = input<WotrFrontId | null> ();
-  // @Input () validUnits: WotrRegionUnit[] | null = null;
-  // @Input () selectedUnits: WotrRegionUnit[] | null = null;
-  // @Input () validActions: BaronyAction[] | null = null;
-  // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
-  // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
-
-
-  currentPlayerChange = output<WotrPlayerInfo | null> ();
-  // buildingSelect = output<BaronyBuilding> ();
-  regionSelect = output<WotrRegionId> ();
-  actionSelect = output<WotrActionDieOrToken> ();
-  // unitClick = output<WotrRegionUnit> ();
-  // selectedUnitsChange = output<WotrRegionUnit[]> ();
-  // actionClick = output<BaronyAction> ();
-  pass = output<void> ();
-  confirm = output<boolean> ();
-  continue = output<void> ();
-  inputQuantity = output<number> ();
-  cancel = output<void> ();
-  // knightsConfirm = output<number> ();
-  // resourceSelect = output<BaronyResourceType> ();
-  testClick = output<void> ();
 
   replayNext = output<number> ();
   replayLast = output<void> ();
@@ -173,16 +141,6 @@ export class WotrBoardComponent {
   summaryFixed = false;
   logsFixed = false;
   zoomFixed = false;
-
-  // onPlayerSelect (player: WotrPlayer) { this.playerSelect.emit (player); }
-  // onBuildingSelect (building: WotrBuilding) { this.buildingSelect.emit (building); }
-  // onLandTileClick (landTile: WotrLand) { this.landTileClick.emit (landTile); }
-  // onActionClick (action: WotrAction) { this.actionClick.emit (action); }
-  // onKnightsConfirm () {
-  //   this.knightsConfirm.emit (this.numberOfKnights);
-  //   this.numberOfKnights = 1;
-  // } // onKnightsConfirm
-  // onResourceSelect (resource: WotrResourceType) { this.resourceSelect.emit (resource); }
 
   onPreviewCardClick (cardId: WotrCardId, front: WotrFront) {
     this.dialog.open<WotrCardsDialogComponent, WotrCardsDialogData> (
@@ -205,15 +163,15 @@ export class WotrBoardComponent {
           region,
           nationById: this.nationById (),
           characterById: this.characterById (),
-          fellowship: this.fellowship (),
-          selectable: this.validRegions ()?.includes (region.id) ?? false,
+          fellowship: this.fellowshipStore.state (),
+          selectable: this.ui.validRegions ()?.includes (region.id) ?? false,
         },
         panelClass: "mat-typography",
       }
     );
     const result = await firstValueFrom (dialogRef.afterClosed ());
     if (result) {
-      this.regionSelect.emit (region.id);
+      this.ui.region.emit (region.id);
     }
   }
 
