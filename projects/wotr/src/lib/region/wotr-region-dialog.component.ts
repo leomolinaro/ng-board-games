@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
@@ -14,6 +14,7 @@ export interface WotrRegionDialogData {
   nationById: Record<WotrNationId, WotrNation>;
   characterById: Record<WotrCharacterId, WotrCharacter>;
   fellowship: WotrFellowship;
+  selectable: boolean;
 }
 
 interface UnitNode {
@@ -40,6 +41,9 @@ interface UnitNode {
         }
       }
     </div>
+    @if (data.selectable) {
+      <button (click)="onSelect ()">Select</button>
+    }
   `,
   styles: [`
     @use "wotr-variables" as wotr;
@@ -58,6 +62,7 @@ export class WotrRegionDialogComponent implements OnInit {
   
   protected data = inject<WotrRegionDialogData> (MAT_DIALOG_DATA);
   private assets = inject (WotrAssetsService);
+  private dialogRef = inject (MatDialogRef<WotrRegionDialogComponent, boolean | undefined>);
 
   protected unitNodes!: UnitNode[];
 
@@ -119,5 +124,9 @@ export class WotrRegionDialogComponent implements OnInit {
   }
 
   protected range: BgTransformFn<number, number[]> = n => arrayUtil.range (n);
+
+  onSelect () {
+    this.dialogRef.close (true);
+  }
 
 }

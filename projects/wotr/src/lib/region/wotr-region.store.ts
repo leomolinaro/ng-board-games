@@ -369,12 +369,12 @@ export class WotrRegionStore {
   }
 
   removeFellowshipFromRegion () {
-    this.updateRegion ("removeFellowshipFromRegion", this.getFellowshipRegion (), units => ({
+    this.updateRegion ("removeFellowshipFromRegion", this.fellowshipRegion (), units => ({
       ...units, fellowship: false
     }));
   }
 
-  getFellowshipRegion () {
+  fellowshipRegion () {
     const state = this.state ();
     return this.state ().ids.find (r => state.map[r].fellowship)!;
   }
@@ -399,6 +399,28 @@ export class WotrRegionStore {
       ...region,
       controlledBy: front
     }));
+  }
+
+  reachableRegions (regionId: WotrRegionId, distance: number): WotrRegionId[] {
+    const reachable = new Set<WotrRegionId> ();
+    reachable.add (regionId);
+    const queue = [regionId];
+    while (queue.length > 0 && distance > 0) {
+      const currentRegionId = queue.shift ()!;
+      if (!reachable.has (currentRegionId)) {
+        const currentRegion = this.region (currentRegionId);
+        const neighbors = currentRegion.neighbors;
+        for (const neighbor of neighbors) {
+          if (neighbor.impassable) { continue; }
+          if (!reachable.has (neighbor.id)) {
+            queue.push (neighbor.id);
+            reachable.add (neighbor.id);
+          }
+        }
+      }
+      distance--;
+    }
+    return Array.from (reachable);
   }
 
 }

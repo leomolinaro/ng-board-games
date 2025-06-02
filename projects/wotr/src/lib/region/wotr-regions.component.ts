@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { arrayUtil } from "../../../../commons/utils/src";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrMordorTrackComponent } from "./wotr-mordor-track.component";
 import { WotrRegionComponent } from "./wotr-region.component";
-import { WotrRegion } from "./wotr-region.models";
+import { WotrRegion, WotrRegionId } from "./wotr-region.models";
 import { WotrStrongholdComponent } from "./wotr-stronghold.component";
 
 @Component ({
@@ -25,6 +26,7 @@ import { WotrStrongholdComponent } from "./wotr-stronghold.component";
         [region]="region"
         [fellowship]="region.fellowship ? fellowship () : null"
         [characterById]="characterById ()"
+        [valid]="!validRegions () || validRegionById ()[region.id]"
         (regionClick)="onRegionClick (region)">
       </svg:g>
       @if (region.settlement === 'stronghold' && region.underSiegeArmy) {
@@ -48,9 +50,12 @@ export class WotrRegionsComponent {
   regions = input.required<WotrRegion[]> ();
   fellowship = input.required<WotrFellowship> ();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
-  // @Input () validRegions: WotrRegionId[] | null = null;
+  validRegions = input.required<WotrRegionId[] | null> ();
+  validRegionById = computed<Partial<Record<WotrRegionId, boolean>>> (() => {
+    return arrayUtil.toMap (this.validRegions () ?? [], region => region, () => true);
+  });
 
-  @Output () regionClick = new EventEmitter<WotrRegion> ();
+  regionClick = output<WotrRegion> ();
 
   viewBox = this.mapService.getViewBox ();
   mapWidth = this.mapService.getWidth ();
@@ -62,9 +67,7 @@ export class WotrRegionsComponent {
   nSelectedUnits: Record<string, number> | null = null;
 
   onRegionClick (region: WotrRegion) {
-    // if (this.validRegions?.includes (regionNode.id)) {
     this.regionClick.emit (region);
-    // }
   }
 
   onStrongholdClick (region: WotrRegion) {

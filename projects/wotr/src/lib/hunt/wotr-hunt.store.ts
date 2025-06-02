@@ -1,5 +1,6 @@
-import { Injectable, Signal } from "@angular/core";
+import { inject, Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrHuntTile, WotrHuntTileId } from "./wotr-hunt.models";
 
 export interface WotrHuntState {
@@ -11,6 +12,7 @@ export interface WotrHuntState {
   huntRemoved: WotrHuntTileId[];
   nHuntDice: number;
   nFreePeopleDice: number;
+  previousTurnNFreePeopleDice: number;
 }
 
 export function initialeState (): WotrHuntState {
@@ -37,12 +39,15 @@ export function initialeState (): WotrHuntState {
     huntAvailable: ["b0", "b0", "b-1", "b-2", "r1rs", "r3s", "rds", "rers"],
     huntRemoved: [],
     nHuntDice: 0,
-    nFreePeopleDice: 0
+    nFreePeopleDice: 0,
+    previousTurnNFreePeopleDice: 0
   };
 }
 
 @Injectable ()
 export class WotrHuntStore {
+
+  private fellowship = inject (WotrFellowshipStore);
 
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;
   state!: Signal<WotrHuntState>;
@@ -76,7 +81,8 @@ export class WotrHuntStore {
     this.update ("resetHuntBox", state => ({
       ...state,
       nHuntDice: 0,
-      nFreePeopleDice: 0
+      nFreePeopleDice: 0,
+      previousTurnNFreePeopleDice: state.nFreePeopleDice
     }));
   }
 
@@ -118,6 +124,14 @@ export class WotrHuntStore {
       const newHuntPool = immutableUtil.listPush (state.huntAvailable, state.huntPool);
       return { ...state, huntAvailable: [], huntPool: newHuntPool };
     });
+  }
+
+  maximumNumberOfHuntDice (): number {
+    return Math.max (this.fellowship.numberOfCompanions (), 1);
+  }
+
+  minimumNumberOfHuntDice (): number {
+    return this.state ().previousTurnNFreePeopleDice > 0 ? 1 : 0;
   }
 
 }

@@ -1,14 +1,23 @@
 import { NgClass } from "@angular/common";
 import { Component, computed, inject, input, output } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { BgAuthService } from "@leobg/commons";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrGameUiInputQuantity } from "../game/wotr-game-ui.store";
 import { WotrPlayerBadgeComponent } from "./wotr-player-badge.component";
 import { WotrPlayerInfo } from "./wotr-player-info.models";
 
 @Component ({
   selector: "wotr-player-toolbar",
-  imports: [NgClass, MatMenuTrigger, MatMenu, MatMenuItem, WotrPlayerBadgeComponent],
+  imports: [
+    NgClass,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    FormsModule,
+    WotrPlayerBadgeComponent
+  ],
   template: `
     <wotr-player-badge
       [playerId]="currentPlayerId ()"
@@ -28,7 +37,18 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
       {{ message () }}
     </span>
     @if (canConfirm ()) {
-      <button (click)="confirm.emit ()">Confirm</button>
+      <button (click)="confirm.emit (true)">Yes</button>
+      <button (click)="confirm.emit (false)">No</button>
+    }
+    @if (canContinue ()) {
+      <button (click)="continue.emit ()">Continue</button>
+    }
+    @let q = canInputQuantity ();
+    @if (q) {
+      <form (ngSubmit)="inputQuantity.emit (quantity)">
+        <input type="number" [(ngModel)]="quantity" name="inputField" placeholder="Enter the quantity"/>
+        <button type="submit">Confirm</button>
+      </form>
     }
   `,
   styles: [`
@@ -46,7 +66,6 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
       margin-left: 1vmin;
       margin-right: auto;
     }
-
   `]
 })
 export class WotrPlayerToolbarComponent {
@@ -55,8 +74,10 @@ export class WotrPlayerToolbarComponent {
 
   message = input.required<string> ();
   canConfirm = input.required<boolean> ();
+  canContinue = input.required<boolean> ();
   canPass = input.required<boolean> ();
   canCancel = input.required<boolean> ();
+  canInputQuantity = input.required<WotrGameUiInputQuantity | false> ();
   currentPlayerId = input.required<WotrFrontId | null> ();
   players = input.required<WotrPlayerInfo[]> ();
 
@@ -66,7 +87,11 @@ export class WotrPlayerToolbarComponent {
   });
 
   currentPlayerChange = output<WotrPlayerInfo | null> ();
-  confirm = output<void> ();
+  confirm = output<boolean> ();
+  continue = output<void> ();
+  inputQuantity = output<number> ();
+
+  protected quantity = 0;
 
   // otherPlayers = computed (() => {
   //   const currentPlayerId = this.currentPlayerId ();

@@ -1,6 +1,5 @@
-import { rollActionDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { rollActionDice } from "../action/wotr-action-die-actions";
+import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";

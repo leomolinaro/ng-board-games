@@ -1,7 +1,6 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId, isCharacterCard, isStrategyCard } from "../card/wotr-card.models";
 import { WotrElvenRing, WotrFront, WotrFrontId } from "./wotr-front.models";
 
@@ -47,6 +46,7 @@ export class WotrFrontStore {
   shadowFront = computed (() => this.state ().map.shadow);
   frontIds () { return this.state ().ids; }
   hasActionDice (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionDice.length; }
+  nActionDice (frontId: WotrFrontId) { return this.state ().map[frontId].actionDice.length; }
   hasActionTokens (frontId: WotrFrontId) { return !!this.state ().map[frontId].actionTokens.length; }
   front (id: WotrFrontId) { return this.state ().map[id]; }
   characterDeck (id: WotrFrontId) { return this.state ().map[id].characterDeck; }

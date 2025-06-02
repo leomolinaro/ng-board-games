@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Output, ViewChild, computed, inject, input, isDevMode } from "@angular/core";
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, computed, inject, input, isDevMode, output } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
-import { downloadUtil } from "@leobg/commons/utils";
+import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character.models";
 import { WotrFellowship } from "../../../fellowship/wotr-fellowhip.models";
@@ -49,7 +49,8 @@ const GRID_STEP = 10;
         <svg:g wotrRegions [regions]="regions ()"
           [fellowship]="fellowship ()"
           [characterById]="characterById ()"
-          (regionClick)="regionClick.next ($event)"></svg:g>
+          [validRegions]="validRegions ()"
+          (regionClick)="regionClick.emit ($event)"></svg:g>
         <svg:g wotrPoliticalTrack [nations]="nations ()"></svg:g>
         <svg:g wotrHuntBox [hunt]="hunt ()"></svg:g>
         <svg:g wotrFellowshipTrack [fellowship]="fellowship ()"></svg:g>
@@ -81,11 +82,14 @@ export class WotrMapComponent {
   shadow = input.required<WotrFront> ();
   fellowship = input.required<WotrFellowship[]> ();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
+  validRegions = input.required<WotrRegionId[] | null> ();
   fronts = computed (() => ([this.freePeoples (), this.shadow ()]));
 
-  // @Input () validRegions: WotrRegionId[] | null = null;
+  validRegionById = computed<Partial<Record<WotrRegionId, boolean>>> (() => {
+    return arrayUtil.toMap (this.validRegions () ?? [], region => region, () => true);
+  });
 
-  @Output () regionClick = new EventEmitter<WotrRegion> ();
+  regionClick = output<WotrRegion> ();
 
   protected viewBox = this.mapService.getViewBox ();
   protected mapWidth = this.mapService.getWidth ();

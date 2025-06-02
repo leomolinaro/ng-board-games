@@ -1,18 +1,30 @@
 import { inject, Injectable } from "@angular/core";
+import { rollActionDice } from "../action/wotr-action-die-actions";
+import { WotrActionDieRules } from "../action/wotr-action-die.rules";
+import { WotrActionDie } from "../action/wotr-action.models";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrCharacterId } from "../character/wotr-character.models";
 import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
+import { allocateHuntDice } from "../hunt/wotr-hunt-actions";
+import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable ()
 export class WotrPlayerLocalService implements WotrPlayerService {
-
+  
   private front = inject (WotrFrontStore);
   private ui = inject (WotrGameUiStore);
+  private region = inject (WotrRegionStore);
+  private fellowship = inject (WotrFellowshipStore);
+  private hunt = inject (WotrHuntStore);
+  private actionDieRules = inject (WotrActionDieRules);
 
   async firstPhase (player: WotrPlayer): Promise<WotrGameStory> {
     await this.ui.askContinue ("Draw cards");
@@ -29,18 +41,115 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   async fellowshipPhase (): Promise<WotrGameStory> {
     const declare = await this.ui.askConfirm ("Do you want to declare the fellowship?");
     if (!declare) { return { type: "phase", actions: [notDeclareFellowship ()] }; }
-    const validRegions = [];
+    const validRegions = this.fellowship.validRegionsForDeclaration ();
     const region = await this.ui.askRegion (validRegions);
     return { type: "phase", actions: [declareFellowship (region)] };
   }
 
-  async separateCompanions (): Promise<WotrGameStory> {
-    return null as any;
-    // return {
-    //   type: "phase",
-    //   actions: [{ type: "draw-cards", cards: ["fpcha01"] }]
-    // };
+  async huntAllocationPhase (): Promise<WotrGameStory> {
+    const min = this.hunt.minimumNumberOfHuntDice ();
+    const max = this.hunt.maximumNumberOfHuntDice ();
+    const quantity = await this.ui.askQuantity ("How many hunt dice do you want to allocate?", min, max);
+    return { type: "phase", actions: [allocateHuntDice (quantity)] };
   }
+
+  async rollActionDice (player: WotrPlayer): Promise<WotrGameStory> {
+    await this.ui.askContinue ("Roll action dice");
+    const nActionDice = this.actionDieRules.rollableActionDice (player.frontId);
+    const actionDice: WotrActionDie[] = [];
+    for (let i = 0; i < nActionDice; i++) {
+      actionDice.push (this.actionDieRules.rollActionDie (player.frontId));
+    }
+    return { type: "phase", actions: [rollActionDice (...actionDice)] };
+  }
+
+  async actionResolution (player: WotrPlayer): Promise<WotrGameStory> {
+    const canPass = this.actionDieRules.canPassAction (player.frontId);
+    if (canPass) {
+      const pass = await this.ui.askConfirm ("Do you want to pass?");
+      if (pass) {
+        return { type: "die-pass" };
+      }
+    }
+    const actionDie = await this.ui.askActionDie ("Choose an action die to resolve", player.frontId);
+    
+
+    throw new Error ("Method not implemented.");
+  }
+
+  async separateCompanions (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async rollHuntDice (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async reRollHuntDice (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async drawHuntTile (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async huntEffect (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async revealFellowship (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async activateTableCard (cardId: WotrCardId): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async activateCombatCard (cardId: WotrCardId): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async activateCharacterAbility (characterId: WotrCharacterId): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async forfeitLeadership (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async wantRetreatIntoSiege (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async wantRetreat (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async chooseCombatCard (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async rollCombatDice (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async reRollCombatDice (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async chooseCasualties (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async battleAdvance (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+  
+  async wantContinueBattle (): Promise<WotrGameStory> {
+    throw new Error ("Method not implemented.");
+  }
+
+
   //   this.ui.updateUi ("asd", s => ({
   //     ...s,
   //     // ...this.ui.resetUi (),

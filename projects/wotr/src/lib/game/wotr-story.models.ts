@@ -1,6 +1,5 @@
 import { BgStoryDoc, unexpectedStory } from "@leobg/commons";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";

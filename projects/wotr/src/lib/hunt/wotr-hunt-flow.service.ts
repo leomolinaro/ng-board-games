@@ -106,9 +106,9 @@ export class WotrHuntFlowService {
         this.logStore.logRevealInMordor ();
         this.fellowshipStore.reveal ();
       } else {
-        const fromRegion = this.regionStore.getFellowshipRegion ();
+        const fromRegion = this.regionStore.fellowshipRegion ();
         if (doReveal) { await this.revealFellowship (); }
-        const toRegion = this.regionStore.getFellowshipRegion ();
+        const toRegion = this.regionStore.fellowshipRegion ();
         if (this.revealedThroughShadowStronghold (fromRegion, toRegion)) {
           const newHuntTileId = await this.drawHuntTile (this.shadow);
           this.resolveHuntTile (newHuntTileId, options);
@@ -140,7 +140,7 @@ export class WotrHuntFlowService {
   private getNReRolls (huntRoll: WotrCombatDie[], nRollSuccesses: number): number {
     const nFailures = huntRoll.length - nRollSuccesses;
     if (!nFailures) { return 0; }
-    const regionId = this.regionStore.getFellowshipRegion ();
+    const regionId = this.regionStore.fellowshipRegion ();
     const region = this.regionStore.region (regionId);
     let nReRolls = 0;
     if (region.settlement === "stronghold" && region.controlledBy === "shadow") { nReRolls++; }

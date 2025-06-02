@@ -96,7 +96,7 @@ export class WotrGameTurnService {
   }
 
   private checkMoveToMordorTrack () {
-    const fellowshipRegion = this.regionStore.getFellowshipRegion ();
+    const fellowshipRegion = this.regionStore.fellowshipRegion ();
     if (fellowshipRegion === "morannon" || fellowshipRegion === "minas-morgul") {
       this.regionStore.removeFellowshipFromRegion ();
       this.fellowshipStore.moveOnMordorTrack ();

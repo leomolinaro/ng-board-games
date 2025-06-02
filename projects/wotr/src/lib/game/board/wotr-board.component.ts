@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, computed, inject,
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { WotrActionDiceComponent } from "../../action-die/wotr-action-dice.component";
+import { firstValueFrom } from "rxjs";
+import { WotrActionDiceComponent } from "../../action/wotr-action-dice.component";
+import { WotrActionDieOrToken } from "../../action/wotr-action.models";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
@@ -18,14 +20,23 @@ import { WotrPlayerInfo } from "../../player/wotr-player-info.models";
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
 import { WotrRegion, WotrRegionId } from "../../region/wotr-region.models";
+import { WotrGameUiInputQuantity } from "../wotr-game-ui.store";
 import { WotrMapComponent } from "./map/wotr-map.component";
 import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 
 @Component ({
   selector: "wotr-board",
-  imports: [BgTransformPipe, MatTabsModule,
-    WotrMapComponent, WotrLogsComponent, WotrFrontAreaComponent,
-    WotrHuntAreaComponent, WotrReplayButtonComponent, WotrActionDiceComponent, WotrPlayerToolbarComponent],
+  imports: [
+    BgTransformPipe,
+    MatTabsModule,
+    WotrMapComponent,
+    WotrLogsComponent,
+    WotrFrontAreaComponent,
+    WotrHuntAreaComponent,
+    WotrReplayButtonComponent,
+    WotrActionDiceComponent,
+    WotrPlayerToolbarComponent
+  ],
   template: `
     <div class="wotr-board">
       <wotr-map
@@ -38,6 +49,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         [shadow]="shadow ()"
         [fellowship]="fellowship ()"
         [characterById]="characterById ()"
+        [validRegions]="validRegions ()"
         (regionClick)="onRegionClick ($event)">
       </wotr-map>
       <wotr-player-toolbar
@@ -46,10 +58,14 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         [players]="players ()"
         [message]="message ()"
         [canConfirm]="canConfirm ()"
+        [canContinue]="canContinue ()"
         [canPass]="canPass ()"
         [canCancel]="canCancel ()"
+        [canInputQuantity]="canInputQuantity ()"
         (currentPlayerChange)="currentPlayerChange.emit ($event)"
-        (confirm)="confirm.emit ()">
+        (confirm)="confirm.emit ($event)"
+        (continue)="continue.emit ()"
+        (inputQuantity)="inputQuantity.emit ($event)">
       </wotr-player-toolbar>
       <div class="wotr-fronts">
         <mat-tab-group>
@@ -72,7 +88,11 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         </mat-tab-group>
       </div>
       <div class="wotr-action-dice-box">
-        <wotr-action-dice [fronts]="fronts ()"></wotr-action-dice>
+        <wotr-action-dice
+          [fronts]="fronts ()"
+          [validActionFront]="validActionFront ()"
+          (actionSelect)="actionSelect.emit ($event)">
+        </wotr-action-dice>
       </div>
       <div class="wotr-logs">
         <wotr-replay-buttons class="wotr-replay-buttons" (replayNext)="replayNext.emit ($event)" (replayLast)="replayLast.emit ()"></wotr-replay-buttons>
@@ -119,7 +139,11 @@ export class WotrBoardComponent {
   // validRegions = input.required<WotrRegionId[] | null> ();
   canPass = input.required<boolean> ({ transform: booleanAttribute as any });
   canConfirm = input.required<boolean> ({ transform: booleanAttribute as any });
+  canContinue = input.required<boolean> ({ transform: booleanAttribute as any });
   canCancel = input.required<boolean> ({ transform: booleanAttribute as any });
+  canInputQuantity = input.required<WotrGameUiInputQuantity | false> ();
+  validRegions = input<WotrRegionId[] | null> ();
+  validActionFront = input<WotrFrontId | null> ();
   // @Input () validUnits: WotrRegionUnit[] | null = null;
   // @Input () selectedUnits: WotrRegionUnit[] | null = null;
   // @Input () validActions: BaronyAction[] | null = null;
@@ -129,12 +153,15 @@ export class WotrBoardComponent {
 
   currentPlayerChange = output<WotrPlayerInfo | null> ();
   // buildingSelect = output<BaronyBuilding> ();
-  regionClick = output<WotrRegionId> ();
+  regionSelect = output<WotrRegionId> ();
+  actionSelect = output<WotrActionDieOrToken> ();
   // unitClick = output<WotrRegionUnit> ();
   // selectedUnitsChange = output<WotrRegionUnit[]> ();
   // actionClick = output<BaronyAction> ();
   pass = output<void> ();
-  confirm = output<void> ();
+  confirm = output<boolean> ();
+  continue = output<void> ();
+  inputQuantity = output<number> ();
   cancel = output<void> ();
   // knightsConfirm = output<number> ();
   // resourceSelect = output<BaronyResourceType> ();
@@ -170,19 +197,24 @@ export class WotrBoardComponent {
     );
   }
 
-  onRegionClick (region: WotrRegion) {
-    this.dialog.open<WotrRegionDialogComponent, WotrRegionDialogData> (
+  async onRegionClick (region: WotrRegion) {
+    const dialogRef = this.dialog.open<WotrRegionDialogComponent, WotrRegionDialogData, boolean | undefined> (
       WotrRegionDialogComponent,
       {
         data: {
           region,
           nationById: this.nationById (),
           characterById: this.characterById (),
-          fellowship: this.fellowship ()
+          fellowship: this.fellowship (),
+          selectable: this.validRegions ()?.includes (region.id) ?? false,
         },
         panelClass: "mat-typography",
       }
     );
+    const result = await firstValueFrom (dialogRef.afterClosed ());
+    if (result) {
+      this.regionSelect.emit (region.id);
+    }
   }
 
-} // WotrBoardComponent
+}

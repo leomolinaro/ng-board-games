@@ -5,7 +5,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrDieStory, WotrPassStory } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
-import { WotrActionDie } from "./wotr-action-die.models";
+import { WotrActionDie } from "./wotr-action.models";
 
 @Injectable ()
 export class WotrActionDieService {

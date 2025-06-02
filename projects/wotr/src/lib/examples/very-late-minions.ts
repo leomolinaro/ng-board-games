@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
-import { discardDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { discardDice } from "../action/wotr-action-die-actions";
+import { WotrActionToken } from "../action/wotr-action.models";
 import { advanceArmy, attack, combatCard, continueBattle, forfeitLeadership, noCombatCard, reRollCombatDice, retreat, retreatIntoSiege, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCards, discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, moveCharacters, playCharacter, separateCompanions } from "../character/wotr-character-actions";

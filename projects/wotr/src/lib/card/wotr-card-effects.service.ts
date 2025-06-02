@@ -46,7 +46,7 @@ export class WotrCardEffectsService {
 
   private cardEffects: Partial<Record<WotrCardLabel, (params: WotrCardParams) => Promise<void>>> = {
     "Nazgul Search": async params => {
-      const fellowshipRegionId = this.regionStore.getFellowshipRegion ();
+      const fellowshipRegionId = this.regionStore.fellowshipRegion ();
       const fellowshipRegion = this.regionStore.region (fellowshipRegionId);
       if ((fellowshipRegion.army && this.armyUtil.hasNazgul (fellowshipRegion.army)) ||
         (fellowshipRegion.freeUnits && this.armyUtil.hasNazgul (fellowshipRegion.freeUnits))) {

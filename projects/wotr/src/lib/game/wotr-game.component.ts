@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieService } from "../action-die/wotr-action-die.service";
-import { WotrActionTokenService } from "../action-token/wotr-action-token.service";
+import { WotrActionDieRules } from "../action/wotr-action-die.rules";
+import { WotrActionDieService } from "../action/wotr-action-die.service";
+import { WotrActionTokenService } from "../action/wotr-action-token.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrBattleStore } from "../battle/wotr-battle.store";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
@@ -65,8 +66,16 @@ import { WotrStoryService } from "./wotr-story.service";
       [message]="ui.message ()"
       [canCancel]="ui.canCancel ()"
       [canPass]="ui.canPass ()"
+      [canInputQuantity]="ui.canInputQuantity ()"
       [canConfirm]="ui.canConfirm ()"
-      (confirm)="ui.confirmSelect.emit ()"
+      [canContinue]="ui.canContinue ()"
+      [validRegions]="ui.validRegions ()"
+      [validActionFront]="ui.validActionFront ()"
+      (regionSelect)="ui.region.emit ($event)"
+      (actionSelect)="ui.action.emit ($event)"
+      (confirm)="ui.confirm.emit ($event)"
+      (continue)="ui.continue.emit ()"
+      (inputQuantity)="ui.inputQuantity.emit ($event)"
       (currentPlayerChange)="ui.setCurrentPlayerId ($event?.id || null)"
       (replayNext)="onReplayNext ($event)"
       (replayLast)="onReplayLast ()">
@@ -77,6 +86,7 @@ import { WotrStoryService } from "./wotr-story.service";
   providers: [
     WotrActionDieService,
     WotrActionService,
+    WotrActionDieRules,
     WotrActionTokenService,
     WotrBattleService,
     WotrBattleStore,

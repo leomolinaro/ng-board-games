@@ -1,7 +1,6 @@
 import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, Signal, computed, inject, input, isDevMode } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";

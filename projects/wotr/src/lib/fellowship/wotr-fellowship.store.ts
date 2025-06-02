@@ -1,6 +1,7 @@
-import { Injectable, Signal } from "@angular/core";
+import { inject, Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.models";
+import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip.models";
 
 export function initialeState (): WotrFellowship {
@@ -16,12 +17,16 @@ export function initialeState (): WotrFellowship {
 @Injectable ()
 export class WotrFellowshipStore {
 
+  private readonly region = inject (WotrRegionStore);
+
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;
   state!: Signal<WotrFellowship>;
 
   isRevealed () { return this.state ().status === "revealed"; }
   guide () { return this.state ().guide; }
   isOnMordorTrack () { return this.state ().mordorTrack != null; }
+  progress () { return this.state ().progress; }
+  numberOfCompanions () { return this.state ().companions.length; }
 
   setCompanions (companions: WotrCompanionId[]) { this.update ("setCompanions", state => ({ ...state, companions })); }
   setGuide (guide: WotrCompanionId) { this.update ("setGuide", state => ({ ...state, guide })); }
@@ -39,6 +44,13 @@ export class WotrFellowshipStore {
 
   moveOnMordorTrack () {
     this.update ("moveOnMordorTrack", state => ({ ...state, mordorTrack: state.mordorTrack == null ? 0 : (state.mordorTrack + 1) as WotrMordorTrack }));
+  }
+
+  validRegionsForDeclaration () {
+    const startingRegion = this.region.fellowshipRegion ();
+    const progress = this.progress ();
+    const reachableRegions = this.region.reachableRegions (startingRegion, progress);
+    return reachableRegions;
   }
 
 }

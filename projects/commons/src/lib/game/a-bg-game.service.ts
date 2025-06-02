@@ -108,7 +108,6 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   }
 
   private async getLocalStory<R extends St> (time: number, playerId: Pid, task: () => Promise<R>): Promise<R | null> {
-    console.log ("getLocalStory", getStoryId (time, playerId));
     this.startTemporaryState ();
     const story = await task ();
     await this.insertStory (story, time, playerId);

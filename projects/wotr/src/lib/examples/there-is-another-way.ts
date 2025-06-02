@@ -1,6 +1,6 @@
 // https://www.youtube.com/watch?v=6kDLffpqd9A&ab_channel=WaroftheRingChamp
 
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { WotrActionToken } from "../action/wotr-action.models";
 import { advanceArmy, attack, combatCard, noCombatCard, reRollCombatDice, retreat, rollCombatDice } from "../battle/wotr-battle-actions";
 import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-card-actions";
 import { chooseRandomCompanion, eliminateCharacter, playCharacter, separateCompanions } from "../character/wotr-character-actions";

@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, Signal, computed, inject, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Signal, computed, inject, input, output } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId, WotrCompanionId, WotrMinionId } from "../character/wotr-character.models";
@@ -129,13 +129,13 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
       }
       <svg:path
         [ngClass]="{
-          'is-active': isValidRegion ? isValidRegion[regionNode ().id] : false,
-          'is-disabled': isValidRegion ? !isValidRegion[regionNode ().id] : false
+          'is-active': valid (),
+          'is-disabled': !valid ()
         }"
         [attr.id]="'wotr-region-' + regionNode ().id"
         class="wotr-region-path"
         [attr.d]="regionNode ().path"
-        (click)="regionClick.next ()">
+        (click)="regionClick.emit ()">
       </svg:path>
     </svg:g>
   `,
@@ -208,12 +208,11 @@ export class WotrRegionComponent {
 
   region = input.required<WotrRegion> ();
   fellowship = input.required<WotrFellowship | null> ();
-  // @Input () validRegions: WotrRegionId[] | null = null;
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
+  valid = input.required<boolean> ();
 
-  @Output () regionClick = new EventEmitter<void> ();
+  regionClick = output<void> ();
 
-  isValidRegion: Record<string, boolean> | null = null;
   isValidUnit: Record<string, boolean> | null = null;
   nSelectedUnits: Record<string, number> | null = null;
 

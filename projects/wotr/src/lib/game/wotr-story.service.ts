@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, forwardRef, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrActionService } from "../commons/wotr-action.service";
@@ -28,7 +28,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   private frontStore = inject (WotrFrontStore);
   private playerStore = inject (WotrPlayerInfoStore);
   protected override auth = inject (BgAuthService);
-  protected override aiPlayer = inject (WotrPlayerAiService);
+  protected override aiPlayer = inject (forwardRef (() => WotrPlayerAiService));
   protected override localPlayer = inject (WotrPlayerLocalService);
   private actionService = inject (WotrActionService);
 
@@ -44,8 +44,8 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   protected override selectStoryDoc$ (storyId: string, gameId: string) { return this.remote.selectStory$ (storyId, gameId); }
   protected override getCurrentPlayerId () { return this.ui.currentPlayerId (); }
   protected override setCurrentPlayer (playerId: WotrFrontId) { this.ui.setCurrentPlayerId (playerId); }
-  protected override currentPlayerChange$ () { return from (this.ui.playerSelect.get ()); }
-  protected override cancelChange$ () { return from (this.ui.cancelSelect.get ()); }
+  protected override currentPlayerChange$ () { return from (this.ui.player.get ()); }
+  protected override cancelChange$ () { return from (this.ui.cancel.get ()); }
 
   private nReplayStories = 0;
   private replayToLastStory = false;

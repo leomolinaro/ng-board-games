@@ -1,5 +1,4 @@
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionToken } from "../action-token/wotr-action-token.models";
+import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card.models";
 
 export type WotrFrontId = "free-peoples" | "shadow";

@@ -1,5 +1,5 @@
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrActionDie } from "./wotr-action-die.models";
+import { WotrActionDie } from "./wotr-action.models";
 
 export type WotrActionDieAction = WotrActionRoll | WotrActionDiceDiscard | WotrActionSkip;
 export interface WotrActionDiceDiscard { type: "action-dice-discard"; front: WotrFrontId; dice: WotrActionDie[] }
