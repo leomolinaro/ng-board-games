@@ -8,19 +8,18 @@
   <svg:polygon
     class="b-land-tile-polygon"
     [attr.id]="coordinates.x + ' ' + coordinates.y + ' ' + coordinates.z"
-    [attr.points]="coordinates | baronyLandTileCoordinates : 'hexagon'"
-    [attr.fill]="'url(\'#' + type + '\')'">
-  </svg:polygon>
+    [attr.points]="coordinates | baronyLandTileCoordinates: 'hexagon'"
+    [attr.fill]="'url(\'#' + type + '\')'"></svg:polygon>
 
   <svg:circle
     *ngIf="active"
     class="b-land-tile-active-signal"
-    [attr.cx]="coordinates | baronyLandTileCoordinates : 'center-x'"
-    [attr.cy]="coordinates | baronyLandTileCoordinates : 'center-y'"
+    [attr.cx]="coordinates | baronyLandTileCoordinates: 'center-x'"
+    [attr.cy]="coordinates | baronyLandTileCoordinates: 'center-y'"
     [attr.r]="activeCircleRadius"
     stroke="black"
     stroke-width="0.03"
-    fill="transparent"/>
+    fill="transparent" />
 
   <svg:image
     *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
@@ -29,8 +28,7 @@
     preserveAspectRatio="none"
     [attr.xlink:href]="pawnNode.href"
     [attr.x]="pawnNode.x"
-    [attr.y]="pawnNode.y">
-  </svg:image>
+    [attr.y]="pawnNode.y"></svg:image>
 
   <ng-container *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy">
     <svg:text

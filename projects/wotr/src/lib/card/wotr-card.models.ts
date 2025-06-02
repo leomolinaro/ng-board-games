@@ -1,9 +1,30 @@
 import { arrayUtil } from "@leobg/commons/utils";
 
 export type WotrCardNumber =
-  "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10" |
-  "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" |
-  "21" | "22" | "23" | "24";
+  | "01"
+  | "02"
+  | "03"
+  | "04"
+  | "05"
+  | "06"
+  | "07"
+  | "08"
+  | "09"
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15"
+  | "16"
+  | "17"
+  | "18"
+  | "19"
+  | "20"
+  | "21"
+  | "22"
+  | "23"
+  | "24";
 
 export type WotrFreePeopleCharacterCardId = `fpcha${WotrCardNumber}`;
 export type WotrFreePeopleStrategyCardId = `fpstr${WotrCardNumber}`;
@@ -15,12 +36,12 @@ export type WotrCharacterCardId = WotrFreePeopleCharacterCardId | WotrShadowChar
 export type WotrStrategyCardId = WotrFreePeopleStrategyCardId | WotrShadowStrategyCardId;
 export type WotrCardId = WotrCharacterCardId | WotrStrategyCardId;
 
-export function isCharacterCard (cardId: WotrCardId): cardId is WotrCharacterCardId {
-  return cardId.startsWith ("fpcha") || cardId.startsWith ("scha");
+export function isCharacterCard(cardId: WotrCardId): cardId is WotrCharacterCardId {
+  return cardId.startsWith("fpcha") || cardId.startsWith("scha");
 }
 
-export function isStrategyCard (cardId: WotrCardId): cardId is WotrStrategyCardId {
-  return cardId.startsWith ("fpstr") || cardId.startsWith ("sstr");
+export function isStrategyCard(cardId: WotrCardId): cardId is WotrStrategyCardId {
+  return cardId.startsWith("fpstr") || cardId.startsWith("sstr");
 }
 
 export interface WotrCard {
@@ -31,142 +52,142 @@ export interface WotrCard {
 }
 
 export type WotrCardLabel =
-  "Elven Cloaks" |
-  "Elven Rope" |
-  "Phial of Galadriel" |
-  "Smeagol Helps Nice Master" |
-  "Mithril Coat and Sting" |
-  "Axe and Bow" |
-  "Horns of Gondor" |
-  "Wizard's Staff" |
-  "Athelas" |
-  "There is Another Way" |
-  "I Will Go Alone" |
-  "Bilbo's Song" |
-  "Mirror of Galadriel" |
-  "Challenge of the King" |
-  "Gwahir the Windlord" |
-  "We Prove the Swifter" |
-  "There and Back Again" |
-  "The Eagles are Coming!" |
-  "The Ents Awake: Treebeard" |
-  "The Ents Awake: Huorns" |
-  "The Ents Awake: Entmoot" |
-  "Dead Men of Dunharrow" |
-  "House of the Stewards" |
-  "The Grey Company" |
-  "The Last Battle" |
-  "A Power too Great" |
-  "The Power of Tom Bombadil" |
-  "Book of Mazarbul" |
-  "The Spirit of Mordor" |
-  "Faramir's Ranges" |
-  "Fear! Fire! Foes!" |
-  "Wisdom of Elrond" |
-  "The Red Arrow" |
-  "Help Unlooked For" |
-  "Paths of the Woses" |
-  "Through a Day and a Night" |
-  "Cirdan's Ships" |
-  "Guards of the Citadel" |
-  "Celeborn's Galadhrim" |
-  "Riders of Theoden" |
-  "Grimbeorn the Old, Son of Beorn" |
-  "Imrahil of Dol Amroth" |
-  "King Brand's Men" |
-  "Swords in Eriador" |
-  "Kindred of Glorfindel" |
-  "Dain Ironfoot's Guard" |
-  "Eomer, son of Eomund" |
-  "Thranduil's Archers" |
-  "Shelob's Lair" |
-  "The Ring is Mine!" |
-  "On, On They Went" |
-  "Give it to Uss!" |
-  "Orc Patrol" |
-  "Isildur's Bane" |
-  "Foul Thing from the Deep" |
-  "Candles of Corpses" |
-  "Nazgul Search" |
-  "Cruel Weather" |
-  "The Nazgul Strike" |
-  "Morgul Wound" |
-  "Lure of the Ring" |
-  "The Breaking of the Fellowship" |
-  "Worn with Sorrow and Toil" |
-  "Flocks of Crebain" |
-  "Balrog of Moria" |
-  "The Lidless Eye" |
-  "Dreadful Spells" |
-  "Grond, Hammer of the Unnderworld" |
-  "The Palantir of Orthanc" |
-  "Wormtongue" |
-  "The Ringwraiths are Abroad" |
-  "The Black Captain Commands" |
-  "Return to Valinor" |
-  "The Fighting Uruk-hai" |
-  "Denethor's Folly" |
-  "The Day Without Dawn" |
-  "Threats and Promises" |
-  "Stormcrow" |
-  "Shadows Gather" |
-  "The Shadow Lengthens" |
-  "The Shadow is Moving" |
-  "Corsairs of Umbar" |
-  "Rage of the Dunledings" |
-  "Return of the Witch-king" |
-  "Half-orcs and Goblin-men" |
-  "Olog-hai" |
-  "Hill-trolls" |
-  "A New Power is Rising" |
-  "Many Kings to the Service of Mordor" |
-  "The King is Revealed" |
-  "Shadows on the Misty Mountains" |
-  "Orcs Multiplying Again" |
-  "Horde From the East" |
-  "Monsters Rousted" |
-  "Musterings of Long-planned War" |
-  "Pits of Mordor";
+  | "Elven Cloaks"
+  | "Elven Rope"
+  | "Phial of Galadriel"
+  | "Smeagol Helps Nice Master"
+  | "Mithril Coat and Sting"
+  | "Axe and Bow"
+  | "Horns of Gondor"
+  | "Wizard's Staff"
+  | "Athelas"
+  | "There is Another Way"
+  | "I Will Go Alone"
+  | "Bilbo's Song"
+  | "Mirror of Galadriel"
+  | "Challenge of the King"
+  | "Gwahir the Windlord"
+  | "We Prove the Swifter"
+  | "There and Back Again"
+  | "The Eagles are Coming!"
+  | "The Ents Awake: Treebeard"
+  | "The Ents Awake: Huorns"
+  | "The Ents Awake: Entmoot"
+  | "Dead Men of Dunharrow"
+  | "House of the Stewards"
+  | "The Grey Company"
+  | "The Last Battle"
+  | "A Power too Great"
+  | "The Power of Tom Bombadil"
+  | "Book of Mazarbul"
+  | "The Spirit of Mordor"
+  | "Faramir's Ranges"
+  | "Fear! Fire! Foes!"
+  | "Wisdom of Elrond"
+  | "The Red Arrow"
+  | "Help Unlooked For"
+  | "Paths of the Woses"
+  | "Through a Day and a Night"
+  | "Cirdan's Ships"
+  | "Guards of the Citadel"
+  | "Celeborn's Galadhrim"
+  | "Riders of Theoden"
+  | "Grimbeorn the Old, Son of Beorn"
+  | "Imrahil of Dol Amroth"
+  | "King Brand's Men"
+  | "Swords in Eriador"
+  | "Kindred of Glorfindel"
+  | "Dain Ironfoot's Guard"
+  | "Eomer, son of Eomund"
+  | "Thranduil's Archers"
+  | "Shelob's Lair"
+  | "The Ring is Mine!"
+  | "On, On They Went"
+  | "Give it to Uss!"
+  | "Orc Patrol"
+  | "Isildur's Bane"
+  | "Foul Thing from the Deep"
+  | "Candles of Corpses"
+  | "Nazgul Search"
+  | "Cruel Weather"
+  | "The Nazgul Strike"
+  | "Morgul Wound"
+  | "Lure of the Ring"
+  | "The Breaking of the Fellowship"
+  | "Worn with Sorrow and Toil"
+  | "Flocks of Crebain"
+  | "Balrog of Moria"
+  | "The Lidless Eye"
+  | "Dreadful Spells"
+  | "Grond, Hammer of the Unnderworld"
+  | "The Palantir of Orthanc"
+  | "Wormtongue"
+  | "The Ringwraiths are Abroad"
+  | "The Black Captain Commands"
+  | "Return to Valinor"
+  | "The Fighting Uruk-hai"
+  | "Denethor's Folly"
+  | "The Day Without Dawn"
+  | "Threats and Promises"
+  | "Stormcrow"
+  | "Shadows Gather"
+  | "The Shadow Lengthens"
+  | "The Shadow is Moving"
+  | "Corsairs of Umbar"
+  | "Rage of the Dunledings"
+  | "Return of the Witch-king"
+  | "Half-orcs and Goblin-men"
+  | "Olog-hai"
+  | "Hill-trolls"
+  | "A New Power is Rising"
+  | "Many Kings to the Service of Mordor"
+  | "The King is Revealed"
+  | "Shadows on the Misty Mountains"
+  | "Orcs Multiplying Again"
+  | "Horde From the East"
+  | "Monsters Rousted"
+  | "Musterings of Long-planned War"
+  | "Pits of Mordor";
 
 export type WotrCardCombatLabel =
-  "It is a Gift" |
-  "Blade of Westernesse" |
-  "Mighty Attack" |
-  "Servant of the Secret Fire" |
-  "Anduril" |
-  "Heroic Death" |
-  "Daring Defiance" |
-  "Fateful Strike" |
-  "Sudden Strike" |
-  "Brave Stand" |
-  "Ents' Rage" |
-  "Huorn-dark" |
-  "Nameless Wood" |
-  "Daylight" |
-  "No Quarter" |
-  "Advantageous Position" |
-  "Scouts" |
-  "Shield-Wall" |
-  "Confusion" |
-  "Charge" |
-  "Valour" |
-  "One for the Dark Lord" |
-  "Cruel as Death" |
-  "They are Terrible" |
-  "Dread and Despair" |
-  "Foul Stench" |
-  "Black Breath" |
-  "Words of Power" |
-  "Durin's Bane" |
-  "Delivery of Orthanc" |
-  "Deadly Strife" |
-  "Onslaught" |
-  "Relentless Assault" |
-  "Great Host" |
-  "Mumakil" |
-  "Swarm of Bats" |
-  "We Come to Kill" |
-  "Desperate Battle";
+  | "It is a Gift"
+  | "Blade of Westernesse"
+  | "Mighty Attack"
+  | "Servant of the Secret Fire"
+  | "Anduril"
+  | "Heroic Death"
+  | "Daring Defiance"
+  | "Fateful Strike"
+  | "Sudden Strike"
+  | "Brave Stand"
+  | "Ents' Rage"
+  | "Huorn-dark"
+  | "Nameless Wood"
+  | "Daylight"
+  | "No Quarter"
+  | "Advantageous Position"
+  | "Scouts"
+  | "Shield-Wall"
+  | "Confusion"
+  | "Charge"
+  | "Valour"
+  | "One for the Dark Lord"
+  | "Cruel as Death"
+  | "They are Terrible"
+  | "Dread and Despair"
+  | "Foul Stench"
+  | "Black Breath"
+  | "Words of Power"
+  | "Durin's Bane"
+  | "Delivery of Orthanc"
+  | "Deadly Strife"
+  | "Onslaught"
+  | "Relentless Assault"
+  | "Great Host"
+  | "Mumakil"
+  | "Swarm of Bats"
+  | "We Come to Kill"
+  | "Desperate Battle";
 
 const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   fpcha01: { id: "fpcha01", label: "Elven Cloaks", combatLabel: "It is a Gift", combatTiming: 3 },
@@ -236,7 +257,12 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   scha17: { id: "scha17", label: "Balrog of Moria", combatLabel: "Durin's Bane", combatTiming: 2 },
   scha18: { id: "scha18", label: "The Lidless Eye", combatLabel: "Words of Power", combatTiming: 1 },
   scha19: { id: "scha19", label: "Dreadful Spells", combatLabel: "Delivery of Orthanc", combatTiming: 3 },
-  scha20: { id: "scha20", label: "Grond, Hammer of the Unnderworld", combatLabel: "Dread and Despair", combatTiming: 3 },
+  scha20: {
+    id: "scha20",
+    label: "Grond, Hammer of the Unnderworld",
+    combatLabel: "Dread and Despair",
+    combatTiming: 3
+  },
   scha21: { id: "scha21", label: "The Palantir of Orthanc", combatLabel: "Cruel as Death", combatTiming: 3 },
   scha22: { id: "scha22", label: "Wormtongue", combatLabel: "Foul Stench", combatTiming: 3 },
   scha23: { id: "scha23", label: "The Ringwraiths are Abroad", combatLabel: "Words of Power", combatTiming: 1 },
@@ -267,11 +293,22 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   sstr24: { id: "sstr24", label: "Pits of Mordor", combatLabel: "Desperate Battle", combatTiming: 3 }
 };
 
-const CARD_BY_LABEL =
-  arrayUtil.toMap (Object.keys (CARD_BY_ID) as WotrCardId[], cardId => CARD_BY_ID[cardId].label, cardId => CARD_BY_ID[cardId]) as Record<WotrCardLabel, WotrCard>;
+const CARD_BY_LABEL = arrayUtil.toMap(
+  Object.keys(CARD_BY_ID) as WotrCardId[],
+  cardId => CARD_BY_ID[cardId].label,
+  cardId => CARD_BY_ID[cardId]
+) as Record<WotrCardLabel, WotrCard>;
 
-export function labelToCardId (label: WotrCardLabel): WotrCardId { return CARD_BY_LABEL[label].id; }
+export function labelToCardId(label: WotrCardLabel): WotrCardId {
+  return CARD_BY_LABEL[label].id;
+}
 
-export function cardToLabel (cardId: WotrCardId): WotrCardLabel { return CARD_BY_ID[cardId].label; }
-export function combatCardToLabel (cardId: WotrCardId): string { return CARD_BY_ID[cardId].combatLabel; }
-export function getCard (cardId: WotrCardId): WotrCard { return CARD_BY_ID[cardId]; }
+export function cardToLabel(cardId: WotrCardId): WotrCardLabel {
+  return CARD_BY_ID[cardId].label;
+}
+export function combatCardToLabel(cardId: WotrCardId): string {
+  return CARD_BY_ID[cardId].combatLabel;
+}
+export function getCard(cardId: WotrCardId): WotrCard {
+  return CARD_BY_ID[cardId];
+}

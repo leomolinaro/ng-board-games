@@ -4,7 +4,7 @@ import { MatToolbar } from "@angular/material/toolbar";
 import { RouterLink } from "@angular/router";
 import { AgotUtilityService } from "../agot-services/agot-utility.service";
 
-@Component ({
+@Component({
   selector: "agot-home",
   templateUrl: "./agot-home.component.html",
   styleUrls: ["./agot-home.component.scss"],
@@ -12,8 +12,7 @@ import { AgotUtilityService } from "../agot-services/agot-utility.service";
   imports: [MatToolbar, NgFor, RouterLink]
 })
 export class AgotHomeComponent {
-  
-  private agotUtilityService = inject (AgotUtilityService);
+  private agotUtilityService = inject(AgotUtilityService);
 
-  utilities = this.agotUtilityService.getUtilities ();
+  utilities = this.agotUtilityService.getUtilities();
 } // AgotHomeComponent

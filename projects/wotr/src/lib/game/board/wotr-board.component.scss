@@ -20,10 +20,10 @@ $area-background: #151515;
   // grid-template-columns: minmax(50%, 1200px) 3fr 2fr;
   // grid-template-rows: 80px 2fr 3fr 80px;
   grid-template-areas:
-    'map toolbar'
-    'map actionDiceBox'
-    'map fronts '
-    'map logs ';
+    "map toolbar"
+    "map actionDiceBox"
+    "map fronts "
+    "map logs ";
   grid-template-columns: minmax(50%, 1fr) minmax(150px, 500px);
   grid-template-rows: fit-content(100px) fit-content(100px) 1fr 1fr;
   grid-gap: 10px;
@@ -56,22 +56,32 @@ $area-background: #151515;
         .mat-mdc-tab-header {
           --mdc-secondary-navigation-tab-container-height: 25px;
         }
-        .free-peoples { --wotr-front-color: #{wotr.$blue}; }
-        .shadow { --wotr-front-color: #{wotr.$red}; }
+        .free-peoples {
+          --wotr-front-color: #{wotr.$blue};
+        }
+        .shadow {
+          --wotr-front-color: #{wotr.$red};
+        }
         .mat-mdc-tab.mdc-tab--active {
-          .mdc-tab__text-label { color: var(--wotr-front-color); }
-          .mdc-tab-indicator__content--underline { border-color: var(--wotr-front-color) !important; display: none }
+          .mdc-tab__text-label {
+            color: var(--wotr-front-color);
+          }
+          .mdc-tab-indicator__content--underline {
+            border-color: var(--wotr-front-color) !important;
+            display: none;
+          }
         }
       }
     }
-
   }
   .wotr-shadow {
     grid-area: shadow;
     background-color: $area-background;
     // box-shadow: widget-shadow($red);
     @include wotr.golden-padding(1vmin);
-    ::ng-deep { --wotr-front-color: #{wotr.$red}; }
+    ::ng-deep {
+      --wotr-front-color: #{wotr.$red};
+    }
   }
   .wotr-detail {
     grid-area: detail;
@@ -82,7 +92,7 @@ $area-background: #151515;
     // box-shadow: widget-shadow(white);
     grid-area: logs;
     background-color: $area-background;
-    
+
     position: relative;
     .wotr-replay-buttons {
       position: absolute;
@@ -92,7 +102,6 @@ $area-background: #151515;
       z-index: 1;
       margin-right: 2vmin;
     }
-
   }
   .wotr-action-dice-box {
     @include wotr.golden-padding(1vmin);

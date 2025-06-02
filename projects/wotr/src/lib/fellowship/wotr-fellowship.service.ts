@@ -8,66 +8,85 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
-@Injectable ()
+@Injectable()
 export class WotrFellowshipService {
-  
-  private actionService = inject (WotrActionService);
-  private nationService = inject (WotrNationService);
-  private fellowhipStore = inject (WotrFellowshipStore);
-  private regionStore = inject (WotrRegionStore);
-  private huntStore = inject (WotrHuntStore);
-  private huntFlow = inject (WotrHuntFlowService);
+  private actionService = inject(WotrActionService);
+  private nationService = inject(WotrNationService);
+  private fellowhipStore = inject(WotrFellowshipStore);
+  private regionStore = inject(WotrRegionStore);
+  private huntStore = inject(WotrHuntStore);
+  private huntFlow = inject(WotrHuntFlowService);
 
-  init () {
-    this.actionService.registerActions (this.getActionAppliers () as any);
-    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+  init() {
+    this.actionService.registerActions(this.getActionAppliers() as any);
+    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
   }
 
-  getActionAppliers (): WotrActionApplierMap<WotrFellowshipAction> {
+  getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
       "fellowship-declare": async (story, front) => {
-        this.regionStore.moveFellowshipToRegion (story.region);
-        this.fellowhipStore.setProgress (0);
-        this.nationService.checkNationActivationByFellowshipDeclaration (story.region);
+        this.regionStore.moveFellowshipToRegion(story.region);
+        this.fellowhipStore.setProgress(0);
+        this.nationService.checkNationActivationByFellowshipDeclaration(story.region);
       },
-      "fellowship-declare-not": async (story, front) => { /*empty*/ },
-      "fellowship-corruption": async (action, front) => { this.fellowhipStore.changeCorruption (action.quantity); },
-      "fellowship-guide": async (action, front) => { this.fellowhipStore.setGuide (action.companion); },
-      "fellowship-hide": async (action, front) => { this.fellowhipStore.hide (); },
+      "fellowship-declare-not": async (story, front) => {
+        /*empty*/
+      },
+      "fellowship-corruption": async (action, front) => {
+        this.fellowhipStore.changeCorruption(action.quantity);
+      },
+      "fellowship-guide": async (action, front) => {
+        this.fellowhipStore.setGuide(action.companion);
+      },
+      "fellowship-hide": async (action, front) => {
+        this.fellowhipStore.hide();
+      },
       "fellowship-progress": async (action, front) => {
-        if (this.fellowhipStore.isOnMordorTrack ()) {
-          await this.huntFlow.resolveHunt ();
-          this.huntStore.addFellowshipDie ();
+        if (this.fellowhipStore.isOnMordorTrack()) {
+          await this.huntFlow.resolveHunt();
+          this.huntStore.addFellowshipDie();
         } else {
-          this.fellowhipStore.increaseProgress ();
-          await this.huntFlow.resolveHunt ();
-          this.huntStore.addFellowshipDie ();
+          this.fellowhipStore.increaseProgress();
+          await this.huntFlow.resolveHunt();
+          this.huntStore.addFellowshipDie();
         }
       },
       "fellowship-reveal": async (action, front) => {
-        this.regionStore.moveFellowshipToRegion (action.region);
-        this.fellowhipStore.reveal ();
-      },
+        this.regionStore.moveFellowshipToRegion(action.region);
+        this.fellowhipStore.reveal();
+      }
     };
   }
 
-  private getActionLoggers (): WotrActionLoggerMap<WotrFellowshipAction> {
+  private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {
     return {
       "fellowship-corruption": (action, front, f) => [
-        f.player (front),
-        ` ${ action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints (Math.abs (action.quantity))}`
+        f.player(front),
+        ` ${action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints(Math.abs(action.quantity))}`
       ],
-      "fellowship-guide": (action, front, f) => [f.player (front), " chooses ", f.character (action.companion), " as the guide"],
-      "fellowship-declare": (action, front, f) => [f.player (front), " declares the fellowship in ", f.region (action.region)],
-      "fellowship-declare-not": (action, front, f) => [f.player (front), " does not declare the fellowship"],
-      "fellowship-hide": (action, front, f) => [f.player (front), " hides the fellowship"],
-      "fellowship-progress": (action, front, f) => [f.player (front), " moves the fellowhip"],
-      "fellowship-reveal": (action, front, f) => [f.player (front), " reveals the fellowship in ", f.region (action.region)],
+      "fellowship-guide": (action, front, f) => [
+        f.player(front),
+        " chooses ",
+        f.character(action.companion),
+        " as the guide"
+      ],
+      "fellowship-declare": (action, front, f) => [
+        f.player(front),
+        " declares the fellowship in ",
+        f.region(action.region)
+      ],
+      "fellowship-declare-not": (action, front, f) => [f.player(front), " does not declare the fellowship"],
+      "fellowship-hide": (action, front, f) => [f.player(front), " hides the fellowship"],
+      "fellowship-progress": (action, front, f) => [f.player(front), " moves the fellowhip"],
+      "fellowship-reveal": (action, front, f) => [
+        f.player(front),
+        " reveals the fellowship in ",
+        f.region(action.region)
+      ]
     };
   }
 
-  private nCorruptionPoints (quantity: number) {
+  private nCorruptionPoints(quantity: number) {
     return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
   }
-
 }

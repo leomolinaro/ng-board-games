@@ -25,11 +25,21 @@
     fill-opacity: 0.3;
   }
 }
-.brit-population-track-path { @include brit-path; }
-.brit-nation-turn-path { @include brit-path; }
-.brit-round-path { @include brit-path; }
-.brit-event-path { @include brit-path; }
-.brit-scoring-path { @include brit-path; }
+.brit-population-track-path {
+  @include brit-path;
+}
+.brit-nation-turn-path {
+  @include brit-path;
+}
+.brit-round-path {
+  @include brit-path;
+}
+.brit-event-path {
+  @include brit-path;
+}
+.brit-scoring-path {
+  @include brit-path;
+}
 .brit-unit {
   // & > * {
   //   transition: 1s ease-in-out;

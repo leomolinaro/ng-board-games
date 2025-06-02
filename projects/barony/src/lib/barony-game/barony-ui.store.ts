@@ -22,10 +22,10 @@ interface BaronyUiState {
   maxNumberOfKnights: number | null;
 } // BaronyUiState
 
-@Injectable ()
-export class BaronyUiStore extends signalStore (
+@Injectable()
+export class BaronyUiStore extends signalStore(
   { protectedState: false },
-  withState<BaronyUiState> ({
+  withState<BaronyUiState>({
     currentPlayer: null,
     turnPlayer: "blue",
     canCancel: false,
@@ -38,55 +38,50 @@ export class BaronyUiStore extends signalStore (
     maxNumberOfKnights: null
   })
 ) {
-  
-  private game = inject (BaronyGameStore);
+  private game = inject(BaronyGameStore);
 
-  actionSelect = uiEvent<BaronyAction> ();
-  landSelect = uiEvent<BaronyLand> ();
-  numberOfKnightsSelect = uiEvent<number> ();
-  passSelect = uiEvent<void> ();
-  buildingSelect = uiEvent<"village" | "stronghold"> ();
-  resourceSelect = uiEvent<BaronyResourceType> ();
-  cancelSelect = uiEvent<void> ();
-  
-  private currentPlayerId$ = toObservable (this.currentPlayer);
-  private turnPlayerId$ = toObservable (this.turnPlayer);
+  actionSelect = uiEvent<BaronyAction>();
+  landSelect = uiEvent<BaronyLand>();
+  numberOfKnightsSelect = uiEvent<number>();
+  passSelect = uiEvent<void>();
+  buildingSelect = uiEvent<"village" | "stronghold">();
+  resourceSelect = uiEvent<BaronyResourceType>();
+  cancelSelect = uiEvent<void>();
 
-  currentPlayerChange$ () {
-    return this.currentPlayerId$.pipe (skip (1), first ());
+  private currentPlayerId$ = toObservable(this.currentPlayer);
+  private turnPlayerId$ = toObservable(this.turnPlayer);
+
+  currentPlayerChange$() {
+    return this.currentPlayerId$.pipe(skip(1), first());
   }
 
-  selectCurrentPlayer$ () {
-    return this.game.select$ (
-      this.currentPlayerId$,
-      this.game.selectPlayerMap$ (),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+  selectCurrentPlayer$() {
+    return this.game.select$(this.currentPlayerId$, this.game.selectPlayerMap$(), (playerId, playersMap) =>
+      playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
 
-  selectTurnPlayer$ () {
-    return this.game.select$ (
-      this.turnPlayerId$,
-      this.game.selectPlayerMap$ (),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+  selectTurnPlayer$() {
+    return this.game.select$(this.turnPlayerId$, this.game.selectPlayerMap$(), (playerId, playersMap) =>
+      playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
 
-  selectPlayers$ () {
-    return this.game.select$ (
-      this.game.selectPlayerIds$ (),
-      this.game.selectPlayerMap$ (),
-      (playerIds, playerMap) => playerIds.map ((id) => playerMap[id])
+  selectPlayers$() {
+    return this.game.select$(this.game.selectPlayerIds$(), this.game.selectPlayerMap$(), (playerIds, playerMap) =>
+      playerIds.map(id => playerMap[id])
     );
   } // selectPlayers$
 
-  updateUi<S extends BaronyUiState & {
-    [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;
-  }> (actionName: string, updater: (state: BaronyUiState) => S) {
-    patchState (this, updater);
+  updateUi<
+    S extends BaronyUiState & {
+      [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;
+    }
+  >(actionName: string, updater: (state: BaronyUiState) => S) {
+    patchState(this, updater);
   } // updateUi
 
-  resetUi (): Partial<BaronyUiState> {
+  resetUi(): Partial<BaronyUiState> {
     return {
       message: null,
       canPass: false,
@@ -95,22 +90,21 @@ export class BaronyUiStore extends signalStore (
       validActions: null,
       validBuildings: null,
       validLands: null,
-      validResources: null,
+      validResources: null
     };
   } // resetUi
 
-  setFirstActionUi (player: BaronyColor): Partial<BaronyUiState> {
+  setFirstActionUi(player: BaronyColor): Partial<BaronyUiState> {
     return {
       turnPlayer: player,
-      canCancel: false,
+      canCancel: false
     };
   }
 
-  setCurrentPlayer (playerId: BaronyColor | null) {
-    this.updateUi ("Set current player", (s) => ({
+  setCurrentPlayer(playerId: BaronyColor | null) {
+    this.updateUi("Set current player", s => ({
       ...s,
-      currentPlayer: playerId,
+      currentPlayer: playerId
     }));
   }
-
 }

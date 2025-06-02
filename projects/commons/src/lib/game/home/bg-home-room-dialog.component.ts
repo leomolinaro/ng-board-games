@@ -2,7 +2,13 @@ import { CdkScrollable } from "@angular/cdk/scrolling";
 import { AsyncPipe, NgClass, NgFor } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, TrackByFunction, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from "@angular/material/dialog";
+import {
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle
+} from "@angular/material/dialog";
 import { ChangeListener, ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { filter, map, tap } from "rxjs/operators";
@@ -24,11 +30,13 @@ export interface BgRoomDialogOutput {
   startGame: boolean;
 }
 
-@Component ({
+@Component({
   selector: "bg-home-room-dialog",
   template: `
     <h1 mat-dialog-title>Players</h1>
-    <div mat-dialog-content class="bg-players">
+    <div
+      mat-dialog-content
+      class="bg-players">
       <bg-home-player-form
         *ngFor="let player of players$ | async; index as i; trackBy: playerTrackBy"
         [onlineGame]="onlineGame"
@@ -36,122 +44,148 @@ export interface BgRoomDialogOutput {
         (playerChange)="onPlayerChange($event, player.id)"
         [isOwner]="game.owner | bgIfUser"
         [isPlayer]="player.controller && (player.controller | bgIfUser)"
-        [ngClass]="player.id | bgTransform : roleToCssClass">
+        [ngClass]="player.id | bgTransform: roleToCssClass">
       </bg-home-player-form>
     </div>
-    <div mat-dialog-actions *bgIfUser="game.owner">
-      <button mat-button color="warn" (click)="onDeleteGameClick()">
+    <div
+      mat-dialog-actions
+      *bgIfUser="game.owner">
+      <button
+        mat-button
+        color="warn"
+        (click)="onDeleteGameClick()">
         Delete game
       </button>
-      <button class="bg-game-start-button" mat-button
-        color="accent" [disabled]="!(validPlayers$ | async)"
+      <button
+        class="bg-game-start-button"
+        mat-button
+        color="accent"
+        [disabled]="!(validPlayers$ | async)"
         (click)="onStartGameClick()">
         Start game
       </button>
     </div>
   `,
-  styles: [`
-    .bg-players {
-      display: flex;
-      flex-direction: column;
-      bg-home-player-form {
-        width: 100%;
+  styles: [
+    `
+      .bg-players {
+        display: flex;
+        flex-direction: column;
+        bg-home-player-form {
+          width: 100%;
+        }
       }
-    }
-    
-    .bg-game-start-button {
-      margin-left: auto !important;
-    }
-  `],
+
+      .bg-game-start-button {
+        margin-left: auto !important;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogTitle, CdkScrollable, MatDialogContent, NgFor, BgHomePlayerFormComponent, NgClass, BgIfUserDirective, MatDialogActions, MatButton, AsyncPipe, BgIfUserPipe, BgTransformPipe]
+  imports: [
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    NgFor,
+    BgHomePlayerFormComponent,
+    NgClass,
+    BgIfUserDirective,
+    MatDialogActions,
+    MatButton,
+    AsyncPipe,
+    BgIfUserPipe,
+    BgTransformPipe
+  ]
 })
 @UntilDestroy
 export class BgHomeRoomDialogComponent<Pid extends string> implements OnInit, OnDestroy {
-  
-  private dialogRef = inject<MatDialogRef<BgHomeRoomDialogComponent<Pid>, BgRoomDialogOutput>> (MatDialogRef);
-  private input = inject<BgRoomDialogInput<Pid>> (MAT_DIALOG_DATA);
-  private protoGameService = inject (BgProtoGameService);
+  private dialogRef = inject<MatDialogRef<BgHomeRoomDialogComponent<Pid>, BgRoomDialogOutput>>(MatDialogRef);
+  private input = inject<BgRoomDialogInput<Pid>>(MAT_DIALOG_DATA);
+  private protoGameService = inject(BgProtoGameService);
 
   onlineGame = this.input.protoGame.online;
   game = this.input.protoGame;
   playerTrackBy: TrackByFunction<BgProtoPlayer<Pid>> = (index, player) => index;
-  private $players = new BehaviorSubject<BgProtoPlayer<Pid>[]> ([]);
-  players$ = this.$players.asObservable ();
+  private $players = new BehaviorSubject<BgProtoPlayer<Pid>[]>([]);
+  players$ = this.$players.asObservable();
 
-  roleToCssClass = (role: Pid) => this.input.playerIdToCssClass (role);
+  roleToCssClass = (role: Pid) => this.input.playerIdToCssClass(role);
 
-  validPlayers$ = this.players$.pipe (
-    map ((players) => {
+  validPlayers$ = this.players$.pipe(
+    map(players => {
       let nPlayers = 0;
       for (const player of players) {
         switch (player.type) {
           case "user":
-            if (!player.name || !player.ready) { return false; }
+            if (!player.name || !player.ready) {
+              return false;
+            }
             nPlayers++;
             break;
           case "ai":
-            if (!player.name) { return false; }
+            if (!player.name) {
+              return false;
+            }
             nPlayers++;
             break;
           case "open":
             return false;
         }
       }
-      if (nPlayers < 2) { return false; }
+      if (nPlayers < 2) {
+        return false;
+      }
       return true;
     })
   );
 
-  @ChangeListener ()
-  private listenToPlayersChange () {
-    return this.protoGameService.selectProtoPlayers$<Pid> (this.game.id)
-      .pipe (tap (protoPlayers => this.$players.next (protoPlayers)));
+  @ChangeListener()
+  private listenToPlayersChange() {
+    return this.protoGameService
+      .selectProtoPlayers$<Pid>(this.game.id)
+      .pipe(tap(protoPlayers => this.$players.next(protoPlayers)));
   }
 
-  @ChangeListener ()
-  private listenToGameStart () {
-    return this.protoGameService.selectProtoGame$ (this.game.id).pipe (
-      filter ((game) => game?.state === "running"),
-      tap (() => this.closeDialog (true))
+  @ChangeListener()
+  private listenToGameStart() {
+    return this.protoGameService.selectProtoGame$(this.game.id).pipe(
+      filter(game => game?.state === "running"),
+      tap(() => this.closeDialog(true))
     );
   }
 
-  ngOnInit () {
-    this.listenToPlayersChange ();
-    this.listenToGameStart ();
+  ngOnInit() {
+    this.listenToPlayersChange();
+    this.listenToGameStart();
   }
 
-  ngOnDestroy () {}
+  ngOnDestroy() {}
 
-  @ConcatingEvent ()
-  onPlayerChange (player: BgProtoPlayer<string>, playerId: string) {
-    return this.protoGameService.updateProtoPlayer$ (player, playerId, this.game.id);
+  @ConcatingEvent()
+  onPlayerChange(player: BgProtoPlayer<string>, playerId: string) {
+    return this.protoGameService.updateProtoPlayer$(player, playerId, this.game.id);
   }
 
-  @ExhaustingEvent ()
-  onStartGameClick () {
+  @ExhaustingEvent()
+  onStartGameClick() {
     if (this.game.state === "open") {
-      const protoPlayers = this.$players.getValue ();
-      return this.input.createGame$ (this.game, protoPlayers)
-        .pipe (tap (() => this.closeDialog (true)));
+      const protoPlayers = this.$players.getValue();
+      return this.input.createGame$(this.game, protoPlayers).pipe(tap(() => this.closeDialog(true)));
     } else {
-      this.closeDialog (true);
-      return of (void 0);
+      this.closeDialog(true);
+      return of(void 0);
     }
   }
 
-  private closeDialog (startGame: boolean) {
-    this.dialogRef.close ({
+  private closeDialog(startGame: boolean) {
+    this.dialogRef.close({
       startGame: startGame,
-      gameId: this.game.id,
+      gameId: this.game.id
     });
   }
 
-  @ExhaustingEvent ()
-  onDeleteGameClick () {
-    return this.input.deleteGame$ (this.game.id)
-      .pipe (tap (() => this.closeDialog (false)));
+  @ExhaustingEvent()
+  onDeleteGameClick() {
+    return this.input.deleteGame$(this.game.id).pipe(tap(() => this.closeDialog(false)));
   }
-
 }

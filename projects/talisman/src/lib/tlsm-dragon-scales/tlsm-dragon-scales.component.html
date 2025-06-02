@@ -1,43 +1,41 @@
 <mat-sidenav-container
   fullscreen
   class="example-container"
-  (backdropClick)="closeSettings()"
->
+  (backdropClick)="closeSettings()">
   <mat-sidenav
     #sidenav
     position="end"
     (keydown.escape)="closeSettings()"
     disableClose
-    style="width: 400px"
-  >
+    style="width: 400px">
     <img
       src="../assets/talisman/dragon.jpg"
       alt="dragons"
-      style="width: 100%"
-    />
+      style="width: 100%" />
     <div>
-      <form *ngIf="optForm" [formGroup]="optForm">
+      <form
+        *ngIf="optForm"
+        [formGroup]="optForm">
         <h3 style="padding-left: 16px">
           Players
-          <button mat-mini-fab color="basic" (click)="addPlayer()">
+          <button
+            mat-mini-fab
+            color="basic"
+            (click)="addPlayer()">
             <mat-icon>add</mat-icon>
           </button>
         </h3>
         <div formArrayName="players">
-          <mat-form-field
-            *ngFor="let player of players$ | async; let i = index"
-          >
+          <mat-form-field *ngFor="let player of players$ | async; let i = index">
             <input
               matInput
               [placeholder]="'Player ' + (i + 1)"
-              [formControlName]="i"
-            />
+              [formControlName]="i" />
             <button
               mat-button
               matSuffix
               mat-icon-button
-              (click)="removePlayer(i)"
-            >
+              (click)="removePlayer(i)">
               <mat-icon>close</mat-icon>
             </button>
           </mat-form-field>
@@ -48,8 +46,7 @@
             type="number"
             matInput
             placeholder="Scales per crown"
-            formControlName="scalesPerCrown"
-          />
+            formControlName="scalesPerCrown" />
         </mat-form-field>
       </form>
     </div>
@@ -64,38 +61,38 @@
           : (grilipusCrowned$ | async)
           ? '#81c784'
           : ''
-    }"
-  >
+    }">
     <mat-toolbar>
       <span>Talisman - Dragon scales</span>
       <button
         mat-icon-button
         style="margin-left: auto"
-        (click)="openSettings()"
-      >
+        (click)="openSettings()">
         <mat-icon>settings</mat-icon>
       </button>
     </mat-toolbar>
     <div class="tlsm-dashboard">
       <tlsm-dragon-card
         class="tlsm-dragon-card varthrax"
-        dragonId="varthrax"
-      ></tlsm-dragon-card>
+        dragonId="varthrax"></tlsm-dragon-card>
       <tlsm-dragon-card
         class="tlsm-dragon-card cadorus"
-        dragonId="cadorus"
-      ></tlsm-dragon-card>
+        dragonId="cadorus"></tlsm-dragon-card>
       <tlsm-dragon-card
         class="tlsm-dragon-card grilipus"
-        dragonId="grilipus"
-      ></tlsm-dragon-card>
+        dragonId="grilipus"></tlsm-dragon-card>
       <mat-card class="tlsm-logs-card">
         <mat-card-header>
           <mat-card-title>Logs</mat-card-title>
         </mat-card-header>
         <mat-list dense>
-          <mat-list-item *ngFor="let log of logs$ | async" style="height: 40px">
-            <img matListAvatar [src]="log.tokenSource" alt="token" />
+          <mat-list-item
+            *ngFor="let log of logs$ | async"
+            style="height: 40px">
+            <img
+              matListAvatar
+              [src]="log.tokenSource"
+              alt="token" />
             <h3 matLine>{{ log.message }}</h3>
           </mat-list-item>
         </mat-list>
@@ -105,59 +102,57 @@
           <mat-card-title>Pool</mat-card-title>
         </mat-card-header>
         <mat-card-content *ngIf="pool$ | async as pool">
-          <mat-grid-list cols="2" rowHeight="70px">
+          <mat-grid-list
+            cols="2"
+            rowHeight="70px">
             <mat-grid-tile>
               <img
                 height="65"
                 src="../assets/talisman/varthrax-token.png"
-                alt="varthrax"
-              />
+                alt="varthrax" />
               <span>&nbsp;{{ pool.scales.varthrax }}</span>
             </mat-grid-tile>
             <mat-grid-tile>
               <img
                 height="60"
                 src="../assets/talisman/strike-token.png"
-                alt="strike"
-              />
+                alt="strike" />
               <span>&nbsp;{{ pool.strikes }}</span>
             </mat-grid-tile>
             <mat-grid-tile>
               <img
                 height="65"
                 src="../assets/talisman/cadorus-token.png"
-                alt="cadorus"
-              />
+                alt="cadorus" />
               <span>&nbsp;{{ pool.scales.cadorus }}</span>
             </mat-grid-tile>
             <mat-grid-tile>
               <img
                 height="60"
                 src="../assets/talisman/rage-token.png"
-                alt="rage"
-              />
+                alt="rage" />
               <span>&nbsp;{{ pool.rages }}</span>
             </mat-grid-tile>
             <mat-grid-tile>
               <img
                 height="65"
                 src="../assets/talisman/grilipus-token.png"
-                alt="grilipus"
-              />
+                alt="grilipus" />
               <span>&nbsp;{{ pool.scales.grilipus }}</span>
             </mat-grid-tile>
             <mat-grid-tile>
               <img
                 height="60"
                 src="../assets/talisman/slumber-token.png"
-                alt="slumber"
-              />
+                alt="slumber" />
               <span>&nbsp;{{ pool.slumbers }}</span>
             </mat-grid-tile>
           </mat-grid-list>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-button (click)="drawToken()">
+          <button
+            mat-button
+            (click)="drawToken()">
             <mat-icon>content_copy</mat-icon>
             &nbsp;Draw
           </button>
@@ -169,8 +164,7 @@
       mat-fab
       style="position: fixed; bottom: 25px; right: 25px"
       (click)="newRound()"
-      title="New round"
-    >
+      title="New round">
       <mat-icon>play_arrow</mat-icon>
     </button>
   </mat-sidenav-content>

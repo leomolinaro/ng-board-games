@@ -2,14 +2,13 @@ import { Injectable, inject } from "@angular/core";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotCard } from "../agot.models";
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 export class AgotDraftService {
-  
-  private dataService = inject (AgotDataService);
+  private dataService = inject(AgotDataService);
 
-  private getTypeSort (type: string) {
+  private getTypeSort(type: string) {
     switch (type) {
       case "agenda":
         return 1;
@@ -28,18 +27,12 @@ export class AgotDraftService {
     } // switch
   } // getTypeSort
 
-  generateDraft (
-    nCards: number,
-    types: string[],
-    factions: string[],
-    packs: string[],
-    duplicates: boolean
-  ) {
-    const poolCards = this.getPool (types, factions, packs);
-    const draftCards = this.getRandom (poolCards, nCards, duplicates);
-    draftCards?.sort ((a, b) => {
-      const typeA = this.getTypeSort (a.type_code);
-      const typeB = this.getTypeSort (b.type_code);
+  generateDraft(nCards: number, types: string[], factions: string[], packs: string[], duplicates: boolean) {
+    const poolCards = this.getPool(types, factions, packs);
+    const draftCards = this.getRandom(poolCards, nCards, duplicates);
+    draftCards?.sort((a, b) => {
+      const typeA = this.getTypeSort(a.type_code);
+      const typeB = this.getTypeSort(b.type_code);
       let comparison = typeA - typeB;
       if (comparison !== 0) {
         return comparison;
@@ -59,50 +52,42 @@ export class AgotDraftService {
     return draftCards;
   }
 
-  private getPool (types: string[], factions: string[], packs: string[]) {
+  private getPool(types: string[], factions: string[], packs: string[]) {
     const typeIds: { [id: string]: boolean } = {};
     const factionIds: { [id: string]: boolean } = {};
     const packIds: { [id: string]: boolean } = {};
-    types.forEach ((id) => (typeIds[id] = true));
-    factions.forEach ((id) => (factionIds[id] = true));
-    packs.forEach ((id) => (packIds[id] = true));
+    types.forEach(id => (typeIds[id] = true));
+    factions.forEach(id => (factionIds[id] = true));
+    packs.forEach(id => (packIds[id] = true));
     const poolCards: AgotCard[] = [];
-    const cards = this.dataService.getCards ();
+    const cards = this.dataService.getCards();
     if (cards) {
       for (const card of cards) {
-        if (
-          typeIds[card.type_code] &&
-          packIds[card.pack_code] &&
-          factionIds[card.faction_code]
-        ) {
-          poolCards.push (card);
+        if (typeIds[card.type_code] && packIds[card.pack_code] && factionIds[card.faction_code]) {
+          poolCards.push(card);
         } // if
       } // for
     } // if
     return poolCards;
   } // getPool
 
-  public getRandom<T> (
-    array: T[],
-    num: number,
-    duplicates: boolean
-  ): T[] | null {
+  public getRandom<T>(array: T[], num: number, duplicates: boolean): T[] | null {
     if (num > array.length) {
       return null;
     }
-    const copy = array.slice ();
+    const copy = array.slice();
     const result = [];
     if (duplicates) {
       while (num--) {
-        const i = Math.floor (Math.random () * copy.length);
+        const i = Math.floor(Math.random() * copy.length);
         const x = copy[i];
-        result.push (x);
+        result.push(x);
       } // while
     } else {
       while (num--) {
-        const i = Math.floor (Math.random () * copy.length);
-        const x = copy.splice (i, 1);
-        result.push (x[0]);
+        const i = Math.floor(Math.random() * copy.length);
+        const x = copy.splice(i, 1);
+        result.push(x[0]);
       } // while
     } // if - else
     return result;

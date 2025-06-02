@@ -8,63 +8,47 @@ import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
 //   movements: number;
 // }
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 export class BritRulesMovementService {
-  
-  private components = inject (BritComponentsService);
+  private components = inject(BritComponentsService);
 
-  getValidUnitsForMovement (
-    nationId: BritNationId,
-    state: BritGameState
-  ): BritAreaUnit[] {
+  getValidUnitsForMovement(nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
-    this.components.AREA_IDS.forEach ((areaId) => {
-      const areaUnits = this.getValidUnitsByNationByArea (
-        areaId,
-        nationId,
-        state
-      );
-      units.push (...areaUnits);
+    this.components.AREA_IDS.forEach(areaId => {
+      const areaUnits = this.getValidUnitsByNationByArea(areaId, nationId, state);
+      units.push(...areaUnits);
     });
     return units;
   }
 
-  getValidUnitsByAreaForMovement (
-    nationId: BritNationId,
-    areaId: BritAreaId,
-    state: BritGameState
-  ): BritAreaUnit[] {
-    return this.getValidUnitsByNationByArea (areaId, nationId, state);
+  getValidUnitsByAreaForMovement(nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritAreaUnit[] {
+    return this.getValidUnitsByNationByArea(areaId, nationId, state);
   }
 
-  private getValidUnitsByNationByArea (
+  private getValidUnitsByNationByArea(
     areaId: BritAreaId,
     nationId: BritNationId,
     state: BritGameState
   ): BritAreaUnit[] {
     const areaState = state.areas[areaId];
-    const areaUnits = areaState.units.filter ((u) => u.nationId === nationId);
+    const areaUnits = areaState.units.filter(u => u.nationId === nationId);
     const area = this.components.AREA[areaId];
     const validUnits: BritAreaUnit[] = [];
     for (const areaUnit of areaUnits) {
-      if (
-        areaUnit.nMovements > 0 &&
-        area.type === "land" &&
-        area.difficultTerrain
-      ) {
+      if (areaUnit.nMovements > 0 && area.type === "land" && area.difficultTerrain) {
         continue;
       }
       // TODO molte regole...
 
       if (areaUnit.type === "cavalry" || areaUnit.nationId === "romans") {
         if (areaUnit.nMovements < 3) {
-          validUnits.push (areaUnit);
+          validUnits.push(areaUnit);
         }
       } else if (areaUnit.type === "infantry") {
         if (areaUnit.nMovements < 2) {
-          validUnits.push (areaUnit);
+          validUnits.push(areaUnit);
         }
       } else if (areaUnit.type === "leader") {
       }
@@ -72,19 +56,14 @@ export class BritRulesMovementService {
     return validUnits;
   }
 
-  getValidAreasForMovement (
-    areaId: BritAreaId,
-    nationId: BritNationId,
-    state: BritGameState
-  ): BritAreaId[] {
+  getValidAreasForMovement(areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
-    const area = this.components.getArea (areaId);
-    area.neighbors.forEach ((n) => {
-      const { id: neiAreaId, strait } =
-        typeof n === "object" ? n : { id: n, strait: false };
-      const neiArea = this.components.getArea (neiAreaId);
+    const area = this.components.getArea(areaId);
+    area.neighbors.forEach(n => {
+      const { id: neiAreaId, strait } = typeof n === "object" ? n : { id: n, strait: false };
+      const neiArea = this.components.getArea(neiAreaId);
       if (neiArea.type === "land") {
-        validAreas.push (neiAreaId);
+        validAreas.push(neiAreaId);
       }
     });
     return validAreas;

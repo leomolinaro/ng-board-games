@@ -18,13 +18,13 @@ import { AgotDraftComponent } from "./agot-draft.component";
 
 const routes: Routes = [
   { path: "", component: AgotDraftComponent },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
+@NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild (routes),
+    RouterModule.forChild(routes),
     MatToolbarModule,
     MatSidenavModule,
     MatIconModule,
@@ -37,7 +37,8 @@ const routes: Routes = [
     MatSliderModule,
     FormsModule,
     NgLetDirective,
-    AgotDraftComponent, AgotCardGridComponent
-  ],
+    AgotDraftComponent,
+    AgotCardGridComponent
+  ]
 })
 export class AgotDraftModule {}

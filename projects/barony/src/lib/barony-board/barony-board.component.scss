@@ -1,4 +1,4 @@
-@use 'barony-variables' as barony;
+@use "barony-variables" as barony;
 
 .b-board {
   position: absolute;
@@ -28,9 +28,9 @@
     padding: 2vmin;
     gap: 2vmin;
     grid-template-areas:
-      'players extras extras'
-      'players extras extras'
-      'players instructions actions';
+      "players extras extras"
+      "players extras extras"
+      "players instructions actions";
     .b-board-instructions-widget {
       grid-area: instructions;
       pointer-events: auto;

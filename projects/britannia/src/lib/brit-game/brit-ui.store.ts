@@ -24,13 +24,12 @@ interface BritUiState {
   canConfirm: boolean;
 } // BritUiState
 
-@Injectable ()
+@Injectable()
 export class BritUiStore extends BgStore<BritUiState> {
-  
-  private game = inject (BritGameStore);
+  private game = inject(BritGameStore);
 
-  constructor () {
-    super (
+  constructor() {
+    super(
       {
         currentPlayer: null,
         turnPlayer: "yellow",
@@ -43,111 +42,113 @@ export class BritUiStore extends BgStore<BritUiState> {
         // validBuildings: null,
         // validResources: null,
         canPass: false,
-        canConfirm: false,
+        canConfirm: false
       },
       "Brit UI"
     );
   } // constructor
 
   // actionChange (action: BritAction) { this.$actionChange.next (action); }
-  passChange () {
-    this.$passChange.next ();
+  passChange() {
+    this.$passChange.next();
   }
-  confirmChange () {
-    this.$confirmChange.next ();
+  confirmChange() {
+    this.$confirmChange.next();
   }
   // numberOfKnightsChange (numberOfKnights: number) { this.$numberOfKnightsChange.next (numberOfKnights); }
-  areaChange (areaId: BritAreaId) {
-    this.$areaChange.next (areaId);
+  areaChange(areaId: BritAreaId) {
+    this.$areaChange.next(areaId);
   }
-  unitChange (unit: BritAreaUnit) {
-    this.$unitChange.next (unit);
+  unitChange(unit: BritAreaUnit) {
+    this.$unitChange.next(unit);
   }
-  selectedUnitsChange (units: BritAreaUnit[]) {
-    this.$selectedUnitsChange.next (units);
+  selectedUnitsChange(units: BritAreaUnit[]) {
+    this.$selectedUnitsChange.next(units);
   }
   // buildingChange (building: BritBuilding) { this.$buildingChange.next (building); }
   // resourceChange (resource: BritResourceType) { this.$resourceChange.next (resource); }
-  cancelChange () {
-    this.$cancelChange.next (void 0);
+  cancelChange() {
+    this.$cancelChange.next(void 0);
   }
   // private $actionChange = new Subject<BritAction> ();
-  private $areaChange = new Subject<BritAreaId> ();
-  private $unitChange = new Subject<BritAreaUnit> ();
-  private $selectedUnitsChange = new Subject<BritAreaUnit[]> ();
-  private $passChange = new Subject<void> ();
-  private $confirmChange = new Subject<void> ();
+  private $areaChange = new Subject<BritAreaId>();
+  private $unitChange = new Subject<BritAreaUnit>();
+  private $selectedUnitsChange = new Subject<BritAreaUnit[]>();
+  private $passChange = new Subject<void>();
+  private $confirmChange = new Subject<void>();
   // private $buildingChange = new Subject<"village" | "stronghold"> ();
   // private $resourceChange = new Subject<BritResourceType> ();
-  private $cancelChange = new Subject<void> ();
+  private $cancelChange = new Subject<void>();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
-  areaChange$<T extends BritAreaId = BritAreaId> (): Observable<T> {
-    return (this.$areaChange as unknown as Subject<T>)
-      .asObservable ()
-      .pipe (first ());
+  areaChange$<T extends BritAreaId = BritAreaId>(): Observable<T> {
+    return (this.$areaChange as unknown as Subject<T>).asObservable().pipe(first());
   }
-  unitChange$ (): Observable<BritAreaUnit> {
-    return this.$unitChange.asObservable ().pipe (first ());
+  unitChange$(): Observable<BritAreaUnit> {
+    return this.$unitChange.asObservable().pipe(first());
   }
-  selectedUnitsChange$ (): Observable<BritAreaUnit[]> {
-    return this.$selectedUnitsChange.asObservable ().pipe (first ());
+  selectedUnitsChange$(): Observable<BritAreaUnit[]> {
+    return this.$selectedUnitsChange.asObservable().pipe(first());
   }
   // numberOfKnightsChange$ () { return this.$numberOfKnightsChange.asObservable ().pipe (first ()); }
-  passChange$ () {
-    return this.$passChange.asObservable ().pipe (first ());
+  passChange$() {
+    return this.$passChange.asObservable().pipe(first());
   }
-  confirmChange$ () {
-    return this.$confirmChange.asObservable ().pipe (first ());
+  confirmChange$() {
+    return this.$confirmChange.asObservable().pipe(first());
   }
   // buildingChange$ () { return this.$buildingChange.asObservable ().pipe (first ()); }
   // resourceChange$ () { return this.$resourceChange.asObservable ().pipe (first ()); }
-  cancelChange$ () {
-    return this.$cancelChange.asObservable ().pipe (first ());
+  cancelChange$() {
+    return this.$cancelChange.asObservable().pipe(first());
   }
-  currentPlayerChange$ () {
-    return this.selectCurrentPlayerId$ ().pipe (skip (1), first ());
+  currentPlayerChange$() {
+    return this.selectCurrentPlayerId$().pipe(skip(1), first());
   }
 
-  selectValidAreas$ () {
-    return this.select$ ((s) => s.validAreas);
+  selectValidAreas$() {
+    return this.select$(s => s.validAreas);
   }
-  selectValidUnits$ () {
-    return this.select$ ((s) => s.validUnits);
+  selectValidUnits$() {
+    return this.select$(s => s.validUnits);
   }
-  selectSelectedUnits$ () {
-    return this.select$ ((s) => s.selectedUnits);
+  selectSelectedUnits$() {
+    return this.select$(s => s.selectedUnits);
   }
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
-  selectCanPass$ () {
-    return this.select$ (s => s.canPass);
+  selectCanPass$() {
+    return this.select$(s => s.canPass);
   }
-  selectCanContinue$ () {
-    return this.select$ (s => s.canConfirm);
+  selectCanContinue$() {
+    return this.select$(s => s.canConfirm);
   }
-  selectCanCancel$ () {
-    return this.select$ (s => s.canCancel);
+  selectCanCancel$() {
+    return this.select$(s => s.canCancel);
   }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
-  selectCurrentPlayerId$ () { return this.select$ (s => s.currentPlayer); }
-  getCurrentPlayerId () { return this.get (s => s.currentPlayer); }
-  selectTurnPlayerId$ () { return this.select$ (s => s.turnPlayer); }
-  selectMessage$ () { return this.select$ (s => s.message); }
+  selectCurrentPlayerId$() {
+    return this.select$(s => s.currentPlayer);
+  }
+  getCurrentPlayerId() {
+    return this.get(s => s.currentPlayer);
+  }
+  selectTurnPlayerId$() {
+    return this.select$(s => s.turnPlayer);
+  }
+  selectMessage$() {
+    return this.select$(s => s.message);
+  }
 
-  selectCurrentPlayer$ () {
-    return this.game.select$ (
-      this.selectCurrentPlayerId$ (),
-      this.game.selectPlayerMap$ (),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+  selectCurrentPlayer$() {
+    return this.game.select$(this.selectCurrentPlayerId$(), this.game.selectPlayerMap$(), (playerId, playersMap) =>
+      playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
 
-  selectTurnPlayer$ () {
-    return this.game.select$ (
-      this.selectTurnPlayerId$ (),
-      this.game.selectPlayerMap$ (),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+  selectTurnPlayer$() {
+    return this.game.select$(this.selectTurnPlayerId$(), this.game.selectPlayerMap$(), (playerId, playersMap) =>
+      playerId ? playersMap[playerId] : null
     );
   } // selectCurrentPlayer$
 
@@ -176,16 +177,16 @@ export class BritUiStore extends BgStore<BritUiState> {
     S extends BritUiState & {
       [K in keyof S]: K extends keyof BritUiState ? BritUiState[K] : never;
     }
-  > (actionName: string, updater: (state: BritUiState) => S) {
-    this.update (actionName, updater);
+  >(actionName: string, updater: (state: BritUiState) => S) {
+    this.update(actionName, updater);
   } // updateUi
 
-  resetUi (): Partial<BritUiState> {
+  resetUi(): Partial<BritUiState> {
     return {
       message: null,
       validAreas: null,
       validUnits: null,
-      selectedUnits: null,
+      selectedUnits: null
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,
@@ -203,10 +204,10 @@ export class BritUiStore extends BgStore<BritUiState> {
   //   };
   // } // setFirstActionUi
 
-  setCurrentPlayer (playerId: BritColor | null) {
-    this.updateUi ("Set current player", (s) => ({
+  setCurrentPlayer(playerId: BritColor | null) {
+    this.updateUi("Set current player", s => ({
       ...s,
-      currentPlayer: playerId,
+      currentPlayer: playerId
     }));
   } // setCurrentPlayer
 } // BritUiStore

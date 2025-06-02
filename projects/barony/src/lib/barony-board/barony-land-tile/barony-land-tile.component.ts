@@ -1,21 +1,8 @@
 import { NgClass, NgFor, NgIf } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { BooleanInput, Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
-import {
-  BaronyColor,
-  BaronyLandCoordinates,
-  BaronyLandType,
-  BaronyPawn,
-  BaronyPawnType,
-} from "../../barony-models";
+import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../../barony-models";
 import { BaronyLandCoordinatesPipe, hexToCartesian } from "./barony-land-tile-coordinates.pipe";
 
 interface BaronyPawnNode {
@@ -29,7 +16,7 @@ interface BaronyPawnNode {
   yText: number;
 } // BaronyPawnNode
 
-@Component ({
+@Component({
   selector: "[baronyLandTile]",
   templateUrl: "./barony-land-tile.component.html",
   styleUrls: ["./barony-land-tile.component.scss"],
@@ -37,16 +24,16 @@ interface BaronyPawnNode {
   imports: [NgClass, NgIf, NgFor, BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
-  @Input () type!: BaronyLandType;
-  @Input () coordinates!: BaronyLandCoordinates;
-  @Input () pawns!: BaronyPawn[];
-  @Input () @BooleanInput () active: boolean = false;
-  @Input () @BooleanInput () disabled: boolean = false;
-  @Output () landTileClick = new EventEmitter<void> ();
+  @Input() type!: BaronyLandType;
+  @Input() coordinates!: BaronyLandCoordinates;
+  @Input() pawns!: BaronyPawn[];
+  @Input() @BooleanInput() active: boolean = false;
+  @Input() @BooleanInput() disabled: boolean = false;
+  @Output() landTileClick = new EventEmitter<void>();
 
-  @Loading () loading$!: Observable<boolean>;
+  @Loading() loading$!: Observable<boolean>;
 
   pawnNodes!: BaronyPawnNode[];
   private hexCenter!: { x: number; y: number };
@@ -57,22 +44,21 @@ export class BaronyLandComponent implements OnChanges {
   textXOffset = 0.2;
   textYOffset = 0.6;
 
-  activeCircleRadius = Math.sqrt (3) / 2;
+  activeCircleRadius = Math.sqrt(3) / 2;
 
-  pawnTrackBy = (pawnNode: BaronyPawnNode) =>
-    pawnNode.color + "_" + pawnNode.type;
+  pawnTrackBy = (pawnNode: BaronyPawnNode) => pawnNode.color + "_" + pawnNode.type;
 
-  ngOnChanges (changes: SimpleChanges<this>): void {
+  ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.coordinates) {
-      this.hexCenter = hexToCartesian (this.coordinates);
+      this.hexCenter = hexToCartesian(this.coordinates);
     } // if
 
     if (changes.pawns) {
       this.pawnNodes = [];
-      this.pawns.forEach ((pawn) => {
-        this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode> (
-          (p) => p.color === pawn.color && p.type === pawn.type,
-          (p) => ({ ...p, quantity: p.quantity + 1 }),
+      this.pawns.forEach(pawn => {
+        this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
+          p => p.color === pawn.color && p.type === pawn.type,
+          p => ({ ...p, quantity: p.quantity + 1 }),
           () => ({
             type: pawn.type,
             color: pawn.color,
@@ -81,13 +67,13 @@ export class BaronyLandComponent implements OnChanges {
             x: 0,
             y: 0,
             xText: 0,
-            yText: 0,
+            yText: 0
           }),
           this.pawnNodes
         );
       });
 
-      this.pawnNodes.sort ((a, b) => {
+      this.pawnNodes.sort((a, b) => {
         if (a.type === b.type) {
           return 0;
         } else {
@@ -99,32 +85,30 @@ export class BaronyLandComponent implements OnChanges {
         } // if - else
       });
 
-      this.pawnNodes.forEach ((pawnNode, index) => {
+      this.pawnNodes.forEach((pawnNode, index) => {
         pawnNode.x =
           this.hexCenter?.x -
           this.pawnWidth / 2.0 +
-          this.pawnPositionRadius *
-            this.getPawnNodeDeltaX (index, this.pawnNodes.length);
+          this.pawnPositionRadius * this.getPawnNodeDeltaX(index, this.pawnNodes.length);
         pawnNode.y =
           this.hexCenter?.y -
           this.pawnHeight / 2.0 +
-          this.pawnPositionRadius *
-            this.getPawnNodeDeltaY (index, this.pawnNodes.length);
+          this.pawnPositionRadius * this.getPawnNodeDeltaY(index, this.pawnNodes.length);
         pawnNode.xText = pawnNode.x + this.textXOffset;
         pawnNode.yText = pawnNode.y + this.textYOffset;
       });
     } // if
   } // ngOnChanges
 
-  private getPawnNodeDeltaX (index: number, total: number) {
-    return total === 1 ? 0 : Math.sin ((2 * Math.PI * index) / total);
+  private getPawnNodeDeltaX(index: number, total: number) {
+    return total === 1 ? 0 : Math.sin((2 * Math.PI * index) / total);
   } // getPawnNodeX
 
-  private getPawnNodeDeltaY (index: number, total: number) {
-    return total === 1 ? 0 : -1 * Math.cos ((2 * Math.PI * index) / total);
+  private getPawnNodeDeltaY(index: number, total: number) {
+    return total === 1 ? 0 : -1 * Math.cos((2 * Math.PI * index) / total);
   } // getPawnNodeX
 
-  onLandTileClick () {
-    this.landTileClick.next ();
+  onLandTileClick() {
+    this.landTileClick.next();
   }
 } // BaronyLandComponent

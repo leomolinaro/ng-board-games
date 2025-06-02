@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject
+} from "@angular/core";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
@@ -6,13 +14,19 @@ import { BgFieldConfig } from "../../form";
 import { BgFormDirective, BgInputFieldDirective, BgRadioFieldDirective } from "../../form/bg-form.directive";
 import { BgArcheoGame } from "../bg-proto-game.service";
 
-@Component ({
+@Component({
   selector: "bg-home-archeo-game-form",
   template: `
-    <ng-container [bgForm]="game" (bgFormChange)="onGameChange ($event)">
+    <ng-container
+      [bgForm]="game"
+      (bgFormChange)="onGameChange($event)">
       <mat-form-field class="bg-game-name-field">
         <mat-label>Game name</mat-label>
-        <input bgField="name" matInput required autocomplete="off" />
+        <input
+          bgField="name"
+          matInput
+          required
+          autocomplete="off" />
       </mat-form-field>
       <mat-radio-group
         class="bg-archeo-game-type-radio"
@@ -23,47 +37,57 @@ import { BgArcheoGame } from "../bg-proto-game.service";
       </mat-radio-group>
     </ng-container>
   `,
-  styles: [`
-    :host {
-      display: flex;
-      flex-direction: column;
-      > * {
-        margin-bottom: 1rem;
-      }
-      .bg-archeo-game-type-radio {
+  styles: [
+    `
+      :host {
         display: flex;
         flex-direction: column;
         > * {
           margin-bottom: 1rem;
         }
+        .bg-archeo-game-type-radio {
+          display: flex;
+          flex-direction: column;
+          > * {
+            margin-bottom: 1rem;
+          }
+        }
       }
-    }
-  `],
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BgFormDirective, MatFormField, MatLabel, BgInputFieldDirective, MatInput, MatRadioGroup, BgRadioFieldDirective, MatRadioButton]
+  imports: [
+    BgFormDirective,
+    MatFormField,
+    MatLabel,
+    BgInputFieldDirective,
+    MatInput,
+    MatRadioGroup,
+    BgRadioFieldDirective,
+    MatRadioButton
+  ]
 })
 export class BgHomeArcheoGameFormComponent {
-  
-  private cd = inject (ChangeDetectorRef);
+  private cd = inject(ChangeDetectorRef);
 
-  @Input () game!: BgArcheoGame;
-  @Output () gameChange = new EventEmitter<BgArcheoGame> ();
+  @Input() game!: BgArcheoGame;
+  @Output() gameChange = new EventEmitter<BgArcheoGame>();
 
   typeConfig: BgFieldConfig<"local" | "online", BgArcheoGame> = {
-    valueGetter: (g) => (g.online ? "online" : "local"),
-    valueSetter: (value, g) => ({ online: value === "online" }),
+    valueGetter: g => (g.online ? "online" : "local"),
+    valueSetter: (value, g) => ({ online: value === "online" })
   };
 
-  onGameChange (newGame: BgArcheoGame) {
+  onGameChange(newGame: BgArcheoGame) {
     this.game = newGame;
-    this.gameChange.emit (newGame);
+    this.gameChange.emit(newGame);
   } // onGameChange
 
-  clearForm () {
+  clearForm() {
     this.game = {
       name: "",
-      online: false,
+      online: false
     };
-    setTimeout (() => this.cd.markForCheck ());
+    setTimeout(() => this.cd.markForCheck());
   } // clearForm
 } // BgHomeArcheoGameFormComponent

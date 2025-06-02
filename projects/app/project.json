@@ -35,10 +35,7 @@
           { "input": "projects/talisman/src/assets", "glob": "**/*", "output": "/assets" },
           { "input": "projects/wotr/src/assets", "glob": "**/*", "output": "/assets" }
         ],
-        "styles": [
-          "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-          "projects/app/src/styles.scss"
-        ],
+        "styles": ["node_modules/@angular/material/prebuilt-themes/indigo-pink.css", "projects/app/src/styles.scss"],
         "scripts": []
       },
       "configurations": {

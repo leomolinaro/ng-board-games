@@ -1,23 +1,18 @@
 module.exports = {
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "jasmine": true
+  env: {
+    browser: true,
+    es2021: true,
+    jasmine: true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-   "ecmaVersion": 2020,
-    "sourceType": "module",
-    "tsconfigRootDir": __dirname,
-    "project": [
-      "./tsconfig.base.json"
-    ]
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    tsconfigRootDir: __dirname,
+    project: ["./tsconfig.base.json"]
   },
-  "plugins": [
+  plugins: [
     "@typescript-eslint",
     "@angular-eslint/eslint-plugin-template",
     "@angular-eslint",
@@ -25,7 +20,7 @@ module.exports = {
     "eslint-plugin-jsdoc",
     "eslint-plugin-prefer-arrow"
   ],
-  "rules": {
+  rules: {
     "@angular-eslint/no-conflicting-lifecycle": "warn",
     "@angular-eslint/no-empty-lifecycle-method": "off",
     "@angular-eslint/no-host-metadata-property": "off",
@@ -74,28 +69,30 @@ module.exports = {
     "@typescript-eslint/explicit-member-accessibility": [
       "off",
       {
-        "accessibility": "explicit"
+        accessibility: "explicit"
       }
     ],
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/indent": ["warn", 2,
+    "@typescript-eslint/indent": [
+      "warn",
+      2,
       {
-        "FunctionDeclaration": { "parameters": "first" },
-        "FunctionExpression": { "parameters": "first" },
-        "SwitchCase": 1,
-        "MemberExpression": "off"
+        FunctionDeclaration: { parameters: "first" },
+        FunctionExpression: { parameters: "first" },
+        SwitchCase: 1,
+        MemberExpression: "off"
       }
     ],
     "@typescript-eslint/member-delimiter-style": [
       "warn",
       {
-        "multiline": {
-          "delimiter": "semi",
-          "requireLast": true
+        multiline: {
+          delimiter: "semi",
+          requireLast: true
         },
-        "singleline": {
-          "delimiter": "semi",
-          "requireLast": false
+        singleline: {
+          delimiter: "semi",
+          requireLast: false
         }
       }
     ],
@@ -118,7 +115,7 @@ module.exports = {
     "@typescript-eslint/no-shadow": [
       "warn",
       {
-        "hoist": "all"
+        hoist: "all"
       }
     ],
     "@typescript-eslint/no-this-alias": "warn",
@@ -131,8 +128,8 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
-        "args": "none",
-        "ignoreRestSiblings": true
+        args: "none",
+        ignoreRestSiblings: true
       }
     ],
     "@typescript-eslint/no-use-before-define": "off",
@@ -142,23 +139,17 @@ module.exports = {
     "@typescript-eslint/prefer-function-type": "warn",
     "@typescript-eslint/prefer-namespace-keyword": "warn",
     // "@typescript-eslint/prefer-regexp-exec": "warn",
-    "@typescript-eslint/quotes": [
-      "warn",
-      "double"
-    ],
+    "@typescript-eslint/quotes": ["warn", "double"],
     // "@typescript-eslint/require-await": "warn",
     // "@typescript-eslint/restrict-plus-operands": "warn",
     // "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/semi": [
-      "warn",
-      "always"
-    ],
+    "@typescript-eslint/semi": ["warn", "always"],
     "@typescript-eslint/triple-slash-reference": [
       "warn",
       {
-        "lib": "always",
-        "path": "always",
-        "types": "prefer-import"
+        lib: "always",
+        path: "always",
+        types: "prefer-import"
       }
     ],
     // "@typescript-eslint/tslint/config": [
@@ -183,10 +174,7 @@ module.exports = {
     "array-callback-return": "warn",
     "array-element-newline": "off",
     "arrow-body-style": "off",
-    "arrow-parens": [
-      "off",
-      "always"
-    ],
+    "arrow-parens": ["off", "always"],
     "arrow-spacing": "warn",
     "block-scoped-var": "warn",
     "block-spacing": "warn",
@@ -194,12 +182,10 @@ module.exports = {
       "off",
       "1tbs",
       {
-        "allowSingleLine": true
+        allowSingleLine: true
       }
     ],
-    "camelcase": [
-      "off"
-    ],
+    "camelcase": ["off"],
     "capitalized-comments": "off",
     "class-methods-use-this": "off",
     "comma-dangle": "off",
@@ -214,21 +200,12 @@ module.exports = {
     "default-case": "off",
     "default-case-last": "warn",
     "default-param-last": "off",
-    "dot-location": [
-      "warn",
-      "property"
-    ],
+    "dot-location": ["warn", "property"],
     "dot-notation": "warn",
     "eol-last": "warn",
-    "eqeqeq": [
-      "warn",
-      "smart"
-    ],
+    "eqeqeq": ["warn", "smart"],
     "for-direction": "warn",
-    "func-call-spacing": [
-      "warn",
-      "always"
-    ],
+    "func-call-spacing": "off",
     "func-name-matching": "warn",
     "func-names": "off",
     "func-style": "off",
@@ -273,7 +250,7 @@ module.exports = {
     "max-statements-per-line": [
       "warn",
       {
-        "max": 3
+        max: 3
       }
     ],
     "multiline-comment-style": "off",
@@ -295,7 +272,7 @@ module.exports = {
     "no-console": [
       "warn",
       {
-        "allow": [
+        allow: [
           "log",
           "warn",
           "dir",
@@ -394,10 +371,7 @@ module.exports = {
     "no-regex-spaces": "warn",
     "no-restricted-exports": "warn",
     "no-restricted-globals": "warn",
-    "no-restricted-imports": [
-      "warn",
-      "rxjs/Rx"
-    ],
+    "no-restricted-imports": ["warn", "rxjs/Rx"],
     "no-restricted-properties": "warn",
     "no-restricted-syntax": "warn",
     "no-return-assign": "off",
@@ -418,7 +392,7 @@ module.exports = {
     "no-trailing-spaces": [
       "warn",
       {
-        "skipBlankLines": true
+        skipBlankLines: true
       }
     ],
     "no-undef": "warn",
@@ -437,7 +411,7 @@ module.exports = {
     "no-unused-expressions": [
       "warn",
       {
-        "allowShortCircuit": true
+        allowShortCircuit: true
       }
     ],
     "no-unused-labels": "warn",
@@ -459,16 +433,10 @@ module.exports = {
     "no-with": "warn",
     "nonblock-statement-body-position": "warn",
     "object-curly-newline": "warn",
-    "object-curly-spacing": [
-      "warn",
-      "always"
-    ],
+    "object-curly-spacing": ["warn", "always"],
     "object-property-newline": "off",
     "object-shorthand": "off",
-    "one-var": [
-      "warn",
-      "never"
-    ],
+    "one-var": ["warn", "never"],
     "one-var-declaration-per-line": "warn",
     "operator-assignment": "warn",
     "operator-linebreak": "warn",
@@ -487,10 +455,7 @@ module.exports = {
     "prefer-rest-params": "warn",
     "prefer-spread": "warn",
     "prefer-template": "off",
-    "quote-props": [
-      "warn",
-      "as-needed"
-    ],
+    "quote-props": ["warn", "as-needed"],
     "quotes": "warn",
     "radix": "off",
     "require-atomic-updates": "warn",
@@ -505,11 +470,8 @@ module.exports = {
     "sort-keys": "off",
     "sort-vars": "off",
     "space-before-blocks": "warn",
-    "space-before-function-paren": "warn",
-    "space-in-parens": [
-      "warn",
-      "never"
-    ],
+    "space-before-function-paren": "off",
+    "space-in-parens": ["warn", "never"],
     "space-infix-ops": "warn",
     "space-unary-ops": "warn",
     "spaced-comment": "off", // ["warn", "always", { "block": { "exceptions": ["*"] }, "line": { "exceptions": ["/"] } } ], non funzionano le cornicette
@@ -526,7 +488,7 @@ module.exports = {
     "wrap-iife": "warn",
     "wrap-regex": "warn",
     "yield-star-spacing": "warn",
-    "yoda": "warn",
+    "yoda": "warn"
     // "deprecation/deprecation": "warn" // or "error" to have stricter rule
   }
-}
+};

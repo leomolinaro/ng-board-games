@@ -58,7 +58,7 @@
       <img
         *ngIf="summaryFixed"
         class="b-board-summary-image"
-        src="assets/barony/summary.jpg"/>
+        src="assets/barony/summary.jpg" />
       <barony-scoreboard
         *ngIf="scoreboardFixed"
         class="b-board-scoreboard-widget"
@@ -98,6 +98,13 @@
 </div>
 
 <ng-template #endGameDialog>
-  <h1 mat-dialog-title class="mat-typography">End game</h1>
-  <barony-end-game mat-dialog-content [players]="players"> </barony-end-game>
+  <h1
+    mat-dialog-title
+    class="mat-typography">
+    End game
+  </h1>
+  <barony-end-game
+    mat-dialog-content
+    [players]="players">
+  </barony-end-game>
 </ng-template>

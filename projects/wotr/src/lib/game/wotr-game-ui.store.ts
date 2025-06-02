@@ -25,20 +25,16 @@ export interface WotrGameUiInputQuantity {
   max: number;
 }
 
-export interface WotrPlayerUiState {
-  
+export interface WotrPlayerUiState {}
+
+export function initialState(): WotrPlayerUiState {
+  return {};
 }
 
-export function initialState (): WotrPlayerUiState {
-  return {
-    
-  };
-}
-
-@Injectable ()
-export class WotrGameUiStore extends signalStore (
+@Injectable()
+export class WotrGameUiStore extends signalStore(
   { protectedState: false },
-  withState<WotrGameUiState> ({
+  withState<WotrGameUiState>({
     currentPlayerId: null,
     canCancel: false,
     message: null,
@@ -50,9 +46,8 @@ export class WotrGameUiStore extends signalStore (
     canInputQuantity: false
   })
 ) {
-  
-  private playerInfoStore = inject (WotrPlayerInfoStore);
-  private game = inject (WotrGameStore);
+  private playerInfoStore = inject(WotrPlayerInfoStore);
+  private game = inject(WotrGameStore);
 
   // canPass = computed (() => this.currentPlayerUi ()?.canPass || false);
   // canCancel = computed (() => this.currentPlayerUi ()?.canCancel || false);
@@ -67,10 +62,10 @@ export class WotrGameUiStore extends signalStore (
   // turnPlayerId = toSignal (this.select$ (s => s.turnPlayer), { requireSync: true });
   // message = toSignal (this.select$ (s => s.message), { requireSync: true });
 
-  currentPlayer = computed<WotrPlayerInfo | null> (() => {
-    const currentPlayerId = this.currentPlayerId ();
+  currentPlayer = computed<WotrPlayerInfo | null>(() => {
+    const currentPlayerId = this.currentPlayerId();
     if (currentPlayerId) {
-      return this.playerInfoStore.playerMap ()[currentPlayerId];
+      return this.playerInfoStore.playerMap()[currentPlayerId];
     } else {
       return null;
     }
@@ -85,24 +80,24 @@ export class WotrGameUiStore extends signalStore (
   //   }
   // });
 
-  pass = uiEvent<void> ();
-  continue = uiEvent<void> ();
-  confirm = uiEvent<boolean> ();
-  cancel = uiEvent<void> ();
-  inputQuantity = uiEvent<number> ();
-  region = uiEvent<WotrRegionId> ();
-  action = uiEvent<WotrActionDieOrToken> ();
-  player = uiEvent<WotrFrontId | null> ();
+  pass = uiEvent<void>();
+  continue = uiEvent<void>();
+  confirm = uiEvent<boolean>();
+  cancel = uiEvent<void>();
+  inputQuantity = uiEvent<number>();
+  region = uiEvent<WotrRegionId>();
+  action = uiEvent<WotrActionDieOrToken>();
+  player = uiEvent<WotrFrontId | null>();
 
   private updateUi<
     S extends WotrGameUiState & {
       [K in keyof S]: K extends keyof WotrGameUiState ? WotrGameUiState[K] : never;
     }
-  > (updater: (state: WotrGameUiState) => S) {
-    patchState (this, updater);
+  >(updater: (state: WotrGameUiState) => S) {
+    patchState(this, updater);
   }
 
-  updatePlayer (front: WotrFrontId, updater: (state: WotrPlayerUiState) => WotrPlayerUiState | null) {
+  updatePlayer(front: WotrFrontId, updater: (state: WotrPlayerUiState) => WotrPlayerUiState | null) {
     // this.updateUi (s => ({
     //   ...s,
     //   players: {
@@ -112,41 +107,41 @@ export class WotrGameUiStore extends signalStore (
     // }));
   }
 
-  async askContinue (message: string): Promise<void> {
-    this.updateUi (s => ({ ...s, message, canContinue: true }));
-    await this.continue.get ();
-    this.updateUi (s => ({ ...s, message: null, canContinue: false }));
+  async askContinue(message: string): Promise<void> {
+    this.updateUi(s => ({ ...s, message, canContinue: true }));
+    await this.continue.get();
+    this.updateUi(s => ({ ...s, message: null, canContinue: false }));
   }
 
-  async askConfirm (message: string): Promise<boolean> {
-    this.updateUi (s => ({ ...s, message, canConfirm: true }));
-    const confirm = await this.confirm.get ();
-    this.updateUi (s => ({ ...s, message: null, canConfirm: false }));
+  async askConfirm(message: string): Promise<boolean> {
+    this.updateUi(s => ({ ...s, message, canConfirm: true }));
+    const confirm = await this.confirm.get();
+    this.updateUi(s => ({ ...s, message: null, canConfirm: false }));
     return confirm;
   }
 
-  async askQuantity (message: string, min: number, max: number): Promise<number> {
-    this.updateUi (s => ({ ...s, message, canInputQuantity: { min, max } }));
-    const quantity = await this.inputQuantity.get ();
-    this.updateUi (s => ({ ...s, message: null, canInputQuantity: false }));
+  async askQuantity(message: string, min: number, max: number): Promise<number> {
+    this.updateUi(s => ({ ...s, message, canInputQuantity: { min, max } }));
+    const quantity = await this.inputQuantity.get();
+    this.updateUi(s => ({ ...s, message: null, canInputQuantity: false }));
     return quantity;
   }
 
-  async askRegion (validRegions: WotrRegionId[]): Promise<WotrRegionId> {
-    this.updateUi (s => ({ ...s, message: "Select a region", validRegions }));
-    const region = await this.region.get ();
-    this.updateUi (s => ({ ...s, message: null, validRegions: null }));
+  async askRegion(validRegions: WotrRegionId[]): Promise<WotrRegionId> {
+    this.updateUi(s => ({ ...s, message: "Select a region", validRegions }));
+    const region = await this.region.get();
+    this.updateUi(s => ({ ...s, message: null, validRegions: null }));
     return region;
   }
 
-  async askActionDie (message: string, frontId: WotrFrontId): Promise<WotrActionDieOrToken> {
-    this.updateUi (s => ({ ...s, message, validActionFront: frontId }));
-    const actionDieOrToken = await this.action.get ();
-    this.updateUi (s => ({ ...s, message: null, validActionFront: null }));
+  async askActionDie(message: string, frontId: WotrFrontId): Promise<WotrActionDieOrToken> {
+    this.updateUi(s => ({ ...s, message, validActionFront: frontId }));
+    const actionDieOrToken = await this.action.get();
+    this.updateUi(s => ({ ...s, message: null, validActionFront: null }));
     return actionDieOrToken;
   }
 
-  resetUi (): Partial<WotrGameUiState> {
+  resetUi(): Partial<WotrGameUiState> {
     return {
       // message: null,
       // validRegions: null,
@@ -169,9 +164,8 @@ export class WotrGameUiStore extends signalStore (
   //   };
   // }
 
-  setCurrentPlayerId (playerId: WotrFrontId | null) {
-    this.player.emit (playerId);
-    patchState (this, { currentPlayerId: playerId });
+  setCurrentPlayerId(playerId: WotrFrontId | null) {
+    this.player.emit(playerId);
+    patchState(this, { currentPlayerId: playerId });
   }
-  
 }

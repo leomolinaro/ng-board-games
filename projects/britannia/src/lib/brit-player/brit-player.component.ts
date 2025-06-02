@@ -1,5 +1,14 @@
 import { NgClass, NgFor } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, TrackByFunction, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  TrackByFunction,
+  inject
+} from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgAuthService } from "@leobg/commons";
 import { BooleanInput } from "@leobg/commons/utils";
@@ -29,7 +38,7 @@ interface BritNationNode {
   cardSource: string;
 } // BritNationNode
 
-@Component ({
+@Component({
   selector: "brit-player",
   templateUrl: "./brit-player.component.html",
   styleUrls: ["./brit-player.component.scss"],
@@ -37,17 +46,16 @@ interface BritNationNode {
   imports: [NgClass, NgFor, MatTooltip]
 })
 export class BritPlayerComponent implements OnInit {
-  
-  private authService = inject (BgAuthService);
-  private assetsService = inject (BritAssetsService);
-  private components = inject (BritComponentsService);
+  private authService = inject(BgAuthService);
+  private assetsService = inject(BritAssetsService);
+  private components = inject(BritComponentsService);
 
-  @Input () player!: BritPlayer;
-  @Input () @BooleanInput () currentPlayer: boolean = false;
+  @Input() player!: BritPlayer;
+  @Input() @BooleanInput() currentPlayer: boolean = false;
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
-  @Output () selectPlayer = new EventEmitter<void> ();
-  @Output () nationClick = new EventEmitter<BritNationId> ();
+  @Output() selectPlayer = new EventEmitter<void>();
+  @Output() nationClick = new EventEmitter<BritNationId>();
   // @Output () clickPawn = new EventEmitter<BritPawnType> ();
   // @Output () clickResource = new EventEmitter<BritResourceType> ();
 
@@ -58,36 +66,29 @@ export class BritPlayerComponent implements OnInit {
 
   selectedNationNode: BritNationNode | null = null;
 
-  nationTrackBy: TrackByFunction<BritNationNode> = (
-    index,
-    nationNode: BritNationNode
-  ) => nationNode.id;
+  nationTrackBy: TrackByFunction<BritNationNode> = (index, nationNode: BritNationNode) => nationNode.id;
   // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
-  ngOnInit (): void {
+  ngOnInit(): void {
     for (const nationId of this.player.nationIds) {
-      this.nationNodes.push ({
+      this.nationNodes.push({
         id: nationId,
         nation: this.components.NATION[nationId],
-        iconSource: this.assetsService.getNationIconImageSource (nationId),
-        cardSource: this.assetsService.getNationCardImageSource (nationId),
+        iconSource: this.assetsService.getNationIconImageSource(nationId),
+        cardSource: this.assetsService.getNationCardImageSource(nationId)
       });
     } // for
   } // ngOnChanges
 
-  onCardClick () {
-    if (
-      !this.player.isAi &&
-      this.authService.isUserId (this.player.controller.id) &&
-      !this.currentPlayer
-    ) {
-      this.selectPlayer.emit ();
+  onCardClick() {
+    if (!this.player.isAi && this.authService.isUserId(this.player.controller.id) && !this.currentPlayer) {
+      this.selectPlayer.emit();
     } // if
   } // onCardClick
 
-  onNationClick (nationNode: BritNationNode, event: MouseEvent) {
-    this.nationClick.next (nationNode.id);
-    event.stopPropagation ();
+  onNationClick(nationNode: BritNationNode, event: MouseEvent) {
+    this.nationClick.next(nationNode.id);
+    event.stopPropagation();
   } // onNationClick
 
   // onPawnClick (pawnNode: BritPawnNode) {

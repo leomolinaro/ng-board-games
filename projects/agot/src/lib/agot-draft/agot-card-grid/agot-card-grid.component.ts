@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
 import { AgotCard } from "../../agot.models";
 import { NgFor, NgIf } from "@angular/common";
 
-@Component ({
+@Component({
   selector: "agot-card-grid",
   templateUrl: "./agot-card-grid.component.html",
   styleUrls: ["./agot-card-grid.component.scss"],
@@ -10,7 +10,7 @@ import { NgFor, NgIf } from "@angular/common";
   imports: [NgFor, NgIf]
 })
 export class AgotCardGridComponent {
-  constructor () {}
+  constructor() {}
 
-  @Input () cards!: AgotCard[];
+  @Input() cards!: AgotCard[];
 } // AgotCardGridComponent

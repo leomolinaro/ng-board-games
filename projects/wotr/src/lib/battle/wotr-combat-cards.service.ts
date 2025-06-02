@@ -24,112 +24,173 @@ export interface WotrCombatCardParams {
   attackingArmy: () => WotrArmy | undefined;
 }
 
-@Injectable ()
+@Injectable()
 export class WotrCombatCardsService {
+  private unitService = inject(WotrUnitService);
+  private armyUtil = inject(WotrArmyUtils);
 
-  private unitService = inject (WotrUnitService);
-  private armyUtil = inject (WotrArmyUtils);
+  private freePeoples = inject(WotrFreePeoplesPlayer);
+  private shadow = inject(WotrShadowPlayer);
 
-  private freePeoples = inject (WotrFreePeoplesPlayer);
-  private shadow = inject (WotrShadowPlayer);
-
-  async combatCardReaction (params: WotrCombatCardParams): Promise<void> {
-    return this.combatCardEffects[params.card.combatLabel] (params);
+  async combatCardReaction(params: WotrCombatCardParams): Promise<void> {
+    return this.combatCardEffects[params.card.combatLabel](params);
   }
 
-  private async activateCombatCard (cardId: WotrCardId, player: WotrPlayer): Promise<false | WotrAction[]> {
-    const story = await player.activateCombatCard (cardId);
+  private async activateCombatCard(cardId: WotrCardId, player: WotrPlayer): Promise<false | WotrAction[]> {
+    const story = await player.activateCombatCard(cardId);
     switch (story.type) {
-      case "reaction-combat-card": return story.actions;
-      case "reaction-combat-card-skip": return false;
-      default: throw unexpectedStory (story, (" combat card activation or not"));
+      case "reaction-combat-card":
+        return story.actions;
+      case "reaction-combat-card-skip":
+        return false;
+      default:
+        throw unexpectedStory(story, " combat card activation or not");
     }
   }
 
-  async forfeitLeadership (player: WotrPlayer): Promise<WotrLeaderUnits> {
-    const story = await player.forfeitLeadership ();
-    const action = findAction<WotrLeaderForfeit> (story, "leader-forfeit");
+  async forfeitLeadership(player: WotrPlayer): Promise<WotrLeaderUnits> {
+    const story = await player.forfeitLeadership();
+    const action = findAction<WotrLeaderForfeit>(story, "leader-forfeit");
     return action.leaders;
   }
 
   private combatCardEffects: Record<WotrCardCombatLabel, (params: WotrCombatCardParams) => Promise<void>> = {
-    "Advantageous Position": async params => { params.shadow.combatModifiers.push (-1); },
-    Anduril: async params => { throw new Error ("TODO"); },
-    "Black Breath": async params => { throw new Error ("TODO"); },
-    "Blade of Westernesse": async params => { throw new Error ("TODO"); },
-    "Brave Stand": async params => { throw new Error ("TODO"); },
-    Charge: async params => { throw new Error ("TODO"); },
-    Confusion: async params => { throw new Error ("TODO"); },
-    "Cruel as Death": async params => {
-      await this.forfeitLeadership (this.shadow);
+    "Advantageous Position": async params => {
+      params.shadow.combatModifiers.push(-1);
     },
-    "Daring Defiance": async params => { throw new Error ("TODO"); },
-    Daylight: async params => {
+    "Anduril": async params => {
+      throw new Error("TODO");
+    },
+    "Black Breath": async params => {
+      throw new Error("TODO");
+    },
+    "Blade of Westernesse": async params => {
+      throw new Error("TODO");
+    },
+    "Brave Stand": async params => {
+      throw new Error("TODO");
+    },
+    "Charge": async params => {
+      throw new Error("TODO");
+    },
+    "Confusion": async params => {
+      throw new Error("TODO");
+    },
+    "Cruel as Death": async params => {
+      await this.forfeitLeadership(this.shadow);
+    },
+    "Daring Defiance": async params => {
+      throw new Error("TODO");
+    },
+    "Daylight": async params => {
       params.shadow.maxNDice = 3;
     },
     "Deadly Strife": async params => {
-      params.shadow.combatModifiers.push (2);
-      params.shadow.leaderModifiers.push (2);
-      params.freePeoples.combatModifiers.push (2);
-      params.freePeoples.leaderModifiers.push (2);
+      params.shadow.combatModifiers.push(2);
+      params.shadow.leaderModifiers.push(2);
+      params.freePeoples.combatModifiers.push(2);
+      params.freePeoples.leaderModifiers.push(2);
     },
-    "Delivery of Orthanc": async params => { throw new Error ("TODO"); },
+    "Delivery of Orthanc": async params => {
+      throw new Error("TODO");
+    },
     "Desperate Battle": async params => {
-      params.shadow.combatModifiers.push (1);
-      params.shadow.leaderModifiers.push (1);
-      params.freePeoples.combatModifiers.push (1);
-      params.freePeoples.leaderModifiers.push (1);
+      params.shadow.combatModifiers.push(1);
+      params.shadow.leaderModifiers.push(1);
+      params.freePeoples.combatModifiers.push(1);
+      params.freePeoples.leaderModifiers.push(1);
     },
     "Dread and Despair": async params => {
-      await this.forfeitLeadership (this.shadow);
+      await this.forfeitLeadership(this.shadow);
     },
-    "Durin's Bane": async params => { throw new Error ("TODO"); },
-    "Ents' Rage": async params => { throw new Error ("TODO"); },
-    "Fateful Strike": async params => { throw new Error ("TODO"); },
-    "Foul Stench": async params => { throw new Error ("TODO"); },
+    "Durin's Bane": async params => {
+      throw new Error("TODO");
+    },
+    "Ents' Rage": async params => {
+      throw new Error("TODO");
+    },
+    "Fateful Strike": async params => {
+      throw new Error("TODO");
+    },
+    "Foul Stench": async params => {
+      throw new Error("TODO");
+    },
     "Great Host": async params => {
-      const attackedArmy = params.attackedArmy ();
-      const attackingArmy = params.attackingArmy ();
-      const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits (attackedArmy) : 0;
-      const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits (attackingArmy) : 0;
-      if ((params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
-        (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)) {
-        await this.unitService.chooseCasualties (this.freePeoples);
+      const attackedArmy = params.attackedArmy();
+      const attackingArmy = params.attackingArmy();
+      const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits(attackedArmy) : 0;
+      const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits(attackingArmy) : 0;
+      if (
+        (params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
+        (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
+      ) {
+        await this.unitService.chooseCasualties(this.freePeoples);
       }
     },
-    "Heroic Death": async params => { throw new Error ("TODO"); },
-    "Huorn-dark": async params => { throw new Error ("TODO"); },
-    "It is a Gift": async params => { throw new Error ("TODO"); },
-    "Mighty Attack": async params => { throw new Error ("TODO"); },
-    Mumakil: async params => { throw new Error ("TODO"); },
-    "Nameless Wood": async params => { throw new Error ("TODO"); },
+    "Heroic Death": async params => {
+      throw new Error("TODO");
+    },
+    "Huorn-dark": async params => {
+      throw new Error("TODO");
+    },
+    "It is a Gift": async params => {
+      throw new Error("TODO");
+    },
+    "Mighty Attack": async params => {
+      throw new Error("TODO");
+    },
+    "Mumakil": async params => {
+      throw new Error("TODO");
+    },
+    "Nameless Wood": async params => {
+      throw new Error("TODO");
+    },
     "No Quarter": async params => {
       // TODO
     },
-    "One for the Dark Lord": async params => { throw new Error ("TODO"); },
-    Onslaught: async params => { throw new Error ("TODO"); },
+    "One for the Dark Lord": async params => {
+      throw new Error("TODO");
+    },
+    "Onslaught": async params => {
+      throw new Error("TODO");
+    },
     "Relentless Assault": async params => {
-      const casualties = await this.unitService.chooseCasualties (this.shadow);
-      const hits = casualties.reduce ((h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2), 0);
-      if (hits) { params.shadow.combatModifiers.push (hits); }
+      const casualties = await this.unitService.chooseCasualties(this.shadow);
+      const hits = casualties.reduce((h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2), 0);
+      if (hits) {
+        params.shadow.combatModifiers.push(hits);
+      }
     },
-    Scouts: async params => {
-      const r = await this.activateCombatCard (params.card.id, this.freePeoples);
+    "Scouts": async params => {
+      const r = await this.activateCombatCard(params.card.id, this.freePeoples);
       // eslint-disable-next-line require-atomic-updates
-      if (r) { params.combatRound.endBattle = true; }
+      if (r) {
+        params.combatRound.endBattle = true;
+      }
     },
-    "Servant of the Secret Fire": async params => { throw new Error ("TODO"); },
+    "Servant of the Secret Fire": async params => {
+      throw new Error("TODO");
+    },
     "Shield-Wall": async params => {
       // TODO
     },
-    "Sudden Strike": async params => { throw new Error ("TODO"); },
-    "Swarm of Bats": async params => { throw new Error ("TODO"); },
-    "They are Terrible": async params => { throw new Error ("TODO"); },
-    Valour: async params => {
-      params.freePeoples.combatModifiers.push (1);
+    "Sudden Strike": async params => {
+      throw new Error("TODO");
     },
-    "We Come to Kill": async params => { throw new Error ("TODO"); },
-    "Words of Power": async params => { throw new Error ("TODO"); },
+    "Swarm of Bats": async params => {
+      throw new Error("TODO");
+    },
+    "They are Terrible": async params => {
+      throw new Error("TODO");
+    },
+    "Valour": async params => {
+      params.freePeoples.combatModifiers.push(1);
+    },
+    "We Come to Kill": async params => {
+      throw new Error("TODO");
+    },
+    "Words of Power": async params => {
+      throw new Error("TODO");
+    }
   };
-
 }

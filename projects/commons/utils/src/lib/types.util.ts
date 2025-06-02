@@ -1,17 +1,17 @@
 export type Key = string | number;
 
-export function isEmptyKey (key: any) {
+export function isEmptyKey(key: any) {
   return !(key || key === 0);
 }
 
-export function isArray<T> (value: any): value is T[] {
-  return Array.isArray (value);
+export function isArray<T>(value: any): value is T[] {
+  return Array.isArray(value);
 }
-export function isString (value: any): value is string {
+export function isString(value: any): value is string {
   return typeof value === "string";
 }
-export function isArrayOfStrings (value: any[]): value is string[] {
-  return !value || !value.length || value.every ((v) => isString (v));
+export function isArrayOfStrings(value: any[]): value is string[] {
+  return !value || !value.length || value.every(v => isString(v));
 }
 
 export type KeyOfType<T, TProp> = {

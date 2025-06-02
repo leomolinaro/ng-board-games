@@ -57,7 +57,7 @@ export interface BaronyLandPiece {
   quantity: number;
 }
 
-export function landCoordinatesToId (c: BaronyLandCoordinates) {
+export function landCoordinatesToId(c: BaronyLandCoordinates) {
   return `${c.x}_${c.y}_${c.z}`;
 }
 
@@ -73,15 +73,48 @@ export interface BaronyConstruction {
   building: BaronyBuilding;
 }
 
-export interface BaronyLogMovement { type: "movement"; movement: BaronyMovement; player: BaronyColor }
-export interface BaronyLogExpedition { type: "expedition"; land: BaronyLandCoordinates; player: BaronyColor }
-export interface BaronyLogNobleTitle { type: "nobleTitle"; resources: BaronyResourceType[]; player: BaronyColor }
-export interface BaronyLogNewCity { type: "newCity"; land: BaronyLandCoordinates; player: BaronyColor }
-export interface BaronyLogConstruction { type: "construction"; construction: BaronyConstruction; player: BaronyColor }
-export interface BaronyLogRecuitment { type: "recruitment"; land: BaronyLandCoordinates; player: BaronyColor }
-export interface BaronyLogTurn { type: "turn"; player: BaronyColor }
-export interface BaronyLogSetupPlacement { type: "setupPlacement"; land: BaronyLandCoordinates; player: BaronyColor }
-export interface BaronyLogSetup { type: "setup" }
+export interface BaronyLogMovement {
+  type: "movement";
+  movement: BaronyMovement;
+  player: BaronyColor;
+}
+export interface BaronyLogExpedition {
+  type: "expedition";
+  land: BaronyLandCoordinates;
+  player: BaronyColor;
+}
+export interface BaronyLogNobleTitle {
+  type: "nobleTitle";
+  resources: BaronyResourceType[];
+  player: BaronyColor;
+}
+export interface BaronyLogNewCity {
+  type: "newCity";
+  land: BaronyLandCoordinates;
+  player: BaronyColor;
+}
+export interface BaronyLogConstruction {
+  type: "construction";
+  construction: BaronyConstruction;
+  player: BaronyColor;
+}
+export interface BaronyLogRecuitment {
+  type: "recruitment";
+  land: BaronyLandCoordinates;
+  player: BaronyColor;
+}
+export interface BaronyLogTurn {
+  type: "turn";
+  player: BaronyColor;
+}
+export interface BaronyLogSetupPlacement {
+  type: "setupPlacement";
+  land: BaronyLandCoordinates;
+  player: BaronyColor;
+}
+export interface BaronyLogSetup {
+  type: "setup";
+}
 
 export type BaronyLog =
   | BaronyLogSetup

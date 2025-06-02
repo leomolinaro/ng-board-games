@@ -4,15 +4,13 @@
       mat-card-avatar
       style="width: 100px; height: 100px"
       [src]="dragon.imageSource"
-      [alt]="dragon.id"
-    />
+      [alt]="dragon.id" />
     <img
       mat-card-avatar
       style="margin-left: 16px; width: 100px; height: 100px"
       [ngStyle]="{ visibility: dragon.crowned ? 'visible' : 'hidden' }"
       src="../assets/talisman/crown-token.png"
-      alt="crown"
-    />
+      alt="crown" />
     <mat-card-title>
       <span>{{ dragon.name }}</span>
       <div class="tlsm-dragon-scales">
@@ -21,8 +19,7 @@
           [src]="dragon.tokenSource"
           [alt]="dragon.id"
           *ngFor="let x of dragon.nScales | bgTimes"
-          (click)="discardScale()"
-        />
+          (click)="discardScale()" />
       </div>
     </mat-card-title>
   </mat-card-header>

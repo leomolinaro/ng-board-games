@@ -5,7 +5,7 @@ import {
   BgFormDirective,
   BgInputFieldDirective,
   BgRadioFieldDirective,
-  BgSelectFieldDirective,
+  BgSelectFieldDirective
 } from "./bg-form.directive";
 
 const components = [
@@ -13,11 +13,11 @@ const components = [
   BgInputFieldDirective,
   BgSelectFieldDirective,
   BgRadioFieldDirective,
-  BgCheckboxFieldDirective,
+  BgCheckboxFieldDirective
 ];
 
-@NgModule ({
+@NgModule({
   exports: [...components],
-  imports: [CommonModule, ...components],
+  imports: [CommonModule, ...components]
 })
 export class BgFormModule {}

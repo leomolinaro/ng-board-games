@@ -7,16 +7,10 @@ import { AgotFcDecksComponent } from "./agot-fc-decks.component";
 
 const routes: Routes = [
   { path: "", component: AgotFcDecksComponent },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
-  imports: [
-    CommonModule,
-    RouterModule.forChild (routes),
-    MatTableModule,
-    BgTransformPipe,
-    AgotFcDecksComponent
-  ],
+@NgModule({
+  imports: [CommonModule, RouterModule.forChild(routes), MatTableModule, BgTransformPipe, AgotFcDecksComponent]
 })
 export class AgotFcPacksModule {}

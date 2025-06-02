@@ -4,7 +4,13 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { FormsModule } from "@angular/forms";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
-import { MatAccordion, MatExpansionPanel, MatExpansionPanelActionRow, MatExpansionPanelHeader, MatExpansionPanelTitle } from "@angular/material/expansion";
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelActionRow,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from "@angular/material/expansion";
 import { MatIcon } from "@angular/material/icon";
 import { MatListOption, MatSelectionList } from "@angular/material/list";
 import { MatProgressBar } from "@angular/material/progress-bar";
@@ -20,40 +26,65 @@ import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
 import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
 import { AgotDraftService } from "./agot-draft.service";
 
-@Component ({
+@Component({
   selector: "agot-draft",
   templateUrl: "./agot-draft.component.html",
   styleUrls: ["./agot-draft.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgLetDirective, MatSidenavContainer, MatSidenav, MatToolbar, NgIf, MatProgressBar, MatAccordion, MatExpansionPanel, MatSlider, MatSliderThumb, MatCheckbox, FormsModule, MatExpansionPanelActionRow, MatButton, MatExpansionPanelHeader, MatExpansionPanelTitle, MatIcon, MatSelectionList, NgFor, MatListOption, MatSidenavContent, MatIconButton, AgotCardGridComponent, AsyncPipe]
+  imports: [
+    NgLetDirective,
+    MatSidenavContainer,
+    MatSidenav,
+    MatToolbar,
+    NgIf,
+    MatProgressBar,
+    MatAccordion,
+    MatExpansionPanel,
+    MatSlider,
+    MatSliderThumb,
+    MatCheckbox,
+    FormsModule,
+    MatExpansionPanelActionRow,
+    MatButton,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatIcon,
+    MatSelectionList,
+    NgFor,
+    MatListOption,
+    MatSidenavContent,
+    MatIconButton,
+    AgotCardGridComponent,
+    AsyncPipe
+  ]
 })
 @UntilDestroy
 export class AgotDraftComponent implements OnInit, OnDestroy {
-  private breakpointObserver = inject (BreakpointObserver);
-  data = inject (AgotDataService);
-  draft = inject (AgotDraftService);
+  private breakpointObserver = inject(BreakpointObserver);
+  data = inject(AgotDataService);
+  draft = inject(AgotDraftService);
 
   nCards = 30;
   duplicates = false;
   selectedTypeIds: string[] = [];
   selectedFactionIds: AgotFactionCode[] = [];
   selectedPackIds: AgotPackCode[] = [];
-  types$ = this.data.getTypes$ ();
-  factions$ = this.data.getFactions$ ();
-  packs$ = this.data.getPacks$ ();
+  types$ = this.data.getTypes$();
+  factions$ = this.data.getFactions$();
+  packs$ = this.data.getPacks$();
 
   draftCards: AgotCard[] | null = null;
 
-  @Loading () loading$!: Observable<boolean>;
+  @Loading() loading$!: Observable<boolean>;
 
   isHandset$: Observable<boolean> = this.breakpointObserver
-    .observe (Breakpoints.Handset)
-    .pipe (map ((result) => result.matches));
+    .observe(Breakpoints.Handset)
+    .pipe(map(result => result.matches));
 
-  @SingleEvent ()
-  ngOnInit () {
-    return this.data.load$ ().pipe (
-      tap (() => {
+  @SingleEvent()
+  ngOnInit() {
+    return this.data.load$().pipe(
+      tap(() => {
         this.selectedTypeIds = ["character", "location", "event", "attachment"];
         this.selectedFactionIds = [
           "neutral",
@@ -64,7 +95,7 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
           "martell",
           "tyrell",
           "thenightswatch",
-          "targaryen",
+          "targaryen"
         ];
         this.selectedPackIds = [
           "Core",
@@ -111,16 +142,16 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
           "PoS",
           "BtRK",
           "TB",
-          "LMHR",
+          "LMHR"
         ];
       })
     );
   } // ngOnInit
 
-  ngOnDestroy () {}
+  ngOnDestroy() {}
 
-  generate () {
-    this.draftCards = this.draft.generateDraft (
+  generate() {
+    this.draftCards = this.draft.generateDraft(
       this.nCards,
       this.selectedTypeIds,
       this.selectedFactionIds,

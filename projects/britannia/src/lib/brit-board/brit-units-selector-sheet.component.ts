@@ -1,8 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
-import {
-  MAT_BOTTOM_SHEET_DATA,
-  MatBottomSheetRef,
-} from "@angular/material/bottom-sheet";
+import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritAreaUnit } from "../brit-game-state.models";
 import { BritUnitsSelectorComponent } from "../brit-units-selector/brit-units-selector.component";
@@ -13,7 +10,7 @@ export interface BritUnitsSelectorSheetInput {
   maxQuantity: number;
 } // BritUnitsSelectorSheetInput
 
-@Component ({
+@Component({
   selector: "brit-unit-number-selection-sheet",
   template: `
     <brit-units-selector
@@ -21,8 +18,7 @@ export interface BritUnitsSelectorSheetInput {
       [(number)]="quantity"
       [max]="data.maxQuantity"
       min="0"
-      (confirm)="onConfirm()"
-    >
+      (confirm)="onConfirm()">
     </brit-units-selector>
   `,
   styles: [],
@@ -30,27 +26,23 @@ export interface BritUnitsSelectorSheetInput {
   imports: [BritUnitsSelectorComponent]
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
-  
-  private bottomSheetRef = inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>> (MatBottomSheetRef);
-  data = inject<BritUnitsSelectorSheetInput> (MAT_BOTTOM_SHEET_DATA);
-  private assetsService = inject (BritAssetsService);
+  private bottomSheetRef = inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>>(MatBottomSheetRef);
+  data = inject<BritUnitsSelectorSheetInput>(MAT_BOTTOM_SHEET_DATA);
+  private assetsService = inject(BritAssetsService);
 
   imageSource!: string;
   quantity!: number;
 
-  ngOnInit () {
+  ngOnInit() {
     this.quantity = this.data.quantity;
-    this.imageSource = this.assetsService.getUnitImageSourceByType (
-      this.data.unit.type,
-      this.data.unit.nationId
-    );
+    this.imageSource = this.assetsService.getUnitImageSourceByType(this.data.unit.type, this.data.unit.nationId);
   } // ngOnInit
 
-  onCloseClick () {
-    this.bottomSheetRef.dismiss ();
+  onCloseClick() {
+    this.bottomSheetRef.dismiss();
   } // onCloseClick
 
-  onConfirm () {
-    this.bottomSheetRef.dismiss (this.quantity);
+  onConfirm() {
+    this.bottomSheetRef.dismiss(this.quantity);
   } // onConfirm
 } // BritUnitsSelectorSheetComponent

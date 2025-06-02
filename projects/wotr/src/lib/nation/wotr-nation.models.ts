@@ -37,15 +37,17 @@ export type WotrGenericUnitType = WotrArmyUnitType | "leader" | "nazgul";
 
 export type WotrPoliticalStep = 3 | 2 | 1 | "atWar";
 
-export function frontOfNation (nationId: WotrNationId): WotrFrontId {
+export function frontOfNation(nationId: WotrNationId): WotrFrontId {
   switch (nationId) {
     case "dwarves":
     case "elves":
     case "gondor":
     case "north":
-    case "rohan": return "free-peoples";
+    case "rohan":
+      return "free-peoples";
     case "isengard":
     case "sauron":
-    case "southrons": return "shadow";
+    case "southrons":
+      return "shadow";
   }
 }

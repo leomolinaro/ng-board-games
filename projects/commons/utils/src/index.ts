@@ -14,8 +14,10 @@ export * from "./lib/ng.util";
 export * from "./lib/rxjs.util";
 export * from "./lib/ui-event";
 export {
-  arrayUtil, BgReduxDevtools,
-  BgStore, debounceSync,
+  arrayUtil,
+  BgReduxDevtools,
+  BgStore,
+  debounceSync,
   downloadUtil,
   immutableUtil,
   objectUtil,
@@ -23,4 +25,3 @@ export {
   stringUtil,
   typesUtil
 };
-

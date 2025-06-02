@@ -15,7 +15,7 @@ import { BritPlayerAiService } from "./brit-player-ai.service";
 import { BritPlayerLocalService } from "./brit-player-local.service";
 import { BritUiStore } from "./brit-ui.store";
 
-@Component ({
+@Component({
   selector: "brit-game",
   template: `
     <brit-board
@@ -32,12 +32,12 @@ import { BritUiStore } from "./brit-ui.store";
       [canPass]="canPass$ | async"
       [canConfirm]="canConfirm$ | async"
       [canCancel]="canCancel$ | async"
-      (passClick)="onPassClick ()"
-      (confirmClick)="onConfirmClick ()"
-      (cancelClick)="onCancelClick ()"
-      (areaClick)="onAreaClick ($event)"
-      (unitClick)="onUnitClick ($event)"
-      (selectedUnitsChange)="onSelectedUnitsChange ($event)">
+      (passClick)="onPassClick()"
+      (confirmClick)="onConfirmClick()"
+      (cancelClick)="onCancelClick()"
+      (areaClick)="onAreaClick($event)"
+      (unitClick)="onUnitClick($event)"
+      (selectedUnitsChange)="onSelectedUnitsChange($event)">
     </brit-board>
     <!-- [validLands]="validLands$ | async"
     [validActions]="validActions$ | async"
@@ -54,127 +54,119 @@ import { BritUiStore } from "./brit-ui.store";
   `,
   styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    BritGameStore,
-    BritUiStore,
-    BritPlayerAiService,
-    BritPlayerLocalService,
-    BritGameService,
-  ],
+  providers: [BritGameStore, BritUiStore, BritPlayerAiService, BritPlayerLocalService, BritGameService],
   imports: [BritBoardComponent, AsyncPipe]
 })
 @UntilDestroy
 export class BritGameComponent implements OnInit, OnDestroy {
-  
-  private components = inject (BritComponentsService);
-  private game = inject (BritGameStore);
-  private ui = inject (BritUiStore);
-  private remote = inject (BritRemoteService);
-  private route = inject (ActivatedRoute);
-  private authService = inject (BgAuthService);
-  private gameService = inject (BritGameService);
+  private components = inject(BritComponentsService);
+  private game = inject(BritGameStore);
+  private ui = inject(BritUiStore);
+  private remote = inject(BritRemoteService);
+  private route = inject(ActivatedRoute);
+  private authService = inject(BgAuthService);
+  private gameService = inject(BritGameService);
 
+  private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
 
-  private gameId: string = this.route.snapshot.paramMap.get ("gameId")!;
-
-  areaStates$ = this.game.selectAreas$ ();
-  nationStates$ = this.game.selectNations$ ();
-  players$ = this.game.selectPlayers$ ();
-  logs$ = this.game.selectLogs$ ();
+  areaStates$ = this.game.selectAreas$();
+  nationStates$ = this.game.selectNations$();
+  players$ = this.game.selectPlayers$();
+  logs$ = this.game.selectLogs$();
   // endGame$ = this.game.selectEndGame$ ();
 
-  turnPlayer$ = this.ui.selectTurnPlayer$ ();
-  currentPlayer$ = this.ui.selectCurrentPlayer$ ();
+  turnPlayer$ = this.ui.selectTurnPlayer$();
+  currentPlayer$ = this.ui.selectCurrentPlayer$();
   // players$ = this.ui.selectPlayers$ ();
-  message$ = this.ui.selectMessage$ ();
-  validAreas$ = this.ui.selectValidAreas$ ();
-  validUnits$ = this.ui.selectValidUnits$ ();
-  selectedUnits$ = this.ui.selectSelectedUnits$ ();
+  message$ = this.ui.selectMessage$();
+  validAreas$ = this.ui.selectValidAreas$();
+  validUnits$ = this.ui.selectValidUnits$();
+  selectedUnits$ = this.ui.selectSelectedUnits$();
   // validActions$ = this.ui.selectValidActions$ ();
   // validBuildings$ = this.ui.selectValidBuildings$ ();
   // validResources$ = this.ui.selectValidResources$ ();
-  canPass$ = this.ui.selectCanPass$ ();
-  canConfirm$ = this.ui.selectCanContinue$ ();
-  canCancel$ = this.ui.selectCanCancel$ ();
+  canPass$ = this.ui.selectCanPass$();
+  canConfirm$ = this.ui.selectCanContinue$();
+  canCancel$ = this.ui.selectCanCancel$();
 
-  @ViewChild (BritBoardComponent) boardComponent!: BritBoardComponent;
+  @ViewChild(BritBoardComponent) boardComponent!: BritBoardComponent;
 
-  @SingleEvent ()
-  ngOnInit () {
-    return forkJoin ([
-      this.remote.getGame$ (this.gameId),
-      this.remote.getPlayers$ (this.gameId, (ref) => ref.orderBy ("sort")),
-      this.remote.getStories$ (this.gameId, (ref) => ref.orderBy ("time").orderBy ("playerId")),
-    ]).pipe (
-      tap (([game, players, stories]) => {
+  @SingleEvent()
+  ngOnInit() {
+    return forkJoin([
+      this.remote.getGame$(this.gameId),
+      this.remote.getPlayers$(this.gameId, ref => ref.orderBy("sort")),
+      this.remote.getStories$(this.gameId, ref => ref.orderBy("time").orderBy("playerId"))
+    ]).pipe(
+      tap(([game, players, stories]) => {
         if (game) {
-          const user = this.authService.getUser ();
-          this.game.initGameState (
-            players.map ((p) => this.playerDocToPlayer (p, user)),
+          const user = this.authService.getUser();
+          this.game.initGameState(
+            players.map(p => this.playerDocToPlayer(p, user)),
             this.gameId,
             game.owner
           );
-          this.listenToGame (stories);
+          this.listenToGame(stories);
         } // if
       })
     );
   } // ngOnInit
 
-  @ChangeListener ()
-  private listenToGame (stories: BritStoryDoc[]) {
-    return this.gameService.game$ (stories);
+  @ChangeListener()
+  private listenToGame(stories: BritStoryDoc[]) {
+    return this.gameService.game$(stories);
   } // listenToGame
 
-  private playerDocToPlayer (playerDoc: BritPlayerDoc, user: BgUser): BritPlayer {
+  private playerDocToPlayer(playerDoc: BritPlayerDoc, user: BgUser): BritPlayer {
     if (playerDoc.isAi) {
       return {
-        ...this.playerDocToAPlayerInit (playerDoc),
+        ...this.playerDocToAPlayerInit(playerDoc),
         isAi: true,
         isLocal: false,
-        isRemote: false,
+        isRemote: false
       };
     } else {
       return {
-        ...this.playerDocToAPlayerInit (playerDoc),
+        ...this.playerDocToAPlayerInit(playerDoc),
         isAi: false,
         controller: playerDoc.controller,
         isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id,
+        isRemote: user.id !== playerDoc.controller.id
       };
     } // if - else
   } // playerDocToPlayer
 
-  private playerDocToAPlayerInit (playerDoc: BritPlayerDoc): ABritPlayer {
+  private playerDocToAPlayerInit(playerDoc: BritPlayerDoc): ABritPlayer {
     return {
       id: playerDoc.id,
       name: playerDoc.name,
-      nationIds: this.components.getNationIdsOfColor (playerDoc.id),
-      score: 0,
+      nationIds: this.components.getNationIdsOfColor(playerDoc.id),
+      score: 0
     };
   } // playerDocToAPlayerInit
 
-  ngOnDestroy () {}
+  ngOnDestroy() {}
 
   // onPlayerSelect (player: BaronyPlayer) { this.ui.setCurrentPlayer (player.id); }
   // onBuildingSelect (building: BaronyBuilding) { this.ui.buildingChange (building); }
-  onAreaClick (areaId: BritAreaId) {
-    this.ui.areaChange (areaId);
+  onAreaClick(areaId: BritAreaId) {
+    this.ui.areaChange(areaId);
   }
-  onUnitClick (unit: BritAreaUnit) {
-    this.ui.unitChange (unit);
+  onUnitClick(unit: BritAreaUnit) {
+    this.ui.unitChange(unit);
   }
-  onSelectedUnitsChange (units: BritAreaUnit[]) {
-    this.ui.selectedUnitsChange (units);
+  onSelectedUnitsChange(units: BritAreaUnit[]) {
+    this.ui.selectedUnitsChange(units);
   }
   // onActionClick (action: BaronyAction) { this.ui.actionChange (action); }
-  onPassClick () {
-    this.ui.passChange ();
+  onPassClick() {
+    this.ui.passChange();
   }
-  onConfirmClick () {
-    this.ui.confirmChange ();
+  onConfirmClick() {
+    this.ui.confirmChange();
   }
-  onCancelClick () {
-    this.ui.cancelChange ();
+  onCancelClick() {
+    this.ui.cancelChange();
   }
   // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }

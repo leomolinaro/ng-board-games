@@ -3,10 +3,8 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrPlayer } from "./wotr-player";
 
-@Injectable ()
+@Injectable()
 export class WotrFreePeoplesPlayer extends WotrPlayer {
-  
-  protected override storyService = inject (WotrStoryService);
+  protected override storyService = inject(WotrStoryService);
   override frontId: WotrFrontId = "free-peoples";
-
 }

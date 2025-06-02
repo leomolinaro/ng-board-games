@@ -1,4 +1,4 @@
-@use 'barony-variables' as barony;
+@use "barony-variables" as barony;
 
 .b-player-card {
   @include barony.golden-padding(2vmin);
@@ -105,8 +105,7 @@
       &.is-active {
         cursor: pointer;
         background: linear-gradient(90deg, white 50%, transparent 50%),
-          linear-gradient(90deg, white 50%, transparent 50%),
-          linear-gradient(0deg, white 50%, transparent 50%),
+          linear-gradient(90deg, white 50%, transparent 50%), linear-gradient(0deg, white 50%, transparent 50%),
           linear-gradient(0deg, white 50%, transparent 50%);
         background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
         background-size: 16px 4px, 16px 4px, 4px 16px, 4px 16px;

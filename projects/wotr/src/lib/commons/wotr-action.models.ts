@@ -9,11 +9,11 @@ export interface WotrAction {
 }
 
 export interface WotrFragmentCreator<F> {
-  player (front: WotrFrontId): F;
-  region (region: WotrRegionId): F;
-  nation (nation: WotrNationId): F;
-  character (characterId: WotrCharacterId): F;
-  huntTile (huntTile: WotrHuntTileId): F;
+  player(front: WotrFrontId): F;
+  region(region: WotrRegionId): F;
+  nation(nation: WotrNationId): F;
+  character(characterId: WotrCharacterId): F;
+  huntTile(huntTile: WotrHuntTileId): F;
 }
 
 export type WotrActionLogger<A, F = any> = (action: A, front: WotrFrontId, f: WotrFragmentCreator<F>) => F[];

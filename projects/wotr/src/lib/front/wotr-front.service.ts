@@ -4,28 +4,25 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontStore } from "./wotr-front.store";
 
-@Injectable ()
+@Injectable()
 export class WotrFrontService {
-  
-  private frontStore = inject (WotrFrontStore);
-  private regionStore = inject (WotrRegionStore);
+  private frontStore = inject(WotrFrontStore);
+  private regionStore = inject(WotrRegionStore);
 
-  refreshVictoryPoints () {
+  refreshVictoryPoints() {
     const points: Record<WotrFrontId, number> = {
       "free-peoples": 0,
-      shadow: 0
+      "shadow": 0
     };
 
-    for (const region of this.regionStore.regions ()) {
+    for (const region of this.regionStore.regions()) {
       if (region.settlement === "stronghold" || region.settlement === "city") {
-        if (region.nationId && region.controlledBy && frontOfNation (region.nationId) !== region.controlledBy) {
+        if (region.nationId && region.controlledBy && frontOfNation(region.nationId) !== region.controlledBy) {
           points[region.controlledBy] += region.settlement === "stronghold" ? 2 : 1;
         }
       }
     }
-    this.frontStore.setVictoryPoints (points["free-peoples"], "free-peoples");
-    this.frontStore.setVictoryPoints (points.shadow, "shadow");
-
+    this.frontStore.setVictoryPoints(points["free-peoples"], "free-peoples");
+    this.frontStore.setVictoryPoints(points.shadow, "shadow");
   }
-
 }

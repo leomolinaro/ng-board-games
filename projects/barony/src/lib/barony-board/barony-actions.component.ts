@@ -1,17 +1,10 @@
 import { NgClass, NgFor } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
 
-@Component ({
+@Component({
   selector: "barony-actions",
   template: `
     <div class="b-actions">
@@ -36,11 +29,11 @@ import { BaronyAction } from "../barony-models";
       <button
         *ngFor="let action of actions"
         class="b-action"
-          [ngClass]="{
-            'is-active': isValid ? isValid[action] : false,
-            'is-disabled': isValid ? !isValid[action] : true
-          }"
-          (click)="onActionClick(action)">
+        [ngClass]="{
+          'is-active': isValid ? isValid[action] : false,
+          'is-disabled': isValid ? !isValid[action] : true
+        }"
+        (click)="onActionClick(action)">
         {{ $any(labels)[action] }}
       </button>
     </div>
@@ -81,14 +74,14 @@ import { BaronyAction } from "../barony-models";
   imports: [NgClass, NgFor]
 })
 export class BaronyActionsComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
-  @Input () validActions: BaronyAction[] | null = null;
-  @Input () canPass!: boolean;
-  @Input () canCancel!: boolean;
-  @Output () actionClick = new EventEmitter<BaronyAction> ();
-  @Output () passClick = new EventEmitter<void> ();
-  @Output () cancelClick = new EventEmitter<void> ();
+  @Input() validActions: BaronyAction[] | null = null;
+  @Input() canPass!: boolean;
+  @Input() canCancel!: boolean;
+  @Output() actionClick = new EventEmitter<BaronyAction>();
+  @Output() passClick = new EventEmitter<void>();
+  @Output() cancelClick = new EventEmitter<void>();
 
   actions = BARONY_ACTIONS;
 
@@ -100,17 +93,17 @@ export class BaronyActionsComponent implements OnChanges {
     expedition: "Expedition",
     nobleTitle: "Noble title",
     pass: "Pass",
-    cancel: "Cancel",
+    cancel: "Cancel"
   };
 
   isValid: { [action: string]: boolean } | null = null;
 
-  ngOnChanges (changes: SimpleChanges<this>): void {
+  ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.validActions || changes.canPass) {
       if (this.validActions) {
-        this.isValid = arrayUtil.toMap (
+        this.isValid = arrayUtil.toMap(
           this.validActions,
-          (a) => a,
+          a => a,
           () => true
         ) as any;
       } else {
@@ -119,21 +112,21 @@ export class BaronyActionsComponent implements OnChanges {
     } // if
   } // ngOnChanges
 
-  onActionClick (action: BaronyAction) {
+  onActionClick(action: BaronyAction) {
     if (this.isValid && this.isValid[action]) {
-      this.actionClick.next (action);
+      this.actionClick.next(action);
     } // if
   } // onActionClick
 
-  onPassClick () {
+  onPassClick() {
     if (this.canPass) {
-      this.passClick.next ();
+      this.passClick.next();
     } // if
   } // onPassClick
 
-  onCancelClick () {
+  onCancelClick() {
     if (this.canCancel) {
-      this.cancelClick.next ();
+      this.cancelClick.next();
     } // if
   } // onCancelClick
 } // BaronyActionsComponent

@@ -16,52 +16,58 @@ interface WotrExampleGame {
   loadStories: () => Promise<WotrStoryDoc[]>;
 }
 
-@Component ({
+@Component({
   selector: "wotr-example-button",
   imports: [MatFabButton, MatIcon, MatMenuModule],
   template: `
     @if (isAdmin ()) {
-      <button mat-fab color="accent" class="load-example"
-        [matMenuTriggerFor]="exampleMenu">
-        <mat-icon>bookmark</mat-icon>
+    <button
+      mat-fab
+      color="accent"
+      class="load-example"
+      [matMenuTriggerFor]="exampleMenu">
+      <mat-icon>bookmark</mat-icon>
+    </button>
+    <mat-menu #exampleMenu="matMenu">
+      @for (game of exampleGames; track game.name) {
+      <button
+        mat-menu-item
+        (click)="onGameClick(game)">
+        <span>{{ game.name }}</span>
       </button>
-      <mat-menu #exampleMenu="matMenu">
-        @for (game of exampleGames; track game.name) {
-          <button mat-menu-item (click)="onGameClick (game)">
-            <span>{{ game.name }}</span>
-          </button>
-        }
-      </mat-menu>
+      }
+    </mat-menu>
     }
   `,
-  styles: [`
-    .load-example {
-      position: absolute;
-      bottom: 50px;
-      left: 50px;
-    }
-  `],
+  styles: [
+    `
+      .load-example {
+        position: absolute;
+        bottom: 50px;
+        left: 50px;
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
 export class WotrExampleButton implements OnDestroy {
-
   // private remote = inject (WotrRemoteService);
-  private auth = inject (BgAuthService);
-  private router = inject (Router);
-  private activatedRoute = inject (ActivatedRoute);
-  private examples = inject (WotrExamplesService);
+  private auth = inject(BgAuthService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private examples = inject(WotrExamplesService);
 
-  protected user = toSignal (this.auth.getUser$ ());
-  protected isAdmin = computed (() => this.user ()?.email === "rhapsody.leo@gmail.com");
+  protected user = toSignal(this.auth.getUser$());
+  protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
 
-  protected exampleGames: WotrExampleGame[] = this.examples.getGames ();
+  protected exampleGames: WotrExampleGame[] = this.examples.getGames();
 
-  ngOnDestroy () { }
+  ngOnDestroy() {}
 
-  @ExhaustingEvent ()
-  protected onGameClick (game: WotrExampleGame) {
-    return from (this.router.navigate (["game", game.id], { relativeTo: this.activatedRoute }));
+  @ExhaustingEvent()
+  protected onGameClick(game: WotrExampleGame) {
+    return from(this.router.navigate(["game", game.id], { relativeTo: this.activatedRoute }));
     // return from (game.loadStories ()).pipe (
     //   switchMap (stories => this.createGame$ (game, stories)),
     //   switchMap (gameId => from (this.router.navigate (["game", gameId], { relativeTo: this.activatedRoute })),)
@@ -84,7 +90,7 @@ export class WotrExampleButton implements OnDestroy {
   //         const storyId = getStoryId (story.time, story.playerId);
   //         return this.remote.insertStory$ (storyId, story, game.id);
   //       })
-        
+
   //     ]).pipe (
   //       map (() => game.id)
   //     ))
@@ -98,5 +104,4 @@ export class WotrExampleButton implements OnDestroy {
   //   };
   //   return this.remote.insertPlayer$ (player, gameId);
   // }
-
 }

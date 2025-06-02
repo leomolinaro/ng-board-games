@@ -1,24 +1,16 @@
-
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { BaronyResourceType } from "../barony-models";
 
-@Component ({
+@Component({
   selector: "barony-resources-selector",
   template: `
     <div class="b-resources-selector-container">
       @for (resource of resources; track resource) {
-        <div
-          class="b-resource-image"
-          (click)="onResourceClick(resource)">
-          <img [src]="'assets/barony/resources/' + resource + '.png'" />
-        </div>
+      <div
+        class="b-resource-image"
+        (click)="onResourceClick(resource)">
+        <img [src]="'assets/barony/resources/' + resource + '.png'" />
+      </div>
       }
     </div>
   `,
@@ -45,15 +37,15 @@ import { BaronyResourceType } from "../barony-models";
   imports: []
 })
 export class BaronyResourcesSelectorComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
-  @Input () resources!: BaronyResourceType[];
+  @Input() resources!: BaronyResourceType[];
   // @Input () player!: BaronyPlayer;
-  @Output () resourceClick = new EventEmitter<BaronyResourceType> ();
+  @Output() resourceClick = new EventEmitter<BaronyResourceType>();
 
-  ngOnChanges (): void {} // ngOnChanges
+  ngOnChanges(): void {} // ngOnChanges
 
-  onResourceClick (resource: BaronyResourceType) {
-    this.resourceClick.next (resource);
+  onResourceClick(resource: BaronyResourceType) {
+    this.resourceClick.next(resource);
   } // onBuildingClick
 } // BaronyResourcesSelectorComponent

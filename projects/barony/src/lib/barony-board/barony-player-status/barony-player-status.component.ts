@@ -1,14 +1,18 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, TrackByFunction, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  TrackByFunction,
+  inject
+} from "@angular/core";
 import { BgAuthService } from "@leobg/commons";
 import { BooleanInput, SimpleChanges } from "@leobg/commons/utils";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../../barony-constants";
-import {
-  BaronyBuilding,
-  BaronyPawnType,
-  BaronyPlayer,
-  BaronyResourceType,
-} from "../../barony-models";
+import { BaronyBuilding, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../../barony-models";
 
 interface BaronyPawnNode {
   source: string;
@@ -24,7 +28,7 @@ interface BaronyResourceNode {
   active: boolean;
 } // BaronyResourceNode
 
-@Component ({
+@Component({
   selector: "barony-player-status",
   templateUrl: "./barony-player-status.component.html",
   styleUrls: ["./barony-player-status.component.scss"],
@@ -32,44 +36,33 @@ interface BaronyResourceNode {
   imports: [NgClass]
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
-  
-  private authService = inject (BgAuthService);
+  private authService = inject(BgAuthService);
 
-  @Input () player!: BaronyPlayer;
-  @Input () @BooleanInput () currentPlayer: boolean = false;
-  @Input () validBuildings: BaronyBuilding[] | null = null;
-  @Input () validResources: BaronyResourceType[] | null = null;
-  @Output () selectPlayer = new EventEmitter<void> ();
-  @Output () clickPawn = new EventEmitter<BaronyPawnType> ();
-  @Output () clickResource = new EventEmitter<BaronyResourceType> ();
+  @Input() player!: BaronyPlayer;
+  @Input() @BooleanInput() currentPlayer: boolean = false;
+  @Input() validBuildings: BaronyBuilding[] | null = null;
+  @Input() validResources: BaronyResourceType[] | null = null;
+  @Output() selectPlayer = new EventEmitter<void>();
+  @Output() clickPawn = new EventEmitter<BaronyPawnType>();
+  @Output() clickResource = new EventEmitter<BaronyResourceType>();
 
   pawnNodes!: BaronyPawnNode[];
   resourceNodes!: BaronyResourceNode[];
 
-  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (
-    index,
-    pawnNode: BaronyPawnNode
-  ) => pawnNode.type;
-  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (
-    index,
-    resourceNode: BaronyResourceNode
-  ) => resourceNode.type;
+  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (index, pawnNode: BaronyPawnNode) => pawnNode.type;
+  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (index, resourceNode: BaronyResourceNode) => resourceNode.type;
 
-  ngOnChanges (changes: SimpleChanges<this>): void {
+  ngOnChanges(changes: SimpleChanges<this>): void {
     let refreshPawns = false;
     let refreshResources = false;
 
     if (changes.player) {
-      if (
-        !changes.player.previousValue ||
-        changes.player.previousValue.pawns !== changes.player.currentValue.pawns
-      ) {
+      if (!changes.player.previousValue || changes.player.previousValue.pawns !== changes.player.currentValue.pawns) {
         refreshPawns = true;
       } // if
       if (
         !changes.player.previousValue ||
-        changes.player.previousValue.resources !==
-          changes.player.currentValue.resources
+        changes.player.previousValue.resources !== changes.player.currentValue.resources
       ) {
         refreshResources = true;
       } // if
@@ -82,46 +75,40 @@ export class BaronyPlayerStatusComponent implements OnChanges {
     } // if
 
     if (refreshPawns) {
-      this.pawnNodes = BARONY_PAWN_TYPES.map ((pt) => ({
+      this.pawnNodes = BARONY_PAWN_TYPES.map(pt => ({
         source: `assets/barony/pawns/${this.player.id}-${pt}.png`,
         type: pt,
         quantity: this.player.pawns[pt],
         active:
-          this.validBuildings && (pt === "stronghold" || pt === "village")
-            ? this.validBuildings.includes (pt)
-            : false,
+          this.validBuildings && (pt === "stronghold" || pt === "village") ? this.validBuildings.includes(pt) : false
       }));
     } // if
 
     if (refreshResources) {
-      this.resourceNodes = BARONY_RESOURCE_TYPES.map ((rt) => ({
+      this.resourceNodes = BARONY_RESOURCE_TYPES.map(rt => ({
         source: `assets/barony/resources/${rt}.png`,
         type: rt,
         quantity: this.player.resources[rt],
-        active: this.validResources ? this.validResources.includes (rt) : false,
+        active: this.validResources ? this.validResources.includes(rt) : false
       }));
     } // refreshResources
   } // ngOnChanges
 
-  onCardClick () {
-    if (
-      !this.player.isAi &&
-      this.authService.isUserId (this.player.controller.id) &&
-      !this.currentPlayer
-    ) {
-      this.selectPlayer.emit ();
+  onCardClick() {
+    if (!this.player.isAi && this.authService.isUserId(this.player.controller.id) && !this.currentPlayer) {
+      this.selectPlayer.emit();
     } // if
   } // onCardClick
 
-  onPawnClick (pawnNode: BaronyPawnNode) {
+  onPawnClick(pawnNode: BaronyPawnNode) {
     if (pawnNode.active) {
-      this.clickPawn.emit (pawnNode.type);
+      this.clickPawn.emit(pawnNode.type);
     } // if
   } // onPawnClick
 
-  onResourceClick (resourceNode: BaronyResourceNode) {
+  onResourceClick(resourceNode: BaronyResourceNode) {
     if (resourceNode.active) {
-      this.clickResource.emit (resourceNode.type);
+      this.clickResource.emit(resourceNode.type);
     } // if
   } // onResourceClick
 } // BaronyPlayerStatusComponent

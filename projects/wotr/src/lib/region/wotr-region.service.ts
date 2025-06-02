@@ -4,27 +4,27 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrRegionAction } from "./wotr-region-actions";
 import { WotrRegionStore } from "./wotr-region.store";
 
-@Injectable ()
+@Injectable()
 export class WotrRegionService {
-  
-  private regionStore = inject (WotrRegionStore);
-  private actionService = inject (WotrActionService);
-  
-  init () {
-    this.actionService.registerActions (this.getActionAppliers () as any);
-    this.actionService.registerActionLoggers (this.getActionLoggers () as any);
+  private regionStore = inject(WotrRegionStore);
+  private actionService = inject(WotrActionService);
+
+  init() {
+    this.actionService.registerActions(this.getActionAppliers() as any);
+    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
   }
 
-  getActionAppliers (): WotrActionApplierMap<WotrRegionAction> {
+  getActionAppliers(): WotrActionApplierMap<WotrRegionAction> {
     return {
-      "region-choose": async (action, front) => { /*empty*/ }
+      "region-choose": async (action, front) => {
+        /*empty*/
+      }
     };
   }
 
-  private getActionLoggers (): WotrActionLoggerMap<WotrRegionAction> {
+  private getActionLoggers(): WotrActionLoggerMap<WotrRegionAction> {
     return {
-      "region-choose": (action, front, f) => [f.player (front), " chooses ", f.region (action.region)],
+      "region-choose": (action, front, f) => [f.player(front), " chooses ", f.region(action.region)]
     };
   }
-
 }

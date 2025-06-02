@@ -29,30 +29,59 @@ export interface BgProtoPlayer<Pid extends string = string> {
 export type BgProtoGameState = "open" | "running" | "ended";
 export type BgProtoPlayerType = "user" | "open" | "closed" | "ai";
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 export class BgProtoGameService {
-  
-  private cloud = inject (BgCloudService);
+  private cloud = inject(BgCloudService);
 
-  private protoGames () {
-    return this.cloud.collection<BgProtoGame> ("proto-games");
+  private protoGames() {
+    return this.cloud.collection<BgProtoGame>("proto-games");
   }
-  getProtoGame$ (gameId: string) { this.cloud.get$ (gameId, this.protoGames ()); }
-  selectProtoGames$ (queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) { return this.cloud.selectAll$ (this.protoGames (), queryFn); }
-  selectProtoGame$ (gameId: string) { return this.cloud.select$ (gameId, this.protoGames ()); }
-  insertProtoGame$ (protoGame: Omit<BgProtoGame, "id">) { return this.cloud.insert$<BgProtoGame> (id => ({ id: id, ...protoGame }), this.protoGames ()); }
-  updateProtoGame$ (patch: Partial<BgProtoGame>, gameId: string) { return this.cloud.update$ (gameId, patch, this.protoGames ()); }
-  deleteProtoGame$ (gameId: string) { return this.cloud.delete$ (gameId, this.protoGames ()); }
+  getProtoGame$(gameId: string) {
+    this.cloud.get$(gameId, this.protoGames());
+  }
+  selectProtoGames$(queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) {
+    return this.cloud.selectAll$(this.protoGames(), queryFn);
+  }
+  selectProtoGame$(gameId: string) {
+    return this.cloud.select$(gameId, this.protoGames());
+  }
+  insertProtoGame$(protoGame: Omit<BgProtoGame, "id">) {
+    return this.cloud.insert$<BgProtoGame>(id => ({ id: id, ...protoGame }), this.protoGames());
+  }
+  updateProtoGame$(patch: Partial<BgProtoGame>, gameId: string) {
+    return this.cloud.update$(gameId, patch, this.protoGames());
+  }
+  deleteProtoGame$(gameId: string) {
+    return this.cloud.delete$(gameId, this.protoGames());
+  }
 
-  private protoPlayers<Pid extends string> (gameId: string) { return this.cloud.collection<BgProtoPlayer<Pid>> (`proto-games/${gameId}/proto-players`); }
-  getProtoPlayers$ (gameId: string, queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined) { return this.cloud.getAll$ (this.protoPlayers (gameId), queryFn); }
-  selectProtoPlayers$<Pid extends string> (gameId: string, queryFn?: BgCloudCollectionQuery<BgProtoPlayer<Pid>> | undefined) { return this.cloud.selectAll$ (this.protoPlayers<Pid> (gameId), queryFn); }
-  selectProtoPlayer$ (playerId: string, gameId: string) { return this.cloud.select$ (playerId, this.protoPlayers (gameId)); }
-  insertProtoPlayer$<Pid extends string> (protoPlayer: BgProtoPlayer<Pid>, gameId: string) { return this.cloud.set$ (protoPlayer.id, protoPlayer, this.protoPlayers (gameId)); }
-  updateProtoPlayer$ (patch: Partial<BgProtoPlayer>, playerId: string, gameId: string) { return this.cloud.update$ (playerId, patch, this.protoPlayers (gameId)); }
-  deleteProtoPlayer$ (playerId: string, gameId: string) { return this.cloud.delete$ (playerId, this.protoPlayers (gameId)); }
-  deleteProtoPlayers$ (gameId: string) { return this.cloud.deleteAll$ (this.protoPlayers (gameId)); }
-
+  private protoPlayers<Pid extends string>(gameId: string) {
+    return this.cloud.collection<BgProtoPlayer<Pid>>(`proto-games/${gameId}/proto-players`);
+  }
+  getProtoPlayers$(gameId: string, queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined) {
+    return this.cloud.getAll$(this.protoPlayers(gameId), queryFn);
+  }
+  selectProtoPlayers$<Pid extends string>(
+    gameId: string,
+    queryFn?: BgCloudCollectionQuery<BgProtoPlayer<Pid>> | undefined
+  ) {
+    return this.cloud.selectAll$(this.protoPlayers<Pid>(gameId), queryFn);
+  }
+  selectProtoPlayer$(playerId: string, gameId: string) {
+    return this.cloud.select$(playerId, this.protoPlayers(gameId));
+  }
+  insertProtoPlayer$<Pid extends string>(protoPlayer: BgProtoPlayer<Pid>, gameId: string) {
+    return this.cloud.set$(protoPlayer.id, protoPlayer, this.protoPlayers(gameId));
+  }
+  updateProtoPlayer$(patch: Partial<BgProtoPlayer>, playerId: string, gameId: string) {
+    return this.cloud.update$(playerId, patch, this.protoPlayers(gameId));
+  }
+  deleteProtoPlayer$(playerId: string, gameId: string) {
+    return this.cloud.delete$(playerId, this.protoPlayers(gameId));
+  }
+  deleteProtoPlayers$(gameId: string) {
+    return this.cloud.deleteAll$(this.protoPlayers(gameId));
+  }
 }

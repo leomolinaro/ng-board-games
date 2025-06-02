@@ -19,13 +19,13 @@ import { TlsmDragonScalesComponent } from "./tlsm-dragon-scales/tlsm-dragon-scal
 
 const routes: Routes = [
   { path: "", component: TlsmDragonScalesComponent },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
+@NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild (routes),
+    RouterModule.forChild(routes),
     MatToolbarModule,
     MatCardModule,
     MatListModule,
@@ -42,6 +42,6 @@ const routes: Routes = [
     TlsmMessageDialog,
     TlsmDragonCardComponent
   ],
-  providers: [TlsmMessageService],
+  providers: [TlsmMessageService]
 })
 export class TlsmModule {}

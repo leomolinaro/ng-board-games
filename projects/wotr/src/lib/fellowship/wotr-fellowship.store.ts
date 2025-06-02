@@ -4,53 +4,78 @@ import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.mo
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip.models";
 
-export function initialeState (): WotrFellowship {
+export function initialeState(): WotrFellowship {
   return {
     status: "hidden",
     companions: [],
     progress: 0,
     corruption: 0,
-    guide: "gandalf-the-grey",
+    guide: "gandalf-the-grey"
   };
 }
 
-@Injectable ()
+@Injectable()
 export class WotrFellowshipStore {
-
-  private readonly region = inject (WotrRegionStore);
+  private readonly region = inject(WotrRegionStore);
 
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;
   state!: Signal<WotrFellowship>;
 
-  isRevealed () { return this.state ().status === "revealed"; }
-  guide () { return this.state ().guide; }
-  isOnMordorTrack () { return this.state ().mordorTrack != null; }
-  progress () { return this.state ().progress; }
-  numberOfCompanions () { return this.state ().companions.length; }
+  isRevealed() {
+    return this.state().status === "revealed";
+  }
+  guide() {
+    return this.state().guide;
+  }
+  isOnMordorTrack() {
+    return this.state().mordorTrack != null;
+  }
+  progress() {
+    return this.state().progress;
+  }
+  numberOfCompanions() {
+    return this.state().companions.length;
+  }
 
-  setCompanions (companions: WotrCompanionId[]) { this.update ("setCompanions", state => ({ ...state, companions })); }
-  setGuide (guide: WotrCompanionId) { this.update ("setGuide", state => ({ ...state, guide })); }
-  setProgress (progress: number) { this.update ("setProgress", state => ({ ...state, progress })); }
-  increaseProgress () { this.update ("increaseProgress", state => ({ ...state, progress: state.progress + 1 })); }
-  changeCorruption (delta: number) { this.update ("changeCorruption", state => ({ ...state, corruption: state.corruption + delta })); }
-  hide () { this.update ("hide", state => ({ ...state, status: "hidden" })); }
-  reveal () { this.update ("reveal", state => ({ ...state, status: "revealed", progress: 0 })); }
-  removeCompanion (companionId: WotrCharacterId) {
-    this.update ("removeCompanion", state => ({
+  setCompanions(companions: WotrCompanionId[]) {
+    this.update("setCompanions", state => ({ ...state, companions }));
+  }
+  setGuide(guide: WotrCompanionId) {
+    this.update("setGuide", state => ({ ...state, guide }));
+  }
+  setProgress(progress: number) {
+    this.update("setProgress", state => ({ ...state, progress }));
+  }
+  increaseProgress() {
+    this.update("increaseProgress", state => ({ ...state, progress: state.progress + 1 }));
+  }
+  changeCorruption(delta: number) {
+    this.update("changeCorruption", state => ({ ...state, corruption: state.corruption + delta }));
+  }
+  hide() {
+    this.update("hide", state => ({ ...state, status: "hidden" }));
+  }
+  reveal() {
+    this.update("reveal", state => ({ ...state, status: "revealed", progress: 0 }));
+  }
+  removeCompanion(companionId: WotrCharacterId) {
+    this.update("removeCompanion", state => ({
       ...state,
-      companions: immutableUtil.listRemoveFirst (c => c === companionId, state.companions)
+      companions: immutableUtil.listRemoveFirst(c => c === companionId, state.companions)
     }));
   }
 
-  moveOnMordorTrack () {
-    this.update ("moveOnMordorTrack", state => ({ ...state, mordorTrack: state.mordorTrack == null ? 0 : (state.mordorTrack + 1) as WotrMordorTrack }));
+  moveOnMordorTrack() {
+    this.update("moveOnMordorTrack", state => ({
+      ...state,
+      mordorTrack: state.mordorTrack == null ? 0 : ((state.mordorTrack + 1) as WotrMordorTrack)
+    }));
   }
 
-  validRegionsForDeclaration () {
-    const startingRegion = this.region.fellowshipRegion ();
-    const progress = this.progress ();
-    const reachableRegions = this.region.reachableRegions (startingRegion, progress);
+  validRegionsForDeclaration() {
+    const startingRegion = this.region.fellowshipRegion();
+    const progress = this.progress();
+    const reachableRegions = this.region.reachableRegions(startingRegion, progress);
     return reachableRegions;
   }
-
 }

@@ -1,16 +1,10 @@
 import { BritAreaId, BritLandAreaId } from "./brit-components.models";
 import { BritAreaUnit } from "./brit-game-state.models";
 
-export type BritStory =
-  | BritArmyPlacement
-  | BritArmyMovements
-  | BritBattleInitiation;
+export type BritStory = BritArmyPlacement | BritArmyMovements | BritBattleInitiation;
 
 export interface BritArmyPlacement {
-  infantryPlacement: (
-    | BritLandAreaId
-    | { areaId: BritLandAreaId; quantity: number }
-  )[];
+  infantryPlacement: (BritLandAreaId | { areaId: BritLandAreaId; quantity: number })[];
 } // BritArmyPlacement
 
 export interface BritArmyMovements {

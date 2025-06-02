@@ -5,11 +5,11 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges,
+  SimpleChanges
 } from "@angular/core";
 import { NgClass, NgIf } from "@angular/common";
 
-@Component ({
+@Component({
   selector: "brit-actions",
   template: `
     <div class="brit-actions">
@@ -19,8 +19,7 @@ import { NgClass, NgIf } from "@angular/common";
           'is-active': canCancel,
           'is-disabled': !canCancel
         }"
-        (click)="onCancelClick()"
-      >
+        (click)="onCancelClick()">
         {{ labels.cancel }}
       </button>
       <button
@@ -30,8 +29,7 @@ import { NgClass, NgIf } from "@angular/common";
           'is-active': canPass,
           'is-disabled': !canPass
         }"
-        (click)="onPassClick()"
-      >
+        (click)="onPassClick()">
         {{ labels.pass }}
       </button>
       <button
@@ -41,8 +39,7 @@ import { NgClass, NgIf } from "@angular/common";
           'is-active': canConfirm,
           'is-disabled': !canConfirm
         }"
-        (click)="onConfirmClick()"
-      >
+        (click)="onConfirmClick()">
         {{ labels.confirm }}
       </button>
       <!-- <button
@@ -59,7 +56,7 @@ import { NgClass, NgIf } from "@angular/common";
   `,
   styles: [
     `
-      @import 'barony-variables';
+      @import "barony-variables";
 
       .brit-actions {
         display: grid;
@@ -89,34 +86,34 @@ import { NgClass, NgIf } from "@angular/common";
           }
         }
       }
-    `,
+    `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, NgIf]
 })
 export class BritActionsComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
   // @Input () validActions: BaronyAction[] | null = null;
-  @Input () canPass!: boolean;
-  @Input () canConfirm!: boolean;
-  @Input () canCancel!: boolean;
+  @Input() canPass!: boolean;
+  @Input() canConfirm!: boolean;
+  @Input() canCancel!: boolean;
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
-  @Output () passClick = new EventEmitter<void> ();
-  @Output () confirmClick = new EventEmitter<void> ();
-  @Output () cancelClick = new EventEmitter<void> ();
+  @Output() passClick = new EventEmitter<void>();
+  @Output() confirmClick = new EventEmitter<void>();
+  @Output() cancelClick = new EventEmitter<void>();
 
   actions = [];
 
   labels = {
     pass: "Pass",
     confirm: "Confirm",
-    cancel: "Cancel",
+    cancel: "Cancel"
   };
 
   isValid: { [action: string]: boolean } | null = null;
 
-  ngOnChanges (changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     // if (changes.validActions || changes.canPass) {
     //   if (this.validActions) {
     //     this.isValid = arrayUtil.toMap (this.validActions, a => a, () => true) as any;
@@ -132,21 +129,21 @@ export class BritActionsComponent implements OnChanges {
   //   } // if
   // } // onActionClick
 
-  onPassClick () {
+  onPassClick() {
     if (this.canPass) {
-      this.passClick.next ();
+      this.passClick.next();
     } // if
   } // onPassClick
 
-  onConfirmClick () {
+  onConfirmClick() {
     if (this.canConfirm) {
-      this.confirmClick.next ();
+      this.confirmClick.next();
     } // if
   } // onConfirmClick
 
-  onCancelClick () {
+  onCancelClick() {
     if (this.canCancel) {
-      this.cancelClick.next ();
+      this.cancelClick.next();
     } // if
   } // onCancelClick
 } // BritActionsComponent

@@ -12,20 +12,20 @@ import { WotrGameComponent } from "./game/wotr-game.component";
 import { WotrHomeComponent } from "./home/wotr-home.component";
 
 const gameResolvers = {
-  mapPaths: () => inject (WotrMapService).loadMapPaths$ (),
-  regionSlots: () => inject (WotrMapService).loadRegionSlots$ (),
+  mapPaths: () => inject(WotrMapService).loadMapPaths$(),
+  regionSlots: () => inject(WotrMapService).loadRegionSlots$()
 };
 
 const routes: Routes = [
   { path: "", component: WotrHomeComponent },
   { path: "game/:gameId", component: WotrGameComponent, resolve: gameResolvers },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
+@NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild (routes),
+    RouterModule.forChild(routes),
     WotrHomeComponent,
     BgSvgModule,
     BgTransformPipe,

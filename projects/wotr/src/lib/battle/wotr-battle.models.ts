@@ -16,11 +16,7 @@ export interface WotrBattle {
 }
 
 export class WotrCombatFront {
-  
-  constructor (
-    public player: WotrPlayer,
-    public isAttacker: boolean
-  ) { }
+  constructor(public player: WotrPlayer, public isAttacker: boolean) {}
 
   frontId = this.player.frontId;
 
@@ -34,20 +30,18 @@ export class WotrCombatFront {
   leaderReRoll?: WotrCombatDie[];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
-  
 }
 
 export class WotrCombatRound {
-  
-  constructor (
+  constructor(
     public round: number,
     public action: WotrArmyAttack,
     attacker: WotrPlayer,
     defender: WotrPlayer,
     public siegeBattle: boolean
   ) {
-    this.attacker = new WotrCombatFront (attacker, true);
-    this.defender = new WotrCombatFront (defender, false);
+    this.attacker = new WotrCombatFront(attacker, true);
+    this.defender = new WotrCombatFront(defender, false);
     if (attacker.frontId === "shadow") {
       this.shadow = this.attacker;
       this.freePeoples = this.defender;
@@ -62,5 +56,4 @@ export class WotrCombatRound {
   shadow: WotrCombatFront;
   freePeoples: WotrCombatFront;
   endBattle = false;
-
 }

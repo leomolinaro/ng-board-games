@@ -7,22 +7,22 @@ export interface WotrPlayerInfoState {
   ids: WotrFrontId[];
 }
 
-export function initialState (): WotrPlayerInfoState {
+export function initialState(): WotrPlayerInfoState {
   return {
-    map: { } as any,
+    map: {} as any,
     ids: []
   };
 }
 
-@Injectable ()
+@Injectable()
 export class WotrPlayerInfoStore {
-
   update!: (actionName: string, updater: (a: WotrPlayerInfoState) => WotrPlayerInfoState) => void;
   state!: Signal<WotrPlayerInfoState>;
 
-  playerMap = computed (() => this.state ().map);
-  playerIds = computed (() => this.state ().ids);
-  players = computed (() => this.state ().ids.map (id => this.state ().map[id]));
-  player (id: WotrFrontId): WotrPlayerInfo { return this.state ().map[id]; }
-
+  playerMap = computed(() => this.state().map);
+  playerIds = computed(() => this.state().ids);
+  players = computed(() => this.state().ids.map(id => this.state().map[id]));
+  player(id: WotrFrontId): WotrPlayerInfo {
+    return this.state().map[id];
+  }
 }

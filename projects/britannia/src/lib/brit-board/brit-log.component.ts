@@ -1,19 +1,9 @@
 import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
-import {
-  BritArea,
-  BritAreaId,
-  BritLeaderId,
-  BritPhase,
-} from "../brit-components.models";
+import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
-import {
-  BritAreaLeader,
-  BritAreaUnit,
-  BritLog,
-  BritPlayer,
-} from "../brit-game-state.models";
+import { BritAreaLeader, BritAreaUnit, BritLog, BritPlayer } from "../brit-game-state.models";
 
 interface BritLogStringFragment {
   type: "string";
@@ -43,7 +33,7 @@ type BritLogFragment =
   | BritLogPlayerFragment
   | BritLogAreaFragment /*  | BritLogLandFragment | BritLogPawnFragment */;
 
-@Component ({
+@Component({
   selector: "brit-log",
   template: `
     <div
@@ -52,12 +42,10 @@ type BritLogFragment =
         'brit-log-h0': log.type === 'setup' || log.type === 'round',
         'brit-log-h1': log.type === 'nation-turn',
         'brit-log-h2': log.type === 'phase'
-      }"
-    >
+      }">
       <ng-container
         *ngFor="let fragment of fragments"
-        [ngSwitch]="fragment.type"
-      >
+        [ngSwitch]="fragment.type">
         <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
         <span *ngSwitchCase="'area'">{{ fragment.label }}</span>
         <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
@@ -68,7 +56,7 @@ type BritLogFragment =
   `,
   styles: [
     `
-      @import 'brit-variables';
+      @import "brit-variables";
 
       .brit-log {
         margin-left: 1.5vw;
@@ -99,66 +87,49 @@ type BritLogFragment =
           color: $green;
         }
       }
-    `,
+    `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
 })
 export class BritLogComponent implements OnChanges {
-  
-  private components = inject (BritComponentsService);
+  private components = inject(BritComponentsService);
 
-  @Input () log!: BritLog;
+  @Input() log!: BritLog;
 
   fragments!: BritLogFragment[];
 
-  ngOnChanges (changes: SimpleChanges<this>) {
+  ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.log) {
       const l = this.log;
       switch (l.type) {
         case "setup":
-          this.fragments = [this.string ("Setup")];
+          this.fragments = [this.string("Setup")];
           break;
         case "round":
-          this.fragments = [this.string (`Round ${l.roundId}`)];
+          this.fragments = [this.string(`Round ${l.roundId}`)];
           break;
         case "nation-turn":
-          this.fragments = [
-            this.string (this.components.NATION[l.nationId].label),
-          ];
+          this.fragments = [this.string(this.components.NATION[l.nationId].label)];
           break;
         case "phase":
-          this.fragments = [this.string (this.getPhaseLabel (l.phase))];
+          this.fragments = [this.string(this.getPhaseLabel(l.phase))];
           break;
         case "population-marker-set":
           this.fragments = [
-            this.string (
-              `Population marker ${
-                l.populationMarker == null
-                  ? "unset"
-                  : `set to ${l.populationMarker}`
-              }`
-            ),
+            this.string(`Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`)
           ];
           break;
         case "infantry-placement":
           this.fragments = [
-            this.string (
-              `${l.quantity} infantr${
-                l.quantity === 1 ? "y" : "ies"
-              } placed in `
-            ),
-            this.area (l.landId),
+            this.string(`${l.quantity} infantr${l.quantity === 1 ? "y" : "ies"} placed in `),
+            this.area(l.landId)
           ];
           break;
         case "infantry-reinforcement":
           this.fragments = [
-            this.string (
-              `${l.quantity} infantry reinforcement${
-                l.quantity === 1 ? "" : "s"
-              } in `
-            ),
-            this.area (l.areaId),
+            this.string(`${l.quantity} infantry reinforcement${l.quantity === 1 ? "" : "s"} in `),
+            this.area(l.areaId)
           ];
           break;
         case "army-movement": {
@@ -169,22 +140,20 @@ export class BritLogComponent implements OnChanges {
             if (isFirst) {
               isFirst = false;
             } else {
-              this.fragments.push (this.string (", "));
+              this.fragments.push(this.string(", "));
             } // if - else
             if (unit.type === "leader") {
               quantity++;
-              this.fragments.push (this.leader (unit.leaderId));
+              this.fragments.push(this.leader(unit.leaderId));
             } else {
               quantity += unit.quantity;
-              this.fragments.push (this.unit (unit));
+              this.fragments.push(this.unit(unit));
             } // if - else
           } // for
-          this.fragments.push (
-            this.string (` ${quantity === 1 ? "moves" : "move"} from `)
-          );
-          this.fragments.push (this.area (l.units[0].areaId));
-          this.fragments.push (this.string (" to "));
-          this.fragments.push (this.area (l.toAreaId));
+          this.fragments.push(this.string(` ${quantity === 1 ? "moves" : "move"} from `));
+          this.fragments.push(this.area(l.units[0].areaId));
+          this.fragments.push(this.string(" to "));
+          this.fragments.push(this.area(l.toAreaId));
           break;
         } // case
         // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
@@ -200,40 +169,35 @@ export class BritLogComponent implements OnChanges {
     } // if
   } // ngOnChanges
 
-  private string (label: string): BritLogStringFragment {
+  private string(label: string): BritLogStringFragment {
     return {
       type: "string",
-      label: label,
+      label: label
     };
   } // string
 
-  private area (areaId: BritAreaId): BritLogAreaFragment {
+  private area(areaId: BritAreaId): BritLogAreaFragment {
     const area = this.components.AREA[areaId];
     return {
       type: "area",
       label: area.name,
-      area,
+      area
     };
   } // area
 
-  private leader (leaderId: BritLeaderId): BritLogStringFragment {
+  private leader(leaderId: BritLeaderId): BritLogStringFragment {
     return {
       type: "string",
-      label: this.components.getLeader (leaderId).name,
+      label: this.components.getLeader(leaderId).name
     };
   } // leader
 
-  private unit (
-    unit: Exclude<BritAreaUnit, BritAreaLeader>
-  ): BritLogStringFragment {
+  private unit(unit: Exclude<BritAreaUnit, BritAreaLeader>): BritLogStringFragment {
     return {
       type: "string",
       label: `${unit.quantity} ${this.components
-        .getNation (unit.nationId)
-        .label.toLowerCase ()} ${this.components.getUnitTypeLabel (
-        unit.type,
-        unit.quantity === 1
-      )}`,
+        .getNation(unit.nationId)
+        .label.toLowerCase()} ${this.components.getUnitTypeLabel(unit.type, unit.quantity === 1)}`
     };
   } // leader
 
@@ -278,7 +242,7 @@ export class BritLogComponent implements OnChanges {
   //   };
   // } // pawn
 
-  private getPhaseLabel (phase: BritPhase): string {
+  private getPhaseLabel(phase: BritPhase): string {
     switch (phase) {
       case "populationIncrease":
         return "Population Increase";

@@ -1,52 +1,88 @@
-<table mat-table [dataSource]="players">
+<table
+  mat-table
+  [dataSource]="players">
   <!--class="mat-elevation-z8"-->
   <ng-container matColumnDef="winner">
-    <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let player">
+    <th
+      mat-header-cell
+      *matHeaderCellDef></th>
+    <td
+      mat-cell
+      *matCellDef="let player">
       @if (player.winner) {
-        <i class="fa fa-trophy"></i>
+      <i class="fa fa-trophy"></i>
       }
     </td>
   </ng-container>
 
   <ng-container matColumnDef="player">
-    <th mat-header-cell *matHeaderCellDef>Player</th>
-    <td mat-cell *matCellDef="let player">{{ player.name }}</td>
+    <th
+      mat-header-cell
+      *matHeaderCellDef>
+      Player
+    </th>
+    <td
+      mat-cell
+      *matCellDef="let player">
+      {{ player.name }}
+    </td>
   </ng-container>
 
   <ng-container matColumnDef="score">
-    <th mat-header-cell *matHeaderCellDef>Score</th>
-    <td mat-cell *matCellDef="let player">{{ player.score }}</td>
+    <th
+      mat-header-cell
+      *matHeaderCellDef>
+      Score
+    </th>
+    <td
+      mat-cell
+      *matCellDef="let player">
+      {{ player.score }}
+    </td>
   </ng-container>
 
   <ng-container matColumnDef="resources">
-    <th mat-header-cell *matHeaderCellDef>Resources</th>
-    <td mat-cell *matCellDef="let player">
+    <th
+      mat-header-cell
+      *matHeaderCellDef>
+      Resources
+    </th>
+    <td
+      mat-cell
+      *matCellDef="let player">
       <div class="b-end-game-resources-cell">
         @for (resourceType of resourceTypes; track resourceType) {
-          <div class="b-end-game-resource-image">
-            <img [src]="resourceType | bgTransform : getResourceImageSource" />
-          </div>
-        }
-        @for (resourceType of resourceTypes; track resourceType) {
-          <div class="b-end-game-resource-quantity">
-            {{ player.resources[resourceType] }}
-          </div>
+        <div class="b-end-game-resource-image">
+          <img [src]="resourceType | bgTransform: getResourceImageSource" />
+        </div>
+        } @for (resourceType of resourceTypes; track resourceType) {
+        <div class="b-end-game-resource-quantity">
+          {{ player.resources[resourceType] }}
+        </div>
         }
       </div>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="victoryPoints">
-    <th mat-header-cell *matHeaderCellDef>Victory points</th>
-    <td mat-cell *matCellDef="let player">{{ player.victoryPoints }}</td>
+    <th
+      mat-header-cell
+      *matHeaderCellDef>
+      Victory points
+    </th>
+    <td
+      mat-cell
+      *matCellDef="let player">
+      {{ player.victoryPoints }}
+    </td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="playerColumns"></tr>
+  <tr
+    mat-header-row
+    *matHeaderRowDef="playerColumns"></tr>
   <tr
     mat-row
     *matRowDef="let player; columns: playerColumns"
     [class]="'b-end-game-player-row ' + 'is-' + player.color"
-    [ngClass]="{ 'is-winner': player.winner }"
-  ></tr>
+    [ngClass]="{ 'is-winner': player.winner }"></tr>
 </table>

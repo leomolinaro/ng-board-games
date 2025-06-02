@@ -11,12 +11,12 @@ mat-sidenav-content {
     padding: 2vmin;
 
     grid-template-areas:
-      'varthrax logs'
-      'varthrax logs'
-      'cadorus logs'
-      'cadorus pool'
-      'grilipus pool'
-      'grilipus pool';
+      "varthrax logs"
+      "varthrax logs"
+      "cadorus logs"
+      "cadorus pool"
+      "grilipus pool"
+      "grilipus pool";
 
     .tlsm-dragon-card {
       &.varthrax {

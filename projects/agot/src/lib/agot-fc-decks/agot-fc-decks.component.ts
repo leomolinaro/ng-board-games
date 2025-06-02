@@ -15,7 +15,7 @@ interface AgotFcDeck {
   agenda: string;
 } // AgotFcDeck
 
-@Component ({
+@Component({
   selector: "agot-fc-decks",
   templateUrl: "./agot-fc-decks.component.html",
   styleUrls: ["./agot-fc-decks.component.scss"],
@@ -24,8 +24,7 @@ interface AgotFcDeck {
 })
 @UntilDestroy
 export class AgotFcDecksComponent implements OnInit, OnDestroy {
-
-  private data = inject (AgotDataService);
+  private data = inject(AgotDataService);
 
   deckColumns: string[] = ["faction", "name"];
   decks: AgotFcDeck[] = [
@@ -34,195 +33,195 @@ export class AgotFcDecksComponent implements OnInit, OnDestroy {
       faction: "stark",
       agenda: agenda.TheLordOfTheCrossing,
       name: "House Stark, Catelyn and Tully",
-      description: "",
+      description: ""
     },
     {
       faction: "stark",
       agenda: agenda.KingsOfWinter,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "stark",
       agenda: agenda.Alliance,
       name: "Stark, Baratheon and The Night's Watch Alliance",
-      description: "",
+      description: ""
     },
     {
       faction: "lannister",
       agenda: agenda.TheRainsOfCastamere,
       name: "House Lannister, Intrigue",
-      description: "",
+      description: ""
     },
     {
       faction: "lannister",
       agenda: agenda.TheLordOfTheCrossing,
       name: "House Lannister, Clansmem",
-      description: "",
+      description: ""
     },
     {
       faction: "lannister",
       agenda: agenda.TheWhiteBook,
       name: "House Lannister, Kingsguards",
-      description: "",
+      description: ""
     },
     {
       faction: "lannister",
       agenda: agenda.Alliance,
       name: "Lannister, Tyrell and Bolton Alliance",
-      description: "",
+      description: ""
     },
     {
       faction: "thenightswatch",
       agenda: agenda.KingsOfWinter,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "thenightswatch",
       agenda: agenda.KnightsOfTheHollowHill,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "thenightswatch",
       agenda: agenda.ValyrianSteel,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "thenightswatch",
       agenda: agenda.TheFreeFolk,
       name: "The Free Folk",
-      description: "",
+      description: ""
     },
     {
       faction: "tyrell",
       agenda: agenda.TheRainsOfCastamere,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "tyrell",
       agenda: agenda.KingsOfSummer,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "tyrell",
       agenda: agenda.AssaultFromTheShadows,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "tyrell",
       agenda: agenda.TheFaithMilitant,
       name: "The Faith Militant",
-      description: "",
+      description: ""
     },
     {
       faction: "martell",
       agenda: agenda.TheWarsToCome,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "martell",
       agenda: agenda.KingsOfSummer,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "martell",
       agenda: agenda.KnightsOfTheHollowHill,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "martell",
       agenda: agenda.KingdomOfShadows,
       name: "Dayne, Aegon Shadows",
-      description: "",
+      description: ""
     },
     {
       faction: "greyjoy",
       agenda: agenda.SeaOfBlood,
       name: "A",
-      description: "",
+      description: ""
     },
     { faction: "greyjoy", agenda: agenda.Fealty, name: "A", description: "" },
     {
       faction: "greyjoy",
       agenda: agenda.Greensight,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "greyjoy",
       agenda: agenda.TheConclave,
       name: "The Conclave",
-      description: "",
+      description: ""
     },
     {
       faction: "baratheon",
       agenda: agenda.ThePrinceThatWasPromised,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "baratheon",
       agenda: agenda.AssaultFromTheShadows,
       name: "A",
-      description: "",
+      description: ""
     },
     { faction: "baratheon", agenda: agenda.Fealty, name: "A", description: "" },
     {
       faction: "baratheon",
       agenda: agenda.TheBrotherhoodWithoutBanners,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "targaryen",
       agenda: agenda.TheHouseWithTheRedDoor,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "targaryen",
       agenda: agenda.TradingWithQohor,
       name: "A",
-      description: "",
+      description: ""
     },
     {
       faction: "targaryen",
       agenda: agenda.SeaOfBlood,
       name: "House Targaryen, Dothraki",
-      description: "",
+      description: ""
     },
     {
       faction: "targaryen",
       agenda: agenda.Alliance,
       name: "Targaryen, Martell, Qohor Alliance",
-      description: "",
-    },
+      description: ""
+    }
   ];
 
-  getDeckFactionImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
+  getDeckFactionImage: BgTransformFn<AgotFcDeck, string> = deck => {
     return `assets/agot/factions/${deck.faction}.png`;
   };
-  getDeckAgendaImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
-    const card = this.data.getCard (deck.agenda);
+  getDeckAgendaImage: BgTransformFn<AgotFcDeck, string> = deck => {
+    const card = this.data.getCard(deck.agenda);
     return card?.image_url;
   };
 
-  @Loading () loading$!: Observable<boolean>;
+  @Loading() loading$!: Observable<boolean>;
 
-  @SingleEvent ()
-  ngOnInit () {
-    return this.data.load$ ().pipe (
-      tap (() => {
-        const cards = this.data.getCards ({ onlyOfficial: true });
+  @SingleEvent()
+  ngOnInit() {
+    return this.data.load$().pipe(
+      tap(() => {
+        const cards = this.data.getCards({ onlyOfficial: true });
         let nAgendas = 0;
         let nAttachments = 0;
         let nCharacters = 0;
@@ -238,14 +237,14 @@ export class AgotFcDecksComponent implements OnInit, OnDestroy {
           greyjoy: 0,
           baratheon: 0,
           targaryen: 0,
-          neutral: 0,
+          neutral: 0
         };
         if (cards) {
-          cards.forEach ((card) => {
+          cards.forEach(card => {
             switch (card.type_code) {
               case "agenda":
                 nAgendas++;
-                console.log (card.name);
+                console.log(card.name);
                 break;
               case "attachment":
                 nAttachments++;
@@ -268,26 +267,26 @@ export class AgotFcDecksComponent implements OnInit, OnDestroy {
                 break;
             } // switch
           });
-          console.log ("nAgendas", nAgendas);
-          console.log ("nAttachments", nAttachments);
-          console.log ("nCharacters", nCharacters);
-          console.log ("nEvents", nEvents);
-          console.log ("nLocations", nLocations);
-          console.log ("nPlots", nPlots);
+          console.log("nAgendas", nAgendas);
+          console.log("nAttachments", nAttachments);
+          console.log("nCharacters", nCharacters);
+          console.log("nEvents", nEvents);
+          console.log("nLocations", nLocations);
+          console.log("nPlots", nPlots);
 
           const n = 40;
-          console.log ("nAgendas", nAgendas / n);
-          console.log ("nAttachments", nAttachments / n);
-          console.log ("nCharacters", nCharacters / n);
-          console.log ("nEvents", nEvents / n);
-          console.log ("nLocations", nLocations / n);
-          console.log ("nPlots", nPlots / n);
+          console.log("nAgendas", nAgendas / n);
+          console.log("nAttachments", nAttachments / n);
+          console.log("nCharacters", nCharacters / n);
+          console.log("nEvents", nEvents / n);
+          console.log("nLocations", nLocations / n);
+          console.log("nPlots", nPlots / n);
 
-          console.log ("nByFaction", nByFaction);
+          console.log("nByFaction", nByFaction);
         } // if
       })
     );
   } // ngOnInit
 
-  ngOnDestroy () {}
+  ngOnDestroy() {}
 } // AgotFcDecksComponent

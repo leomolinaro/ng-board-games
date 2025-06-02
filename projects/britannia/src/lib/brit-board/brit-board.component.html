@@ -8,18 +8,13 @@
       [validUnits]="validUnits"
       [selectedUnits]="selectedUnits"
       (areaClick)="areaClick.emit($event)"
-      (unitClick)="onUnitClick($event)"
-    >
+      (unitClick)="onUnitClick($event)">
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">
     <div
       *ngIf="message"
-      [class]="
-        'brit-board-instructions-widget' +
-        (turnPlayer ? ' is-' + turnPlayer.id : '')
-      "
-    >
+      [class]="'brit-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
       <div class="brit-board-instructions">{{ message }}</div>
     </div>
     <!-- *ngIf="validActions || canPass || canCancel" -->
@@ -32,8 +27,7 @@
       [canCancel]="canCancel"
       (passClick)="onPassClick()"
       (confirmClick)="onConfirmClick()"
-      (cancelClick)="onCancelClick()"
-    >
+      (cancelClick)="onCancelClick()">
     </brit-actions>
     <div class="brit-board-players-widget">
       <brit-player
@@ -42,34 +36,29 @@
         [player]="player"
         [currentPlayer]="player === currentPlayer"
         (selectPlayer)="onPlayerSelect(player)"
-        (nationClick)="onPlayerNationClick($event)"
-      >
+        (nationClick)="onPlayerNationClick($event)">
       </brit-player>
     </div>
     <div class="brit-board-extras">
       <bg-map-zoom-buttons
         *ngIf="zoomFixed"
         class="brit-board-zoom-buttons-widget"
-        [controls]="britMap.bgMapZoom"
-      ></bg-map-zoom-buttons>
+        [controls]="britMap.bgMapZoom"></bg-map-zoom-buttons>
       <brit-logs
         *ngIf="logsFixed"
         class="brit-board-logs-widget"
-        [logs]="logs"
-      ></brit-logs>
+        [logs]="logs"></brit-logs>
       <div class="brit-board-buttons">
         <button
           class="brit-board-button"
           [ngClass]="{ 'is-active': logsFixed }"
-          (click)="logsFixed = !logsFixed"
-        >
+          (click)="logsFixed = !logsFixed">
           <i class="brit-board-logs-icon fa fa-file-text"></i>
         </button>
         <button
           class="brit-board-button"
           [ngClass]="{ 'is-active': zoomFixed }"
-          (click)="zoomFixed = !zoomFixed"
-        >
+          (click)="zoomFixed = !zoomFixed">
           <i class="brit-board-logs-icon fa fa-search-plus"></i>
         </button>
       </div>

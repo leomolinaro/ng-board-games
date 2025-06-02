@@ -17,53 +17,56 @@ const Y0 = 737;
 
 const NPERROW = 4;
 
-@Component ({
+@Component({
   selector: "[wotrHuntBox]",
   imports: [],
   template: `
     @for (huntDieNode of huntDieNodes (); track huntDieNode.id) {
-      <svg:image
-        transform="scale(0.8, 0.8)"
-        [attr.x]="huntDieNode.svgX" [attr.y]="huntDieNode.svgY"
-        [attr.xlink:href]="huntDieNode.image"/>
+    <svg:image
+      transform="scale(0.8, 0.8)"
+      [attr.x]="huntDieNode.svgX"
+      [attr.y]="huntDieNode.svgY"
+      [attr.xlink:href]="huntDieNode.image" />
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrHuntBoxComponent {
+  hunt = input.required<WotrHuntState>();
 
-  hunt = input.required<WotrHuntState> ();
+  private assets = inject(WotrAssetsService);
 
-  private assets = inject (WotrAssetsService);
+  private nHuntDice = computed(() => this.hunt().nHuntDice);
+  private nFreePeopleDice = computed(() => this.hunt().nFreePeopleDice);
 
-  private nHuntDice = computed (() => this.hunt ().nHuntDice);
-  private nFreePeopleDice = computed (() => this.hunt ().nFreePeopleDice);
-  
-  private getX (index: number) { return X0 + (index % NPERROW) * XSTEP; }
-  private getY (index: number) { return Y0 + Math.floor (index / NPERROW) * YSTEP; }
+  private getX(index: number) {
+    return X0 + (index % NPERROW) * XSTEP;
+  }
+  private getY(index: number) {
+    return Y0 + Math.floor(index / NPERROW) * YSTEP;
+  }
 
-  huntDieNodes: Signal<WotrHuntDieNode[]> = computed (() => {
+  huntDieNodes: Signal<WotrHuntDieNode[]> = computed(() => {
     const nodes: WotrHuntDieNode[] = [];
     let index = 0;
-    for (let i = 0; i < this.nHuntDice (); i++) {
-      nodes.push ({
+    for (let i = 0; i < this.nHuntDice(); i++) {
+      nodes.push({
         id: "s" + index,
-        image: this.assets.getActionDieImage ("eye", "shadow"),
-        svgX: this.getX (index),
-        svgY: this.getY (index),
+        image: this.assets.getActionDieImage("eye", "shadow"),
+        svgX: this.getX(index),
+        svgY: this.getY(index)
       });
       index++;
     }
-    for (let j = 0; j < this.nFreePeopleDice (); j++) {
-      nodes.push ({
+    for (let j = 0; j < this.nFreePeopleDice(); j++) {
+      nodes.push({
         id: "fp" + index,
-        image: this.assets.getActionDieImage ("character", "free-peoples"),
-        svgX: this.getX (index),
-        svgY: this.getY (index),
+        image: this.assets.getActionDieImage("character", "free-peoples"),
+        svgX: this.getX(index),
+        svgY: this.getY(index)
       });
       index++;
     }
     return nodes;
   });
-
 }

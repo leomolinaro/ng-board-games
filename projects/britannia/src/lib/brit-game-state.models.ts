@@ -1,5 +1,13 @@
 import { BgUser } from "@leobg/commons";
-import { BritAreaId, BritColor, BritLandAreaId, BritLeaderId, BritNationId, BritPhase, BritPopulation } from "./brit-components.models";
+import {
+  BritAreaId,
+  BritColor,
+  BritLandAreaId,
+  BritLeaderId,
+  BritNationId,
+  BritPhase,
+  BritPopulation
+} from "./brit-components.models";
 
 export interface BritGameState {
   gameId: string;
@@ -51,12 +59,7 @@ export interface BritAreaLeader extends ABritAreaUnit {
   leaderId: BritLeaderId;
 } // BritAreaLeader
 
-export type BritAreaUnit =
-  | BritAreaInfantry
-  | BritAreaCavalry
-  | BritAreaRomanFort
-  | BritAreaSaxonBuhr
-  | BritAreaLeader;
+export type BritAreaUnit = BritAreaInfantry | BritAreaCavalry | BritAreaRomanFort | BritAreaSaxonBuhr | BritAreaLeader;
 
 export interface BritAreaState {
   units: BritAreaUnit[];

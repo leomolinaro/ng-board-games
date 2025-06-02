@@ -19,9 +19,11 @@ export interface WotrFront {
   victoryPoints: number;
 }
 
-export function oppositeFront (front: WotrFrontId): WotrFrontId {
+export function oppositeFront(front: WotrFrontId): WotrFrontId {
   switch (front) {
-    case "free-peoples": return "shadow";
-    case "shadow": return "free-peoples";
+    case "free-peoples":
+      return "shadow";
+    case "shadow":
+      return "free-peoples";
   }
 }

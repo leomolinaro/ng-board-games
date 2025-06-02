@@ -11,9 +11,26 @@ export type BritColor = "blue" | "yellow" | "red" | "green";
 
 export type BritUnitType = "infantry" | "cavalry" | "roman-fort" | "saxon-buhr" | "leader";
 
-export type BritLeaderId = "arthur" | "william" | "aelle" | "egbert" | "alfred" | "edgar" | "harold"
-| "ivar-and-halfdan" | "cnut" | "svein-estrithson" | "harald-hardrada" | "ida" | "oswiu" | "offa"
-| "boudicca" | "urien" | "fergus-mor-mac-erc" | "ketil-flatnose" | "olaf-guthfrithsson";
+export type BritLeaderId =
+  | "arthur"
+  | "william"
+  | "aelle"
+  | "egbert"
+  | "alfred"
+  | "edgar"
+  | "harold"
+  | "ivar-and-halfdan"
+  | "cnut"
+  | "svein-estrithson"
+  | "harald-hardrada"
+  | "ida"
+  | "oswiu"
+  | "offa"
+  | "boudicca"
+  | "urien"
+  | "fergus-mor-mac-erc"
+  | "ketil-flatnose"
+  | "olaf-guthfrithsson";
 
 export interface BritLeader {
   id: BritLeaderId;
@@ -92,11 +109,11 @@ export type BritSeaAreaId =
 
 export type BritAreaId = BritLandAreaId | BritSeaAreaId;
 
-export function isBritLandAreaId (areaId: BritAreaId): areaId is BritLandAreaId {
-  return !isBritSeaAreaId (areaId);
+export function isBritLandAreaId(areaId: BritAreaId): areaId is BritLandAreaId {
+  return !isBritSeaAreaId(areaId);
 } // isBritLandAreaId
 
-export function isBritSeaAreaId (areaId: BritAreaId): areaId is BritSeaAreaId {
+export function isBritSeaAreaId(areaId: BritAreaId): areaId is BritSeaAreaId {
   switch (areaId) {
     case "icelandic-sea":
     case "north-sea":
@@ -160,23 +177,7 @@ export interface BritNation {
   leaderIds: BritLeaderId[];
 } // BritNation
 
-export type BritRoundId =
-  | 1
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 7
-  | 8
-  | 9
-  | 10
-  | 11
-  | 12
-  | 13
-  | 14
-  | 15
-  | 16;
+export type BritRoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
 export interface BritRound {
   id: BritRoundId;
@@ -188,12 +189,7 @@ export interface BritRound {
   kingElection: boolean;
 } // BritRound
 
-export type BritPhase =
-  | "populationIncrease"
-  | "movement"
-  | "battlesRetreats"
-  | "raiderWithdrawal"
-  | "overpopulation";
+export type BritPhase = "populationIncrease" | "movement" | "battlesRetreats" | "raiderWithdrawal" | "overpopulation";
 
 export interface BritEvent {
   nation: BritNationId;

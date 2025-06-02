@@ -1,15 +1,8 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 
-@Component ({
+@Component({
   selector: "barony-knights-selector",
   template: `
     <div class="b-knights-selector-container">
@@ -36,7 +29,9 @@ import { SimpleChanges } from "@leobg/commons/utils";
           <i class="fa fa-caret-down"></i>
         </button>
       </div>
-      <button class="b-knights-confirm" (click)="onConfirm()">
+      <button
+        class="b-knights-confirm"
+        (click)="onConfirm()">
         <i class="fa fa-check"></i>
       </button>
     </div>
@@ -99,37 +94,37 @@ import { SimpleChanges } from "@leobg/commons/utils";
   imports: [NgClass]
 })
 export class BaronyKnightsSelectorComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
-  @Input () number!: number;
-  @Input () min!: number;
-  @Input () max!: number;
-  @Output () numberChange = new EventEmitter<number> ();
-  @Output () confirm = new EventEmitter<void> ();
+  @Input() number!: number;
+  @Input() min!: number;
+  @Input() max!: number;
+  @Output() numberChange = new EventEmitter<number>();
+  @Output() confirm = new EventEmitter<void>();
 
   enableIncrease = false;
   enableDecrease = false;
 
-  ngOnChanges (changes: SimpleChanges<this>) {
+  ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.number || changes.min || changes.max) {
       this.enableIncrease = this.number < this.max;
       this.enableDecrease = this.number > this.min;
     } // if
   } // ngOnChanges
 
-  onIncrease () {
+  onIncrease() {
     if (this.enableIncrease) {
-      this.numberChange.emit (this.number + 1);
+      this.numberChange.emit(this.number + 1);
     } // if
   } // onIncrease
 
-  onDecrease () {
+  onDecrease() {
     if (this.enableDecrease) {
-      this.numberChange.emit (this.number - 1);
+      this.numberChange.emit(this.number - 1);
     } // if
   } // onIncrease
 
-  onConfirm () {
-    this.confirm.next ();
+  onConfirm() {
+    this.confirm.next();
   } // onConfirm
 } // BaronyKnightsSelectorComponent

@@ -8,64 +8,72 @@ import { WotrLog } from "../log/wotr-log.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrMapService } from "./board/map/wotr-map.service";
 import { WotrGameComponent } from "./wotr-game.component";
- 
+
 class WotrMapServiceMock {
-  loadMapPaths$ () { return of (true); }
-  loadRegionSlots$ () { return of (true); }
-  getViewBox () { return "0 0 0 0"; }
-  getWidth () { return "0"; }
-  getRegionPath () { return ""; }
+  loadMapPaths$() {
+    return of(true);
+  }
+  loadRegionSlots$() {
+    return of(true);
+  }
+  getViewBox() {
+    return "0 0 0 0";
+  }
+  getWidth() {
+    return "0";
+  }
+  getRegionPath() {
+    return "";
+  }
 }
 
 class BgAuthServiceMock {
-  getUser () { return { id: "test" }; }
+  getUser() {
+    return { id: "test" };
+  }
 }
 
-const activatedRouteMock = { snapshot: { paramMap: new Map ([["gameId", "very-late-minions"]]) } };
+const activatedRouteMock = { snapshot: { paramMap: new Map([["gameId", "very-late-minions"]]) } };
 
-describe ("WotrGameComponent", () => {
+describe("WotrGameComponent", () => {
   let component: WotrGameComponent;
   let fixture: ComponentFixture<WotrGameComponent>;
   let logs$: Observable<WotrLog[]>;
 
-  beforeEach (async () => {
-    await TestBed.configureTestingModule ({
-      imports: [
-        WotrGameComponent,
-        NoopAnimationsModule
-      ],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [WotrGameComponent, NoopAnimationsModule],
       providers: [
         { provide: ActivatedRoute, useValue: activatedRouteMock },
         { provide: BgAuthService, useClass: BgAuthServiceMock },
         { provide: WotrMapService, useClass: WotrMapServiceMock }
-      ],
-    }).compileComponents ();
+      ]
+    }).compileComponents();
 
-    fixture = TestBed.createComponent (WotrGameComponent);
+    fixture = TestBed.createComponent(WotrGameComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges ();
+    fixture.detectChanges();
   });
 
-  xit ("should create", () => {
-    expect (component).toBeTruthy ();
+  xit("should create", () => {
+    expect(component).toBeTruthy();
   });
 
-  it ("should replay a game", async () => {
-    component.onReplayLast ();
-    
-    TestBed.runInInjectionContext (() => {
-      const logStore = ((component as any).logStore as WotrLogStore);
-      logs$ = toObservable (logStore.state);
+  it("should replay a game", async () => {
+    component.onReplayLast();
+
+    TestBed.runInInjectionContext(() => {
+      const logStore = (component as any).logStore as WotrLogStore;
+      logs$ = toObservable(logStore.state);
     });
 
-    await new Promise (resolve => {
-      const sub = logs$.subscribe (logs => {
+    await new Promise(resolve => {
+      const sub = logs$.subscribe(logs => {
         if (logs.length >= 529) {
-          setTimeout (() => resolve (true), 1000);
-          sub.unsubscribe ();
+          setTimeout(() => resolve(true), 1000);
+          sub.unsubscribe();
         }
       });
     });
   }, 15000);
-
 });

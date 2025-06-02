@@ -22,183 +22,178 @@ interface IBgAuthProvider {
   signOut$: () => Observable<void>;
 }
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 export class BgAuthService {
-  
-  private googleProvider = inject (BgGoogleAuthProvider);
-  private guestProvider = inject (BgGuestAuthProvider);
-  private cloud = inject (BgCloudService);
+  private googleProvider = inject(BgGoogleAuthProvider);
+  private guestProvider = inject(BgGuestAuthProvider);
+  private cloud = inject(BgCloudService);
 
-  private $user = new BehaviorSubject<BgUser | null> (null);
+  private $user = new BehaviorSubject<BgUser | null>(null);
   // TO MOCK
   // private $user = new BehaviorSubject<BgUser | null> ({ email: "rhapsody.leo@gmail.com" } as any);
-  private setUser (user: BgUser | null) {
-    this.$user.next (user);
+  private setUser(user: BgUser | null) {
+    this.$user.next(user);
   }
 
-  private users () {
-    return this.cloud.collection<BgUser> ("users");
+  private users() {
+    return this.cloud.collection<BgUser>("users");
   }
 
-  getUser$ () {
-    return this.$user.asObservable ();
+  getUser$() {
+    return this.$user.asObservable();
   }
-  getUser () {
-    return this.$user.getValue () as BgUser;
+  getUser() {
+    return this.$user.getValue() as BgUser;
   }
-  hasUser () {
-    return !!this.$user.getValue ();
+  hasUser() {
+    return !!this.$user.getValue();
   }
-  isUserId (userId: string) {
-    return this.getUser ()?.id === userId;
+  isUserId(userId: string) {
+    return this.getUser()?.id === userId;
   }
 
-  autoSignIn$ () {
-    const loginType = localStorage.getItem (
-      LOCALSTORAGE_BG_LOGIN_TYPE_KEY
-    ) as BgUserLoginType | null;
+  autoSignIn$() {
+    const loginType = localStorage.getItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY) as BgUserLoginType | null;
     if (loginType) {
-      return this.provider (loginType)
-        .autoSignIn$ ()
-        .pipe (switchMap ((user) => this.login$ (user)));
+      return this.provider(loginType)
+        .autoSignIn$()
+        .pipe(switchMap(user => this.login$(user)));
     } else {
-      return of (null);
+      return of(null);
     }
   }
 
-  signIn$ (type: BgUserLoginType) {
-    return this.provider (type)
-      .signIn$ ()
-      .pipe (
-        switchMap ((user) => this.login$ (user)),
-        catchError ((e) => {
-          this.setUser (null);
-          return throwError (e);
+  signIn$(type: BgUserLoginType) {
+    return this.provider(type)
+      .signIn$()
+      .pipe(
+        switchMap(user => this.login$(user)),
+        catchError(e => {
+          this.setUser(null);
+          return throwError(e);
         })
       );
   }
 
-  signOut$ () {
-    const user = this.$user.getValue ();
+  signOut$() {
+    const user = this.$user.getValue();
     if (user) {
-      this.setUser (null);
-      localStorage.removeItem (LOCALSTORAGE_BG_LOGIN_TYPE_KEY);
-      return this.provider (user.loginType).signOut$ ();
+      this.setUser(null);
+      localStorage.removeItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY);
+      return this.provider(user.loginType).signOut$();
     } else {
-      return of (void 0);
+      return of(void 0);
     }
   }
 
-  deleteUser$ () {
-    const user = this.$user.getValue ();
+  deleteUser$() {
+    const user = this.$user.getValue();
     if (user) {
-      return this.signOut$ ().pipe (
-        switchMap (() => this.cloud.delete$ (user.id, this.users ()))
-      );
+      return this.signOut$().pipe(switchMap(() => this.cloud.delete$(user.id, this.users())));
     } else {
-      return of (void 0);
+      return of(void 0);
     }
   }
 
-  private provider (type: BgUserLoginType): IBgAuthProvider {
+  private provider(type: BgUserLoginType): IBgAuthProvider {
     switch (type) {
       case "google":
         return this.googleProvider;
       case "guest":
         return this.guestProvider;
       default:
-        throw new Error (`Login type ${type} not implemented.`);
+        throw new Error(`Login type ${type} not implemented.`);
     }
   }
 
-  private login$ (user: BgUser | null) {
+  private login$(user: BgUser | null) {
     if (user) {
-      this.setUser (user);
-      localStorage.setItem (LOCALSTORAGE_BG_LOGIN_TYPE_KEY, user.loginType);
-      return this.upsertUser$ (user);
+      this.setUser(user);
+      localStorage.setItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY, user.loginType);
+      return this.upsertUser$(user);
     } else {
-      this.setUser (null);
-      return of (null);
+      this.setUser(null);
+      return of(null);
     }
   }
 
-  private upsertUser$ (user: BgUser) {
-    const users = this.users ();
-    return this.cloud.set$<BgUser> (user.id, user, users);
+  private upsertUser$(user: BgUser) {
+    const users = this.users();
+    return this.cloud.set$<BgUser>(user.id, user, users);
   }
 }
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 class BgGoogleAuthProvider implements IBgAuthProvider {
-  private auth: Auth = inject (Auth);
+  private auth: Auth = inject(Auth);
 
-  signIn$ (): Observable<BgUser | null> {
-    return from (signInWithPopup (this.auth, new GoogleAuthProvider ())).pipe (
-      map ((userCredential) => this.googleUserToBgUser (userCredential.user))
+  signIn$(): Observable<BgUser | null> {
+    return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
+      map(userCredential => this.googleUserToBgUser(userCredential.user))
     );
   }
 
-  signOut$ () {
-    return from (this.auth.signOut ());
+  signOut$() {
+    return from(this.auth.signOut());
   }
 
-  autoSignIn$ (): Observable<BgUser | null> {
-    return fireUser (this.auth).pipe (
-      first (),
-      map ((authUser) => this.googleUserToBgUser (authUser))
+  autoSignIn$(): Observable<BgUser | null> {
+    return fireUser(this.auth).pipe(
+      first(),
+      map(authUser => this.googleUserToBgUser(authUser))
     );
   }
 
-  private googleUserToBgUser (authUser: User | null): BgUser | null {
+  private googleUserToBgUser(authUser: User | null): BgUser | null {
     return authUser
       ? {
-        id: authUser.uid,
-        email: authUser.email || "",
-        displayName: authUser.displayName || authUser.email || "",
-        loginType: "google",
-      }
+          id: authUser.uid,
+          email: authUser.email || "",
+          displayName: authUser.displayName || authUser.email || "",
+          loginType: "google"
+        }
       : null;
   }
 }
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 class BgGuestAuthProvider implements IBgAuthProvider {
-  signIn$ (): Observable<BgUser | null> {
-    const guestKey = `guestKey${new Date ().getTime ()}`;
-    localStorage.setItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, guestKey);
-    const user = this.guestKeyToBgUser (guestKey);
-    return of (user);
+  signIn$(): Observable<BgUser | null> {
+    const guestKey = `guestKey${new Date().getTime()}`;
+    localStorage.setItem(LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, guestKey);
+    const user = this.guestKeyToBgUser(guestKey);
+    return of(user);
   }
 
-  signOut$ () {
-    localStorage.removeItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
-    return of (void 0);
+  signOut$() {
+    localStorage.removeItem(LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
+    return of(void 0);
   }
 
-  autoSignIn$ (): Observable<BgUser | null> {
-    const guestKey = localStorage.getItem (LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
+  autoSignIn$(): Observable<BgUser | null> {
+    const guestKey = localStorage.getItem(LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
     if (guestKey) {
-      const user = this.guestKeyToBgUser (guestKey);
-      return of (user);
+      const user = this.guestKeyToBgUser(guestKey);
+      return of(user);
     } else {
-      return of (null);
+      return of(null);
     }
   }
 
-  private guestKeyToBgUser (guestKey: string): BgUser | null {
+  private guestKeyToBgUser(guestKey: string): BgUser | null {
     return guestKey
       ? {
-        displayName: "Guest " + guestKey,
-        email: "",
-        id: guestKey,
-        loginType: "guest",
-      }
+          displayName: "Guest " + guestKey,
+          email: "",
+          id: guestKey,
+          loginType: "guest"
+        }
       : null;
   }
 }

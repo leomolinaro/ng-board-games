@@ -24,13 +24,13 @@ import { BaronyHomeComponent } from "./barony-home/barony-home.component";
 const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
   { path: "game/:gameId", component: BaronyGameComponent },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
+@NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild (routes),
+    RouterModule.forChild(routes),
     BgTransformPipe,
     BgSvgModule,
     BaronyHomeComponent,
@@ -49,10 +49,10 @@ const routes: Routes = [
     BaronyBuildingsSelectorComponent,
     BaronyGameComponent,
     BaronyEndGameComponent,
-    BaronyScoreboardComponent,
+    BaronyScoreboardComponent
   ],
   providers: [
     // BaronyGameResolver
-  ],
+  ]
 })
 export class BaronyModule {}

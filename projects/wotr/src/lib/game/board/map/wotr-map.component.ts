@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, computed, inject, input, isDevMode, output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  computed,
+  inject,
+  input,
+  isDevMode,
+  output
+} from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
@@ -22,19 +32,23 @@ import { WotrMapService } from "./wotr-map.service";
 
 const GRID_STEP = 10;
 
-@Component ({
+@Component({
   selector: "wotr-map",
   imports: [
     BgSvgModule,
     WotrRegionsComponent,
-    WotrPoliticalTrackComponent, WotrHuntBoxComponent,
-    WotrFellowshipTrackComponent, WotrFellowshipBoxComponent,
+    WotrPoliticalTrackComponent,
+    WotrHuntBoxComponent,
+    WotrFellowshipTrackComponent,
+    WotrFellowshipBoxComponent,
     WotrElvenRingsBoxComponent,
-    WotrDeckBoxesComponent, WotrTableCardsComponent,
+    WotrDeckBoxesComponent,
+    WotrTableCardsComponent,
     WotrVictoryPointsTrackComponent
   ],
   template: `
-    <svg:svg bgSvg
+    <svg:svg
+      bgSvg
       xmlns="http://www.w3.org/2000/svg"
       version="1.1"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -42,25 +56,46 @@ const GRID_STEP = 10;
       height="100%"
       [attr.viewBox]="viewBox"
       preserveAspectRatio="xMidYMin">
-      <svg:g #wotrMap [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }">
-        <image [attr.width]="mapWidth"
-          [attr.xlink:href]="mapImageSource">
-        </image>
-        <svg:g wotrRegions [regions]="regions ()"
-          [fellowship]="fellowship ()"
-          [characterById]="characterById ()"
-          [validRegions]="validRegions ()"
-          (regionClick)="regionClick.emit ($event)"></svg:g>
-        <svg:g wotrPoliticalTrack [nations]="nations ()"></svg:g>
-        <svg:g wotrHuntBox [hunt]="hunt ()"></svg:g>
-        <svg:g wotrFellowshipTrack [fellowship]="fellowship ()"></svg:g>
-        <svg:g wotrFellowshipBox [fellowship]="fellowship ()"></svg:g>
-        <svg:g wotrElvenRingsBox
-          [freePeoplesElvenRings]="freePeoples ().elvenRings"
-          [shadowElvenRings]="shadow ().elvenRings"></svg:g>
-        <svg:g wotrDeckBoxes [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
-        <svg:g wotrTableCards [freePeoples]="freePeoples ()" [shadow]="shadow ()"></svg:g>
-        <svg:g wotrVictoryPointsTrack [fronts]="fronts ()"></svg:g>
+      <svg:g
+        #wotrMap
+        [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }">
+        <image
+          [attr.width]="mapWidth"
+          [attr.xlink:href]="mapImageSource"></image>
+        <svg:g
+          wotrRegions
+          [regions]="regions()"
+          [fellowship]="fellowship()"
+          [characterById]="characterById()"
+          [validRegions]="validRegions()"
+          (regionClick)="regionClick.emit($event)"></svg:g>
+        <svg:g
+          wotrPoliticalTrack
+          [nations]="nations()"></svg:g>
+        <svg:g
+          wotrHuntBox
+          [hunt]="hunt()"></svg:g>
+        <svg:g
+          wotrFellowshipTrack
+          [fellowship]="fellowship()"></svg:g>
+        <svg:g
+          wotrFellowshipBox
+          [fellowship]="fellowship()"></svg:g>
+        <svg:g
+          wotrElvenRingsBox
+          [freePeoplesElvenRings]="freePeoples().elvenRings"
+          [shadowElvenRings]="shadow().elvenRings"></svg:g>
+        <svg:g
+          wotrDeckBoxes
+          [freePeoples]="freePeoples()"
+          [shadow]="shadow()"></svg:g>
+        <svg:g
+          wotrTableCards
+          [freePeoples]="freePeoples()"
+          [shadow]="shadow()"></svg:g>
+        <svg:g
+          wotrVictoryPointsTrack
+          [fronts]="fronts()"></svg:g>
       </svg:g>
     </svg:svg>
     <!-- @if (isDevMode) {
@@ -70,71 +105,68 @@ const GRID_STEP = 10;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrMapComponent {
+  private mapService = inject(WotrMapService);
+  private assets = inject(WotrAssetsService);
+  private slotsGeneratorService = inject(WotrMapSlotsGeneratorService);
 
-  private mapService = inject (WotrMapService);
-  private assets = inject (WotrAssetsService);
-  private slotsGeneratorService = inject (WotrMapSlotsGeneratorService);
+  regions = input.required<WotrRegion[]>();
+  nations = input.required<WotrNation[]>();
+  hunt = input.required<WotrHuntState[]>();
+  freePeoples = input.required<WotrFront>();
+  shadow = input.required<WotrFront>();
+  fellowship = input.required<WotrFellowship[]>();
+  characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
+  validRegions = input.required<WotrRegionId[] | null>();
+  fronts = computed(() => [this.freePeoples(), this.shadow()]);
 
-  regions = input.required<WotrRegion[]> ();
-  nations = input.required<WotrNation[]> ();
-  hunt = input.required<WotrHuntState[]> ();
-  freePeoples = input.required<WotrFront> ();
-  shadow = input.required<WotrFront> ();
-  fellowship = input.required<WotrFellowship[]> ();
-  characterById = input.required<Record<WotrCharacterId, WotrCharacter>> ();
-  validRegions = input.required<WotrRegionId[] | null> ();
-  fronts = computed (() => ([this.freePeoples (), this.shadow ()]));
-
-  validRegionById = computed<Partial<Record<WotrRegionId, boolean>>> (() => {
-    return arrayUtil.toMap (this.validRegions () ?? [], region => region, () => true);
+  validRegionById = computed<Partial<Record<WotrRegionId, boolean>>>(() => {
+    return arrayUtil.toMap(
+      this.validRegions() ?? [],
+      region => region,
+      () => true
+    );
   });
 
-  regionClick = output<WotrRegion> ();
+  regionClick = output<WotrRegion>();
 
-  protected viewBox = this.mapService.getViewBox ();
-  protected mapWidth = this.mapService.getWidth ();
+  protected viewBox = this.mapService.getViewBox();
+  protected mapWidth = this.mapService.getWidth();
 
   protected testGridPoints: { x: number; y: number; color: string }[] = [];
 
-  @ViewChild (BgSvgComponent) bgSvg!: BgSvgComponent;
-  @ViewChild ("wotrMap") mapElementRef!: ElementRef<SVGGElement>;
-  @ViewChild (BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
+  @ViewChild(BgSvgComponent) bgSvg!: BgSvgComponent;
+  @ViewChild("wotrMap") mapElementRef!: ElementRef<SVGGElement>;
+  @ViewChild(BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
 
-  protected isDevMode = isDevMode ();
+  protected isDevMode = isDevMode();
 
-  protected mapImageSource = this.assets.getMapImageSource ();
+  protected mapImageSource = this.assets.getMapImageSource();
 
   // onUnitClick (unitNode: WotrUnitNode) {
   //   if (this.isValidUnit && this.isValidUnit[unitNode.id]) {
   //     this.unitClick.emit (unitNode.unit);
 
-  calculateSlots () {
-    const splittedViewBox = this.viewBox.split (" ");
+  calculateSlots() {
+    const splittedViewBox = this.viewBox.split(" ");
     const width = +splittedViewBox[2];
     const height = +splittedViewBox[3];
-    const screenCTM = this.mapElementRef.nativeElement.getScreenCTM ()!;
-    const pt = this.bgSvg.createSVGPoint ();
+    const screenCTM = this.mapElementRef.nativeElement.getScreenCTM()!;
+    const pt = this.bgSvg.createSVGPoint();
     const coordinatesToAreaId = (x: number, y: number) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;
       // this.testGridPoints.push ({ x: pt.x, y: pt.y, color: "black" });
-      const clientP = pt.matrixTransform (screenCTM);
-      const elementId: string | undefined = document.elementFromPoint (clientP.x, clientP.y)?.id;
-      if (elementId && elementId.startsWith ("wotr-region-")) {
-        return elementId.slice (12) as WotrRegionId;
+      const clientP = pt.matrixTransform(screenCTM);
+      const elementId: string | undefined = document.elementFromPoint(clientP.x, clientP.y)?.id;
+      if (elementId && elementId.startsWith("wotr-region-")) {
+        return elementId.slice(12) as WotrRegionId;
       } else {
         return null;
       }
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;
-    const slots = this.slotsGeneratorService.generateSlots (
-      this.regions (),
-      xMax,
-      yMax,
-      coordinatesToAreaId
-    );
-    downloadUtil.downloadJson (slots, "wotr-map-slots.json");
+    const slots = this.slotsGeneratorService.generateSlots(this.regions(), xMax, yMax, coordinatesToAreaId);
+    downloadUtil.downloadJson(slots, "wotr-map-slots.json");
   }
-
 }

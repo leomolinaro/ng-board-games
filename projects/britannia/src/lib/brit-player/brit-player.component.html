@@ -6,21 +6,13 @@
     'is-remote': player.isRemote,
     'is-local': player.isLocal
   }"
-  (click)="onCardClick()"
->
+  (click)="onCardClick()">
   <div class="brit-player-header">
     <i
       class="brit-player-type-icon fa"
       [ngClass]="
-        player.isAi
-          ? 'fa-desktop'
-          : player.isRemote
-          ? 'fa-globe'
-          : currentPlayer
-          ? 'fa-user'
-          : 'fa-user-o'
-      "
-    ></i>
+        player.isAi ? 'fa-desktop' : player.isRemote ? 'fa-globe' : currentPlayer ? 'fa-user' : 'fa-user-o'
+      "></i>
     <div class="brit-player-name">{{ player.name }}</div>
     <i class="brit-player-score-icon fa fa-star"></i>
     <div class="brit-player-score">{{ player.score }}</div>
@@ -29,13 +21,11 @@
     <div
       *ngFor="let nationNode of nationNodes; trackBy: nationTrackBy"
       class="brit-player-nation"
-      (click)="onNationClick(nationNode, $event)"
-    >
+      (click)="onNationClick(nationNode, $event)">
       <img
         class="brit-player-nation-icon"
         [src]="nationNode.iconSource"
-        [matTooltip]="nationNode.nation.label"
-      />
+        [matTooltip]="nationNode.nation.label" />
     </div>
 
     <!-- <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"

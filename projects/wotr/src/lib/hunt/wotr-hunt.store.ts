@@ -15,23 +15,23 @@ export interface WotrHuntState {
   previousTurnNFreePeopleDice: number;
 }
 
-export function initialeState (): WotrHuntState {
+export function initialeState(): WotrHuntState {
   return {
     map: {
       3: { id: "3", type: "standard", quantity: 3 },
       2: { id: "2", type: "standard", quantity: 2 },
       1: { id: "1", type: "standard", quantity: 1 },
-      er: { id: "er", type: "standard", eye: true, reveal: true },
+      "er": { id: "er", type: "standard", eye: true, reveal: true },
       "2r": { id: "2r", type: "standard", quantity: 2, reveal: true },
       "1r": { id: "1r", type: "standard", quantity: 1, reveal: true },
       "0r": { id: "0r", type: "standard", quantity: 0, reveal: true },
-      b0: { id: "b0", type: "free-people-special", quantity: 0 },
+      "b0": { id: "b0", type: "free-people-special", quantity: 0 },
       "b-1": { id: "b-1", type: "free-people-special", quantity: -1 },
       "b-2": { id: "b-2", type: "free-people-special", quantity: -2 },
-      r1rs: { id: "r1rs", type: "shadow-special", quantity: 1, reveal: true, stop: true },
-      r3s: { id: "r3s", type: "shadow-special", quantity: 3, stop: true },
-      rds: { id: "rds", type: "shadow-special", dice: true, stop: true },
-      rers: { id: "rers", type: "shadow-special", eye: true, reveal: true, stop: true }
+      "r1rs": { id: "r1rs", type: "shadow-special", quantity: 1, reveal: true, stop: true },
+      "r3s": { id: "r3s", type: "shadow-special", quantity: 3, stop: true },
+      "rds": { id: "rds", type: "shadow-special", dice: true, stop: true },
+      "rers": { id: "rers", type: "shadow-special", eye: true, reveal: true, stop: true }
     },
     huntPool: ["3", "3", "3", "2", "2", "1", "1", "er", "er", "er", "er", "2r", "1r", "1r", "0r", "0r"],
     huntDrawn: [],
@@ -44,41 +44,46 @@ export function initialeState (): WotrHuntState {
   };
 }
 
-@Injectable ()
+@Injectable()
 export class WotrHuntStore {
-
-  private fellowship = inject (WotrFellowshipStore);
+  private fellowship = inject(WotrFellowshipStore);
 
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;
   state!: Signal<WotrHuntState>;
 
-  huntTile (huntTileId: WotrHuntTileId): WotrHuntTile { return this.state ().map[huntTileId]; }
-  hasHuntDice (): boolean { return !!this.state ().nHuntDice; }
-  getNTotalDice (): number { return this.state ().nHuntDice + this.state ().nFreePeopleDice; }
+  huntTile(huntTileId: WotrHuntTileId): WotrHuntTile {
+    return this.state().map[huntTileId];
+  }
+  hasHuntDice(): boolean {
+    return !!this.state().nHuntDice;
+  }
+  getNTotalDice(): number {
+    return this.state().nHuntDice + this.state().nFreePeopleDice;
+  }
 
-  incrementFreePeopleDice (): void {
-    this.update ("incrementFreePeopleDice", state => ({
+  incrementFreePeopleDice(): void {
+    this.update("incrementFreePeopleDice", state => ({
       ...state,
       nFreePeopleDice: state.nFreePeopleDice + 1
     }));
   }
 
-  addHuntDice (quantity: number): void {
-    this.update ("addHuntDice", state => ({
+  addHuntDice(quantity: number): void {
+    this.update("addHuntDice", state => ({
       ...state,
       nHuntDice: quantity + state.nHuntDice
     }));
   }
 
-  addFellowshipDie (): void {
-    this.update ("addFellowshipDie", state => ({
+  addFellowshipDie(): void {
+    this.update("addFellowshipDie", state => ({
       ...state,
       nFreePeopleDice: 1 + state.nFreePeopleDice
     }));
   }
 
-  resetHuntBox (): void {
-    this.update ("resetHuntBox", state => ({
+  resetHuntBox(): void {
+    this.update("resetHuntBox", state => ({
       ...state,
       nHuntDice: 0,
       nFreePeopleDice: 0,
@@ -86,52 +91,51 @@ export class WotrHuntStore {
     }));
   }
 
-  drawHuntTile (tile: WotrHuntTileId): void {
-    this.update ("drawHuntTile", state => ({
+  drawHuntTile(tile: WotrHuntTileId): void {
+    this.update("drawHuntTile", state => ({
       ...state,
-      huntPool: immutableUtil.listRemoveFirst (h => h === tile, state.huntPool),
-      huntDrawn: immutableUtil.listPush ([tile], state.huntDrawn)
+      huntPool: immutableUtil.listRemoveFirst(h => h === tile, state.huntPool),
+      huntDrawn: immutableUtil.listPush([tile], state.huntDrawn)
     }));
   }
 
-  moveAvailableTileToReady (tile: WotrHuntTileId): void {
-    this.update ("moveAvailableTileToReady", state => ({
+  moveAvailableTileToReady(tile: WotrHuntTileId): void {
+    this.update("moveAvailableTileToReady", state => ({
       ...state,
-      huntReady: immutableUtil.listPush ([tile], state.huntReady),
-      huntAvailable: immutableUtil.listRemoveFirst (h => h === tile, state.huntAvailable),
+      huntReady: immutableUtil.listPush([tile], state.huntReady),
+      huntAvailable: immutableUtil.listRemoveFirst(h => h === tile, state.huntAvailable)
     }));
   }
 
-  moveAvailableTileToPool (tile: WotrHuntTileId): void {
-    this.update ("moveAvailableTileToPool", state => ({
+  moveAvailableTileToPool(tile: WotrHuntTileId): void {
+    this.update("moveAvailableTileToPool", state => ({
       ...state,
-      huntReady: immutableUtil.listPush ([tile], state.huntReady),
-      huntPool: immutableUtil.listRemoveFirst (h => h === tile, state.huntPool),
+      huntReady: immutableUtil.listPush([tile], state.huntReady),
+      huntPool: immutableUtil.listRemoveFirst(h => h === tile, state.huntPool)
     }));
   }
 
-  moveDrawnEyeTilesToAvailable () {
-    this.update ("moveDrawnEyeTilesToAvailable", state => {
-      const eyeTiles = state.huntDrawn.filter (t => !!state.map[t].eye);
-      const newHuntDrawn = immutableUtil.listRemoveAll (t => !!state.map[t].eye, state.huntDrawn);
-      const newHuntPool = immutableUtil.listPush (eyeTiles, state.huntPool);
+  moveDrawnEyeTilesToAvailable() {
+    this.update("moveDrawnEyeTilesToAvailable", state => {
+      const eyeTiles = state.huntDrawn.filter(t => !!state.map[t].eye);
+      const newHuntDrawn = immutableUtil.listRemoveAll(t => !!state.map[t].eye, state.huntDrawn);
+      const newHuntPool = immutableUtil.listPush(eyeTiles, state.huntPool);
       return { ...state, huntDrawn: newHuntDrawn, huntPool: newHuntPool };
     });
   }
 
-  moveReadyTilesToAvailable () {
-    this.update ("moveReadyTilesToAvailable", state => {
-      const newHuntPool = immutableUtil.listPush (state.huntAvailable, state.huntPool);
+  moveReadyTilesToAvailable() {
+    this.update("moveReadyTilesToAvailable", state => {
+      const newHuntPool = immutableUtil.listPush(state.huntAvailable, state.huntPool);
       return { ...state, huntAvailable: [], huntPool: newHuntPool };
     });
   }
 
-  maximumNumberOfHuntDice (): number {
-    return Math.max (this.fellowship.numberOfCompanions (), 1);
+  maximumNumberOfHuntDice(): number {
+    return Math.max(this.fellowship.numberOfCompanions(), 1);
   }
 
-  minimumNumberOfHuntDice (): number {
-    return this.state ().previousTurnNFreePeopleDice > 0 ? 1 : 0;
+  minimumNumberOfHuntDice(): number {
+    return this.state().previousTurnNFreePeopleDice > 0 ? 1 : 0;
   }
-
 }

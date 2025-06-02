@@ -1,19 +1,14 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { NgClass } from "@angular/common";
 
-@Component ({
+@Component({
   selector: "brit-units-selector",
   template: `
     <div class="brit-unit-selector-container">
-      <img class="brit-nation-unit-image" [src]="imageSource" />
+      <img
+        class="brit-nation-unit-image"
+        [src]="imageSource" />
       <div class="brit-units">
         <span class="brit-unit-number">{{ this.number }}</span>
         <span class="brit-unit-fraction-sign">/</span>
@@ -25,8 +20,7 @@ import { NgClass } from "@angular/common";
           [ngClass]="{
             'is-active': enableIncrease,
             'is-disabled': !enableIncrease
-          }"
-        >
+          }">
           <i class="fa fa-caret-up"></i>
         </button>
         <button
@@ -34,12 +28,13 @@ import { NgClass } from "@angular/common";
           [ngClass]="{
             'is-active': enableDecrease,
             'is-disabled': !enableDecrease
-          }"
-        >
+          }">
           <i class="fa fa-caret-down"></i>
         </button>
       </div>
-      <button class="brit-unit-confirm" (click)="onConfirm()">
+      <button
+        class="brit-unit-confirm"
+        (click)="onConfirm()">
         <i class="fa fa-check"></i>
       </button>
     </div>
@@ -49,38 +44,38 @@ import { NgClass } from "@angular/common";
   imports: [NgClass]
 })
 export class BritUnitsSelectorComponent implements OnChanges {
-  constructor () {}
+  constructor() {}
 
-  @Input () number!: number;
-  @Input () imageSource!: string;
-  @Input () min!: number;
-  @Input () max!: number;
-  @Output () numberChange = new EventEmitter<number> ();
-  @Output () confirm = new EventEmitter<void> ();
+  @Input() number!: number;
+  @Input() imageSource!: string;
+  @Input() min!: number;
+  @Input() max!: number;
+  @Output() numberChange = new EventEmitter<number>();
+  @Output() confirm = new EventEmitter<void>();
 
   enableIncrease = false;
   enableDecrease = false;
 
-  ngOnChanges (changes: SimpleChanges<this>) {
+  ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.number || changes.min || changes.max) {
       this.enableIncrease = this.number < this.max;
       this.enableDecrease = this.number > this.min;
     } // if
   } // ngOnChanges
 
-  onIncrease () {
+  onIncrease() {
     if (this.enableIncrease) {
-      this.numberChange.emit (this.number + 1);
+      this.numberChange.emit(this.number + 1);
     } // if
   } // onIncrease
 
-  onDecrease () {
+  onDecrease() {
     if (this.enableDecrease) {
-      this.numberChange.emit (this.number - 1);
+      this.numberChange.emit(this.number - 1);
     } // if
   } // onIncrease
 
-  onConfirm () {
-    this.confirm.next ();
+  onConfirm() {
+    this.confirm.next();
   } // onConfirm
 } // BritUnitsSelectorComponent

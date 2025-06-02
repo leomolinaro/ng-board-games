@@ -23,10 +23,10 @@ import { BgHomeComponent } from "./bg-home.component";
 
 const components = [BgHomeComponent];
 
-@NgModule ({
+@NgModule({
   exports: [
     ...components,
-    BgHomePlayerFormComponent, // TODO rimuovere
+    BgHomePlayerFormComponent // TODO rimuovere
   ],
   imports: [
     CommonModule,
@@ -48,7 +48,7 @@ const components = [BgHomeComponent];
     ...components,
     BgHomeRoomDialogComponent,
     BgHomePlayerFormComponent,
-    BgHomeArcheoGameFormComponent,
-  ],
+    BgHomeArcheoGameFormComponent
+  ]
 })
 export class BgHomeModule {}

@@ -2,8 +2,12 @@
   <span>A Game of Thrones LCG 2.0</span>
 </mat-toolbar>
 <div class="agot-utilities">
-  <div *ngFor="let utiliy of utilities" class="agot-utility-wrapper">
-    <a class="agot-utility" [routerLink]="utiliy.routerLink">
+  <div
+    *ngFor="let utiliy of utilities"
+    class="agot-utility-wrapper">
+    <a
+      class="agot-utility"
+      [routerLink]="utiliy.routerLink">
       {{ utiliy.name }}
     </a>
   </div>

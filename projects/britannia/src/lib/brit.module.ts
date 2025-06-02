@@ -21,33 +21,29 @@ import { BritMapService } from "./brit-map/brit-map.service";
 import { BritPlayerComponent } from "./brit-player/brit-player.component";
 import { BritUnitsSelectorComponent } from "./brit-units-selector/brit-units-selector.component";
 
-@Injectable ()
+@Injectable()
 export class BritAreaPathResolver implements Resolve<any> {
-  
-  private mapService = inject (BritMapService);
+  private mapService = inject(BritMapService);
 
-  resolve (): Observable<any> {
-    return forkJoin ([
-      this.mapService.loadAreaPaths$ (),
-      this.mapService.loadAreaSlots$ (),
-    ]);
+  resolve(): Observable<any> {
+    return forkJoin([this.mapService.loadAreaPaths$(), this.mapService.loadAreaSlots$()]);
   } // resolve
 } // BritAreaPathResolver
 
 const gameResolvers = {
-  areaPaths: BritAreaPathResolver,
+  areaPaths: BritAreaPathResolver
 };
 
 const routes: Routes = [
   { path: "", component: BritHomeComponent },
   { path: "game/:gameId", component: BritGameComponent, resolve: gameResolvers },
-  { path: "**", redirectTo: "", pathMatch: "full" },
+  { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 
-@NgModule ({
+@NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild (routes),
+    RouterModule.forChild(routes),
     BritHomeComponent,
     BgSvgModule,
     BgTransformPipe,
@@ -67,6 +63,6 @@ const routes: Routes = [
     BritLogComponent,
     BritActionsComponent
   ],
-  providers: [BritAreaPathResolver],
+  providers: [BritAreaPathResolver]
 })
 export class BritModule {}

@@ -5,14 +5,10 @@ import { MatIconModule } from "@angular/material/icon";
 import { BgMapZoomButtonsComponent } from "./bg-map-zoom-buttons.component";
 import { BgMapZoomDirective, BgSvgComponent } from "./bg-map-zoom.directive";
 
-const components = [
-  BgSvgComponent,
-  BgMapZoomDirective,
-  BgMapZoomButtonsComponent,
-];
+const components = [BgSvgComponent, BgMapZoomDirective, BgMapZoomButtonsComponent];
 
-@NgModule ({
+@NgModule({
   imports: [CommonModule, MatButtonModule, MatIconModule, ...components],
-  exports: [...components],
+  exports: [...components]
 })
 export class BgSvgModule {}

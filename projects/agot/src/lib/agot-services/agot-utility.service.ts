@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 
 export const AGOT_UTILITY_PATHS = {
   draft: "draft",
-  fcDecks: "full-collection-decks",
+  fcDecks: "full-collection-decks"
 }; // AGOT_UTILITY_PATHS
 
 export interface AgotUtility {
@@ -12,16 +12,16 @@ export interface AgotUtility {
 
 const AGOT_UTILITIES: AgotUtility[] = [
   { name: "Draft", routerLink: AGOT_UTILITY_PATHS.draft },
-  { name: "Full collection decks", routerLink: AGOT_UTILITY_PATHS.fcDecks },
+  { name: "Full collection decks", routerLink: AGOT_UTILITY_PATHS.fcDecks }
 ];
 
-@Injectable ({
-  providedIn: "root",
+@Injectable({
+  providedIn: "root"
 })
 export class AgotUtilityService {
-  constructor () {}
+  constructor() {}
 
-  getUtilities () {
+  getUtilities() {
     return AGOT_UTILITIES;
   }
 } // AgotUtilityService

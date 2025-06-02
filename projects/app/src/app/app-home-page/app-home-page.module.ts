@@ -7,12 +7,7 @@ import { AppHomePageComponent } from "./app-home-page.component";
 
 const routes: Routes = [{ path: "", component: AppHomePageComponent }];
 
-@NgModule ({
-  imports: [
-    CommonModule,
-    RouterModule.forChild (routes),
-    MatToolbarModule,
-    AppHomePageComponent,
-  ],
+@NgModule({
+  imports: [CommonModule, RouterModule.forChild(routes), MatToolbarModule, AppHomePageComponent]
 })
 export class AppHomePageModule {}

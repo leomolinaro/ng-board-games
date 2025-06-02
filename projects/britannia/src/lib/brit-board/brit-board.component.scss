@@ -1,4 +1,4 @@
-@import 'brit-variables';
+@import "brit-variables";
 
 .brit-board {
   position: absolute;
@@ -28,10 +28,10 @@
     padding: 2vmin;
 
     grid-template-areas:
-      'players instructions extras'
-      'players . extras'
-      'players . actions'
-      'players . actions';
+      "players instructions extras"
+      "players . extras"
+      "players . actions"
+      "players . actions";
 
     .brit-board-instructions-widget {
       grid-area: instructions;

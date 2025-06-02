@@ -1,6 +1,6 @@
 // @import '~@angular/material/theming';
-@use '@angular/material' as mat;
-@use 'bg-variables' as bg;
+@use "@angular/material" as mat;
+@use "bg-variables" as bg;
 
 $bg-typography-config: mat.m2-define-typography-config(
   $headline-1: mat.m2-define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em, $font-family: system-ui),
@@ -13,7 +13,7 @@ $bg-typography-config: mat.m2-define-typography-config(
   $body-2: mat.m2-define-typography-level(16px, 24px, 500, $font-family: system-ui),
   $body-1: mat.m2-define-typography-level(16px, 20px, 400, $font-family: system-ui),
   $caption: mat.m2-define-typography-level(14px, 20px, 400, $font-family: system-ui),
-  $button: mat.m2-define-typography-level(16px, 16px, 500, $font-family: system-ui),
+  $button: mat.m2-define-typography-level(16px, 16px, 500, $font-family: system-ui)
 );
 
 $bg-primary: mat.m2-define-palette(mat.$m2-purple-palette, 200);
@@ -25,9 +25,9 @@ $bg-theme: mat.m2-define-dark-theme(
     color: (
       primary: $bg-primary,
       accent: $bg-accent,
-      warn: $bg-warn,
+      warn: $bg-warn
     ),
-    typography: $bg-typography-config,
+    typography: $bg-typography-config
   )
 );
 

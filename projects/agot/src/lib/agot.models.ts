@@ -85,17 +85,10 @@ export const agotAgendaCode = {
   KingdomOfShadows: "13079",
   TheWhiteBook: "13099",
   ValyrianSteel: "13118",
-  ThePrinceThatWasPromised: "14045",
+  ThePrinceThatWasPromised: "14045"
 };
 
-export type AgotTypeCode =
-  | "agenda"
-  | "character"
-  | "plot"
-  | "event"
-  | "attachment"
-  | "location"
-  | "title";
+export type AgotTypeCode = "agenda" | "character" | "plot" | "event" | "attachment" | "location" | "title";
 
 export interface AgotCard {
   pack_code: AgotPackCode;
