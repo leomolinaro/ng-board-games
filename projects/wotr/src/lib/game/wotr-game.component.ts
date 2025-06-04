@@ -44,6 +44,7 @@ import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameUiStore } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrStoryService } from "./wotr-story.service";
+import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
 
 @Component({
   selector: "wotr-game",
@@ -94,7 +95,8 @@ import { WotrStoryService } from "./wotr-story.service";
     WotrRegionStore,
     WotrStoryService,
     WotrGameUiStore,
-    WotrUnitService
+    WotrUnitService,
+    WotrUnitPlayerService
   ]
 })
 @UntilDestroy

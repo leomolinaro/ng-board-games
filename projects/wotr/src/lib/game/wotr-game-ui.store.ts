@@ -2,6 +2,7 @@ import { Injectable, computed, inject } from "@angular/core";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
 import { WotrActionChoice } from "../action/wotr-action.models";
+import { WotrCardId } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
@@ -67,15 +68,8 @@ export class WotrGameUiStore extends signalStore(
   });
 
   pass = uiEvent<void>();
-  continue = uiEvent<void>();
-  confirm = uiEvent<boolean>();
   cancel = uiEvent<void>();
-  inputQuantity = uiEvent<number>();
-  region = uiEvent<WotrRegionId>();
-  nation = uiEvent<WotrNationId>();
-  actionChoice = uiEvent<WotrActionChoice>();
   player = uiEvent<WotrFrontId | null>();
-  option = uiEvent<WotrAskOption>();
 
   private updateUi<
     S extends WotrGameUiState & {
@@ -85,12 +79,14 @@ export class WotrGameUiStore extends signalStore(
     patchState(this, updater);
   }
 
+  continue = uiEvent<void>();
   async askContinue(message: string): Promise<void> {
     this.updateUi(s => ({ ...s, message, canContinue: true }));
     await this.continue.get();
     this.updateUi(s => ({ ...s, message: null, canContinue: false }));
   }
 
+  confirm = uiEvent<boolean>();
   async askConfirm(message: string): Promise<boolean> {
     this.updateUi(s => ({ ...s, message, canConfirm: true }));
     const confirm = await this.confirm.get();
@@ -98,6 +94,7 @@ export class WotrGameUiStore extends signalStore(
     return confirm;
   }
 
+  inputQuantity = uiEvent<number>();
   async askQuantity(message: string, min: number, max: number): Promise<number> {
     this.updateUi(s => ({ ...s, message, canInputQuantity: { min, max } }));
     const quantity = await this.inputQuantity.get();
@@ -105,12 +102,15 @@ export class WotrGameUiStore extends signalStore(
     return quantity;
   }
 
+  region = uiEvent<WotrRegionId>();
   async askRegion(validRegions: WotrRegionId[]): Promise<WotrRegionId> {
     this.updateUi(s => ({ ...s, message: "Select a region", validRegions }));
     const region = await this.region.get();
     this.updateUi(s => ({ ...s, message: null, validRegions: null }));
     return region;
   }
+
+  nation = uiEvent<WotrNationId>();
   async askNation(message: string, validNations: WotrNationId[]): Promise<WotrNationId> {
     this.updateUi(s => ({ ...s, message, validNations }));
     const nation = await this.nation.get();
@@ -118,6 +118,7 @@ export class WotrGameUiStore extends signalStore(
     return nation;
   }
 
+  actionChoice = uiEvent<WotrActionChoice>();
   async askActionDie(message: string, frontId: WotrFrontId): Promise<WotrActionChoice> {
     this.updateUi(s => ({ ...s, message, validActionFront: frontId }));
     const actionDieOrToken = await this.actionChoice.get();
@@ -125,6 +126,7 @@ export class WotrGameUiStore extends signalStore(
     return actionDieOrToken;
   }
 
+  option = uiEvent<WotrAskOption>();
   async askOption<O>(message: string, options: WotrAskOption<O>[]): Promise<O> {
     this.updateUi(s => ({ ...s, message, validOptions: options }));
     const option = await this.option.get();
@@ -132,20 +134,12 @@ export class WotrGameUiStore extends signalStore(
     return option.value as O;
   }
 
+  askCard(message: string, validCards: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId | null> {
+    throw new Error("Method not implemented.");
+  }
+
   resetUi(): Partial<WotrGameUiState> {
-    return {
-      // message: null,
-      // validRegions: null,
-      // validUnits: null,
-      // selectedUnits: null,
-      // canPass: false,
-      // canCancel: true,
-      // maxNumberOfKnights: null,
-      // validActions: null,
-      // validBuildings: null,
-      // validLands: null,
-      // validResources: null
-    };
+    return {};
   }
 
   // setFirstActionUi (player: string): Partial<WotrUiState> {

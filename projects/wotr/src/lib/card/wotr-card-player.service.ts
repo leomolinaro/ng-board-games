@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
@@ -39,5 +40,13 @@ export class WotrCardPlayerService {
     this.front.drawCards([drawnCard], frontId);
     await this.ui.askContinue("Continue");
     return drawnCard;
+  }
+
+  async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
+    throw new Error("Method not implemented.");
+  }
+
+  getPlayableEventCards(frontId: WotrFrontId): WotrCardId[] {
+    throw new Error("Method not implemented.");
   }
 }
