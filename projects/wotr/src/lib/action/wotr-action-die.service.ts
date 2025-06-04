@@ -43,7 +43,7 @@ export class WotrActionDieService {
         }
       },
       "action-die-skip": async (action, front) => {
-        this.frontStore.removeActionDie(action.die, front);
+        // empty (the die will already be removed at the end of the action)
       }
     };
   }
