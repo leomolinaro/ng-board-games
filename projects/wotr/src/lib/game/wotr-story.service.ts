@@ -113,13 +113,7 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   }
 
   protected override resetUi(turnPlayer: WotrFrontId) {
-    // this.ui.updateUi (s => ({
-    //   ...s,
-    //   // turnPlayerId: turnPlayer,
-    //   // ...this.ui.resetUi (),
-    //   // canCancel: false,
-    //   // message: `${this.playerStore.player (turnPlayer).name} is thinking...`,
-    // }));
+    this.ui.resetUi(turnPlayer);
   }
 
   async parallelStories(getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>) {

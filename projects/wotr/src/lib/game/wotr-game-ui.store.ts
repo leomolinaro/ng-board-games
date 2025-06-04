@@ -30,9 +30,19 @@ export interface WotrGameUiInputQuantity {
 
 export interface WotrPlayerUiState {}
 
-export function initialState(): WotrPlayerUiState {
-  return {};
-}
+export const initialState: WotrGameUiState = {
+  currentPlayerId: null,
+  canCancel: false,
+  message: null,
+  validRegions: null,
+  validNations: null,
+  validActionFront: null,
+  validOptions: null,
+  canPass: false,
+  canConfirm: false,
+  canContinue: false,
+  canInputQuantity: false
+};
 
 interface WotrAskOption<O = unknown> {
   value: O;
@@ -40,22 +50,7 @@ interface WotrAskOption<O = unknown> {
 }
 
 @Injectable()
-export class WotrGameUiStore extends signalStore(
-  { protectedState: false },
-  withState<WotrGameUiState>({
-    currentPlayerId: null,
-    canCancel: false,
-    message: null,
-    validRegions: null,
-    validNations: null,
-    validActionFront: null,
-    validOptions: null,
-    canPass: false,
-    canConfirm: false,
-    canContinue: false,
-    canInputQuantity: false
-  })
-) {
+export class WotrGameUiStore extends signalStore({ protectedState: false }, withState<WotrGameUiState>(initialState)) {
   private playerInfoStore = inject(WotrPlayerInfoStore);
 
   currentPlayer = computed<WotrPlayerInfo | null>(() => {
@@ -69,7 +64,6 @@ export class WotrGameUiStore extends signalStore(
 
   pass = uiEvent<void>();
   cancel = uiEvent<void>();
-  player = uiEvent<WotrFrontId | null>();
 
   private updateUi<
     S extends WotrGameUiState & {
@@ -138,8 +132,12 @@ export class WotrGameUiStore extends signalStore(
     throw new Error("Method not implemented.");
   }
 
-  resetUi(): Partial<WotrGameUiState> {
-    return {};
+  resetUi(turnPlayer: WotrFrontId) {
+    this.updateUi(s => ({
+      ...initialState,
+      message: `${this.playerInfoStore.player(turnPlayer).name} is thinking...`,
+      currentPlayerId: s.currentPlayerId
+    }));
   }
 
   // setFirstActionUi (player: string): Partial<WotrUiState> {
@@ -149,6 +147,7 @@ export class WotrGameUiStore extends signalStore(
   //   };
   // }
 
+  player = uiEvent<WotrFrontId | null>();
   setCurrentPlayerId(playerId: WotrFrontId | null) {
     this.player.emit(playerId);
     patchState(this, { currentPlayerId: playerId });
