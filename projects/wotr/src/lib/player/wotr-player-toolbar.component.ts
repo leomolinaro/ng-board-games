@@ -1,19 +1,18 @@
 import { NgClass } from "@angular/common";
-import { Component, computed, inject, input, output } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { BgAuthService } from "@leobg/commons";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiInputQuantity } from "../game/wotr-game-ui.store";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrPlayerBadgeComponent } from "./wotr-player-badge.component";
-import { WotrPlayerInfo } from "./wotr-player-info.models";
+import { WotrPlayerInfoStore } from "./wotr-player-info.store";
 
 @Component({
   selector: "wotr-player-toolbar",
   imports: [NgClass, MatMenuTrigger, MatMenu, MatMenuItem, FormsModule, WotrPlayerBadgeComponent],
   template: `
     <wotr-player-badge
-      [playerId]="currentPlayerId()"
+      [playerId]="ui.currentPlayerId()"
       [ngClass]="{
         'can-change-player': !!selectablePlayers().length
       }"
@@ -23,21 +22,21 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
       @for (player of selectablePlayers (); track player.id) {
       <div
         mat-menu-item
-        (click)="currentPlayerChange.emit(player)">
+        (click)="ui.setCurrentPlayerId(player.id)">
         <wotr-player-badge [playerId]="player.id"></wotr-player-badge>
       </div>
       }
     </mat-menu>
     <span class="message">
-      {{ message() }}
+      {{ ui.message() }}
     </span>
-    @if (canConfirm ()) {
-    <button (click)="confirm.emit(true)">Yes</button>
-    <button (click)="confirm.emit(false)">No</button>
-    } @if (canContinue ()) {
-    <button (click)="continue.emit()">Continue</button>
-    } @let q = canInputQuantity (); @if (q) {
-    <form (ngSubmit)="inputQuantity.emit(quantity)">
+    @if (ui.canConfirm ()) {
+    <button (click)="ui.confirm.emit(true)">Yes</button>
+    <button (click)="ui.confirm.emit(false)">No</button>
+    } @if (ui.canContinue()) {
+    <button (click)="ui.continue.emit()">Continue</button>
+    } @if (ui.canInputQuantity()) {
+    <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
       <input
         type="number"
         [(ngModel)]="quantity"
@@ -45,13 +44,15 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
         placeholder="Enter the quantity" />
       <button type="submit">Confirm</button>
     </form>
+    } @for (option of ui.validOptions(); track option.value) {
+    <button (click)="ui.option.emit(option)">{{ option.label }}</button>
     }
   `,
   styles: [
     `
-      @import "wotr-variables";
+      @use "wotr-variables" as wotr;
       :host {
-        @include golden-padding(1vmin);
+        @include wotr.golden-padding(1vmin);
         height: 100%;
         display: flex;
         align-items: center;
@@ -68,44 +69,17 @@ import { WotrPlayerInfo } from "./wotr-player-info.models";
 })
 export class WotrPlayerToolbarComponent {
   private authService = inject(BgAuthService);
+  protected ui = inject(WotrGameUiStore);
+  protected playerInfoStore = inject(WotrPlayerInfoStore);
 
-  message = input.required<string>();
-  canConfirm = input.required<boolean>();
-  canContinue = input.required<boolean>();
-  canPass = input.required<boolean>();
-  canCancel = input.required<boolean>();
-  canInputQuantity = input.required<WotrGameUiInputQuantity | false>();
-  currentPlayerId = input.required<WotrFrontId | null>();
-  players = input.required<WotrPlayerInfo[]>();
+  protected players = this.playerInfoStore.players;
 
-  selectablePlayers = computed(() => {
-    const currentPlayerId = this.currentPlayerId();
+  protected selectablePlayers = computed(() => {
+    const currentPlayerId = this.ui.currentPlayerId();
     return this.players().filter(
       p => !p.isAi && currentPlayerId !== p.id && p.controller.id === this.authService.getUser().id
     );
   });
 
-  currentPlayerChange = output<WotrPlayerInfo | null>();
-  confirm = output<boolean>();
-  continue = output<void>();
-  inputQuantity = output<number>();
-
   protected quantity = 0;
-
-  // otherPlayers = computed (() => {
-  //   const currentPlayerId = this.currentPlayerId ();
-  //   const playerIds = this.playerInfoStore.playerIds ();
-  //   const playerMap = this.playerInfoStore.playerMap ();
-  //   if (currentPlayerId) {
-  //     const n = playerIds.length;
-  //     const toReturn: WotrPlayer[] = [];
-  //     const offset = playerIds.indexOf (currentPlayerId);
-  //     for (let i = 1; i < n; i++) {
-  //       toReturn.push (playerMap[playerIds[(offset + i) % n]]);
-  //     }
-  //     return toReturn;
-  //   } else {
-  //     return playerIds.map (id => playerMap[id]);
-  //   }
-  // });
 }

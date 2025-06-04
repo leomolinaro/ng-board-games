@@ -24,6 +24,7 @@ export class WotrActionTokenService {
     this.frontStore.removeActionToken(story.token, front);
   };
 
-  private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (story, front) =>
+  private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (story, front) => {
     this.logStore.logStory(story, front);
+  };
 }

@@ -39,7 +39,6 @@ export abstract class WotrPlayer {
     return this.storyService.story(this.frontId, p => p.separateCompanions());
   }
 
-  // changeGuide (): Promise<WotrGameStory>;
   actionResolution(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.actionResolution(this));
   }

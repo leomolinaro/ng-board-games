@@ -16,7 +16,6 @@ import { WotrHuntStore } from "../../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../../log/wotr-log.store";
 import { WotrLogsComponent } from "../../log/wotr-logs.component";
 import { WotrNationStore } from "../../nation/wotr-nation.store";
-import { WotrPlayerInfoStore } from "../../player/wotr-player-info.store";
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
 import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
@@ -44,7 +43,6 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         class="wotr-map"
         #wotrMap
         [regions]="regionStore.regions()"
-        [nations]="nations()"
         [hunt]="huntStore.state()"
         [freePeoples]="freePeoples()"
         [shadow]="shadow()"
@@ -53,21 +51,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         [validRegions]="ui.validRegions()"
         (regionClick)="onRegionClick($event)">
       </wotr-map>
-      <wotr-player-toolbar
-        class="wotr-toolbar"
-        [currentPlayerId]="ui.currentPlayerId()"
-        [players]="playerInfoStore.players()"
-        [message]="ui.message()"
-        [canConfirm]="ui.canConfirm()"
-        [canContinue]="ui.canContinue()"
-        [canPass]="ui.canPass()"
-        [canCancel]="ui.canCancel()"
-        [canInputQuantity]="ui.canInputQuantity()"
-        (currentPlayerChange)="ui.setCurrentPlayerId($event?.id || null)"
-        (confirm)="ui.confirm.emit($event)"
-        (continue)="ui.continue.emit()"
-        (inputQuantity)="ui.inputQuantity.emit($event)">
-      </wotr-player-toolbar>
+      <wotr-player-toolbar class="wotr-toolbar"> </wotr-player-toolbar>
       <div class="wotr-fronts">
         <mat-tab-group>
           @for (front of fronts (); track front.id) {
@@ -98,7 +82,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         <wotr-action-dice
           [fronts]="fronts()"
           [validActionFront]="ui.validActionFront()"
-          (actionSelect)="ui.action.emit($event)">
+          (actionSelect)="ui.actionChoice.emit($event)">
         </wotr-action-dice>
       </div>
       <div class="wotr-logs">
@@ -116,7 +100,6 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 export class WotrBoardComponent {
   private dialog = inject(MatDialog);
 
-  protected playerInfoStore = inject(WotrPlayerInfoStore);
   protected regionStore = inject(WotrRegionStore);
   protected frontStore = inject(WotrFrontStore);
   protected huntStore = inject(WotrHuntStore);
@@ -135,7 +118,6 @@ export class WotrBoardComponent {
 
   protected freePeoplesNations = this.nationStore.freePeoplesNations;
   protected nationById = this.nationStore.nationById;
-  protected nations = this.nationStore.nations;
   protected shadowNations = this.nationStore.shadowNations;
 
   protected nChaCards: BgTransformFn<WotrCardId[], number> = handCards =>

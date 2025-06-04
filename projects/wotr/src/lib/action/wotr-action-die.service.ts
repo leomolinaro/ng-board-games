@@ -34,14 +34,16 @@ export class WotrActionDieService {
 
   getActionAppliers(): WotrActionApplierMap<WotrActionDieAction> {
     return {
-      "action-roll": async (action, front) => this.frontStore.setActionDice(action.dice, front),
+      "action-roll": async (action, front) => {
+        this.frontStore.setActionDice(action.dice, front);
+      },
       "action-dice-discard": async (action, front) => {
         for (const die of action.dice) {
           this.frontStore.removeActionDie(die, action.front);
         }
       },
       "action-die-skip": async (action, front) => {
-        /*empty*/
+        this.frontStore.removeActionDie(action.die, front);
       }
     };
   }

@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output } from "@angu
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrFront, WotrFrontId } from "../front/wotr-front.models";
-import { WotrActionDie, WotrActionDieOrToken, WotrActionToken } from "./wotr-action.models";
+import { WotrActionChoice, WotrActionDie, WotrActionToken } from "./wotr-action.models";
 
 @Component({
   selector: "wotr-action-dice",
@@ -48,7 +48,7 @@ export class WotrActionDiceComponent {
 
   fronts = input.required<WotrFront[]>();
   validActionFront = input.required<WotrFrontId | null>();
-  actionSelect = output<WotrActionDieOrToken>();
+  actionSelect = output<WotrActionChoice>();
 
   protected actionDieImage: BgTransformFn<WotrActionDie, string, WotrFrontId> = (actionDie, frontId) =>
     this.assets.getActionDieImage(actionDie, frontId);
@@ -57,13 +57,13 @@ export class WotrActionDiceComponent {
 
   onActionDieClick(actionDie: WotrActionDie, frontId: WotrFrontId) {
     if (this.validActionFront() === frontId) {
-      this.actionSelect.emit(actionDie);
+      this.actionSelect.emit({ type: "die", die: actionDie });
     }
   }
 
   onActionTokenClick(actionToken: WotrActionToken, frontId: WotrFrontId) {
     if (this.validActionFront() === frontId) {
-      this.actionSelect.emit(actionToken);
+      this.actionSelect.emit({ type: "token", token: actionToken });
     }
   }
 }

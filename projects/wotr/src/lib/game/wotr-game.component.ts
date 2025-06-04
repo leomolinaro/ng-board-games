@@ -4,11 +4,13 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieRules } from "../action/wotr-action-die.rules";
 import { WotrActionDieService } from "../action/wotr-action-die.service";
+import { WotrActionPlayerService } from "../action/wotr-action-player.service";
 import { WotrActionTokenService } from "../action/wotr-action-token.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrBattleStore } from "../battle/wotr-battle.store";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
+import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
@@ -23,6 +25,7 @@ import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntService } from "../hunt/wotr-hunt.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrNationPlayerService } from "../nation/wotr-nation-player.service";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrAllPlayers } from "../player/wotr-all-players";
@@ -61,6 +64,7 @@ import { WotrStoryService } from "./wotr-story.service";
     WotrBattleService,
     WotrBattleStore,
     WotrCardEffectsService,
+    WotrCardPlayerService,
     WotrCardService,
     WotrCharacterService,
     WotrCharacterStore,
@@ -76,12 +80,14 @@ import { WotrStoryService } from "./wotr-story.service";
     WotrHuntService,
     WotrHuntStore,
     WotrLogStore,
+    WotrNationPlayerService,
     WotrNationService,
     WotrNationStore,
     WotrPlayerAiService,
     WotrAllPlayers,
     WotrShadowPlayer,
     WotrFreePeoplesPlayer,
+    WotrActionPlayerService,
     WotrPlayerLocalService,
     WotrPlayerInfoStore,
     WotrRegionService,

@@ -1,4 +1,4 @@
-export type WotrActionDieOrToken = WotrActionDie | WotrActionToken;
+export type WotrActionChoice = { type: "die"; die: WotrActionDie } | { type: "token"; token: WotrActionToken };
 
 export type WotrFreePeopleActionDie = "character" | "army" | "muster" | "event" | "muster-army" | "will-of-the-west";
 export type WotrShadowActionDie = "character" | "army" | "muster" | "event" | "muster-army" | "eye";

@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { rollActionDice } from "../action/wotr-action-die-actions";
 import { WotrActionDieRules } from "../action/wotr-action-die.rules";
+import { WotrActionPlayerService } from "../action/wotr-action-player.service";
 import { WotrActionDie } from "../action/wotr-action.models";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
@@ -12,7 +13,6 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { allocateHuntDice } from "../hunt/wotr-hunt-actions";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
 
@@ -20,10 +20,10 @@ import { WotrPlayerService } from "./wotr-player.service";
 export class WotrPlayerLocalService implements WotrPlayerService {
   private front = inject(WotrFrontStore);
   private ui = inject(WotrGameUiStore);
-  private region = inject(WotrRegionStore);
   private fellowship = inject(WotrFellowshipStore);
   private hunt = inject(WotrHuntStore);
   private actionDieRules = inject(WotrActionDieRules);
+  private playerActionService = inject(WotrActionPlayerService);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
     await this.ui.askContinue("Draw cards");
@@ -76,9 +76,12 @@ export class WotrPlayerLocalService implements WotrPlayerService {
         return { type: "die-pass" };
       }
     }
-    const actionDie = await this.ui.askActionDie("Choose an action die to resolve", player.frontId);
-
-    throw new Error("Method not implemented.");
+    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", player.frontId);
+    if (actionChoice.type === "die") {
+      return this.playerActionService.resolveActionDie(actionChoice.die, player.frontId);
+    } else {
+      return this.playerActionService.resolveActionToken(actionChoice.token, player.frontId);
+    }
   }
 
   async separateCompanions(): Promise<WotrGameStory> {

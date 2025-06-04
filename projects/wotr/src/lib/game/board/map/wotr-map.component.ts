@@ -23,7 +23,6 @@ import { WotrTableCardsComponent } from "../../../front/wotr-table-card-boxes.co
 import { WotrVictoryPointsTrackComponent } from "../../../front/wotr-victory-points-track.component";
 import { WotrHuntBoxComponent } from "../../../hunt/wotr-hunt-box.component";
 import { WotrHuntState } from "../../../hunt/wotr-hunt.store";
-import { WotrNation } from "../../../nation/wotr-nation.models";
 import { WotrPoliticalTrackComponent } from "../../../nation/wotr-political-track.component";
 import { WotrRegion, WotrRegionId } from "../../../region/wotr-region.models";
 import { WotrRegionsComponent } from "../../../region/wotr-regions.component";
@@ -69,9 +68,7 @@ const GRID_STEP = 10;
           [characterById]="characterById()"
           [validRegions]="validRegions()"
           (regionClick)="regionClick.emit($event)"></svg:g>
-        <svg:g
-          wotrPoliticalTrack
-          [nations]="nations()"></svg:g>
+        <svg:g wotrPoliticalTrack></svg:g>
         <svg:g
           wotrHuntBox
           [hunt]="hunt()"></svg:g>
@@ -110,7 +107,6 @@ export class WotrMapComponent {
   private slotsGeneratorService = inject(WotrMapSlotsGeneratorService);
 
   regions = input.required<WotrRegion[]>();
-  nations = input.required<WotrNation[]>();
   hunt = input.required<WotrHuntState[]>();
   freePeoples = input.required<WotrFront>();
   shadow = input.required<WotrFront>();

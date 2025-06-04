@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import { NgClass } from "@angular/common";
+import { ChangeDetectionStrategy, Component, Signal, computed, inject } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgSvgModule } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation.models";
+import { WotrNationStore } from "./wotr-nation.store";
 
 interface WotrPoliticalNode {
   id: WotrNationId;
@@ -32,30 +35,74 @@ const PSTEPWAR = PSTEP1 + PSTEP;
 
 @Component({
   selector: "[wotrPoliticalTrack]",
-  imports: [BgSvgModule, MatTooltipModule],
+  imports: [BgSvgModule, MatTooltipModule, NgClass],
   template: `
-    @for (politicalNode of politicalNodes (); track politicalNode.id) {
+    @for (politicalNode of politicalNodes (); track politicalNode.id) { @let selectable =
+    validNationMap()?.[politicalNode.id];
     <svg:image
       transform="scale(0.8, 0.8)"
       [attr.x]="politicalNode.svgX"
       [attr.y]="politicalNode.svgY"
       [attr.xlink:href]="politicalNode.image" />
+    <svg:rect
+      class="political-marker-rect"
+      [attr.transform]="
+        'scale(0.8, 0.8) rotate(45,' + (politicalNode.svgX + 10) + ', ' + (politicalNode.svgY + 16) + ')'
+      "
+      [attr.x]="politicalNode.svgX"
+      [attr.y]="politicalNode.svgY"
+      [attr.width]="24"
+      [attr.height]="24"
+      [ngClass]="{
+        disabled: validNationMap() && !selectable,
+        selectable: validNationMap() && selectable
+      }"
+      (click)="onNationClick(politicalNode.id)"></svg:rect>
     }
   `,
+  styles: [
+    `
+      .political-marker-rect {
+        fill: transparent;
+        &.selectable {
+          cursor: pointer;
+        }
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+          fill: black; // does not work for image
+        }
+      }
+    `
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrPoliticalTrackComponent {
   private assets = inject(WotrAssetsService);
+  private nationStore = inject(WotrNationStore);
+  private ui = inject(WotrGameUiStore);
 
-  nations = input.required<WotrNation[]>();
+  protected nations = this.nationStore.nations;
+  private validNations = this.ui.validNations;
   private politicalNodeMap!: Record<WotrNationId, WotrPoliticalNode>;
+  protected validNationMap: Signal<Partial<Record<WotrNationId, boolean>> | null> = computed(() => {
+    const validNations = this.validNations();
+    if (!validNations) {
+      return null;
+    }
+    return arrayUtil.toMap(
+      validNations,
+      n => n,
+      n => true // true if the nation is valid, false otherwise
+    );
+  });
 
-  politicalNodes: Signal<WotrPoliticalNode[]> = computed(() => {
+  protected politicalNodes: Signal<WotrPoliticalNode[]> = computed(() => {
     const { nodes, map } = arrayUtil.entitiesToNodes(
       this.nations(),
       this.politicalNodeMap || {},
       nation => nation.id,
-      (nation, node) => nation === node.nation,
+      (nation, node) => nation === node?.nation,
       (nation, index, oldNode) => this.nationToPoliticalNode(nation, oldNode)
     );
     this.politicalNodeMap = map;
@@ -63,7 +110,6 @@ export class WotrPoliticalTrackComponent {
   });
 
   private nationToPoliticalNode(nation: WotrNation, oldNode: WotrPoliticalNode | null): WotrPoliticalNode {
-    // const path = this.mapService.getRegionPath (nation.id);
     const node: WotrPoliticalNode = {
       id: nation.id,
       nation,
@@ -126,11 +172,17 @@ export class WotrPoliticalTrackComponent {
     }
   };
 
-  getPoliticalMakerX(nationId: WotrNationId, step: WotrPoliticalStep) {
+  private getPoliticalMakerX(nationId: WotrNationId, step: WotrPoliticalStep) {
     return this.politicalMakerXY[nationId][step].x;
   }
 
-  getPoliticalMakerY(nationId: WotrNationId, step: WotrPoliticalStep) {
+  private getPoliticalMakerY(nationId: WotrNationId, step: WotrPoliticalStep) {
     return this.politicalMakerXY[nationId][step].y;
+  }
+
+  protected onNationClick(nationId: WotrNationId) {
+    if (this.validNationMap()?.[nationId]) {
+      this.ui.nation.emit(nationId);
+    }
   }
 }
