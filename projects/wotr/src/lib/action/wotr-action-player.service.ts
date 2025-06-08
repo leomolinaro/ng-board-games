@@ -1,27 +1,67 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrDrawEventCardChoice, WotrPlayEventCardChoice } from "../card/wotr-card-action-choices";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
+import {
+  WotrBringCharacterIntoPlayChoice,
+  WotrMoveCompanionsChoice,
+  WotrMoveMinionsChoice,
+  WotrSeparateCompanionsChoice
+} from "../character/wotr-character-choices";
+import { WotrAction } from "../commons/wotr-action.models";
+import { WotrFellowshipProgressChoice, WotrHideFellowshipChoice } from "../fellowship/wotr-fellowship-choices";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { advanceNation } from "../nation/wotr-nation-actions";
+import { WotrDiplomaticActionChoice } from "../nation/wotr-nation-choices";
 import { WotrNationPlayerService } from "../nation/wotr-nation-player.service";
+import { WotrPlayer } from "../player/wotr-player";
+import {
+  WotrAttackArmyChoice,
+  WotrLeaderArmyAttackChoice,
+  WotrLeaderArmyMoveChoice,
+  WotrMoveArmiesChoice,
+  WotrRecruitReinforcementsChoice
+} from "../unit/wotr-unit-choices";
 import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
-import { skipActionDie } from "./wotr-action-die-actions";
+import {
+  WotrActionPlayerChoice,
+  WotrChangeArmyDieChoice,
+  WotrChangeCharacterDieChoice,
+  WotrChangeEventDieChoice,
+  WotrChangeMusterDieChoice,
+  WotrSkipDieChoice
+} from "./wotr-action-choices";
+import { WotrActionDieRules } from "./wotr-action-die.rules";
 import { WotrActionDie, WotrActionToken } from "./wotr-action.models";
-
-// type WotrEventDieChoice = "draw" | "play" | "skip";
-// type WotrArmyDieChoice = "move" | "attack" | "play" | "skip";
-// type WotrMusterDieChoice = "diplomatic" | "play" | "recruit" | "bring" | "skip";
-// type WotrMasterArmyDieChoice = "move" | "attack" | "diplomatic" | "recruit" | "bring" | "skip" | "play";
-// type WotrCharacterDieChoice = "play" | "skip";
 
 @Injectable()
 export class WotrActionPlayerService {
   private ui = inject(WotrGameUiStore);
+  private frontStore = inject(WotrFrontStore);
   private cardPlayer = inject(WotrCardPlayerService);
   private nationPlayer = inject(WotrNationPlayerService);
   private unitPlayer = inject(WotrUnitPlayerService);
+  private actionDieRules = inject(WotrActionDieRules);
+
+  async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
+    const canPass = this.actionDieRules.canPassAction(player.frontId);
+    if (canPass) {
+      const pass = await this.ui.askConfirm("Do you want to pass?");
+      if (pass) {
+        return { type: "die-pass" };
+      }
+    }
+    const playableTokens = this.actionDieRules.playableTokens(player.frontId);
+    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", player.frontId, playableTokens);
+    if (actionChoice.type === "die") {
+      return this.resolveActionDie(actionChoice.die, player.frontId);
+    } else {
+      return this.resolveActionToken(actionChoice.token, player.frontId);
+    }
+  }
 
   resolveActionDie(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrGameStory> {
     switch (die) {
@@ -42,112 +82,179 @@ export class WotrActionPlayerService {
     }
   }
 
-  private async resolveArmyDie(frontId: string): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "die",
+      die: "army",
+      actions: await this.resolveArmyResult(frontId)
+    };
   }
 
-  private async resolveCharacterDie(frontId: string): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async resolveArmyResult(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const choice = await this.askActionChoice("Choose an action for the army die", [
+      new WotrMoveArmiesChoice(frontId),
+      new WotrAttackArmyChoice(frontId),
+      new WotrPlayEventCardChoice(["army"], frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrSkipDieChoice("event")
+    ]);
+    return choice.resolve();
   }
 
-  private async resolveMusterDie(frontId: string): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  private async resolveCharacterDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "die",
+      die: "character",
+      actions: await this.resolveCharacterResult(frontId)
+    };
   }
 
-  private async resolveMusterArmyDie(frontId: string): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async resolveCharacterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const choices: WotrActionPlayerChoice[] = [
+      new WotrLeaderArmyMoveChoice(frontId),
+      new WotrLeaderArmyAttackChoice(frontId),
+      new WotrPlayEventCardChoice(["character"], frontId, this.frontStore, this.ui, this.cardPlayer)
+    ];
+    if (frontId === "free-peoples") {
+      choices.push(
+        new WotrFellowshipProgressChoice(),
+        new WotrHideFellowshipChoice(),
+        new WotrSeparateCompanionsChoice(),
+        new WotrMoveCompanionsChoice()
+      );
+    } else {
+      choices.push(new WotrMoveMinionsChoice());
+    }
+    choices.push(new WotrSkipDieChoice("character"));
 
-    // const action = await this.ui.askOption<"muster" | "army" | "skip">("Choose an action result", [
-    //   { value: "muster", label: "Muster result" },
-    //   { value: "army", label: "Army result" },
-    //   { value: "skip", label: "Skip the die" }
-    // ]);
-    // switch (action) {
-    //   case "muster":
-    //     return this.resolveMusterDie(frontId, false);
-    //   case "army":
-    //     return this.resolveArmyDie(frontId, false);
-    //   case "skip":
-    //     return this.skipDieStory("muster-army");
-    // }
+    const choice = await this.askActionChoice("Choose an action for the character die", choices);
+    return choice.resolve();
   }
 
-  private async resolveWillOfTheWestDie(frontId: string): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "die",
+      die: "muster",
+      actions: await this.resolveMusterResult(frontId)
+    };
+  }
+
+  async resolveMusterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const choices: WotrActionPlayerChoice[] = [
+      new WotrDiplomaticActionChoice(frontId),
+      new WotrPlayEventCardChoice(["muster"], frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrRecruitReinforcementsChoice(frontId)
+    ];
+    if (frontId === "shadow") {
+      choices.push(new WotrBringCharacterIntoPlayChoice(["saruman", "the-witch-king", "the-mouth-of-sauron"], frontId));
+    }
+    choices.push(new WotrSkipDieChoice("muster-army"));
+    const choice = await this.askActionChoice("Choose an action for the muster die", choices);
+    return choice.resolve();
+  }
+
+  private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const choices: WotrActionPlayerChoice[] = [
+      new WotrDiplomaticActionChoice(frontId),
+      new WotrMoveArmiesChoice(frontId),
+      new WotrAttackArmyChoice(frontId),
+      new WotrPlayEventCardChoice(["muster", "army"], frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrRecruitReinforcementsChoice(frontId)
+    ];
+    if (frontId === "shadow") {
+      choices.push(new WotrBringCharacterIntoPlayChoice(["saruman", "the-witch-king", "the-mouth-of-sauron"], frontId));
+    }
+    choices.push(new WotrSkipDieChoice("muster-army"));
+    const choice = await this.askActionChoice("Choose an action for the muster-army die", choices);
+    return {
+      type: "die",
+      die: "muster-army",
+      actions: await choice.resolve()
+    };
+  }
+
+  private async resolveWillOfTheWestDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const choices: WotrActionPlayerChoice[] = [
+      new WotrChangeCharacterDieChoice(frontId, this),
+      new WotrChangeArmyDieChoice(frontId, this),
+      new WotrChangeMusterDieChoice(frontId, this),
+      new WotrChangeEventDieChoice(frontId, this)
+    ];
+    if (frontId === "free-peoples") {
+      choices.push(new WotrBringCharacterIntoPlayChoice(["gandalf-the-white", "aragorn"], frontId));
+    }
+    choices.push(new WotrSkipDieChoice("will-of-the-west"));
+    const choice = await this.askActionChoice("Choose an action for the Will of the West die", choices);
+    return {
+      type: "die",
+      die: "will-of-the-west",
+      actions: await choice.resolve()
+    };
   }
 
   private async resolveEventDie(frontId: WotrFrontId): Promise<WotrGameStory> {
-    const action = await this.ui.askOption<"draw" | "play" | "skip">("Choose an action for the event die", [
-      { value: "draw", label: "Draw a card" },
-      { value: "play", label: "Play an event card" },
-      { value: "skip", label: "Skip the die" }
-    ]);
-    switch (action) {
-      case "draw": {
-        const cardId = await this.cardPlayer.drawCard(frontId);
-        return {
-          type: "die",
-          die: "event",
-          actions: cardId ? [drawCardIds(cardId)] : []
-        };
-      }
-      case "play": {
-        const playableCards = this.cardPlayer.getPlayableEventCards(frontId);
-        const cardId = await this.ui.askCard("Select an event card to play", playableCards, frontId);
-        if (!cardId) {
-          return {
-            type: "die",
-            die: "event",
-            actions: []
-          };
-        }
-        const actions = await this.cardPlayer.playCard(cardId, frontId);
-        return {
-          type: "die",
-          die: "event",
-          actions
-        };
-      }
-      case "skip": {
-        return this.skipDieStory("event");
-      }
-    }
-  }
-
-  private skipDieStory(die: WotrActionDie): WotrGameStory {
     return {
       type: "die",
-      die,
-      actions: [skipActionDie(die)]
+      die: "event",
+      actions: await this.resolveEventResult(frontId)
     };
+  }
+
+  async resolveEventResult(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const choice = await this.askActionChoice("Choose an action for the event die", [
+      new WotrDrawEventCardChoice(frontId, this.cardPlayer),
+      new WotrPlayEventCardChoice("any", frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrSkipDieChoice("event")
+    ]);
+    return choice.resolve();
+  }
+
+  private async askActionChoice(message: string, choices: WotrActionPlayerChoice[]): Promise<WotrActionPlayerChoice> {
+    const choice = await this.ui.askOption<WotrActionPlayerChoice>(
+      message,
+      choices.map(c => ({
+        value: c,
+        label: c.label(),
+        disabled: c.isAvailable()
+      }))
+    );
+    return choice;
   }
 
   async resolveActionToken(token: WotrActionToken, frontId: WotrFrontId): Promise<WotrGameStory> {
     switch (token) {
-      case "draw-card": {
-        const cardId = await this.cardPlayer.drawCard(frontId);
-        return {
-          type: "token",
-          token: "draw-card",
-          actions: cardId ? [drawCardIds(cardId)] : []
-        };
-      }
-      case "political-advance": {
-        const nation = await this.nationPlayer.politicalAdvance(frontId);
-        return {
-          type: "token",
-          token: "political-advance",
-          actions: nation ? [advanceNation(nation, 1)] : []
-        };
-      }
-      case "move-nazgul-minions": {
-        const nazgulMovements = await this.unitPlayer.moveNazgulMinions(frontId);
-        return {
-          type: "token",
-          token: "move-nazgul-minions",
-          actions: nazgulMovements
-        };
-      }
+      case "draw-card":
+        return this.resolveDrawCardToken(frontId);
+      case "political-advance":
+        return this.resolvePoliticalAdvanceToken(frontId);
+      case "move-nazgul-minions":
+        return this.resolveMoveNazgulMinionsToken(frontId);
     }
+  }
+
+  private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const cardId = await this.cardPlayer.drawCard(frontId);
+    return {
+      type: "token",
+      token: "draw-card",
+      actions: [drawCardIds(cardId)]
+    };
+  }
+
+  private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const nation = await this.nationPlayer.politicalAdvance(frontId);
+    return {
+      type: "token",
+      token: "political-advance",
+      actions: [advanceNation(nation, 1)]
+    };
+  }
+
+  private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const nazgulMovements = await this.unitPlayer.moveNazgulMinions(frontId);
+    return {
+      type: "token",
+      token: "move-nazgul-minions",
+      actions: nazgulMovements
+    };
   }
 }

@@ -35,7 +35,7 @@ export type WotrShadowCardId = WotrShadowCharacterCardId | WotrShadowStrategyCar
 export type WotrCharacterCardId = WotrFreePeopleCharacterCardId | WotrShadowCharacterCardId;
 export type WotrStrategyCardId = WotrFreePeopleStrategyCardId | WotrShadowStrategyCardId;
 export type WotrCardId = WotrCharacterCardId | WotrStrategyCardId;
-
+export type WotrCardType = "character" | "muster" | "army";
 export function isCharacterCard(cardId: WotrCardId): cardId is WotrCharacterCardId {
   return cardId.startsWith("fpcha") || cardId.startsWith("scha");
 }

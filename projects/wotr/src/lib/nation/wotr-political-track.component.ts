@@ -37,27 +37,27 @@ const PSTEPWAR = PSTEP1 + PSTEP;
   selector: "[wotrPoliticalTrack]",
   imports: [BgSvgModule, MatTooltipModule, NgClass],
   template: `
-    @for (politicalNode of politicalNodes (); track politicalNode.id) { @let selectable =
-    validNationMap()?.[politicalNode.id];
-    <svg:image
-      transform="scale(0.8, 0.8)"
-      [attr.x]="politicalNode.svgX"
-      [attr.y]="politicalNode.svgY"
-      [attr.xlink:href]="politicalNode.image" />
-    <svg:rect
-      class="political-marker-rect"
-      [attr.transform]="
-        'scale(0.8, 0.8) rotate(45,' + (politicalNode.svgX + 10) + ', ' + (politicalNode.svgY + 16) + ')'
-      "
-      [attr.x]="politicalNode.svgX"
-      [attr.y]="politicalNode.svgY"
-      [attr.width]="24"
-      [attr.height]="24"
-      [ngClass]="{
-        disabled: validNationMap() && !selectable,
-        selectable: validNationMap() && selectable
-      }"
-      (click)="onNationClick(politicalNode.id)"></svg:rect>
+    @for (politicalNode of politicalNodes(); track politicalNode.id) {
+      @let selectable = validNationMap()?.[politicalNode.id];
+      <svg:image
+        transform="scale(0.8, 0.8)"
+        [attr.x]="politicalNode.svgX"
+        [attr.y]="politicalNode.svgY"
+        [attr.xlink:href]="politicalNode.image" />
+      <svg:rect
+        class="political-marker-rect"
+        [attr.transform]="
+          'scale(0.8, 0.8) rotate(45,' + (politicalNode.svgX + 10) + ', ' + (politicalNode.svgY + 16) + ')'
+        "
+        [attr.x]="politicalNode.svgX"
+        [attr.y]="politicalNode.svgY"
+        [attr.width]="24"
+        [attr.height]="24"
+        [ngClass]="{
+          disabled: validNationMap() && !selectable,
+          selectable: validNationMap() && selectable
+        }"
+        (click)="onNationClick(politicalNode.id)"></svg:rect>
     }
   `,
   styles: [

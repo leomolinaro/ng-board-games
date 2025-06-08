@@ -3,7 +3,7 @@ import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { oppositeFront, WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrActionDie, WotrFreePeopleActionDie, WotrShadowActionDie } from "./wotr-action.models";
+import { WotrActionDie, WotrActionToken, WotrFreePeopleActionDie, WotrShadowActionDie } from "./wotr-action.models";
 
 @Injectable()
 export class WotrActionDieRules {
@@ -58,5 +58,9 @@ export class WotrActionDieRules {
     // Can pass only if the opponent has more action dice left
     const opponent = oppositeFront(frontId);
     return this.frontStore.nActionDice(opponent) > this.frontStore.nActionDice(frontId);
+  }
+
+  playableTokens(frontId: WotrFrontId): WotrActionToken[] {
+    throw new Error("Method not implemented.");
   }
 }

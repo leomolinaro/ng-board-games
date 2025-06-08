@@ -1,7 +1,7 @@
 import { Injectable, computed, inject } from "@angular/core";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
-import { WotrActionChoice } from "../action/wotr-action.models";
+import { WotrActionChoice, WotrActionToken } from "../action/wotr-action.models";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
@@ -16,6 +16,7 @@ interface WotrGameUiState {
   validRegions: WotrRegionId[] | null;
   validNations: WotrNationId[] | null;
   validActionFront: WotrFrontId | null;
+  validActionTokens: WotrActionToken[] | null;
   validOptions: WotrAskOption[] | null;
   canPass: boolean;
   canConfirm: boolean;
@@ -37,6 +38,7 @@ export const initialState: WotrGameUiState = {
   validRegions: null,
   validNations: null,
   validActionFront: null,
+  validActionTokens: null,
   validOptions: null,
   canPass: false,
   canConfirm: false,
@@ -47,6 +49,7 @@ export const initialState: WotrGameUiState = {
 interface WotrAskOption<O = unknown> {
   value: O;
   label: string;
+  disabled?: boolean;
 }
 
 @Injectable()
@@ -113,10 +116,14 @@ export class WotrGameUiStore extends signalStore({ protectedState: false }, with
   }
 
   actionChoice = uiEvent<WotrActionChoice>();
-  async askActionDie(message: string, frontId: WotrFrontId): Promise<WotrActionChoice> {
-    this.updateUi(s => ({ ...s, message, validActionFront: frontId }));
+  async askActionDie(
+    message: string,
+    frontId: WotrFrontId,
+    validActionTokens: WotrActionToken[]
+  ): Promise<WotrActionChoice> {
+    this.updateUi(s => ({ ...s, message, validActionFront: frontId, validActionTokens }));
     const actionDieOrToken = await this.actionChoice.get();
-    this.updateUi(s => ({ ...s, message: null, validActionFront: null }));
+    this.updateUi(s => ({ ...s, message: null, validActionFront: null, validActionTokens: null }));
     return actionDieOrToken;
   }
 
@@ -128,7 +135,7 @@ export class WotrGameUiStore extends signalStore({ protectedState: false }, with
     return option.value as O;
   }
 
-  askCard(message: string, validCards: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId | null> {
+  askCard(message: string, validCards: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {
     throw new Error("Method not implemented.");
   }
 

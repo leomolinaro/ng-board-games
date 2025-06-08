@@ -9,11 +9,10 @@ export class WotrNationPlayerService {
   private ui = inject(WotrGameUiStore);
   private nation = inject(WotrNationStore);
 
-  async politicalAdvance(frontId: WotrFrontId): Promise<WotrNationId | null> {
+  async politicalAdvance(frontId: WotrFrontId): Promise<WotrNationId> {
     const validNations = this.advanceableNations(frontId);
     if (validNations.length === 0) {
-      await this.ui.askContinue("No nations can advance politically");
-      return null;
+      throw new Error("No nations can advance politically");
     }
     const nation = await this.ui.askNation("Choose a nation to advance politically", validNations);
     return nation;

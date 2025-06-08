@@ -69,19 +69,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
-    const canPass = this.actionDieRules.canPassAction(player.frontId);
-    if (canPass) {
-      const pass = await this.ui.askConfirm("Do you want to pass?");
-      if (pass) {
-        return { type: "die-pass" };
-      }
-    }
-    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", player.frontId);
-    if (actionChoice.type === "die") {
-      return this.playerActionService.resolveActionDie(actionChoice.die, player.frontId);
-    } else {
-      return this.playerActionService.resolveActionToken(actionChoice.token, player.frontId);
-    }
+    return this.playerActionService.actionResolution(player);
   }
 
   async separateCompanions(): Promise<WotrGameStory> {

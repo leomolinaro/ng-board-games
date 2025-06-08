@@ -19,33 +19,40 @@ import { WotrPlayerInfoStore } from "./wotr-player-info.store";
       [matMenuTriggerFor]="selectablePlayers().length ? selectablePlayersMenu : null">
     </wotr-player-badge>
     <mat-menu #selectablePlayersMenu="matMenu">
-      @for (player of selectablePlayers (); track player.id) {
-      <div
-        mat-menu-item
-        (click)="ui.setCurrentPlayerId(player.id)">
-        <wotr-player-badge [playerId]="player.id"></wotr-player-badge>
-      </div>
+      @for (player of selectablePlayers(); track player.id) {
+        <div
+          mat-menu-item
+          (click)="ui.setCurrentPlayerId(player.id)">
+          <wotr-player-badge [playerId]="player.id"></wotr-player-badge>
+        </div>
       }
     </mat-menu>
     <span class="message">
       {{ ui.message() }}
     </span>
-    @if (ui.canConfirm ()) {
-    <button (click)="ui.confirm.emit(true)">Yes</button>
-    <button (click)="ui.confirm.emit(false)">No</button>
-    } @if (ui.canContinue()) {
-    <button (click)="ui.continue.emit()">Continue</button>
-    } @if (ui.canInputQuantity()) {
-    <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
-      <input
-        type="number"
-        [(ngModel)]="quantity"
-        name="inputField"
-        placeholder="Enter the quantity" />
-      <button type="submit">Confirm</button>
-    </form>
-    } @for (option of ui.validOptions(); track option.value) {
-    <button (click)="ui.option.emit(option)">{{ option.label }}</button>
+    @if (ui.canConfirm()) {
+      <button (click)="ui.confirm.emit(true)">Yes</button>
+      <button (click)="ui.confirm.emit(false)">No</button>
+    }
+    @if (ui.canContinue()) {
+      <button (click)="ui.continue.emit()">Continue</button>
+    }
+    @if (ui.canInputQuantity()) {
+      <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
+        <input
+          type="number"
+          [(ngModel)]="quantity"
+          name="inputField"
+          placeholder="Enter the quantity" />
+        <button type="submit">Confirm</button>
+      </form>
+    }
+    @for (option of ui.validOptions(); track option.value) {
+      <button
+        [disabled]="!!option.disabled"
+        (click)="!option.disabled && ui.option.emit(option)">
+        {{ option.label }}
+      </button>
     }
   `,
   styles: [

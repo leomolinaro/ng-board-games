@@ -10,12 +10,11 @@ export class WotrCardPlayerService {
   private ui = inject(WotrGameUiStore);
   private front = inject(WotrFrontStore);
 
-  async drawCard(frontId: WotrFrontId): Promise<WotrCardId | null> {
+  async drawCard(frontId: WotrFrontId): Promise<WotrCardId> {
     const characterDeck = this.front.characterDeck(frontId);
     const strategyDeck = this.front.strategyDeck(frontId);
     if (characterDeck.length === 0 && strategyDeck.length === 0) {
-      await this.ui.askContinue("No cards left to draw");
-      return null;
+      throw new Error("No cards left to draw");
     }
     if (characterDeck.length === 0) {
       return this.drawCardFromDeck(strategyDeck, frontId);

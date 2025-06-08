@@ -3,6 +3,7 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
 import {
   WotrCardId,
+  WotrCardType,
   WotrCharacterCardId,
   WotrStrategyCardId,
   isCharacterCard,
@@ -69,13 +70,24 @@ export class WotrFrontStore {
     return this.state().map[id];
   }
   characterDeck(id: WotrFrontId) {
-    return this.state().map[id].characterDeck;
+    return this.front(id).characterDeck;
   }
   strategyDeck(id: WotrFrontId) {
-    return this.state().map[id].strategyDeck;
+    return this.front(id).strategyDeck;
   }
   hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
-    return !!this.state().map[frontId].tableCards.includes(cardId);
+    return !!this.front(frontId).tableCards.includes(cardId);
+  }
+  hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
+    throw new Error("Method not implemented.");
+    return this.front(frontId).handCards.some(cardId => this.isPlayableCard(cardId, frontId));
+  }
+  getPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
+    throw new Error("Method not implemented.");
+    return this.front(frontId).handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
+  }
+  isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
+    throw new Error("Method not implemented.");
   }
 
   private updateFront(actionName: string, frontId: WotrFrontId, updater: (a: WotrFront) => WotrFront) {
