@@ -37,15 +37,10 @@ export class WotrCardPlayerService {
   private async drawCardFromDeck(deck: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {
     const drawnCard = deck[0];
     this.front.drawCards([drawnCard], frontId);
-    await this.ui.askContinue("Continue");
     return drawnCard;
   }
 
   async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
-  }
-
-  getPlayableEventCards(frontId: WotrFrontId): WotrCardId[] {
     throw new Error("Method not implemented.");
   }
 }

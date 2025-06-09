@@ -11,7 +11,7 @@ import {
   input,
   isDevMode
 } from "@angular/core";
-import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
+import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
@@ -88,29 +88,43 @@ export type WotrLogParsedFragment =
         'breakpoint': debugBreakpoint()
       }"
       (click)="logClick.next()">
-      @for (fragment of fragments (); track $index) { @switch (fragment.type) { @case ("string") {
-      <span>{{ fragment.label }}</span> } @case ("card") {
-      <span
-        ><i>{{ fragment.label }}</i></span
-      >
-      } @case ("player") {
-      <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span> } @case
-      ("region") { <span>{{ fragment.region.name }}</span> } @case ("nation") {
-      <span>{{ fragment.nation.name }}</span> } @case ("die") {
-      <img
-        class="action-die"
-        [src]="fragment.dieImage" />
-      } @case ("token") {
-      <img
-        class="action-token"
-        [src]="fragment.tokenImage" />
-      } @case ("hunt-tile") {
-      <img
-        class="hunt-tile"
-        [src]="fragment.tileImage" />
+      @for (fragment of fragments(); track $index) {
+        @switch (fragment.type) {
+          @case ("string") {
+            <span>{{ fragment.label }}</span>
+          }
+          @case ("card") {
+            <span
+              ><i>{{ fragment.label }}</i></span
+            >
+          }
+          @case ("player") {
+            <span [ngClass]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{ fragment.label }}</span>
+          }
+          @case ("region") {
+            <span>{{ fragment.region.name }}</span>
+          }
+          @case ("nation") {
+            <span>{{ fragment.nation.name }}</span>
+          }
+          @case ("die") {
+            <img
+              class="action-die"
+              [src]="fragment.dieImage" />
+          }
+          @case ("token") {
+            <img
+              class="action-token"
+              [src]="fragment.tokenImage" />
+          }
+          @case ("hunt-tile") {
+            <img
+              class="hunt-tile"
+              [src]="fragment.tileImage" />
+          }
+          <!-- @case ("hunt-tile") { <span>{{ fragment.label }}</span> } -->
+        }
       }
-      <!-- @case ("hunt-tile") { <span>{{ fragment.label }}</span> } -->
-      } }
     </div>
   `,
   styles: [

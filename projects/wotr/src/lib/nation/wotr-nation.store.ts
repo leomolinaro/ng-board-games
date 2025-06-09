@@ -202,6 +202,13 @@ export class WotrNationStore {
     return [...s.fpNationIds, ...s.sNationIds].map(id => s.map[id]);
   });
 
+  hasReinforcements(nation: WotrNation) {
+    const reinforcements = nation.reinforcements;
+    return (
+      reinforcements.regular > 0 || reinforcements.elite > 0 || reinforcements.leader > 0 || reinforcements.nazgul > 0
+    );
+  }
+
   private updateNation(actionName: string, nationId: WotrNationId, updater: (a: WotrNation) => WotrNation) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [nationId]: updater(s.map[nationId]) } }));
   }

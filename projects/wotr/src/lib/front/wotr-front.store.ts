@@ -1,9 +1,8 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
+import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die.models";
 import {
   WotrCardId,
-  WotrCardType,
   WotrCharacterCardId,
   WotrStrategyCardId,
   isCharacterCard,
@@ -58,13 +57,16 @@ export class WotrFrontStore {
     return this.state().ids;
   }
   hasActionDice(frontId: WotrFrontId) {
-    return !!this.state().map[frontId].actionDice.length;
+    return !!this.front(frontId).actionDice.length;
   }
   nActionDice(frontId: WotrFrontId) {
-    return this.state().map[frontId].actionDice.length;
+    return this.front(frontId).actionDice.length;
   }
   hasActionTokens(frontId: WotrFrontId) {
-    return !!this.state().map[frontId].actionTokens.length;
+    return !!this.front(frontId).actionTokens.length;
+  }
+  actionTokens(frontId: WotrFrontId) {
+    return this.front(frontId).actionTokens;
   }
   front(id: WotrFrontId) {
     return this.state().map[id];
@@ -77,17 +79,6 @@ export class WotrFrontStore {
   }
   hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
     return !!this.front(frontId).tableCards.includes(cardId);
-  }
-  hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
-    throw new Error("Method not implemented.");
-    return this.front(frontId).handCards.some(cardId => this.isPlayableCard(cardId, frontId));
-  }
-  getPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
-    throw new Error("Method not implemented.");
-    return this.front(frontId).handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
-  }
-  isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
-    throw new Error("Method not implemented.");
   }
 
   private updateFront(actionName: string, frontId: WotrFrontId, updater: (a: WotrFront) => WotrFront) {

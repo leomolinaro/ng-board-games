@@ -1,6 +1,8 @@
-import { WotrActionPlayerChoice } from "../action/wotr-action-choices";
+import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrUnitPlayerService } from "./wotr-unit-player.service";
+import { WotrUnitService } from "./wotr-unit.service";
 
 export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
   constructor(private frontId: WotrFrontId) {}
@@ -35,14 +37,18 @@ export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
 }
 
 export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
-  constructor(private frontId: WotrFrontId) {}
+  constructor(
+    private frontId: WotrFrontId,
+    private unitService: WotrUnitService,
+    private unitPlayer: WotrUnitPlayerService
+  ) {}
 
   label(): string {
     return "Recruit reinforcements";
   }
 
   isAvailable(): boolean {
-    throw new Error("Method not implemented.");
+    return this.unitService.canFrontRecruitReinforcements(this.frontId);
   }
 
   async resolve(): Promise<WotrAction[]> {

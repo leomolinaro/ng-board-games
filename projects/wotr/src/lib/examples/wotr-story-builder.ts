@@ -1,5 +1,5 @@
-import { rollActionDice } from "../action/wotr-action-die-actions";
-import { WotrActionDie, WotrActionToken } from "../action/wotr-action.models";
+import { rollActionDice } from "../action-die/wotr-action-die-actions";
+import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
@@ -26,7 +26,10 @@ import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "..
 import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
 
 export class WotrFrontStoryComposer {
-  constructor(private front: WotrFrontId, private time: number) {}
+  constructor(
+    private front: WotrFrontId,
+    private time: number
+  ) {}
 
   protected story() {
     return { time: this.time, playerId: this.front };

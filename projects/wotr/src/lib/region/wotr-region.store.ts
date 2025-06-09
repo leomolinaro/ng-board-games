@@ -1144,6 +1144,9 @@ export class WotrRegionStore {
     const region = this.region(regionId);
     return region.army?.front === frontId;
   }
+  canMoveNazgul() {
+    return this.regions().some(region => this.isNazgulInRegion(region.id));
+  }
 
   private updateRegion(actionName: string, regionId: WotrRegionId, updater: (a: WotrRegion) => WotrRegion) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater(s.map[regionId]) } }));

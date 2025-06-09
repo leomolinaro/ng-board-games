@@ -1,4 +1,4 @@
-import { WotrActionPlayerChoice } from "../action/wotr-action-choices";
+import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrCharacterId } from "./wotr-character.models";

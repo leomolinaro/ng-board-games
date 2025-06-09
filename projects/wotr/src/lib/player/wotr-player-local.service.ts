@@ -1,8 +1,8 @@
 import { inject, Injectable } from "@angular/core";
-import { rollActionDice } from "../action/wotr-action-die-actions";
-import { WotrActionDieRules } from "../action/wotr-action-die.rules";
-import { WotrActionPlayerService } from "../action/wotr-action-player.service";
-import { WotrActionDie } from "../action/wotr-action.models";
+import { rollActionDice } from "../action-die/wotr-action-die-actions";
+import { WotrActionPlayerService } from "../action-die/wotr-action-die-player.service";
+import { WotrActionDie } from "../action-die/wotr-action-die.models";
+import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
@@ -22,7 +22,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private ui = inject(WotrGameUiStore);
   private fellowship = inject(WotrFellowshipStore);
   private hunt = inject(WotrHuntStore);
-  private actionDieRules = inject(WotrActionDieRules);
+  private actionDieService = inject(WotrActionDieService);
   private playerActionService = inject(WotrActionPlayerService);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
@@ -60,10 +60,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
 
   async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
     await this.ui.askContinue("Roll action dice");
-    const nActionDice = this.actionDieRules.rollableActionDice(player.frontId);
+    const nActionDice = this.actionDieService.rollableActionDice(player.frontId);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
-      actionDice.push(this.actionDieRules.rollActionDie(player.frontId));
+      actionDice.push(this.actionDieService.rollActionDie(player.frontId));
     }
     return { type: "phase", actions: [rollActionDice(...actionDice)] };
   }

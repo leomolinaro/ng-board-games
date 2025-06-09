@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
-import { WotrActionToken } from "../action/wotr-action.models";
+import { WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card.models";
 import { WotrCardUtils } from "../card/wotr-card.utils";
 import { WotrCompanionId } from "../character/wotr-character.models";

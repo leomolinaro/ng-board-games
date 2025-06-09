@@ -2,10 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieRules } from "../action/wotr-action-die.rules";
-import { WotrActionDieService } from "../action/wotr-action-die.service";
-import { WotrActionPlayerService } from "../action/wotr-action-player.service";
-import { WotrActionTokenService } from "../action/wotr-action-token.service";
+import { WotrActionPlayerService } from "../action-die/wotr-action-die-player.service";
+import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { WotrBattleService } from "../battle/wotr-battle.service";
 import { WotrBattleStore } from "../battle/wotr-battle.store";
 import { WotrCombatCardsService } from "../battle/wotr-combat-cards.service";
@@ -39,12 +37,12 @@ import { WotrRegionService } from "../region/wotr-region.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayerDoc } from "../remote/wotr-remote.models";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
+import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameUiStore } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrStoryService } from "./wotr-story.service";
-import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
 
 @Component({
   selector: "wotr-game",
@@ -60,8 +58,6 @@ import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
   providers: [
     WotrActionDieService,
     WotrActionService,
-    WotrActionDieRules,
-    WotrActionTokenService,
     WotrBattleService,
     WotrBattleStore,
     WotrCardEffectsService,
@@ -111,7 +107,6 @@ export class WotrGameComponent implements OnInit, OnDestroy {
 
   constructor() {
     inject(WotrActionDieService).init();
-    inject(WotrActionTokenService).init();
     inject(WotrCardService).init();
     inject(WotrBattleService).init();
     inject(WotrCharacterService).init();

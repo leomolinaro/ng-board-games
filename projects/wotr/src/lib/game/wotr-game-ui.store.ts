@@ -1,7 +1,7 @@
 import { Injectable, computed, inject } from "@angular/core";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
-import { WotrActionChoice, WotrActionToken } from "../action/wotr-action.models";
+import { WotrActionChoice, WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";

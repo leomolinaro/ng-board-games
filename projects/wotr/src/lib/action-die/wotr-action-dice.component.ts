@@ -3,29 +3,30 @@ import { ChangeDetectionStrategy, Component, inject, input, output } from "@angu
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrFront, WotrFrontId } from "../front/wotr-front.models";
-import { WotrActionChoice, WotrActionDie, WotrActionToken } from "./wotr-action.models";
+import { WotrActionChoice, WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
 
 @Component({
   selector: "wotr-action-dice",
   imports: [BgTransformPipe, NgClass],
   template: `
-    @for (front of fronts (); track front.id) {
-    <div
-      class="wotr-action-dice"
-      [ngClass]="{
-        selectable: validActionFront() === front.id,
-        disabled: validActionFront() && validActionFront() !== front.id
-      }">
-      @for (actionDie of front.actionDice; track $index) {
-      <img
-        [src]="actionDie | bgTransform: actionDieImage:front.id"
-        (click)="onActionDieClick(actionDie, front.id)" />
-      } @for (actionToken of front.actionTokens; track $index) {
-      <img
-        [src]="actionToken | bgTransform: actionTokenImage:front.id"
-        (click)="onActionTokenClick(actionToken, front.id)" />
-      }
-    </div>
+    @for (front of fronts(); track front.id) {
+      <div
+        class="wotr-action-dice"
+        [ngClass]="{
+          selectable: validActionFront() === front.id,
+          disabled: validActionFront() && validActionFront() !== front.id
+        }">
+        @for (actionDie of front.actionDice; track $index) {
+          <img
+            [src]="actionDie | bgTransform: actionDieImage : front.id"
+            (click)="onActionDieClick(actionDie, front.id)" />
+        }
+        @for (actionToken of front.actionTokens; track $index) {
+          <img
+            [src]="actionToken | bgTransform: actionTokenImage : front.id"
+            (click)="onActionTokenClick(actionToken, front.id)" />
+        }
+      </div>
     }
   `,
   styles: [

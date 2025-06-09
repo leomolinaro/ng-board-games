@@ -1,4 +1,4 @@
-import { WotrActionPlayerChoice } from "../action/wotr-action-choices";
+import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 
 export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {

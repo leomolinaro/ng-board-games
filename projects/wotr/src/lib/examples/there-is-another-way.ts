@@ -1,6 +1,6 @@
 // https://www.youtube.com/watch?v=6kDLffpqd9A&ab_channel=WaroftheRingChamp
 
-import { WotrActionToken } from "../action/wotr-action.models";
+import { WotrActionToken } from "../action-die/wotr-action-die.models";
 import {
   advanceArmy,
   attack,

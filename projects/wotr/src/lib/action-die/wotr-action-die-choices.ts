@@ -1,8 +1,8 @@
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { skipActionDie } from "./wotr-action-die-actions";
-import { WotrActionPlayerService } from "./wotr-action-player.service";
-import { WotrActionDie } from "./wotr-action.models";
+import { WotrActionPlayerService } from "./wotr-action-die-player.service";
+import { WotrActionDie } from "./wotr-action-die.models";
 
 export interface WotrActionPlayerChoice {
   label(): string;

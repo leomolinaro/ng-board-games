@@ -3,7 +3,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
-import { WotrActionDiceComponent } from "../../action/wotr-action-dice.component";
+import { WotrActionDiceComponent } from "../../action-die/wotr-action-dice.component";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
 import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
 import { WotrCharacterStore } from "../../character/wotr-character.store";
@@ -54,24 +54,24 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
       <wotr-player-toolbar class="wotr-toolbar"> </wotr-player-toolbar>
       <div class="wotr-fronts">
         <mat-tab-group>
-          @for (front of fronts (); track front.id) {
-          <mat-tab
-            [label]="
-              front.name +
-              ' ' +
-              (front.handCards | bgTransform: nChaCards) +
-              ' / ' +
-              (front.handCards | bgTransform: nStrCards)
-            "
-            [labelClass]="front.id"
-            [bodyClass]="front.id">
-            <wotr-front-area
-              [front]="front"
-              [nations]="front.id === 'free-peoples' ? freePeoplesNations() : shadowNations()"
-              [characters]="characters()"
-              (cardClick)="onPreviewCardClick($event, front)">
-            </wotr-front-area>
-          </mat-tab>
+          @for (front of fronts(); track front.id) {
+            <mat-tab
+              [label]="
+                front.name +
+                ' ' +
+                (front.handCards | bgTransform: nChaCards) +
+                ' / ' +
+                (front.handCards | bgTransform: nStrCards)
+              "
+              [labelClass]="front.id"
+              [bodyClass]="front.id">
+              <wotr-front-area
+                [front]="front"
+                [nations]="front.id === 'free-peoples' ? freePeoplesNations() : shadowNations()"
+                [characters]="characters()"
+                (cardClick)="onPreviewCardClick($event, front)">
+              </wotr-front-area>
+            </mat-tab>
           }
           <mat-tab label="Hunt">
             <wotr-hunt-area [hunt]="huntStore.state()"> </wotr-hunt-area>

@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
-import { discardDice } from "../action/wotr-action-die-actions";
-import { WotrActionToken } from "../action/wotr-action.models";
+import { discardDice } from "../action-die/wotr-action-die-actions";
+import { WotrActionToken } from "../action-die/wotr-action-die.models";
 import {
   advanceArmy,
   attack,
