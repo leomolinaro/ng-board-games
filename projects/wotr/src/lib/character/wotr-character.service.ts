@@ -4,14 +4,17 @@ import { WotrCardId } from "../card/wotr-card.models";
 import { WotrAction, WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrCharacterReactionStory, WotrGameStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
+import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrNationService } from "../nation/wotr-nation.service";
+import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegion } from "../region/wotr-region.models";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
@@ -21,6 +24,7 @@ import { WotrCharacterStore } from "./wotr-character.store";
 export class WotrCharacterService {
   private actionService = inject(WotrActionService);
   private nationService = inject(WotrNationService);
+  private nationStore = inject(WotrNationStore);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
@@ -177,5 +181,40 @@ export class WotrCharacterService {
       default:
         throw unexpectedStory(story, " character activation or not");
     }
+  }
+
+  isAvailable(characterId: WotrCharacterId) {
+    return this.characterStore.isAvailable(characterId);
+  }
+  isAtWar(nationId: WotrNationId): boolean {
+    return this.nationStore.isAtWar(nationId);
+  }
+  someFreePeoplesNationIsAtWar(): boolean {
+    return this.nationStore.freePeoplesNations().some(n => this.isAtWar(n.id));
+  }
+  isUnconquered(regionId: WotrRegionId): boolean {
+    return this.regionStore.isUnconquered(regionId);
+  }
+  someRegionWithShadowArmyAndSauronUnit(): boolean {
+    return this.regionStore.regions().some(r => {
+      if (!r.army) {
+        return false;
+      }
+      if (r.army.front !== "shadow") {
+        return false;
+      }
+      return r.army.regulars?.some(u => u.nation === "sauron") || r.army.elites?.some(c => c.nation === "sauron");
+    });
+  }
+  someRegionWithUnconqueredSauronStronghold(): boolean {
+    return this.regionStore
+      .regions()
+      .some(r => r.nationId === "sauron" && this.regionStore.isUnconquered(r.id) && r.settlement === "stronghold");
+  }
+  isFellowshipOnMordorTrack(): boolean {
+    return this.fellowshipStore.isOnMordorTrack();
+  }
+  victoryPoints(frontId: WotrFrontId): number {
+    return this.frontStore.front(frontId).victoryPoints;
   }
 }

@@ -1147,6 +1147,10 @@ export class WotrRegionStore {
   canMoveNazgul() {
     return this.regions().some(region => this.isNazgulInRegion(region.id));
   }
+  isUnconquered(regionId: WotrRegionId) {
+    const region = this.region(regionId);
+    return region.originalFrontId === region.controlledBy;
+  }
 
   private updateRegion(actionName: string, regionId: WotrRegionId, updater: (a: WotrRegion) => WotrRegion) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater(s.map[regionId]) } }));

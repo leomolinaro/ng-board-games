@@ -1,12 +1,21 @@
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
+import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrCharacterId } from "./wotr-character.models";
+import { WotrCharacterService } from "./wotr-character.service";
+import {
+  WotrAragornChoice,
+  WotrGandalfTheWhiteChoice,
+  WotrMouthOfSauronChoice,
+  WotrSarumanChoice,
+  WotrWitchKingChoice
+} from "./wotr-characters";
 
 export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice {
   constructor(
-    private characters: WotrCharacterId[],
-    private frontId: WotrFrontId
+    private die: WotrActionDie,
+    private frontId: WotrFrontId,
+    private characterService: WotrCharacterService
   ) {}
 
   label(): string {
@@ -14,7 +23,27 @@ export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice 
   }
 
   isAvailable(): boolean {
-    throw new Error("Method not implemented.");
+    if (this.frontId === "free-peoples") {
+      if (new WotrGandalfTheWhiteChoice().canBeBroughtIntoPlay(this.die)) {
+        return true;
+      }
+      if (new WotrAragornChoice().canBeBroughtIntoPlay(this.die)) {
+        return true;
+      }
+    } else {
+      if (this.die === "muster") {
+        if (new WotrSarumanChoice(this.characterService).canBeBroughtIntoPlay(this.die)) {
+          return true;
+        }
+        if (new WotrWitchKingChoice(this.characterService).canBeBroughtIntoPlay(this.die)) {
+          return true;
+        }
+        if (new WotrMouthOfSauronChoice(this.characterService).canBeBroughtIntoPlay(this.die)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   async resolve(): Promise<WotrAction[]> {

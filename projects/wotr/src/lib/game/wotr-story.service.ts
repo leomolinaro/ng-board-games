@@ -28,8 +28,12 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
   private playerStore = inject(WotrPlayerInfoStore);
   protected override auth = inject(BgAuthService);
   protected override aiPlayer = inject(forwardRef(() => WotrPlayerAiService));
-  protected override localPlayer = inject(WotrPlayerLocalService);
+  protected override localPlayer!: WotrPlayerLocalService;
   private actionService = inject(WotrActionService);
+
+  init(localPlayer: WotrPlayerLocalService) {
+    this.localPlayer = localPlayer;
+  }
 
   protected storyDocs: WotrStoryDoc[] | null = null;
   setStoryDocs(storyDocs: WotrStoryDoc[]) {

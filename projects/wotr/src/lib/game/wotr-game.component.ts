@@ -104,6 +104,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private story = inject(WotrStoryService);
   private flow = inject(WotrGameTurnService);
   private cardEffects = inject(WotrCardEffectsService);
+  private localPlayerService = inject(WotrPlayerLocalService);
 
   constructor() {
     inject(WotrActionDieService).init();
@@ -116,6 +117,7 @@ export class WotrGameComponent implements OnInit, OnDestroy {
     inject(WotrNationService).init();
     inject(WotrRegionService).init();
     inject(WotrUnitService).init();
+    this.story.init(this.localPlayerService);
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

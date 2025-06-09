@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { forwardRef, inject, Injectable } from "@angular/core";
 import { WotrDrawEventCardChoice } from "../card/wotr-card-action-choices";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
@@ -9,6 +9,7 @@ import {
   WotrMoveMinionsChoice,
   WotrSeparateCompanionsChoice
 } from "../character/wotr-character-choices";
+import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFellowshipProgressChoice, WotrHideFellowshipChoice } from "../fellowship/wotr-fellowship-choices";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -41,13 +42,14 @@ import { WotrActionDieService } from "./wotr-action-die.service";
 
 @Injectable()
 export class WotrActionPlayerService {
-  private ui = inject(WotrGameUiStore);
-  private cardService = inject(WotrCardService);
-  private nationService = inject(WotrNationService);
-  private cardPlayer = inject(WotrCardPlayerService);
-  private nationPlayer = inject(WotrNationPlayerService);
-  private unitPlayer = inject(WotrUnitPlayerService);
   private actionDieService = inject(WotrActionDieService);
+  private cardPlayer = inject(WotrCardPlayerService);
+  private cardService = inject(WotrCardService);
+  private characterService = inject<WotrCharacterService>(forwardRef(() => WotrCharacterService));
+  private nationPlayer = inject(WotrNationPlayerService);
+  private nationService = inject(WotrNationService);
+  private ui = inject(WotrGameUiStore);
+  private unitPlayer = inject(WotrUnitPlayerService);
   private unitService = inject(WotrUnitService);
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
@@ -149,7 +151,7 @@ export class WotrActionPlayerService {
       new WotrRecruitReinforcementsChoice(frontId, this.unitService, this.unitPlayer)
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice(["saruman", "the-witch-king", "the-mouth-of-sauron"], frontId));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", frontId, this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster-army"));
     const choice = await this.askActionChoice("Choose an action for the muster die", choices);
@@ -165,7 +167,7 @@ export class WotrActionPlayerService {
       new WotrRecruitReinforcementsChoice(frontId, this.unitService, this.unitPlayer)
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice(["saruman", "the-witch-king", "the-mouth-of-sauron"], frontId));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", frontId, this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster-army"));
     const choice = await this.askActionChoice("Choose an action for the muster-army die", choices);
@@ -184,7 +186,7 @@ export class WotrActionPlayerService {
       new WotrChangeEventDieChoice(frontId, this)
     ];
     if (frontId === "free-peoples") {
-      choices.push(new WotrBringCharacterIntoPlayChoice(["gandalf-the-white", "aragorn"], frontId));
+      choices.push(new WotrBringCharacterIntoPlayChoice("will-of-the-west", frontId, this.characterService));
     }
     choices.push(new WotrSkipDieChoice("will-of-the-west"));
     const choice = await this.askActionChoice("Choose an action for the Will of the West die", choices);

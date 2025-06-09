@@ -208,6 +208,10 @@ export class WotrNationStore {
       reinforcements.regular > 0 || reinforcements.elite > 0 || reinforcements.leader > 0 || reinforcements.nazgul > 0
     );
   }
+  isAtWar(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
+    return nation.politicalStep === "atWar";
+  }
 
   private updateNation(actionName: string, nationId: WotrNationId, updater: (a: WotrNation) => WotrNation) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [nationId]: updater(s.map[nationId]) } }));
