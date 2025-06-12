@@ -12,6 +12,13 @@ import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
+import {
+  WotrAragornChoice,
+  WotrGandalfTheWhite,
+  WotrMouthOfSauronChoice,
+  WotrSarumanChoice,
+  WotrWitchKingChoice
+} from "../character/wotr-characters";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrEventService } from "../commons/wotr-event.service";
 import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
@@ -43,6 +50,7 @@ import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameUiStore } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrStoryService } from "./wotr-story.service";
+import { WotrCharactersService } from "../character/wotr-characters.service";
 
 @Component({
   selector: "wotr-game",
@@ -64,7 +72,13 @@ import { WotrStoryService } from "./wotr-story.service";
     WotrCardPlayerService,
     WotrCardService,
     WotrCharacterService,
+    WotrCharactersService,
     WotrCharacterStore,
+    WotrGandalfTheWhite,
+    WotrAragornChoice,
+    WotrSarumanChoice,
+    WotrWitchKingChoice,
+    WotrMouthOfSauronChoice,
     WotrCombatCardsService,
     WotrEventService,
     WotrFellowshipService,

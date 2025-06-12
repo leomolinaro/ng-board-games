@@ -9,7 +9,12 @@ import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrEliteUnitElimination, WotrRegularUnitElimination, WotrUnitAction } from "./wotr-unit-actions";
+import {
+  WotrEliteUnitElimination,
+  WotrRegularUnitElimination,
+  WotrUnitAction
+} from "./wotr-unit-actions";
+import { WotrArmy } from "./wotr-unit.models";
 
 @Injectable()
 export class WotrUnitService {
@@ -207,10 +212,26 @@ export class WotrUnitService {
         " recruits elite units in ",
         f.region(action.region)
       ],
-      "leader-elimination": (action, front, f) => [f.player(front), " removes leaders from ", f.region(action.region)],
-      "leader-recruitment": (action, front, f) => [f.player(front), " recruits leaders in ", f.region(action.region)],
-      "nazgul-elimination": (action, front, f) => [f.player(front), " removes nazgul from ", f.region(action.region)],
-      "nazgul-recruitment": (action, front, f) => [f.player(front), " recruits nazgul in ", f.region(action.region)],
+      "leader-elimination": (action, front, f) => [
+        f.player(front),
+        " removes leaders from ",
+        f.region(action.region)
+      ],
+      "leader-recruitment": (action, front, f) => [
+        f.player(front),
+        " recruits leaders in ",
+        f.region(action.region)
+      ],
+      "nazgul-elimination": (action, front, f) => [
+        f.player(front),
+        " removes nazgul from ",
+        f.region(action.region)
+      ],
+      "nazgul-recruitment": (action, front, f) => [
+        f.player(front),
+        " recruits nazgul in ",
+        f.region(action.region)
+      ],
       "nazgul-movement": (action, front, f) => [
         f.player(front),
         ` moves ${action.nNazgul} Nazgul from `,
@@ -233,7 +254,9 @@ export class WotrUnitService {
 
   canFrontRecruitReinforcements(frontId: WotrFrontId): boolean {
     if (frontId === "free-peoples") {
-      return this.nationStore.freePeoplesNations().some(nation => this.canRecruitReinforcements(nation));
+      return this.nationStore
+        .freePeoplesNations()
+        .some(nation => this.canRecruitReinforcements(nation));
     } else {
       return this.nationStore.shadowNations().some(nation => this.canRecruitReinforcements(nation));
     }
@@ -247,6 +270,54 @@ export class WotrUnitService {
     }
     return this.regionStore
       .regions()
-      .some(region => region.nationId === nation.id && region.controlledBy === nation.front && region.settlement);
+      .some(
+        region =>
+          region.nationId === nation.id && region.controlledBy === nation.front && region.settlement
+      );
+  }
+  canFrontMoveArmies(frontId: WotrFrontId): boolean {
+    return this.regionStore.regions().some(region => {
+      if (!region.army) return false;
+      if (region.army.front !== frontId) return false;
+      const armyAtWar = this.isArmyAtWar(region.army);
+      const armyUnitNations = this.armyUnitNations(region.army);
+      return region.neighbors.some(neighbor => {
+        if (neighbor.impassable) return false;
+        if (!this.regionStore.isFreeForArmyMovement(neighbor.id, frontId)) return false;
+        const neighborRegion = this.regionStore.region(neighbor.id);
+        if (armyAtWar) return true;
+        return armyUnitNations.some(nation => nation === neighborRegion.nationId);
+      });
+    });
+  }
+  private armyUnitNations(army: WotrArmy): WotrNationId[] {
+    const nations = new Set<WotrNationId>();
+    army.regulars?.forEach(nation => nations.add(nation.nation));
+    army.elites?.forEach(nation => nations.add(nation.nation));
+    return Array.from(nations);
+  }
+  private isArmyAtWar(army: WotrArmy): boolean {
+    const nations = this.armyUnitNations(army);
+    return nations.some(nation => this.nationStore.isAtWar(nation));
+  }
+
+  canFrontAttackArmies(frontId: WotrFrontId): boolean {
+    return this.regionStore.regions().some(region => {
+      if (!region.army) return false;
+      if (region.army.front !== frontId) return false;
+      return this.canArmyAttackArmies(region.army, region);
+    });
+  }
+
+  canArmyAttackArmies(army: WotrArmy, region: WotrRegion): boolean {
+    if (!this.isArmyAtWar(army)) return false;
+    if (region.underSiegeArmy) return true;
+    return region.neighbors.some(neighbor => {
+      if (neighbor.impassable) return false;
+      const neighborRegion = this.regionStore.region(neighbor.id);
+      if (!neighborRegion.army) return false;
+      if (neighborRegion.army.front !== army.front) return false;
+      return true;
+    });
   }
 }

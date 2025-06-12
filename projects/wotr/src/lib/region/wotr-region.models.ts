@@ -117,7 +117,7 @@ export interface WotrRegion {
   id: WotrRegionId;
   name: string;
   nationId?: WotrNationId;
-  originalFrontId?: WotrFrontId; // original controller, only if settlement
+  frontId?: WotrFrontId; // original controller, only if settlement
   seaside: boolean;
   neighbors: WotrNeighbor[];
   fortification?: true;

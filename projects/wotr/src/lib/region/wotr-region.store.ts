@@ -15,1073 +15,447 @@ export interface WotrRegionState {
 
 export function initialeState(): WotrRegionState {
   return {
+    // prettier-ignore
     ids: [
-      "forlindon",
-      "north-ered-luin",
-      "ered-luin",
-      "grey-havens",
-      "harlindon",
-      "tower-hills",
-      "evendim",
-      "arnor",
-      "north-downs",
-      "bree",
-      "buckland",
-      "the-shire",
-      "south-ered-luin",
-      "minhiriath",
-      "cardolan",
-      "old-forest",
-      "south-downs",
-      "weather-hills",
-      "ettenmoors",
-      "angmar",
-      "mount-gram",
-      "mount-gundabad",
-      "troll-shaws",
-      "rivendell",
-      "fords-of-bruinen",
-      "hollin",
-      "moria",
-      "north-dunland",
-      "tharbad",
-      "south-dunland",
-      "enedwaith",
-      "gap-of-rohan",
-      "orthanc",
-      "druwaith-iaur",
-      "andrast",
-      "high-pass",
-      "goblins-gate",
-      "eagles-eyre",
-      "old-ford",
-      "gladden-fields",
-      "dimrill-dale",
-      "lorien",
-      "parth-celebrant",
-      "fangorn",
-      "fords-of-isen",
-      "helms-deep",
-      "westemnet",
-      "edoras",
-      "folde",
-      "eastemnet",
-      "anfalas",
-      "erech",
-      "dol-amroth",
-      "lamedon",
-      "pelargir",
-      "lossarnach",
-      "minas-tirith",
-      "druadan-forest",
-      "carrock",
-      "rhosgobel",
-      "north-anduin-vale",
-      "south-anduin-vale",
-      "western-brown-lands",
-      "western-emyn-muil",
-      "dead-marshes",
-      "osgiliath",
-      "south-ithilien",
-      "north-ithilien",
-      "eastern-emyn-muil",
-      "eastern-brown-lands",
-      "dagorlad",
-      "ash-mountains",
-      "noman-lands",
-      "southern-dorwinion",
-      "northern-dorwinion",
-      "southern-rhovanion",
-      "northern-rhovanion",
-      "vale-of-the-celduin",
-      "vale-of-the-carnen",
-      "eastern-mirkwood",
-      "narrows-of-the-forest",
-      "dol-guldur",
-      "southern-mirkwood",
-      "old-forest-road",
-      "western-mirkwood",
-      "northern-mirkwood",
-      "withered-heath",
-      "woodland-realm",
-      "dale",
-      "erebor",
-      "iron-hills",
-      "north-rhun",
-      "east-rhun",
-      "south-rhun",
-      "morannon",
-      "minas-morgul",
-      "gorgoroth",
-      "nurn",
-      "barad-dur",
-      "west-harondor",
-      "east-harondor",
-      "umbar",
-      "near-harad",
-      "far-harad",
-      "khand"
+      "forlindon", "north-ered-luin", "ered-luin", "grey-havens", "harlindon", "tower-hills",
+      "evendim", "arnor", "north-downs", "bree", "buckland", "the-shire", "south-ered-luin",
+      "minhiriath", "cardolan", "old-forest", "south-downs", "weather-hills", "ettenmoors",
+      "angmar", "mount-gram", "mount-gundabad", "troll-shaws", "rivendell", "fords-of-bruinen",
+      "hollin", "moria", "north-dunland", "tharbad", "south-dunland", "enedwaith", "gap-of-rohan",
+      "orthanc", "druwaith-iaur", "andrast", "high-pass", "goblins-gate", "eagles-eyre",
+      "old-ford", "gladden-fields", "dimrill-dale", "lorien", "parth-celebrant", "fangorn",
+      "fords-of-isen", "helms-deep", "westemnet", "edoras", "folde", "eastemnet", "anfalas",
+      "erech", "dol-amroth", "lamedon", "pelargir", "lossarnach", "minas-tirith", "druadan-forest",
+      "carrock", "rhosgobel", "north-anduin-vale", "south-anduin-vale", "western-brown-lands",
+      "western-emyn-muil", "dead-marshes", "osgiliath", "south-ithilien", "north-ithilien",
+      "eastern-emyn-muil", "eastern-brown-lands", "dagorlad", "ash-mountains", "noman-lands",
+      "southern-dorwinion", "northern-dorwinion", "southern-rhovanion", "northern-rhovanion",
+      "vale-of-the-celduin", "vale-of-the-carnen", "eastern-mirkwood", "narrows-of-the-forest",
+      "dol-guldur", "southern-mirkwood", "old-forest-road", "western-mirkwood", "northern-mirkwood",
+      "withered-heath", "woodland-realm", "dale", "erebor", "iron-hills", "north-rhun", "east-rhun",
+      "south-rhun", "morannon", "minas-morgul", "gorgoroth", "nurn", "barad-dur", "west-harondor",
+      "east-harondor", "umbar", "near-harad", "far-harad", "khand"
     ],
     map: {
-      "forlindon": initialRegion(
-        "forlindon",
-        "Forlindon",
-        null,
-        false,
-        null,
+      // prettier-ignore
+      "forlindon": initialRegion("forlindon", "Forlindon", null, false, null,
         ["grey-havens"],
-        ["north-ered-luin", "ered-luin"],
-        true
-      ),
-      "north-ered-luin": initialRegion(
-        "north-ered-luin",
-        "North Ered Luin",
-        "dwarves",
-        false,
-        null,
+        ["north-ered-luin", "ered-luin"], true),
+      // prettier-ignore
+      "north-ered-luin": initialRegion("north-ered-luin", "North Ered Luin", "dwarves", false, null,
         ["ered-luin", "evendim"],
-        ["forlindon"],
-        true
-      ),
-      "ered-luin": initialRegion(
-        "ered-luin",
-        "Ered Luin",
-        "dwarves",
-        false,
-        "town",
+        ["forlindon"], true),
+      // prettier-ignore
+      "ered-luin": initialRegion("ered-luin", "Ered Luin", "dwarves", false, "town",
         ["north-ered-luin", "evendim", "tower-hills", "grey-havens"],
-        ["forlindon"],
-        false
-      ),
-      "grey-havens": initialRegion(
-        "grey-havens",
-        "Grey Havens",
-        "elves",
-        false,
-        "stronghold",
+        ["forlindon"], false),
+      // prettier-ignore
+      "grey-havens": initialRegion("grey-havens", "Grey Havens", "elves", false, "stronghold",
         ["forlindon", "ered-luin", "tower-hills", "harlindon"],
-        [],
-        true
-      ),
-      "harlindon": initialRegion(
-        "harlindon",
-        "Harlindon",
-        null,
-        false,
-        null,
+        [], true),
+      // prettier-ignore
+      "harlindon": initialRegion("harlindon", "Harlindon", null, false, null,
         ["grey-havens", "south-ered-luin"],
-        ["tower-hills"],
-        true
-      ),
-      "tower-hills": initialRegion(
-        "tower-hills",
-        "Tower Hills",
-        null,
-        false,
-        null,
+        ["tower-hills"], true),
+      // prettier-ignore
+      "tower-hills": initialRegion("tower-hills", "Tower Hills", null, false, null,
         ["grey-havens", "ered-luin", "evendim", "the-shire", "south-ered-luin"],
-        ["harlindon"],
-        false
-      ),
-      "evendim": initialRegion(
-        "evendim",
-        "Evendim",
-        null,
-        false,
-        null,
+        ["harlindon"], false),
+      // prettier-ignore
+      "evendim": initialRegion("evendim", "Evendim", null, false, null,
         ["arnor", "north-downs", "buckland", "the-shire", "tower-hills", "ered-luin", "north-ered-luin"],
-        [],
-        true
-      ),
-      "arnor": initialRegion(
-        "arnor",
-        "Arnor",
-        null,
-        false,
-        null,
+        [], true),
+      // prettier-ignore
+      "arnor": initialRegion("arnor", "Arnor", null, false, null,
         ["angmar", "ettenmoors", "north-downs", "evendim"],
-        [],
-        false
-      ),
-      "north-downs": initialRegion(
-        "north-downs",
-        "North Downs",
-        "north",
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "north-downs": initialRegion("north-downs", "North Downs", "north", false, null,
         ["arnor", "ettenmoors", "weather-hills", "bree", "buckland", "evendim"],
-        [],
-        false
-      ),
-      "bree": initialRegion(
-        "bree",
-        "Bree",
-        "north",
-        false,
-        "town",
+        [], false),
+      // prettier-ignore
+      "bree": initialRegion("bree", "Bree", "north", false, "town",
         ["north-downs", "weather-hills", "south-downs", "buckland"],
-        [],
-        false
-      ),
-      "buckland": initialRegion(
-        "buckland",
-        "Buckland",
-        "north",
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "buckland": initialRegion("buckland", "Buckland", "north", false, null,
         ["north-downs", "bree", "south-downs", "cardolan", "old-forest", "the-shire", "evendim"],
-        [],
-        false
-      ),
-      "the-shire": initialRegion(
-        "the-shire",
-        "The Shire",
-        "north",
-        false,
-        "city",
+        [], false),
+      // prettier-ignore
+      "the-shire": initialRegion("the-shire", "The Shire", "north", false, "city",
         ["evendim", "buckland", "old-forest", "south-ered-luin", "tower-hills"],
-        [],
-        false
-      ),
-      "south-ered-luin": initialRegion(
-        "south-ered-luin",
-        "South Ered Luin",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "south-ered-luin": initialRegion("south-ered-luin", "South Ered Luin", null, false, null,
         ["the-shire", "old-forest", "cardolan", "minhiriath", "harlindon", "tower-hills"],
-        [],
-        true
-      ),
-      "minhiriath": initialRegion(
-        "minhiriath",
-        "Minhiriath",
-        null,
-        false,
-        null,
+        [], true),
+      // prettier-ignore
+      "minhiriath": initialRegion("minhiriath", "Minhiriath", null, false, null,
         ["south-ered-luin", "cardolan", "tharbad", "enedwaith"],
-        [],
-        true
-      ),
-      "cardolan": initialRegion(
-        "cardolan",
-        "Cardolan",
-        null,
-        false,
-        null,
+        [], true),
+      // prettier-ignore
+      "cardolan": initialRegion("cardolan", "Cardolan", null, false, null,
         ["old-forest", "buckland", "south-downs", "north-dunland", "tharbad", "minhiriath", "south-ered-luin"],
-        [],
-        false
-      ),
-      "old-forest": initialRegion(
-        "old-forest",
-        "Old Forest",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "old-forest": initialRegion("old-forest", "Old Forest", null, false, null,
         ["buckland", "cardolan", "south-ered-luin", "the-shire"],
-        [],
-        false
-      ),
-      "south-downs": initialRegion(
-        "south-downs",
-        "South Downs",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "south-downs": initialRegion("south-downs", "South Downs", null, false, null,
         ["bree", "weather-hills", "troll-shaws", "hollin", "north-dunland", "cardolan", "buckland"],
-        [],
-        false
-      ),
-      "weather-hills": initialRegion(
-        "weather-hills",
-        "Weather Hills",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "weather-hills": initialRegion("weather-hills", "Weather Hills", null, false, null,
         ["ettenmoors", "troll-shaws", "south-downs", "bree", "north-downs"],
-        [],
-        false
-      ),
-      "ettenmoors": initialRegion(
-        "ettenmoors",
-        "Ettenmoors",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "ettenmoors": initialRegion("ettenmoors", "Ettenmoors", null, false, null,
         ["angmar", "mount-gram", "troll-shaws", "weather-hills", "north-downs", "arnor"],
-        ["mount-gundabad"],
-        false
-      ),
-      "angmar": initialRegion(
-        "angmar",
-        "Angmar",
-        "sauron",
-        false,
-        "city",
+        ["mount-gundabad"], false),
+      // prettier-ignore
+      "angmar": initialRegion("angmar", "Angmar", "sauron", false, "city",
         ["mount-gram", "ettenmoors", "arnor"],
-        [],
-        false
-      ),
-      "mount-gram": initialRegion(
-        "mount-gram",
-        "Mount Gram",
-        "sauron",
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "mount-gram": initialRegion("mount-gram", "Mount Gram", "sauron", false, null,
         ["angmar", "mount-gundabad", "ettenmoors"],
-        [],
-        false
-      ),
-      "mount-gundabad": initialRegion(
-        "mount-gundabad",
-        "Mount Gundabad",
-        "sauron",
-        false,
-        "stronghold",
+        [], false),
+      // prettier-ignore
+      "mount-gundabad": initialRegion("mount-gundabad", "Mount Gundabad", "sauron", false, "stronghold",
         ["mount-gram", "eagles-eyre"],
-        ["ettenmoors", "troll-shaws", "rivendell", "carrock"],
-        false
-      ),
-      "troll-shaws": initialRegion(
-        "troll-shaws",
-        "Troll Shaws",
-        null,
-        false,
-        null,
+        ["ettenmoors", "troll-shaws", "rivendell", "carrock"], false),
+      // prettier-ignore
+      "troll-shaws": initialRegion("troll-shaws", "Troll Shaws", null, false, null,
         ["rivendell", "fords-of-bruinen", "hollin", "south-downs", "weather-hills", "ettenmoors"],
-        ["mount-gundabad"],
-        false
-      ),
-      "rivendell": initialRegion(
-        "rivendell",
-        "Rivendell",
-        "elves",
-        false,
-        "stronghold",
+        ["mount-gundabad"], false),
+      // prettier-ignore
+      "rivendell": initialRegion("rivendell", "Rivendell", "elves", false, "stronghold",
         ["fords-of-bruinen", "troll-shaws"],
-        ["mount-gundabad", "eagles-eyre", "old-ford", "goblins-gate", "high-pass"],
-        false
-      ),
-      "fords-of-bruinen": initialRegion(
-        "fords-of-bruinen",
-        "Fords of Bruinen",
-        null,
-        false,
-        null,
+        ["mount-gundabad", "eagles-eyre", "old-ford", "goblins-gate", "high-pass"], false),
+      // prettier-ignore
+      "fords-of-bruinen": initialRegion("fords-of-bruinen", "Fords of Bruinen", null, false, null,
         ["rivendell", "high-pass", "hollin", "troll-shaws"],
-        ["moria"],
-        false
-      ),
-      "hollin": initialRegion(
-        "hollin",
-        "Hollin",
-        null,
-        false,
-        null,
+        ["moria"], false),
+      // prettier-ignore
+      "hollin": initialRegion("hollin", "Hollin", null, false, null,
         ["fords-of-bruinen", "moria", "north-dunland", "south-downs", "troll-shaws"],
-        [],
-        false
-      ),
-      "moria": initialRegion(
-        "moria",
-        "Moria",
-        "sauron",
-        false,
-        "stronghold",
+        [], false),
+      // prettier-ignore
+      "moria": initialRegion("moria", "Moria", "sauron", false, "stronghold",
         ["hollin", "dimrill-dale", "north-dunland"],
-        ["fords-of-bruinen", "high-pass", "goblins-gate", "old-ford", "gladden-fields"],
-        false
-      ),
-      "north-dunland": initialRegion(
-        "north-dunland",
-        "North Dunland",
-        null,
-        false,
-        "town",
+        ["fords-of-bruinen", "high-pass", "goblins-gate", "old-ford", "gladden-fields"], false),
+      // prettier-ignore
+      "north-dunland": initialRegion("north-dunland", "North Dunland", null, false, "town",
         ["hollin", "moria", "south-dunland", "tharbad", "cardolan", "south-downs"],
-        ["lorien", "parth-celebrant", "fangorn"],
-        false
-      ),
-      "tharbad": initialRegion(
-        "tharbad",
-        "Tharbad",
-        null,
-        false,
-        null,
+        ["lorien", "parth-celebrant", "fangorn"], false),
+      // prettier-ignore
+      "tharbad": initialRegion("tharbad", "Tharbad", null, false, null,
         ["cardolan", "north-dunland", "south-dunland", "enedwaith", "minhiriath"],
-        [],
-        false
-      ),
-      "south-dunland": initialRegion(
-        "south-dunland",
-        "South Dunland",
-        null,
-        false,
-        "town",
+        [], false),
+      // prettier-ignore
+      "south-dunland": initialRegion("south-dunland", "South Dunland", null, false, "town",
         ["north-dunland", "gap-of-rohan", "enedwaith", "tharbad"],
-        ["fangorn", "orthanc"],
-        false
-      ),
-      "enedwaith": initialRegion(
-        "enedwaith",
-        "Enedwaith",
-        null,
-        false,
-        null,
+        ["fangorn", "orthanc"], false),
+      // prettier-ignore
+      "enedwaith": initialRegion("enedwaith", "Enedwaith", null, false, null,
         ["tharbad", "south-dunland", "gap-of-rohan", "druwaith-iaur", "minhiriath"],
-        [],
-        true
-      ),
-      "gap-of-rohan": initialRegion(
-        "gap-of-rohan",
-        "Gap of Rohan",
-        null,
-        false,
-        null,
+        [], true),
+      // prettier-ignore
+      "gap-of-rohan": initialRegion("gap-of-rohan", "Gap of Rohan", null, false, null,
         ["south-dunland", "orthanc", "fords-of-isen", "druwaith-iaur", "enedwaith"],
-        [],
-        false
-      ),
-      "orthanc": initialRegion(
-        "orthanc",
-        "Orthanc",
-        null,
-        false,
-        "stronghold",
+        [], false),
+      // prettier-ignore
+      "orthanc": initialRegion("orthanc", "Orthanc", null, false, "stronghold",
         ["fords-of-isen", "gap-of-rohan"],
-        ["south-dunland", "fangorn"],
-        false
-      ),
-      "druwaith-iaur": initialRegion(
-        "druwaith-iaur",
-        "Druwaith Iaur",
-        null,
-        false,
-        null,
+        ["south-dunland", "fangorn"], false),
+      // prettier-ignore
+      "druwaith-iaur": initialRegion("druwaith-iaur", "Druwaith Iaur", null, false, null,
         ["enedwaith", "gap-of-rohan", "fords-of-isen", "andrast"],
-        ["anfalas"],
-        true
-      ),
-      "andrast": initialRegion("andrast", "Andrast", null, false, null, ["druwaith-iaur", "anfalas"], [], true),
-      "high-pass": initialRegion(
-        "high-pass",
-        "High-pass",
-        null,
-        false,
-        null,
+        ["anfalas"], true),
+      // prettier-ignore
+      "andrast": initialRegion("andrast", "Andrast", null, false, null,
+        ["druwaith-iaur", "anfalas"],
+        [], true),
+      // prettier-ignore
+      "high-pass": initialRegion("high-pass", "High-pass", null, false, null,
         ["goblins-gate", "fords-of-bruinen"],
-        ["rivendell", "moria"],
-        false
-      ),
-      "goblins-gate": initialRegion(
-        "goblins-gate",
-        "Goblins Gate",
-        null,
-        false,
-        null,
+        ["rivendell", "moria"], false),
+      // prettier-ignore
+      "goblins-gate": initialRegion("goblins-gate", "Goblins Gate", null, false, null,
         ["high-pass", "old-ford"],
-        ["rivendell", "moria"],
-        false
-      ),
-      "eagles-eyre": initialRegion(
-        "eagles-eyre",
-        "Eagle's Eyre",
-        null,
-        false,
-        null,
+        ["rivendell", "moria"], false),
+      // prettier-ignore
+      "eagles-eyre": initialRegion("eagles-eyre", "Eagle's Eyre", null, false, null,
         ["mount-gundabad", "carrock", "old-ford"],
-        ["rivendell"],
-        false
-      ),
-      "old-ford": initialRegion(
-        "old-ford",
-        "Old Ford",
-        null,
-        false,
-        null,
+        ["rivendell"], false),
+      // prettier-ignore
+      "old-ford": initialRegion("old-ford", "Old Ford", null, false, null,
         ["eagles-eyre", "carrock", "rhosgobel", "gladden-fields", "goblins-gate"],
-        ["moria", "rivendell"],
-        false
-      ),
-      "gladden-fields": initialRegion(
-        "gladden-fields",
-        "Gladden Fields",
-        null,
-        false,
-        null,
+        ["moria", "rivendell"], false),
+      // prettier-ignore
+      "gladden-fields": initialRegion("gladden-fields", "Gladden Fields", null, false, null,
         ["old-ford", "rhosgobel", "north-anduin-vale", "dimrill-dale"],
-        ["moria"],
-        false
-      ),
-      "dimrill-dale": initialRegion(
-        "dimrill-dale",
-        "Dimrill Dale",
-        null,
-        false,
-        null,
+        ["moria"], false),
+      // prettier-ignore
+      "dimrill-dale": initialRegion("dimrill-dale", "Dimrill Dale", null, false, null,
         ["gladden-fields", "north-anduin-vale", "south-anduin-vale", "parth-celebrant", "lorien"],
-        [],
-        false
-      ),
-      "lorien": initialRegion(
-        "lorien",
-        "Lorien",
-        "elves",
-        false,
-        "stronghold",
+        [], false),
+      // prettier-ignore
+      "lorien": initialRegion("lorien", "Lorien", "elves", false, "stronghold",
         ["dimrill-dale", "parth-celebrant"],
-        ["moria", "north-dunland"],
-        false
-      ),
-      "parth-celebrant": initialRegion(
-        "parth-celebrant",
-        "Parth Celebrant",
-        null,
-        false,
-        null,
+        ["moria", "north-dunland"], false),
+      // prettier-ignore
+      "parth-celebrant": initialRegion("parth-celebrant", "Parth Celebrant", null, false, null,
         ["lorien", "south-anduin-vale", "western-brown-lands", "eastemnet", "fangorn"],
-        ["north-dunland"],
-        false
-      ),
-      "fangorn": initialRegion(
-        "fangorn",
-        "Fangorn",
-        null,
-        false,
-        null,
+        ["north-dunland"], false),
+      // prettier-ignore
+      "fangorn": initialRegion("fangorn", "Fangorn", null, false, null,
         ["parth-celebrant", "eastemnet", "westemnet", "fords-of-isen"],
-        ["north-dunland", "south-dunland", "orthanc"],
-        false
-      ),
-      "fords-of-isen": initialRegion(
-        "fords-of-isen",
-        "Fords of Isen",
-        "rohan",
-        true,
-        null,
+        ["north-dunland", "south-dunland", "orthanc"], false),
+      // prettier-ignore
+      "fords-of-isen": initialRegion("fords-of-isen", "Fords of Isen", "rohan", true, null,
         ["gap-of-rohan", "orthanc", "fangorn", "westemnet", "helms-deep", "druwaith-iaur"],
-        ["anfalas"],
-        false
-      ),
-      "helms-deep": initialRegion(
-        "helms-deep",
-        "Helms Deep",
-        "rohan",
-        false,
-        "stronghold",
+        ["anfalas"], false),
+      // prettier-ignore
+      "helms-deep": initialRegion("helms-deep", "Helms Deep", "rohan", false, "stronghold",
         ["fords-of-isen", "westemnet"],
-        ["anfalas", "erech"],
-        false
-      ),
-      "westemnet": initialRegion(
-        "westemnet",
-        "Westemnet",
-        "rohan",
-        false,
-        "town",
+        ["anfalas", "erech"], false),
+      // prettier-ignore
+      "westemnet": initialRegion("westemnet", "Westemnet", "rohan", false, "town",
         ["fangorn", "eastemnet", "folde", "edoras", "helms-deep", "fords-of-isen"],
-        ["erech"],
-        false
-      ),
-      "edoras": initialRegion(
-        "edoras",
-        "Edoras",
-        "rohan",
-        false,
-        "city",
+        ["erech"], false),
+      // prettier-ignore
+      "edoras": initialRegion("edoras", "Edoras", "rohan", false, "city",
         ["westemnet", "folde"],
-        ["erech", "lamedon"],
-        false
-      ),
-      "folde": initialRegion(
-        "folde",
-        "Folde",
-        "rohan",
-        false,
-        "town",
+        ["erech", "lamedon"], false),
+      // prettier-ignore
+      "folde": initialRegion("folde", "Folde", "rohan", false, "town",
         ["edoras", "westemnet", "eastemnet", "druadan-forest"],
-        ["lamedon"],
-        false
-      ),
-      "eastemnet": initialRegion(
-        "eastemnet",
-        "Eastemnet",
-        "rohan",
-        false,
-        null,
-        [
-          "fangorn",
-          "parth-celebrant",
-          "western-brown-lands",
-          "western-emyn-muil",
-          "druadan-forest",
-          "folde",
-          "westemnet"
-        ],
-        [],
-        false
-      ),
-      "anfalas": initialRegion(
-        "anfalas",
-        "Anfalas",
-        "gondor",
-        false,
-        null,
+        ["lamedon"], false),
+      // prettier-ignore
+      "eastemnet": initialRegion("eastemnet", "Eastemnet", "rohan", false, null,
+        ["fangorn", "parth-celebrant", "western-brown-lands", "western-emyn-muil", "druadan-forest", "folde", "westemnet"],
+        [], false),
+      // prettier-ignore
+      "anfalas": initialRegion("anfalas", "Anfalas", "gondor", false, null,
         ["andrast", "erech", "dol-amroth"],
-        ["fords-of-isen", "helms-deep"],
-        true
-      ),
-      "erech": initialRegion(
-        "erech",
-        "Erech",
-        "gondor",
-        false,
-        null,
+        ["fords-of-isen", "helms-deep"], true),
+      // prettier-ignore
+      "erech": initialRegion("erech", "Erech", "gondor", false, null,
         ["anfalas", "dol-amroth", "lamedon"],
-        ["helms-deep", "westemnet", "edoras"],
-        false
-      ),
-      "dol-amroth": initialRegion(
-        "dol-amroth",
-        "Dol Amroth",
-        "gondor",
-        false,
-        "stronghold",
+        ["helms-deep", "westemnet", "edoras"], false),
+      // prettier-ignore
+      "dol-amroth": initialRegion("dol-amroth", "Dol Amroth", "gondor", false, "stronghold",
         ["anfalas", "erech", "lamedon"],
-        [],
-        true
-      ),
-      "lamedon": initialRegion(
-        "lamedon",
-        "Lamedon",
-        "gondor",
-        false,
-        "town",
+        [], true),
+      // prettier-ignore
+      "lamedon": initialRegion("lamedon", "Lamedon", "gondor", false, "town",
         ["erech", "dol-amroth", "pelargir"],
-        ["edoras", "folde", "lossarnach", "minas-tirith", "druadan-forest"],
-        false
-      ),
-      "pelargir": initialRegion(
-        "pelargir",
-        "Pelargir",
-        "gondor",
-        false,
-        "city",
+        ["edoras", "folde", "lossarnach", "minas-tirith", "druadan-forest"], false),
+      // prettier-ignore
+      "pelargir": initialRegion("pelargir", "Pelargir", "gondor", false, "city",
         ["lamedon", "lossarnach", "osgiliath", "west-harondor"],
-        [],
-        true
-      ),
-      "lossarnach": initialRegion(
-        "lossarnach",
-        "Lossarnach",
-        "gondor",
-        false,
-        "town",
+        [], true),
+      // prettier-ignore
+      "lossarnach": initialRegion("lossarnach", "Lossarnach", "gondor", false, "town",
         ["minas-tirith", "osgiliath", "pelargir"],
-        ["lamedon"],
-        false
-      ),
-      "minas-tirith": initialRegion(
-        "minas-tirith",
-        "Minas Tirith",
-        "gondor",
-        false,
-        "stronghold",
+        ["lamedon"], false),
+      // prettier-ignore
+      "minas-tirith": initialRegion("minas-tirith", "Minas Tirith", "gondor", false, "stronghold",
         ["druadan-forest", "osgiliath", "lossarnach"],
-        ["lamedon"],
-        false
-      ),
-      "druadan-forest": initialRegion(
-        "druadan-forest",
-        "Druadan Forest",
-        "gondor",
-        false,
-        null,
+        ["lamedon"], false),
+      // prettier-ignore
+      "druadan-forest": initialRegion("druadan-forest", "Druadan Forest", "gondor", false, null,
         ["folde", "eastemnet", "western-emyn-muil", "dead-marshes", "osgiliath", "minas-tirith"],
-        ["lamedon"],
-        false
-      ),
-      "carrock": initialRegion(
-        "carrock",
-        "Carrock",
-        "north",
-        false,
-        "town",
+        ["lamedon"], false),
+      // prettier-ignore
+      "carrock": initialRegion("carrock", "Carrock", "north", false, "town",
         ["eagles-eyre", "old-ford", "rhosgobel", "old-forest-road", "western-mirkwood", "northern-mirkwood"],
-        ["mount-gundabad"],
-        false
-      ),
-      "rhosgobel": initialRegion(
-        "rhosgobel",
-        "Rhosgobel",
-        "north",
-        false,
-        null,
+        ["mount-gundabad"], false),
+      // prettier-ignore
+      "rhosgobel": initialRegion("rhosgobel", "Rhosgobel", "north", false, null,
         ["carrock", "old-forest-road", "narrows-of-the-forest", "north-anduin-vale", "gladden-fields", "old-ford"],
-        [],
-        false
-      ),
-      "north-anduin-vale": initialRegion(
-        "north-anduin-vale",
-        "North Anduin Vale",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "north-anduin-vale": initialRegion("north-anduin-vale", "North Anduin Vale", null, false, null,
         ["rhosgobel", "narrows-of-the-forest", "dol-guldur", "south-anduin-vale", "dimrill-dale", "gladden-fields"],
-        [],
-        false
-      ),
-      "south-anduin-vale": initialRegion(
-        "south-anduin-vale",
-        "South Anduin Vale",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "south-anduin-vale": initialRegion("south-anduin-vale", "South Anduin Vale", null, false, null,
         ["north-anduin-vale", "dol-guldur", "western-brown-lands", "parth-celebrant", "dimrill-dale"],
-        [],
-        false
-      ),
-      "western-brown-lands": initialRegion(
-        "western-brown-lands",
-        "Western Brown Lands",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "western-brown-lands": initialRegion("western-brown-lands", "Western Brown Lands", null, false, null,
         ["south-anduin-vale", "dol-guldur", "eastern-brown-lands", "western-emyn-muil", "eastemnet", "parth-celebrant"],
-        [],
-        false
-      ),
-      "western-emyn-muil": initialRegion(
-        "western-emyn-muil",
-        "Western Emyn Muil",
-        null,
-        false,
-        null,
-        [
-          "western-brown-lands",
-          "eastern-brown-lands",
-          "eastern-emyn-muil",
-          "dead-marshes",
-          "druadan-forest",
-          "eastemnet"
-        ],
-        [],
-        false
-      ),
-      "dead-marshes": initialRegion(
-        "dead-marshes",
-        "Dead Marshes",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "western-emyn-muil": initialRegion("western-emyn-muil", "Western Emyn Muil", null, false, null,
+        ["western-brown-lands", "eastern-brown-lands", "eastern-emyn-muil", "dead-marshes", "druadan-forest", "eastemnet"],
+        [], false),
+      // prettier-ignore
+      "dead-marshes": initialRegion("dead-marshes", "Dead Marshes", null, false, null,
         ["western-emyn-muil", "eastern-emyn-muil", "north-ithilien", "osgiliath", "druadan-forest"],
-        [],
-        false
-      ),
-      "osgiliath": initialRegion(
-        "osgiliath",
-        "Osgiliath",
-        null,
-        true,
-        null,
-        [
-          "dead-marshes",
-          "north-ithilien",
-          "south-ithilien",
-          "west-harondor",
-          "pelargir",
-          "lossarnach",
-          "minas-tirith",
-          "druadan-forest"
-        ],
-        [],
-        false
-      ),
-      "south-ithilien": initialRegion(
-        "south-ithilien",
-        "South Ithilien",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "osgiliath": initialRegion("osgiliath", "Osgiliath", null, true, null,
+        ["dead-marshes", "north-ithilien", "south-ithilien", "west-harondor", "pelargir", "lossarnach", "minas-tirith", "druadan-forest"],
+        [], false),
+      // prettier-ignore
+      "south-ithilien": initialRegion("south-ithilien", "South Ithilien", null, false, null,
         ["north-ithilien", "minas-morgul", "east-harondor", "west-harondor", "osgiliath"],
-        ["gorgoroth", "nurn"],
-        false
-      ),
-      "north-ithilien": initialRegion(
-        "north-ithilien",
-        "North Ithilien",
-        null,
-        false,
-        null,
+        ["gorgoroth", "nurn"], false),
+      // prettier-ignore
+      "north-ithilien": initialRegion("north-ithilien", "North Ithilien", null, false, null,
         ["eastern-emyn-muil", "dagorlad", "minas-morgul", "south-ithilien", "osgiliath", "dead-marshes"],
-        ["morannon"],
-        false
-      ),
-      "eastern-emyn-muil": initialRegion(
-        "eastern-emyn-muil",
-        "Eastern Emyn Muil",
-        null,
-        false,
-        null,
+        ["morannon"], false),
+      // prettier-ignore
+      "eastern-emyn-muil": initialRegion("eastern-emyn-muil", "Eastern Emyn Muil", null, false, null,
         ["eastern-brown-lands", "noman-lands", "dagorlad", "north-ithilien", "dead-marshes", "western-emyn-muil"],
-        [],
-        false
-      ),
-      "eastern-brown-lands": initialRegion(
-        "eastern-brown-lands",
-        "Eastern Brown Lands",
-        null,
-        false,
-        null,
-        [
-          "southern-mirkwood",
-          "southern-rhovanion",
-          "noman-lands",
-          "eastern-emyn-muil",
-          "western-emyn-muil",
-          "western-brown-lands",
-          "dol-guldur"
-        ],
-        [],
-        false
-      ),
-      "dagorlad": initialRegion(
-        "dagorlad",
-        "Dagorlad",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "eastern-brown-lands": initialRegion("eastern-brown-lands", "Eastern Brown Lands", null, false, null,
+        ["southern-mirkwood", "southern-rhovanion", "noman-lands", "eastern-emyn-muil", "western-emyn-muil", "western-brown-lands", "dol-guldur"],
+        [], false),
+      // prettier-ignore
+      "dagorlad": initialRegion("dagorlad", "Dagorlad", null, false, null,
         ["noman-lands", "ash-mountains", "morannon", "north-ithilien", "eastern-emyn-muil"],
-        [],
-        false
-      ),
-      "ash-mountains": initialRegion(
-        "ash-mountains",
-        "Ash Mountains",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "ash-mountains": initialRegion("ash-mountains", "Ash Mountains", null, false, null,
         ["dagorlad", "noman-lands", "southern-dorwinion", "south-rhun"],
-        ["morannon", "barad-dur"],
-        false
-      ),
-      "noman-lands": initialRegion(
-        "noman-lands",
-        "Noman-Lands",
-        null,
-        false,
-        null,
-        [
-          "southern-rhovanion",
-          "southern-dorwinion",
-          "ash-mountains",
-          "dagorlad",
-          "eastern-emyn-muil",
-          "eastern-brown-lands"
-        ],
-        [],
-        false
-      ),
-      "southern-dorwinion": initialRegion(
-        "southern-dorwinion",
-        "Southern Dorwinion",
-        null,
-        false,
-        null,
+        ["morannon", "barad-dur"], false),
+      // prettier-ignore
+      "noman-lands": initialRegion("noman-lands", "Noman-Lands", null, false, null,
+        ["southern-rhovanion", "southern-dorwinion", "ash-mountains", "dagorlad", "eastern-emyn-muil", "eastern-brown-lands"],
+        [], false),
+      // prettier-ignore
+      "southern-dorwinion": initialRegion("southern-dorwinion", "Southern Dorwinion", null, false, null,
         ["northern-dorwinion", "south-rhun", "ash-mountains", "noman-lands", "southern-rhovanion"],
-        [],
-        false
-      ),
-      "northern-dorwinion": initialRegion(
-        "northern-dorwinion",
-        "Northern Dorwinion",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "northern-dorwinion": initialRegion("northern-dorwinion", "Northern Dorwinion", null, false, null,
         ["vale-of-the-celduin", "north-rhun", "southern-dorwinion", "southern-rhovanion"],
-        [],
-        false
-      ),
-      "southern-rhovanion": initialRegion(
-        "southern-rhovanion",
-        "Southern Rhovanion",
-        null,
-        false,
-        null,
-        [
-          "northern-rhovanion",
-          "vale-of-the-celduin",
-          "northern-dorwinion",
-          "southern-dorwinion",
-          "noman-lands",
-          "eastern-brown-lands",
-          "southern-mirkwood"
-        ],
-        [],
-        false
-      ),
-      "northern-rhovanion": initialRegion(
-        "northern-rhovanion",
-        "Northern Rhovanion",
-        null,
-        false,
-        null,
-        [
-          "dale",
-          "vale-of-the-carnen",
-          "vale-of-the-celduin",
-          "southern-rhovanion",
-          "southern-mirkwood",
-          "eastern-mirkwood"
-        ],
-        [],
-        false
-      ),
-      "vale-of-the-celduin": initialRegion(
-        "vale-of-the-celduin",
-        "Vale of the Celduin",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "southern-rhovanion": initialRegion("southern-rhovanion", "Southern Rhovanion", null, false, null,
+        ["northern-rhovanion", "vale-of-the-celduin", "northern-dorwinion", "southern-dorwinion", "noman-lands", "eastern-brown-lands", "southern-mirkwood"],
+        [], false),
+      // prettier-ignore
+      "northern-rhovanion": initialRegion("northern-rhovanion", "Northern Rhovanion", null, false, null,
+        ["dale", "vale-of-the-carnen", "vale-of-the-celduin", "southern-rhovanion", "southern-mirkwood", "eastern-mirkwood"],
+        [], false),
+      // prettier-ignore
+      "vale-of-the-celduin": initialRegion("vale-of-the-celduin", "Vale of the Celduin", null, false, null,
         ["vale-of-the-carnen", "north-rhun", "northern-dorwinion", "southern-rhovanion", "northern-rhovanion"],
-        [],
-        false
-      ),
-      "vale-of-the-carnen": initialRegion(
-        "vale-of-the-carnen",
-        "Vale of the Carnen",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "vale-of-the-carnen": initialRegion("vale-of-the-carnen", "Vale of the Carnen", null, false, null,
         ["iron-hills", "east-rhun", "north-rhun", "vale-of-the-celduin", "northern-rhovanion", "dale"],
-        [],
-        false
-      ),
-      "eastern-mirkwood": initialRegion(
-        "eastern-mirkwood",
-        "Eastern Mirkwood",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "eastern-mirkwood": initialRegion("eastern-mirkwood", "Eastern Mirkwood", null, false, null,
         ["old-forest-road", "northern-rhovanion", "southern-mirkwood", "dol-guldur", "narrows-of-the-forest"],
-        [],
-        false
-      ),
-      "narrows-of-the-forest": initialRegion(
-        "narrows-of-the-forest",
-        "Narrows of the Forest",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "narrows-of-the-forest": initialRegion("narrows-of-the-forest", "Narrows of the Forest", null, false, null,
         ["old-forest-road", "eastern-mirkwood", "dol-guldur", "north-anduin-vale", "rhosgobel"],
-        [],
-        false
-      ),
-      "dol-guldur": initialRegion(
-        "dol-guldur",
-        "Dol Guldur",
-        "sauron",
-        false,
-        "stronghold",
-        [
-          "north-anduin-vale",
-          "narrows-of-the-forest",
-          "eastern-mirkwood",
-          "southern-mirkwood",
-          "eastern-brown-lands",
-          "western-brown-lands",
-          "south-anduin-vale"
-        ],
-        [],
-        false
-      ),
-      "southern-mirkwood": initialRegion(
-        "southern-mirkwood",
-        "Southern Mirkwood",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "dol-guldur": initialRegion("dol-guldur", "Dol Guldur", "sauron", false, "stronghold",
+        ["north-anduin-vale", "narrows-of-the-forest", "eastern-mirkwood", "southern-mirkwood", "eastern-brown-lands", "western-brown-lands", "south-anduin-vale"],
+        [], false),
+      // prettier-ignore
+      "southern-mirkwood": initialRegion("southern-mirkwood", "Southern Mirkwood", null, false, null,
         ["eastern-mirkwood", "northern-rhovanion", "southern-rhovanion", "eastern-brown-lands", "dol-guldur"],
-        [],
-        false
-      ),
-      "old-forest-road": initialRegion(
-        "old-forest-road",
-        "Old Forest Road",
-        "north",
-        false,
-        null,
-        [
-          "woodland-realm",
-          "dale",
-          "northern-rhovanion",
-          "eastern-mirkwood",
-          "narrows-of-the-forest",
-          "rhosgobel",
-          "carrock",
-          "western-mirkwood"
-        ],
-        [],
-        false
-      ),
-      "western-mirkwood": initialRegion(
-        "western-mirkwood",
-        "Western Mirkwood",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "old-forest-road": initialRegion("old-forest-road", "Old Forest Road", "north", false, null,
+        ["woodland-realm", "dale", "northern-rhovanion", "eastern-mirkwood", "narrows-of-the-forest", "rhosgobel", "carrock", "western-mirkwood"],
+        [], false),
+      // prettier-ignore
+      "western-mirkwood": initialRegion("western-mirkwood", "Western Mirkwood", null, false, null,
         ["northern-mirkwood", "woodland-realm", "old-forest-road", "carrock"],
-        [],
-        false
-      ),
-      "northern-mirkwood": initialRegion(
-        "northern-mirkwood",
-        "Northern Mirkwood",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "northern-mirkwood": initialRegion("northern-mirkwood", "Northern Mirkwood", null, false, null,
         ["carrock", "western-mirkwood", "woodland-realm", "withered-heath"],
-        [],
-        false
-      ),
-      "withered-heath": initialRegion(
-        "withered-heath",
-        "Withered Heath",
-        null,
-        false,
-        null,
+        [], false),
+      // prettier-ignore
+      "withered-heath": initialRegion("withered-heath", "Withered Heath", null, false, null,
         ["northern-mirkwood", "woodland-realm", "dale", "erebor"],
-        [],
-        false
-      ),
-      "woodland-realm": initialRegion(
-        "woodland-realm",
-        "Woodland Realm",
-        "elves",
-        false,
-        "stronghold",
+        [], false),
+      // prettier-ignore
+      "woodland-realm": initialRegion("woodland-realm", "Woodland Realm", "elves", false, "stronghold",
         ["northern-mirkwood", "withered-heath", "dale", "old-forest-road", "western-mirkwood"],
+        [], false),
+      // prettier-ignore
+      "dale": initialRegion("dale", "Dale", "north", false, "city",
         [],
-        false
-      ),
-      "dale": initialRegion("dale", "Dale", "north", false, "city", [], [], false),
-      "erebor": initialRegion("erebor", "Erebor", "dwarves", false, "stronghold", [], [], false),
-      "iron-hills": initialRegion("iron-hills", "Iron Hills", "dwarves", false, "town", [], [], false),
-      "north-rhun": initialRegion("north-rhun", "North Rhun", "southrons", false, "town", [], [], false),
-      "east-rhun": initialRegion("east-rhun", "East Rhun", "southrons", false, null, [], [], false),
-      "south-rhun": initialRegion("south-rhun", "South Rhun", "southrons", false, "town", [], [], false),
-      "morannon": initialRegion("morannon", "Morannon", "sauron", false, "stronghold", [], [], false),
-      "minas-morgul": initialRegion("minas-morgul", "Minas Morgul", "sauron", false, "stronghold", [], [], false),
-      "gorgoroth": initialRegion("gorgoroth", "Gorgoroth", "sauron", false, null, [], [], false),
-      "nurn": initialRegion("nurn", "Nurn", "sauron", false, "town", [], [], false),
-      "barad-dur": initialRegion("barad-dur", "Barad-dur", "sauron", false, "stronghold", [], [], false),
-      "west-harondor": initialRegion("west-harondor", "West Harondor", null, false, null, [], [], true),
-      "east-harondor": initialRegion("east-harondor", "East Harondor", null, false, null, [], [], false),
-      "umbar": initialRegion("umbar", "Umbar", "southrons", false, "stronghold", [], [], true),
-      "near-harad": initialRegion("near-harad", "Near Harad", "southrons", false, "town", [], [], false),
-      "far-harad": initialRegion("far-harad", "Far Harad", "southrons", false, "city", [], [], false),
-      "khand": initialRegion("khand", "Khand", "southrons", false, null, [], [], false)
+        [], false),
+      // prettier-ignore
+      "erebor": initialRegion("erebor", "Erebor", "dwarves", false, "stronghold",
+        [],
+        [], false),
+      // prettier-ignore
+      "iron-hills": initialRegion("iron-hills", "Iron Hills", "dwarves", false, "town",
+        [],
+        [], false),
+      // prettier-ignore
+      "north-rhun": initialRegion("north-rhun", "North Rhun", "southrons", false, "town",
+        [],
+        [], false),
+      // prettier-ignore
+      "east-rhun": initialRegion("east-rhun", "East Rhun", "southrons", false, null,
+        [],
+        [], false),
+      // prettier-ignore
+      "south-rhun": initialRegion("south-rhun", "South Rhun", "southrons", false, "town",
+        [],
+        [], false),
+      // prettier-ignore
+      "morannon": initialRegion("morannon", "Morannon", "sauron", false, "stronghold", [],
+        [], false),
+      // prettier-ignore
+      "minas-morgul": initialRegion("minas-morgul", "Minas Morgul", "sauron", false, "stronghold",
+        [],
+        [], false),
+      // prettier-ignore
+      "gorgoroth": initialRegion("gorgoroth", "Gorgoroth", "sauron", false, null,
+        [],
+        [], false),
+      // prettier-ignore
+      "nurn": initialRegion("nurn", "Nurn", "sauron", false, "town",
+        [],
+        [], false),
+      // prettier-ignore
+      "barad-dur": initialRegion("barad-dur", "Barad-dur", "sauron", false, "stronghold",
+        [],
+        [], false),
+      // prettier-ignore
+      "west-harondor": initialRegion("west-harondor", "West Harondor", null, false, null,
+        [],
+        [], true),
+      // prettier-ignore
+      "east-harondor": initialRegion("east-harondor", "East Harondor", null, false, null,
+        [],
+        [], false),
+      // prettier-ignore
+      "umbar": initialRegion("umbar", "Umbar", "southrons", false, "stronghold",
+        [],
+        [], true),
+      // prettier-ignore
+      "near-harad": initialRegion("near-harad", "Near Harad", "southrons", false, "town",
+        [],
+        [], false),
+      // prettier-ignore
+      "far-harad": initialRegion("far-harad", "Far Harad", "southrons", false, "city",
+        [],
+        [], false),
+      // prettier-ignore
+      "khand": initialRegion("khand", "Khand", "southrons", false, null,
+        [],
+        [], false)
     }
   };
 }
@@ -1102,7 +476,7 @@ function initialRegion(
   const region: WotrRegion = {
     id: id,
     name: name,
-    ...(nationId ? { nationId } : {}),
+    ...(nationId ? { nationId, frontId: frontOfNation(nationId) } : {}),
     ...(fortification ? { fortification } : {}),
     ...(settlement ? { settlement } : {}),
     neighbors: neighbors,
@@ -1132,12 +506,17 @@ export class WotrRegionStore {
   }
   isCharacterInRegion(character: WotrCharacterId, regionId: WotrRegionId) {
     const region = this.region(regionId);
-    return region.army?.characters?.includes(character) || region.freeUnits?.characters?.includes(character);
+    return (
+      region.army?.characters?.includes(character) ||
+      region.freeUnits?.characters?.includes(character)
+    );
   }
   isNazgulInRegion(regionId: WotrRegionId) {
     const region = this.region(regionId);
     return (
-      !!region.army?.nNazgul || !!region.freeUnits?.nNazgul || this.isCharacterInRegion("the-witch-king", regionId)
+      !!region.army?.nNazgul ||
+      !!region.freeUnits?.nNazgul ||
+      this.isCharacterInRegion("the-witch-king", regionId)
     );
   }
   isArmyInRegion(frontId: WotrFrontId, regionId: WotrRegionId) {
@@ -1149,11 +528,23 @@ export class WotrRegionStore {
   }
   isUnconquered(regionId: WotrRegionId) {
     const region = this.region(regionId);
-    return region.originalFrontId === region.controlledBy;
+    return region.frontId === region.controlledBy;
+  }
+  isFreeForArmyMovement(id: WotrRegionId, frontId: WotrFrontId): boolean {
+    const region = this.region(id);
+    if (!region.army) return true;
+    return region.army.front === frontId;
   }
 
-  private updateRegion(actionName: string, regionId: WotrRegionId, updater: (a: WotrRegion) => WotrRegion) {
-    this.update(actionName, s => ({ ...s, map: { ...s.map, [regionId]: updater(s.map[regionId]) } }));
+  private updateRegion(
+    actionName: string,
+    regionId: WotrRegionId,
+    updater: (a: WotrRegion) => WotrRegion
+  ) {
+    this.update(actionName, s => ({
+      ...s,
+      map: { ...s.map, [regionId]: updater(s.map[regionId]) }
+    }));
   }
 
   private updateArmy(
@@ -1225,28 +616,42 @@ export class WotrRegionStore {
     });
   }
   addRegularsToArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("addRegularsToArmy", regionId, army => this.armyUtil.addRegulars(quantity, nation, army));
+    this.updateArmy("addRegularsToArmy", regionId, army =>
+      this.armyUtil.addRegulars(quantity, nation, army)
+    );
   }
   removeRegularsFromArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("removeRegularsFromArmy", regionId, army => this.armyUtil.removeRegulars(quantity, nation, army));
+    this.updateArmy("removeRegularsFromArmy", regionId, army =>
+      this.armyUtil.removeRegulars(quantity, nation, army)
+    );
   }
   addElitesToArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("addElitesToArmy", regionId, army => this.armyUtil.addElites(quantity, nation, army));
+    this.updateArmy("addElitesToArmy", regionId, army =>
+      this.armyUtil.addElites(quantity, nation, army)
+    );
   }
   removeElitesFromArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("removeElitesFromArmy", regionId, army => this.armyUtil.removeElites(quantity, nation, army));
+    this.updateArmy("removeElitesFromArmy", regionId, army =>
+      this.armyUtil.removeElites(quantity, nation, army)
+    );
   }
   addLeadersToArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("addLeadersToArmy", regionId, army => this.armyUtil.addLeaders(quantity, nation, army));
+    this.updateArmy("addLeadersToArmy", regionId, army =>
+      this.armyUtil.addLeaders(quantity, nation, army)
+    );
   }
   removeLeadersFromArmy(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
-    this.updateArmy("removeLeadersFromArmy", regionId, army => this.armyUtil.removeLeaders(quantity, nation, army));
+    this.updateArmy("removeLeadersFromArmy", regionId, army =>
+      this.armyUtil.removeLeaders(quantity, nation, army)
+    );
   }
   addNazgulToArmy(quantity: number, regionId: WotrRegionId) {
     this.updateArmy("addNazgulToArmy", regionId, army => this.armyUtil.addNazgul(quantity, army));
   }
   removeNazgulFromArmy(quantity: number, regionId: WotrRegionId) {
-    this.updateArmy("removeNazgulFromArmy", regionId, army => this.armyUtil.removeNazgul(quantity, army));
+    this.updateArmy("removeNazgulFromArmy", regionId, army =>
+      this.armyUtil.removeNazgul(quantity, army)
+    );
   }
 
   addRegularsToArmyUnderSiege(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
@@ -1280,7 +685,9 @@ export class WotrRegionStore {
     );
   }
   addNazgulToArmyUnderSiege(quantity: number, regionId: WotrRegionId) {
-    this.updateArmyUnderSiege("addNazgulToArmyUnderSiege", regionId, army => this.armyUtil.addNazgul(quantity, army));
+    this.updateArmyUnderSiege("addNazgulToArmyUnderSiege", regionId, army =>
+      this.armyUtil.addNazgul(quantity, army)
+    );
   }
   removeNazgulFromArmyUnderSiege(quantity: number, regionId: WotrRegionId) {
     this.updateArmyUnderSiege("removeNazgulFromArmyUnderSiege", regionId, army =>
@@ -1307,11 +714,15 @@ export class WotrRegionStore {
   }
 
   addCharacterToArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
-    this.updateArmy("addCharacterToArmy", regionId, army => this.armyUtil.addCharacter(characterId, army));
+    this.updateArmy("addCharacterToArmy", regionId, army =>
+      this.armyUtil.addCharacter(characterId, army)
+    );
   }
 
   removeCharacterFromArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
-    this.updateArmy("removeCharacterFromArmy", regionId, army => this.armyUtil.removeCharacter(characterId, army));
+    this.updateArmy("removeCharacterFromArmy", regionId, army =>
+      this.armyUtil.removeCharacter(characterId, army)
+    );
   }
 
   moveArmy(fromRegionId: WotrRegionId, toRegionId: WotrRegionId, leftUnits?: WotrUnits) {
@@ -1357,7 +768,10 @@ export class WotrRegionStore {
       if (!freeunits) {
         freeunits = {};
       }
-      return { ...freeunits, characters: immutableUtil.listPush([characterId], freeunits.characters || []) };
+      return {
+        ...freeunits,
+        characters: immutableUtil.listPush([characterId], freeunits.characters || [])
+      };
     });
   }
 
@@ -1368,7 +782,10 @@ export class WotrRegionStore {
       }
       return {
         ...freeunits,
-        characters: immutableUtil.listRemoveFirst(c => c === characterId, freeunits.characters || [])
+        characters: immutableUtil.listRemoveFirst(
+          c => c === characterId,
+          freeunits.characters || []
+        )
       };
     });
   }

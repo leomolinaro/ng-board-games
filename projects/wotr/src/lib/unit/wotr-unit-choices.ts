@@ -5,14 +5,17 @@ import { WotrUnitPlayerService } from "./wotr-unit-player.service";
 import { WotrUnitService } from "./wotr-unit.service";
 
 export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
-  constructor(private frontId: WotrFrontId) {}
+  constructor(
+    private frontId: WotrFrontId,
+    private unitService: WotrUnitService
+  ) {}
 
   label(): string {
     return "Attack";
   }
 
   isAvailable(): boolean {
-    throw new Error("Method not implemented.");
+    return this.unitService.canFrontAttackArmies(this.frontId);
   }
 
   async resolve(): Promise<WotrAction[]> {
@@ -21,14 +24,17 @@ export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
 }
 
 export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
-  constructor(private frontId: WotrFrontId) {}
+  constructor(
+    private frontId: WotrFrontId,
+    private unitService: WotrUnitService
+  ) {}
 
   label(): string {
     return "Move armies";
   }
 
   isAvailable(): boolean {
-    throw new Error("Method not implemented.");
+    return this.unitService.canFrontMoveArmies(this.frontId);
   }
 
   async resolve(): Promise<WotrAction[]> {

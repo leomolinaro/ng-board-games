@@ -1,54 +1,116 @@
+import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrCharacterService } from "./wotr-character.service";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrRegionId } from "../region/wotr-region.models";
+import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrCharacterStore } from "./wotr-character.store";
 
-interface WotrCharacterChoice {
+interface WotrCharacterCard {
   canBeBroughtIntoPlay(die: WotrActionDie): boolean;
 }
 
-export class WotrGandalfTheWhiteChoice implements WotrCharacterChoice {
-  constructor() {}
+@Injectable()
+export class WotrGandalfTheWhite implements WotrCharacterCard {
+  private characterStore = inject(WotrCharacterStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    throw new Error("Method not implemented.");
+    if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
+    if (die !== "will-of-the-west") return false;
+    const gandalf = this.characterStore.character("gandalf-the-grey");
+    if (gandalf.status !== "inPlay" && gandalf.status !== "eliminated") return false;
+    if (
+      this.characterStore.minions().every(c => {
+        return c.status !== "inPlay" && c.status !== "eliminated";
+      })
+    ) {
+      return false;
+    }
+    return true;
   }
 }
 
-export class WotrAragornChoice implements WotrCharacterChoice {
-  constructor() {}
+@Injectable()
+export class WotrAragornChoice implements WotrCharacterCard {
+  private regionStore = inject(WotrRegionStore);
+  private characterStore = inject(WotrCharacterStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    throw new Error("Method not implemented.");
+    if (!this.characterStore.isAvailable("aragorn")) return false;
+    if (die !== "will-of-the-west") return false;
+    if (this.striderInRegion("minas-tirith")) return true;
+    if (this.striderInRegion("dol-amroth")) return true;
+    if (this.striderInRegion("pelargir")) return true;
+    return false;
+  }
+  private striderInRegion(regionId: WotrRegionId): boolean {
+    const region = this.regionStore.region(regionId);
+    if (region.army?.front === "free-peoples") {
+      return !!region.army.characters?.some(c => c === "strider");
+    } else {
+      return !!region.freeUnits?.characters?.some(c => c === "strider");
+    }
   }
 }
-export class WotrSarumanChoice implements WotrCharacterChoice {
-  constructor(private characterService: WotrCharacterService) {}
+
+@Injectable()
+export class WotrSarumanChoice implements WotrCharacterCard {
+  private characterStore = inject(WotrCharacterStore);
+  private nationStore = inject(WotrNationStore);
+  private regionStore = inject(WotrRegionStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterService.isAvailable("saruman") &&
-      this.characterService.isAtWar("isengard") &&
-      this.characterService.isUnconquered("orthanc")
+      this.characterStore.isAvailable("saruman") &&
+      this.nationStore.isAtWar("isengard") &&
+      this.regionStore.isUnconquered("orthanc")
     );
   }
 }
-export class WotrWitchKingChoice implements WotrCharacterChoice {
-  constructor(private characterService: WotrCharacterService) {}
+
+@Injectable()
+export class WotrWitchKingChoice implements WotrCharacterCard {
+  private characterStore = inject(WotrCharacterStore);
+  private nationStore = inject(WotrNationStore);
+  private regionStore = inject(WotrRegionStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterService.isAvailable("the-witch-king") &&
-      this.characterService.isAtWar("sauron") &&
-      this.characterService.someFreePeoplesNationIsAtWar() &&
-      this.characterService.someRegionWithShadowArmyAndSauronUnit()
+      this.characterStore.isAvailable("the-witch-king") &&
+      this.nationStore.isAtWar("sauron") &&
+      this.nationStore.freePeoplesNations().some(n => this.nationStore.isAtWar(n.id)) &&
+      this.regionStore.regions().some(r => {
+        if (!r.army) return false;
+        if (r.army.front !== "shadow") return false;
+        return (
+          r.army.regulars?.some(u => u.nation === "sauron") ||
+          r.army.elites?.some(c => c.nation === "sauron")
+        );
+      })
     );
   }
 }
-export class WotrMouthOfSauronChoice implements WotrCharacterChoice {
-  constructor(private characterService: WotrCharacterService) {}
+
+@Injectable()
+export class WotrMouthOfSauronChoice implements WotrCharacterCard {
+  private frontStore = inject(WotrFrontStore);
+  private characterStore = inject(WotrCharacterStore);
+  private fellowshipStore = inject(WotrFellowshipStore);
+  private regionStore = inject(WotrRegionStore);
+
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterService.isAvailable("the-mouth-of-sauron") &&
-      (this.characterService.isFellowshipOnMordorTrack() || this.characterService.victoryPoints("free-peoples") > 0) &&
-      this.characterService.someRegionWithUnconqueredSauronStronghold()
+      this.characterStore.isAvailable("the-mouth-of-sauron") &&
+      (this.fellowshipStore.isOnMordorTrack() ||
+        this.frontStore.front("free-peoples").victoryPoints > 0) &&
+      this.regionStore
+        .regions()
+        .some(
+          r =>
+            r.nationId === "sauron" &&
+            this.regionStore.isUnconquered(r.id) &&
+            r.settlement === "stronghold"
+        )
     );
   }
 }

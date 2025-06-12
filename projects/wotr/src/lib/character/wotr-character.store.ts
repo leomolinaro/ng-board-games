@@ -49,14 +49,26 @@ function initialCompanion(
   leadership: number,
   activationNation: WotrNationId | "all" | null
 ): WotrCharacter {
-  const character: WotrCharacter = { id, name, level, leadership, status: "available", front: "free-peoples" };
+  const character: WotrCharacter = {
+    id,
+    name,
+    level,
+    leadership,
+    status: "available",
+    front: "free-peoples"
+  };
   if (activationNation) {
     character.activationNation = activationNation;
   }
   return character;
 }
 
-function initialMinion(id: WotrCharacterId, name: string, level: number, leadership: number): WotrCharacter {
+function initialMinion(
+  id: WotrCharacterId,
+  name: string,
+  level: number,
+  leadership: number
+): WotrCharacter {
   return { id, name, level, leadership, status: "available", front: "shadow" };
 }
 
@@ -69,6 +81,9 @@ export class WotrCharacterStore {
   characters = computed(() => {
     const s = this.state();
     return s.ids.map(id => s.map[id]);
+  });
+  minions = computed(() => {
+    return this.characters().filter(c => c.front === "shadow");
   });
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];
@@ -85,7 +100,10 @@ export class WotrCharacterStore {
     characterId: WotrCharacterId,
     updater: (a: WotrCharacter) => WotrCharacter
   ) {
-    this.update(actionName, s => ({ ...s, map: { ...s.map, [characterId]: updater(s.map[characterId]) } }));
+    this.update(actionName, s => ({
+      ...s,
+      map: { ...s.map, [characterId]: updater(s.map[characterId]) }
+    }));
   }
 
   setEliminated(characterId: WotrCharacterId) {
