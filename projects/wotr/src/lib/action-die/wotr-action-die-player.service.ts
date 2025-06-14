@@ -2,7 +2,6 @@ import { inject, Injectable } from "@angular/core";
 import { WotrDrawEventCardChoice } from "../card/wotr-card-action-choices";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
-import { WotrCardService } from "../card/wotr-card.service";
 import {
   WotrBringCharacterIntoPlayChoice,
   WotrMoveCompanionsChoice,
@@ -21,7 +20,6 @@ import { WotrGameStory } from "../game/wotr-story.models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrDiplomaticActionChoice } from "../nation/wotr-nation-choices";
 import { WotrNationPlayerService } from "../nation/wotr-nation-player.service";
-import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrPlayer } from "../player/wotr-player";
 import {
   WotrAttackArmyChoice,
@@ -31,7 +29,6 @@ import {
   WotrRecruitReinforcementsChoice
 } from "../unit/wotr-unit-choices";
 import { WotrUnitPlayerService } from "../unit/wotr-unit-player.service";
-import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   WotrActionPlayerChoice,
   WotrChangeArmyDieChoice,
@@ -49,14 +46,22 @@ import { WotrActionDieService } from "./wotr-action-die.service";
 export class WotrActionPlayerService {
   private actionDieService = inject(WotrActionDieService);
   private cardPlayer = inject(WotrCardPlayerService);
-  private cardService = inject(WotrCardService);
   private charactersService = inject(WotrCharactersService);
   private nationPlayer = inject(WotrNationPlayerService);
-  private nationService = inject(WotrNationService);
   private ui = inject(WotrGameUiStore);
   private unitPlayer = inject(WotrUnitPlayerService);
-  private unitService = inject(WotrUnitService);
   private recruitReinforcementsChoice = inject(WotrRecruitReinforcementsChoice);
+  private attackArmyChoice = inject(WotrAttackArmyChoice);
+  private moveArmiesChoice = inject(WotrMoveArmiesChoice);
+  private leaderArmyAttackChoice = inject(WotrLeaderArmyAttackChoice);
+  private leaderArmyMoveChoice = inject(WotrLeaderArmyMoveChoice);
+  private fellowshipProgressChoice = inject(WotrFellowshipProgressChoice);
+  private hideFellowshiptChoice = inject(WotrHideFellowshipChoice);
+  private separateCompanionsChoice = inject(WotrSeparateCompanionsChoice);
+  private moveCompanionsChoice = inject(WotrMoveCompanionsChoice);
+  private moveMinionsChoice = inject(WotrMoveMinionsChoice);
+  private diplomaticActionChoice = inject(WotrDiplomaticActionChoice);
+  private drawEventCardChoice = inject(WotrDrawEventCardChoice);
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
     const canPass = this.actionDieService.canPassAction(player.frontId);
@@ -110,8 +115,8 @@ export class WotrActionPlayerService {
     const choice = await this.askActionChoice(
       "Choose an action for the army die",
       [
-        new WotrMoveArmiesChoice(frontId, this.unitService),
-        new WotrAttackArmyChoice(frontId, this.unitService),
+        this.moveArmiesChoice,
+        this.attackArmyChoice,
         // new WotrPlayEventCardChoice(["army"], frontId, this.frontStore, this.ui, this.cardPlayer),
         new WotrSkipDieChoice("event")
       ],
@@ -130,19 +135,19 @@ export class WotrActionPlayerService {
 
   async resolveCharacterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
     const choices: WotrActionPlayerChoice[] = [
-      new WotrLeaderArmyMoveChoice(),
-      new WotrLeaderArmyAttackChoice(frontId)
+      this.leaderArmyMoveChoice,
+      this.leaderArmyAttackChoice
       // new WotrPlayEventCardChoice(["character"], frontId, this.frontStore, this.ui, this.cardPlayer)
     ];
     if (frontId === "free-peoples") {
       choices.push(
-        new WotrFellowshipProgressChoice(),
-        new WotrHideFellowshipChoice(),
-        new WotrSeparateCompanionsChoice(),
-        new WotrMoveCompanionsChoice()
+        this.fellowshipProgressChoice,
+        this.hideFellowshiptChoice,
+        this.separateCompanionsChoice,
+        this.moveCompanionsChoice
       );
     } else {
-      choices.push(new WotrMoveMinionsChoice());
+      choices.push(this.moveMinionsChoice);
     }
     choices.push(new WotrSkipDieChoice("character"));
 
@@ -164,14 +169,14 @@ export class WotrActionPlayerService {
 
   async resolveMusterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
     const choices: WotrActionPlayerChoice[] = [
-      new WotrDiplomaticActionChoice(frontId, this.nationService, this.nationPlayer),
+      this.diplomaticActionChoice,
       // new WotrPlayEventCardChoice(["muster"], frontId, this.frontStore, this.ui, this.cardPlayer),
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice("muster", frontId, this.charactersService));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.charactersService));
     }
-    choices.push(new WotrSkipDieChoice("muster-army"));
+    choices.push(new WotrSkipDieChoice("muster"));
     const choice = await this.askActionChoice(
       "Choose an action for the muster die",
       choices,
@@ -182,14 +187,14 @@ export class WotrActionPlayerService {
 
   private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
     const choices: WotrActionPlayerChoice[] = [
-      new WotrDiplomaticActionChoice(frontId, this.nationService, this.nationPlayer),
-      new WotrMoveArmiesChoice(frontId, this.unitService),
-      new WotrAttackArmyChoice(frontId, this.unitService),
+      this.diplomaticActionChoice,
+      this.moveArmiesChoice,
+      this.attackArmyChoice,
       // new WotrPlayEventCardChoice(["muster", "army"], frontId, this.frontStore, this.ui, this.cardPlayer),
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice("muster", frontId, this.charactersService));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.charactersService));
     }
     choices.push(new WotrSkipDieChoice("muster-army"));
     const choice = await this.askActionChoice(
@@ -213,7 +218,7 @@ export class WotrActionPlayerService {
     ];
     if (frontId === "free-peoples") {
       choices.push(
-        new WotrBringCharacterIntoPlayChoice("will-of-the-west", frontId, this.charactersService)
+        new WotrBringCharacterIntoPlayChoice("will-of-the-west", this.charactersService)
       );
     }
     choices.push(new WotrSkipDieChoice("will-of-the-west"));
@@ -241,7 +246,7 @@ export class WotrActionPlayerService {
     const choice = await this.askActionChoice(
       "Choose an action for the event die",
       [
-        new WotrDrawEventCardChoice(frontId, this.cardService, this.cardPlayer),
+        this.drawEventCardChoice,
         // new WotrPlayEventCardChoice("any", frontId, this.frontStore, this.ui, this.cardPlayer),
         new WotrSkipDieChoice("event")
       ],

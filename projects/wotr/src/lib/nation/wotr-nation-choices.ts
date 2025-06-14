@@ -1,3 +1,4 @@
+import { inject, Injectable } from "@angular/core";
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -5,23 +6,21 @@ import { advanceNation } from "./wotr-nation-actions";
 import { WotrNationPlayerService } from "./wotr-nation-player.service";
 import { WotrNationService } from "./wotr-nation.service";
 
+@Injectable({ providedIn: "root" })
 export class WotrDiplomaticActionChoice implements WotrActionPlayerChoice {
-  constructor(
-    private frontId: WotrFrontId,
-    private nationService: WotrNationService,
-    private nationPlayer: WotrNationPlayerService
-  ) {}
+  private nationService = inject(WotrNationService);
+  private nationPlayer = inject(WotrNationPlayerService);
 
   label(): string {
     return "Diplomatic action";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.nationService.canFrontAdvancePoliticalTrack(this.frontId);
+    return this.nationService.canFrontAdvancePoliticalTrack(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const nation = await this.nationPlayer.politicalAdvance(this.frontId);
+    const nation = await this.nationPlayer.politicalAdvance(frontId);
     return [advanceNation(nation, 1)];
   }
 }

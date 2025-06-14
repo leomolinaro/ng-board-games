@@ -1,3 +1,4 @@
+import { Injectable } from "@angular/core";
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrAction } from "../commons/wotr-action.models";
@@ -7,7 +8,6 @@ import { WotrCharactersService } from "./wotr-characters.service";
 export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice {
   constructor(
     private die: WotrActionDie,
-    private frontId: WotrFrontId,
     private charactersService: WotrCharactersService
   ) {}
 
@@ -16,7 +16,7 @@ export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice 
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.charactersService.someCharacterCanBeBroughtIntoPlay(this.die, this.frontId);
+    return this.charactersService.someCharacterCanBeBroughtIntoPlay(this.die, frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -24,9 +24,8 @@ export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice 
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
-  constructor() {}
-
   label(): string {
     return "Separate companions";
   }
@@ -40,9 +39,8 @@ export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrMoveCompanionsChoice implements WotrActionPlayerChoice {
-  constructor() {}
-
   label(): string {
     return "Move companions";
   }
@@ -56,9 +54,8 @@ export class WotrMoveCompanionsChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrMoveMinionsChoice implements WotrActionPlayerChoice {
-  constructor() {}
-
   label(): string {
     return "Move minions";
   }

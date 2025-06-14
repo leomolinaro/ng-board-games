@@ -1,10 +1,10 @@
+import { Injectable } from "@angular/core";
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 
+@Injectable({ providedIn: "root" })
 export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
-  constructor() {}
-
   label(): string {
     return "Fellowship progress";
   }
@@ -18,9 +18,8 @@ export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrHideFellowshipChoice implements WotrActionPlayerChoice {
-  constructor() {}
-
   label(): string {
     return "Hide fellowship";
   }

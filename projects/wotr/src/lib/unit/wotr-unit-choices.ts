@@ -4,18 +4,16 @@ import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrUnitService } from "./wotr-unit.service";
 
+@Injectable({ providedIn: "root" })
 export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
-  constructor(
-    private frontId: WotrFrontId,
-    private unitService: WotrUnitService
-  ) {}
+  private unitService = inject(WotrUnitService);
 
   label(): string {
     return "Attack";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontAttackArmies(this.frontId);
+    return this.unitService.canFrontAttackArmies(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -23,18 +21,16 @@ export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
-  constructor(
-    private frontId: WotrFrontId,
-    private unitService: WotrUnitService
-  ) {}
+  private unitService = inject(WotrUnitService);
 
   label(): string {
     return "Move armies";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontMoveArmies(this.frontId);
+    return this.unitService.canFrontMoveArmies(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -59,6 +55,7 @@ export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrLeaderArmyMoveChoice implements WotrActionPlayerChoice {
   label(): string {
     return "Move army with leader";
@@ -73,9 +70,8 @@ export class WotrLeaderArmyMoveChoice implements WotrActionPlayerChoice {
   }
 }
 
+@Injectable({ providedIn: "root" })
 export class WotrLeaderArmyAttackChoice implements WotrActionPlayerChoice {
-  constructor(private frontId: WotrFrontId) {}
-
   label(): string {
     return "Attack with leader";
   }
