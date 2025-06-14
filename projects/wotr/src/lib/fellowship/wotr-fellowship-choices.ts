@@ -1,5 +1,6 @@
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
+import { WotrFrontId } from "../front/wotr-front.models";
 
 export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
   constructor() {}
@@ -8,11 +9,11 @@ export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
     return "Fellowship progress";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -24,11 +25,11 @@ export class WotrHideFellowshipChoice implements WotrActionPlayerChoice {
     return "Hide fellowship";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }

@@ -18,11 +18,11 @@ export class WotrDrawEventCardChoice implements WotrActionPlayerChoice {
     return "Draw a card";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.cardService.canDrawCard(this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     const cardId = await this.cardPlayer.drawCard(this.frontId);
     return [drawCardIds(cardId)];
   }
@@ -41,13 +41,17 @@ export class WotrPlayEventCardChoice implements WotrActionPlayerChoice {
     return "Play an event card";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.cardService.hasPlayableCards(this.cartTypes, this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     const playableCards = this.cardService.getPlayableCards(this.cartTypes, this.frontId);
-    const cardId = await this.ui.askCard("Select an event card to play", playableCards, this.frontId);
+    const cardId = await this.ui.askCard(
+      "Select an event card to play",
+      playableCards,
+      this.frontId
+    );
     return this.cardPlayer.playCard(cardId, this.frontId);
   }
 }

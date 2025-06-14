@@ -16,11 +16,11 @@ export class WotrDiplomaticActionChoice implements WotrActionPlayerChoice {
     return "Diplomatic action";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.nationService.canFrontAdvancePoliticalTrack(this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     const nation = await this.nationPlayer.politicalAdvance(this.frontId);
     return [advanceNation(nation, 1)];
   }

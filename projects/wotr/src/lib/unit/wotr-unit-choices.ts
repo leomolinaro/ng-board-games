@@ -1,7 +1,7 @@
+import { inject, Injectable } from "@angular/core";
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrUnitPlayerService } from "./wotr-unit-player.service";
 import { WotrUnitService } from "./wotr-unit.service";
 
 export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
@@ -14,11 +14,11 @@ export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
     return "Attack";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.unitService.canFrontAttackArmies(this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -33,47 +33,42 @@ export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
     return "Move armies";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.unitService.canFrontMoveArmies(this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
 
+Injectable();
 export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
-  constructor(
-    private frontId: WotrFrontId,
-    private unitService: WotrUnitService,
-    private unitPlayer: WotrUnitPlayerService
-  ) {}
+  private unitService = inject(WotrUnitService);
 
   label(): string {
     return "Recruit reinforcements";
   }
 
-  isAvailable(): boolean {
-    return this.unitService.canFrontRecruitReinforcements(this.frontId);
+  isAvailable(frontId: WotrFrontId): boolean {
+    return this.unitService.canFrontRecruitReinforcements(frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
 
 export class WotrLeaderArmyMoveChoice implements WotrActionPlayerChoice {
-  constructor(private frontId: WotrFrontId) {}
-
   label(): string {
     return "Move army with leader";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -85,11 +80,11 @@ export class WotrLeaderArmyAttackChoice implements WotrActionPlayerChoice {
     return "Attack with leader";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }

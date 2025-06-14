@@ -15,11 +15,11 @@ export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice 
     return "Bring character into play";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return this.charactersService.someCharacterCanBeBroughtIntoPlay(this.die, this.frontId);
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -31,11 +31,11 @@ export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
     return "Separate companions";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -47,11 +47,11 @@ export class WotrMoveCompanionsChoice implements WotrActionPlayerChoice {
     return "Move companions";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }
@@ -63,11 +63,11 @@ export class WotrMoveMinionsChoice implements WotrActionPlayerChoice {
     return "Move minions";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     throw new Error("Method not implemented.");
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
   }
 }

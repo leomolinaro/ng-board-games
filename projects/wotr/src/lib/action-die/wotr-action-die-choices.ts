@@ -6,8 +6,8 @@ import { WotrActionDie } from "./wotr-action-die.models";
 
 export interface WotrActionPlayerChoice {
   label(): string;
-  isAvailable(): boolean;
-  resolve(): Promise<WotrAction[]>;
+  isAvailable(frontId: WotrFrontId): boolean;
+  resolve(frontId: WotrFrontId): Promise<WotrAction[]>;
 }
 
 export class WotrChangeCharacterDieChoice implements WotrActionPlayerChoice {
@@ -20,11 +20,11 @@ export class WotrChangeCharacterDieChoice implements WotrActionPlayerChoice {
     return "Character result";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.actionPlayerService.resolveCharacterResult(this.frontId);
   }
 }
@@ -37,10 +37,10 @@ export class WotrChangeArmyDieChoice implements WotrActionPlayerChoice {
   label(): string {
     return "Army result";
   }
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.actionPlayerService.resolveArmyResult(this.frontId);
   }
 }
@@ -55,11 +55,11 @@ export class WotrChangeMusterDieChoice implements WotrActionPlayerChoice {
     return "Muster result";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.actionPlayerService.resolveMusterResult(this.frontId);
   }
 }
@@ -74,11 +74,11 @@ export class WotrChangeEventDieChoice implements WotrActionPlayerChoice {
     return "Event result";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.actionPlayerService.resolveEventResult(this.frontId);
   }
 }
@@ -90,11 +90,11 @@ export class WotrSkipDieChoice implements WotrActionPlayerChoice {
     return "Skip the action die";
   }
 
-  isAvailable(): boolean {
+  isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
 
-  async resolve(): Promise<WotrAction[]> {
+  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
     return [skipActionDie(this.die)];
   }
 }
