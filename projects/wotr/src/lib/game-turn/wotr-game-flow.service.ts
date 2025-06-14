@@ -25,7 +25,7 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrSetup, WotrSetupRulesService } from "../setup/wotr-setup-rules.service";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrGameTurnService {
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
@@ -160,7 +160,9 @@ export class WotrGameTurnService {
 
   async chooseAction(
     player: WotrPlayer
-  ): Promise<WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory> {
+  ): Promise<
+    WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory
+  > {
     const story = await player.actionResolution();
     switch (story.type) {
       case "die":
@@ -188,7 +190,8 @@ export class WotrGameTurnService {
   }
 
   private getNextResolutionFrontId(player: WotrPlayer, story: WotrGameStory): WotrPlayer | null {
-    const otherPlayer = oppositeFront(player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
+    const otherPlayer =
+      oppositeFront(player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
     if (this.frontStore.hasActionDice(otherPlayer.frontId)) {
       return otherPlayer;
     }

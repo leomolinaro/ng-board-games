@@ -12,7 +12,7 @@ export function initialeState(): WotrLogState {
   return [];
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrLogStore {
   update!: (actionName: string, updater: (a: WotrLogState) => WotrLogState) => void;
   state!: Signal<WotrLogState>;
@@ -47,7 +47,12 @@ export class WotrLogStore {
     this.addLog("logCombatCard", { type: "combat-card", card, front, during: "battle" });
   }
 
-  logAction(action: WotrAction, story: WotrGameStory, front: WotrFrontId, during?: "battle" | "hunt") {
+  logAction(
+    action: WotrAction,
+    story: WotrGameStory,
+    front: WotrFrontId,
+    during?: "battle" | "hunt"
+  ) {
     this.addLog(`logAction [${action.type}]`, { type: "action", action, story, front, during });
   }
   logEffect(effect: WotrAction, during?: "battle" | "hunt") {

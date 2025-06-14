@@ -26,7 +26,7 @@ export interface WotrCardParams {
   // isAttacker: boolean;
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCardEffectsService {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -80,7 +80,8 @@ export class WotrCardEffectsService {
   };
 
   registerCardEffects() {
-    const cardEffectsById: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>> = {};
+    const cardEffectsById: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>> =
+      {};
     objectUtil.forEachProp(this.cardEffects, (label, cardEffect) => {
       cardEffectsById[labelToCardId(label as WotrCardLabel)] = cardEffect;
     });

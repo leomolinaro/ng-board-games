@@ -11,7 +11,7 @@ interface WotrCharacterCard {
   canBeBroughtIntoPlay(die: WotrActionDie): boolean;
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrGandalfTheWhite implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
@@ -30,7 +30,7 @@ export class WotrGandalfTheWhite implements WotrCharacterCard {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrAragornChoice implements WotrCharacterCard {
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
@@ -52,7 +52,7 @@ export class WotrAragornChoice implements WotrCharacterCard {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrSarumanChoice implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
@@ -67,7 +67,7 @@ export class WotrSarumanChoice implements WotrCharacterCard {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrWitchKingChoice implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
@@ -90,7 +90,7 @@ export class WotrWitchKingChoice implements WotrCharacterCard {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrMouthOfSauronChoice implements WotrCharacterCard {
   private frontStore = inject(WotrFrontStore);
   private characterStore = inject(WotrCharacterStore);

@@ -1,5 +1,9 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+  WotrStoryApplier
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrHuntStory } from "../game/wotr-story.models";
@@ -8,7 +12,7 @@ import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrHuntService {
   private actionService = inject(WotrActionService);
   private huntStore = inject(WotrHuntStore);
@@ -54,15 +58,26 @@ export class WotrHuntService {
         playerLog(front),
         ` allocates ${this.nDice(action.quantity)} in the Hunt Box`
       ],
-      "hunt-re-roll": (action, front, f) => [playerLog(front), ` re-rolls ${this.dice(action.dice)} for the hunt`],
-      "hunt-roll": (action, front, f) => [playerLog(front), ` rolls ${this.dice(action.dice)} for the hunt`],
+      "hunt-re-roll": (action, front, f) => [
+        playerLog(front),
+        ` re-rolls ${this.dice(action.dice)} for the hunt`
+      ],
+      "hunt-roll": (action, front, f) => [
+        playerLog(front),
+        ` rolls ${this.dice(action.dice)} for the hunt`
+      ],
       "hunt-tile-add": (action, front, f) => [
         f.player(front),
         " adds ",
         f.huntTile(action.tile),
         " hunt tile to the Mordor Track"
       ],
-      "hunt-tile-draw": (action, front, f) => [f.player(front), " draws ", f.huntTile(action.tile), " hunt tile"]
+      "hunt-tile-draw": (action, front, f) => [
+        f.player(front),
+        " draws ",
+        f.huntTile(action.tile),
+        " hunt tile"
+      ]
     };
   }
 

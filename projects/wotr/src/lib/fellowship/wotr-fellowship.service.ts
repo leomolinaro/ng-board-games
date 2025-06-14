@@ -8,7 +8,7 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrFellowshipService {
   private actionService = inject(WotrActionService);
   private nationService = inject(WotrNationService);
@@ -75,7 +75,10 @@ export class WotrFellowshipService {
         " declares the fellowship in ",
         f.region(action.region)
       ],
-      "fellowship-declare-not": (action, front, f) => [f.player(front), " does not declare the fellowship"],
+      "fellowship-declare-not": (action, front, f) => [
+        f.player(front),
+        " does not declare the fellowship"
+      ],
       "fellowship-hide": (action, front, f) => [f.player(front), " hides the fellowship"],
       "fellowship-progress": (action, front, f) => [f.player(front), " moves the fellowhip"],
       "fellowship-reveal": (action, front, f) => [

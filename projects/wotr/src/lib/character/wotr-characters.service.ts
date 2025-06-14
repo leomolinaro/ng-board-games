@@ -9,7 +9,7 @@ import {
   WotrWitchKingChoice
 } from "./wotr-characters";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCharactersService {
   private gandalfTheWhite = inject(WotrGandalfTheWhite);
   private aragornChoice = inject(WotrAragornChoice);

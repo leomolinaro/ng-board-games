@@ -4,7 +4,7 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontStore } from "./wotr-front.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrFrontService {
   private frontStore = inject(WotrFrontStore);
   private regionStore = inject(WotrRegionStore);
@@ -17,7 +17,11 @@ export class WotrFrontService {
 
     for (const region of this.regionStore.regions()) {
       if (region.settlement === "stronghold" || region.settlement === "city") {
-        if (region.nationId && region.controlledBy && frontOfNation(region.nationId) !== region.controlledBy) {
+        if (
+          region.nationId &&
+          region.controlledBy &&
+          frontOfNation(region.nationId) !== region.controlledBy
+        ) {
           points[region.controlledBy] += region.settlement === "stronghold" ? 2 : 1;
         }
       }

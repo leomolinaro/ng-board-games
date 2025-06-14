@@ -12,12 +12,21 @@ import {
 } from "./wotr-action.models";
 import { WotrEventService } from "./wotr-event.service";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrActionService {
   private eventService = inject(WotrEventService);
 
   private actionAppliers: Map<string, WotrActionApplier<WotrAction>> = new Map();
   private storyAppliers: Map<string, WotrStoryApplier<WotrStory>> = new Map();
+  private actionLoggers: Map<string, WotrActionLogger<WotrAction>> = new Map();
+  private effectLoggers: Map<string, WotrEffectLogger<WotrAction>> = new Map();
+
+  clear() {
+    this.actionAppliers.clear();
+    this.storyAppliers.clear();
+    this.actionLoggers.clear();
+    this.effectLoggers.clear();
+  }
 
   registerActions(actionAppliers: Record<string, WotrActionApplier<WotrAction>>) {
     objectUtil.forEachProp(actionAppliers, (actionType, actionApplier) =>
@@ -49,8 +58,6 @@ export class WotrActionService {
     await storyApplier(story, frontId);
   }
 
-  private actionLoggers: Map<string, WotrActionLogger<WotrAction>> = new Map();
-
   registerActionLoggers(actionLoggers: Record<string, WotrActionLogger<WotrAction>>) {
     objectUtil.forEachProp(actionLoggers, (actionType, actionLogger) =>
       this.actionLoggers.set(actionType, actionLogger)
@@ -69,15 +76,16 @@ export class WotrActionService {
     return actionLogger(action, front, fragmentCreator);
   }
 
-  private effectLoggers: Map<string, WotrEffectLogger<WotrAction>> = new Map();
-
   registerEffectLoggers(effectLoggers: Record<string, WotrEffectLogger<WotrAction>>) {
     objectUtil.forEachProp(effectLoggers, (effectType, effectLogger) =>
       this.effectLoggers.set(effectType, effectLogger)
     );
   }
 
-  getEffectLogFragments<F>(effect: WotrAction, fragmentCreator: WotrFragmentCreator<F>): (F | string)[] {
+  getEffectLogFragments<F>(
+    effect: WotrAction,
+    fragmentCreator: WotrFragmentCreator<F>
+  ): (F | string)[] {
     const effectLogger = this.effectLoggers.get(effect.type);
     if (!effectLogger) {
       throw new Error(`Unknown effect log ${effect.type}`);

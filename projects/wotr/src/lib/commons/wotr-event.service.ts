@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { WotrEvent, WotrEventConsumer } from "./wotr-event.models";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrEventService {
   private registrations: Record<string, WotrEventConsumer<WotrEvent>[]> = {};
 

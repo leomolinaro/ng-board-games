@@ -16,7 +16,7 @@ import {
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit.models";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrUnitService {
   private actionService = inject(WotrActionService);
   private nationStore = inject(WotrNationStore);

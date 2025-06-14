@@ -42,7 +42,7 @@ function initialFront(id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]
   };
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrFrontStore {
   update!: (actionName: string, updater: (a: WotrFrontState) => WotrFrontState) => void;
   state!: Signal<WotrFrontState>;
@@ -81,7 +81,11 @@ export class WotrFrontStore {
     return !!this.front(frontId).tableCards.includes(cardId);
   }
 
-  private updateFront(actionName: string, frontId: WotrFrontId, updater: (a: WotrFront) => WotrFront) {
+  private updateFront(
+    actionName: string,
+    frontId: WotrFrontId,
+    updater: (a: WotrFront) => WotrFront
+  ) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [frontId]: updater(s.map[frontId]) } }));
   }
 

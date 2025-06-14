@@ -2,18 +2,32 @@ import { Injectable, inject } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCardService } from "../card/wotr-card.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+  WotrStoryApplier
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrDieStory, WotrPassStory, WotrSkipTokensStory, WotrTokenStory } from "../game/wotr-story.models";
+import {
+  WotrDieStory,
+  WotrPassStory,
+  WotrSkipTokensStory,
+  WotrTokenStory
+} from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
-import { WotrActionDie, WotrActionToken, WotrFreePeopleActionDie, WotrShadowActionDie } from "./wotr-action-die.models";
+import {
+  WotrActionDie,
+  WotrActionToken,
+  WotrFreePeopleActionDie,
+  WotrShadowActionDie
+} from "./wotr-action-die.models";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrActionDieService {
   private actionService = inject(WotrActionService);
   private frontStore = inject(WotrFrontStore);
@@ -81,7 +95,10 @@ export class WotrActionDieService {
         f.player(action.front),
         ` ${this.dice(action.dice)}`
       ],
-      "action-die-skip": (action, front, f) => [f.player(front), ` skips ${this.dice([action.die])}`]
+      "action-die-skip": (action, front, f) => [
+        f.player(front),
+        ` skips ${this.dice([action.die])}`
+      ]
     };
   }
 
@@ -97,7 +114,14 @@ export class WotrActionDieService {
     "will-of-the-west"
   ];
 
-  private SHADOW_ACTION_DICE: WotrShadowActionDie[] = ["character", "army", "event", "muster", "muster-army", "eye"];
+  private SHADOW_ACTION_DICE: WotrShadowActionDie[] = [
+    "character",
+    "army",
+    "event",
+    "muster",
+    "muster-army",
+    "eye"
+  ];
 
   rollableActionDice(frontId: WotrFrontId): number {
     switch (frontId) {

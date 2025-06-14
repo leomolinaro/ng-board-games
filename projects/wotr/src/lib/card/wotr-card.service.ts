@@ -1,15 +1,23 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+  WotrStoryApplier
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrCardReactionStory, WotrDieCardStory, WotrSkipCardReactionStory } from "../game/wotr-story.models";
+import {
+  WotrCardReactionStory,
+  WotrDieCardStory,
+  WotrSkipCardReactionStory
+} from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardParams } from "./wotr-card-effects.service";
 import { WotrCardId, WotrCardType, cardToLabel } from "./wotr-card.models";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCardService {
   private actionService = inject(WotrActionService);
   private frontStore = inject(WotrFrontStore);
@@ -24,7 +32,9 @@ export class WotrCardService {
   }
 
   private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
-  registerCardEffects(cardEffects: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>) {
+  registerCardEffects(
+    cardEffects: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>
+  ) {
     this.cardEffects = cardEffects;
   }
 
@@ -55,22 +65,31 @@ export class WotrCardService {
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
       "card-discard": async (action, front) => this.frontStore.discardCards(action.cards, front),
-      "card-discard-from-table": async (action, front) => this.frontStore.discardCardFromTable(action.card, front),
+      "card-discard-from-table": async (action, front) =>
+        this.frontStore.discardCardFromTable(action.card, front),
       "card-draw": async (action, front) => this.frontStore.drawCards(action.cards, front),
-      "card-play-on-table": async (action, front) => this.frontStore.playCardOnTable(action.card, front),
-      "card-random-discard": async (action, front) => this.frontStore.discardCards([action.card], oppositeFront(front))
+      "card-play-on-table": async (action, front) =>
+        this.frontStore.playCardOnTable(action.card, front),
+      "card-random-discard": async (action, front) =>
+        this.frontStore.discardCards([action.card], oppositeFront(front))
     };
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrCardAction> {
     return {
-      "card-discard": (action, front, f) => [f.player(front), ` discards ${this.nCards(action.cards)}`],
+      "card-discard": (action, front, f) => [
+        f.player(front),
+        ` discards ${this.nCards(action.cards)}`
+      ],
       "card-discard-from-table": (action, front, f) => [
         f.player(front),
         ` discards "${cardToLabel(action.card)}" from table`
       ],
       "card-draw": (action, front, f) => [f.player(front), ` draws ${this.nCards(action.cards)}`],
-      "card-play-on-table": (action, front, f) => [f.player(front), ` plays "${cardToLabel(action.card)}" on table`],
+      "card-play-on-table": (action, front, f) => [
+        f.player(front),
+        ` plays "${cardToLabel(action.card)}" on table`
+      ],
       "card-random-discard": (action, front, f) => [
         f.player(front),
         " random discards 1 card from ",
@@ -86,11 +105,15 @@ export class WotrCardService {
 
   hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
     throw new Error("Method not implemented.");
-    return this.frontStore.front(frontId).handCards.some(cardId => this.isPlayableCard(cardId, frontId));
+    return this.frontStore
+      .front(frontId)
+      .handCards.some(cardId => this.isPlayableCard(cardId, frontId));
   }
   getPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
     throw new Error("Method not implemented.");
-    return this.frontStore.front(frontId).handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
+    return this.frontStore
+      .front(frontId)
+      .handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
   }
   isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
     throw new Error("Method not implemented.");

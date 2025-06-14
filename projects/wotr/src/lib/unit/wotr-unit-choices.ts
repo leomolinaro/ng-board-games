@@ -42,7 +42,7 @@ export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
   }
 }
 
-Injectable();
+@Injectable({ providedIn: "root" })
 export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
   private unitService = inject(WotrUnitService);
 

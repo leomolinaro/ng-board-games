@@ -52,8 +52,11 @@ interface WotrAskOption<O = unknown> {
   disabled?: boolean;
 }
 
-@Injectable()
-export class WotrGameUiStore extends signalStore({ protectedState: false }, withState<WotrGameUiState>(initialState)) {
+@Injectable({ providedIn: "root" })
+export class WotrGameUiStore extends signalStore(
+  { protectedState: false },
+  withState<WotrGameUiState>(initialState)
+) {
   private playerInfoStore = inject(WotrPlayerInfoStore);
 
   currentPlayer = computed<WotrPlayerInfo | null>(() => {

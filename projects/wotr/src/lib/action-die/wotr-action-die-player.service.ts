@@ -43,7 +43,9 @@ import {
 import { WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
 import { WotrActionDieService } from "./wotr-action-die.service";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class WotrActionPlayerService {
   private actionDieService = inject(WotrActionDieService);
   private cardPlayer = inject(WotrCardPlayerService);
@@ -54,6 +56,7 @@ export class WotrActionPlayerService {
   private ui = inject(WotrGameUiStore);
   private unitPlayer = inject(WotrUnitPlayerService);
   private unitService = inject(WotrUnitService);
+  private recruitReinforcementsChoice = inject(WotrRecruitReinforcementsChoice);
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
     const canPass = this.actionDieService.canPassAction(player.frontId);
@@ -176,8 +179,6 @@ export class WotrActionPlayerService {
     );
     return choice.resolve(frontId);
   }
-
-  private recruitReinforcementsChoice = inject(WotrRecruitReinforcementsChoice);
 
   private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
     const choices: WotrActionPlayerChoice[] = [

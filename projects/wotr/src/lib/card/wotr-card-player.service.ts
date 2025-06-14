@@ -5,7 +5,7 @@ import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrCardId } from "./wotr-card.models";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCardPlayerService {
   private ui = inject(WotrGameUiStore);
   private front = inject(WotrFrontStore);

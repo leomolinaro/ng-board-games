@@ -1,10 +1,11 @@
-import { inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrStoryService } from "../game/wotr-story.service";
 import { WotrFreePeoplesPlayer } from "./wotr-free-peoples-player";
 import { WotrShadowPlayer } from "./wotr-shadow-player";
 
+@Injectable({ providedIn: "root" })
 export class WotrAllPlayers {
   protected storyService = inject(WotrStoryService);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -14,7 +15,9 @@ export class WotrAllPlayers {
     return this.storyService.parallelStories(frontId => p => p.firstPhase(this.player(frontId)));
   }
   rollActionDice(): Promise<Record<WotrFrontId, WotrGameStory>> {
-    return this.storyService.parallelStories(frontId => p => p.rollActionDice(this.player(frontId)));
+    return this.storyService.parallelStories(
+      frontId => p => p.rollActionDice(this.player(frontId))
+    );
   }
   chooseCombatCard(): Promise<Record<WotrFrontId, WotrGameStory>> {
     return this.storyService.parallelStories(frontId => p => p.chooseCombatCard!());

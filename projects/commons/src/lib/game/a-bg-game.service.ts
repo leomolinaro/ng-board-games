@@ -1,4 +1,16 @@
-import { EMPTY, Observable, expand, filter, first, firstValueFrom, last, map, of, race, tap } from "rxjs";
+import {
+  EMPTY,
+  Observable,
+  expand,
+  filter,
+  first,
+  firstValueFrom,
+  last,
+  map,
+  of,
+  race,
+  tap
+} from "rxjs";
 import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
 
 interface ABgPlayer<Id extends string> {
@@ -58,12 +70,20 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract endTemporaryState(): void;
   protected abstract resetUi(playerId: string): void;
 
+  clear() {
+    this.storyTime = 0;
+    this.storyDocs = null;
+  }
+
   protected abstract insertStoryDoc$(
     storyId: string,
     storyDoc: BgStoryDoc<Pid, St>,
     gameId: string
   ): Observable<unknown>;
-  protected abstract selectStoryDoc$(storyId: string, gameId: string): Observable<BgStoryDoc<Pid, St> | undefined>;
+  protected abstract selectStoryDoc$(
+    storyId: string,
+    gameId: string
+  ): Observable<BgStoryDoc<Pid, St> | undefined>;
 
   private isRemotePlayer(playerId: string) {
     const player = this.getPlayer(playerId);
@@ -110,7 +130,11 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     }
   }
 
-  private async getLocalStory<R extends St>(time: number, playerId: Pid, task: () => Promise<R>): Promise<R | null> {
+  private async getLocalStory<R extends St>(
+    time: number,
+    playerId: Pid,
+    task: () => Promise<R>
+  ): Promise<R | null> {
     this.startTemporaryState();
     const story = await task();
     await this.insertStory(story, time, playerId);
@@ -125,7 +149,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     return storyDoc;
   }
 
-  private getRemoteStory$<R extends St>(time: number, playerId: Pid): Observable<BgStoryDoc<Pid, R>> {
+  private getRemoteStory$<R extends St>(
+    time: number,
+    playerId: Pid
+  ): Observable<BgStoryDoc<Pid, R>> {
     const storyId = getStoryId(time, playerId);
     return this.selectStoryDoc$(storyId, this.getGameId()).pipe(
       filter(storyDoc => !!storyDoc),
@@ -175,11 +202,17 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     }
   }
 
-  protected executeTask<R extends St>(playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Promise<R> {
+  protected executeTask<R extends St>(
+    playerId: Pid,
+    task: (playerService: PlSrv) => Promise<R>
+  ): Promise<R> {
     return firstValueFrom(this.executeTask$(playerId, p => task(p)));
   }
 
-  private executeTask$<R extends St>(playerId: Pid, task: (playerService: PlSrv) => Promise<R>): Observable<R> {
+  private executeTask$<R extends St>(
+    playerId: Pid,
+    task: (playerService: PlSrv) => Promise<R>
+  ): Observable<R> {
     const time = this.storyTime + 1;
     this.autoRefreshCurrentPlayer(playerId);
     if (this.storyDocs?.length) {

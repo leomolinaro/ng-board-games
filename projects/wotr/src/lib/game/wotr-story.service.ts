@@ -19,8 +19,13 @@ export interface WotrStoryTask {
   task: (playerService: WotrPlayerService) => Promise<WotrGameStory>;
 }
 
-@Injectable()
-export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo, WotrGameStory, WotrPlayerService> {
+@Injectable({ providedIn: "root" })
+export class WotrStoryService extends ABgGameService<
+  WotrFrontId,
+  WotrPlayerInfo,
+  WotrGameStory,
+  WotrPlayerService
+> {
   private store = inject(WotrGameStore);
   private ui = inject(WotrGameUiStore);
   private remote = inject(WotrRemoteService);
@@ -120,7 +125,9 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
     this.ui.resetUi(turnPlayer);
   }
 
-  async parallelStories(getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
+  async parallelStories(
+    getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>
+  ) {
     const stories = await this.executeTasks2(
       this.frontStore.frontIds().map(front => ({ playerId: front, task: getTask(front) }))
     );
@@ -134,7 +141,10 @@ export class WotrStoryService extends ABgGameService<WotrFrontId, WotrPlayerInfo
     return toReturn;
   }
 
-  async story(front: WotrFrontId, task: (playerService: WotrPlayerService) => Promise<WotrGameStory>) {
+  async story(
+    front: WotrFrontId,
+    task: (playerService: WotrPlayerService) => Promise<WotrGameStory>
+  ) {
     const story = await this.executeTask2(front, task);
     await this.applyStory(story, front);
     return story;

@@ -33,7 +33,24 @@ export function initialeState(): WotrHuntState {
       "rds": { id: "rds", type: "shadow-special", dice: true, stop: true },
       "rers": { id: "rers", type: "shadow-special", eye: true, reveal: true, stop: true }
     },
-    huntPool: ["3", "3", "3", "2", "2", "1", "1", "er", "er", "er", "er", "2r", "1r", "1r", "0r", "0r"],
+    huntPool: [
+      "3",
+      "3",
+      "3",
+      "2",
+      "2",
+      "1",
+      "1",
+      "er",
+      "er",
+      "er",
+      "er",
+      "2r",
+      "1r",
+      "1r",
+      "0r",
+      "0r"
+    ],
     huntDrawn: [],
     huntReady: [],
     huntAvailable: ["b0", "b0", "b-1", "b-2", "r1rs", "r3s", "rds", "rers"],
@@ -44,7 +61,7 @@ export function initialeState(): WotrHuntState {
   };
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrHuntStore {
   private fellowship = inject(WotrFellowshipStore);
 

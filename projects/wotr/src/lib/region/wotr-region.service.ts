@@ -4,7 +4,7 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrRegionAction } from "./wotr-region-actions";
 import { WotrRegionStore } from "./wotr-region.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrRegionService {
   private regionStore = inject(WotrRegionStore);
   private actionService = inject(WotrActionService);

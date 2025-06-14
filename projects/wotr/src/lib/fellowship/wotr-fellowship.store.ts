@@ -14,7 +14,7 @@ export function initialeState(): WotrFellowship {
   };
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrFellowshipStore {
   private readonly region = inject(WotrRegionStore);
 

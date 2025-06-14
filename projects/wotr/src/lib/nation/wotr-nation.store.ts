@@ -79,8 +79,28 @@ export function initialeState(): WotrNationState {
         "Northern elite",
         "Northern leader"
       ),
-      isengard: initialShadowNation("isengard", "Isengard", true, 1, 12, 6, 0, "Isengard regular", "Isengard elite"),
-      sauron: initialShadowNation("sauron", "Sauron", true, 1, 36, 6, 8, "Sauron regular", "Sauron elite"),
+      isengard: initialShadowNation(
+        "isengard",
+        "Isengard",
+        true,
+        1,
+        12,
+        6,
+        0,
+        "Isengard regular",
+        "Isengard elite"
+      ),
+      sauron: initialShadowNation(
+        "sauron",
+        "Sauron",
+        true,
+        1,
+        36,
+        6,
+        8,
+        "Sauron regular",
+        "Sauron elite"
+      ),
       southrons: initialShadowNation(
         "southrons",
         "Southrons & Esterlings",
@@ -180,7 +200,7 @@ function initialNation(
   };
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrNationStore {
   update!: (actionName: string, updater: (a: WotrNationState) => WotrNationState) => void;
   state!: Signal<WotrNationState>;
@@ -205,7 +225,10 @@ export class WotrNationStore {
   hasReinforcements(nation: WotrNation) {
     const reinforcements = nation.reinforcements;
     return (
-      reinforcements.regular > 0 || reinforcements.elite > 0 || reinforcements.leader > 0 || reinforcements.nazgul > 0
+      reinforcements.regular > 0 ||
+      reinforcements.elite > 0 ||
+      reinforcements.leader > 0 ||
+      reinforcements.nazgul > 0
     );
   }
   isAtWar(nationId: WotrNationId): boolean {
@@ -213,14 +236,28 @@ export class WotrNationStore {
     return nation.politicalStep === "atWar";
   }
 
-  private updateNation(actionName: string, nationId: WotrNationId, updater: (a: WotrNation) => WotrNation) {
-    this.update(actionName, s => ({ ...s, map: { ...s.map, [nationId]: updater(s.map[nationId]) } }));
+  private updateNation(
+    actionName: string,
+    nationId: WotrNationId,
+    updater: (a: WotrNation) => WotrNation
+  ) {
+    this.update(actionName, s => ({
+      ...s,
+      map: { ...s.map, [nationId]: updater(s.map[nationId]) }
+    }));
   }
 
-  private updateUnitReinforcements(unitType: WotrGenericUnitType, deltaQuantity: number, nationId: WotrNationId) {
+  private updateUnitReinforcements(
+    unitType: WotrGenericUnitType,
+    deltaQuantity: number,
+    nationId: WotrNationId
+  ) {
     this.updateNation("updateUnitReinforcements", nationId, nation => ({
       ...nation,
-      reinforcements: { ...nation.reinforcements, [unitType]: nation.reinforcements[unitType] + deltaQuantity }
+      reinforcements: {
+        ...nation.reinforcements,
+        [unitType]: nation.reinforcements[unitType] + deltaQuantity
+      }
     }));
   }
 
@@ -249,7 +286,11 @@ export class WotrNationStore {
     this.updateUnitReinforcements("nazgul", -quantity, "sauron");
   }
 
-  private updateUnitCasualties(unitType: WotrFreeGenericUnitType, deltaQuantity: number, nationId: WotrNationId) {
+  private updateUnitCasualties(
+    unitType: WotrFreeGenericUnitType,
+    deltaQuantity: number,
+    nationId: WotrNationId
+  ) {
     this.updateNation("updateUnitCasualties", nationId, nation => ({
       ...nation,
       casualties: { ...nation.casualties, [unitType]: nation.casualties[unitType] + deltaQuantity }

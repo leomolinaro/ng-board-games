@@ -10,11 +10,13 @@ import {
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrFellowshipCorruption, WotrFellowshipReveal } from "../fellowship/wotr-fellowship-actions";
+import {
+  WotrFellowshipCorruption,
+  WotrFellowshipReveal
+} from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { filterActions, findAction } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -30,7 +32,7 @@ interface WotrHuntTileResolutionOptions {
   ignoreFreePeopleSpecialTile?: true;
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrHuntFlowService {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
@@ -39,7 +41,6 @@ export class WotrHuntFlowService {
   private logStore = inject(WotrLogStore);
   private fellowshipStore = inject(WotrFellowshipStore);
 
-  private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
@@ -86,7 +87,10 @@ export class WotrHuntFlowService {
     }
   }
 
-  async resolveHuntTile(huntTileId: WotrHuntTileId, options: WotrHuntTileResolutionOptions): Promise<WotrHuntTile> {
+  async resolveHuntTile(
+    huntTileId: WotrHuntTileId,
+    options: WotrHuntTileResolutionOptions
+  ): Promise<WotrHuntTile> {
     const huntTile = this.huntStore.huntTile(huntTileId);
     if (options.ignoreEyeTile && huntTile.eye) {
       return huntTile;
@@ -100,7 +104,11 @@ export class WotrHuntFlowService {
 
     let doReveal = false;
     if (huntTile.reveal && !wasRevealed) {
-      if (this.fellowshipStore.guide() !== "gollum" || huntTile.type !== "standard" || huntTile.quantity == null) {
+      if (
+        this.fellowshipStore.guide() !== "gollum" ||
+        huntTile.type !== "standard" ||
+        huntTile.quantity == null
+      ) {
         doReveal = true;
       }
     }
@@ -255,7 +263,10 @@ export class WotrHuntFlowService {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await this.characterService.activateCharacterAbility(companion, this.freePeoples);
+        const actions = await this.characterService.activateCharacterAbility(
+          companion,
+          this.freePeoples
+        );
         if (actions) {
           absorbedDamage++;
         }

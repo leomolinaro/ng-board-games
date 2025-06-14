@@ -5,7 +5,7 @@ import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrPlayerService } from "./wotr-player.service";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrPlayerAiService implements WotrPlayerService {
   private game = inject(WotrGameStore);
 

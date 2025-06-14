@@ -16,7 +16,7 @@ import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrPlayerLocalService implements WotrPlayerService {
   private front = inject(WotrFrontStore);
   private ui = inject(WotrGameUiStore);
@@ -54,7 +54,11 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   async huntAllocationPhase(): Promise<WotrGameStory> {
     const min = this.hunt.minimumNumberOfHuntDice();
     const max = this.hunt.maximumNumberOfHuntDice();
-    const quantity = await this.ui.askQuantity("How many hunt dice do you want to allocate?", min, max);
+    const quantity = await this.ui.askQuantity(
+      "How many hunt dice do you want to allocate?",
+      min,
+      max
+    );
     return { type: "phase", actions: [allocateHuntDice(quantity)] };
   }
 

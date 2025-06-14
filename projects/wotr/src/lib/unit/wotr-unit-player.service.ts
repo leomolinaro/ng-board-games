@@ -3,7 +3,7 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrNazgulMovement } from "./wotr-unit-actions";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrUnitPlayerService {
   private ui = inject(WotrGameUiStore);
 

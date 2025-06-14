@@ -4,7 +4,7 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrNation, WotrNationId } from "./wotr-nation.models";
 import { WotrNationStore } from "./wotr-nation.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrNationPlayerService {
   private ui = inject(WotrGameUiStore);
   private nation = inject(WotrNationStore);

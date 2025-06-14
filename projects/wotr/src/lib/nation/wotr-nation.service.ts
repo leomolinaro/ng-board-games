@@ -1,17 +1,25 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrActionApplier, WotrActionLoggerMap, WotrEffectLoggerMap } from "../commons/wotr-action.models";
+import {
+  WotrActionApplier,
+  WotrActionLoggerMap,
+  WotrEffectLoggerMap
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrNationAction, WotrPoliticalActivation, WotrPoliticalAdvance } from "./wotr-nation-actions";
+import {
+  WotrNationAction,
+  WotrPoliticalActivation,
+  WotrPoliticalAdvance
+} from "./wotr-nation-actions";
 import { WotrNation, WotrNationId } from "./wotr-nation.models";
 import { WotrNationStore } from "./wotr-nation.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrNationService {
   private actionService = inject(WotrActionService);
   private nationStore = inject(WotrNationStore);
@@ -20,8 +28,14 @@ export class WotrNationService {
   private characterStore = inject(WotrCharacterStore);
 
   init() {
-    this.actionService.registerAction<WotrPoliticalActivation>("political-activation", this.politicalActivation);
-    this.actionService.registerAction<WotrPoliticalAdvance>("political-advance", this.politicalAdvance);
+    this.actionService.registerAction<WotrPoliticalActivation>(
+      "political-activation",
+      this.politicalActivation
+    );
+    this.actionService.registerAction<WotrPoliticalAdvance>(
+      "political-advance",
+      this.politicalAdvance
+    );
     this.actionService.registerActionLoggers(this.getActionLoggers() as any);
     this.actionService.registerEffectLoggers(this.getEffectLoggers() as any);
   }
@@ -94,7 +108,10 @@ export class WotrNationService {
       ) {
         for (const characterId of characters) {
           const character = this.characterStore.character(characterId);
-          if (character.activationNation === "all" || character.activationNation === region.nationId) {
+          if (
+            character.activationNation === "all" ||
+            character.activationNation === region.nationId
+          ) {
             this.activateNation(region.nationId);
           }
         }
@@ -130,7 +147,11 @@ export class WotrNationService {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrNationAction> {
     return {
-      "political-activation": (action, front, f) => [f.player(front), " activates ", f.nation(action.nation)],
+      "political-activation": (action, front, f) => [
+        f.player(front),
+        " activates ",
+        f.nation(action.nation)
+      ],
       "political-advance": (action, front, f) => [
         f.player(front),
         " advances ",
@@ -143,18 +164,27 @@ export class WotrNationService {
   private getEffectLoggers(): WotrEffectLoggerMap<WotrNationAction> {
     return {
       "political-activation": (effect, f) => [f.nation(effect.nation), " is activated"],
-      "political-advance": (effect, f) => [f.nation(effect.nation), " is advanced on the Political Track"]
+      "political-advance": (effect, f) => [
+        f.nation(effect.nation),
+        " is advanced on the Political Track"
+      ]
     };
   }
 
   canFrontAdvancePoliticalTrack(frontId: WotrFrontId): boolean {
     if (frontId === "free-peoples") {
-      return this.nationStore.freePeoplesNations().some(nation => this.canAdvancePoliticalTrack(nation));
+      return this.nationStore
+        .freePeoplesNations()
+        .some(nation => this.canAdvancePoliticalTrack(nation));
     } else {
       return this.nationStore.shadowNations().some(nation => this.canAdvancePoliticalTrack(nation));
     }
   }
   canAdvancePoliticalTrack(nation: WotrNation): boolean {
-    return nation.politicalStep === 3 || nation.politicalStep === 2 || (nation.politicalStep === 1 && nation.active);
+    return (
+      nation.politicalStep === 3 ||
+      nation.politicalStep === 2 ||
+      (nation.politicalStep === 1 && nation.active)
+    );
   }
 }

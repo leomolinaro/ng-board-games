@@ -24,7 +24,7 @@ export interface WotrCombatCardParams {
   attackingArmy: () => WotrArmy | undefined;
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCombatCardsService {
   private unitService = inject(WotrUnitService);
   private armyUtil = inject(WotrArmyUtils);
@@ -36,7 +36,10 @@ export class WotrCombatCardsService {
     return this.combatCardEffects[params.card.combatLabel](params);
   }
 
-  private async activateCombatCard(cardId: WotrCardId, player: WotrPlayer): Promise<false | WotrAction[]> {
+  private async activateCombatCard(
+    cardId: WotrCardId,
+    player: WotrPlayer
+  ): Promise<false | WotrAction[]> {
     const story = await player.activateCombatCard(cardId);
     switch (story.type) {
       case "reaction-combat-card":
@@ -54,7 +57,10 @@ export class WotrCombatCardsService {
     return action.leaders;
   }
 
-  private combatCardEffects: Record<WotrCardCombatLabel, (params: WotrCombatCardParams) => Promise<void>> = {
+  private combatCardEffects: Record<
+    WotrCardCombatLabel,
+    (params: WotrCombatCardParams) => Promise<void>
+  > = {
     "Advantageous Position": async params => {
       params.shadow.combatModifiers.push(-1);
     },
@@ -121,7 +127,9 @@ export class WotrCombatCardsService {
       const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits(attackedArmy) : 0;
       const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits(attackingArmy) : 0;
       if (
-        (params.isAttacker && nAttackedArmyUnits && nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
+        (params.isAttacker &&
+          nAttackedArmyUnits &&
+          nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
         (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
       ) {
         await this.unitService.chooseCasualties(this.freePeoples);
@@ -156,7 +164,10 @@ export class WotrCombatCardsService {
     },
     "Relentless Assault": async params => {
       const casualties = await this.unitService.chooseCasualties(this.shadow);
-      const hits = casualties.reduce((h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2), 0);
+      const hits = casualties.reduce(
+        (h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2),
+        0
+      );
       if (hits) {
         params.shadow.combatModifiers.push(hits);
       }

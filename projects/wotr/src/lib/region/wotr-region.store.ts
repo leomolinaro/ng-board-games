@@ -489,7 +489,7 @@ function initialRegion(
   return region;
 }
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrRegionStore {
   private armyUtil = inject(WotrArmyUtils);
   private characterStore = inject(WotrCharacterStore);

@@ -1,11 +1,20 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCardId } from "../card/wotr-card.models";
-import { WotrAction, WotrActionApplierMap, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
+import {
+  WotrAction,
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+  WotrStoryApplier
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrCharacterReactionStory, WotrGameStory, WotrSkipCharacterReactionStory } from "../game/wotr-story.models";
+import {
+  WotrCharacterReactionStory,
+  WotrGameStory,
+  WotrSkipCharacterReactionStory
+} from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrNationStore } from "../nation/wotr-nation.store";
@@ -18,7 +27,7 @@ import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
 
-@Injectable()
+@Injectable({ providedIn: "root" })
 export class WotrCharacterService {
   private actionService = inject(WotrActionService);
   private nationService = inject(WotrNationService);
@@ -39,14 +48,20 @@ export class WotrCharacterService {
     this.actionService.registerStory("reaction-character-skip", this.reactionCharacterSkip);
   }
 
-  private reactionCharacter: WotrStoryApplier<WotrCharacterReactionStory> = async (story, front) => {
+  private reactionCharacter: WotrStoryApplier<WotrCharacterReactionStory> = async (
+    story,
+    front
+  ) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
       await this.actionService.applyAction(action, front);
     }
   };
 
-  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterReactionStory> = async (story, front) => {
+  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterReactionStory> = async (
+    story,
+    front
+  ) => {
     this.logStore.logStory(story, front);
   };
 
@@ -77,11 +92,15 @@ export class WotrCharacterService {
           if (character.status === "inFellowship") {
             this.fellowshipStore.removeCompanion(characterId);
           } else if (character.status === "inPlay") {
-            let region = this.regionStore.regions().find(r => r.army?.characters?.includes(characterId));
+            let region = this.regionStore
+              .regions()
+              .find(r => r.army?.characters?.includes(characterId));
             if (region) {
               this.regionStore.removeCharacterFromArmy(characterId, region.id);
             } else {
-              region = this.regionStore.regions().find(r => r.freeUnits?.characters?.includes(characterId));
+              region = this.regionStore
+                .regions()
+                .find(r => r.freeUnits?.characters?.includes(characterId));
               if (region) {
                 this.regionStore.removeCharacterFromFreeUnits(characterId, region.id);
               }
@@ -135,7 +154,11 @@ export class WotrCharacterService {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrCharacterAction> {
     return {
-      "character-elimination": (action, front, f) => [f.player(front), " removes ", this.characters(action.characters)],
+      "character-elimination": (action, front, f) => [
+        f.player(front),
+        " removes ",
+        this.characters(action.characters)
+      ],
       "character-movement": (action, front, f) => [
         f.player(front),
         " moves ",
@@ -169,7 +192,10 @@ export class WotrCharacterService {
     return characters.map(c => this.characterStore.character(c).name).join(", ");
   }
 
-  async activateCharacterAbility(characterId: WotrCharacterId, player: WotrPlayer): Promise<false | WotrAction[]> {
+  async activateCharacterAbility(
+    characterId: WotrCharacterId,
+    player: WotrPlayer
+  ): Promise<false | WotrAction[]> {
     const story = await player.activateCharacterAbility(characterId);
     switch (story.type) {
       case "reaction-character":
