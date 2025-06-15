@@ -11,7 +11,7 @@ export interface WotrPlayerService {
   rollHuntDice(): Promise<WotrGameStory>;
   reRollHuntDice(): Promise<WotrGameStory>;
   drawHuntTile(): Promise<WotrGameStory>;
-  huntEffect(): Promise<WotrGameStory>;
+  huntEffect(damage: number): Promise<WotrGameStory>;
   revealFellowship(): Promise<WotrGameStory>;
   separateCompanions(): Promise<WotrGameStory>;
 

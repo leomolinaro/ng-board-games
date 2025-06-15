@@ -46,6 +46,9 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
         button {
           @include wotr.golden-padding(2vmin);
           cursor: pointer;
+          &:hover:not(.disabled) {
+            background: #ddd;
+          }
           &.disabled {
             cursor: not-allowed;
           }

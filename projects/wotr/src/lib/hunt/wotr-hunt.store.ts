@@ -74,8 +74,14 @@ export class WotrHuntStore {
   hasHuntDice(): boolean {
     return !!this.state().nHuntDice;
   }
-  getNTotalDice(): number {
+  nTotalDice(): number {
     return this.state().nHuntDice + this.state().nFreePeopleDice;
+  }
+  nHuntDice(): number {
+    return this.state().nHuntDice;
+  }
+  huntPool(): WotrHuntTileId[] {
+    return this.state().huntPool;
   }
 
   incrementFreePeopleDice(): void {

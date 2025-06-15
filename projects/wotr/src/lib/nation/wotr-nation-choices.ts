@@ -1,13 +1,13 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { advanceNation } from "./wotr-nation-actions";
 import { WotrNationPlayerService } from "./wotr-nation-player.service";
 import { WotrNationService } from "./wotr-nation.service";
 
 @Injectable({ providedIn: "root" })
-export class WotrDiplomaticActionChoice implements WotrActionPlayerChoice {
+export class WotrDiplomaticActionChoice implements WotrPlayerChoice {
   private nationService = inject(WotrNationService);
   private nationPlayer = inject(WotrNationPlayerService);
 

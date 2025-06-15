@@ -3,6 +3,7 @@ import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
 import { WotrActionChoice, WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
@@ -50,6 +51,12 @@ interface WotrAskOption<O = unknown> {
   value: O;
   label: string;
   disabled?: boolean;
+}
+
+export interface WotrPlayerChoice<P = WotrFrontId> {
+  label(): string;
+  isAvailable(params: P): boolean;
+  resolve(params: P): Promise<WotrAction[]>;
 }
 
 @Injectable({ providedIn: "root" })
@@ -136,6 +143,22 @@ export class WotrGameUiStore extends signalStore(
     const option = await this.option.get();
     this.updateUi(s => ({ ...s, message: null, validOptions: null }));
     return option.value as O;
+  }
+
+  async playerChoice<P = WotrFrontId>(
+    message: string,
+    choices: WotrPlayerChoice<P>[],
+    params: P
+  ): Promise<WotrAction[]> {
+    const choice = await this.askOption<WotrPlayerChoice<P>>(
+      message,
+      choices.map(c => ({
+        value: c,
+        label: c.label(),
+        disabled: !c.isAvailable(params)
+      }))
+    );
+    return choice.resolve(params);
   }
 
   askCard(message: string, validCards: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {

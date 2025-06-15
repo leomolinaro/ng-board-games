@@ -1,17 +1,23 @@
 import { inject, Injectable } from "@angular/core";
+import { randomUtil } from "../../../../commons/utils/src";
 import { rollActionDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionPlayerService } from "../action-die/wotr-action-die-player.service";
+import { WotrActionDiePlayerService } from "../action-die/wotr-action-die-player.service";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
+import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { allocateHuntDice } from "../hunt/wotr-hunt-actions";
+import { allocateHuntDice, drawHuntTile, rollHuntDice } from "../hunt/wotr-hunt-actions";
+import {
+  WotrFellowshipCorruptionChoice,
+  WotrHuntEffectChoiceParams
+} from "../hunt/wotr-hunt-effect-choices";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
@@ -23,7 +29,8 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private fellowship = inject(WotrFellowshipStore);
   private hunt = inject(WotrHuntStore);
   private actionDieService = inject(WotrActionDieService);
-  private playerActionService = inject(WotrActionPlayerService);
+  private playerActionDieService = inject(WotrActionDiePlayerService);
+  private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
     await this.ui.askContinue("Draw cards");
@@ -73,7 +80,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
-    return this.playerActionService.actionResolution(player);
+    return this.playerActionDieService.actionResolution(player);
   }
 
   async separateCompanions(): Promise<WotrGameStory> {
@@ -81,7 +88,12 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollHuntDice(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    await this.ui.askContinue("Roll hunt dice");
+    const huntDice: WotrCombatDie[] = [];
+    for (let i = 0; i < this.hunt.nHuntDice(); i++) {
+      huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
+    }
+    return { type: "hunt", actions: [rollHuntDice(...huntDice)] };
   }
 
   async reRollHuntDice(): Promise<WotrGameStory> {
@@ -89,11 +101,20 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    await this.ui.askContinue("Draw hunt tile");
+    const huntTile = randomUtil.getRandomElement(this.hunt.huntPool());
+    return { type: "hunt", actions: [drawHuntTile(huntTile)] };
   }
 
-  async huntEffect(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async huntEffect(damage: number): Promise<WotrGameStory> {
+    // TODO
+    const choices: WotrPlayerChoice<WotrHuntEffectChoiceParams>[] = [
+      this.fellowshipCorruptionChoice
+    ];
+    const actions = await this.ui.playerChoice(`Absorbe ${damage} hunt damage points`, choices, {
+      damage
+    });
+    return { type: "hunt", actions };
   }
 
   async revealFellowship(): Promise<WotrGameStory> {

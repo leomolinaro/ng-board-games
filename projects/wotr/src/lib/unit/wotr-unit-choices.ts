@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrUnitService } from "./wotr-unit.service";
 
 @Injectable({ providedIn: "root" })
-export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
+export class WotrAttackArmyChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
 
   label(): string {
@@ -22,7 +22,7 @@ export class WotrAttackArmyChoice implements WotrActionPlayerChoice {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
+export class WotrMoveArmiesChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
 
   label(): string {
@@ -39,7 +39,7 @@ export class WotrMoveArmiesChoice implements WotrActionPlayerChoice {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
+export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
 
   label(): string {
@@ -56,7 +56,7 @@ export class WotrRecruitReinforcementsChoice implements WotrActionPlayerChoice {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrLeaderArmyMoveChoice implements WotrActionPlayerChoice {
+export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
   label(): string {
     return "Move army with leader";
@@ -72,7 +72,7 @@ export class WotrLeaderArmyMoveChoice implements WotrActionPlayerChoice {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrLeaderArmyAttackChoice implements WotrActionPlayerChoice {
+export class WotrLeaderArmyAttackChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
 
   label(): string {

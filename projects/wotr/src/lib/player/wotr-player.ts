@@ -29,8 +29,8 @@ export abstract class WotrPlayer {
   drawHuntTile(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.drawHuntTile());
   }
-  huntEffect(): Promise<WotrGameStory> {
-    return this.storyService.story(this.frontId, p => p.huntEffect());
+  huntEffect(damage: number): Promise<WotrGameStory> {
+    return this.storyService.story(this.frontId, p => p.huntEffect(damage));
   }
   revealFellowship(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.revealFellowship());

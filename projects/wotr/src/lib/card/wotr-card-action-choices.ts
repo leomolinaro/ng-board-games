@@ -1,15 +1,14 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { drawCardIds } from "./wotr-card-actions";
 import { WotrCardPlayerService } from "./wotr-card-player.service";
 import { WotrCardType } from "./wotr-card.models";
 import { WotrCardService } from "./wotr-card.service";
 
 @Injectable({ providedIn: "root" })
-export class WotrDrawEventCardChoice implements WotrActionPlayerChoice {
+export class WotrDrawEventCardChoice implements WotrPlayerChoice {
   private cardService = inject(WotrCardService);
   private cardPlayer = inject(WotrCardPlayerService);
 
@@ -27,7 +26,7 @@ export class WotrDrawEventCardChoice implements WotrActionPlayerChoice {
   }
 }
 
-export class WotrPlayEventCardChoice implements WotrActionPlayerChoice {
+export class WotrPlayEventCardChoice implements WotrPlayerChoice {
   constructor(
     private cartTypes: WotrCardType[] | "any",
     private frontId: WotrFrontId,

@@ -32,6 +32,13 @@ interface WotrHuntTileResolutionOptions {
   ignoreFreePeopleSpecialTile?: true;
 }
 
+type HuntEffect =
+  | WotrFellowshipCorruption
+  | WotrCharacterElimination
+  | WotrCompanionRandom
+  | WotrFellowshipReveal
+  | WotrCardDiscardFromTable;
+
 @Injectable({ providedIn: "root" })
 export class WotrHuntFlowService {
   private regionStore = inject(WotrRegionStore);
@@ -76,7 +83,7 @@ export class WotrHuntFlowService {
 
   private async resolveHuntOnMordorTrack() {
     this.logStore.logHuntResolution();
-    const nSuccesses = this.huntStore.getNTotalDice();
+    const nSuccesses = this.huntStore.nTotalDice();
     const huntTileId = await this.drawHuntTile(this.shadow);
     const huntTile = await this.resolveHuntTile(huntTileId, {
       nSuccesses
@@ -115,7 +122,7 @@ export class WotrHuntFlowService {
 
     let isRevealing = doReveal;
     while (damage > 0) {
-      const { absorbedDamage, gollumRevealing } = await this.absorbHuntDamage();
+      const { absorbedDamage, gollumRevealing } = await this.absorbHuntDamage(damage);
       damage -= absorbedDamage;
       if (gollumRevealing && !wasRevealed) {
         isRevealing = true;
@@ -186,10 +193,12 @@ export class WotrHuntFlowService {
     return Math.min(nReRolls, nFailures);
   }
 
-  async absorbHuntDamage(): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
+  async absorbHuntDamage(
+    damage: number
+  ): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
     let gollumRevealing = false;
-    const actions = await this.huntEffect(this.freePeoples);
+    const actions = await this.huntEffect(damage);
     for (const action of actions) {
       switch (action.type) {
         case "fellowship-corruption":
@@ -230,25 +239,9 @@ export class WotrHuntFlowService {
     }
   }
 
-  async huntEffect(
-    player: WotrPlayer
-  ): Promise<
-    (
-      | WotrFellowshipCorruption
-      | WotrCharacterElimination
-      | WotrCompanionRandom
-      | WotrFellowshipReveal
-      | WotrCardDiscardFromTable
-    )[]
-  > {
-    const story = await player.huntEffect();
-    const actions = filterActions<
-      | WotrFellowshipCorruption
-      | WotrCharacterElimination
-      | WotrCompanionRandom
-      | WotrFellowshipReveal
-      | WotrCardDiscardFromTable
-    >(
+  async huntEffect(damage: number): Promise<HuntEffect[]> {
+    const story = await this.freePeoples.huntEffect(damage);
+    const actions = filterActions<HuntEffect>(
       story,
       "fellowship-corruption",
       "character-elimination",

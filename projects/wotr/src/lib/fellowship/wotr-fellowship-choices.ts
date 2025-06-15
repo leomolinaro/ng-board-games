@@ -1,11 +1,12 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { moveFelloswhip } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
+export class WotrFellowshipProgressChoice implements WotrPlayerChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
   label(): string {
     return "Fellowship progress";
@@ -17,12 +18,12 @@ export class WotrFellowshipProgressChoice implements WotrActionPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return [moveFelloswhip()];
   }
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrHideFellowshipChoice implements WotrActionPlayerChoice {
+export class WotrHideFellowshipChoice implements WotrPlayerChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
 
   label(): string {
@@ -39,7 +40,7 @@ export class WotrHideFellowshipChoice implements WotrActionPlayerChoice {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
+export class WotrSeparateCompanionsChoice implements WotrPlayerChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
   label(): string {
     return "Separate companions";
