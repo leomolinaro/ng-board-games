@@ -34,6 +34,12 @@ $area-background: #151515;
   }
   .wotr-map {
     grid-area: map;
+    position: relative;
+  }
+  .wotr-options-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
   .wotr-toolbar {
     grid-area: toolbar;

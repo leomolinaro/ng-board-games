@@ -5,7 +5,10 @@ import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
 import { WotrActionDiceComponent } from "../../action-die/wotr-action-dice.component";
 import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card.models";
-import { WotrCardsDialogComponent, WotrCardsDialogData } from "../../card/wotr-cards-dialog.component";
+import {
+  WotrCardsDialogComponent,
+  WotrCardsDialogData
+} from "../../card/wotr-cards-dialog.component";
 import { WotrCharacterStore } from "../../character/wotr-character.store";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship.store";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
@@ -16,8 +19,12 @@ import { WotrHuntStore } from "../../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../../log/wotr-log.store";
 import { WotrLogsComponent } from "../../log/wotr-logs.component";
 import { WotrNationStore } from "../../nation/wotr-nation.store";
+import { WotrOptionsPanelComponent } from "../../player/wotr-options-panel.component";
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
-import { WotrRegionDialogComponent, WotrRegionDialogData } from "../../region/wotr-region-dialog.component";
+import {
+  WotrRegionDialogComponent,
+  WotrRegionDialogData
+} from "../../region/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
 import { WotrGameUiStore } from "../wotr-game-ui.store";
@@ -35,23 +42,26 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
     WotrHuntAreaComponent,
     WotrReplayButtonComponent,
     WotrActionDiceComponent,
+    WotrOptionsPanelComponent,
     WotrPlayerToolbarComponent
   ],
   template: `
     <div class="wotr-board">
-      <wotr-map
-        class="wotr-map"
-        #wotrMap
-        [regions]="regionStore.regions()"
-        [hunt]="huntStore.state()"
-        [freePeoples]="freePeoples()"
-        [shadow]="shadow()"
-        [fellowship]="fellowshipStore.state()"
-        [characterById]="characterById()"
-        [validRegions]="ui.validRegions()"
-        (regionClick)="onRegionClick($event)">
-      </wotr-map>
-      <wotr-player-toolbar class="wotr-toolbar"> </wotr-player-toolbar>
+      <div class="wotr-map">
+        <wotr-map
+          #wotrMap
+          [regions]="regionStore.regions()"
+          [hunt]="huntStore.state()"
+          [freePeoples]="freePeoples()"
+          [shadow]="shadow()"
+          [fellowship]="fellowshipStore.state()"
+          [characterById]="characterById()"
+          [validRegions]="ui.validRegions()"
+          (regionClick)="onRegionClick($event)">
+        </wotr-map>
+        <wotr-options-panel class="wotr-options-panel"></wotr-options-panel>
+      </div>
+      <wotr-player-toolbar class="wotr-toolbar"></wotr-player-toolbar>
       <div class="wotr-fronts">
         <mat-tab-group>
           @for (front of fronts(); track front.id) {
@@ -143,19 +153,20 @@ export class WotrBoardComponent {
   }
 
   async onRegionClick(region: WotrRegion) {
-    const dialogRef = this.dialog.open<WotrRegionDialogComponent, WotrRegionDialogData, boolean | undefined>(
+    const dialogRef = this.dialog.open<
       WotrRegionDialogComponent,
-      {
-        data: {
-          region,
-          nationById: this.nationById(),
-          characterById: this.characterById(),
-          fellowship: this.fellowshipStore.state(),
-          selectable: this.ui.validRegions()?.includes(region.id) ?? false
-        },
-        panelClass: "mat-typography"
-      }
-    );
+      WotrRegionDialogData,
+      boolean | undefined
+    >(WotrRegionDialogComponent, {
+      data: {
+        region,
+        nationById: this.nationById(),
+        characterById: this.characterById(),
+        fellowship: this.fellowshipStore.state(),
+        selectable: this.ui.validRegions()?.includes(region.id) ?? false
+      },
+      panelClass: "mat-typography"
+    });
     const result = await firstValueFrom(dialogRef.afterClosed());
     if (result) {
       this.ui.region.emit(region.id);

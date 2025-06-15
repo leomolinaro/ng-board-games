@@ -30,30 +30,6 @@ import { WotrPlayerInfoStore } from "./wotr-player-info.store";
     <span class="message">
       {{ ui.message() }}
     </span>
-    @if (ui.canConfirm()) {
-      <button (click)="ui.confirm.emit(true)">Yes</button>
-      <button (click)="ui.confirm.emit(false)">No</button>
-    }
-    @if (ui.canContinue()) {
-      <button (click)="ui.continue.emit()">Continue</button>
-    }
-    @if (ui.canInputQuantity()) {
-      <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
-        <input
-          type="number"
-          [(ngModel)]="quantity"
-          name="inputField"
-          placeholder="Enter the quantity" />
-        <button type="submit">Confirm</button>
-      </form>
-    }
-    @for (option of ui.validOptions(); track option.value) {
-      <button
-        [disabled]="!!option.disabled"
-        (click)="!option.disabled && ui.option.emit(option)">
-        {{ option.label }}
-      </button>
-    }
   `,
   styles: [
     `
@@ -87,6 +63,4 @@ export class WotrPlayerToolbarComponent {
       p => !p.isAi && currentPlayerId !== p.id && p.controller.id === this.authService.getUser().id
     );
   });
-
-  protected quantity = 0;
 }
