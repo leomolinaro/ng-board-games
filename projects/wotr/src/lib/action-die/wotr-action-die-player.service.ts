@@ -5,14 +5,14 @@ import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import {
   WotrBringCharacterIntoPlayChoice,
   WotrMoveCompanionsChoice,
-  WotrMoveMinionsChoice,
-  WotrSeparateCompanionsChoice
+  WotrMoveMinionsChoice
 } from "../character/wotr-character-choices";
-import { WotrCharactersService } from "../character/wotr-characters.service";
+import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrAction } from "../commons/wotr-action.models";
 import {
   WotrFellowshipProgressChoice,
-  WotrHideFellowshipChoice
+  WotrHideFellowshipChoice,
+  WotrSeparateCompanionsChoice
 } from "../fellowship/wotr-fellowship-choices";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
@@ -46,7 +46,7 @@ import { WotrActionDieService } from "./wotr-action-die.service";
 export class WotrActionPlayerService {
   private actionDieService = inject(WotrActionDieService);
   private cardPlayer = inject(WotrCardPlayerService);
-  private charactersService = inject(WotrCharactersService);
+  private characterService = inject(WotrCharacterService);
   private nationPlayer = inject(WotrNationPlayerService);
   private ui = inject(WotrGameUiStore);
   private unitPlayer = inject(WotrUnitPlayerService);
@@ -174,7 +174,7 @@ export class WotrActionPlayerService {
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.charactersService));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster"));
     const choice = await this.askActionChoice(
@@ -194,7 +194,7 @@ export class WotrActionPlayerService {
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
-      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.charactersService));
+      choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster-army"));
     const choice = await this.askActionChoice(
@@ -217,9 +217,7 @@ export class WotrActionPlayerService {
       new WotrChangeEventDieChoice(frontId, this)
     ];
     if (frontId === "free-peoples") {
-      choices.push(
-        new WotrBringCharacterIntoPlayChoice("will-of-the-west", this.charactersService)
-      );
+      choices.push(new WotrBringCharacterIntoPlayChoice("will-of-the-west", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("will-of-the-west"));
     const choice = await this.askActionChoice(

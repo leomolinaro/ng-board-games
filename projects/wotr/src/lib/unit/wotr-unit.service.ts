@@ -1,4 +1,6 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrCharacterId } from "../character/wotr-character.models";
+import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFrontId } from "../front/wotr-front.models";
@@ -14,7 +16,7 @@ import {
   WotrRegularUnitElimination,
   WotrUnitAction
 } from "./wotr-unit-actions";
-import { WotrArmy } from "./wotr-unit.models";
+import { WotrArmy, WotrNationUnit } from "./wotr-unit.models";
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitService {
@@ -22,6 +24,7 @@ export class WotrUnitService {
   private nationStore = inject(WotrNationStore);
   private nationService = inject(WotrNationService);
   private regionStore = inject(WotrRegionStore);
+  private characterStore = inject(WotrCharacterStore);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -275,21 +278,81 @@ export class WotrUnitService {
           region.nationId === nation.id && region.controlledBy === nation.front && region.settlement
       );
   }
+
   canFrontMoveArmies(frontId: WotrFrontId): boolean {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
-      const armyAtWar = this.isArmyAtWar(region.army);
-      const armyUnitNations = this.armyUnitNations(region.army);
-      return region.neighbors.some(neighbor => {
-        if (neighbor.impassable) return false;
-        if (!this.regionStore.isFreeForArmyMovement(neighbor.id, frontId)) return false;
-        const neighborRegion = this.regionStore.region(neighbor.id);
-        if (armyAtWar) return true;
-        return armyUnitNations.some(nation => nation === neighborRegion.nationId);
-      });
+      return this.canMoveArmy(region.army, region);
     });
   }
+
+  canFrontMoveArmiesWithLeader(frontId: WotrFrontId): boolean {
+    return this.regionStore.regions().some(region => {
+      if (!region.army) return false;
+      if (region.army.front !== frontId) return false;
+      if (!this.hasArmyLeadership(region.army)) return false;
+      return this.canMoveArmy(region.army, region);
+    });
+  }
+
+  private hasArmyLeadership(army: WotrArmy): boolean {
+    return this.getArmyLeadership(army) > 0;
+  }
+
+  getArmyLeadership(army: WotrArmy): number {
+    let leadership = 0;
+    if (army.elites) {
+      leadership += this.getEliteUnitsLeadership(army.elites);
+    }
+    if (army.leaders) {
+      leadership += this.getLeadersLeadership(army.leaders);
+    }
+    if (army.nNazgul) {
+      leadership += this.getNazgulLeadership(army.nNazgul);
+    }
+    if (army.characters) {
+      leadership += this.getCharactersLeadership(army.characters);
+    }
+    return leadership;
+  }
+
+  private getEliteUnitsLeadership(elites: WotrNationUnit[]) {
+    return elites.reduce((l, armyUnit) => {
+      if (armyUnit.nation === "isengard" && this.characterStore.isInPlay("saruman")) {
+        return l + 1;
+      }
+      return l;
+    }, 0);
+  }
+
+  private getLeadersLeadership(leaders: WotrNationUnit[]) {
+    return leaders.length;
+  }
+
+  private getNazgulLeadership(nNazgul: number) {
+    return nNazgul;
+  }
+
+  private getCharactersLeadership(characters: WotrCharacterId[]) {
+    return characters.reduce((l, characterId) => {
+      return l + this.characterStore.character(characterId).leadership;
+    }, 0);
+  }
+
+  private canMoveArmy(army: WotrArmy, region: WotrRegion): boolean {
+    const armyAtWar = this.isArmyAtWar(army);
+    const armyUnitNations = this.armyUnitNations(army);
+    return region.neighbors.some(neighbor => {
+      if (neighbor.impassable) return false;
+      if (!this.regionStore.isFreeForArmyMovement(neighbor.id, army.front)) return false;
+      if (armyAtWar) return true;
+      const neighborRegion = this.regionStore.region(neighbor.id);
+      if (!neighborRegion.nationId) return true;
+      return armyUnitNations.some(nation => nation === neighborRegion.nationId);
+    });
+  }
+
   private armyUnitNations(army: WotrArmy): WotrNationId[] {
     const nations = new Set<WotrNationId>();
     army.regulars?.forEach(nation => nations.add(nation.nation));
@@ -305,6 +368,15 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
+      return this.canArmyAttackArmies(region.army, region);
+    });
+  }
+
+  canFrontAttackArmiesWithLeader(frontId: WotrFrontId): boolean {
+    return this.regionStore.regions().some(region => {
+      if (!region.army) return false;
+      if (region.army.front !== frontId) return false;
+      if (!this.hasArmyLeadership(region.army)) return false;
       return this.canArmyAttackArmies(region.army, region);
     });
   }

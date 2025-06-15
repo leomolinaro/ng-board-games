@@ -1,14 +1,14 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { WotrActionPlayerChoice } from "../action-die/wotr-action-die-choices";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrCharactersService } from "./wotr-characters.service";
+import { WotrCharacterService } from "./wotr-character.service";
 
 export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice {
   constructor(
     private die: WotrActionDie,
-    private charactersService: WotrCharactersService
+    private characterService: WotrCharacterService
   ) {}
 
   label(): string {
@@ -16,22 +16,7 @@ export class WotrBringCharacterIntoPlayChoice implements WotrActionPlayerChoice 
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.charactersService.someCharacterCanBeBroughtIntoPlay(this.die, frontId);
-  }
-
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
-  }
-}
-
-@Injectable({ providedIn: "root" })
-export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
-  label(): string {
-    return "Separate companions";
-  }
-
-  isAvailable(frontId: WotrFrontId): boolean {
-    throw new Error("Method not implemented.");
+    return this.characterService.canrBringCharacterIntoPlay(this.die, frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -41,12 +26,13 @@ export class WotrSeparateCompanionsChoice implements WotrActionPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrMoveCompanionsChoice implements WotrActionPlayerChoice {
+  private characterService = inject(WotrCharacterService);
   label(): string {
     return "Move companions";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    throw new Error("Method not implemented.");
+    return this.characterService.canMoveCompanions();
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -56,12 +42,13 @@ export class WotrMoveCompanionsChoice implements WotrActionPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrMoveMinionsChoice implements WotrActionPlayerChoice {
+  private characterService = inject(WotrCharacterService);
   label(): string {
     return "Move minions";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    throw new Error("Method not implemented.");
+    return this.characterService.canMoveNazgulOrMinions();
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {

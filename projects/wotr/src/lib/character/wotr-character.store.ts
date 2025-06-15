@@ -35,9 +35,16 @@ export function initialeState(): WotrCharacterState {
       "aragorn": initialCompanion("aragorn", "Aragorn", 3, 2, "all"),
       "gandalf-the-white": initialCompanion("gandalf-the-white", "Gandalf the White", 3, 1, "all"),
       "gollum": initialCompanion("gollum", "Gollum", 0, 0, null),
-      "saruman": initialMinion("saruman", "Saruman", 0, 1),
-      "the-mouth-of-sauron": initialMinion("the-mouth-of-sauron", "The Mouth of Sauron", 3, 2),
-      "the-witch-king": initialMinion("the-witch-king", "The Witch King", -1, 2)
+      "saruman": initialMinion("saruman", "Saruman", 0, 1, false),
+      "the-mouth-of-sauron": initialMinion(
+        "the-mouth-of-sauron",
+        "The Mouth of Sauron",
+        3,
+        2,
+        false
+      ),
+      // prettier-ignore
+      "the-witch-king": initialMinion("the-witch-king", "The Witch King", Number.MAX_SAFE_INTEGER, 2, true)
     }
   };
 }
@@ -55,7 +62,8 @@ function initialCompanion(
     level,
     leadership,
     status: "available",
-    front: "free-peoples"
+    front: "free-peoples",
+    flying: false
   };
   if (activationNation) {
     character.activationNation = activationNation;
@@ -67,9 +75,10 @@ function initialMinion(
   id: WotrCharacterId,
   name: string,
   level: number,
-  leadership: number
+  leadership: number,
+  flying: boolean
 ): WotrCharacter {
-  return { id, name, level, leadership, status: "available", front: "shadow" };
+  return { id, name, level, leadership, status: "available", front: "shadow", flying };
 }
 
 @Injectable({ providedIn: "root" })
@@ -84,6 +93,9 @@ export class WotrCharacterStore {
   });
   minions = computed(() => {
     return this.characters().filter(c => c.front === "shadow");
+  });
+  companions = computed(() => {
+    return this.characters().filter(c => c.front === "free-peoples");
   });
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];

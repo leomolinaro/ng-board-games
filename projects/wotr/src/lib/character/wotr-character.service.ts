@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
+import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrCardId } from "../card/wotr-card.models";
 import {
   WotrAction,
@@ -9,6 +10,7 @@ import {
 } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import {
   WotrCharacterReactionStory,
@@ -26,6 +28,13 @@ import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
+import {
+  WotrAragornChoice,
+  WotrGandalfTheWhite,
+  WotrMouthOfSauronChoice,
+  WotrSarumanChoice,
+  WotrWitchKingChoice
+} from "./wotr-characters";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterService {
@@ -40,6 +49,12 @@ export class WotrCharacterService {
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+
+  private gandalfTheWhite = inject(WotrGandalfTheWhite);
+  private aragornChoice = inject(WotrAragornChoice);
+  private sarumanChoice = inject(WotrSarumanChoice);
+  private witchKingChoice = inject(WotrWitchKingChoice);
+  private mouthOfSauronChoice = inject(WotrMouthOfSauronChoice);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -205,5 +220,63 @@ export class WotrCharacterService {
       default:
         throw unexpectedStory(story, " character activation or not");
     }
+  }
+
+  canMoveNazgulOrMinions(): boolean {
+    if (this.canMoveStandardNazgul()) return true;
+    this.characterStore.minions().some(minion => this.canMoveCharacter(minion));
+    return false;
+  }
+
+  canMoveStandardNazgul(): boolean {
+    return this.regionStore.regions().some(region => {
+      if (region.army?.nNazgul) return true;
+      if (region.freeUnits?.nNazgul) return true;
+      if (region.underSiegeArmy?.nNazgul) return true;
+      return false;
+    });
+  }
+
+  canMoveCharacter(character: WotrCharacter): boolean {
+    if (character.status !== "inPlay") return false;
+    if (character.level === 0) return false;
+    if (character.flying) {
+      if (this.isCharacterUnderSiege(character)) return false;
+    }
+    return true;
+  }
+
+  canMoveCompanions(): boolean {
+    return this.characterStore.companions().some(companion => this.canMoveCharacter(companion));
+  }
+
+  isCharacterUnderSiege(character: WotrCharacter): boolean {
+    return this.regionStore.regions().some(region => {
+      return !region.underSiegeArmy?.characters?.includes(character.id);
+    });
+  }
+
+  canrBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {
+    if (frontId === "free-peoples") {
+      if (this.gandalfTheWhite.canBeBroughtIntoPlay(die)) {
+        return true;
+      }
+      if (this.aragornChoice.canBeBroughtIntoPlay(die)) {
+        return true;
+      }
+    } else {
+      if (die === "muster") {
+        if (this.sarumanChoice.canBeBroughtIntoPlay(die)) {
+          return true;
+        }
+        if (this.witchKingChoice.canBeBroughtIntoPlay(die)) {
+          return true;
+        }
+        if (this.mouthOfSauronChoice.canBeBroughtIntoPlay(die)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

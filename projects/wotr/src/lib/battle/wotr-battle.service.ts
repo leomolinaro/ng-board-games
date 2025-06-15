@@ -24,7 +24,8 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrEliteUnitElimination, WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
-import { WotrArmy, WotrNationUnit } from "../unit/wotr-unit.models";
+import { WotrArmy } from "../unit/wotr-unit.models";
+import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   WotrArmyAdvance,
   WotrArmyAttack,
@@ -466,58 +467,18 @@ export class WotrBattleService {
     return damagePoints;
   }
 
+  private unitService = inject(WotrUnitService);
+
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
       const retroguard = this.battle().retroguard;
-      const retroguardLeadership = retroguard ? this.getArmyLeadership(retroguard) : 0;
-      const armyLeadership = this.getArmyLeadership(this.attackingArmy(combatRound));
+      const retroguardLeadership = retroguard ? this.unitService.getArmyLeadership(retroguard) : 0;
+      const armyLeadership = this.unitService.getArmyLeadership(this.attackingArmy(combatRound));
       return armyLeadership - retroguardLeadership;
     } else {
-      return this.getArmyLeadership(this.attackedArmy(combatRound));
+      const attackedArmy = this.attackedArmy(combatRound);
+      return attackedArmy ? this.unitService.getArmyLeadership(attackedArmy) : 0;
     }
-  }
-
-  private getArmyLeadership(army: WotrArmy | undefined) {
-    if (!army) {
-      return 0;
-    }
-    let leadership = 0;
-    if (army.elites) {
-      leadership += this.getEliteUnitsLeadership(army.elites);
-    }
-    if (army.leaders) {
-      leadership += this.getLeadersLeadership(army.leaders);
-    }
-    if (army.nNazgul) {
-      leadership += this.getNazgulLeadership(army.nNazgul);
-    }
-    if (army.characters) {
-      leadership += this.getCharactersLeadership(army.characters);
-    }
-    return leadership;
-  }
-
-  private getEliteUnitsLeadership(elites: WotrNationUnit[]) {
-    return elites.reduce((l, armyUnit) => {
-      if (armyUnit.nation === "isengard" && this.characterStore.isInPlay("saruman")) {
-        return l + 1;
-      }
-      return l;
-    }, 0);
-  }
-
-  private getLeadersLeadership(leaders: WotrNationUnit[]) {
-    return leaders.length;
-  }
-
-  private getNazgulLeadership(nNazgul: number) {
-    return nNazgul;
-  }
-
-  private getCharactersLeadership(characters: WotrCharacterId[]) {
-    return characters.reduce((l, characterId) => {
-      return l + this.characterStore.character(characterId).leadership;
-    }, 0);
   }
 
   private getNRollSuccesses(

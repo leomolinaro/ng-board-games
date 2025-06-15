@@ -24,4 +24,5 @@ export interface WotrCharacter {
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
   front: WotrFrontId;
   activationNation?: WotrNationId | "all";
+  flying: boolean;
 }
