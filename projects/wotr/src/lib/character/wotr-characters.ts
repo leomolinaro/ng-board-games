@@ -12,7 +12,7 @@ interface WotrCharacterCard {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrGandalfTheWhite implements WotrCharacterCard {
+export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
@@ -31,7 +31,7 @@ export class WotrGandalfTheWhite implements WotrCharacterCard {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrAragornChoice implements WotrCharacterCard {
+export class WotrAragornCard implements WotrCharacterCard {
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
@@ -53,7 +53,7 @@ export class WotrAragornChoice implements WotrCharacterCard {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrSarumanChoice implements WotrCharacterCard {
+export class WotrSarumanCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
@@ -68,7 +68,7 @@ export class WotrSarumanChoice implements WotrCharacterCard {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrWitchKingChoice implements WotrCharacterCard {
+export class WotrWitchKingCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
@@ -91,7 +91,7 @@ export class WotrWitchKingChoice implements WotrCharacterCard {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrMouthOfSauronChoice implements WotrCharacterCard {
+export class WotrMouthOfSauronCard implements WotrCharacterCard {
   private frontStore = inject(WotrFrontStore);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);

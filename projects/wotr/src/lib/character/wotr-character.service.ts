@@ -29,11 +29,11 @@ import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
 import {
-  WotrAragornChoice,
-  WotrGandalfTheWhite,
-  WotrMouthOfSauronChoice,
-  WotrSarumanChoice,
-  WotrWitchKingChoice
+  WotrAragornCard,
+  WotrGandalfTheWhiteCard,
+  WotrMouthOfSauronCard,
+  WotrSarumanCard,
+  WotrWitchKingCard
 } from "./wotr-characters";
 
 @Injectable({ providedIn: "root" })
@@ -50,11 +50,11 @@ export class WotrCharacterService {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
-  private gandalfTheWhite = inject(WotrGandalfTheWhite);
-  private aragornChoice = inject(WotrAragornChoice);
-  private sarumanChoice = inject(WotrSarumanChoice);
-  private witchKingChoice = inject(WotrWitchKingChoice);
-  private mouthOfSauronChoice = inject(WotrMouthOfSauronChoice);
+  private gandalfTheWhite = inject(WotrGandalfTheWhiteCard);
+  private aragornChoice = inject(WotrAragornCard);
+  private sarumanChoice = inject(WotrSarumanCard);
+  private witchKingChoice = inject(WotrWitchKingCard);
+  private mouthOfSauronChoice = inject(WotrMouthOfSauronCard);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
