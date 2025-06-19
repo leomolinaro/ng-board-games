@@ -8,7 +8,11 @@ import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
-import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
+import {
+  declareFellowship,
+  notDeclareFellowship,
+  revealFellowship
+} from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
@@ -19,6 +23,7 @@ import {
   WotrHuntEffectChoiceParams
 } from "../hunt/wotr-hunt-effect-choices";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
 
@@ -31,6 +36,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private actionDieService = inject(WotrActionDieService);
   private playerActionDieService = inject(WotrActionDiePlayerService);
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
+  private regionStore = inject(WotrRegionStore);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
     await this.ui.askContinue("Draw cards");
@@ -118,7 +124,20 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async revealFellowship(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    const progress = this.fellowship.progress();
+    const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
+    const reachableRegions = this.regionStore.reachableRegions(fellowshipRegion.id, progress);
+    const validRegions = reachableRegions.filter(r => {
+      const region = this.regionStore.region(r);
+      if (region.settlement !== "city" && region.settlement !== "stronghold") return true;
+      if (region.controlledBy !== "free-peoples") return true;
+      return false;
+    });
+    const chosenRegion = await this.ui.askRegion(validRegions);
+    return {
+      type: "hunt",
+      actions: [revealFellowship(chosenRegion)]
+    };
   }
 
   async activateTableCard(cardId: WotrCardId): Promise<WotrGameStory> {

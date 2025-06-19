@@ -38,7 +38,7 @@ export function initialeState(): WotrRegionState {
     ],
     map: {
       // prettier-ignore
-      "forlindon": initialRegion("forlindon", "Forlindon", null, false, null,
+      "forlindon": initialRegion("forlindon", "Forlindon", "elves", false, null,
         ["grey-havens"],
         ["north-ered-luin", "ered-luin"], true),
       // prettier-ignore
@@ -146,7 +146,7 @@ export function initialeState(): WotrRegionState {
         ["hollin", "dimrill-dale", "north-dunland"],
         ["fords-of-bruinen", "high-pass", "goblins-gate", "old-ford", "gladden-fields"], false),
       // prettier-ignore
-      "north-dunland": initialRegion("north-dunland", "North Dunland", null, false, "town",
+      "north-dunland": initialRegion("north-dunland", "North Dunland", "isengard", false, "town",
         ["hollin", "moria", "south-dunland", "tharbad", "cardolan", "south-downs"],
         ["lorien", "parth-celebrant", "fangorn"], false),
       // prettier-ignore
@@ -154,7 +154,7 @@ export function initialeState(): WotrRegionState {
         ["cardolan", "north-dunland", "south-dunland", "enedwaith", "minhiriath"],
         [], false),
       // prettier-ignore
-      "south-dunland": initialRegion("south-dunland", "South Dunland", null, false, "town",
+      "south-dunland": initialRegion("south-dunland", "South Dunland", "isengard", false, "town",
         ["north-dunland", "gap-of-rohan", "enedwaith", "tharbad"],
         ["fangorn", "orthanc"], false),
       // prettier-ignore
@@ -162,11 +162,11 @@ export function initialeState(): WotrRegionState {
         ["tharbad", "south-dunland", "gap-of-rohan", "druwaith-iaur", "minhiriath"],
         [], true),
       // prettier-ignore
-      "gap-of-rohan": initialRegion("gap-of-rohan", "Gap of Rohan", null, false, null,
+      "gap-of-rohan": initialRegion("gap-of-rohan", "Gap of Rohan", "isengard", false, null,
         ["south-dunland", "orthanc", "fords-of-isen", "druwaith-iaur", "enedwaith"],
         [], false),
       // prettier-ignore
-      "orthanc": initialRegion("orthanc", "Orthanc", null, false, "stronghold",
+      "orthanc": initialRegion("orthanc", "Orthanc", "isengard", false, "stronghold",
         ["fords-of-isen", "gap-of-rohan"],
         ["south-dunland", "fangorn"], false),
       // prettier-ignore
@@ -857,26 +857,27 @@ export class WotrRegionStore {
     }));
   }
 
-  reachableRegions(regionId: WotrRegionId, distance: number): WotrRegionId[] {
-    const reachable = new Set<WotrRegionId>();
-    reachable.add(regionId);
-    const queue = [regionId];
-    while (queue.length > 0 && distance > 0) {
-      const currentRegionId = queue.shift()!;
-      if (!reachable.has(currentRegionId)) {
-        const currentRegion = this.region(currentRegionId);
-        const neighbors = currentRegion.neighbors;
-        for (const neighbor of neighbors) {
-          if (neighbor.impassable) {
-            continue;
-          }
-          if (!reachable.has(neighbor.id)) {
-            queue.push(neighbor.id);
-            reachable.add(neighbor.id);
-          }
+  reachableRegions(startRegionId: WotrRegionId, maxDistance: number): WotrRegionId[] {
+    const reachable: WotrRegionId[] = [];
+    const visited = new Set<WotrRegionId>();
+    const queue: { regionId: WotrRegionId; distance: number }[] = [
+      { regionId: startRegionId, distance: 0 }
+    ];
+    while (queue.length > 0) {
+      const { regionId, distance } = queue.shift()!;
+      if (visited.has(regionId) || distance > maxDistance) continue;
+      visited.add(regionId);
+      reachable.push(regionId);
+      const region = this.region(regionId);
+      const neighbors = region.neighbors;
+      for (const neighbor of neighbors) {
+        if (neighbor.impassable) {
+          continue;
+        }
+        if (!visited.has(neighbor.id)) {
+          queue.push({ regionId: neighbor.id, distance: distance + 1 });
         }
       }
-      distance--;
     }
     return Array.from(reachable);
   }
