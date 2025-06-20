@@ -1,5 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, output } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  output,
+  signal
+} from "@angular/core";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
@@ -27,6 +35,7 @@ import {
 } from "../../region/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
+import { WotrUnits } from "../../unit/wotr-unit.models";
 import { WotrGameUiStore } from "../wotr-game-ui.store";
 import { WotrMapComponent } from "./map/wotr-map.component";
 import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
@@ -63,7 +72,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
       </div>
       <wotr-player-toolbar class="wotr-toolbar"></wotr-player-toolbar>
       <div class="wotr-fronts">
-        <mat-tab-group>
+        <mat-tab-group [selectedIndex]="selectedFrontIndex()">
           @for (front of fronts(); track front.id) {
             <mat-tab
               [label]="
@@ -142,6 +151,26 @@ export class WotrBoardComponent {
   logsFixed = false;
   zoomFixed = false;
 
+  protected selectedFrontIndex = signal<number>(0);
+  private selectFront = effect(() => {
+    const validReinforcementUnits = this.ui.validReinforcementUnits();
+    if (!validReinforcementUnits) return;
+    this.selectedFrontIndex.set(validReinforcementUnits[0].front === "free-peoples" ? 0 : 1);
+  });
+
+  private selectRegion = effect(() => {
+    const validRegionUnits = this.ui.validRegionUnits();
+    if (!validRegionUnits) return;
+    const validRegion = this.ui.validRegions()![0];
+    const region = this.regionStore.region(validRegion);
+    this.openRegionDialog(region);
+  });
+
+  private regionDialogRef: MatDialogRef<
+    WotrRegionDialogComponent,
+    boolean | WotrUnits | undefined
+  > | null = null;
+
   onPreviewCardClick(cardId: WotrCardId, front: WotrFront) {
     this.dialog.open<WotrCardsDialogComponent, WotrCardsDialogData>(WotrCardsDialogComponent, {
       data: {
@@ -152,24 +181,39 @@ export class WotrBoardComponent {
     });
   }
 
-  async onRegionClick(region: WotrRegion) {
-    const dialogRef = this.dialog.open<
+  private async openRegionDialog(region: WotrRegion) {
+    const validRegionUnits = this.ui.validRegionUnits();
+    this.regionDialogRef = this.dialog.open<
       WotrRegionDialogComponent,
       WotrRegionDialogData,
-      boolean | undefined
+      boolean | WotrUnits | undefined
     >(WotrRegionDialogComponent, {
       data: {
         region,
         nationById: this.nationById(),
         characterById: this.characterById(),
         fellowship: this.fellowshipStore.state(),
-        selectable: this.ui.validRegions()?.includes(region.id) ?? false
+        selectable: !validRegionUnits && (this.ui.validRegions()?.includes(region.id) ?? false),
+        selectableUnits: validRegionUnits
       },
       panelClass: "mat-typography"
     });
-    const result = await firstValueFrom(dialogRef.afterClosed());
+    const result = await firstValueFrom(this.regionDialogRef.afterClosed());
+    this.regionDialogRef = null;
     if (result) {
+      if (result === true) {
+        this.ui.region.emit(region.id);
+      } else {
+        this.ui.regionUnits.emit(result);
+      }
       this.ui.region.emit(region.id);
     }
+  }
+
+  async onRegionClick(region: WotrRegion) {
+    if (this.regionDialogRef) {
+      this.regionDialogRef.close();
+    }
+    this.openRegionDialog(region);
   }
 }

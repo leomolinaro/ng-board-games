@@ -422,7 +422,7 @@ module.exports = {
     "no-warning-comments": "warn",
     "no-whitespace-before-property": "warn",
     "no-with": "warn",
-    "nonblock-statement-body-position": "warn",
+    "nonblock-statement-body-position": "off",
     "object-curly-newline": "warn",
     "object-curly-spacing": ["warn", "always"],
     "object-property-newline": "off",

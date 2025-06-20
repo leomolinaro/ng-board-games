@@ -1,6 +1,6 @@
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrNationId } from "../nation/wotr-nation.models";
+import { WotrGenericUnitType, WotrNationId } from "../nation/wotr-nation.models";
 
 export interface WotrArmy {
   front: WotrFrontId;
@@ -32,6 +32,12 @@ export interface WotrLeaderUnits {
 export interface WotrNationUnit {
   nation: WotrNationId;
   quantity: number;
+}
+
+export interface WotrReinforcementUnit {
+  front: WotrFrontId;
+  nation: WotrNationId;
+  type: WotrGenericUnitType;
 }
 
 export function regular(nation: WotrNationId, quantity: number = 1) {

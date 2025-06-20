@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
-import { moveFelloswhip } from "./wotr-fellowship-actions";
+import { hideFellowship, moveFelloswhip } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
@@ -35,7 +35,7 @@ export class WotrHideFellowshipChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return [hideFellowship()];
   }
 }
 

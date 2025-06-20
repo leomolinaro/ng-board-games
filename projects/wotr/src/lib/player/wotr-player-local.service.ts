@@ -60,7 +60,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
       return { type: "phase", actions: [notDeclareFellowship()] };
     }
     const validRegions = this.fellowship.validRegionsForDeclaration();
-    const region = await this.ui.askRegion(validRegions);
+    const region = await this.ui.askRegion(
+      "Choose a region to declare the fellowship",
+      validRegions
+    );
     return { type: "phase", actions: [declareFellowship(region)] };
   }
 
@@ -133,7 +136,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
       if (region.controlledBy !== "free-peoples") return true;
       return false;
     });
-    const chosenRegion = await this.ui.askRegion(validRegions);
+    const chosenRegion = await this.ui.askRegion(
+      "Choose a region where to reveal the fellowship",
+      validRegions
+    );
     return {
       type: "hunt",
       actions: [revealFellowship(chosenRegion)]

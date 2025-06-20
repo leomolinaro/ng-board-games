@@ -1,6 +1,14 @@
 import { WotrFrontId } from "../front/wotr-front.models";
 
-export type WotrNationId = "dwarves" | "elves" | "gondor" | "north" | "rohan" | "isengard" | "sauron" | "southrons";
+export type WotrNationId =
+  | "dwarves"
+  | "elves"
+  | "gondor"
+  | "north"
+  | "rohan"
+  | "isengard"
+  | "sauron"
+  | "southrons";
 
 export interface WotrNation {
   id: WotrNationId;
@@ -34,6 +42,7 @@ export type WotrArmyUnitType = "regular" | "elite";
 export type WotrFreeUnitType = "nazgul" | "companion" | "minion" | "fellowship";
 export type WotrFreeGenericUnitType = WotrArmyUnitType | "leader";
 export type WotrGenericUnitType = WotrArmyUnitType | "leader" | "nazgul";
+export type WotrUnitType = WotrFreeGenericUnitType | WotrFreeUnitType;
 
 export type WotrPoliticalStep = 3 | 2 | 1 | "atWar";
 

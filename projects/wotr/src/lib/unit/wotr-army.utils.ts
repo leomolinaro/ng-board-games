@@ -12,7 +12,11 @@ export class WotrArmyUtils {
     return this.addUnits("regulars", nation, quantity, army);
   }
 
-  removeRegulars(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy | undefined {
+  removeRegulars(
+    quantity: number,
+    nation: WotrNationId,
+    army: WotrArmy | undefined
+  ): WotrArmy | undefined {
     return this.removeUnits("regulars", nation, quantity, army);
   }
 
@@ -20,7 +24,11 @@ export class WotrArmyUtils {
     return this.addUnits("elites", nation, quantity, army);
   }
 
-  removeElites(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy | undefined {
+  removeElites(
+    quantity: number,
+    nation: WotrNationId,
+    army: WotrArmy | undefined
+  ): WotrArmy | undefined {
     return this.removeUnits("elites", nation, quantity, army);
   }
 
@@ -28,7 +36,11 @@ export class WotrArmyUtils {
     return this.addUnits("leaders", nation, quantity, army);
   }
 
-  removeLeaders(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy | undefined {
+  removeLeaders(
+    quantity: number,
+    nation: WotrNationId,
+    army: WotrArmy | undefined
+  ): WotrArmy | undefined {
     return this.removeUnits("leaders", nation, quantity, army);
   }
 
@@ -48,7 +60,11 @@ export class WotrArmyUtils {
         const unit = units[index];
         return {
           ...army,
-          [unitKey]: immutableUtil.listReplaceByIndex(index, { ...unit, quantity: unit.quantity + quantity }, units)
+          [unitKey]: immutableUtil.listReplaceByIndex(
+            index,
+            { ...unit, quantity: unit.quantity + quantity },
+            units
+          )
         };
       } else {
         return {
@@ -122,7 +138,10 @@ export class WotrArmyUtils {
     if (!army?.characters) {
       throw new Error("removeCharacter");
     }
-    army = { ...army, characters: immutableUtil.listRemoveFirst(c => c === characterId, army.characters || []) };
+    army = {
+      ...army,
+      characters: immutableUtil.listRemoveFirst(c => c === characterId, army.characters || [])
+    };
     return this.isEmptyArmy(army) ? undefined : army;
   }
 
@@ -178,7 +197,9 @@ export class WotrArmyUtils {
 
   unitsToArmy(units: WotrUnits): WotrArmy {
     return {
-      front: units.regulars?.length ? frontOfNation(units.regulars[0].nation) : frontOfNation(units.elites![0].nation),
+      front: units.regulars?.length
+        ? frontOfNation(units.regulars[0].nation)
+        : frontOfNation(units.elites![0].nation),
       ...units
     };
   }
@@ -192,13 +213,22 @@ export class WotrArmyUtils {
     }
     let newArmy = army1;
     if (army2.regulars) {
-      newArmy = army2.regulars.reduce((a, unit) => this.addRegulars(unit.quantity, unit.nation, a), newArmy);
+      newArmy = army2.regulars.reduce(
+        (a, unit) => this.addRegulars(unit.quantity, unit.nation, a),
+        newArmy
+      );
     }
     if (army2.elites) {
-      newArmy = army2.elites.reduce((a, unit) => this.addElites(unit.quantity, unit.nation, a), newArmy);
+      newArmy = army2.elites.reduce(
+        (a, unit) => this.addElites(unit.quantity, unit.nation, a),
+        newArmy
+      );
     }
     if (army2.leaders) {
-      newArmy = army2.leaders.reduce((a, unit) => this.addLeaders(unit.quantity, unit.nation, a), newArmy);
+      newArmy = army2.leaders.reduce(
+        (a, unit) => this.addLeaders(unit.quantity, unit.nation, a),
+        newArmy
+      );
     }
     if (army2.nNazgul) {
       newArmy = this.addNazgul(army2.nNazgul, newArmy);
@@ -209,7 +239,10 @@ export class WotrArmyUtils {
     return newArmy;
   }
 
-  splitUnits(army: WotrArmy | undefined, splittedUnits: WotrUnits | undefined): WotrArmy | undefined {
+  splitUnits(
+    army: WotrArmy | undefined,
+    splittedUnits: WotrUnits | undefined
+  ): WotrArmy | undefined {
     if (!army) {
       throw new Error("splitArmy");
     }
@@ -245,5 +278,13 @@ export class WotrArmyUtils {
       );
     }
     return newArmy;
+  }
+
+  nArmyUnits(army: WotrArmy): number {
+    const { regulars, elites } = army;
+    let totalArmyUnits = 0;
+    totalArmyUnits += regulars?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
+    totalArmyUnits += elites?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
+    return totalArmyUnits;
   }
 }

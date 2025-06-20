@@ -3,7 +3,7 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { frontOfNation, WotrNationId } from "../nation/wotr-nation.models";
+import { frontOfNation, WotrNation, WotrNationId } from "../nation/wotr-nation.models";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import { WotrArmy, WotrFreeUnits, WotrUnits } from "../unit/wotr-unit.models";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region.models";
@@ -534,6 +534,19 @@ export class WotrRegionStore {
     const region = this.region(id);
     if (!region.army) return true;
     return region.army.front === frontId;
+  }
+  hasRecruitmentSettlement(nation: WotrNation, exludedRegions: Set<WotrRegionId>): boolean {
+    return this.regions()
+      .filter(r => !exludedRegions.has(r.id))
+      .some(r => this.isRecruitmentRegion(r, nation));
+  }
+  isRecruitmentRegion(region: WotrRegion, nation: WotrNation): boolean {
+    return (
+      region.nationId === nation.id && region.controlledBy === nation.front && !!region.settlement
+    );
+  }
+  recruitmentRegions(nation: WotrNation): WotrRegion[] {
+    return this.regions().filter(r => this.isRecruitmentRegion(r, nation));
   }
 
   private updateRegion(

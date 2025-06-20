@@ -9,6 +9,12 @@ import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrRegionId } from "../region/wotr-region.models";
+import { WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit.models";
+
+export interface WotrValidRegionUnits {
+  nArmyUnits: number;
+  underSiege: boolean;
+}
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -19,6 +25,8 @@ interface WotrGameUiState {
   validActionFront: WotrFrontId | null;
   validActionTokens: WotrActionToken[] | null;
   validOptions: WotrAskOption[] | null;
+  validReinforcementUnits: WotrReinforcementUnit[] | null;
+  validRegionUnits: WotrValidRegionUnits | null;
   canPass: boolean;
   canConfirm: boolean;
   canContinue: boolean;
@@ -41,6 +49,8 @@ export const initialState: WotrGameUiState = {
   validActionFront: null,
   validActionTokens: null,
   validOptions: null,
+  validReinforcementUnits: null,
+  validRegionUnits: null,
   canPass: false,
   canConfirm: false,
   canContinue: false,
@@ -110,8 +120,8 @@ export class WotrGameUiStore extends signalStore(
   }
 
   region = uiEvent<WotrRegionId>();
-  async askRegion(validRegions: WotrRegionId[]): Promise<WotrRegionId> {
-    this.updateUi(s => ({ ...s, message: "Select a region", validRegions }));
+  async askRegion(message: string, validRegions: WotrRegionId[]): Promise<WotrRegionId> {
+    this.updateUi(s => ({ ...s, message, validRegions }));
     const region = await this.region.get();
     this.updateUi(s => ({ ...s, message: null, validRegions: null }));
     return region;
@@ -143,6 +153,34 @@ export class WotrGameUiStore extends signalStore(
     const option = await this.option.get();
     this.updateUi(s => ({ ...s, message: null, validOptions: null }));
     return option.value as O;
+  }
+
+  reinforcementUnit = uiEvent<WotrReinforcementUnit>();
+  async askReinforcementUnit(
+    message: string,
+    validReinforcementUnits: WotrReinforcementUnit[]
+  ): Promise<WotrReinforcementUnit> {
+    this.updateUi(s => ({ ...s, message, validReinforcementUnits }));
+    const reinforcementUnit = await this.reinforcementUnit.get();
+    this.updateUi(s => ({ ...s, message: null, validReinforcementUnits: null }));
+    return reinforcementUnit;
+  }
+
+  regionUnits = uiEvent<WotrUnits>();
+  async askRegionUnits(
+    message: string,
+    regionId: WotrRegionId,
+    validUnits: WotrValidRegionUnits
+  ): Promise<WotrUnits> {
+    this.updateUi(s => ({
+      ...s,
+      message,
+      validRegionUnits: validUnits,
+      validRegions: [regionId]
+    }));
+    const regionUnits = await this.regionUnits.get();
+    this.updateUi(s => ({ ...s, message: null, validRegionUnits: null, validRegions: null }));
+    return regionUnits;
   }
 
   async playerChoice<P = WotrFrontId>(

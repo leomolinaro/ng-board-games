@@ -222,15 +222,29 @@ export class WotrNationStore {
     return [...s.fpNationIds, ...s.sNationIds].map(id => s.map[id]);
   });
 
-  hasReinforcements(nation: WotrNation) {
+  hasReinforcements(nation: WotrNation, recruitmentPoints: number) {
     const reinforcements = nation.reinforcements;
-    return (
-      reinforcements.regular > 0 ||
-      reinforcements.elite > 0 ||
-      reinforcements.leader > 0 ||
-      reinforcements.nazgul > 0
-    );
+    if (reinforcements.regular > 0 || reinforcements.leader > 0 || reinforcements.nazgul > 0)
+      return true;
+    return recruitmentPoints >= 2 && reinforcements.elite > 0;
   }
+
+  hasRegularReinforcements(nation: WotrNation): boolean {
+    return nation.reinforcements.regular > 0;
+  }
+
+  hasEliteReinforcements(nation: WotrNation): boolean {
+    return nation.reinforcements.elite > 0;
+  }
+
+  hasLeaderReinforcements(nation: WotrNation): boolean {
+    return nation.reinforcements.leader > 0;
+  }
+
+  hasNazgulReinforcements(nation: WotrNation): boolean {
+    return nation.reinforcements.nazgul > 0;
+  }
+
   isAtWar(nationId: WotrNationId): boolean {
     const nation = this.nation(nationId);
     return nation.politicalStep === "atWar";
