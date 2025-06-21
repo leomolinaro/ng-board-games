@@ -7,13 +7,6 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
   selector: "wotr-options-panel",
   imports: [NgClass, FormsModule],
   template: `
-    @if (ui.canConfirm()) {
-      <button (click)="ui.confirm.emit(true)">Yes</button>
-      <button (click)="ui.confirm.emit(false)">No</button>
-    }
-    @if (ui.canContinue()) {
-      <button (click)="ui.continue.emit()">Continue</button>
-    }
     @if (ui.canInputQuantity()) {
       <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
         <input

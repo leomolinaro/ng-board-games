@@ -28,8 +28,6 @@ interface WotrGameUiState {
   validReinforcementUnits: WotrReinforcementUnit[] | null;
   validRegionUnits: WotrValidRegionUnits | null;
   canPass: boolean;
-  canConfirm: boolean;
-  canContinue: boolean;
   canInputQuantity: WotrGameUiInputQuantity | false;
 }
 
@@ -52,8 +50,6 @@ export const initialState: WotrGameUiState = {
   validReinforcementUnits: null,
   validRegionUnits: null,
   canPass: false,
-  canConfirm: false,
-  canContinue: false,
   canInputQuantity: false
 };
 
@@ -96,19 +92,15 @@ export class WotrGameUiStore extends signalStore(
     patchState(this, updater);
   }
 
-  continue = uiEvent<void>();
-  async askContinue(message: string): Promise<void> {
-    this.updateUi(s => ({ ...s, message, canContinue: true }));
-    await this.continue.get();
-    this.updateUi(s => ({ ...s, message: null, canContinue: false }));
+  async askSingleOption(message: string): Promise<void> {
+    await this.askOption<null>(message, [{ value: null, label: message }]);
   }
 
-  confirm = uiEvent<boolean>();
   async askConfirm(message: string): Promise<boolean> {
-    this.updateUi(s => ({ ...s, message, canConfirm: true }));
-    const confirm = await this.confirm.get();
-    this.updateUi(s => ({ ...s, message: null, canConfirm: false }));
-    return confirm;
+    return this.askOption<boolean>(message, [
+      { value: true, label: "Yes" },
+      { value: false, label: "No" }
+    ]);
   }
 
   inputQuantity = uiEvent<number>();

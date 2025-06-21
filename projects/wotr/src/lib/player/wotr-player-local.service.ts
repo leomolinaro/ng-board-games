@@ -29,19 +29,19 @@ import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerLocalService implements WotrPlayerService {
-  private front = inject(WotrFrontStore);
+  private frontStore = inject(WotrFrontStore);
   private ui = inject(WotrGameUiStore);
-  private fellowship = inject(WotrFellowshipStore);
-  private hunt = inject(WotrHuntStore);
+  private fellowshipStore = inject(WotrFellowshipStore);
+  private huntStore = inject(WotrHuntStore);
   private actionDieService = inject(WotrActionDieService);
   private playerActionDieService = inject(WotrActionDiePlayerService);
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
   private regionStore = inject(WotrRegionStore);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
-    await this.ui.askContinue("Draw cards");
-    const characterDeck = this.front.characterDeck(player.frontId);
-    const strategyDeck = this.front.strategyDeck(player.frontId);
+    await this.ui.askSingleOption("Draw cards");
+    const characterDeck = this.frontStore.characterDeck(player.frontId);
+    const strategyDeck = this.frontStore.strategyDeck(player.frontId);
     const drawnCards: WotrCardId[] = [];
     if (characterDeck.length) {
       drawnCards.push(characterDeck[0]);
@@ -49,8 +49,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     if (strategyDeck.length) {
       drawnCards.push(strategyDeck[0]);
     }
-    this.front.drawCards(drawnCards, player.frontId);
-    await this.ui.askContinue("Continue");
+    this.frontStore.drawCards(drawnCards, player.frontId);
     return { type: "phase", actions: [drawCardIds(...drawnCards)] };
   }
 
@@ -59,7 +58,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     if (!declare) {
       return { type: "phase", actions: [notDeclareFellowship()] };
     }
-    const validRegions = this.fellowship.validRegionsForDeclaration();
+    const validRegions = this.fellowshipStore.validRegionsForDeclaration();
     const region = await this.ui.askRegion(
       "Choose a region to declare the fellowship",
       validRegions
@@ -68,8 +67,8 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async huntAllocationPhase(): Promise<WotrGameStory> {
-    const min = this.hunt.minimumNumberOfHuntDice();
-    const max = this.hunt.maximumNumberOfHuntDice();
+    const min = this.huntStore.minimumNumberOfHuntDice();
+    const max = this.huntStore.maximumNumberOfHuntDice();
     const quantity = await this.ui.askQuantity(
       "How many hunt dice do you want to allocate?",
       min,
@@ -79,7 +78,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
-    await this.ui.askContinue("Roll action dice");
+    await this.ui.askSingleOption("Roll action dice");
     const nActionDice = this.actionDieService.rollableActionDice(player.frontId);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
@@ -97,9 +96,9 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollHuntDice(): Promise<WotrGameStory> {
-    await this.ui.askContinue("Roll hunt dice");
+    await this.ui.askSingleOption("Roll hunt dice");
     const huntDice: WotrCombatDie[] = [];
-    for (let i = 0; i < this.hunt.nHuntDice(); i++) {
+    for (let i = 0; i < this.huntStore.nHuntDice(); i++) {
       huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
     }
     return { type: "hunt", actions: [rollHuntDice(...huntDice)] };
@@ -110,8 +109,8 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
-    await this.ui.askContinue("Draw hunt tile");
-    const huntTile = randomUtil.getRandomElement(this.hunt.huntPool());
+    await this.ui.askSingleOption("Draw hunt tile");
+    const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
     return { type: "hunt", actions: [drawHuntTile(huntTile)] };
   }
 
@@ -127,7 +126,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async revealFellowship(): Promise<WotrGameStory> {
-    const progress = this.fellowship.progress();
+    const progress = this.fellowshipStore.progress();
     const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
     const reachableRegions = this.regionStore.reachableRegions(fellowshipRegion.id, progress);
     const validRegions = reachableRegions.filter(r => {
