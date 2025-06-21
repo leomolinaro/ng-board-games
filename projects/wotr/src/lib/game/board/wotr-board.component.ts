@@ -20,7 +20,7 @@ import {
 import { WotrCharacterStore } from "../../character/wotr-character.store";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship.store";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
-import { WotrFront } from "../../front/wotr-front.models";
+import { WotrFrontId } from "../../front/wotr-front.models";
 import { WotrFrontStore } from "../../front/wotr-front.store";
 import { WotrHuntAreaComponent } from "../../hunt/wotr-hunt-area.component";
 import { WotrHuntStore } from "../../hunt/wotr-hunt.store";
@@ -88,7 +88,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
                 [front]="front"
                 [nations]="front.id === 'free-peoples' ? freePeoplesNations() : shadowNations()"
                 [characters]="characters()"
-                (cardClick)="onPreviewCardClick($event, front)">
+                (cardClick)="onPreviewCardClick($event, front.id)">
               </wotr-front-area>
             </mat-tab>
           }
@@ -152,13 +152,17 @@ export class WotrBoardComponent {
   zoomFixed = false;
 
   protected selectedFrontIndex = signal<number>(0);
-  private selectFront = effect(() => {
+  private focusFront = effect(() => {
     const validReinforcementUnits = this.ui.validReinforcementUnits();
-    if (!validReinforcementUnits) return;
-    this.selectedFrontIndex.set(validReinforcementUnits[0].front === "free-peoples" ? 0 : 1);
+    const validCards = this.ui.validCards();
+    if (!validReinforcementUnits && !validCards) return;
+    const frontId = validReinforcementUnits
+      ? validReinforcementUnits[0].front
+      : validCards!.frontId;
+    this.selectedFrontIndex.set(frontId === "free-peoples" ? 0 : 1);
   });
 
-  private selectRegion = effect(() => {
+  private focusRegion = effect(() => {
     const validRegionUnits = this.ui.validRegionUnits();
     if (!validRegionUnits) return;
     const validRegion = this.ui.validRegions()![0];
@@ -166,19 +170,42 @@ export class WotrBoardComponent {
     this.openRegionDialog(region);
   });
 
+  private focusCards = effect(() => {
+    const validCards = this.ui.validCards();
+    if (!validCards) return;
+    this.openCardsDialog(null, validCards.frontId);
+  });
+
   private regionDialogRef: MatDialogRef<
     WotrRegionDialogComponent,
     boolean | WotrUnits | undefined
   > | null = null;
 
-  onPreviewCardClick(cardId: WotrCardId, front: WotrFront) {
-    this.dialog.open<WotrCardsDialogComponent, WotrCardsDialogData>(WotrCardsDialogComponent, {
+  onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
+    this.openCardsDialog(cardId, frontId);
+  }
+
+  private async openCardsDialog(cardId: WotrCardId | null, frontId: WotrFrontId) {
+    const front = this.frontStore.front(frontId);
+    const cardsDialogRef = this.dialog.open<
+      WotrCardsDialogComponent,
+      WotrCardsDialogData,
+      undefined | WotrCardId[]
+    >(WotrCardsDialogComponent, {
       data: {
-        selectedCardId: cardId,
-        cardIds: front.handCards
+        focusedCardId: cardId,
+        cardIds: front.handCards,
+        selectableCards: this.ui.validCards()
       },
-      panelClass: "wotr-cards-overlay-panel"
+      panelClass: "wotr-cards-overlay-panel",
+      width: "100%",
+      maxWidth: "100%"
     });
+    const result = await firstValueFrom(cardsDialogRef.afterClosed());
+    this.regionDialogRef = null;
+    if (result) {
+      this.ui.cards.emit(result);
+    }
   }
 
   private async openRegionDialog(region: WotrRegion) {

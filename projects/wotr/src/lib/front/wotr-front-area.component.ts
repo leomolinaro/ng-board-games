@@ -224,11 +224,18 @@ export class WotrFrontAreaComponent {
   protected range: BgTransformFn<number, number[]> = n => arrayUtil.range(n);
 
   protected selectedTabIndex = signal<number>(0);
-  private selectReinforcements = effect(() => {
+  private focusReinforcements = effect(() => {
     const validReinforcementUnits = this.ui.validReinforcementUnits();
     if (!validReinforcementUnits) return;
     if (!validReinforcementUnits.some(u => u.front === this.front().id)) return;
     this.selectedTabIndex.set(1);
+  });
+
+  private focusCards = effect(() => {
+    const validCards = this.ui.validCards();
+    if (!validCards) return;
+    if (validCards.frontId !== this.front().id) return;
+    this.selectedTabIndex.set(0);
   });
 
   protected validReinforcementUnits = computed<Record<WotrNationId, ValidUnits> | null>(() => {

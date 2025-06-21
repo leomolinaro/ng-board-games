@@ -16,6 +16,12 @@ export interface WotrValidRegionUnits {
   underSiege: boolean;
 }
 
+export interface WotrValidCards {
+  nCards: number;
+  frontId: WotrFrontId;
+  message: string;
+}
+
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
   canCancel: boolean;
@@ -27,6 +33,7 @@ interface WotrGameUiState {
   validOptions: WotrAskOption[] | null;
   validReinforcementUnits: WotrReinforcementUnit[] | null;
   validRegionUnits: WotrValidRegionUnits | null;
+  validCards: WotrValidCards | null;
   canPass: boolean;
   canInputQuantity: WotrGameUiInputQuantity | false;
 }
@@ -49,6 +56,7 @@ export const initialState: WotrGameUiState = {
   validOptions: null,
   validReinforcementUnits: null,
   validRegionUnits: null,
+  validCards: null,
   canPass: false,
   canInputQuantity: false
 };
@@ -92,7 +100,7 @@ export class WotrGameUiStore extends signalStore(
     patchState(this, updater);
   }
 
-  async askSingleOption(message: string): Promise<void> {
+  async askContinue(message: string): Promise<void> {
     await this.askOption<null>(message, [{ value: null, label: message }]);
   }
 
@@ -117,6 +125,14 @@ export class WotrGameUiStore extends signalStore(
     const region = await this.region.get();
     this.updateUi(s => ({ ...s, message: null, validRegions: null }));
     return region;
+  }
+
+  cards = uiEvent<WotrCardId[]>();
+  async askCards(message: string, validCards: WotrValidCards): Promise<WotrCardId[]> {
+    this.updateUi(s => ({ ...s, message, validCards }));
+    const cards = await this.cards.get();
+    this.updateUi(s => ({ ...s, message: null, validCards: null }));
+    return cards;
   }
 
   nation = uiEvent<WotrNationId>();

@@ -13,12 +13,16 @@ import { WotrFrontId } from "../front/wotr-front.models";
         'shadow': playerId() === 'shadow'
       }">
       <!-- @if (player (); as c) { {{ c.name }} } @else { - } -->
-      @if (playerId (); as p) { {{ p === "free-peoples" ? "F" : "S" }} } @else { - }
+      @if (playerId(); as p) {
+        {{ p === "free-peoples" ? "F" : "S" }}
+      } @else {
+        -
+      }
     </div>
   `,
   styles: [
     `
-      @import "wotr-variables";
+      @use "wotr-variables" as wotr;
       .badge {
         border-radius: 50%;
         width: 20px;
@@ -35,10 +39,10 @@ import { WotrFrontId } from "../front/wotr-front.models";
         // text-align: center;
 
         &.free-peoples {
-          background: $blue;
+          background: wotr.$blue;
         }
         &.shadow {
-          background: $red;
+          background: wotr.$red;
         }
       }
     `

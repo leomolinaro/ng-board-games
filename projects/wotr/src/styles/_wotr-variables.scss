@@ -1,8 +1,23 @@
-@import "bg-variables";
+@use "bg-variables" as bg;
 
 @function widget-shadow($color) {
   @return inset 0 0 6px 0px $color;
 }
+
+@mixin button {
+  @include bg.golden-padding(2vmin);
+  cursor: pointer;
+  &:hover:not(.disabled) {
+    background: #ddd;
+  }
+  &.disabled {
+    cursor: not-allowed;
+  }
+}
+@mixin golden-padding($horizontal-padding) {
+  @include bg.golden-padding($horizontal-padding);
+}
+$background: bg.$background;
 // @function widget-shadow-hover($color) {
 //   @return inset 0 0 6px 2px $color;
 // }

@@ -37,14 +37,7 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
         background: #151515b0;
         border-radius: 3px;
         button {
-          @include wotr.golden-padding(2vmin);
-          cursor: pointer;
-          &:hover:not(.disabled) {
-            background: #ddd;
-          }
-          &.disabled {
-            cursor: not-allowed;
-          }
+          @include wotr.button;
         }
       }
     `

@@ -2,7 +2,6 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
-import { drawCardIds } from "./wotr-card-actions";
 import { WotrCardPlayerService } from "./wotr-card-player.service";
 import { WotrCardType } from "./wotr-card.models";
 import { WotrCardService } from "./wotr-card.service";
@@ -21,8 +20,7 @@ export class WotrDrawEventCardChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const cardId = await this.cardPlayer.drawCard(frontId);
-    return [drawCardIds(cardId)];
+    return this.cardPlayer.drawCard(frontId);
   }
 }
 

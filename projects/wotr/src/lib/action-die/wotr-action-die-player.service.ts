@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrDrawEventCardChoice } from "../card/wotr-card-action-choices";
-import { drawCardIds } from "../card/wotr-card-actions";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import {
   WotrBringCharacterIntoPlayChoice,
@@ -251,11 +250,11 @@ export class WotrActionDiePlayerService {
   }
 
   private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrGameStory> {
-    const cardId = await this.cardPlayer.drawCard(frontId);
+    const actions = await this.cardPlayer.drawCard(frontId);
     return {
       type: "token",
       token: "draw-card",
-      actions: [drawCardIds(cardId)]
+      actions
     };
   }
 

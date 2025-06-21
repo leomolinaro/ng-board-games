@@ -5,7 +5,7 @@ import { WotrActionDiePlayerService } from "../action-die/wotr-action-die-player
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { drawCardIds } from "../card/wotr-card-actions";
+import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import {
@@ -14,7 +14,6 @@ import {
   revealFellowship
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontStore } from "../front/wotr-front.store";
 import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { allocateHuntDice, drawHuntTile, rollHuntDice } from "../hunt/wotr-hunt-actions";
@@ -29,7 +28,6 @@ import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerLocalService implements WotrPlayerService {
-  private frontStore = inject(WotrFrontStore);
   private ui = inject(WotrGameUiStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
@@ -37,20 +35,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private playerActionDieService = inject(WotrActionDiePlayerService);
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
   private regionStore = inject(WotrRegionStore);
+  private cardPlayerService = inject(WotrCardPlayerService);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
-    await this.ui.askSingleOption("Draw cards");
-    const characterDeck = this.frontStore.characterDeck(player.frontId);
-    const strategyDeck = this.frontStore.strategyDeck(player.frontId);
-    const drawnCards: WotrCardId[] = [];
-    if (characterDeck.length) {
-      drawnCards.push(characterDeck[0]);
-    }
-    if (strategyDeck.length) {
-      drawnCards.push(strategyDeck[0]);
-    }
-    this.frontStore.drawCards(drawnCards, player.frontId);
-    return { type: "phase", actions: [drawCardIds(...drawnCards)] };
+    return this.cardPlayerService.firstPhaseDrawCards(player);
   }
 
   async fellowshipPhase(): Promise<WotrGameStory> {
@@ -78,7 +66,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
-    await this.ui.askSingleOption("Roll action dice");
+    await this.ui.askContinue("Roll action dice");
     const nActionDice = this.actionDieService.rollableActionDice(player.frontId);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
@@ -96,7 +84,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollHuntDice(): Promise<WotrGameStory> {
-    await this.ui.askSingleOption("Roll hunt dice");
+    await this.ui.askContinue("Roll hunt dice");
     const huntDice: WotrCombatDie[] = [];
     for (let i = 0; i < this.huntStore.nHuntDice(); i++) {
       huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
@@ -109,7 +97,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
-    await this.ui.askSingleOption("Draw hunt tile");
+    await this.ui.askContinue("Draw hunt tile");
     const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
     return { type: "hunt", actions: [drawHuntTile(huntTile)] };
   }

@@ -77,6 +77,9 @@ export class WotrFrontStore {
   strategyDeck(id: WotrFrontId) {
     return this.front(id).strategyDeck;
   }
+  handCards(id: WotrFrontId) {
+    return this.front(id).handCards;
+  }
   hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
     return !!this.front(frontId).tableCards.includes(cardId);
   }

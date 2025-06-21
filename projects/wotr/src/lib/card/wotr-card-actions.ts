@@ -27,6 +27,9 @@ export interface WotrCardDiscard {
 export function discardCards(...cards: WotrCardLabel[]): WotrCardDiscard {
   return { type: "card-discard", cards: labelsToCardIds(cards) };
 }
+export function discardCardIds(...cards: WotrCardId[]): WotrCardDiscard {
+  return { type: "card-discard", cards };
+}
 export interface WotrCardPlayOnTable {
   type: "card-play-on-table";
   card: WotrCardId;
