@@ -7,7 +7,6 @@ import {
 import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrHuntStory } from "../game/wotr-story.models";
-import { playerLog } from "../log/wotr-log.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt.store";
@@ -55,15 +54,15 @@ export class WotrHuntService {
   private getActionLoggers(): WotrActionLoggerMap<WotrHuntAction> {
     return {
       "hunt-allocation": (action, front, f) => [
-        playerLog(front),
+        f.player(front),
         ` allocates ${this.nDice(action.quantity)} in the Hunt Box`
       ],
       "hunt-re-roll": (action, front, f) => [
-        playerLog(front),
+        f.player(front),
         ` re-rolls ${this.dice(action.dice)} for the hunt`
       ],
       "hunt-roll": (action, front, f) => [
-        playerLog(front),
+        f.player(front),
         ` rolls ${this.dice(action.dice)} for the hunt`
       ],
       "hunt-tile-add": (action, front, f) => [

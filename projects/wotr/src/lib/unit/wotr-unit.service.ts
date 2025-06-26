@@ -244,12 +244,12 @@ export class WotrUnitService {
       ],
       "nazgul-elimination": (action, front, f) => [
         f.player(front),
-        " removes nazgul from ",
+        " removes Nazgul from ",
         f.region(action.region)
       ],
       "nazgul-recruitment": (action, front, f) => [
         f.player(front),
-        " recruits nazgul in ",
+        " recruits Nazgul in ",
         f.region(action.region)
       ],
       "nazgul-movement": (action, front, f) => [
@@ -314,16 +314,16 @@ export class WotrUnitService {
   ): WotrReinforcementUnit[] {
     const units: WotrReinforcementUnit[] = [];
     if (this.nationStore.hasRegularReinforcements(nation)) {
-      units.push({ front: nation.front, nation: nation.id, type: "regular" });
+      units.push({ nation: nation.id, type: "regular" });
     }
     if (constraints.points >= 2 && this.nationStore.hasEliteReinforcements(nation)) {
-      units.push({ front: nation.front, nation: nation.id, type: "elite" });
+      units.push({ nation: nation.id, type: "elite" });
     }
     if (this.nationStore.hasLeaderReinforcements(nation)) {
-      units.push({ front: nation.front, nation: nation.id, type: "leader" });
+      units.push({ nation: nation.id, type: "leader" });
     }
     if (this.nationStore.hasNazgulReinforcements(nation)) {
-      units.push({ front: nation.front, nation: nation.id, type: "nazgul" });
+      units.push({ nation: nation.id, type: "nazgul" });
     }
     return units;
   }
@@ -339,11 +339,20 @@ export class WotrUnitService {
   }
 
   canFrontMoveArmies(frontId: WotrFrontId): boolean {
-    return this.regionStore.regions().some(region => {
-      if (!region.army) return false;
-      if (region.army.front !== frontId) return false;
-      return this.canMoveArmy(region.army, region);
-    });
+    return this.regionStore.regions().some(region => this.canMoveArmyFromRegion(region, frontId));
+  }
+
+  moveArmiesStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
+    return this.regionStore
+      .regions()
+      .filter(region => this.canMoveArmyFromRegion(region, frontId))
+      .map(region => region.id);
+  }
+
+  canMoveArmyFromRegion(region: WotrRegion, frontId: WotrFrontId): boolean {
+    if (!region.army) return false;
+    if (region.army.front !== frontId) return false;
+    return this.canMoveArmy(region.army, region);
   }
 
   canFrontMoveArmiesWithLeader(frontId: WotrFrontId): boolean {

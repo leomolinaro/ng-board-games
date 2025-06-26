@@ -47,7 +47,11 @@ const PSTEPWAR = PSTEP1 + PSTEP;
       <svg:rect
         class="political-marker-rect"
         [attr.transform]="
-          'scale(0.8, 0.8) rotate(45,' + (politicalNode.svgX + 10) + ', ' + (politicalNode.svgY + 16) + ')'
+          'scale(0.8, 0.8) rotate(45,' +
+          (politicalNode.svgX + 10) +
+          ', ' +
+          (politicalNode.svgY + 16) +
+          ')'
         "
         [attr.x]="politicalNode.svgX"
         [attr.y]="politicalNode.svgY"
@@ -83,7 +87,7 @@ export class WotrPoliticalTrackComponent {
   private ui = inject(WotrGameUiStore);
 
   protected nations = this.nationStore.nations;
-  private validNations = this.ui.validNations;
+  private validNations = this.ui.nationSelection;
   private politicalNodeMap!: Record<WotrNationId, WotrPoliticalNode>;
   protected validNationMap: Signal<Partial<Record<WotrNationId, boolean>> | null> = computed(() => {
     const validNations = this.validNations();
@@ -109,7 +113,10 @@ export class WotrPoliticalTrackComponent {
     return nodes;
   });
 
-  private nationToPoliticalNode(nation: WotrNation, oldNode: WotrPoliticalNode | null): WotrPoliticalNode {
+  private nationToPoliticalNode(
+    nation: WotrNation,
+    oldNode: WotrPoliticalNode | null
+  ): WotrPoliticalNode {
     const node: WotrPoliticalNode = {
       id: nation.id,
       nation,
@@ -121,7 +128,10 @@ export class WotrPoliticalTrackComponent {
     return node;
   }
 
-  private politicalMakerXY: Record<WotrNationId, Record<WotrPoliticalStep, { x: number; y: number }>> = {
+  private politicalMakerXY: Record<
+    WotrNationId,
+    Record<WotrPoliticalStep, { x: number; y: number }>
+  > = {
     dwarves: {
       3: { x: PX1, y: PY1 + PSTEP3 },
       2: { x: PX1, y: PY1 + PSTEP2 },

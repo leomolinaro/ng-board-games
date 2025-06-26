@@ -110,7 +110,7 @@ export class WotrActionDiePlayerService {
   }
 
   async resolveArmyResult(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.ui.playerChoice(
+    return this.ui.askChoice(
       "Choose an action for the army die",
       [
         this.moveArmiesChoice,
@@ -147,7 +147,7 @@ export class WotrActionDiePlayerService {
       choices.push(this.moveMinionsChoice);
     }
     choices.push(new WotrSkipDieChoice("character"));
-    return this.ui.playerChoice("Choose an action for the character die", choices, frontId);
+    return this.ui.askChoice("Choose an action for the character die", choices, frontId);
   }
 
   private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrGameStory> {
@@ -168,7 +168,7 @@ export class WotrActionDiePlayerService {
       choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster"));
-    return this.ui.playerChoice("Choose an action for the muster die", choices, frontId);
+    return this.ui.askChoice("Choose an action for the muster die", choices, frontId);
   }
 
   private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
@@ -183,7 +183,7 @@ export class WotrActionDiePlayerService {
       choices.push(new WotrBringCharacterIntoPlayChoice("muster", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("muster-army"));
-    const actions = await this.ui.playerChoice(
+    const actions = await this.ui.askChoice(
       "Choose an action for the muster-army die",
       choices,
       frontId
@@ -206,7 +206,7 @@ export class WotrActionDiePlayerService {
       choices.push(new WotrBringCharacterIntoPlayChoice("will-of-the-west", this.characterService));
     }
     choices.push(new WotrSkipDieChoice("will-of-the-west"));
-    const actions = await this.ui.playerChoice(
+    const actions = await this.ui.askChoice(
       "Choose an action for the Will of the West die",
       choices,
       frontId
@@ -227,7 +227,7 @@ export class WotrActionDiePlayerService {
   }
 
   async resolveEventResult(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.ui.playerChoice(
+    return this.ui.askChoice(
       "Choose an action for the event die",
       [
         this.drawEventCardChoice,

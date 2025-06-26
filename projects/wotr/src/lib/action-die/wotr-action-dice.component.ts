@@ -1,30 +1,50 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, input, output } from "@angular/core";
-import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrFront, WotrFrontId } from "../front/wotr-front.models";
-import { WotrActionChoice, WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
+import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
+
+interface FrontNode {
+  id: WotrFrontId;
+  front: WotrFront;
+  selectable: boolean;
+  disabled: boolean;
+  actionDieNodes: ActionDieNode[];
+  actionTokenNodes: ActionTokendNode[];
+}
+
+interface ActionDieNode {
+  id: WotrActionDie;
+  imageSource: string;
+}
+
+interface ActionTokendNode {
+  id: WotrActionToken;
+  imageSource: string;
+}
 
 @Component({
   selector: "wotr-action-dice",
-  imports: [BgTransformPipe, NgClass],
+  imports: [NgClass],
   template: `
-    @for (front of fronts(); track front.id) {
+    @for (frontNode of frontNodes(); track frontNode.id) {
       <div
         class="wotr-action-dice"
         [ngClass]="{
-          selectable: validActionFront() === front.id,
-          disabled: validActionFront() && validActionFront() !== front.id
+          selectable: frontNode.selectable,
+          disabled: frontNode.disabled
         }">
-        @for (actionDie of front.actionDice; track $index) {
+        @for (actionDieNode of frontNode.actionDieNodes; track $index) {
           <img
-            [src]="actionDie | bgTransform: actionDieImage : front.id"
-            (click)="onActionDieClick(actionDie, front.id)" />
+            [src]="actionDieNode.imageSource"
+            (click)="onActionDieClick(actionDieNode.id, frontNode)" />
         }
-        @for (actionToken of front.actionTokens; track $index) {
+        @for (actionTokenNode of frontNode.actionTokenNodes; track $index) {
           <img
-            [src]="actionToken | bgTransform: actionTokenImage : front.id"
-            (click)="onActionTokenClick(actionToken, front.id)" />
+            [src]="actionTokenNode.imageSource"
+            (click)="onActionTokenClick(actionTokenNode.id, frontNode)" />
         }
       </div>
     }
@@ -46,25 +66,37 @@ import { WotrActionChoice, WotrActionDie, WotrActionToken } from "./wotr-action-
 })
 export class WotrActionDiceComponent {
   protected assets = inject(WotrAssetsService);
+  private ui = inject(WotrGameUiStore);
+  private frontStore = inject(WotrFrontStore);
 
-  fronts = input.required<WotrFront[]>();
-  validActionFront = input.required<WotrFrontId | null>();
-  actionSelect = output<WotrActionChoice>();
+  protected fronts = this.frontStore.fronts;
+  protected actionDieSelection = this.ui.actionDieSelection;
 
-  protected actionDieImage: BgTransformFn<WotrActionDie, string, WotrFrontId> = (actionDie, frontId) =>
-    this.assets.getActionDieImage(actionDie, frontId);
-  protected actionTokenImage: BgTransformFn<WotrActionToken, string, WotrFrontId> = (actionToken, frontId) =>
-    this.assets.getActionTokenImage(actionToken, frontId);
+  protected frontNodes = computed<FrontNode[]>(() => {
+    const actionDieSelection = this.actionDieSelection();
+    return this.fronts().map<FrontNode>(front => ({
+      id: front.id,
+      front,
+      selectable: actionDieSelection?.frontId === front.id,
+      disabled: !!actionDieSelection && actionDieSelection.frontId !== front.id,
+      actionDieNodes: front.actionDice.map<ActionDieNode>(actionDie => ({
+        id: actionDie,
+        imageSource: this.assets.getActionDieImage(actionDie, front.id)
+      })),
+      actionTokenNodes: front.actionTokens.map<ActionTokendNode>(actionToken => ({
+        id: actionToken,
+        imageSource: this.assets.getActionTokenImage(actionToken, front.id)
+      }))
+    }));
+  });
 
-  onActionDieClick(actionDie: WotrActionDie, frontId: WotrFrontId) {
-    if (this.validActionFront() === frontId) {
-      this.actionSelect.emit({ type: "die", die: actionDie });
-    }
+  onActionDieClick(actionDie: WotrActionDie, frontNode: FrontNode) {
+    if (!frontNode.selectable) return;
+    this.ui.actionChoice.emit({ type: "die", die: actionDie });
   }
 
-  onActionTokenClick(actionToken: WotrActionToken, frontId: WotrFrontId) {
-    if (this.validActionFront() === frontId) {
-      this.actionSelect.emit({ type: "token", token: actionToken });
-    }
+  onActionTokenClick(actionToken: WotrActionToken, frontNode: FrontNode) {
+    if (!frontNode.selectable) return;
+    this.ui.actionChoice.emit({ type: "token", token: actionToken });
   }
 }

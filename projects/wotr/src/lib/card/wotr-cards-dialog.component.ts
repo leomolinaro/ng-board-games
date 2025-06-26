@@ -10,13 +10,13 @@ import {
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
-import { WotrValidCards } from "../game/wotr-game-ui.store";
+import { WotrCardSelection } from "../game/wotr-game-ui.store";
 import { WotrCardId } from "./wotr-card.models";
 
 export interface WotrCardsDialogData {
   focusedCardId: WotrCardId | null;
   cardIds: WotrCardId[];
-  selectableCards: WotrValidCards | null;
+  selectableCards: WotrCardSelection | null;
 }
 
 @Component({

@@ -7,7 +7,7 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
   selector: "wotr-options-panel",
   imports: [NgClass, FormsModule],
   template: `
-    @if (ui.canInputQuantity()) {
+    @if (ui.inputQuantitySelection()) {
       <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
         <input
           type="number"
@@ -17,7 +17,7 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
         <button type="submit">Confirm</button>
       </form>
     }
-    @for (option of ui.validOptions(); track option.value) {
+    @for (option of ui.options(); track option.value) {
       <button
         [ngClass]="{ disabled: !!option.disabled }"
         [disabled]="!!option.disabled"

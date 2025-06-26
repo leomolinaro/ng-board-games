@@ -11,34 +11,46 @@ import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit.models";
 
-export interface WotrValidRegionUnits {
-  nArmyUnits: number;
+interface WotrGameUiState {
+  currentPlayerId: WotrFrontId | null;
+  canCancel: boolean;
+  message: string | null;
+  options: WotrPlayerOption[] | null;
+  regionSelection: WotrRegionId[] | null;
+  nationSelection: WotrNationId[] | null;
+  actionDieSelection: WotrActionDieSelection | null;
+  reinforcementUnitSelection: WotrReinforcementUnitSelection | null;
+  regionUnitSelection: WotrRegionUnitSelection | null;
+  cardSelection: WotrCardSelection | null;
+  inputQuantitySelection: WotrInputQuantitySelection | false;
+}
+
+export interface WotrActionDieSelection {
+  frontId: WotrFrontId;
+  tokens: WotrActionToken[];
+}
+
+export interface WotrRegionUnitSelection {
+  regionIds: WotrRegionId[];
+  equalsNArmyUnits?: number;
+  equalsNHits?: number;
+  everyAtWar?: boolean;
+  someLeaders?: boolean;
   underSiege: boolean;
 }
 
-export interface WotrValidCards {
+export interface WotrCardSelection {
   nCards: number;
   frontId: WotrFrontId;
   message: string;
 }
 
-interface WotrGameUiState {
-  currentPlayerId: WotrFrontId | null;
-  canCancel: boolean;
-  message: string | null;
-  validRegions: WotrRegionId[] | null;
-  validNations: WotrNationId[] | null;
-  validActionFront: WotrFrontId | null;
-  validActionTokens: WotrActionToken[] | null;
-  validOptions: WotrAskOption[] | null;
-  validReinforcementUnits: WotrReinforcementUnit[] | null;
-  validRegionUnits: WotrValidRegionUnits | null;
-  validCards: WotrValidCards | null;
-  canPass: boolean;
-  canInputQuantity: WotrGameUiInputQuantity | false;
+export interface WotrReinforcementUnitSelection {
+  units: WotrReinforcementUnit[];
+  frontId: WotrFrontId;
 }
 
-export interface WotrGameUiInputQuantity {
+export interface WotrInputQuantitySelection {
   min: number;
   max: number;
 }
@@ -49,19 +61,17 @@ export const initialState: WotrGameUiState = {
   currentPlayerId: null,
   canCancel: false,
   message: null,
-  validRegions: null,
-  validNations: null,
-  validActionFront: null,
-  validActionTokens: null,
-  validOptions: null,
-  validReinforcementUnits: null,
-  validRegionUnits: null,
-  validCards: null,
-  canPass: false,
-  canInputQuantity: false
+  regionSelection: null,
+  nationSelection: null,
+  actionDieSelection: null,
+  options: null,
+  reinforcementUnitSelection: null,
+  regionUnitSelection: null,
+  cardSelection: null,
+  inputQuantitySelection: false
 };
 
-interface WotrAskOption<O = unknown> {
+interface WotrPlayerOption<O = unknown> {
   value: O;
   label: string;
   disabled?: boolean;
@@ -113,33 +123,33 @@ export class WotrGameUiStore extends signalStore(
 
   inputQuantity = uiEvent<number>();
   async askQuantity(message: string, min: number, max: number): Promise<number> {
-    this.updateUi(s => ({ ...s, message, canInputQuantity: { min, max } }));
+    this.updateUi(s => ({ ...s, message, inputQuantitySelection: { min, max } }));
     const quantity = await this.inputQuantity.get();
-    this.updateUi(s => ({ ...s, message: null, canInputQuantity: false }));
+    this.updateUi(s => ({ ...s, message: null, inputQuantitySelection: false }));
     return quantity;
   }
 
   region = uiEvent<WotrRegionId>();
-  async askRegion(message: string, validRegions: WotrRegionId[]): Promise<WotrRegionId> {
-    this.updateUi(s => ({ ...s, message, validRegions }));
+  async askRegion(message: string, regionSelection: WotrRegionId[]): Promise<WotrRegionId> {
+    this.updateUi(s => ({ ...s, message, regionSelection }));
     const region = await this.region.get();
-    this.updateUi(s => ({ ...s, message: null, validRegions: null }));
+    this.updateUi(s => ({ ...s, message: null, regionSelection: null }));
     return region;
   }
 
   cards = uiEvent<WotrCardId[]>();
-  async askCards(message: string, validCards: WotrValidCards): Promise<WotrCardId[]> {
-    this.updateUi(s => ({ ...s, message, validCards }));
+  async askCards(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId[]> {
+    this.updateUi(s => ({ ...s, message, cardSelection }));
     const cards = await this.cards.get();
-    this.updateUi(s => ({ ...s, message: null, validCards: null }));
+    this.updateUi(s => ({ ...s, message: null, cardSelection: null }));
     return cards;
   }
 
   nation = uiEvent<WotrNationId>();
-  async askNation(message: string, validNations: WotrNationId[]): Promise<WotrNationId> {
-    this.updateUi(s => ({ ...s, message, validNations }));
+  async askNation(message: string, nationSelection: WotrNationId[]): Promise<WotrNationId> {
+    this.updateUi(s => ({ ...s, message, nationSelection }));
     const nation = await this.nation.get();
-    this.updateUi(s => ({ ...s, message: null, validNations: null }));
+    this.updateUi(s => ({ ...s, message: null, nationSelection: null }));
     return nation;
   }
 
@@ -147,51 +157,49 @@ export class WotrGameUiStore extends signalStore(
   async askActionDie(
     message: string,
     frontId: WotrFrontId,
-    validActionTokens: WotrActionToken[]
+    tokens: WotrActionToken[]
   ): Promise<WotrActionChoice> {
-    this.updateUi(s => ({ ...s, message, validActionFront: frontId, validActionTokens }));
+    this.updateUi(s => ({ ...s, message, actionDieSelection: { frontId, tokens } }));
     const actionDieOrToken = await this.actionChoice.get();
-    this.updateUi(s => ({ ...s, message: null, validActionFront: null, validActionTokens: null }));
+    this.updateUi(s => ({ ...s, message: null, actionDieSelection: null }));
     return actionDieOrToken;
   }
 
-  option = uiEvent<WotrAskOption>();
-  async askOption<O>(message: string, options: WotrAskOption<O>[]): Promise<O> {
-    this.updateUi(s => ({ ...s, message, validOptions: options }));
+  option = uiEvent<WotrPlayerOption>();
+  async askOption<O>(message: string, options: WotrPlayerOption<O>[]): Promise<O> {
+    this.updateUi(s => ({ ...s, message, options: options }));
     const option = await this.option.get();
-    this.updateUi(s => ({ ...s, message: null, validOptions: null }));
+    this.updateUi(s => ({ ...s, message: null, options: null }));
     return option.value as O;
   }
 
   reinforcementUnit = uiEvent<WotrReinforcementUnit>();
   async askReinforcementUnit(
     message: string,
-    validReinforcementUnits: WotrReinforcementUnit[]
+    reinforcementUnitSelection: WotrReinforcementUnitSelection
   ): Promise<WotrReinforcementUnit> {
-    this.updateUi(s => ({ ...s, message, validReinforcementUnits }));
+    this.updateUi(s => ({ ...s, message, reinforcementUnitSelection }));
     const reinforcementUnit = await this.reinforcementUnit.get();
-    this.updateUi(s => ({ ...s, message: null, validReinforcementUnits: null }));
+    this.updateUi(s => ({ ...s, message: null, reinforcementUnitSelection: null }));
     return reinforcementUnit;
   }
 
   regionUnits = uiEvent<WotrUnits>();
   async askRegionUnits(
     message: string,
-    regionId: WotrRegionId,
-    validUnits: WotrValidRegionUnits
+    unitSelection: WotrRegionUnitSelection
   ): Promise<WotrUnits> {
     this.updateUi(s => ({
       ...s,
       message,
-      validRegionUnits: validUnits,
-      validRegions: [regionId]
+      regionUnitSelection: unitSelection
     }));
     const regionUnits = await this.regionUnits.get();
-    this.updateUi(s => ({ ...s, message: null, validRegionUnits: null, validRegions: null }));
+    this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null, regionSelection: null }));
     return regionUnits;
   }
 
-  async playerChoice<P = WotrFrontId>(
+  async askChoice<P = WotrFrontId>(
     message: string,
     choices: WotrPlayerChoice<P>[],
     params: P
@@ -207,7 +215,7 @@ export class WotrGameUiStore extends signalStore(
     return choice.resolve(params);
   }
 
-  askCard(message: string, validCards: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {
+  askCard(message: string, cardSelection: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {
     throw new Error("Method not implemented.");
   }
 

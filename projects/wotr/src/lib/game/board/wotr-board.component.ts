@@ -31,7 +31,8 @@ import { WotrOptionsPanelComponent } from "../../player/wotr-options-panel.compo
 import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.component";
 import {
   WotrRegionDialogComponent,
-  WotrRegionDialogData
+  WotrRegionDialogData,
+  WotrRegionDialogResult
 } from "../../region/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
@@ -65,7 +66,6 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
           [shadow]="shadow()"
           [fellowship]="fellowshipStore.state()"
           [characterById]="characterById()"
-          [validRegions]="ui.validRegions()"
           (regionClick)="onRegionClick($event)">
         </wotr-map>
         <wotr-options-panel class="wotr-options-panel"></wotr-options-panel>
@@ -98,11 +98,7 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
         </mat-tab-group>
       </div>
       <div class="wotr-action-dice-box">
-        <wotr-action-dice
-          [fronts]="fronts()"
-          [validActionFront]="ui.validActionFront()"
-          (actionSelect)="ui.actionChoice.emit($event)">
-        </wotr-action-dice>
+        <wotr-action-dice></wotr-action-dice>
       </div>
       <div class="wotr-logs">
         <wotr-replay-buttons
@@ -153,32 +149,32 @@ export class WotrBoardComponent {
 
   protected selectedFrontIndex = signal<number>(0);
   private focusFront = effect(() => {
-    const validReinforcementUnits = this.ui.validReinforcementUnits();
-    const validCards = this.ui.validCards();
-    if (!validReinforcementUnits && !validCards) return;
-    const frontId = validReinforcementUnits
-      ? validReinforcementUnits[0].front
-      : validCards!.frontId;
+    const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
+    const cardSelection = this.ui.cardSelection();
+    if (!reinforcementUnitSelection && !cardSelection) return;
+    const frontId = reinforcementUnitSelection
+      ? reinforcementUnitSelection.frontId
+      : cardSelection!.frontId;
     this.selectedFrontIndex.set(frontId === "free-peoples" ? 0 : 1);
   });
 
   private focusRegion = effect(() => {
-    const validRegionUnits = this.ui.validRegionUnits();
-    if (!validRegionUnits) return;
-    const validRegion = this.ui.validRegions()![0];
-    const region = this.regionStore.region(validRegion);
+    const regionUnitSelection = this.ui.regionUnitSelection();
+    if (!regionUnitSelection) return;
+    if (regionUnitSelection.regionIds.length !== 1) return;
+    const region = this.regionStore.region(regionUnitSelection.regionIds[0]);
     this.openRegionDialog(region);
   });
 
   private focusCards = effect(() => {
-    const validCards = this.ui.validCards();
-    if (!validCards) return;
-    this.openCardsDialog(null, validCards.frontId);
+    const cardSelection = this.ui.cardSelection();
+    if (!cardSelection) return;
+    this.openCardsDialog(null, cardSelection.frontId);
   });
 
   private regionDialogRef: MatDialogRef<
     WotrRegionDialogComponent,
-    boolean | WotrUnits | undefined
+    true | WotrUnits | { removing: WotrUnits; declassing: WotrUnits }
   > | null = null;
 
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
@@ -195,7 +191,7 @@ export class WotrBoardComponent {
       data: {
         focusedCardId: cardId,
         cardIds: front.handCards,
-        selectableCards: this.ui.validCards()
+        selectableCards: this.ui.cardSelection()
       },
       panelClass: "wotr-cards-overlay-panel",
       width: "100%",
@@ -209,20 +205,21 @@ export class WotrBoardComponent {
   }
 
   private async openRegionDialog(region: WotrRegion) {
-    const validRegionUnits = this.ui.validRegionUnits();
+    const regionUnitSelection = this.ui.regionUnitSelection();
+    const data: WotrRegionDialogData = {
+      region,
+      nationById: this.nationById(),
+      characterById: this.characterById(),
+      fellowship: this.fellowshipStore.state(),
+      regionSelection: this.ui.regionSelection()?.includes(region.id) ?? false,
+      unitSelection: regionUnitSelection
+    };
     this.regionDialogRef = this.dialog.open<
       WotrRegionDialogComponent,
       WotrRegionDialogData,
-      boolean | WotrUnits | undefined
+      WotrRegionDialogResult
     >(WotrRegionDialogComponent, {
-      data: {
-        region,
-        nationById: this.nationById(),
-        characterById: this.characterById(),
-        fellowship: this.fellowshipStore.state(),
-        selectable: !validRegionUnits && (this.ui.validRegions()?.includes(region.id) ?? false),
-        selectableUnits: validRegionUnits
-      },
+      data,
       panelClass: "mat-typography"
     });
     const result = await firstValueFrom(this.regionDialogRef.afterClosed());
@@ -230,10 +227,11 @@ export class WotrBoardComponent {
     if (result) {
       if (result === true) {
         this.ui.region.emit(region.id);
+      } else if ("removing" in result || "declassing" in result) {
+        throw new Error("Removing or declassing units is not implemented yet.");
       } else {
         this.ui.regionUnits.emit(result);
       }
-      this.ui.region.emit(region.id);
     }
   }
 

@@ -107,7 +107,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     const choices: WotrPlayerChoice<WotrHuntEffectChoiceParams>[] = [
       this.fellowshipCorruptionChoice
     ];
-    const actions = await this.ui.playerChoice(`Absorbe ${damage} hunt damage points`, choices, {
+    const actions = await this.ui.askChoice(`Absorbe ${damage} hunt damage points`, choices, {
       damage
     });
     return { type: "hunt", actions };

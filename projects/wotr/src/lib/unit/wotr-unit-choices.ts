@@ -13,6 +13,7 @@ import {
   recruitNazgul,
   recruitRegularUnit
 } from "./wotr-unit-actions";
+import { WotrUnitPlayerService } from "./wotr-unit-player.service";
 import { WotrArmy } from "./wotr-unit.models";
 import { WotrRecruitmentConstraints, WotrUnitService } from "./wotr-unit.service";
 
@@ -36,6 +37,7 @@ export class WotrAttackArmyChoice implements WotrPlayerChoice {
 @Injectable({ providedIn: "root" })
 export class WotrMoveArmiesChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
+  private unitPlayerService = inject(WotrUnitPlayerService);
 
   label(): string {
     return "Move armies";
@@ -46,7 +48,7 @@ export class WotrMoveArmiesChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return this.unitPlayerService.moveArmies(2, frontId);
   }
 }
 
@@ -76,7 +78,10 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
         exludedRegions: exludedRegions
       };
       const validUnits = this.unitService.validFrontReinforcementUnits(frontId, constraints);
-      const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", validUnits);
+      const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+        units: validUnits,
+        frontId: frontId
+      });
       points += unit.type === "elite" ? 2 : 1;
       const nation = this.nationStore.nation(unit.nation);
       const validRegions = this.regionStore
@@ -126,8 +131,9 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
   ): Promise<WotrAction[]> {
     const nArmyUnits = this.armyUtils.nArmyUnits(army);
     if (nArmyUnits <= stackingLimit) return [];
-    const units = await this.ui.askRegionUnits("Choose a unit to remove", regionId, {
-      nArmyUnits: nArmyUnits - stackingLimit,
+    const units = await this.ui.askRegionUnits("Choose a unit to remove", {
+      regionIds: [regionId],
+      equalsNArmyUnits: nArmyUnits - stackingLimit,
       underSiege
     });
     const actions: WotrAction[] = [];

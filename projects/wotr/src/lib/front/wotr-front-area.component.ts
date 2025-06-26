@@ -59,7 +59,7 @@ function initValidUnits(): ValidUnits {
       <mat-tab label="Reinforcements">
         <div class="reinforcements">
           @for (nation of nations(); track nation.id) {
-            @let validUnits = validReinforcementUnits()?.[nation.id];
+            @let validUnits = reinforcementUnitSelection()?.[nation.id];
             @for (i of nation.reinforcements.regular | bgTransform: range; track i) {
               <img
                 class="reinforcement-unit"
@@ -225,22 +225,22 @@ export class WotrFrontAreaComponent {
 
   protected selectedTabIndex = signal<number>(0);
   private focusReinforcements = effect(() => {
-    const validReinforcementUnits = this.ui.validReinforcementUnits();
-    if (!validReinforcementUnits) return;
-    if (!validReinforcementUnits.some(u => u.front === this.front().id)) return;
+    const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
+    if (!reinforcementUnitSelection) return;
+    if (reinforcementUnitSelection.frontId !== this.front().id) return;
     this.selectedTabIndex.set(1);
   });
 
   private focusCards = effect(() => {
-    const validCards = this.ui.validCards();
-    if (!validCards) return;
-    if (validCards.frontId !== this.front().id) return;
+    const cardSelection = this.ui.cardSelection();
+    if (!cardSelection) return;
+    if (cardSelection.frontId !== this.front().id) return;
     this.selectedTabIndex.set(0);
   });
 
-  protected validReinforcementUnits = computed<Record<WotrNationId, ValidUnits> | null>(() => {
-    const validReinforcementUnits = this.ui.validReinforcementUnits();
-    if (!validReinforcementUnits) return null;
+  protected reinforcementUnitSelection = computed<Record<WotrNationId, ValidUnits> | null>(() => {
+    const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
+    if (!reinforcementUnitSelection) return null;
     const validUnitsByNation: Record<WotrNationId, ValidUnits> = {
       dwarves: initValidUnits(),
       elves: initValidUnits(),
@@ -251,7 +251,7 @@ export class WotrFrontAreaComponent {
       sauron: initValidUnits(),
       north: initValidUnits()
     };
-    for (const u of validReinforcementUnits) {
+    for (const u of reinforcementUnitSelection.units) {
       const validUnits = validUnitsByNation[u.nation];
       switch (u.type) {
         case "regular":
@@ -272,11 +272,11 @@ export class WotrFrontAreaComponent {
   });
 
   onReinforcementUnitSelect(type: WotrGenericUnitType, nationId: WotrNationId) {
-    const validReinforcementUnits = this.ui.validReinforcementUnits();
-    if (!validReinforcementUnits) return;
-    if (!validReinforcementUnits.some(u => u.nation === nationId && u.type === type)) return;
+    const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
+    if (!reinforcementUnitSelection) return;
+    if (!reinforcementUnitSelection.units.some(u => u.nation === nationId && u.type === type))
+      return;
     this.ui.reinforcementUnit.emit({
-      front: this.front().id,
       nation: nationId,
       type
     });

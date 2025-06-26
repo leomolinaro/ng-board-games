@@ -10,7 +10,7 @@ import {
   output
 } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
-import { arrayUtil, downloadUtil } from "@leobg/commons/utils";
+import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../../../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character.models";
 import { WotrFellowship } from "../../../fellowship/wotr-fellowhip.models";
@@ -26,6 +26,7 @@ import { WotrHuntState } from "../../../hunt/wotr-hunt.store";
 import { WotrPoliticalTrackComponent } from "../../../nation/wotr-political-track.component";
 import { WotrRegion, WotrRegionId } from "../../../region/wotr-region.models";
 import { WotrRegionsComponent } from "../../../region/wotr-regions.component";
+import { WotrGameUiStore } from "../../wotr-game-ui.store";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapService } from "./wotr-map.service";
 
@@ -66,7 +67,6 @@ const GRID_STEP = 10;
           [regions]="regions()"
           [fellowship]="fellowship()"
           [characterById]="characterById()"
-          [validRegions]="validRegions()"
           (regionClick)="regionClick.emit($event)"></svg:g>
         <svg:g wotrPoliticalTrack></svg:g>
         <svg:g
@@ -105,6 +105,7 @@ export class WotrMapComponent {
   private mapService = inject(WotrMapService);
   private assets = inject(WotrAssetsService);
   private slotsGeneratorService = inject(WotrMapSlotsGeneratorService);
+  private ui = inject(WotrGameUiStore);
 
   regions = input.required<WotrRegion[]>();
   hunt = input.required<WotrHuntState[]>();
@@ -112,16 +113,7 @@ export class WotrMapComponent {
   shadow = input.required<WotrFront>();
   fellowship = input.required<WotrFellowship[]>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
-  validRegions = input.required<WotrRegionId[] | null>();
   fronts = computed(() => [this.freePeoples(), this.shadow()]);
-
-  validRegionById = computed<Partial<Record<WotrRegionId, boolean>>>(() => {
-    return arrayUtil.toMap(
-      this.validRegions() ?? [],
-      region => region,
-      () => true
-    );
-  });
 
   regionClick = output<WotrRegion>();
 
@@ -162,7 +154,12 @@ export class WotrMapComponent {
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;
-    const slots = this.slotsGeneratorService.generateSlots(this.regions(), xMax, yMax, coordinatesToAreaId);
+    const slots = this.slotsGeneratorService.generateSlots(
+      this.regions(),
+      xMax,
+      yMax,
+      coordinatesToAreaId
+    );
     downloadUtil.downloadJson(slots, "wotr-map-slots.json");
   }
 }

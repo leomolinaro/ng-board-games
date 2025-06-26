@@ -35,7 +35,6 @@ export interface WotrNationUnit {
 }
 
 export interface WotrReinforcementUnit {
-  front: WotrFrontId;
   nation: WotrNationId;
   type: WotrGenericUnitType;
 }
