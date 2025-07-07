@@ -7,8 +7,12 @@ export type WotrUnitAction =
   | WotrNazgulMovement
   | WotrRegularUnitRecruitment
   | WotrRegularUnitElimination
+  | WotrRegulardUnitUpgrade
+  | WotrRegularUnitDisband
   | WotrEliteUnitRecruitment
   | WotrEliteUnitElimination
+  | WotrEliteUnitDowngrade
+  | WotrEliteUnitDisband
   | WotrLeaderRecruitment
   | WotrLeaderElimination
   | WotrNazgulRecruitment
@@ -26,13 +30,17 @@ export interface WotrArmyMovement {
 export function moveArmies(...movements: WotrArmyMovement[]): WotrArmyMovements {
   return { type: "army-movements", movements };
 }
-// eslint-disable-next-line @typescript-eslint/no-shadow
 export function armyMovement(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   leftUnits?: WotrUnits
 ): WotrArmyMovement {
-  return { fromRegion, toRegion, leftUnits };
+  const movement: WotrArmyMovement = { fromRegion, toRegion };
+  if (leftUnits) {
+    movement.leftUnits = leftUnits;
+  }
+  return movement;
 }
 export function leftUnits(...comp: WotrUnitComposer[]): WotrUnits {
   return comp.reduce((units, u) => u.addTo(units), {});
@@ -44,7 +52,11 @@ export interface WotrNazgulMovement {
   toRegion: WotrRegionId;
   nNazgul: number;
 }
-export function moveNazgul(fromRegion: WotrRegionId, toRegion: WotrRegionId, nNazgul: number = 1): WotrNazgulMovement {
+export function moveNazgul(
+  fromRegion: WotrRegionId,
+  toRegion: WotrRegionId,
+  nNazgul: number = 1
+): WotrNazgulMovement {
   return { type: "nazgul-movement", fromRegion, toRegion, nNazgul };
 }
 
@@ -75,6 +87,34 @@ export function eliminateRegularUnit(
   return { type: "regular-unit-elimination", region, nation, quantity };
 }
 
+export interface WotrRegulardUnitUpgrade {
+  type: "regular-unit-upgrade";
+  region: WotrRegionId;
+  quantity: number;
+  nation: WotrNationId;
+}
+export function upgradeRegularUnit(
+  region: WotrRegionId,
+  nation: WotrNationId,
+  quantity: number = 1
+): WotrRegulardUnitUpgrade {
+  return { type: "regular-unit-upgrade", region, nation, quantity };
+}
+
+export interface WotrRegularUnitDisband {
+  type: "regular-unit-disband";
+  region: WotrRegionId;
+  quantity: number;
+  nation: WotrNationId;
+}
+export function disbandRegularUnit(
+  region: WotrRegionId,
+  nation: WotrNationId,
+  quantity: number = 1
+): WotrRegularUnitDisband {
+  return { type: "regular-unit-disband", region, nation, quantity };
+}
+
 export interface WotrEliteUnitRecruitment {
   type: "elite-unit-recruitment";
   region: WotrRegionId;
@@ -88,6 +128,7 @@ export function recruitEliteUnit(
 ): WotrEliteUnitRecruitment {
   return { type: "elite-unit-recruitment", region, nation, quantity };
 }
+
 export interface WotrEliteUnitElimination {
   type: "elite-unit-elimination";
   region: WotrRegionId;
@@ -102,13 +143,45 @@ export function eliminateEliteUnit(
   return { type: "elite-unit-elimination", region, nation, quantity };
 }
 
+export interface WotrEliteUnitDowngrade {
+  type: "elite-unit-downgrade";
+  region: WotrRegionId;
+  quantity: number;
+  nation: WotrNationId;
+}
+export function downgradeEliteUnit(
+  region: WotrRegionId,
+  nation: WotrNationId,
+  quantity: number = 1
+): WotrEliteUnitDowngrade {
+  return { type: "elite-unit-downgrade", region, nation, quantity };
+}
+
+export interface WotrEliteUnitDisband {
+  type: "elite-unit-disband";
+  region: WotrRegionId;
+  quantity: number;
+  nation: WotrNationId;
+}
+export function disbandEliteUnit(
+  region: WotrRegionId,
+  nation: WotrNationId,
+  quantity: number = 1
+): WotrEliteUnitDisband {
+  return { type: "elite-unit-disband", region, nation, quantity };
+}
+
 export interface WotrLeaderRecruitment {
   type: "leader-recruitment";
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
 }
-export function recruitLeader(region: WotrRegionId, nation: WotrNationId, quantity: number = 1): WotrLeaderRecruitment {
+export function recruitLeader(
+  region: WotrRegionId,
+  nation: WotrNationId,
+  quantity: number = 1
+): WotrLeaderRecruitment {
   return { type: "leader-recruitment", region, nation, quantity };
 }
 export interface WotrLeaderElimination {

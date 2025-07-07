@@ -7,7 +7,7 @@ import {
   output,
   signal
 } from "@angular/core";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
@@ -32,11 +32,12 @@ import { WotrPlayerToolbarComponent } from "../../player/wotr-player-toolbar.com
 import {
   WotrRegionDialogComponent,
   WotrRegionDialogData,
+  WotrRegionDialogRef,
   WotrRegionDialogResult
 } from "../../region/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
-import { WotrUnits } from "../../unit/wotr-unit.models";
+import { WotrRegionUnits } from "../../unit/wotr-unit.models";
 import { WotrGameUiStore } from "../wotr-game-ui.store";
 import { WotrMapComponent } from "./map/wotr-map.component";
 import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
@@ -172,10 +173,7 @@ export class WotrBoardComponent {
     this.openCardsDialog(null, cardSelection.frontId);
   });
 
-  private regionDialogRef: MatDialogRef<
-    WotrRegionDialogComponent,
-    true | WotrUnits | { removing: WotrUnits; declassing: WotrUnits }
-  > | null = null;
+  private regionDialogRef: WotrRegionDialogRef | null = null;
 
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
     this.openCardsDialog(cardId, frontId);
@@ -230,7 +228,8 @@ export class WotrBoardComponent {
       } else if ("removing" in result || "declassing" in result) {
         throw new Error("Removing or declassing units is not implemented yet.");
       } else {
-        this.ui.regionUnits.emit(result);
+        const regionUnits: WotrRegionUnits = { ...result, regionId: region.id };
+        this.ui.regionUnits.emit(regionUnits);
       }
     }
   }

@@ -1,15 +1,7 @@
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGenericUnitType, WotrNationId } from "../nation/wotr-nation.models";
-
-export interface WotrArmy {
-  front: WotrFrontId;
-  regulars?: WotrNationUnit[];
-  elites?: WotrNationUnit[];
-  leaders?: WotrNationUnit[];
-  nNazgul?: number;
-  characters?: WotrCharacterId[];
-}
+import { WotrRegionId } from "../region/wotr-region.models";
 
 export interface WotrUnits {
   regulars?: WotrNationUnit[];
@@ -17,6 +9,14 @@ export interface WotrUnits {
   leaders?: WotrNationUnit[];
   nNazgul?: number;
   characters?: WotrCharacterId[];
+}
+
+export interface WotrArmy extends WotrUnits {
+  front: WotrFrontId;
+}
+
+export interface WotrRegionUnits extends WotrUnits {
+  regionId: WotrRegionId;
 }
 
 export interface WotrFreeUnits {

@@ -23,7 +23,11 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
-import { WotrEliteUnitElimination, WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
+import {
+  WotrEliteUnitDowngrade,
+  WotrEliteUnitElimination,
+  WotrRegularUnitElimination
+} from "../unit/wotr-unit-actions";
 import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
@@ -530,11 +534,9 @@ export class WotrBattleService {
   ) {
     if (oppositeCombatFront.nTotalHits) {
       const story = await combatFront.player.chooseCasualties();
-      const actions = filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination>(
-        story,
-        "regular-unit-elimination",
-        "elite-unit-elimination"
-      );
+      const actions = filterActions<
+        WotrRegularUnitElimination | WotrEliteUnitElimination | WotrEliteUnitDowngrade
+      >(story, "regular-unit-elimination", "elite-unit-elimination", "elite-unit-downgrade");
       return actions;
     }
     return null;

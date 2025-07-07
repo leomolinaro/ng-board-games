@@ -9,7 +9,7 @@ import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit.models";
+import { WotrRegionUnits, WotrReinforcementUnit } from "../unit/wotr-unit.models";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -184,11 +184,11 @@ export class WotrGameUiStore extends signalStore(
     return reinforcementUnit;
   }
 
-  regionUnits = uiEvent<WotrUnits>();
+  regionUnits = uiEvent<WotrRegionUnits>();
   async askRegionUnits(
     message: string,
     unitSelection: WotrRegionUnitSelection
-  ): Promise<WotrUnits> {
+  ): Promise<WotrRegionUnits> {
     this.updateUi(s => ({
       ...s,
       message,

@@ -5,16 +5,14 @@ import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtils } from "./wotr-army.utils";
 import {
-  eliminateRegularUnit,
+  moveArmies,
   recruitEliteUnit,
   recruitLeader,
   recruitNazgul,
   recruitRegularUnit
 } from "./wotr-unit-actions";
 import { WotrUnitPlayerService } from "./wotr-unit-player.service";
-import { WotrArmy } from "./wotr-unit.models";
 import { WotrRecruitmentConstraints, WotrUnitService } from "./wotr-unit.service";
 
 @Injectable({ providedIn: "root" })
@@ -48,7 +46,8 @@ export class WotrMoveArmiesChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.unitPlayerService.moveArmies(2, frontId);
+    const movements = await this.unitPlayerService.moveArmies(2, frontId);
+    return [moveArmies(...movements)];
   }
 }
 
@@ -57,7 +56,7 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
-  private armyUtils = inject(WotrArmyUtils);
+  private unitPlayerService = inject(WotrUnitPlayerService);
   private ui = inject(WotrGameUiStore);
 
   label(): string {
@@ -118,46 +117,9 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
           break;
         }
       }
-      actions.push(...(await this.checkStackingLimit(regionId, frontId)));
+      actions.push(...(await this.unitPlayerService.checkStackingLimit(regionId, frontId)));
     }
     return actions;
-  }
-
-  private async checkArmyStackingLimit(
-    army: WotrArmy,
-    regionId: WotrRegionId,
-    stackingLimit: number,
-    underSiege: boolean
-  ): Promise<WotrAction[]> {
-    const nArmyUnits = this.armyUtils.nArmyUnits(army);
-    if (nArmyUnits <= stackingLimit) return [];
-    const units = await this.ui.askRegionUnits("Choose a unit to remove", {
-      regionIds: [regionId],
-      equalsNArmyUnits: nArmyUnits - stackingLimit,
-      underSiege
-    });
-    const actions: WotrAction[] = [];
-    units.regulars?.forEach(unit =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
-    );
-    units.elites?.forEach(unit =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
-    );
-    return actions;
-  }
-
-  private async checkStackingLimit(
-    regionId: WotrRegionId,
-    frontId: WotrFrontId
-  ): Promise<WotrAction[]> {
-    const region = this.regionStore.region(regionId);
-    if (region.army?.front === frontId) {
-      return this.checkArmyStackingLimit(region.army, regionId, 10, false);
-    }
-    if (region.underSiegeArmy?.front === frontId) {
-      return this.checkArmyStackingLimit(region.underSiegeArmy, regionId, 5, true);
-    }
-    return [];
   }
 }
 

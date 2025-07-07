@@ -391,71 +391,72 @@ export function initialeState(): WotrRegionState {
         [], false),
       // prettier-ignore
       "dale": initialRegion("dale", "Dale", "north", false, "city",
-        [],
+        ["erebor", "iron-hills", "vale-of-the-carnen", "northern-rhovanion", "old-forest-road", "woodland-realm", "withered-heath"],
         [], false),
       // prettier-ignore
       "erebor": initialRegion("erebor", "Erebor", "dwarves", false, "stronghold",
-        [],
+        ["iron-hills", "dale", "withered-heath"],
         [], false),
       // prettier-ignore
       "iron-hills": initialRegion("iron-hills", "Iron Hills", "dwarves", false, "town",
-        [],
+        ["east-rhun", "vale-of-the-carnen", "dale", "erebor"],
         [], false),
       // prettier-ignore
       "north-rhun": initialRegion("north-rhun", "North Rhun", "southrons", false, "town",
-        [],
+        ["east-rhun", "northern-rhovanion", "vale-of-the-celduin", "vale-of-the-carnen"],
         [], false),
       // prettier-ignore
       "east-rhun": initialRegion("east-rhun", "East Rhun", "southrons", false, null,
-        [],
+        ["iron-hills", "south-rhun", "north-rhun", "vale-of-the-carnen"],
         [], false),
       // prettier-ignore
       "south-rhun": initialRegion("south-rhun", "South Rhun", "southrons", false, "town",
-        [],
-        [], false),
+        ["east-rhun", "ash-mountains", "southern-dorwinion"],
+        ["barad-dur"], false),
       // prettier-ignore
-      "morannon": initialRegion("morannon", "Morannon", "sauron", false, "stronghold", [],
-        [], false),
+      "morannon": initialRegion("morannon", "Morannon", "sauron", false, "stronghold",
+        ["dagorlad", "gorgoroth"],
+        ["ash-mountains", "barad-dur", "minas-morgul", "north-ithilien"], false),
       // prettier-ignore
       "minas-morgul": initialRegion("minas-morgul", "Minas Morgul", "sauron", false, "stronghold",
-        [],
-        [], false),
+        ["gorgoroth", "south-ithilien", "north-ithilien"],
+        ["morannon"], false),
       // prettier-ignore
       "gorgoroth": initialRegion("gorgoroth", "Gorgoroth", "sauron", false, null,
-        [],
-        [], false),
+        ["barad-dur", "nurn", "minas-morgul", "morannon"],
+        ["south-ithilien", "south-rhun", "khand"], false),
       // prettier-ignore
       "nurn": initialRegion("nurn", "Nurn", "sauron", false, "town",
-        [],
-        [], false),
+        ["gorgoroth"],
+        ["khand", "east-harondor", "south-ithilien"], false),
       // prettier-ignore
       "barad-dur": initialRegion("barad-dur", "Barad-dur", "sauron", false, "stronghold",
-        [],
-        [], false),
+        ["gorgoroth"],
+        ["south-rhun", "morannon", "ash-mountains"], false),
       // prettier-ignore
       "west-harondor": initialRegion("west-harondor", "West Harondor", null, false, null,
-        [],
+        ["pelargir", "osgiliath", "south-ithilien", "east-harondor", "near-harad", "umbar"],
         [], true),
       // prettier-ignore
       "east-harondor": initialRegion("east-harondor", "East Harondor", null, false, null,
-        [],
-        [], false),
+        ["south-ithilien", "near-harad", "west-harondor"],
+        ["nurn", "khand"], false),
       // prettier-ignore
       "umbar": initialRegion("umbar", "Umbar", "southrons", false, "stronghold",
-        [],
+        ["west-harondor", "near-harad"],
         [], true),
       // prettier-ignore
       "near-harad": initialRegion("near-harad", "Near Harad", "southrons", false, "town",
-        [],
+        ["east-harondor", "khand", "far-harad", "umbar", "west-harondor"],
         [], false),
       // prettier-ignore
       "far-harad": initialRegion("far-harad", "Far Harad", "southrons", false, "city",
-        [],
+        ["khand", "near-harad"],
         [], false),
       // prettier-ignore
       "khand": initialRegion("khand", "Khand", "southrons", false, null,
-        [],
-        [], false)
+        ["far-harad", "near-harad"],
+        ["east-harondor", "nurn"], false)
     }
   };
 }

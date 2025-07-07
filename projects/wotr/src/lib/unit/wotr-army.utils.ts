@@ -243,12 +243,8 @@ export class WotrArmyUtils {
     army: WotrArmy | undefined,
     splittedUnits: WotrUnits | undefined
   ): WotrArmy | undefined {
-    if (!army) {
-      throw new Error("splitArmy");
-    }
-    if (!splittedUnits) {
-      return army;
-    }
+    if (!army) throw new Error("splitArmy");
+    if (!splittedUnits) return army;
     let newArmy: WotrArmy | undefined = army;
     if (splittedUnits.regulars) {
       newArmy = splittedUnits.regulars.reduce<WotrArmy | undefined>(
