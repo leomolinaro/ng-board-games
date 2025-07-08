@@ -157,6 +157,10 @@ export class WotrActionDieService {
     }
   }
 
+  canSkipTokens(frontId: WotrFrontId): boolean {
+    return !this.frontStore.hasActionDice(frontId);
+  }
+
   canPassAction(frontId: WotrFrontId): boolean {
     // Can pass only if the opponent has more action dice left
     const opponent = oppositeFront(frontId);

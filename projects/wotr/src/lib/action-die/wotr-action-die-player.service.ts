@@ -62,11 +62,19 @@ export class WotrActionDiePlayerService {
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
-    const canPass = this.actionDieService.canPassAction(player.frontId);
-    if (canPass) {
-      const pass = await this.ui.askConfirm("Do you want to pass?");
-      if (pass) {
-        return { type: "die-pass" };
+    const canSkipTokens = this.actionDieService.canSkipTokens(player.frontId);
+    if (canSkipTokens) {
+      const skipTokens = await this.ui.askConfirm("Do you want to skip action tokens?");
+      if (skipTokens) {
+        return { type: "token-skip" };
+      }
+    } else {
+      const canPass = this.actionDieService.canPassAction(player.frontId);
+      if (canPass) {
+        const pass = await this.ui.askConfirm("Do you want to pass?");
+        if (pass) {
+          return { type: "die-pass" };
+        }
       }
     }
     const playableTokens = this.actionDieService.playableTokens(player.frontId);
