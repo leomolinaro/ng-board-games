@@ -16,11 +16,11 @@ export class WotrBringCharacterIntoPlayChoice implements WotrPlayerChoice {
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.characterService.canrBringCharacterIntoPlay(this.die, frontId);
+    return this.characterService.canBringCharacterIntoPlay(this.die, frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return this.characterService.bringCharacterIntoPlay(this.die, frontId);
   }
 }
 

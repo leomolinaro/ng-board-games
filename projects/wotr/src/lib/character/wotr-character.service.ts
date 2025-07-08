@@ -12,6 +12,7 @@ import { WotrActionService } from "../commons/wotr-action.service";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import {
   WotrCharacterReactionStory,
   WotrGameStory,
@@ -19,7 +20,6 @@ import {
 } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
-import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -30,6 +30,7 @@ import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
 import {
   WotrAragornCard,
+  WotrCharacterCard,
   WotrGandalfTheWhiteCard,
   WotrMouthOfSauronCard,
   WotrSarumanCard,
@@ -40,7 +41,6 @@ import {
 export class WotrCharacterService {
   private actionService = inject(WotrActionService);
   private nationService = inject(WotrNationService);
-  private nationStore = inject(WotrNationStore);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
@@ -50,11 +50,13 @@ export class WotrCharacterService {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
+  private ui = inject(WotrGameUiStore);
+
   private gandalfTheWhite = inject(WotrGandalfTheWhiteCard);
-  private aragornChoice = inject(WotrAragornCard);
-  private sarumanChoice = inject(WotrSarumanCard);
-  private witchKingChoice = inject(WotrWitchKingCard);
-  private mouthOfSauronChoice = inject(WotrMouthOfSauronCard);
+  private aragorn = inject(WotrAragornCard);
+  private saruman = inject(WotrSarumanCard);
+  private witchKing = inject(WotrWitchKingCard);
+  private mouthOfSauron = inject(WotrMouthOfSauronCard);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -256,27 +258,36 @@ export class WotrCharacterService {
     });
   }
 
-  canrBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {
+  private freePeoplesCharacterCards(): WotrCharacterCard[] {
+    return [this.gandalfTheWhite, this.aragorn];
+  }
+
+  private shadowCharacterCards(): WotrCharacterCard[] {
+    return [this.saruman, this.witchKing, this.mouthOfSauron];
+  }
+
+  bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
+    const cards =
+      frontId === "free-peoples" ? this.freePeoplesCharacterCards() : this.shadowCharacterCards();
+    return this.ui.askChoice(
+      "Choose character to bring into play",
+      cards.map<WotrPlayerChoice>(card => ({
+        label: () => card.name(),
+        isAvailable: () => card.canBeBroughtIntoPlay(die),
+        resolve: async () => {
+          const action = await card.bringIntoPlay();
+          return [action];
+        }
+      })),
+      frontId
+    );
+  }
+
+  canBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {
     if (frontId === "free-peoples") {
-      if (this.gandalfTheWhite.canBeBroughtIntoPlay(die)) {
-        return true;
-      }
-      if (this.aragornChoice.canBeBroughtIntoPlay(die)) {
-        return true;
-      }
+      return this.freePeoplesCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
     } else {
-      if (die === "muster") {
-        if (this.sarumanChoice.canBeBroughtIntoPlay(die)) {
-          return true;
-        }
-        if (this.witchKingChoice.canBeBroughtIntoPlay(die)) {
-          return true;
-        }
-        if (this.mouthOfSauronChoice.canBeBroughtIntoPlay(die)) {
-          return true;
-        }
-      }
+      return this.shadowCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
     }
-    return false;
   }
 }
