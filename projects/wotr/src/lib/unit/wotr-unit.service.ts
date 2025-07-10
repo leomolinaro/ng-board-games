@@ -421,14 +421,22 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => this.canMoveArmyFromRegion(region, frontId));
   }
 
-  moveArmiesStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
+  armyMovementStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
     return this.regionStore
       .regions()
       .filter(region => this.canMoveArmyFromRegion(region, frontId))
       .map(region => region.id);
   }
 
-  moveArmyTargetRegions(army: WotrRegionUnits, frontId: WotrFrontId): WotrRegionId[] {
+  armyWithLeaderMovementStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
+    return this.regionStore
+      .regions()
+      .filter(region => region.army && this.doesArmyHaveLeadership(region.army))
+      .filter(region => this.canMoveArmyFromRegion(region, frontId))
+      .map(region => region.id);
+  }
+
+  armyMovementTargetRegions(army: WotrRegionUnits, frontId: WotrFrontId): WotrRegionId[] {
     const region = this.regionStore.region(army.regionId);
     const neighbors = region.neighbors
       .filter(neighbor => !neighbor.impassable)
@@ -457,12 +465,12 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
-      if (!this.hasArmyLeadership(region.army)) return false;
+      if (!this.doesArmyHaveLeadership(region.army)) return false;
       return this.canMoveArmy(region.army, region);
     });
   }
 
-  private hasArmyLeadership(army: WotrArmy): boolean {
+  private doesArmyHaveLeadership(army: WotrArmy): boolean {
     return this.getArmyLeadership(army) > 0;
   }
 
@@ -543,7 +551,7 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
-      if (!this.hasArmyLeadership(region.army)) return false;
+      if (!this.doesArmyHaveLeadership(region.army)) return false;
       return this.canArmyAttackArmies(region.army, region);
     });
   }

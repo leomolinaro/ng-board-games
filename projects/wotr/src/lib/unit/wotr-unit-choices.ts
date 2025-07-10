@@ -126,6 +126,8 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
 @Injectable({ providedIn: "root" })
 export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
+  private unitPlayerService = inject(WotrUnitPlayerService);
+
   label(): string {
     return "Move army with leader";
   }
@@ -135,7 +137,8 @@ export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    const movement = await this.unitPlayerService.moveArmyWithLeader(frontId);
+    return [moveArmies(movement)];
   }
 }
 

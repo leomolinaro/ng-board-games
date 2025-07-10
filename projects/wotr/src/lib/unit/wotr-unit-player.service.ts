@@ -11,7 +11,7 @@ import {
   WotrArmyMovement,
   WotrNazgulMovement
 } from "./wotr-unit-actions";
-import { WotrArmy } from "./wotr-unit.models";
+import { WotrArmy, WotrRegionUnits } from "./wotr-unit.models";
 import { WotrUnitService } from "./wotr-unit.service";
 
 @Injectable({ providedIn: "root" })
@@ -30,20 +30,7 @@ export class WotrUnitPlayerService {
     let doneMoves = 0;
     const movements: WotrArmyMovement[] = [];
     while (continueMoving) {
-      const candidateRegions = this.unitService.moveArmiesStartingRegions(frontId);
-      const movingArmy = await this.ui.askRegionUnits("Select units to move", {
-        regionIds: candidateRegions,
-        underSiege: false
-      });
-      const fromRegion = this.regionStore.region(movingArmy.regionId);
-      const toRegionId = await this.ui.askRegion(
-        "Select region to move in",
-        this.unitService.moveArmyTargetRegions(movingArmy, frontId)
-      );
-      const leftUnits = this.armyUtils.splitUnits(fromRegion.army, movingArmy);
-      const movement = armyMovement(movingArmy.regionId, toRegionId, leftUnits);
-      this.unitService.moveArmy(movement, frontId);
-      await this.checkStackingLimit(toRegionId, frontId);
+      const movement = await this.moveArmy(frontId);
       movements.push(movement);
       continueMoving = false;
       doneMoves++;
@@ -52,6 +39,42 @@ export class WotrUnitPlayerService {
       }
     }
     return movements;
+  }
+
+  async moveArmy(frontId: WotrFrontId): Promise<WotrArmyMovement> {
+    const candidateRegions = this.unitService.armyMovementStartingRegions(frontId);
+    const movingArmy = await this.ui.askRegionUnits("Select units to move", {
+      regionIds: candidateRegions,
+      type: "moveArmy",
+      withLeaders: false
+    });
+    return this.moveThisArmy(movingArmy, frontId);
+  }
+
+  private async moveThisArmy(
+    movingArmy: WotrRegionUnits,
+    frontId: WotrFrontId
+  ): Promise<WotrArmyMovement> {
+    const fromRegion = this.regionStore.region(movingArmy.regionId);
+    const toRegionId = await this.ui.askRegion(
+      "Select region to move in",
+      this.unitService.armyMovementTargetRegions(movingArmy, frontId)
+    );
+    const leftUnits = this.armyUtils.splitUnits(fromRegion.army, movingArmy);
+    const movement = armyMovement(movingArmy.regionId, toRegionId, leftUnits);
+    this.unitService.moveArmy(movement, frontId);
+    await this.checkStackingLimit(toRegionId, frontId);
+    return movement;
+  }
+
+  async moveArmyWithLeader(frontId: WotrFrontId): Promise<WotrArmyMovement> {
+    const candidateRegions = this.unitService.armyWithLeaderMovementStartingRegions(frontId);
+    const movingArmy = await this.ui.askRegionUnits("Select units to move", {
+      regionIds: candidateRegions,
+      type: "moveArmy",
+      withLeaders: true
+    });
+    return this.moveThisArmy(movingArmy, frontId);
   }
 
   async checkStackingLimit(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -75,7 +98,8 @@ export class WotrUnitPlayerService {
     if (nArmyUnits <= stackingLimit) return [];
     const units = await this.ui.askRegionUnits("Choose a unit to remove", {
       regionIds: [regionId],
-      equalsNArmyUnits: nArmyUnits - stackingLimit,
+      type: "disband",
+      nArmyUnits: nArmyUnits - stackingLimit,
       underSiege
     });
     const actions: WotrAction[] = [];

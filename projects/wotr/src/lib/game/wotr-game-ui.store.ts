@@ -10,6 +10,7 @@ import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionUnits, WotrReinforcementUnit } from "../unit/wotr-unit.models";
+import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -28,15 +29,6 @@ interface WotrGameUiState {
 export interface WotrActionDieSelection {
   frontId: WotrFrontId;
   tokens: WotrActionToken[];
-}
-
-export interface WotrRegionUnitSelection {
-  regionIds: WotrRegionId[];
-  equalsNArmyUnits?: number;
-  equalsNHits?: number;
-  everyAtWar?: boolean;
-  someLeaders?: boolean;
-  underSiege: boolean;
 }
 
 export interface WotrCardSelection {

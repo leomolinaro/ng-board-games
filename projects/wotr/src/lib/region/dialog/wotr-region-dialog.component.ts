@@ -10,13 +10,17 @@ import {
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
-import { WotrAssetsService, WotrUnitImage } from "../assets/wotr-assets.service";
-import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
-import { WotrRegionUnitSelection } from "../game/wotr-game-ui.store";
-import { WotrGenericUnitType, WotrNation, WotrNationId } from "../nation/wotr-nation.models";
-import { WotrUnits } from "../unit/wotr-unit.models";
-import { WotrRegion } from "./wotr-region.models";
+import { WotrAssetsService, WotrUnitImage } from "../../assets/wotr-assets.service";
+import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
+import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
+import { WotrNation, WotrNationId } from "../../nation/wotr-nation.models";
+import { WotrUnits } from "../../unit/wotr-unit.models";
+import { WotrRegion } from "../wotr-region.models";
+import {
+  UnitNode,
+  WotrRegionUnitSelection,
+  selectionModeFactory
+} from "./wotr-region-unit-selection";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -25,21 +29,6 @@ export interface WotrRegionDialogData {
   fellowship: WotrFellowship;
   regionSelection: boolean;
   unitSelection: WotrRegionUnitSelection | null;
-}
-
-interface UnitNode {
-  id: string;
-  type: WotrGenericUnitType | "character" | "fellowship";
-  nationId: WotrNationId | null;
-  source: string;
-  label: string;
-  width: number;
-  height: number;
-  selected?: boolean;
-  downgrading?: boolean;
-  removing?: boolean;
-  selectable: boolean;
-  disabled: boolean;
 }
 
 export type WotrRegionDialogResult =
@@ -73,10 +62,15 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialogComponent, WotrRe
       }
     </div>
     @if (data.regionSelection || data.unitSelection) {
+      @if (canConfirm() !== true) {
+        <p>
+          {{ canConfirm() }}
+        </p>
+      }
       <button
         class="confirm-button"
-        [disabled]="!canConfirm()"
-        [ngClass]="{ disabled: !canConfirm() }"
+        [disabled]="canConfirm() !== true"
+        [ngClass]="{ disabled: canConfirm() !== true }"
         (click)="onConfirm()">
         {{ data.regionSelection ? "Select region" : "Confirm units" }}
       </button>
@@ -126,51 +120,49 @@ export class WotrRegionDialogComponent implements OnInit {
   private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
 
   protected unitNodes!: UnitNode[];
-  protected nSelectedUnits = signal(0);
+  private selectedNodes = signal<UnitNode[]>([]);
 
   protected canConfirm = computed(() => {
-    if (this.data.unitSelection) {
-      return this.nSelectedUnits() > 0;
-    }
-    if (this.data.regionSelection) {
-      return true;
-    }
+    if (this.data.regionSelection) return true;
+    if (this.unitSelectionMode) return this.unitSelectionMode.canConfirm(this.selectedNodes());
     return false;
   });
 
+  private unitSelectionMode = this.data.unitSelection
+    ? selectionModeFactory(this.data.unitSelection)
+    : null;
+
   ngOnInit() {
     const region = this.data.region;
-    const unitSelection = this.data.unitSelection;
-    this.unitNodes = this.unitsToUnitNodes(
-      region.army,
-      unitSelection ? (unitSelection.underSiege ? false : unitSelection) : null
-    );
+    this.unitNodes = this.unitsToUnitNodes(region.army, "army");
     this.unitNodes = this.unitNodes.concat(
-      this.unitsToUnitNodes(
-        region.underSiegeArmy,
-        unitSelection ? (unitSelection.underSiege ? unitSelection : false) : null
-      )
+      this.unitsToUnitNodes(region.underSiegeArmy, "underSiege")
     );
-    this.unitNodes = this.unitNodes.concat(
-      this.unitsToUnitNodes(region.freeUnits, unitSelection ? false : null)
-    );
+    this.unitNodes = this.unitNodes.concat(this.unitsToUnitNodes(region.freeUnits, "freeUnits"));
     if (this.data.region.fellowship) {
       const image = this.assets.getFellowshipImage(this.data.fellowship.status === "revealed");
       this.unitNodes.push({
         id: "fellowship",
         type: "fellowship",
+        group: "fellowship",
         nationId: null,
         label: "Fellowship",
-        selectable: false,
-        disabled: false,
         ...this.scale(image)
       });
+    }
+    if (this.unitSelectionMode) {
+      this.unitSelectionMode.initialize(this.unitNodes);
+      for (const unitNode of this.unitNodes) {
+        if (unitNode.selected) {
+          this.selectedNodes.update(nodes => [...nodes, unitNode]);
+        }
+      }
     }
   }
 
   private unitsToUnitNodes(
     units: WotrUnits | undefined,
-    unitSelection: WotrRegionUnitSelection | false | null
+    group: "army" | "underSiege" | "freeUnits"
   ): UnitNode[] {
     if (!units) return [];
     const d = this.data;
@@ -181,10 +173,9 @@ export class WotrRegionDialogComponent implements OnInit {
         unitNodes.push({
           id: armyUnit.nation + "_regular_" + i,
           type: "regular",
+          group,
           nationId: armyUnit.nation,
           label: d.nationById[armyUnit.nation].regularLabel,
-          selectable: !!unitSelection,
-          disabled: unitSelection === false,
           ...this.scale(image)
         });
       }
@@ -195,10 +186,9 @@ export class WotrRegionDialogComponent implements OnInit {
         unitNodes.push({
           id: armyUnit.nation + "_elite_" + i,
           type: "elite",
+          group,
           nationId: armyUnit.nation,
           label: d.nationById[armyUnit.nation].eliteLabel,
-          selectable: !!unitSelection,
-          disabled: unitSelection === false,
           ...this.scale(image)
         });
       }
@@ -209,10 +199,9 @@ export class WotrRegionDialogComponent implements OnInit {
         unitNodes.push({
           id: leader.nation + "_leader_" + i,
           type: "leader",
+          group,
           nationId: leader.nation,
           label: d.nationById[leader.nation].leaderLabel!,
-          selectable: !!unitSelection,
-          disabled: unitSelection === false,
           ...this.scale(image)
         });
       }
@@ -223,10 +212,9 @@ export class WotrRegionDialogComponent implements OnInit {
         unitNodes.push({
           id: "nazgul_" + i,
           type: "nazgul",
+          group,
           nationId: "sauron",
           label: "Nazgul",
-          selectable: !!unitSelection,
-          disabled: unitSelection === false,
           ...this.scale(image)
         });
       }
@@ -236,10 +224,9 @@ export class WotrRegionDialogComponent implements OnInit {
       unitNodes.push({
         id: character,
         type: "character",
+        group,
         nationId: null,
         label: d.characterById[character].name,
-        selectable: false,
-        disabled: false,
         ...this.scale(image)
       });
     });
@@ -256,7 +243,7 @@ export class WotrRegionDialogComponent implements OnInit {
     if (!this.canConfirm()) return;
     if (this.data.unitSelection) {
       const selectedUnits: WotrUnits = {};
-      this.unitNodes.forEach(unitNode => {
+      for (const unitNode of this.unitNodes) {
         if (unitNode.selected) {
           switch (unitNode.type) {
             case "regular": {
@@ -310,7 +297,7 @@ export class WotrRegionDialogComponent implements OnInit {
             }
           }
         }
-      });
+      }
       this.dialogRef.close(selectedUnits);
     } else if (this.data.regionSelection) {
       this.dialogRef.close(true);
@@ -320,11 +307,11 @@ export class WotrRegionDialogComponent implements OnInit {
   onUnitClick(unitNode: UnitNode) {
     if (unitNode.disabled || !unitNode.selectable) return;
     if (unitNode.selected) {
-      this.nSelectedUnits.update(s => s - 1);
       unitNode.selected = false;
+      this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
     } else {
-      this.nSelectedUnits.update(s => s + 1);
       unitNode.selected = true;
+      this.selectedNodes.update(nodes => [...nodes, unitNode]);
     }
   }
 }

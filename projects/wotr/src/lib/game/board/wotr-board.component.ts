@@ -34,7 +34,7 @@ import {
   WotrRegionDialogData,
   WotrRegionDialogRef,
   WotrRegionDialogResult
-} from "../../region/wotr-region-dialog.component";
+} from "../../region/dialog/wotr-region-dialog.component";
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
 import { WotrRegionUnits } from "../../unit/wotr-unit.models";
