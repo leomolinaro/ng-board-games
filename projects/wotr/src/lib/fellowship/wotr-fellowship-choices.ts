@@ -4,6 +4,7 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { hideFellowship, moveFelloswhip } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
+import { WotrFellowshipService } from "./wotr-fellowship.service";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipProgressChoice implements WotrPlayerChoice {
@@ -42,6 +43,7 @@ export class WotrHideFellowshipChoice implements WotrPlayerChoice {
 @Injectable({ providedIn: "root" })
 export class WotrSeparateCompanionsChoice implements WotrPlayerChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
+  private fellowshipService = inject(WotrFellowshipService);
   label(): string {
     return "Separate companions";
   }
@@ -51,6 +53,6 @@ export class WotrSeparateCompanionsChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return this.fellowshipService.separateCompanions(frontId);
   }
 }

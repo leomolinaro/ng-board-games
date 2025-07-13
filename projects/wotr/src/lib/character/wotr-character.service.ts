@@ -290,4 +290,18 @@ export class WotrCharacterService {
       return this.shadowCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
     }
   }
+
+  companionCanEnterRegion(region: WotrRegion): boolean {
+    if (region.settlement !== "stronghold") return true;
+    if (region.controlledBy !== "free-peoples") return true;
+    if (region.underSiegeArmy) return false;
+    return true;
+  }
+
+  companionCanLeaveRegion(region: WotrRegion): boolean {
+    if (region.settlement !== "stronghold") return true;
+    if (region.controlledBy === "shadow") return false;
+    if (region.underSiegeArmy) return false;
+    return true;
+  }
 }

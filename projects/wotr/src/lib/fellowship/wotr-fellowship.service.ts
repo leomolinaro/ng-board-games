@@ -1,6 +1,14 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
+import { separateCompanions } from "../character/wotr-character-actions";
+import { WotrCharacterService } from "../character/wotr-character.service";
+import { WotrCharacterStore } from "../character/wotr-character.store";
+import {
+  WotrAction,
+  WotrActionApplierMap,
+  WotrActionLoggerMap
+} from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -16,6 +24,9 @@ export class WotrFellowshipService {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private huntFlow = inject(WotrHuntFlowService);
+  private characterStore = inject(WotrCharacterStore);
+  private characterService = inject(WotrCharacterService);
+  private ui = inject(WotrGameUiStore);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -91,5 +102,31 @@ export class WotrFellowshipService {
 
   private nCorruptionPoints(quantity: number) {
     return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
+  }
+
+  async separateCompanions(frontId: string): Promise<WotrAction[]> {
+    const fellowshipCompanions = this.fellowhipStore.companions();
+    const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
+      companions: fellowshipCompanions
+    });
+    const level = companions.reduce((l, companionId) => {
+      const companion = this.characterStore.character(companionId);
+      if (l < companion.level) return companion.level;
+      return l;
+    }, 0);
+    const fellowshipProgress = this.fellowhipStore.progress();
+    const totalMovement = fellowshipProgress + level;
+    const fellowshipRegion = this.regionStore.fellowshipRegion();
+    const targetRegions = this.regionStore.reachableRegions(
+      fellowshipRegion,
+      totalMovement,
+      region => this.characterService.companionCanLeaveRegion(region),
+      region => this.characterService.companionCanEnterRegion(region)
+    );
+    const targetRegion = await this.ui.askRegion(
+      "Select a region to move the separated companions",
+      targetRegions
+    );
+    return [separateCompanions(targetRegion, ...companions)];
   }
 }

@@ -871,7 +871,12 @@ export class WotrRegionStore {
     }));
   }
 
-  reachableRegions(startRegionId: WotrRegionId, maxDistance: number): WotrRegionId[] {
+  reachableRegions(
+    startRegionId: WotrRegionId,
+    maxDistance: number,
+    canLeave?: (region: WotrRegion) => boolean,
+    canEnter?: (region: WotrRegion) => boolean
+  ): WotrRegionId[] {
     const reachable: WotrRegionId[] = [];
     const visited = new Set<WotrRegionId>();
     const queue: { regionId: WotrRegionId; distance: number }[] = [
@@ -881,15 +886,20 @@ export class WotrRegionStore {
       const { regionId, distance } = queue.shift()!;
       if (visited.has(regionId) || distance > maxDistance) continue;
       visited.add(regionId);
-      reachable.push(regionId);
       const region = this.region(regionId);
-      const neighbors = region.neighbors;
-      for (const neighbor of neighbors) {
-        if (neighbor.impassable) {
-          continue;
-        }
-        if (!visited.has(neighbor.id)) {
-          queue.push({ regionId: neighbor.id, distance: distance + 1 });
+      if (!canEnter || distance === 0 || canEnter(region)) {
+        reachable.push(regionId);
+      }
+
+      if (!canLeave || canLeave(region)) {
+        const neighbors = region.neighbors;
+        for (const neighbor of neighbors) {
+          if (neighbor.impassable) {
+            continue;
+          }
+          if (!visited.has(neighbor.id)) {
+            queue.push({ regionId: neighbor.id, distance: distance + 1 });
+          }
         }
       }
     }

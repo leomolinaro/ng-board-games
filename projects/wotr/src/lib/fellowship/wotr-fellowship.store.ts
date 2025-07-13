@@ -36,6 +36,9 @@ export class WotrFellowshipStore {
   numberOfCompanions() {
     return this.state().companions.length;
   }
+  companions() {
+    return this.state().companions;
+  }
 
   setCompanions(companions: WotrCompanionId[]) {
     this.update("setCompanions", state => ({ ...state, companions }));

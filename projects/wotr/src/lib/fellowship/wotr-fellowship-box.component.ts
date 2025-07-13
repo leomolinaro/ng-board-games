@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  computed,
+  inject,
+  input,
+  output
+} from "@angular/core";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrFellowship } from "./wotr-fellowhip.models";
 
@@ -19,27 +27,50 @@ const NPERROW = 2;
 const GUIDE_X = 1200;
 const GUIDE_Y = 100;
 
+const BOXX = 1073;
+const BOXY = 6;
+const BOXWIDTH = 168;
+const BOXHEIGHT = 164;
+
 @Component({
   selector: "[wotrFellowshipBox]",
   imports: [],
   template: `
-    @for (companionNode of companionNodes (); track companionNode.id) {
-    <svg:image
-      transform="scale(0.8, 0.8)"
-      [attr.x]="companionNode.svgX"
-      [attr.y]="companionNode.svgY"
-      [attr.xlink:href]="companionNode.image" />
+    @for (companionNode of companionNodes(); track companionNode.id) {
+      <svg:image
+        transform="scale(0.8, 0.8)"
+        [attr.x]="companionNode.svgX"
+        [attr.y]="companionNode.svgY"
+        [attr.xlink:href]="companionNode.image" />
     }
     <svg:image
       transform="scale(0.8, 0.8)"
       [attr.x]="guideNode().svgX"
       [attr.y]="guideNode().svgY"
       [attr.xlink:href]="guideNode().image" />
+    <svg:rect
+      (click)="boxClick.emit()"
+      transform="scale(0.8, 0.8)"
+      [attr.x]="boxX"
+      [attr.y]="boxY"
+      [attr.width]="boxWidth"
+      [attr.height]="boxHeight"
+      class="wotr-fellowship-box"></svg:rect>
+  `,
+  styles: `
+    .wotr-fellowship-box {
+      fill: transparent;
+      &:hover {
+        opacity: 0.3;
+        fill: black;
+      }
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrFellowshipBoxComponent {
   fellowship = input.required<WotrFellowship>();
+  boxClick = output<void>();
   private companions = computed(() => this.fellowship().companions);
   private guide = computed(() => this.fellowship().guide);
 
@@ -51,6 +82,11 @@ export class WotrFellowshipBoxComponent {
   private getY(index: number) {
     return Y0 + Math.floor(index / NPERROW) * YSTEP;
   }
+
+  protected boxWidth = BOXWIDTH;
+  protected boxHeight = BOXHEIGHT;
+  protected boxX = BOXX;
+  protected boxY = BOXY;
 
   companionNodes: Signal<WotrCompanionNode[]> = computed(() => {
     const nodes: WotrCompanionNode[] = [];

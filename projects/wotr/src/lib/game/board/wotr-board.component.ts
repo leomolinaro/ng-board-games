@@ -18,6 +18,12 @@ import {
   WotrCardsDialogData
 } from "../../card/wotr-cards-dialog.component";
 import { WotrCharacterStore } from "../../character/wotr-character.store";
+import {
+  WotrFellowshipDialogComponent,
+  WotrFellowshipDialogData,
+  WotrFellowshipDialogRef,
+  WotrFellowshipDialogResult
+} from "../../fellowship/wotr-fellowship-dialog.component";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship.store";
 import { WotrFrontAreaComponent } from "../../front/wotr-front-area.component";
 import { WotrFrontId } from "../../front/wotr-front.models";
@@ -67,7 +73,8 @@ import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
           [shadow]="shadow()"
           [fellowship]="fellowshipStore.state()"
           [characterById]="characterById()"
-          (regionClick)="onRegionClick($event)">
+          (regionClick)="onRegionClick($event)"
+          (fellowshipBoxClick)="onFellowshipBoxClick()">
         </wotr-map>
         <wotr-options-panel class="wotr-options-panel"></wotr-options-panel>
       </div>
@@ -174,6 +181,7 @@ export class WotrBoardComponent {
   });
 
   private regionDialogRef: WotrRegionDialogRef | null = null;
+  private fellowshipDialogRef: WotrFellowshipDialogRef | null = null;
 
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
     this.openCardsDialog(cardId, frontId);
@@ -234,10 +242,33 @@ export class WotrBoardComponent {
     }
   }
 
-  async onRegionClick(region: WotrRegion) {
+  onRegionClick(region: WotrRegion) {
     if (this.regionDialogRef) {
       this.regionDialogRef.close();
     }
     this.openRegionDialog(region);
+  }
+
+  onFellowshipBoxClick() {
+    if (this.fellowshipDialogRef) {
+      this.fellowshipDialogRef.close();
+    }
+    this.openFellowshipBoxDialog();
+  }
+
+  private async openFellowshipBoxDialog() {
+    const data: WotrFellowshipDialogData = {
+      selection: this.ui.fellowshipCompanionsSelection()
+    };
+    this.fellowshipDialogRef = this.dialog.open<
+      WotrFellowshipDialogComponent,
+      WotrFellowshipDialogData,
+      WotrFellowshipDialogResult
+    >(WotrFellowshipDialogComponent, { data, panelClass: "mat-typography" });
+    const result = await firstValueFrom(this.fellowshipDialogRef.afterClosed());
+    this.fellowshipDialogRef = null;
+    if (result) {
+      this.ui.fellowshipCompanions.emit(result);
+    }
   }
 }

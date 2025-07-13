@@ -77,7 +77,8 @@ const GRID_STEP = 10;
           [fellowship]="fellowship()"></svg:g>
         <svg:g
           wotrFellowshipBox
-          [fellowship]="fellowship()"></svg:g>
+          [fellowship]="fellowship()"
+          (boxClick)="fellowshipBoxClick.emit()"></svg:g>
         <svg:g
           wotrElvenRingsBox
           [freePeoplesElvenRings]="freePeoples().elvenRings"
@@ -116,6 +117,7 @@ export class WotrMapComponent {
   fronts = computed(() => [this.freePeoples(), this.shadow()]);
 
   regionClick = output<WotrRegion>();
+  fellowshipBoxClick = output<void>();
 
   protected viewBox = this.mapService.getViewBox();
   protected mapWidth = this.mapService.getWidth();

@@ -3,14 +3,15 @@ import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
 import { WotrActionChoice, WotrActionToken } from "../action-die/wotr-action-die.models";
 import { WotrCardId } from "../card/wotr-card.models";
+import { WotrCompanionId } from "../character/wotr-character.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
+import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionUnits, WotrReinforcementUnit } from "../unit/wotr-unit.models";
-import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -24,6 +25,7 @@ interface WotrGameUiState {
   regionUnitSelection: WotrRegionUnitSelection | null;
   cardSelection: WotrCardSelection | null;
   inputQuantitySelection: WotrInputQuantitySelection | false;
+  fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | null;
 }
 
 export interface WotrActionDieSelection {
@@ -40,6 +42,10 @@ export interface WotrCardSelection {
 export interface WotrReinforcementUnitSelection {
   units: WotrReinforcementUnit[];
   frontId: WotrFrontId;
+}
+
+export interface WotrFellowshipCompanionSelection {
+  companions: WotrCompanionId[];
 }
 
 export interface WotrInputQuantitySelection {
@@ -60,7 +66,8 @@ export const initialState: WotrGameUiState = {
   reinforcementUnitSelection: null,
   regionUnitSelection: null,
   cardSelection: null,
-  inputQuantitySelection: false
+  inputQuantitySelection: false,
+  fellowshipCompanionsSelection: null
 };
 
 interface WotrPlayerOption<O = unknown> {
@@ -189,6 +196,21 @@ export class WotrGameUiStore extends signalStore(
     const regionUnits = await this.regionUnits.get();
     this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null, regionSelection: null }));
     return regionUnits;
+  }
+
+  fellowshipCompanions = uiEvent<WotrCompanionId[]>();
+  async askFellowshipCompanions(
+    message: string,
+    fellowshipCompanionsSelection: WotrFellowshipCompanionSelection
+  ): Promise<WotrCompanionId[]> {
+    this.updateUi(s => ({
+      ...s,
+      message,
+      fellowshipCompanionsSelection
+    }));
+    const companions = await this.fellowshipCompanions.get();
+    this.updateUi(s => ({ ...s, message: null, fellowshipCompanionsSelection: null }));
+    return companions;
   }
 
   async askChoice<P = WotrFrontId>(
