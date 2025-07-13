@@ -109,19 +109,15 @@ export class WotrFellowshipService {
     const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
       companions: fellowshipCompanions
     });
-    const level = companions.reduce((l, companionId) => {
-      const companion = this.characterStore.character(companionId);
-      if (l < companion.level) return companion.level;
-      return l;
-    }, 0);
+    const groupLevel = this.characterService.characterGroupLevel(companions);
     const fellowshipProgress = this.fellowhipStore.progress();
-    const totalMovement = fellowshipProgress + level;
+    const totalMovement = fellowshipProgress + groupLevel;
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     const targetRegions = this.regionStore.reachableRegions(
       fellowshipRegion,
       totalMovement,
-      region => this.characterService.companionCanLeaveRegion(region),
-      region => this.characterService.companionCanEnterRegion(region)
+      (region, distance) => this.characterService.companionCanEnterRegion(region, distance),
+      (region, distance) => this.characterService.companionCanLeaveRegion(region, distance)
     );
     const targetRegion = await this.ui.askRegion(
       "Select a region to move the separated companions",

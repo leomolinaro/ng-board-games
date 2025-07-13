@@ -874,8 +874,8 @@ export class WotrRegionStore {
   reachableRegions(
     startRegionId: WotrRegionId,
     maxDistance: number,
-    canLeave?: (region: WotrRegion) => boolean,
-    canEnter?: (region: WotrRegion) => boolean
+    canEnter?: (region: WotrRegion, distance: number) => boolean,
+    canLeave?: (region: WotrRegion, distance: number) => boolean
   ): WotrRegionId[] {
     const reachable: WotrRegionId[] = [];
     const visited = new Set<WotrRegionId>();
@@ -887,11 +887,11 @@ export class WotrRegionStore {
       if (visited.has(regionId) || distance > maxDistance) continue;
       visited.add(regionId);
       const region = this.region(regionId);
-      if (!canEnter || distance === 0 || canEnter(region)) {
+      if (!canEnter || canEnter(region, distance)) {
         reachable.push(regionId);
       }
 
-      if (!canLeave || canLeave(region)) {
+      if (!canLeave || canLeave(region, distance)) {
         const neighbors = region.neighbors;
         for (const neighbor of neighbors) {
           if (neighbor.impassable) {

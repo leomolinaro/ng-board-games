@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrCardId } from "../card/wotr-card.models";
@@ -25,7 +25,11 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrCharacterAction } from "./wotr-character-actions";
+import {
+  moveCharacters,
+  WotrCharacterAction,
+  WotrCharacterMovement
+} from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
 import {
@@ -93,16 +97,7 @@ export class WotrCharacterService {
         }
         this.nationService.checkNationActivationByCharacters(action.region, action.characters);
       },
-      "character-movement": async (action, front) => {
-        const fromRegion = this.regionStore.region(action.fromRegion);
-        const toRegion = this.regionStore.region(action.toRegion);
-        for (const characterId of action.characters) {
-          const character = this.characterStore.character(characterId);
-          this.removeCharacterFromRegion(character, fromRegion);
-          this.addCharacterToRegion(character, toRegion);
-        }
-        this.nationService.checkNationActivationByCharacters(action.toRegion, action.characters);
-      },
+      "character-movement": async (action, front) => this.moveCharacters(action, front),
       "character-elimination": async (action, front) => {
         for (const characterId of action.characters) {
           const character = this.characterStore.character(characterId);
@@ -141,6 +136,17 @@ export class WotrCharacterService {
         this.nationService.checkNationActivationByCharacters(action.toRegion, action.companions);
       }
     };
+  }
+
+  private async moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): Promise<void> {
+    const fromRegion = this.regionStore.region(action.fromRegion);
+    const toRegion = this.regionStore.region(action.toRegion);
+    for (const characterId of action.characters) {
+      const character = this.characterStore.character(characterId);
+      this.removeCharacterFromRegion(character, fromRegion);
+      this.addCharacterToRegion(character, toRegion);
+    }
+    this.nationService.checkNationActivationByCharacters(action.toRegion, action.characters);
   }
 
   private addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
@@ -291,17 +297,79 @@ export class WotrCharacterService {
     }
   }
 
-  companionCanEnterRegion(region: WotrRegion): boolean {
+  companionCanEnterRegion(region: WotrRegion, distance: number): boolean {
+    if (distance === 0) return true;
     if (region.settlement !== "stronghold") return true;
     if (region.controlledBy !== "free-peoples") return true;
     if (region.underSiegeArmy) return false;
     return true;
   }
 
-  companionCanLeaveRegion(region: WotrRegion): boolean {
+  companionCanLeaveRegion(region: WotrRegion, distance: number): boolean {
     if (region.settlement !== "stronghold") return true;
-    if (region.controlledBy === "shadow") return false;
-    if (region.underSiegeArmy) return false;
-    return true;
+    if (region.controlledBy === "free-peoples") {
+      return !region.underSiegeArmy;
+    } else {
+      return distance === 0;
+    }
+  }
+
+  async moveCompanions(): Promise<WotrAction[]> {
+    const movableCompanions = new Set(
+      this.characterStore
+        .companions()
+        .filter(c => this.canMoveCharacter(c))
+        .map(c => c.id)
+    );
+    const actions: WotrAction[] = [];
+    let continueMoving = true;
+    do {
+      const action = await this.moveCompanionGroup(movableCompanions);
+      this.moveCharacters(action, "free-peoples");
+      actions.push(action);
+      action.characters.forEach(c => movableCompanions.delete(c));
+      if (movableCompanions.size > 0) {
+        continueMoving = await this.ui.askConfirm("Do you want to move more companions?");
+      } else {
+        continueMoving = false;
+      }
+    } while (continueMoving);
+    return actions;
+  }
+
+  private async moveCompanionGroup(
+    moveableCharacters: Set<WotrCharacterId>
+  ): Promise<WotrCharacterMovement> {
+    const fromRegions = this.regionStore.regions().filter(region => {
+      if (region.army?.characters?.some(c => moveableCharacters.has(c))) return true;
+      if (region.freeUnits?.characters?.some(c => moveableCharacters.has(c))) return true;
+      return false;
+    });
+    const movingUnits = await this.ui.askRegionUnits("Choose characters to move", {
+      type: "moveCharacters",
+      regionIds: fromRegions.map(r => r.id),
+      characters: Array.from(moveableCharacters)
+    });
+    const movingCharacters = movingUnits.characters!;
+    const fromRegion = movingUnits.regionId;
+    const level = this.characterGroupLevel(movingCharacters);
+
+    const targetRegions = this.regionStore.reachableRegions(
+      fromRegion,
+      level,
+      (region, distance) => this.companionCanEnterRegion(region, distance),
+      (region, distance) => this.companionCanLeaveRegion(region, distance)
+    );
+    const toRegion = await this.ui.askRegion("Select a region to move companions", targetRegions);
+
+    return moveCharacters(fromRegion, toRegion, ...movingCharacters);
+  }
+
+  characterGroupLevel(characters: WotrCharacterId[]): number {
+    return characters.reduce((l, characterId) => {
+      const companion = this.characterStore.character(characterId);
+      if (l < companion.level) return companion.level;
+      return l;
+    }, 0);
   }
 }

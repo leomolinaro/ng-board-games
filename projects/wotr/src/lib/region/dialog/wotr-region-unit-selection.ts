@@ -6,11 +6,17 @@ import { WotrRegionId } from "../wotr-region.models";
 export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection
   | WotrAttackingUnitSelection
-  | WotrDisbandingUnitSelection;
+  | WotrDisbandingUnitSelection
+  | WotrMovingCharactersUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
   regionIds: WotrRegionId[];
+}
+
+export interface WotrMovingCharactersUnitSelection extends AWotrRegionUnitSelection {
+  type: "moveCharacters";
+  characters: WotrCharacterId[];
 }
 
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
@@ -61,6 +67,8 @@ export function selectionModeFactory(
     // return new AttackSelectionMode();
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
+    case "moveCharacters":
+      return new MoveCharactersSelectionMode(unitSelection.characters);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -127,6 +135,29 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
         return false;
       });
       if (!someLeaders) return "Select at least one leader to move.";
+    }
+    return true;
+  }
+}
+
+export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private characters: WotrCharacterId[]) {}
+
+  initialize(unitNodes: UnitNode[]) {
+    for (const unitNode of unitNodes) {
+      if (
+        unitNode.type === "character" &&
+        this.characters.includes(unitNode.id as WotrCharacterId)
+      ) {
+        unitNode.selectable = true;
+        unitNode.selected = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    if (selectedNodes.length === 0) {
+      return "Select at least one character to move.";
     }
     return true;
   }
