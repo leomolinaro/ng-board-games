@@ -1,3 +1,5 @@
+import { WotrCharacterId } from "../../character/wotr-character.models";
+import { WotrCharacterStore } from "../../character/wotr-character.store";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation.models";
 import { WotrRegionId } from "../wotr-region.models";
 
@@ -41,7 +43,6 @@ export interface UnitNode {
   downgrading?: boolean;
   removing?: boolean;
   selectable?: boolean;
-  disabled?: boolean;
 }
 
 interface WotrRegionUnitSelectionMode {
@@ -50,11 +51,12 @@ interface WotrRegionUnitSelectionMode {
 }
 
 export function selectionModeFactory(
-  unitSelection: WotrRegionUnitSelection
+  unitSelection: WotrRegionUnitSelection,
+  characterStore: WotrCharacterStore
 ): WotrRegionUnitSelectionMode {
   switch (unitSelection.type) {
     case "moveArmy":
-      return new MoveArmySelectionMode(unitSelection.withLeaders);
+      return new MoveArmySelectionMode(unitSelection.withLeaders, characterStore);
     // case "attack":
     // return new AttackSelectionMode();
     case "disband":
@@ -75,8 +77,6 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
     for (const unitNode of unitNodes) {
       if (unitNode.group === group && (unitNode.type === "regular" || unitNode.type === "elite")) {
         unitNode.selectable = true;
-      } else {
-        unitNode.disabled = true;
       }
     }
   }
@@ -93,15 +93,22 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
 }
 
 export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
-  constructor(private withLeaders: boolean) {}
+  constructor(
+    private withLeaders: boolean,
+    private characterStore: WotrCharacterStore
+  ) {}
+
   initialize(unitNodes: UnitNode[]) {
     for (const unitNode of unitNodes) {
-      if (unitNode.group === "army") {
-        unitNode.selectable = true;
-        unitNode.selected = true;
-      } else {
-        unitNode.disabled = true;
+      if (unitNode.group !== "army") continue;
+      if (
+        unitNode.type === "character" &&
+        this.characterStore.character(unitNode.id as WotrCharacterId).level === 0
+      ) {
+        continue;
       }
+      unitNode.selectable = true;
+      unitNode.selected = true;
     }
   }
 

@@ -218,7 +218,7 @@ export class WotrBoardComponent {
       characterById: this.characterById(),
       fellowship: this.fellowshipStore.state(),
       regionSelection: this.ui.regionSelection()?.includes(region.id) ?? false,
-      unitSelection: regionUnitSelection
+      unitSelection: regionUnitSelection?.regionIds.includes(region.id) ? regionUnitSelection : null
     };
     this.regionDialogRef = this.dialog.open<
       WotrRegionDialogComponent,

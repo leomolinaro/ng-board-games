@@ -21,6 +21,7 @@ import {
   WotrRegionUnitSelection,
   selectionModeFactory
 } from "./wotr-region-unit-selection";
+import { WotrCharacterStore } from "../../character/wotr-character.store";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -43,12 +44,11 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialogComponent, WotrRe
   imports: [MatTooltipModule, NgClass],
   template: `
     <h1>{{ data.region.name }}</h1>
-    <div>
+    <div [ngClass]="{ 'unit-selection-active': data.unitSelection }">
       @for (unitNode of unitNodes; track unitNode.id) {
         <img
           class="unit"
           [ngClass]="{
-            disabled: unitNode.disabled,
             selectable: unitNode.selectable,
             selected: unitNode.selected,
             downgrading: unitNode.downgrading,
@@ -92,7 +92,9 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialogComponent, WotrRe
         @include wotr.button;
       }
 
-      .unit {
+      .unit-selection-active .unit {
+        opacity: 0.5;
+        cursor: not-allowed;
         &.selected {
           border: 2px solid white;
         }
@@ -103,11 +105,8 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialogComponent, WotrRe
           border: 2px solid orange;
         }
         &.selectable {
+          opacity: 1;
           cursor: pointer;
-        }
-        &.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
         }
       }
     `
@@ -118,6 +117,7 @@ export class WotrRegionDialogComponent implements OnInit {
   protected data = inject<WotrRegionDialogData>(MAT_DIALOG_DATA);
   private assets = inject(WotrAssetsService);
   private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
+  private characterStore = inject(WotrCharacterStore);
 
   protected unitNodes!: UnitNode[];
   private selectedNodes = signal<UnitNode[]>([]);
@@ -129,7 +129,7 @@ export class WotrRegionDialogComponent implements OnInit {
   });
 
   private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(this.data.unitSelection)
+    ? selectionModeFactory(this.data.unitSelection, this.characterStore)
     : null;
 
   ngOnInit() {
@@ -305,7 +305,7 @@ export class WotrRegionDialogComponent implements OnInit {
   }
 
   onUnitClick(unitNode: UnitNode) {
-    if (unitNode.disabled || !unitNode.selectable) return;
+    if (!unitNode.selectable) return;
     if (unitNode.selected) {
       unitNode.selected = false;
       this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
