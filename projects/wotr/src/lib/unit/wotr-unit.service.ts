@@ -431,7 +431,7 @@ export class WotrUnitService {
   armyWithLeaderMovementStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
     return this.regionStore
       .regions()
-      .filter(region => region.army && this.doesArmyHaveLeadership(region.army))
+      .filter(region => region.army && this.doesArmyHaveLeadership(region.army, true))
       .filter(region => this.canMoveArmyFromRegion(region, frontId))
       .map(region => region.id);
   }
@@ -465,16 +465,16 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
-      if (!this.doesArmyHaveLeadership(region.army)) return false;
+      if (!this.doesArmyHaveLeadership(region.army, true)) return false;
       return this.canMoveArmy(region.army, region);
     });
   }
 
-  private doesArmyHaveLeadership(army: WotrArmy): boolean {
-    return this.getArmyLeadership(army) > 0;
+  private doesArmyHaveLeadership(army: WotrArmy, moveable: boolean): boolean {
+    return this.getArmyLeadership(army, moveable) > 0;
   }
 
-  getArmyLeadership(army: WotrArmy): number {
+  getArmyLeadership(army: WotrArmy, moveable: boolean): number {
     let leadership = 0;
     if (army.elites) {
       leadership += this.getEliteUnitsLeadership(army.elites);
@@ -486,7 +486,7 @@ export class WotrUnitService {
       leadership += this.getNazgulLeadership(army.nNazgul);
     }
     if (army.characters) {
-      leadership += this.getCharactersLeadership(army.characters);
+      leadership += this.getCharactersLeadership(army.characters, moveable);
     }
     return leadership;
   }
@@ -508,9 +508,11 @@ export class WotrUnitService {
     return nNazgul;
   }
 
-  private getCharactersLeadership(characters: WotrCharacterId[]) {
+  private getCharactersLeadership(characters: WotrCharacterId[], moveable: boolean): number {
     return characters.reduce((l, characterId) => {
-      return l + this.characterStore.character(characterId).leadership;
+      const character = this.characterStore.character(characterId);
+      const leadership = moveable && character.level === 0 ? 0 : character.leadership;
+      return l + leadership;
     }, 0);
   }
 
@@ -551,7 +553,7 @@ export class WotrUnitService {
     return this.regionStore.regions().some(region => {
       if (!region.army) return false;
       if (region.army.front !== frontId) return false;
-      if (!this.doesArmyHaveLeadership(region.army)) return false;
+      if (!this.doesArmyHaveLeadership(region.army, false)) return false;
       return this.canArmyAttackArmies(region.army, region);
     });
   }

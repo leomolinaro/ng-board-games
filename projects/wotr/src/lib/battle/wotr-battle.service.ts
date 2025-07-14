@@ -476,12 +476,17 @@ export class WotrBattleService {
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
       const retroguard = this.battle().retroguard;
-      const retroguardLeadership = retroguard ? this.unitService.getArmyLeadership(retroguard) : 0;
-      const armyLeadership = this.unitService.getArmyLeadership(this.attackingArmy(combatRound));
+      const retroguardLeadership = retroguard
+        ? this.unitService.getArmyLeadership(retroguard, false)
+        : 0;
+      const armyLeadership = this.unitService.getArmyLeadership(
+        this.attackingArmy(combatRound),
+        false
+      );
       return armyLeadership - retroguardLeadership;
     } else {
       const attackedArmy = this.attackedArmy(combatRound);
-      return attackedArmy ? this.unitService.getArmyLeadership(attackedArmy) : 0;
+      return attackedArmy ? this.unitService.getArmyLeadership(attackedArmy, false) : 0;
     }
   }
 
