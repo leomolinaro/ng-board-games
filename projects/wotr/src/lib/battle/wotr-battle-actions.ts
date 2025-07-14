@@ -26,9 +26,15 @@ export interface WotrArmyAttack {
   toRegion: WotrRegionId;
   retroguard?: WotrArmy;
 }
-// eslint-disable-next-line @typescript-eslint/no-shadow
-export function attack(fromRegion: WotrRegionId, toRegion: WotrRegionId, retroguard?: WotrArmy): WotrArmyAttack {
-  return { type: "army-attack", fromRegion, toRegion, retroguard };
+export function attack(
+  fromRegion: WotrRegionId,
+  toRegion: WotrRegionId,
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  retroguard?: WotrArmy
+): WotrArmyAttack {
+  const action: WotrArmyAttack = { type: "army-attack", fromRegion, toRegion };
+  if (retroguard) action.retroguard = retroguard;
+  return action;
 }
 export function retroguard(...comp: WotrUnitComposer[]): WotrArmy {
   return composeArmy(comp);
@@ -36,7 +42,9 @@ export function retroguard(...comp: WotrUnitComposer[]): WotrArmy {
 
 function composeArmy(comp: WotrUnitComposer[]): WotrArmy {
   const a: Omit<WotrArmy, "front"> = comp.reduce((units, u) => u.addTo(units), {});
-  const front = a.regulars?.length ? frontOfNation(a.regulars[0].nation) : frontOfNation(a.elites![0].nation);
+  const front = a.regulars?.length
+    ? frontOfNation(a.regulars[0].nation)
+    : frontOfNation(a.elites![0].nation);
   return { ...a, front };
 }
 

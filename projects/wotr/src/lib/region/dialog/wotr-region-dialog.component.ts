@@ -12,6 +12,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService, WotrUnitImage } from "../../assets/wotr-assets.service";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character.models";
+import { WotrCharacterStore } from "../../character/wotr-character.store";
 import { WotrFellowship } from "../../fellowship/wotr-fellowhip.models";
 import { WotrNation, WotrNationId } from "../../nation/wotr-nation.models";
 import { WotrUnits } from "../../unit/wotr-unit.models";
@@ -21,7 +22,6 @@ import {
   WotrRegionUnitSelection,
   selectionModeFactory
 } from "./wotr-region-unit-selection";
-import { WotrCharacterStore } from "../../character/wotr-character.store";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -124,7 +124,8 @@ export class WotrRegionDialogComponent implements OnInit {
 
   protected canConfirm = computed(() => {
     if (this.data.regionSelection) return true;
-    if (this.unitSelectionMode) return this.unitSelectionMode.canConfirm(this.selectedNodes());
+    if (this.unitSelectionMode)
+      return this.unitSelectionMode.canConfirm(this.selectedNodes(), this.data.region);
     return false;
   });
 
@@ -151,7 +152,7 @@ export class WotrRegionDialogComponent implements OnInit {
       });
     }
     if (this.unitSelectionMode) {
-      this.unitSelectionMode.initialize(this.unitNodes);
+      this.unitSelectionMode.initialize(this.unitNodes, this.data.region);
       for (const unitNode of this.unitNodes) {
         if (unitNode.selected) {
           this.selectedNodes.update(nodes => [...nodes, unitNode]);

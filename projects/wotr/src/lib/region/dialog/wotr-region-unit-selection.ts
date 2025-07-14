@@ -1,7 +1,8 @@
 import { WotrCharacterId } from "../../character/wotr-character.models";
 import { WotrCharacterStore } from "../../character/wotr-character.store";
+import { WotrFrontId } from "../../front/wotr-front.models";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation.models";
-import { WotrRegionId } from "../wotr-region.models";
+import { WotrRegion, WotrRegionId } from "../wotr-region.models";
 
 export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection
@@ -27,7 +28,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
   type: "attack";
   withLeaders: boolean;
-  underSiege: boolean;
+  frontId: WotrFrontId;
 }
 
 export interface WotrDisbandingUnitSelection extends AWotrRegionUnitSelection {
@@ -52,8 +53,8 @@ export interface UnitNode {
 }
 
 interface WotrRegionUnitSelectionMode {
-  initialize(unitNodes: UnitNode[]): void;
-  canConfirm(selectedNodes: UnitNode[]): true | string;
+  initialize(unitNodes: UnitNode[], region: WotrRegion): void;
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
 }
 
 export function selectionModeFactory(
@@ -63,8 +64,8 @@ export function selectionModeFactory(
   switch (unitSelection.type) {
     case "moveArmy":
       return new MoveArmySelectionMode(unitSelection.withLeaders, characterStore);
-    // case "attack":
-    // return new AttackSelectionMode();
+    case "attack":
+      return new AttackSelectionMode(unitSelection.withLeaders, unitSelection.frontId);
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
@@ -135,6 +136,42 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
         return false;
       });
       if (!someLeaders) return "Select at least one leader to move.";
+    }
+    return true;
+  }
+}
+
+export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(
+    private withLeaders: boolean,
+    private frontId: WotrFrontId
+  ) {}
+
+  initialize(unitNodes: UnitNode[], region: WotrRegion) {
+    const underSiegeArmy = region.underSiegeArmy?.front === this.frontId;
+    for (const unitNode of unitNodes) {
+      if (unitNode.group !== "army" && unitNode.group !== "underSiege") continue;
+      if (underSiegeArmy && unitNode.group === "army") continue;
+      unitNode.selectable = true;
+      unitNode.selected = true;
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    const someArmyUnits = selectedNodes.some(node => {
+      if (node.type === "regular") return true;
+      if (node.type === "elite") return true;
+      return false;
+    });
+    if (!someArmyUnits) return "Select at least one regular or elite unit to attack.";
+    if (this.withLeaders) {
+      const someLeaders = selectedNodes.some(node => {
+        if (node.type === "character") return true;
+        if (node.type === "nazgul") return true;
+        if (node.type === "leader") return true;
+        return false;
+      });
+      if (!someLeaders) return "Select at least one leader to attack.";
     }
     return true;
   }

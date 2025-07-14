@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { attack } from "../battle/wotr-battle-actions";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameUiStore } from "../game/wotr-game-ui.store";
@@ -49,6 +50,47 @@ export class WotrUnitPlayerService {
       withLeaders: false
     });
     return this.moveThisArmy(movingArmy, frontId);
+  }
+
+  async attack(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const attackingUnits = await this.askAttackingUnits(frontId, false);
+    return this.attackWithArmy(attackingUnits, frontId);
+  }
+
+  private async askAttackingUnits(
+    frontId: WotrFrontId,
+    withLeaders: boolean
+  ): Promise<WotrRegionUnits> {
+    const candidateRegions = withLeaders
+      ? this.unitService.attackWithLeadersStartingRegions(frontId)
+      : this.unitService.attackStartingRegions(frontId);
+    return this.ui.askRegionUnits("Select units to attack", {
+      type: "attack",
+      regionIds: candidateRegions.map(region => region.id),
+      withLeaders,
+      frontId
+    });
+  }
+
+  private async attackWithArmy(
+    attackingUnits: WotrRegionUnits,
+    frontId: WotrFrontId
+  ): Promise<WotrAction[]> {
+    const fromRegion = this.regionStore.region(attackingUnits.regionId);
+    const fromArmy =
+      fromRegion.army?.front === frontId ? fromRegion.army : fromRegion.underSiegeArmy!;
+    const retroguard = this.armyUtils.splitUnits(fromArmy, attackingUnits);
+    const targetRegions = this.unitService.attackTargetRegions(fromRegion, frontId);
+    const toRegionId = await this.ui.askRegion(
+      "Select region to attack",
+      targetRegions.map(region => region.id)
+    );
+    return [attack(fromRegion.id, toRegionId, retroguard)];
+  }
+
+  async attackWithLeader(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const attackingUnits = await this.askAttackingUnits(frontId, true);
+    return this.attackWithArmy(attackingUnits, frontId);
   }
 
   private async moveThisArmy(

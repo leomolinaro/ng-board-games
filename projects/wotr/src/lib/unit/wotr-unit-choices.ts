@@ -18,17 +18,18 @@ import { WotrRecruitmentConstraints, WotrUnitService } from "./wotr-unit.service
 @Injectable({ providedIn: "root" })
 export class WotrAttackArmyChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
+  private unitPlayerService = inject(WotrUnitPlayerService);
 
   label(): string {
     return "Attack";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontAttackArmies(frontId);
+    return this.unitService.canFrontAttack(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return this.unitPlayerService.attack(frontId);
   }
 }
 
@@ -145,16 +146,19 @@ export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
 @Injectable({ providedIn: "root" })
 export class WotrLeaderArmyAttackChoice implements WotrPlayerChoice {
   private unitService = inject(WotrUnitService);
+  private unitPlayerService = inject(WotrUnitPlayerService);
 
   label(): string {
     return "Attack with leader";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontAttackArmiesWithLeader(frontId);
+    return this.unitService.canFrontAttackWithLeader(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    const a = await this.unitPlayerService.attackWithLeader(frontId);
+    console.log("WotrLeaderArmyAttackChoice.resolve", a);
+    return a;
   }
 }
