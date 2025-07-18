@@ -4,6 +4,8 @@ import { rollActionDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionDiePlayerService } from "../action-die/wotr-action-die-player.service";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrActionDieService } from "../action-die/wotr-action-die.service";
+import { noCombatCard } from "../battle/wotr-battle-actions";
+import { WotrBattlePlayerService } from "../battle/wotr-battle-player.service";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
 import { WotrCardId } from "../card/wotr-card.models";
@@ -14,6 +16,7 @@ import {
   revealFellowship
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
+import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { allocateHuntDice, drawHuntTile, rollHuntDice } from "../hunt/wotr-hunt-actions";
@@ -22,6 +25,7 @@ import {
   WotrHuntEffectChoiceParams
 } from "../hunt/wotr-hunt-effect-choices";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
@@ -36,6 +40,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
   private regionStore = inject(WotrRegionStore);
   private cardPlayerService = inject(WotrCardPlayerService);
+  private battlePlayerService = inject(WotrBattlePlayerService);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
     return this.cardPlayerService.firstPhaseDrawCards(player);
@@ -157,20 +162,41 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     throw new Error("Method not implemented.");
   }
 
-  async chooseCombatCard(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrGameStory> {
+    console.warn("WotrPlayerLocalService.chooseCombatCard is not implemented.");
+    return { type: "battle", actions: [noCombatCard()] };
   }
 
-  async rollCombatDice(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "battle",
+      actions: [await this.battlePlayerService.rollCombatDice(nDice, frontId)]
+    };
   }
 
-  async reRollCombatDice(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "battle",
+      actions: [await this.battlePlayerService.reRollCombatDice(nDice, frontId)]
+    };
   }
 
-  async chooseCasualties(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async chooseCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    underSiege: boolean
+  ): Promise<WotrGameStory> {
+    return {
+      type: "battle",
+      actions: await this.battlePlayerService.chooseCasualties(hitPoints, regionId, underSiege)
+    };
+  }
+
+  async eliminateArmy(regionId: WotrRegionId, underSiege: boolean): Promise<WotrGameStory> {
+    return {
+      type: "battle",
+      actions: await this.battlePlayerService.eliminateArmy(regionId, underSiege)
+    };
   }
 
   async battleAdvance(): Promise<WotrGameStory> {

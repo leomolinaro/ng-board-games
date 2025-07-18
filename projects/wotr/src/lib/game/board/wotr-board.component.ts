@@ -233,8 +233,8 @@ export class WotrBoardComponent {
     if (result) {
       if (result === true) {
         this.ui.region.emit(region.id);
-      } else if ("removing" in result || "declassing" in result) {
-        throw new Error("Removing or declassing units is not implemented yet.");
+      } else if ("removing" in result && "downgrading" in result) {
+        this.ui.casualtyUnits.emit(result);
       } else {
         const regionUnits: WotrRegionUnits = { ...result, regionId: region.id };
         this.ui.regionUnits.emit(regionUnits);

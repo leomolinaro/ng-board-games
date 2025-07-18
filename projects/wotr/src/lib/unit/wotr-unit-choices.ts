@@ -157,8 +157,6 @@ export class WotrLeaderArmyAttackChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const a = await this.unitPlayerService.attackWithLeader(frontId);
-    console.log("WotrLeaderArmyAttackChoice.resolve", a);
-    return a;
+    return this.unitPlayerService.attackWithLeader(frontId);
   }
 }

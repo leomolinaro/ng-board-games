@@ -283,4 +283,12 @@ export class WotrArmyUtils {
     totalArmyUnits += elites?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
     return totalArmyUnits;
   }
+
+  nHits(army: WotrArmy) {
+    const { regulars, elites } = army;
+    let totalHits = 0;
+    totalHits += regulars?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
+    totalHits += elites?.reduce((sum, unit) => sum + unit.quantity * 2, 0) ?? 0;
+    return totalHits;
+  }
 }

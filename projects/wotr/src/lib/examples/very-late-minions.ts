@@ -53,7 +53,8 @@ import {
   moveArmies,
   moveNazgul,
   recruitEliteUnit,
-  recruitRegularUnit
+  recruitRegularUnit,
+  upgradeRegularUnit
 } from "../unit/wotr-unit-actions";
 import { character, elite, nazgul, regular } from "../unit/wotr-unit.models";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
@@ -201,13 +202,7 @@ export const stories: WotrStoryDoc[] = [
   b.fp().battleStory(retreatIntoSiege("lorien")),
   b.s().battleStory(advanceArmy()),
   b.fp().musterArmyDie(recruitEliteUnit("woodland-realm", "elves")),
-  b
-    .s()
-    .eventDieCard(
-      "Hill-trolls",
-      eliminateRegularUnit("lorien", "sauron", 2),
-      recruitEliteUnit("lorien", "sauron", 2)
-    ),
+  b.s().eventDieCard("Hill-trolls", upgradeRegularUnit("lorien", "sauron", 2)),
   b.fp().musterArmyDie(advanceNation("north")),
   b.s().musterArmyDie(advanceNation("southrons")),
   b.fp().willOfTheWestDie(advanceNation("north")),
@@ -316,19 +311,9 @@ export const stories: WotrStoryDoc[] = [
       recruitRegularUnit("south-dunland", "isengard")
     ),
   b.fp().pass(),
-  b
-    .s()
-    .musterDie(
-      eliminateRegularUnit("orthanc", "isengard", 2),
-      recruitEliteUnit("orthanc", "isengard", 2)
-    ),
+  b.s().musterDie(upgradeRegularUnit("orthanc", "isengard", 2)),
   b.fp().pass(),
-  b
-    .s()
-    .musterDie(
-      eliminateRegularUnit("orthanc", "isengard", 2),
-      recruitEliteUnit("orthanc", "isengard", 2)
-    ),
+  b.s().musterDie(upgradeRegularUnit("orthanc", "isengard", 2)),
   b
     .fp()
     .musterElvenRingDie(

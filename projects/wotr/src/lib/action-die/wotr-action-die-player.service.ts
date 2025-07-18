@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrDrawEventCardChoice } from "../card/wotr-card-action-choices";
+import { WotrDrawEventCardChoice, WotrPlayEventCardChoice } from "../card/wotr-card-action-choices";
 import { WotrCardPlayerService } from "../card/wotr-card-player.service";
+import { WotrCardService } from "../card/wotr-card.service";
 import {
   WotrBringCharacterIntoPlayChoice,
   WotrMoveCompanionsChoice,
@@ -60,6 +61,7 @@ export class WotrActionDiePlayerService {
   private moveMinionsChoice = inject(WotrMoveMinionsChoice);
   private diplomaticActionChoice = inject(WotrDiplomaticActionChoice);
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
+  private cardService = inject(WotrCardService);
 
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
     const canSkipTokens = this.actionDieService.canSkipTokens(player.frontId);
@@ -123,7 +125,7 @@ export class WotrActionDiePlayerService {
       [
         this.moveArmiesChoice,
         this.attackArmyChoice,
-        // new WotrPlayEventCardChoice(["army"], frontId, this.frontStore, this.ui, this.cardPlayer),
+        new WotrPlayEventCardChoice(["army"], frontId, this.cardService, this.ui, this.cardPlayer),
         new WotrSkipDieChoice("event")
       ],
       frontId
@@ -141,8 +143,14 @@ export class WotrActionDiePlayerService {
   async resolveCharacterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
     const choices: WotrPlayerChoice[] = [
       this.leaderArmyMoveChoice,
-      this.leaderArmyAttackChoice
-      // new WotrPlayEventCardChoice(["character"], frontId, this.frontStore, this.ui, this.cardPlayer)
+      this.leaderArmyAttackChoice,
+      new WotrPlayEventCardChoice(
+        ["character"],
+        frontId,
+        this.cardService,
+        this.ui,
+        this.cardPlayer
+      )
     ];
     if (frontId === "free-peoples") {
       choices.push(
@@ -169,7 +177,7 @@ export class WotrActionDiePlayerService {
   async resolveMusterResult(frontId: WotrFrontId): Promise<WotrAction[]> {
     const choices: WotrPlayerChoice[] = [
       this.diplomaticActionChoice,
-      // new WotrPlayEventCardChoice(["muster"], frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrPlayEventCardChoice(["muster"], frontId, this.cardService, this.ui, this.cardPlayer),
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
@@ -184,7 +192,13 @@ export class WotrActionDiePlayerService {
       this.diplomaticActionChoice,
       this.moveArmiesChoice,
       this.attackArmyChoice,
-      // new WotrPlayEventCardChoice(["muster", "army"], frontId, this.frontStore, this.ui, this.cardPlayer),
+      new WotrPlayEventCardChoice(
+        ["muster", "army"],
+        frontId,
+        this.cardService,
+        this.ui,
+        this.cardPlayer
+      ),
       this.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
@@ -239,7 +253,7 @@ export class WotrActionDiePlayerService {
       "Choose an action for the event die",
       [
         this.drawEventCardChoice,
-        // new WotrPlayEventCardChoice("any", frontId, this.frontStore, this.ui, this.cardPlayer),
+        new WotrPlayEventCardChoice("any", frontId, this.cardService, this.ui, this.cardPlayer),
         new WotrSkipDieChoice("event")
       ],
       frontId

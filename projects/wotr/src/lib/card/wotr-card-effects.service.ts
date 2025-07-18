@@ -37,8 +37,8 @@ export class WotrCardEffectsService {
 
   private cardService = inject(WotrCardService);
 
-  private async rollCombatDice(player: WotrPlayer): Promise<WotrCombatDie[]> {
-    const story = await player.rollCombatDice();
+  private async rollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
+    const story = await player.rollCombatDice(nDice);
     const action = findAction<WotrCombatRoll>(story, "combat-roll");
     return action.dice;
   }
@@ -56,8 +56,8 @@ export class WotrCardEffectsService {
     },
     "Dreadful Spells": async params => {
       findAction<WotrRegionChoose>(params.story, "region-choose");
-      await this.rollCombatDice(this.shadow);
-      await this.freePeoples.chooseCasualties();
+      await this.rollCombatDice(1, this.shadow); // TODO nDice
+      await this.freePeoples.chooseCasualties(1, "andrast", false); // TODO hitPoints
     },
     "Isildur's Bane": async params => {
       const action = findAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");

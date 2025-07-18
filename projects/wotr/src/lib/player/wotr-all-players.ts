@@ -20,13 +20,19 @@ export class WotrAllPlayers {
     );
   }
   chooseCombatCard(): Promise<Record<WotrFrontId, WotrGameStory>> {
-    return this.storyService.parallelStories(frontId => p => p.chooseCombatCard!());
+    return this.storyService.parallelStories(frontId => p => p.chooseCombatCard(frontId));
   }
-  rollCombatDice(): Promise<Record<WotrFrontId, WotrGameStory>> {
-    return this.storyService.parallelStories(frontId => p => p.rollCombatDice!());
+  rollCombatDice(nDice: Record<WotrFrontId, number>): Promise<Record<WotrFrontId, WotrGameStory>> {
+    return this.storyService.parallelStories(
+      frontId => p => p.rollCombatDice(nDice[frontId], frontId)
+    );
   }
-  reRollCombatDice(): Promise<Record<WotrFrontId, WotrGameStory>> {
-    return this.storyService.parallelStories(frontId => p => p.reRollCombatDice!());
+  reRollCombatDice(
+    nDice: Record<WotrFrontId, number>
+  ): Promise<Record<WotrFrontId, WotrGameStory>> {
+    return this.storyService.parallelStories(
+      frontId => p => p.reRollCombatDice(nDice[frontId], frontId)
+    );
   }
 
   private player(frontId: WotrFrontId) {

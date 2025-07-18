@@ -1,4 +1,5 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
@@ -11,12 +12,16 @@ import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrArmyUtils } from "./wotr-army.utils";
 import {
   WotrArmyMovement,
   WotrEliteUnitDisband,
+  WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
   WotrEliteUnitRecruitment,
+  WotrLeaderElimination,
   WotrLeaderRecruitment,
+  WotrNazgulElimination,
   WotrNazgulRecruitment,
   WotrRegularUnitDisband,
   WotrRegularUnitElimination,
@@ -43,6 +48,7 @@ export class WotrUnitService {
   private nationService = inject(WotrNationService);
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
+  private armyUtil = inject(WotrArmyUtils);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -341,14 +347,46 @@ export class WotrUnitService {
     };
   }
 
-  async chooseCasualties(player: WotrPlayer) {
-    const story = await player.chooseCasualties();
-    const actions = filterActions<WotrRegularUnitElimination | WotrEliteUnitElimination>(
-      story,
-      "regular-unit-elimination",
-      "elite-unit-elimination"
-    );
-    return actions;
+  async chooseCasualties(hitPoints: number, regionId: WotrRegionId, player: WotrPlayer) {
+    const region = this.regionStore.region(regionId);
+    const underSiege = region.underSiegeArmy?.front === player.frontId;
+    const army = underSiege ? region.underSiegeArmy! : region.army!;
+    return this.chooseFrontCasualties(player, hitPoints, army, regionId, underSiege);
+  }
+
+  async chooseFrontCasualties(
+    player: WotrPlayer,
+    nTotalHits: number | 0,
+    army: WotrArmy,
+    regionId: WotrRegionId,
+    underSiege: boolean
+  ) {
+    if (!nTotalHits) return null;
+    const nHits = this.armyUtil.nHits(army);
+    if (nTotalHits < nHits) {
+      const story = await player.chooseCasualties(nTotalHits, regionId, underSiege);
+      const actions = filterActions<
+        WotrRegularUnitElimination | WotrEliteUnitElimination | WotrEliteUnitDowngrade
+      >(story, "regular-unit-elimination", "elite-unit-elimination", "elite-unit-downgrade");
+      return actions;
+    } else {
+      const story = await player.eliminateArmy(regionId, underSiege);
+      const actions = filterActions<
+        | WotrRegularUnitElimination
+        | WotrEliteUnitElimination
+        | WotrLeaderElimination
+        | WotrNazgulElimination
+        | WotrCharacterElimination
+      >(
+        story,
+        "regular-unit-elimination",
+        "elite-unit-elimination",
+        "leader-elimination",
+        "nazgul-elimination",
+        "character-elimination"
+      );
+      return actions;
+    }
   }
 
   canFrontRecruitReinforcements(frontId: WotrFrontId): boolean {
@@ -491,17 +529,29 @@ export class WotrUnitService {
     return leadership;
   }
 
+  getArmyCombatStrength(army: WotrArmy): number {
+    let combatStrength = 0;
+    if (army.regulars) {
+      combatStrength += army.regulars.reduce((cs, unit) => cs + unit.quantity, 0);
+    }
+    if (army.elites) {
+      combatStrength += army.elites.reduce((cs, unit) => cs + unit.quantity, 0);
+    }
+    // TODO characters
+    return combatStrength;
+  }
+
   private getEliteUnitsLeadership(elites: WotrNationUnit[]) {
     return elites.reduce((l, armyUnit) => {
       if (armyUnit.nation === "isengard" && this.characterStore.isInPlay("saruman")) {
-        return l + 1;
+        return l + armyUnit.quantity;
       }
       return l;
     }, 0);
   }
 
   private getLeadersLeadership(leaders: WotrNationUnit[]) {
-    return leaders.length;
+    return leaders.reduce((l, unit) => l + unit.quantity, 0);
   }
 
   private getNazgulLeadership(nNazgul: number) {

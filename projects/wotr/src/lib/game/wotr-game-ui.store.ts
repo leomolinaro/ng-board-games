@@ -9,9 +9,12 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrNationId } from "../nation/wotr-nation.models";
 import { WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
-import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
+import {
+  WotrChooseCasualtiesUnitSelection,
+  WotrRegionUnitSelection
+} from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionUnits, WotrReinforcementUnit } from "../unit/wotr-unit.models";
+import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit.models";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -196,6 +199,21 @@ export class WotrGameUiStore extends signalStore(
     const regionUnits = await this.regionUnits.get();
     this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null, regionSelection: null }));
     return regionUnits;
+  }
+
+  casualtyUnits = uiEvent<{ downgrading: WotrUnits; removing: WotrUnits }>();
+  async askCasualtyUnits(
+    message: string,
+    unitSelection: WotrChooseCasualtiesUnitSelection
+  ): Promise<{ downgrading: WotrUnits; removing: WotrUnits }> {
+    this.updateUi(s => ({
+      ...s,
+      message,
+      regionUnitSelection: unitSelection
+    }));
+    const casualtyUnits = await this.casualtyUnits.get();
+    this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null }));
+    return casualtyUnits;
   }
 
   fellowshipCompanions = uiEvent<WotrCompanionId[]>();

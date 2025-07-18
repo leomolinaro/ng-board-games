@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterService } from "../character/wotr-character.service";
@@ -9,11 +9,10 @@ import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontService } from "../front/wotr-front.service";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import {
+  findAction,
   WotrBattleStory,
   WotrCombatCardReactionStory,
-  WotrSkipCombatCardReactionStory,
-  filterActions,
-  findAction
+  WotrSkipCombatCardReactionStory
 } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
@@ -23,11 +22,6 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrArmyUtils } from "../unit/wotr-army.utils";
-import {
-  WotrEliteUnitDowngrade,
-  WotrEliteUnitElimination,
-  WotrRegularUnitElimination
-} from "../unit/wotr-unit-actions";
 import { WotrArmy } from "../unit/wotr-unit.models";
 import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
@@ -67,6 +61,9 @@ export class WotrBattleService {
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+
+  private currentBattle: WotrBattle | undefined;
+  private currentCombatRound: WotrCombatRound | undefined;
 
   init() {
     this.actionService.registerAction<WotrArmyAttack>(
@@ -210,9 +207,11 @@ export class WotrBattleService {
       retroguard,
       region: action.toRegion
     };
+    this.currentBattle = battle;
     this.battleStore.startBattle(battle);
     await this.resolveBattle(battle);
     this.battleStore.endBattle();
+    this.currentBattle = undefined;
   }
 
   private async resolveBattle(battle: WotrBattle) {
@@ -226,12 +225,14 @@ export class WotrBattleService {
         battle.defender,
         !!this.attackedRegion(battle.action).underSiegeArmy
       );
-      continueBattle = await this.resolveCombat(combatRound);
+      this.currentCombatRound = combatRound;
+      continueBattle = await this.resolveCombat(combatRound, battle);
+      this.currentCombatRound = undefined;
       round++;
     } while (continueBattle);
   }
 
-  private async resolveCombat(combatRound: WotrCombatRound): Promise<boolean> {
+  private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
     let attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
     if (hasStronghold && !combatRound.siegeBattle) {
@@ -253,7 +254,7 @@ export class WotrBattleService {
       await this.leaderReRolls(combatRound);
       await this.resolveCombatCards(5, combatRound);
       await this.resolveCombatCards(6, combatRound);
-      await this.chooseCasualties(combatRound);
+      await this.chooseCasualties(combatRound, battle);
       await this.resolveCombatCards(7, combatRound);
     }
 
@@ -361,8 +362,13 @@ export class WotrBattleService {
   }
 
   private async combatRolls(combatRound: WotrCombatRound) {
+    const nDice: Record<WotrFrontId, number> = {
+      "free-peoples": this.getNRolls(combatRound.freePeoples, combatRound),
+      "shadow": this.getNRolls(combatRound.shadow, combatRound)
+    };
     const { "shadow": shadowRoll, "free-peoples": freePeoplesRoll } =
-      await this.parallelRollCombatDice();
+      await this.parallelRollCombatDice(nDice);
+    // eslint-disable-next-line require-atomic-updates
     combatRound.shadow.combatRoll = shadowRoll;
     combatRound.shadow.nCombatSuccesses = this.getNRollSuccesses(
       shadowRoll,
@@ -390,8 +396,14 @@ export class WotrBattleService {
     );
     if (defenderNReRolls) {
       if (attackerNReRolls) {
+        const nDice: Record<WotrFrontId, number> = {
+          "shadow": combatRound.defender.frontId === "shadow" ? defenderNReRolls : attackerNReRolls,
+          "free-peoples":
+            combatRound.defender.frontId === "free-peoples" ? defenderNReRolls : attackerNReRolls
+        };
         const { "shadow": shadowReRoll, "free-peoples": freePeoplesReRoll } =
-          await this.parallelReRollCombatDice();
+          await this.parallelReRollCombatDice(nDice);
+        // eslint-disable-next-line require-atomic-updates
         combatRound.shadow.leaderReRoll = shadowReRoll;
         combatRound.shadow.nLeaderSuccesses = this.getNRollSuccesses(
           shadowReRoll,
@@ -405,7 +417,11 @@ export class WotrBattleService {
           combatRound
         );
       } else {
-        const defenderReRoll = await this.reRollCombatDice(combatRound.defender.player);
+        const defenderReRoll = await this.reRollCombatDice(
+          defenderNReRolls,
+          combatRound.defender.player
+        );
+        // eslint-disable-next-line require-atomic-updates
         combatRound.defender.leaderReRoll = defenderReRoll;
         combatRound.defender.nLeaderSuccesses = this.getNRollSuccesses(
           defenderReRoll,
@@ -414,7 +430,11 @@ export class WotrBattleService {
         );
       }
     } else if (attackerNReRolls) {
-      const attackerReRoll = await this.reRollCombatDice(combatRound.attacker.player);
+      const attackerReRoll = await this.reRollCombatDice(
+        attackerNReRolls,
+        combatRound.attacker.player
+      );
+      // eslint-disable-next-line require-atomic-updates
       combatRound.attacker.leaderReRoll = attackerReRoll;
       combatRound.attacker.nLeaderSuccesses = this.getNRollSuccesses(
         attackerReRoll,
@@ -426,6 +446,10 @@ export class WotrBattleService {
       (combatRound.defender.nCombatSuccesses ?? 0) + (combatRound.defender.nLeaderSuccesses ?? 0);
     combatRound.attacker.nTotalHits =
       (combatRound.attacker.nCombatSuccesses ?? 0) + (combatRound.attacker.nLeaderSuccesses ?? 0);
+  }
+
+  private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+    return Math.min(this.getCombatStrength(combatFront, combatRound), 5);
   }
 
   private getNReRolls(
@@ -473,17 +497,20 @@ export class WotrBattleService {
 
   private unitService = inject(WotrUnitService);
 
+  getCombatStrength(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+    if (combatFront.isAttacker) {
+      const attackingArmy = this.attackingArmy(combatRound);
+      return this.unitService.getArmyCombatStrength(attackingArmy);
+    } else {
+      const attackedArmy = this.attackedArmy(combatRound);
+      return attackedArmy ? this.unitService.getArmyCombatStrength(attackedArmy) : 0;
+    }
+  }
+
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
-      const retroguard = this.battle().retroguard;
-      const retroguardLeadership = retroguard
-        ? this.unitService.getArmyLeadership(retroguard, false)
-        : 0;
-      const armyLeadership = this.unitService.getArmyLeadership(
-        this.attackingArmy(combatRound),
-        false
-      );
-      return armyLeadership - retroguardLeadership;
+      const attackingArmy = this.attackingArmy(combatRound);
+      return this.unitService.getArmyLeadership(attackingArmy, false);
     } else {
       const attackedArmy = this.attackedArmy(combatRound);
       return attackedArmy ? this.unitService.getArmyLeadership(attackedArmy, false) : 0;
@@ -528,23 +555,23 @@ export class WotrBattleService {
     return 5;
   }
 
-  private async chooseCasualties(combatRound: WotrCombatRound) {
-    await this.chooseFrontCasualties(combatRound.attacker, combatRound.defender);
-    await this.chooseFrontCasualties(combatRound.defender, combatRound.attacker);
-  }
-
-  private async chooseFrontCasualties(
-    combatFront: WotrCombatFront,
-    oppositeCombatFront: WotrCombatFront
-  ) {
-    if (oppositeCombatFront.nTotalHits) {
-      const story = await combatFront.player.chooseCasualties();
-      const actions = filterActions<
-        WotrRegularUnitElimination | WotrEliteUnitElimination | WotrEliteUnitDowngrade
-      >(story, "regular-unit-elimination", "elite-unit-elimination", "elite-unit-downgrade");
-      return actions;
-    }
-    return null;
+  private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
+    const attackingArmy = this.attackingArmy(combatRound);
+    await this.unitService.chooseFrontCasualties(
+      combatRound.attacker.player,
+      combatRound.defender.nTotalHits || 0,
+      attackingArmy,
+      battle.region,
+      false
+    );
+    const attackedArmy = this.attackedArmy(combatRound);
+    await this.unitService.chooseFrontCasualties(
+      combatRound.defender.player,
+      combatRound.attacker.nTotalHits || 0,
+      attackedArmy,
+      battle.region,
+      combatRound.siegeBattle
+    );
   }
 
   private async checkSorcerer(combatRound: WotrCombatRound) {
@@ -579,7 +606,7 @@ export class WotrBattleService {
   }
   private attackedArmy(combatRound: WotrCombatRound) {
     const attackedRegion = this.attackedRegion(combatRound.action);
-    return combatRound.siegeBattle ? attackedRegion.underSiegeArmy : attackedRegion.army;
+    return combatRound.siegeBattle ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
   }
   private attackedRegion(action: WotrArmyAttack) {
     return this.regionStore.region(action.toRegion);
@@ -618,22 +645,26 @@ export class WotrBattleService {
     }
   }
 
-  private async reRollCombatDice(player: WotrPlayer): Promise<WotrCombatDie[]> {
-    const story = await player.reRollCombatDice();
+  private async reRollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
+    const story = await player.reRollCombatDice(nDice);
     const action = findAction<WotrCombatReRoll>(story, "combat-re-roll");
     return action.dice;
   }
 
-  private async parallelRollCombatDice(): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
-    const stories = await this.allPlayers.rollCombatDice();
+  private async parallelRollCombatDice(
+    nDice: Record<WotrFrontId, number>
+  ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
+    const stories = await this.allPlayers.rollCombatDice(nDice);
     return {
       "free-peoples": findAction<WotrCombatRoll>(stories["free-peoples"], "combat-roll").dice,
       "shadow": findAction<WotrCombatRoll>(stories.shadow, "combat-roll").dice
     };
   }
 
-  private async parallelReRollCombatDice(): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
-    const stories = await this.allPlayers.reRollCombatDice();
+  private async parallelReRollCombatDice(
+    nDice: Record<WotrFrontId, number>
+  ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
+    const stories = await this.allPlayers.reRollCombatDice(nDice);
     return {
       "free-peoples": findAction<WotrCombatReRoll>(stories["free-peoples"], "combat-re-roll").dice,
       "shadow": findAction<WotrCombatReRoll>(stories.shadow, "combat-re-roll").dice

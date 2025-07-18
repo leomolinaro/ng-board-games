@@ -3,6 +3,7 @@ import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrGameStore } from "../game/wotr-game.store";
 import { WotrGameStory } from "../game/wotr-story.models";
+import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable({ providedIn: "root" })
@@ -79,6 +80,9 @@ export class WotrPlayerAiService implements WotrPlayerService {
     throw new Error("Method not implemented.");
   }
   chooseCasualties(): Promise<WotrGameStory> {
+    throw new Error("Method not implemented.");
+  }
+  eliminateArmy(regionId: WotrRegionId, underSiege: boolean): Promise<WotrGameStory> {
     throw new Error("Method not implemented.");
   }
   battleAdvance(): Promise<WotrGameStory> {

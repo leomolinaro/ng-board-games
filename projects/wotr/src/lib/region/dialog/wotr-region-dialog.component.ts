@@ -122,16 +122,18 @@ export class WotrRegionDialogComponent implements OnInit {
   protected unitNodes!: UnitNode[];
   private selectedNodes = signal<UnitNode[]>([]);
 
+  private unitSelectionMode = this.data.unitSelection
+    ? selectionModeFactory(this.data.unitSelection, this.characterStore)
+    : null;
+
+  private casualtiesMode = this.data.unitSelection?.type === "chooseCasualties";
+
   protected canConfirm = computed(() => {
     if (this.data.regionSelection) return true;
     if (this.unitSelectionMode)
       return this.unitSelectionMode.canConfirm(this.selectedNodes(), this.data.region);
     return false;
   });
-
-  private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(this.data.unitSelection, this.characterStore)
-    : null;
 
   ngOnInit() {
     const region = this.data.region;
@@ -243,76 +245,107 @@ export class WotrRegionDialogComponent implements OnInit {
   onConfirm() {
     if (!this.canConfirm()) return;
     if (this.data.unitSelection) {
-      const selectedUnits: WotrUnits = {};
-      for (const unitNode of this.unitNodes) {
-        if (unitNode.selected) {
-          switch (unitNode.type) {
-            case "regular": {
-              if (!selectedUnits.regulars) selectedUnits.regulars = [];
-              const regular = selectedUnits.regulars.find(u => u.nation === unitNode.nationId);
-              if (regular) {
-                regular.quantity++;
-              } else {
-                selectedUnits.regulars.push({
-                  nation: unitNode.nationId!,
-                  quantity: 1
-                });
-              }
-              break;
-            }
-            case "elite": {
-              if (!selectedUnits.elites) selectedUnits.elites = [];
-              const elite = selectedUnits.elites.find(u => u.nation === unitNode.nationId);
-              if (elite) {
-                elite.quantity++;
-              } else {
-                selectedUnits.elites.push({
-                  nation: unitNode.nationId!,
-                  quantity: 1
-                });
-              }
-              break;
-            }
-            case "leader": {
-              if (!selectedUnits.leaders) selectedUnits.leaders = [];
-              const leader = selectedUnits.leaders.find(u => u.nation === unitNode.nationId);
-              if (leader) {
-                leader.quantity++;
-              } else {
-                selectedUnits.leaders.push({
-                  nation: unitNode.nationId!,
-                  quantity: 1
-                });
-              }
-              break;
-            }
-            case "nazgul": {
-              if (!selectedUnits.nNazgul) selectedUnits.nNazgul = 0;
-              selectedUnits.nNazgul++;
-              break;
-            }
-            case "character": {
-              if (!selectedUnits.characters) selectedUnits.characters = [];
-              selectedUnits.characters.push(unitNode.id as WotrCharacterId);
-              break;
-            }
+      if (this.casualtiesMode) {
+        const downgradedUnits: WotrUnits = {};
+        const removedUnits: WotrUnits = {};
+        for (const unitNode of this.unitNodes) {
+          if (unitNode.downgrading) {
+            this.addNodeToUnits(unitNode, downgradedUnits);
+          }
+          if (unitNode.removing) {
+            this.addNodeToUnits(unitNode, removedUnits);
           }
         }
+        this.dialogRef.close({ removing: removedUnits, downgrading: downgradedUnits });
+      } else {
+        const selectedUnits: WotrUnits = {};
+        for (const unitNode of this.unitNodes) {
+          if (unitNode.selected) {
+            this.addNodeToUnits(unitNode, selectedUnits);
+          }
+        }
+        this.dialogRef.close(selectedUnits);
       }
-      this.dialogRef.close(selectedUnits);
     } else if (this.data.regionSelection) {
       this.dialogRef.close(true);
     }
   }
 
+  private addNodeToUnits(unitNode: UnitNode, units: WotrUnits) {
+    switch (unitNode.type) {
+      case "regular": {
+        if (!units.regulars) units.regulars = [];
+        const regular = units.regulars.find(u => u.nation === unitNode.nationId);
+        if (regular) {
+          regular.quantity++;
+        } else {
+          units.regulars.push({
+            nation: unitNode.nationId!,
+            quantity: 1
+          });
+        }
+        break;
+      }
+      case "elite": {
+        if (!units.elites) units.elites = [];
+        const elite = units.elites.find(u => u.nation === unitNode.nationId);
+        if (elite) {
+          elite.quantity++;
+        } else {
+          units.elites.push({
+            nation: unitNode.nationId!,
+            quantity: 1
+          });
+        }
+        break;
+      }
+      case "leader": {
+        if (!units.leaders) units.leaders = [];
+        const leader = units.leaders.find(u => u.nation === unitNode.nationId);
+        if (leader) {
+          leader.quantity++;
+        } else {
+          units.leaders.push({
+            nation: unitNode.nationId!,
+            quantity: 1
+          });
+        }
+        break;
+      }
+      case "nazgul": {
+        if (!units.nNazgul) units.nNazgul = 0;
+        units.nNazgul++;
+        break;
+      }
+      case "character": {
+        if (!units.characters) units.characters = [];
+        units.characters.push(unitNode.id as WotrCharacterId);
+        break;
+      }
+    }
+  }
+
   onUnitClick(unitNode: UnitNode) {
     if (!unitNode.selectable) return;
-    if (unitNode.selected) {
-      unitNode.selected = false;
-      this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+    if (this.casualtiesMode) {
+      if (unitNode.removing) {
+        unitNode.removing = false;
+        this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+      } else if (unitNode.downgrading) {
+        unitNode.downgrading = false;
+        unitNode.removing = true;
+      } else {
+        unitNode.downgrading = true;
+        this.selectedNodes.update(nodes => [...nodes, unitNode]);
+      }
     } else {
-      unitNode.selected = true;
-      this.selectedNodes.update(nodes => [...nodes, unitNode]);
+      if (unitNode.selected) {
+        unitNode.selected = false;
+        this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+      } else {
+        unitNode.selected = true;
+        this.selectedNodes.update(nodes => [...nodes, unitNode]);
+      }
     }
   }
 }

@@ -8,6 +8,7 @@ export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection
   | WotrAttackingUnitSelection
   | WotrDisbandingUnitSelection
+  | WotrChooseCasualtiesUnitSelection
   | WotrMovingCharactersUnitSelection;
 
 interface AWotrRegionUnitSelection {
@@ -34,6 +35,17 @@ export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrDisbandingUnitSelection extends AWotrRegionUnitSelection {
   type: "disband";
   nArmyUnits: number;
+  underSiege: boolean;
+}
+
+export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelection {
+  type: "chooseCasualties";
+  hitPoints: number | "full";
+  underSiege: boolean;
+}
+
+export interface WotrEliminateAllUnitsSelection extends AWotrRegionUnitSelection {
+  type: "eliminateAll";
   underSiege: boolean;
 }
 
@@ -70,6 +82,8 @@ export function selectionModeFactory(
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
       return new MoveCharactersSelectionMode(unitSelection.characters);
+    case "chooseCasualties":
+      return new ChooseCasualtiesSelectionMode(unitSelection.hitPoints, unitSelection.underSiege);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -197,5 +211,57 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
       return "Select at least one character to move.";
     }
     return true;
+  }
+}
+
+export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(
+    private hitPoints: number | "full",
+    private underSiege: boolean
+  ) {}
+
+  initialize(unitNodes: UnitNode[]) {
+    if (this.hitPoints === "full") {
+      const group = this.underSiege ? "underSiege" : "army";
+      for (const node of unitNodes) {
+        if (node.group === group) {
+          node.removing = true;
+        }
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    const group = this.underSiege ? "underSiege" : "army";
+    const nodes = selectedNodes.filter(node => node.group === group);
+    if (this.hitPoints === "full") {
+      if (nodes.every(node => node.removing)) {
+        return true;
+      } else {
+        return "Remove all the units.";
+      }
+    } else {
+      let selectedHitPoints = 0;
+      for (const node of nodes) {
+        switch (node.type) {
+          case "regular":
+            if (node.removing) {
+              selectedHitPoints += 1;
+            }
+            break;
+          case "elite":
+            if (node.downgrading) {
+              selectedHitPoints += 1;
+            } else if (node.removing) {
+              selectedHitPoints += 2;
+            }
+            break;
+        }
+      }
+      if (selectedHitPoints < this.hitPoints) {
+        return `Select casualties with at least ${this.hitPoints} hit points.`;
+      }
+      return true;
+    }
   }
 }
