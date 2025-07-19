@@ -13,10 +13,14 @@ export interface WotrBattle {
   retroguard?: WotrArmy;
   attackerCombatCard?: WotrCardId;
   defenderCombatCard?: WotrCardId;
+  siege: boolean;
 }
 
 export class WotrCombatFront {
-  constructor(public player: WotrPlayer, public isAttacker: boolean) {}
+  constructor(
+    public player: WotrPlayer,
+    public isAttacker: boolean
+  ) {}
 
   frontId = this.player.frontId;
 
@@ -38,7 +42,7 @@ export class WotrCombatRound {
     public action: WotrArmyAttack,
     attacker: WotrPlayer,
     defender: WotrPlayer,
-    public siegeBattle: boolean
+    public siege: boolean
   ) {
     this.attacker = new WotrCombatFront(attacker, true);
     this.defender = new WotrCombatFront(defender, false);

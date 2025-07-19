@@ -57,7 +57,7 @@ export class WotrCardEffectsService {
     "Dreadful Spells": async params => {
       findAction<WotrRegionChoose>(params.story, "region-choose");
       await this.rollCombatDice(1, this.shadow); // TODO nDice
-      await this.freePeoples.chooseCasualties(1, "andrast", false); // TODO hitPoints
+      await this.freePeoples.chooseCasualties(1); // TODO hitPoints
     },
     "Isildur's Bane": async params => {
       const action = findAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");

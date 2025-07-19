@@ -25,7 +25,6 @@ import {
   WotrHuntEffectChoiceParams
 } from "../hunt/wotr-hunt-effect-choices";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
-import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
@@ -181,26 +180,25 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     };
   }
 
-  async chooseCasualties(
-    hitPoints: number,
-    regionId: WotrRegionId,
-    underSiege: boolean
-  ): Promise<WotrGameStory> {
+  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrGameStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.chooseCasualties(hitPoints, regionId, underSiege)
+      actions: await this.battlePlayerService.chooseCasualties(hitPoints, frontId)
     };
   }
 
-  async eliminateArmy(regionId: WotrRegionId, underSiege: boolean): Promise<WotrGameStory> {
+  async eliminateArmy(frontId: WotrFrontId): Promise<WotrGameStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.eliminateArmy(regionId, underSiege)
+      actions: await this.battlePlayerService.eliminateArmy(frontId)
     };
   }
 
-  async battleAdvance(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+  async battleAdvance(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return {
+      type: "battle",
+      actions: await this.battlePlayerService.battleAdvance(frontId)
+    };
   }
 
   async wantContinueBattle(): Promise<WotrGameStory> {

@@ -2,6 +2,7 @@ import { WotrCharacterId } from "../../character/wotr-character.models";
 import { WotrCharacterStore } from "../../character/wotr-character.store";
 import { WotrFrontId } from "../../front/wotr-front.models";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation.models";
+import { WotrUnits } from "../../unit/wotr-unit.models";
 import { WotrRegion, WotrRegionId } from "../wotr-region.models";
 
 export type WotrRegionUnitSelection =
@@ -24,6 +25,8 @@ export interface WotrMovingCharactersUnitSelection extends AWotrRegionUnitSelect
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   type: "moveArmy";
   withLeaders: boolean;
+  retroguard: WotrUnits | null;
+  required: boolean;
 }
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
@@ -42,11 +45,7 @@ export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelect
   type: "chooseCasualties";
   hitPoints: number | "full";
   underSiege: boolean;
-}
-
-export interface WotrEliminateAllUnitsSelection extends AWotrRegionUnitSelection {
-  type: "eliminateAll";
-  underSiege: boolean;
+  retroguard: WotrUnits | null;
 }
 
 export interface UnitNode {
@@ -75,7 +74,7 @@ export function selectionModeFactory(
 ): WotrRegionUnitSelectionMode {
   switch (unitSelection.type) {
     case "moveArmy":
-      return new MoveArmySelectionMode(unitSelection.withLeaders, characterStore);
+      return new MoveArmySelectionMode(unitSelection, characterStore);
     case "attack":
       return new AttackSelectionMode(unitSelection.withLeaders, unitSelection.frontId);
     case "disband":
@@ -83,7 +82,7 @@ export function selectionModeFactory(
     case "moveCharacters":
       return new MoveCharactersSelectionMode(unitSelection.characters);
     case "chooseCasualties":
-      return new ChooseCasualtiesSelectionMode(unitSelection.hitPoints, unitSelection.underSiege);
+      return new ChooseCasualtiesSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -117,11 +116,12 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
 
 export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
-    private withLeaders: boolean,
+    private unitSelection: WotrMovingArmyUnitSelection,
     private characterStore: WotrCharacterStore
   ) {}
 
   initialize(unitNodes: UnitNode[]) {
+    if (this.unitSelection.retroguard) throw new Error("Method not implemented.");
     for (const unitNode of unitNodes) {
       if (unitNode.group !== "army") continue;
       if (
@@ -136,13 +136,14 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
+    if (!this.unitSelection.required) return true;
     const someArmyUnits = selectedNodes.some(node => {
       if (node.type === "regular") return true;
       if (node.type === "elite") return true;
       return false;
     });
     if (!someArmyUnits) return "Select at least one regular or elite unit to move.";
-    if (this.withLeaders) {
+    if (this.unitSelection.withLeaders) {
       const someLeaders = selectedNodes.some(node => {
         if (node.type === "character") return true;
         if (node.type === "nazgul") return true;
@@ -215,14 +216,12 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
 }
 
 export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMode {
-  constructor(
-    private hitPoints: number | "full",
-    private underSiege: boolean
-  ) {}
+  constructor(private unitSelection: WotrChooseCasualtiesUnitSelection) {}
 
   initialize(unitNodes: UnitNode[]) {
-    if (this.hitPoints === "full") {
-      const group = this.underSiege ? "underSiege" : "army";
+    if (this.unitSelection.retroguard) throw new Error("Method not implemented.");
+    if (this.unitSelection.hitPoints === "full") {
+      const group = this.unitSelection.underSiege ? "underSiege" : "army";
       for (const node of unitNodes) {
         if (node.group === group) {
           node.removing = true;
@@ -232,9 +231,9 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
-    const group = this.underSiege ? "underSiege" : "army";
+    const group = this.unitSelection.underSiege ? "underSiege" : "army";
     const nodes = selectedNodes.filter(node => node.group === group);
-    if (this.hitPoints === "full") {
+    if (this.unitSelection.hitPoints === "full") {
       if (nodes.every(node => node.removing)) {
         return true;
       } else {
@@ -258,8 +257,8 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
             break;
         }
       }
-      if (selectedHitPoints < this.hitPoints) {
-        return `Select casualties with at least ${this.hitPoints} hit points.`;
+      if (selectedHitPoints < this.unitSelection.hitPoints) {
+        return `Select casualties with at least ${this.unitSelection.hitPoints} hit points.`;
       }
       return true;
     }

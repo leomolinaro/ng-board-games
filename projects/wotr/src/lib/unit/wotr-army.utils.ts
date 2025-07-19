@@ -145,7 +145,7 @@ export class WotrArmyUtils {
     return this.isEmptyArmy(army) ? undefined : army;
   }
 
-  private isEmptyArmy(army: WotrArmy) {
+  isEmptyArmy(army: WotrUnits) {
     if (army.regulars?.length) {
       return false;
     }

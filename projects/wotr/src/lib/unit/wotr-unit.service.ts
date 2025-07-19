@@ -364,13 +364,13 @@ export class WotrUnitService {
     if (!nTotalHits) return null;
     const nHits = this.armyUtil.nHits(army);
     if (nTotalHits < nHits) {
-      const story = await player.chooseCasualties(nTotalHits, regionId, underSiege);
+      const story = await player.chooseCasualties(nTotalHits);
       const actions = filterActions<
         WotrRegularUnitElimination | WotrEliteUnitElimination | WotrEliteUnitDowngrade
       >(story, "regular-unit-elimination", "elite-unit-elimination", "elite-unit-downgrade");
       return actions;
     } else {
-      const story = await player.eliminateArmy(regionId, underSiege);
+      const story = await player.eliminateArmy();
       const actions = filterActions<
         | WotrRegularUnitElimination
         | WotrEliteUnitElimination

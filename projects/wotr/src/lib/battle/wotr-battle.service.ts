@@ -205,7 +205,8 @@ export class WotrBattleService {
       attacker,
       defender,
       retroguard,
-      region: action.toRegion
+      region: action.toRegion,
+      siege: !!this.attackedRegion(action).underSiegeArmy
     };
     this.currentBattle = battle;
     this.battleStore.startBattle(battle);
@@ -223,7 +224,7 @@ export class WotrBattleService {
         battle.action,
         battle.attacker,
         battle.defender,
-        !!this.attackedRegion(battle.action).underSiegeArmy
+        battle.siege
       );
       this.currentCombatRound = combatRound;
       continueBattle = await this.resolveCombat(combatRound, battle);
@@ -235,7 +236,7 @@ export class WotrBattleService {
   private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
     let attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
-    if (hasStronghold && !combatRound.siegeBattle) {
+    if (hasStronghold && !combatRound.siege) {
       const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
       if (retreatIntoSiege) {
         await this.battleAdvance(combatRound.attacker.player); // TODO controllare se avanza
@@ -265,7 +266,7 @@ export class WotrBattleService {
     } else {
       const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
       attackedRegion = this.attackedRegion(combatRound.action);
-      if (wantContinueBattle && !combatRound.siegeBattle) {
+      if (wantContinueBattle && !combatRound.siege) {
         // TODO && defender can retreat
         const wantRetreat = await this.wantRetreat(combatRound.defender.player);
         if (wantRetreat) {
@@ -570,7 +571,7 @@ export class WotrBattleService {
       combatRound.attacker.nTotalHits || 0,
       attackedArmy,
       battle.region,
-      combatRound.siegeBattle
+      combatRound.siege
     );
   }
 
@@ -606,7 +607,7 @@ export class WotrBattleService {
   }
   private attackedArmy(combatRound: WotrCombatRound) {
     const attackedRegion = this.attackedRegion(combatRound.action);
-    return combatRound.siegeBattle ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
+    return combatRound.siege ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
   }
   private attackedRegion(action: WotrArmyAttack) {
     return this.regionStore.region(action.toRegion);

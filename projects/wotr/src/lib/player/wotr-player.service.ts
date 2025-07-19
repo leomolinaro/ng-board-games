@@ -2,7 +2,6 @@ import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrPlayer } from "./wotr-player";
 
 export interface WotrPlayerService {
@@ -28,13 +27,9 @@ export interface WotrPlayerService {
   chooseCombatCard(frontId: WotrFrontId): Promise<WotrGameStory>;
   rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory>;
   reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory>;
-  chooseCasualties(
-    hitPoints: number,
-    regionId: WotrRegionId,
-    underSiege: boolean
-  ): Promise<WotrGameStory>;
-  eliminateArmy(regionId: WotrRegionId, underSiege: boolean): Promise<WotrGameStory>;
-  battleAdvance(): Promise<WotrGameStory>;
+  chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrGameStory>;
+  eliminateArmy(frontId: WotrFrontId): Promise<WotrGameStory>;
+  battleAdvance(frontId: WotrFrontId): Promise<WotrGameStory>;
   wantContinueBattle(): Promise<WotrGameStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;

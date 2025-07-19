@@ -47,7 +47,9 @@ export class WotrUnitPlayerService {
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
       type: "moveArmy",
-      withLeaders: false
+      withLeaders: false,
+      retroguard: null,
+      required: true
     });
     return this.moveThisArmy(movingArmy, frontId);
   }
@@ -114,7 +116,9 @@ export class WotrUnitPlayerService {
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
       type: "moveArmy",
-      withLeaders: true
+      withLeaders: true,
+      retroguard: null,
+      required: true
     });
     return this.moveThisArmy(movingArmy, frontId);
   }
