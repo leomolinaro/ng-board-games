@@ -25,6 +25,8 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
+import { moveNazgul, WotrNazgulMovement } from "../unit/wotr-unit-actions";
+import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   moveCharacters,
   WotrCharacterAction,
@@ -50,6 +52,7 @@ export class WotrCharacterService {
   private regionStore = inject(WotrRegionStore);
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
+  private unitService = inject(WotrUnitService);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -324,7 +327,7 @@ export class WotrCharacterService {
     const actions: WotrAction[] = [];
     let continueMoving = true;
     do {
-      const action = await this.moveCompanionGroup(movableCompanions);
+      const action = await this.moveCharacterGroup(movableCompanions);
       this.moveCharacters(action, "free-peoples");
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
@@ -341,7 +344,99 @@ export class WotrCharacterService {
     return actions;
   }
 
-  private async moveCompanionGroup(
+  async moveNazgulAndMinions(): Promise<WotrAction[]> {
+    const moveableNonFlyingMinions = new Set(
+      this.characterStore
+        .minions()
+        .filter(c => !c.flying && this.canMoveCharacter(c))
+        .map(c => c.id)
+    );
+    const hasNazgul =
+      this.canMoveStandardNazgul() ||
+      this.canMoveCharacter(this.characterStore.character("the-witch-king"));
+    const actions: WotrAction[] = [];
+    let continueMoving = true;
+    do {
+      let moveNonFlyingMinions = moveableNonFlyingMinions.size > 0;
+      if (moveNonFlyingMinions && hasNazgul) {
+        moveNonFlyingMinions = await this.ui.askConfirm(
+          "Do you want to move non-flying minions or Nazgul?",
+          "Move non-flying minions",
+          "Move Nazgul"
+        );
+      }
+
+      if (moveNonFlyingMinions) {
+        const action = await this.moveCharacterGroup(moveableNonFlyingMinions);
+        this.moveCharacters(action, "shadow");
+        actions.push(action);
+        action.characters.forEach(c => moveableNonFlyingMinions.delete(c));
+      } else {
+        const moveNazgulActions = await this.moveNazgul();
+        for (const action of moveNazgulActions) {
+          if (action.type === "nazgul-movement") {
+            this.unitService.moveNazgul(action);
+          } else {
+            this.moveCharacters(action, "shadow");
+          }
+          actions.push(action);
+        }
+      }
+
+      if (hasNazgul || moveableNonFlyingMinions.size > 0) {
+        continueMoving = await this.ui.askConfirm(
+          "Do you want to move more minions?",
+          "Move more",
+          "Stop moving"
+        );
+      } else {
+        continueMoving = false;
+      }
+    } while (continueMoving);
+    return actions;
+  }
+
+  private async moveNazgul(): Promise<(WotrNazgulMovement | WotrCharacterMovement)[]> {
+    const fromRegions = this.regionStore.regions().filter(region => this.hasNazgul(region));
+    const movingNazgul = await this.ui.askRegionUnits("Select Nazgul to move", {
+      type: "moveNazgul",
+      regionIds: fromRegions.map(r => r.id)
+    });
+    const fromRegion = movingNazgul.regionId;
+    const targetRegions = this.regionStore.regions().filter(region => {
+      if (
+        region.settlement === "stronghold" &&
+        region.controlledBy === "free-peoples" &&
+        !region.underSiegeArmy
+      )
+        return false;
+      return true;
+    });
+    const targetRegion = await this.ui.askRegion(
+      "Select a region to move Nazgul",
+      targetRegions.map(r => r.id)
+    );
+    const actions: (WotrNazgulMovement | WotrCharacterMovement)[] = [];
+    if (movingNazgul.nNazgul) {
+      actions.push(moveNazgul(fromRegion, targetRegion, movingNazgul.nNazgul));
+    }
+    if (movingNazgul.characters?.includes("the-witch-king")) {
+      actions.push(moveCharacters(fromRegion, targetRegion, "the-witch-king"));
+    }
+    return actions;
+  }
+
+  private hasNazgul(region: WotrRegion): boolean {
+    if (region.army?.nNazgul) return true;
+    if (region.freeUnits?.nNazgul) return true;
+    if (region.underSiegeArmy?.nNazgul) return true;
+    if (region.army?.characters?.includes("the-witch-king")) return true;
+    if (region.freeUnits?.characters?.includes("the-witch-king")) return true;
+    if (region.underSiegeArmy?.characters?.includes("the-witch-king")) return true;
+    return false;
+  }
+
+  private async moveCharacterGroup(
     moveableCharacters: Set<WotrCharacterId>
   ): Promise<WotrCharacterMovement> {
     const fromRegions = this.regionStore.regions().filter(region => {
@@ -371,8 +466,8 @@ export class WotrCharacterService {
 
   characterGroupLevel(characters: WotrCharacterId[]): number {
     return characters.reduce((l, characterId) => {
-      const companion = this.characterStore.character(characterId);
-      if (l < companion.level) return companion.level;
+      const character = this.characterStore.character(characterId);
+      if (l < character.level) return character.level;
       return l;
     }, 0);
   }

@@ -22,6 +22,7 @@ import {
   WotrLeaderElimination,
   WotrLeaderRecruitment,
   WotrNazgulElimination,
+  WotrNazgulMovement,
   WotrNazgulRecruitment,
   WotrRegularUnitDisband,
   WotrRegularUnitElimination,
@@ -63,10 +64,7 @@ export class WotrUnitService {
         }
       },
       "nazgul-movement": async (action, front) => {
-        const fromRegion = this.regionStore.region(action.fromRegion);
-        this.removeNazgulFromRegion(action.nNazgul, fromRegion);
-        const toRegion = this.regionStore.region(action.toRegion);
-        this.addNazgulToRegion(action.nNazgul, toRegion);
+        this.moveNazgul(action);
       },
       "regular-unit-recruitment": async (action, front) => this.recruitRegularUnit(action),
       "regular-unit-elimination": async (action, front) => this.eliminateRegularUnit(action),
@@ -115,6 +113,13 @@ export class WotrUnitService {
         this.nationStore.addNazgulToReinforcements(action.quantity);
       }
     };
+  }
+
+  moveNazgul(action: WotrNazgulMovement) {
+    const fromRegion = this.regionStore.region(action.fromRegion);
+    this.removeNazgulFromRegion(action.nNazgul, fromRegion);
+    const toRegion = this.regionStore.region(action.toRegion);
+    this.addNazgulToRegion(action.nNazgul, toRegion);
   }
 
   moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId) {

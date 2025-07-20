@@ -52,6 +52,6 @@ export class WotrMoveMinionsChoice implements WotrPlayerChoice {
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
+    return this.characterService.moveNazgulAndMinions();
   }
 }

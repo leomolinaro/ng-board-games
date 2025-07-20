@@ -10,7 +10,8 @@ export type WotrRegionUnitSelection =
   | WotrAttackingUnitSelection
   | WotrDisbandingUnitSelection
   | WotrChooseCasualtiesUnitSelection
-  | WotrMovingCharactersUnitSelection;
+  | WotrMovingCharactersUnitSelection
+  | WotrMovingNazgulUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -20,6 +21,10 @@ interface AWotrRegionUnitSelection {
 export interface WotrMovingCharactersUnitSelection extends AWotrRegionUnitSelection {
   type: "moveCharacters";
   characters: WotrCharacterId[];
+}
+
+export interface WotrMovingNazgulUnitSelection extends AWotrRegionUnitSelection {
+  type: "moveNazgul";
 }
 
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
@@ -81,6 +86,8 @@ export function selectionModeFactory(
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
       return new MoveCharactersSelectionMode(unitSelection.characters);
+    case "moveNazgul":
+      return new MoveNazgulSelectionMode(unitSelection);
     case "chooseCasualties":
       return new ChooseCasualtiesSelectionMode(unitSelection);
     default:
@@ -210,6 +217,29 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
   canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 0) {
       return "Select at least one character to move.";
+    }
+    return true;
+  }
+}
+
+export class MoveNazgulSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrMovingNazgulUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]) {
+    for (const unitNode of unitNodes) {
+      if (
+        unitNode.type === "nazgul" ||
+        (unitNode.type === "character" && unitNode.id === "the-witch-king")
+      ) {
+        unitNode.selectable = true;
+        unitNode.selected = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    if (selectedNodes.length === 0) {
+      return "Select at least one Nazgul to move.";
     }
     return true;
   }
