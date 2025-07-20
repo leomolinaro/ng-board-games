@@ -154,7 +154,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async wantRetreatIntoSiege(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    return {
+      type: "battle",
+      actions: [await this.battlePlayerService.wantRetreatIntoSiege()]
+    };
   }
 
   async wantRetreat(): Promise<WotrGameStory> {
