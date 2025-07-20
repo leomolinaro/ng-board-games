@@ -220,11 +220,17 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
 
   initialize(unitNodes: UnitNode[]) {
     if (this.unitSelection.retroguard) throw new Error("Method not implemented.");
+    const group = this.unitSelection.underSiege ? "underSiege" : "army";
     if (this.unitSelection.hitPoints === "full") {
-      const group = this.unitSelection.underSiege ? "underSiege" : "army";
       for (const node of unitNodes) {
         if (node.group === group) {
           node.removing = true;
+        }
+      }
+    } else {
+      for (const node of unitNodes) {
+        if (node.group === group && (node.type === "regular" || node.type === "elite")) {
+          node.selectable = true;
         }
       }
     }
@@ -257,8 +263,8 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
             break;
         }
       }
-      if (selectedHitPoints < this.unitSelection.hitPoints) {
-        return `Select casualties with at least ${this.unitSelection.hitPoints} hit points.`;
+      if (selectedHitPoints !== this.unitSelection.hitPoints) {
+        return `Select casualties with ${this.unitSelection.hitPoints} hit points.`;
       }
       return true;
     }

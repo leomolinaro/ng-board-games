@@ -335,7 +335,11 @@ export class WotrRegionDialogComponent implements OnInit {
         unitNode.downgrading = false;
         unitNode.removing = true;
       } else {
-        unitNode.downgrading = true;
+        if (unitNode.type === "regular") {
+          unitNode.removing = true;
+        } else if (unitNode.type === "elite") {
+          unitNode.downgrading = true;
+        }
         this.selectedNodes.update(nodes => [...nodes, unitNode]);
       }
     } else {
