@@ -7,13 +7,15 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
   selector: "wotr-options-panel",
   imports: [NgClass, FormsModule],
   template: `
-    @if (ui.inputQuantitySelection()) {
-      <form (ngSubmit)="ui.inputQuantity.emit(quantity)">
+    @if (ui.inputQuantitySelection(); as inputQuantity) {
+      <form (ngSubmit)="onInputSumbit(quantity)">
         <input
           type="number"
           [(ngModel)]="quantity"
           name="inputField"
-          placeholder="Enter the quantity" />
+          placeholder="Enter the quantity"
+          [min]="inputQuantity.min"
+          [max]="inputQuantity.max" />
         <button type="submit">Confirm</button>
       </form>
     }
@@ -48,4 +50,11 @@ export class WotrOptionsPanelComponent {
   protected ui = inject(WotrGameUiStore);
 
   protected quantity = 0;
+
+  onInputSumbit(quantity: number) {
+    const inputQuantity = this.ui.inputQuantitySelection();
+    if (!inputQuantity || quantity < inputQuantity.min || quantity > inputQuantity.max) return;
+    this.ui.inputQuantity.emit(quantity);
+    this.quantity = 0;
+  }
 }

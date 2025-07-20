@@ -74,8 +74,8 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
-    await this.ui.askContinue("Roll action dice");
     const nActionDice = this.actionDieService.rollableActionDice(player.frontId);
+    await this.ui.askContinue(`Roll ${nActionDice} action dice`);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
       actionDice.push(this.actionDieService.rollActionDie(player.frontId));

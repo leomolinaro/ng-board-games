@@ -16,6 +16,7 @@ import {
   WotrSkipTokensStory,
   WotrTokenStory
 } from "../game/wotr-story.models";
+import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -34,8 +35,9 @@ export class WotrActionDieService {
   private logStore = inject(WotrLogStore);
   private cardService = inject(WotrCardService);
   private nationService = inject(WotrNationService);
-  private charaters = inject(WotrCharacterStore);
+  private characters = inject(WotrCharacterStore);
   private regions = inject(WotrRegionStore);
+  private huntStore = inject(WotrHuntStore);
 
   init() {
     this.actionService.registerActions(this.getActionAppliers() as any);
@@ -127,23 +129,27 @@ export class WotrActionDieService {
     switch (frontId) {
       case "free-peoples": {
         let nDice = 4;
-        if (this.charaters.isInPlay("aragorn")) {
+        if (this.characters.isInPlay("aragorn")) {
           nDice += 1;
         }
-        if (this.charaters.isInPlay("gandalf-the-white")) {
+        if (this.characters.isInPlay("gandalf-the-white")) {
           nDice += 1;
         }
         return nDice;
       }
       case "shadow": {
         let nDice = 7;
-        if (this.charaters.isInPlay("aragorn")) {
+        if (this.characters.isInPlay("the-witch-king")) {
           nDice += 1;
         }
-        if (this.charaters.isInPlay("gandalf-the-white")) {
+        if (this.characters.isInPlay("saruman")) {
           nDice += 1;
         }
-        return nDice;
+        if (this.characters.isInPlay("the-mouth-of-sauron")) {
+          nDice += 1;
+        }
+        const huntDice = this.huntStore.nHuntDice();
+        return nDice - huntDice;
       }
     }
   }
