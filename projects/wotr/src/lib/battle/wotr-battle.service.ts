@@ -134,7 +134,7 @@ export class WotrBattleService {
   private async applyArmyAdvance(action: WotrArmyAdvance) {
     const fromRegion = this.battleStore.state()!.action.fromRegion;
     const toRegion = this.battleStore.state()!.action.toRegion;
-    this.regionStore.moveArmy(fromRegion, toRegion);
+    this.regionStore.moveArmy(fromRegion, toRegion, action.leftUnits);
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrBattleAction> {
