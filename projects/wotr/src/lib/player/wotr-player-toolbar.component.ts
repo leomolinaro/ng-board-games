@@ -30,6 +30,13 @@ import { WotrPlayerInfoStore } from "./wotr-player-info.store";
     <span class="message">
       {{ ui.message() }}
     </span>
+    @if (ui.canCancel() && ui.message()) {
+      <button
+        class="cancel"
+        (click)="ui.cancel.emit()">
+        Cancel
+      </button>
+    }
   `,
   styles: [
     `
@@ -46,6 +53,9 @@ import { WotrPlayerInfoStore } from "./wotr-player-info.store";
       .message {
         margin-left: 1vmin;
         margin-right: auto;
+      }
+      .cancel {
+        @include wotr.button;
       }
     `
   ]

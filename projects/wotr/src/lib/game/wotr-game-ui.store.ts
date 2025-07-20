@@ -102,7 +102,11 @@ export class WotrGameUiStore extends signalStore(
   });
 
   pass = uiEvent<void>();
+
   cancel = uiEvent<void>();
+  setCanCancel(canCancel: boolean) {
+    patchState(this, { canCancel });
+  }
 
   private updateUi<
     S extends WotrGameUiState & {
@@ -127,7 +131,7 @@ export class WotrGameUiStore extends signalStore(
   async askQuantity(message: string, min: number, max: number): Promise<number> {
     this.updateUi(s => ({ ...s, message, inputQuantitySelection: { min, max } }));
     const quantity = await this.inputQuantity.get();
-    this.updateUi(s => ({ ...s, message: null, inputQuantitySelection: false }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, inputQuantitySelection: false }));
     return quantity;
   }
 
@@ -135,7 +139,7 @@ export class WotrGameUiStore extends signalStore(
   async askRegion(message: string, regionSelection: WotrRegionId[]): Promise<WotrRegionId> {
     this.updateUi(s => ({ ...s, message, regionSelection }));
     const region = await this.region.get();
-    this.updateUi(s => ({ ...s, message: null, regionSelection: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, regionSelection: null }));
     return region;
   }
 
@@ -143,7 +147,7 @@ export class WotrGameUiStore extends signalStore(
   async askCards(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId[]> {
     this.updateUi(s => ({ ...s, message, cardSelection }));
     const cards = await this.cards.get();
-    this.updateUi(s => ({ ...s, message: null, cardSelection: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, cardSelection: null }));
     return cards;
   }
 
@@ -151,7 +155,7 @@ export class WotrGameUiStore extends signalStore(
   async askNation(message: string, nationSelection: WotrNationId[]): Promise<WotrNationId> {
     this.updateUi(s => ({ ...s, message, nationSelection }));
     const nation = await this.nation.get();
-    this.updateUi(s => ({ ...s, message: null, nationSelection: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, nationSelection: null }));
     return nation;
   }
 
@@ -163,7 +167,7 @@ export class WotrGameUiStore extends signalStore(
   ): Promise<WotrActionChoice> {
     this.updateUi(s => ({ ...s, message, actionDieSelection: { frontId, tokens } }));
     const actionDieOrToken = await this.actionChoice.get();
-    this.updateUi(s => ({ ...s, message: null, actionDieSelection: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, actionDieSelection: null }));
     return actionDieOrToken;
   }
 
@@ -171,7 +175,7 @@ export class WotrGameUiStore extends signalStore(
   async askOption<O>(message: string, options: WotrPlayerOption<O>[]): Promise<O> {
     this.updateUi(s => ({ ...s, message, options: options }));
     const option = await this.option.get();
-    this.updateUi(s => ({ ...s, message: null, options: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, options: null }));
     return option.value as O;
   }
 
@@ -182,7 +186,12 @@ export class WotrGameUiStore extends signalStore(
   ): Promise<WotrReinforcementUnit> {
     this.updateUi(s => ({ ...s, message, reinforcementUnitSelection }));
     const reinforcementUnit = await this.reinforcementUnit.get();
-    this.updateUi(s => ({ ...s, message: null, reinforcementUnitSelection: null }));
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      reinforcementUnitSelection: null
+    }));
     return reinforcementUnit;
   }
 
@@ -197,7 +206,13 @@ export class WotrGameUiStore extends signalStore(
       regionUnitSelection: unitSelection
     }));
     const regionUnits = await this.regionUnits.get();
-    this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null, regionSelection: null }));
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      regionUnitSelection: null,
+      regionSelection: null
+    }));
     return regionUnits;
   }
 
@@ -212,7 +227,7 @@ export class WotrGameUiStore extends signalStore(
       regionUnitSelection: unitSelection
     }));
     const casualtyUnits = await this.casualtyUnits.get();
-    this.updateUi(s => ({ ...s, message: null, regionUnitSelection: null }));
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, regionUnitSelection: null }));
     return casualtyUnits;
   }
 
@@ -227,7 +242,12 @@ export class WotrGameUiStore extends signalStore(
       fellowshipCompanionsSelection
     }));
     const companions = await this.fellowshipCompanions.get();
-    this.updateUi(s => ({ ...s, message: null, fellowshipCompanionsSelection: null }));
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      fellowshipCompanionsSelection: null
+    }));
     return companions;
   }
 
@@ -255,6 +275,7 @@ export class WotrGameUiStore extends signalStore(
     this.updateUi(s => ({
       ...initialState,
       message: `${this.playerInfoStore.player(turnPlayer).name} is thinking...`,
+      canCancel: false,
       currentPlayerId: s.currentPlayerId
     }));
   }
