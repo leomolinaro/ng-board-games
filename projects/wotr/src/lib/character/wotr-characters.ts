@@ -3,8 +3,9 @@ import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrGameUiStore } from "../game/wotr-game-ui.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrRegionId } from "../region/wotr-region.models";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
 import { playCharacter } from "./wotr-character-actions";
 import { WotrCharacterStore } from "./wotr-character.store";
@@ -105,6 +106,7 @@ export class WotrWitchKingCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
+  private ui = inject(WotrGameUiStore);
 
   name(): string {
     return this.characterStore.character("the-witch-king").name;
@@ -116,19 +118,30 @@ export class WotrWitchKingCard implements WotrCharacterCard {
       this.characterStore.isAvailable("the-witch-king") &&
       this.nationStore.isAtWar("sauron") &&
       this.nationStore.freePeoplesNations().some(n => this.nationStore.isAtWar(n.id)) &&
-      this.regionStore.regions().some(r => {
-        if (!r.army) return false;
-        if (r.army.front !== "shadow") return false;
-        return (
-          r.army.regulars?.some(u => u.nation === "sauron") ||
-          r.army.elites?.some(c => c.nation === "sauron")
-        );
-      })
+      this.regionStore.regions().some(r => this.isValidRegion(r))
     );
   }
 
-  bringIntoPlay(): Promise<WotrAction> {
-    throw new Error("Method not implemented.");
+  async bringIntoPlay(): Promise<WotrAction> {
+    const validRegions = this.regionStore
+      .regions()
+      .filter(r => this.isValidRegion(r))
+      .map(r => r.id);
+    const region = await this.ui.askRegion(
+      "Select a region to bring the Witch-King into play",
+      validRegions
+    );
+    return playCharacter(region, "the-witch-king");
+  }
+
+  private isValidRegion(region: WotrRegion): boolean {
+    if (!region.army) return false;
+    if (region.army.front !== "shadow") return false;
+    return (
+      region.army.regulars?.some(u => u.nation === "sauron") ||
+      region.army.elites?.some(c => c.nation === "sauron") ||
+      false
+    );
   }
 }
 

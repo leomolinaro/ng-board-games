@@ -104,19 +104,17 @@ export class WotrCardService {
   }
 
   hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
-    throw new Error("Method not implemented.");
     return this.frontStore
       .front(frontId)
       .handCards.some(cardId => this.isPlayableCard(cardId, frontId));
   }
   getPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
-    throw new Error("Method not implemented.");
     return this.frontStore
       .front(frontId)
       .handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
   }
   isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
-    throw new Error("Method not implemented.");
+    return false;
   }
   canDrawCard(frontId: WotrFrontId): boolean {
     const front = this.frontStore.front(frontId);
