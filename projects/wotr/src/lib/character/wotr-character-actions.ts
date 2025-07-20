@@ -4,9 +4,7 @@ import { WotrCharacterId } from "./wotr-character.models";
 export type WotrCharacterAction =
   | WotrCharacterMovement
   | WotrCharacterPlay
-  | WotrCharacterElimination
-  | WotrCompanionSeparation
-  | WotrCompanionRandom;
+  | WotrCharacterElimination;
 export interface WotrCharacterMovement {
   type: "character-movement";
   characters: WotrCharacterId[];
@@ -25,7 +23,10 @@ export interface WotrCharacterPlay {
   characters: WotrCharacterId[];
   region: WotrRegionId;
 }
-export function playCharacter(region: WotrRegionId, ...characters: WotrCharacterId[]): WotrCharacterPlay {
+export function playCharacter(
+  region: WotrRegionId,
+  ...characters: WotrCharacterId[]
+): WotrCharacterPlay {
   return { type: "character-play", region, characters };
 }
 export interface WotrCharacterElimination {
@@ -34,19 +35,4 @@ export interface WotrCharacterElimination {
 }
 export function eliminateCharacter(...characters: WotrCharacterId[]): WotrCharacterElimination {
   return { type: "character-elimination", characters };
-}
-export interface WotrCompanionSeparation {
-  type: "companion-separation";
-  companions: WotrCharacterId[];
-  toRegion: WotrRegionId;
-}
-export function separateCompanions(toRegion: WotrRegionId, ...companions: WotrCharacterId[]): WotrCompanionSeparation {
-  return { type: "companion-separation", companions, toRegion };
-}
-export interface WotrCompanionRandom {
-  type: "companion-random";
-  companions: WotrCharacterId[];
-}
-export function chooseRandomCompanion(...companions: WotrCharacterId[]): WotrCompanionRandom {
-  return { type: "companion-random", companions };
 }

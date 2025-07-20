@@ -3,8 +3,8 @@ import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { hideFellowship, moveFelloswhip } from "./wotr-fellowship-actions";
-import { WotrFellowshipStore } from "./wotr-fellowship.store";
 import { WotrFellowshipService } from "./wotr-fellowship.service";
+import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipProgressChoice implements WotrPlayerChoice {

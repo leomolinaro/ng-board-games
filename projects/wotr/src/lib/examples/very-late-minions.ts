@@ -23,21 +23,21 @@ import {
   playCardOnTable
 } from "../card/wotr-card-actions";
 import {
-  chooseRandomCompanion,
   eliminateCharacter,
   moveCharacters,
-  playCharacter,
-  separateCompanions
+  playCharacter
 } from "../character/wotr-character-actions";
 import {
   changeGuide,
+  chooseRandomCompanion,
   corruptFellowship,
   declareFellowship,
   healFellowship,
   hideFellowship,
   moveFelloswhip,
   notDeclareFellowship,
-  revealFellowship
+  revealFellowship,
+  separateCompanions
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile, drawHuntTile } from "../hunt/wotr-hunt-actions";

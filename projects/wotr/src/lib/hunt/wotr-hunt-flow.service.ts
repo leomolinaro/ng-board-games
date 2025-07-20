@@ -2,15 +2,13 @@ import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card.models";
-import {
-  WotrCharacterElimination,
-  WotrCompanionRandom,
-  WotrCompanionSeparation
-} from "../character/wotr-character-actions";
+import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character.models";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import {
+  WotrCompanionRandom,
+  WotrCompanionSeparation,
   WotrFellowshipCorruption,
   WotrFellowshipReveal
 } from "../fellowship/wotr-fellowship-actions";

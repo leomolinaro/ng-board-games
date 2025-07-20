@@ -11,25 +11,28 @@ import {
   rollCombatDice
 } from "../battle/wotr-battle-actions";
 import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-card-actions";
-import {
-  chooseRandomCompanion,
-  eliminateCharacter,
-  playCharacter,
-  separateCompanions
-} from "../character/wotr-character-actions";
+import { eliminateCharacter, playCharacter } from "../character/wotr-character-actions";
 import {
   changeGuide,
+  chooseRandomCompanion,
   corruptFellowship,
   declareFellowship,
   hideFellowship,
   moveFelloswhip,
   notDeclareFellowship,
-  revealFellowship
+  revealFellowship,
+  separateCompanions
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrStoryDoc } from "../game/wotr-story.models";
 import { addHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
-import { armyMovement, eliminateLeader, eliminateRegularUnit, leftUnits, moveArmies } from "../unit/wotr-unit-actions";
+import {
+  armyMovement,
+  eliminateLeader,
+  eliminateRegularUnit,
+  leftUnits,
+  moveArmies
+} from "../unit/wotr-unit-actions";
 import { elite, nazgul, regular } from "../unit/wotr-unit.models";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
 
@@ -60,14 +63,22 @@ export const stories: WotrStoryDoc[] = [
         armyMovement("north-dunland", "moria")
       )
     ),
-  b.fp().musterArmyDie(moveArmies(armyMovement("edoras", "westemnet"), armyMovement("carrock", "old-forest-road"))),
+  b
+    .fp()
+    .musterArmyDie(
+      moveArmies(armyMovement("edoras", "westemnet"), armyMovement("carrock", "old-forest-road"))
+    ),
   b.s().musterArmyDie(playCharacter("orthanc", "saruman")),
   b.fp().characterDie(moveFelloswhip()),
   b.s().rollHuntDice(6, 2),
   b.s().drawHuntTile("2r"),
   b.fp().huntEffect(corruptFellowship(2)),
   b.fp().huntEffect(revealFellowship("goblins-gate")),
-  b.s().musterArmyDie(moveArmies(armyMovement("moria", "dimrill-dale"), armyMovement("morannon", "dagorlad"))),
+  b
+    .s()
+    .musterArmyDie(
+      moveArmies(armyMovement("moria", "dimrill-dale"), armyMovement("morannon", "dagorlad"))
+    ),
   b.fp().skipTokens(),
   // Turn 2 4:00
   b.sT().phaseStory(drawCards("Give it to Uss!", "Threats and Promises")),
@@ -78,12 +89,19 @@ export const stories: WotrStoryDoc[] = [
   b.fp().musterAbilityDie("strider", hideFellowship()),
   b.s().eventDie(drawCards("The Shadow Lengthens")),
   b.fp().willOfTheWestDie(playCharacter("fangorn", "gandalf-the-white")),
-  b.s().armyDie(moveArmies(armyMovement("dagorlad", "noman-lands"), armyMovement("far-harad", "near-harad"))),
+  b
+    .s()
+    .armyDie(
+      moveArmies(armyMovement("dagorlad", "noman-lands"), armyMovement("far-harad", "near-harad"))
+    ),
   b.fp().pass(),
   b
     .s()
     .armyDie(
-      moveArmies(armyMovement("noman-lands", "southern-rhovanion"), armyMovement("dol-guldur", "north-anduin-vale"))
+      moveArmies(
+        armyMovement("noman-lands", "southern-rhovanion"),
+        armyMovement("dol-guldur", "north-anduin-vale")
+      )
     ),
   b.fp().pass(),
   b
@@ -110,7 +128,15 @@ export const stories: WotrStoryDoc[] = [
   b.fp().phaseStory(declareFellowship("old-ford")),
   b.s().huntAllocation(1),
   b.sT().rollActionDice("event", "character", "event", "event", "eye", "army", "character"),
-  b.fp().rollActionDice("muster-army", "will-of-the-west", "will-of-the-west", "will-of-the-west", "character"),
+  b
+    .fp()
+    .rollActionDice(
+      "muster-army",
+      "will-of-the-west",
+      "will-of-the-west",
+      "will-of-the-west",
+      "character"
+    ),
   b.fp().characterDie(moveFelloswhip()),
   b.s().rollHuntDice(4, 6),
   b.s().drawHuntTile("0r"),
@@ -125,7 +151,11 @@ export const stories: WotrStoryDoc[] = [
     .s()
     .armyDie(
       moveArmies(
-        armyMovement("old-forest-road", "carrock", leftUnits(regular("sauron", 8), elite("sauron"), nazgul(1))),
+        armyMovement(
+          "old-forest-road",
+          "carrock",
+          leftUnits(regular("sauron", 8), elite("sauron"), nazgul(1))
+        ),
         armyMovement("near-harad", "umbar", leftUnits(regular("southrons", 1)))
       )
     ),
@@ -137,9 +167,19 @@ export const stories: WotrStoryDoc[] = [
   b.fp().battleStory(rollCombatDice(6)),
   b.s().battleStory(reRollCombatDice(1)),
   b.s().battleStory(eliminateRegularUnit("old-forest-road", "sauron")),
-  b.fp().combatCardReaction("Stormcrow", eliminateRegularUnit("dale", "north"), eliminateLeader("dale", "north")),
+  b
+    .fp()
+    .combatCardReaction(
+      "Stormcrow",
+      eliminateRegularUnit("dale", "north"),
+      eliminateLeader("dale", "north")
+    ),
   b.s().battleStory(advanceArmy(leftUnits(regular("sauron")))),
-  b.fp().willOfTheWestDie(moveArmies(armyMovement("iron-hills", "erebor"), armyMovement("westemnet", "helms-deep"))),
+  b
+    .fp()
+    .willOfTheWestDie(
+      moveArmies(armyMovement("iron-hills", "erebor"), armyMovement("westemnet", "helms-deep"))
+    ),
   b.s().eventDie(drawCards("The Black Captain Commands")),
   b.fp().willOfTheWestDie(moveFelloswhip()),
   b.s().rollHuntDice(1, 2),

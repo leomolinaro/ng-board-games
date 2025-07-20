@@ -1,4 +1,4 @@
-import { WotrCompanionId } from "../character/wotr-character.models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.models";
 import { WotrRegionId } from "../region/wotr-region.models";
 
 export interface WotrFellowshipDeclare {
@@ -50,6 +50,24 @@ export interface WotrFellowshipGuide {
 export function changeGuide(companion: WotrCompanionId): WotrFellowshipGuide {
   return { type: "fellowship-guide", companion };
 }
+export interface WotrCompanionSeparation {
+  type: "companion-separation";
+  companions: WotrCharacterId[];
+  toRegion: WotrRegionId;
+}
+export function separateCompanions(
+  toRegion: WotrRegionId,
+  ...companions: WotrCharacterId[]
+): WotrCompanionSeparation {
+  return { type: "companion-separation", companions, toRegion };
+}
+export interface WotrCompanionRandom {
+  type: "companion-random";
+  companions: WotrCharacterId[];
+}
+export function chooseRandomCompanion(...companions: WotrCharacterId[]): WotrCompanionRandom {
+  return { type: "companion-random", companions };
+}
 
 export type WotrFellowshipAction =
   | WotrFellowshipProgress
@@ -58,4 +76,6 @@ export type WotrFellowshipAction =
   | WotrFellowshipDeclareNot
   | WotrFellowshipHide
   | WotrFellowshipReveal
-  | WotrFellowshipGuide;
+  | WotrFellowshipGuide
+  | WotrCompanionSeparation
+  | WotrCompanionRandom;

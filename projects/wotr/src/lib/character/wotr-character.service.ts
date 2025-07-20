@@ -30,8 +30,7 @@ import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   moveCharacters,
   WotrCharacterAction,
-  WotrCharacterMovement,
-  WotrCompanionSeparation
+  WotrCharacterMovement
 } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
@@ -143,23 +142,8 @@ export class WotrCharacterService {
           this.characterStore.setEliminated(characterId);
         }
         await this.checkWornWithSorrowAndToil();
-      },
-      "companion-random": async (action, front) => {
-        /*empty*/
-      },
-      "companion-separation": async (action, front) => this.separateCompanion(action)
+      }
     };
-  }
-
-  separateCompanion(action: WotrCompanionSeparation) {
-    const toRegion = this.regionStore.region(action.toRegion);
-    for (const companionId of action.companions) {
-      this.fellowshipStore.removeCompanion(companionId);
-      this.characterStore.setInPlay(companionId);
-      const character = this.characterStore.character(companionId);
-      this.addCharacterToRegion(character, toRegion);
-    }
-    this.nationService.checkNationActivationByCharacters(action.toRegion, action.companions);
   }
 
   private async moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): Promise<void> {
@@ -173,7 +157,7 @@ export class WotrCharacterService {
     this.nationService.checkNationActivationByCharacters(action.toRegion, action.characters);
   }
 
-  private addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
+  addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
     if (region.army?.front === character.front) {
       this.regionStore.addCharacterToArmy(character.id, region.id);
     } else {
@@ -219,18 +203,6 @@ export class WotrCharacterService {
         this.characters(action.characters),
         " in ",
         f.region(action.region)
-      ],
-      "companion-random": (action, front, f) => [
-        f.player(front),
-        " draws ",
-        this.characters(action.companions),
-        " randomly"
-      ],
-      "companion-separation": (action, front, f) => [
-        f.player(front),
-        " separates ",
-        this.characters(action.companions),
-        " from the fellowship"
       ]
     };
   }

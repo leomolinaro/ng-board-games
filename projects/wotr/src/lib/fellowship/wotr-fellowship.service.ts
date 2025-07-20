@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { separateCompanions } from "../character/wotr-character-actions";
-import { WotrCompanionId } from "../character/wotr-character.models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character.models";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import {
@@ -14,14 +13,19 @@ import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { changeGuide, WotrFellowshipAction } from "./wotr-fellowship-actions";
+import {
+  changeGuide,
+  separateCompanions,
+  WotrCompanionSeparation,
+  WotrFellowshipAction
+} from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipService {
   private actionService = inject(WotrActionService);
   private nationService = inject(WotrNationService);
-  private fellowhipStore = inject(WotrFellowshipStore);
+  private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private huntFlow = inject(WotrHuntFlowService);
@@ -38,35 +42,39 @@ export class WotrFellowshipService {
     return {
       "fellowship-declare": async (story, front) => {
         this.regionStore.moveFellowshipToRegion(story.region);
-        this.fellowhipStore.setProgress(0);
+        this.fellowshipStore.setProgress(0);
         this.nationService.checkNationActivationByFellowshipDeclaration(story.region);
       },
       "fellowship-declare-not": async (story, front) => {
         /*empty*/
       },
       "fellowship-corruption": async (action, front) => {
-        this.fellowhipStore.changeCorruption(action.quantity);
+        this.fellowshipStore.changeCorruption(action.quantity);
       },
       "fellowship-guide": async (action, front) => {
-        this.fellowhipStore.setGuide(action.companion);
+        this.fellowshipStore.setGuide(action.companion);
       },
       "fellowship-hide": async (action, front) => {
-        this.fellowhipStore.hide();
+        this.fellowshipStore.hide();
       },
       "fellowship-progress": async (action, front) => {
-        if (this.fellowhipStore.isOnMordorTrack()) {
+        if (this.fellowshipStore.isOnMordorTrack()) {
           await this.huntFlow.resolveHunt();
           this.huntStore.addFellowshipDie();
         } else {
-          this.fellowhipStore.increaseProgress();
+          this.fellowshipStore.increaseProgress();
           await this.huntFlow.resolveHunt();
           this.huntStore.addFellowshipDie();
         }
       },
       "fellowship-reveal": async (action, front) => {
         this.regionStore.moveFellowshipToRegion(action.region);
-        this.fellowhipStore.reveal();
-      }
+        this.fellowshipStore.reveal();
+      },
+      "companion-random": async (action, front) => {
+        /*empty*/
+      },
+      "companion-separation": async (action, front) => this.separateCompanion(action)
     };
   }
 
@@ -97,22 +105,49 @@ export class WotrFellowshipService {
         f.player(front),
         " reveals the fellowship in ",
         f.region(action.region)
+      ],
+      "companion-random": (action, front, f) => [
+        f.player(front),
+        " draws ",
+        this.characters(action.companions),
+        " randomly"
+      ],
+      "companion-separation": (action, front, f) => [
+        f.player(front),
+        " separates ",
+        this.characters(action.companions),
+        " from the fellowship"
       ]
     };
+  }
+
+  private characters(characters: WotrCharacterId[]) {
+    return characters.map(c => this.characterStore.character(c).name).join(", ");
   }
 
   private nCorruptionPoints(quantity: number) {
     return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
   }
 
+  private separateCompanion(action: WotrCompanionSeparation) {
+    const toRegion = this.regionStore.region(action.toRegion);
+    for (const companionId of action.companions) {
+      this.fellowshipStore.removeCompanion(companionId);
+      this.characterStore.setInPlay(companionId);
+      const character = this.characterStore.character(companionId);
+      this.characterService.addCharacterToRegion(character, toRegion);
+    }
+    this.nationService.checkNationActivationByCharacters(action.toRegion, action.companions);
+  }
+
   async separateCompanions(frontId: string): Promise<WotrAction[]> {
-    const fellowshipCompanions = this.fellowhipStore.companions();
+    const fellowshipCompanions = this.fellowshipStore.companions();
     const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
       companions: fellowshipCompanions,
       singleSelection: false
     });
     const groupLevel = this.characterService.characterGroupLevel(companions);
-    const fellowshipProgress = this.fellowhipStore.progress();
+    const fellowshipProgress = this.fellowshipStore.progress();
     const totalMovement = fellowshipProgress + groupLevel;
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     const targetRegions = this.regionStore.reachableRegions(
@@ -128,9 +163,9 @@ export class WotrFellowshipService {
     const actions: WotrAction[] = [];
     const action = separateCompanions(targetRegion, ...companions);
     actions.push(action);
-    this.characterService.separateCompanion(action);
+    this.separateCompanion(action);
 
-    if (companions.some(c => this.fellowhipStore.guide() === c)) {
+    if (companions.some(c => this.fellowshipStore.guide() === c)) {
       const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
       if (leftCompanionIds.length > 0) {
         const leftCompanions = leftCompanionIds.map(id => this.characterStore.character(id));
