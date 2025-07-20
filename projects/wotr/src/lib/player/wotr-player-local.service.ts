@@ -161,7 +161,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async wantRetreat(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    return {
+      type: "battle",
+      actions: [await this.battlePlayerService.wantRetreat()]
+    };
   }
 
   async chooseCombatCard(frontId: WotrFrontId): Promise<WotrGameStory> {
@@ -205,7 +208,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async wantContinueBattle(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    return {
+      type: "battle",
+      actions: [await this.battlePlayerService.wantContinueBattle()]
+    };
   }
 
   //   this.ui.updateUi ("asd", s => ({

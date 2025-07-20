@@ -17,8 +17,12 @@ import {
 import { WotrUnits } from "../unit/wotr-unit.models";
 import {
   advanceArmy,
+  ceaseBattle,
+  continueBattle,
   notAdvanceArmy,
+  notRetreat,
   notRetreatIntoSiege,
+  retreat,
   retreatIntoSiege,
   WotrCombatReRoll,
   WotrCombatRoll
@@ -144,5 +148,21 @@ export class WotrBattlePlayerService {
       `Do you want to retreat into siege in ${region.name}?`
     );
     return confirm ? retreatIntoSiege(region.id) : notRetreatIntoSiege(region.id);
+  }
+
+  async wantContinueBattle(): Promise<WotrAction> {
+    const battle = this.battleStore.battle()!;
+    const region = this.regionStore.region(battle.action.toRegion);
+    const confirm = await this.ui.askConfirm(
+      `Do you want to continue the battle in ${region.name}?`
+    );
+    return confirm ? continueBattle(region.id) : ceaseBattle(region.id);
+  }
+
+  async wantRetreat(): Promise<WotrAction> {
+    const battle = this.battleStore.battle()!;
+    const region = this.regionStore.region(battle.action.toRegion);
+    const confirm = await this.ui.askConfirm(`Do you want to retreat from ${region.name}?`);
+    return confirm ? retreat(region.id) : notRetreat(region.id);
   }
 }
