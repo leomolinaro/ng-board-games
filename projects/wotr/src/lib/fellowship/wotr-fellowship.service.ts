@@ -1,5 +1,6 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { separateCompanions } from "../character/wotr-character-actions";
+import { WotrCompanionId } from "../character/wotr-character.models";
 import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import {
@@ -13,7 +14,7 @@ import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
 import { WotrNationService } from "../nation/wotr-nation.service";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrFellowshipAction } from "./wotr-fellowship-actions";
+import { changeGuide, WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
@@ -107,7 +108,8 @@ export class WotrFellowshipService {
   async separateCompanions(frontId: string): Promise<WotrAction[]> {
     const fellowshipCompanions = this.fellowhipStore.companions();
     const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
-      companions: fellowshipCompanions
+      companions: fellowshipCompanions,
+      singleSelection: false
     });
     const groupLevel = this.characterService.characterGroupLevel(companions);
     const fellowshipProgress = this.fellowhipStore.progress();
@@ -123,6 +125,25 @@ export class WotrFellowshipService {
       "Select a region to move the separated companions",
       targetRegions
     );
-    return [separateCompanions(targetRegion, ...companions)];
+    const actions: WotrAction[] = [];
+    const action = separateCompanions(targetRegion, ...companions);
+    actions.push(action);
+    this.characterService.separateCompanion(action);
+
+    if (companions.some(c => this.fellowhipStore.guide() === c)) {
+      const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
+      if (leftCompanionIds.length > 0) {
+        const leftCompanions = leftCompanionIds.map(id => this.characterStore.character(id));
+        const maxLevel = leftCompanions.reduce((max, c) => Math.max(max, c.level), 0);
+        const targetCompanions = leftCompanions.filter(c => c.level === maxLevel);
+        const newGuide = await this.ui.askFellowshipCompanions("Select a new guide", {
+          companions: targetCompanions.map(c => c.id as WotrCompanionId),
+          singleSelection: true
+        });
+        actions.push(changeGuide(newGuide[0]));
+      }
+    }
+
+    return actions;
   }
 }

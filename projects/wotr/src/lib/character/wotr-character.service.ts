@@ -30,7 +30,8 @@ import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   moveCharacters,
   WotrCharacterAction,
-  WotrCharacterMovement
+  WotrCharacterMovement,
+  WotrCompanionSeparation
 } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
 import { WotrCharacterStore } from "./wotr-character.store";
@@ -146,17 +147,19 @@ export class WotrCharacterService {
       "companion-random": async (action, front) => {
         /*empty*/
       },
-      "companion-separation": async (action, front) => {
-        const toRegion = this.regionStore.region(action.toRegion);
-        for (const companionId of action.companions) {
-          this.fellowshipStore.removeCompanion(companionId);
-          this.characterStore.setInPlay(companionId);
-          const character = this.characterStore.character(companionId);
-          this.addCharacterToRegion(character, toRegion);
-        }
-        this.nationService.checkNationActivationByCharacters(action.toRegion, action.companions);
-      }
+      "companion-separation": async (action, front) => this.separateCompanion(action)
     };
+  }
+
+  separateCompanion(action: WotrCompanionSeparation) {
+    const toRegion = this.regionStore.region(action.toRegion);
+    for (const companionId of action.companions) {
+      this.fellowshipStore.removeCompanion(companionId);
+      this.characterStore.setInPlay(companionId);
+      const character = this.characterStore.character(companionId);
+      this.addCharacterToRegion(character, toRegion);
+    }
+    this.nationService.checkNationActivationByCharacters(action.toRegion, action.companions);
   }
 
   private async moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): Promise<void> {

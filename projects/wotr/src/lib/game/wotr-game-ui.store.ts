@@ -49,6 +49,7 @@ export interface WotrReinforcementUnitSelection {
 
 export interface WotrFellowshipCompanionSelection {
   companions: WotrCompanionId[];
+  singleSelection: boolean;
 }
 
 export interface WotrInputQuantitySelection {

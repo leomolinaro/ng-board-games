@@ -118,7 +118,9 @@ export class WotrFellowshipDialogComponent implements OnInit {
 
   protected canConfirm = computed(() => {
     if (!this.data.selection) return false;
-    return this.selectedNodes().length > 0;
+    if (!this.selectedNodes().length) return false;
+    if (this.data.selection.singleSelection && this.selectedNodes().length > 1) return false;
+    return true;
   });
 
   ngOnInit() {

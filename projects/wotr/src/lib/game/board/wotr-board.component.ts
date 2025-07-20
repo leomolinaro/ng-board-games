@@ -180,6 +180,12 @@ export class WotrBoardComponent {
     this.openCardsDialog(null, cardSelection.frontId);
   });
 
+  private focusFellowship = effect(() => {
+    const fellowshipCompanionsSelection = this.ui.fellowshipCompanionsSelection();
+    if (!fellowshipCompanionsSelection) return;
+    this.openFellowshipBoxDialog();
+  });
+
   private regionDialogRef: WotrRegionDialogRef | null = null;
   private fellowshipDialogRef: WotrFellowshipDialogRef | null = null;
 
