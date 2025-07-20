@@ -120,10 +120,10 @@ export class WotrGameUiStore extends signalStore(
     await this.askOption<null>(message, [{ value: null, label: message }]);
   }
 
-  async askConfirm(message: string): Promise<boolean> {
+  async askConfirm(message: string, yesLabel: string, noLabel: string): Promise<boolean> {
     return this.askOption<boolean>(message, [
-      { value: true, label: "Yes" },
-      { value: false, label: "No" }
+      { value: true, label: yesLabel },
+      { value: false, label: noLabel }
     ]);
   }
 

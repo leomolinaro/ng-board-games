@@ -329,7 +329,11 @@ export class WotrCharacterService {
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
       if (movableCompanions.size > 0) {
-        continueMoving = await this.ui.askConfirm("Do you want to move more companions?");
+        continueMoving = await this.ui.askConfirm(
+          "Do you want to move more companions?",
+          "Move more",
+          "Stop moving"
+        );
       } else {
         continueMoving = false;
       }

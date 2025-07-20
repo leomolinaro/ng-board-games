@@ -66,14 +66,18 @@ export class WotrActionDiePlayerService {
   async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
     const canSkipTokens = this.actionDieService.canSkipTokens(player.frontId);
     if (canSkipTokens) {
-      const skipTokens = await this.ui.askConfirm("Do you want to skip action tokens?");
+      const skipTokens = await this.ui.askConfirm(
+        "Do you want to skip action tokens?",
+        "Skip action tokens",
+        "Play action token"
+      );
       if (skipTokens) {
         return { type: "token-skip" };
       }
     } else {
       const canPass = this.actionDieService.canPassAction(player.frontId);
       if (canPass) {
-        const pass = await this.ui.askConfirm("Do you want to pass?");
+        const pass = await this.ui.askConfirm("Do you want to pass?", "Pass", "Play action die");
         if (pass) {
           return { type: "die-pass" };
         }

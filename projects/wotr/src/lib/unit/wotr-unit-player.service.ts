@@ -36,7 +36,11 @@ export class WotrUnitPlayerService {
       continueMoving = false;
       doneMoves++;
       if (doneMoves < numberOfMoves) {
-        continueMoving = await this.ui.askConfirm("Continue moving armies?");
+        continueMoving = await this.ui.askConfirm(
+          "Continue moving armies?",
+          "Move another",
+          "Stop moving"
+        );
       }
     }
     return movements;

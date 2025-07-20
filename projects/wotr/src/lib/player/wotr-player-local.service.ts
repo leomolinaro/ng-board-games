@@ -46,7 +46,11 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async fellowshipPhase(): Promise<WotrGameStory> {
-    const declare = await this.ui.askConfirm("Do you want to declare the fellowship?");
+    const declare = await this.ui.askConfirm(
+      "Do you want to declare the fellowship?",
+      "Declare",
+      "Not declare"
+    );
     if (!declare) {
       return { type: "phase", actions: [notDeclareFellowship()] };
     }

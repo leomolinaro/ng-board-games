@@ -145,7 +145,9 @@ export class WotrBattlePlayerService {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
-      `Do you want to retreat into siege in ${region.name}?`
+      `Do you want to retreat into siege in ${region.name}?`,
+      "Retreat into siege",
+      "Continue field battle"
     );
     return confirm ? retreatIntoSiege(region.id) : notRetreatIntoSiege(region.id);
   }
@@ -154,7 +156,9 @@ export class WotrBattlePlayerService {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
-      `Do you want to continue the battle in ${region.name}?`
+      `Do you want to continue the battle in ${region.name}?`,
+      "Continue battle",
+      "Cease battle"
     );
     return confirm ? continueBattle(region.id) : ceaseBattle(region.id);
   }
@@ -162,7 +166,11 @@ export class WotrBattlePlayerService {
   async wantRetreat(): Promise<WotrAction> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
-    const confirm = await this.ui.askConfirm(`Do you want to retreat from ${region.name}?`);
+    const confirm = await this.ui.askConfirm(
+      `Do you want to retreat from ${region.name}?`,
+      "Retreat",
+      "Not retreat"
+    );
     return confirm ? retreat(region.id) : notRetreat(region.id);
   }
 }
