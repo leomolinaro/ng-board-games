@@ -151,6 +151,7 @@ export class WotrMouthOfSauronCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
+  private ui = inject(WotrGameUiStore);
 
   name(): string {
     return this.characterStore.character("the-mouth-of-sauron").name;
@@ -162,17 +163,27 @@ export class WotrMouthOfSauronCard implements WotrCharacterCard {
       this.characterStore.isAvailable("the-mouth-of-sauron") &&
       (this.fellowshipStore.isOnMordorTrack() ||
         this.frontStore.front("free-peoples").victoryPoints > 0) &&
-      this.regionStore
-        .regions()
-        .some(
-          r =>
-            r.nationId === "sauron" &&
-            this.regionStore.isUnconquered(r.id) &&
-            r.settlement === "stronghold"
-        )
+      this.regionStore.regions().some(r => this.isValidRegion(r))
     );
   }
-  bringIntoPlay(): Promise<WotrAction> {
-    throw new Error("Method not implemented.");
+
+  async bringIntoPlay(): Promise<WotrAction> {
+    const validRegions = this.regionStore
+      .regions()
+      .filter(r => this.isValidRegion(r))
+      .map(r => r.id);
+    const region = await this.ui.askRegion(
+      "Select a region to bring the Mouth of Sauron into play",
+      validRegions
+    );
+    return playCharacter(region, "the-mouth-of-sauron");
+  }
+
+  private isValidRegion(r: WotrRegion): boolean {
+    return (
+      r.nationId === "sauron" &&
+      this.regionStore.isUnconquered(r.id) &&
+      r.settlement === "stronghold"
+    );
   }
 }
