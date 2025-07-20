@@ -512,6 +512,9 @@ export class WotrRegionStore {
       region.freeUnits?.characters?.includes(character)
     );
   }
+  characterRegion(character: WotrCharacterId): WotrRegion | null {
+    return this.regions().find(r => this.isCharacterInRegion(character, r.id)) || null;
+  }
   isNazgulInRegion(regionId: WotrRegionId) {
     const region = this.region(regionId);
     return (
@@ -791,9 +794,7 @@ export class WotrRegionStore {
 
   removeCharacterFromFreeUnits(characterId: WotrCharacterId, regionId: WotrRegionId) {
     this.updateFreeUnits("removeCharacterFromFreeUnits", regionId, freeunits => {
-      if (!freeunits?.characters) {
-        throw new Error("removeCharacterFromFreeUnits");
-      }
+      if (!freeunits?.characters) throw new Error("No characters in free units to remove");
       return {
         ...freeunits,
         characters: immutableUtil.listRemoveFirst(

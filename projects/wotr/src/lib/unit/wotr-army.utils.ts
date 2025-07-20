@@ -135,9 +135,7 @@ export class WotrArmyUtils {
   }
 
   removeCharacter(characterId: WotrCharacterId, army: WotrArmy | undefined): WotrArmy | undefined {
-    if (!army?.characters) {
-      throw new Error("removeCharacter");
-    }
+    if (!army?.characters) throw new Error("No characters in army to remove");
     army = {
       ...army,
       characters: immutableUtil.listRemoveFirst(c => c === characterId, army.characters || [])

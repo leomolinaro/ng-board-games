@@ -94,6 +94,24 @@ export class WotrCharacterService {
       "character-play": async (action, front) => {
         const region = this.regionStore.region(action.region);
         for (const characterId of action.characters) {
+          switch (characterId) {
+            case "aragorn": {
+              const striderRegion = this.regionStore.characterRegion("strider")!;
+              const strider = this.characterStore.character("strider");
+              this.characterStore.setEliminated("strider");
+              this.removeCharacterFromRegion(strider, striderRegion);
+              break;
+            }
+            case "gandalf-the-white": {
+              const gandalf = this.characterStore.character("gandalf-the-grey");
+              if (gandalf.status === "inPlay") {
+                const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
+                this.characterStore.setEliminated("gandalf-the-grey");
+                this.removeCharacterFromRegion(gandalf, gandalfRegion);
+              }
+              break;
+            }
+          }
           const character = this.characterStore.character(characterId);
           this.characterStore.setInPlay(characterId);
           this.addCharacterToRegion(character, region);

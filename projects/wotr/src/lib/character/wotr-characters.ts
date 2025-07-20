@@ -19,6 +19,9 @@ export interface WotrCharacterCard {
 @Injectable({ providedIn: "root" })
 export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
+  private regionStore = inject(WotrRegionStore);
+  private ui = inject(WotrGameUiStore);
+
   name(): string {
     return this.characterStore.character("gandalf-the-white").name;
   }
@@ -36,8 +39,34 @@ export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
     }
     return true;
   }
-  bringIntoPlay(): Promise<WotrAction> {
-    throw new Error("Method not implemented.");
+
+  async bringIntoPlay(): Promise<WotrAction> {
+    const gandalf = this.characterStore.character("gandalf-the-grey");
+    if (gandalf.status === "inPlay") {
+      const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
+      return playCharacter(gandalfRegion.id, "gandalf-the-white");
+    } else if (gandalf.status === "eliminated") {
+      const elvenStrongholds: WotrRegionId[] = [
+        "rivendell",
+        "lorien",
+        "woodland-realm",
+        "grey-havens"
+      ];
+      const targetRegions: WotrRegionId[] = ["fangorn"];
+      for (const regionId of elvenStrongholds) {
+        if (this.regionStore.isUnconquered(regionId)) {
+          targetRegions.push(regionId);
+        }
+      }
+      const region = await this.ui.askRegion(
+        "Select a region to bring Gandalf the White into play",
+        targetRegions
+      );
+      return playCharacter(region, "gandalf-the-white");
+    }
+    throw new Error(
+      "Gandalf the Grey is not in a valid state to bring Gandalf the White into play."
+    );
   }
 }
 
