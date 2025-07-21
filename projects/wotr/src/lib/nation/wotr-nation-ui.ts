@@ -1,12 +1,12 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrNation, WotrNationId } from "./wotr-nation.models";
 import { WotrNationStore } from "./wotr-nation.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrNationPlayerService {
-  private ui = inject(WotrGameUiStore);
+export class WotrNationUi {
+  private ui = inject(WotrGameUi);
   private nation = inject(WotrNationStore);
 
   async politicalAdvance(frontId: WotrFrontId): Promise<WotrNationId> {

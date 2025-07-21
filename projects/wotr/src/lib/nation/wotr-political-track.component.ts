@@ -4,7 +4,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgSvgModule } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsService } from "../assets/wotr-assets.service";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation.models";
 import { WotrNationStore } from "./wotr-nation.store";
 
@@ -84,7 +84,7 @@ const PSTEPWAR = PSTEP1 + PSTEP;
 export class WotrPoliticalTrackComponent {
   private assets = inject(WotrAssetsService);
   private nationStore = inject(WotrNationStore);
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
 
   protected nations = this.nationStore.nations;
   private validNations = this.ui.nationSelection;

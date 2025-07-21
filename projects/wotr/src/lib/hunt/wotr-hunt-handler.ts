@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   WotrActionApplierMap,
   WotrActionLoggerMap,
@@ -12,7 +12,7 @@ import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrHuntService {
+export class WotrHuntHandler {
   private actionService = inject(WotrActionService);
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);

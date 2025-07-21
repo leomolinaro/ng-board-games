@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -12,20 +12,21 @@ import {
   recruitNazgul,
   recruitRegularUnit
 } from "./wotr-unit-actions";
-import { WotrUnitPlayerService } from "./wotr-unit-player.service";
-import { WotrRecruitmentConstraints, WotrUnitService } from "./wotr-unit.service";
+import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
+import { WotrUnitRules } from "./wotr-unit-rules";
+import { WotrUnitUi } from "./wotr-unit-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrAttackArmyChoice implements WotrPlayerChoice {
-  private unitService = inject(WotrUnitService);
-  private unitPlayerService = inject(WotrUnitPlayerService);
+  private unitRules = inject(WotrUnitRules);
+  private unitPlayerService = inject(WotrUnitUi);
 
   label(): string {
     return "Attack";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontAttack(frontId);
+    return this.unitRules.canFrontAttack(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -35,15 +36,15 @@ export class WotrAttackArmyChoice implements WotrPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrMoveArmiesChoice implements WotrPlayerChoice {
-  private unitService = inject(WotrUnitService);
-  private unitPlayerService = inject(WotrUnitPlayerService);
+  private unitRules = inject(WotrUnitRules);
+  private unitPlayerService = inject(WotrUnitUi);
 
   label(): string {
     return "Move armies";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontMoveArmies(frontId);
+    return this.unitRules.canFrontMoveArmies(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -54,18 +55,19 @@ export class WotrMoveArmiesChoice implements WotrPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
-  private unitService = inject(WotrUnitService);
+  private unitRules = inject(WotrUnitRules);
+  private unitHandler = inject(WotrUnitHandler);
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
-  private unitPlayerService = inject(WotrUnitPlayerService);
-  private ui = inject(WotrGameUiStore);
+  private unitPlayerService = inject(WotrUnitUi);
+  private ui = inject(WotrGameUi);
 
   label(): string {
     return "Recruit reinforcements";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontRecruitReinforcements(frontId);
+    return this.unitRules.canFrontRecruitReinforcements(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -77,7 +79,7 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
         points: 2 - points,
         exludedRegions: exludedRegions
       };
-      const validUnits = this.unitService.validFrontReinforcementUnits(frontId, constraints);
+      const validUnits = this.unitRules.validFrontReinforcementUnits(frontId, constraints);
       const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
         units: validUnits,
         frontId: frontId
@@ -95,25 +97,25 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
       switch (unit.type) {
         case "regular": {
           const action = recruitRegularUnit(regionId, unit.nation, 1);
-          this.unitService.recruitRegularUnit(action);
+          this.unitHandler.recruitRegularUnit(action);
           actions.push(action);
           break;
         }
         case "elite": {
           const action = recruitEliteUnit(regionId, unit.nation, 1);
-          this.unitService.recruitEliteUnit(action);
+          this.unitHandler.recruitEliteUnit(action);
           actions.push(action);
           break;
         }
         case "leader": {
           const action = recruitLeader(regionId, unit.nation, 1);
-          this.unitService.recruitLeader(action);
+          this.unitHandler.recruitLeader(action);
           actions.push(action);
           break;
         }
         case "nazgul": {
           const action = recruitNazgul(regionId, 1);
-          this.unitService.recruitNazgul(action);
+          this.unitHandler.recruitNazgul(action);
           actions.push(action);
           break;
         }
@@ -126,15 +128,15 @@ export class WotrRecruitReinforcementsChoice implements WotrPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
-  private unitService = inject(WotrUnitService);
-  private unitPlayerService = inject(WotrUnitPlayerService);
+  private unitRules = inject(WotrUnitRules);
+  private unitPlayerService = inject(WotrUnitUi);
 
   label(): string {
     return "Move army with leader";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontMoveArmiesWithLeader(frontId);
+    return this.unitRules.canFrontMoveArmiesWithLeader(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -145,15 +147,15 @@ export class WotrLeaderArmyMoveChoice implements WotrPlayerChoice {
 
 @Injectable({ providedIn: "root" })
 export class WotrLeaderArmyAttackChoice implements WotrPlayerChoice {
-  private unitService = inject(WotrUnitService);
-  private unitPlayerService = inject(WotrUnitPlayerService);
+  private unitRules = inject(WotrUnitRules);
+  private unitPlayerService = inject(WotrUnitUi);
 
   label(): string {
     return "Attack with leader";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.unitService.canFrontAttackWithLeader(frontId);
+    return this.unitRules.canFrontAttackWithLeader(frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {

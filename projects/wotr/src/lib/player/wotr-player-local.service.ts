@@ -1,45 +1,41 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { rollActionDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionDiePlayerService } from "../action-die/wotr-action-die-player.service";
+import { WotrActionDieRules } from "../action-die/wotr-action-die-rules";
+import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrActionDieService } from "../action-die/wotr-action-die.service";
 import { noCombatCard } from "../battle/wotr-battle-actions";
-import { WotrBattlePlayerService } from "../battle/wotr-battle-player.service";
+import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrCardPlayerService } from "../card/wotr-card-player.service";
+import { WotrCardUi } from "../card/wotr-card-ui";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacterId } from "../character/wotr-character.models";
-import {
-  declareFellowship,
-  notDeclareFellowship,
-  revealFellowship
-} from "../fellowship/wotr-fellowship-actions";
+import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiStore, WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
-import { allocateHuntDice, drawHuntTile, rollHuntDice } from "../hunt/wotr-hunt-actions";
+import { allocateHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import {
   WotrFellowshipCorruptionChoice,
   WotrHuntEffectChoiceParams
 } from "../hunt/wotr-hunt-effect-choices";
+import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrHuntStore } from "../hunt/wotr-hunt.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
 import { WotrPlayer } from "./wotr-player";
 import { WotrPlayerService } from "./wotr-player.service";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerLocalService implements WotrPlayerService {
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
-  private actionDieService = inject(WotrActionDieService);
-  private playerActionDieService = inject(WotrActionDiePlayerService);
+  private huntUi = inject(WotrHuntUi);
+  private actionDieRules = inject(WotrActionDieRules);
+  private playerActionDieService = inject(WotrActionDieUi);
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
-  private regionStore = inject(WotrRegionStore);
-  private cardPlayerService = inject(WotrCardPlayerService);
-  private battlePlayerService = inject(WotrBattlePlayerService);
+  private cardPlayerService = inject(WotrCardUi);
+  private battlePlayerService = inject(WotrBattleUi);
 
   async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
     return this.cardPlayerService.firstPhaseDrawCards(player);
@@ -74,11 +70,11 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
-    const nActionDice = this.actionDieService.rollableActionDice(player.frontId);
+    const nActionDice = this.actionDieRules.rollableActionDice(player.frontId);
     await this.ui.askContinue(`Roll ${nActionDice} action dice`);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
-      actionDice.push(this.actionDieService.rollActionDie(player.frontId));
+      actionDice.push(this.actionDieRules.rollActionDie(player.frontId));
     }
     return { type: "phase", actions: [rollActionDice(...actionDice)] };
   }
@@ -105,9 +101,7 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
-    await this.ui.askContinue("Draw hunt tile");
-    const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
-    return { type: "hunt", actions: [drawHuntTile(huntTile)] };
+    return { type: "hunt", actions: [await this.huntUi.drawHuntTile()] };
   }
 
   async huntEffect(damage: number): Promise<WotrGameStory> {
@@ -122,22 +116,9 @@ export class WotrPlayerLocalService implements WotrPlayerService {
   }
 
   async revealFellowship(): Promise<WotrGameStory> {
-    const progress = this.fellowshipStore.progress();
-    const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
-    const reachableRegions = this.regionStore.reachableRegions(fellowshipRegion.id, progress);
-    const validRegions = reachableRegions.filter(r => {
-      const region = this.regionStore.region(r);
-      if (region.settlement !== "city" && region.settlement !== "stronghold") return true;
-      if (region.controlledBy !== "free-peoples") return true;
-      return false;
-    });
-    const chosenRegion = await this.ui.askRegion(
-      "Choose a region where to reveal the fellowship",
-      validRegions
-    );
     return {
       type: "hunt",
-      actions: [revealFellowship(chosenRegion)]
+      actions: await this.huntUi.revealFellowship()
     };
   }
 
@@ -204,10 +185,10 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     };
   }
 
-  async battleAdvance(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async battleAdvance(): Promise<WotrGameStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.battleAdvance(frontId)
+      actions: await this.battlePlayerService.battleAdvance()
     };
   }
 
@@ -217,177 +198,4 @@ export class WotrPlayerLocalService implements WotrPlayerService {
       actions: [await this.battlePlayerService.wantContinueBattle()]
     };
   }
-
-  //   this.ui.updateUi ("asd", s => ({
-  //     ...s,
-  //     // ...this.ui.resetUi (),
-  //     // turnPlayer: playerId,
-  //     message: `[${front}] Draw cards`,
-  //     // validAreas: validLands,
-  //     // canCancel: iInfantry !== 1,
-  //   }));
-  //   await firstValueFrom (this.ui.testChange$ ());
-  //     map (() => ({
-  //       phase: 1,
-  //       actions: [{ type: "card-draw", cards: ["fpcha01"] }]
-  //     }))
-  //   );
-  // }
-
-  // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement> {
-  //   const placement: WotrArmyPlacement = {
-  //     infantryPlacement: [],
-  //   };
-  //   return forN (nInfantries, (index) => {
-  //     return this.chooseLandForPlacement$ (index + 1, nInfantries, nationId, playerId).pipe (
-  //       map ((landAreaId) => {
-  //         this.game.applyInfantryPlacement (landAreaId, nationId);
-  //         const ipIndex = placement.infantryPlacement.findIndex ((ip) => (typeof ip === "object" ? ip.areaId : ip) === landAreaId);
-  //         if (ipIndex >= 0) {
-  //           let ip = placement.infantryPlacement[ipIndex];
-  //           ip = { areaId: landAreaId, quantity: typeof ip === "object" ? ip.quantity + 1 : 2 };
-  //           placement.infantryPlacement[ipIndex] = ip;
-  //         } else {
-  //           placement.infantryPlacement.push (landAreaId);
-  //         } // if - else
-  //         return void 0;
-  //       })
-  //     );
-  //   }).pipe (mapTo (placement));
-  // } // armiesPlacement$
-
-  // private chooseLandForPlacement$ (iInfantry: number, nTotInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrLandAreaId> {
-  //   const validLands = this.rules.populationIncrease.getValidLandsForPlacement (nationId, playerId, this.game.get ());
-  //   this.ui.updateUi ("Choose land for placement", (s) => ({
-  //     ...s,
-  //     ...this.ui.resetUi (),
-  //     turnPlayer: playerId,
-  //     message: `Choose a land area to place an infantry on (${iInfantry} / ${nTotInfantries}).`,
-  //     validAreas: validLands,
-  //     canCancel: iInfantry !== 1,
-  //   }));
-  //   return this.ui.areaChange$<WotrLandAreaId> ();
-  // } // chooseLandForRecruitment$
-
-  // armyMovements$ (nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyMovements> {
-  //   const armyMovements: WotrArmyMovements = { movements: [] };
-  //   return this.armyMovement$ (nationId, playerId, armyMovements.movements).pipe (
-  //     expand<WotrArmyMovement | "pass", Observable<WotrArmyMovement | "pass">> ((movementOrPass) => {
-  //       if (movementOrPass === "pass") {
-  //         return EMPTY;
-  //       } else {
-  //         armyMovements.movements.push (movementOrPass);
-  //         this.game.applyArmyMovement (movementOrPass, true);
-  //         return this.armyMovement$ (
-  //           nationId,
-  //           playerId,
-  //           armyMovements.movements
-  //         );
-  //       } // if - else
-  //     }),
-  //     last (),
-  //     mapTo (armyMovements)
-  //   );
-  // } // armyMovements$
-
-  // private armyMovement$ (nationId: WotrNationId, playerId: WotrPlayerId, movements: WotrArmyMovement[]): Observable<WotrArmyMovement | "pass"> {
-  //   return this.chooseUnitsForMovement$ (nationId, playerId, movements).pipe (
-  //     map ((unitsOrPass) => unitsOrPass === "pass" ? "pass" : { units: unitsOrPass, toAreaId: null! }),
-  //     expand<WotrArmyMovement | "pass", Observable<WotrArmyMovement | "pass">> ((armyMovementOrPass) => {
-  //       if (armyMovementOrPass === "pass") {
-  //         return EMPTY;
-  //       } else if (armyMovementOrPass.toAreaId) {
-  //         return EMPTY;
-  //       } else {
-  //         this.ui.updateUi ("Units selected", (s) => ({ ...s, selectedUnits: armyMovementOrPass.units }));
-  //         if (armyMovementOrPass.units.length) {
-  //           return this.chooseUnitsOrAreaForMovement$ (nationId, playerId, armyMovementOrPass.units).pipe (
-  //             map ((unitsOrAreaId) => {
-  //               if (typeof unitsOrAreaId === "string") {
-  //                 return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
-  //               } else {
-  //                 return { ...armyMovementOrPass, units: unitsOrAreaId };
-  //               } // if - else
-  //             })
-  //           );
-  //         } else {
-  //           return this.chooseUnitsForMovement$ (nationId, playerId, movements).pipe (
-  //             map ((unitsOrPass) => unitsOrPass === "pass" ? "pass" : { ...armyMovementOrPass, units: unitsOrPass })
-  //           );
-  //         } // if - else
-  //       } // if - else
-  //     }),
-  //     last ()
-  //   );
-  // } // armyMovement$
-
-  // private chooseUnitsForMovement$ (nationId: WotrNationId, playerId: WotrPlayerId, movements: WotrArmyMovement[]): Observable<WotrAreaUnit[] | "pass"> {
-  //   const validUnits = this.rules.movement.getValidUnitsForMovement (nationId, this.game.get ());
-  //   this.ui.updateUi ("Select units for movement", (s) => ({
-  //     ...s,
-  //     ...this.ui.resetUi (),
-  //     turnPlayer: playerId,
-  //     message: "Select one or more units to be moved.",
-  //     validUnits: validUnits,
-  //     selectedUnits: [],
-  //     canCancel: !!movements.length,
-  //     canPass: true,
-  //   }));
-  //   return race<[WotrAreaUnit[], "pass"]> (
-  //     this.ui.selectedUnitsChange$ (),
-  //     this.ui.passChange$ ().pipe (mapTo ("pass"))
-  //   );
-  // } // chooseUnitsForMovement$
-
-  // private chooseUnitsOrAreaForMovement$ (nationId: WotrNationId, playerId: WotrPlayerId, selectedUnits: WotrAreaUnit[]): Observable<WotrAreaUnit[] | WotrAreaId> {
-  //   const areaId = selectedUnits[0].areaId;
-  //   const validUnits = this.rules.movement.getValidUnitsByAreaForMovement (nationId, areaId, this.game.get ());
-  //   const validAreas = this.rules.movement.getValidAreasForMovement (areaId, nationId, this.game.get ());
-  //   this.ui.updateUi ("Select area or units for movement", (s) => ({
-  //     ...s,
-  //     ...this.ui.resetUi (),
-  //     turnPlayer: playerId,
-  //     message: "Choose an area to move the selected units to, or select more units to be moved.",
-  //     validUnits: validUnits,
-  //     validAreas: validAreas,
-  //     selectedUnits: selectedUnits,
-  //     canCancel: true,
-  //   }));
-  //   return race (this.ui.selectedUnitsChange$ (), this.ui.areaChange$ ());
-  // } // chooseUnitsOrAreaForMovement$
-
-  // battleInitiation$ (nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrBattleInitiation> {
-  //   return this.chooseLandForBattle$ (nationId, playerId).pipe (
-  //     switchMap ((landId) => {
-  //       return this.confirmBattleInitiation$ (landId, playerId).pipe (
-  //         map (() => ({ landId }))
-  //       );
-  //     })
-  //   );
-  // } // battleInitiation$
-
-  // private chooseLandForBattle$ (nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrLandAreaId> {
-  //   const validAreas = this.rules.battlesRetreats.getValidAreasForBattle (nationId, this.game.get ());
-  //   this.ui.updateUi ("Select area for battle", (s) => ({
-  //     ...s,
-  //     ...this.ui.resetUi (),
-  //     turnPlayer: playerId,
-  //     message: "Choose an area to resolve the battle into.",
-  //     validAreas: validAreas,
-  //   }));
-  //   return this.ui.areaChange$<WotrLandAreaId> ();
-  // } // chooseLandForBattle$
-
-  // private confirmBattleInitiation$ (landId: WotrLandAreaId, playerId: WotrPlayerId): Observable<void> {
-  //   this.ui.updateUi ("Confirm battle initiation", (s) => ({
-  //     ...s,
-  //     ...this.ui.resetUi (),
-  //     turnPlayer: playerId,
-  //     message: `Confirm to initiate the battle in ${this.components.AREA[landId].name}.`,
-  //     validAreas: [landId],
-  //     canConfirm: true,
-  //     canCancel: true,
-  //   }));
-  //   return this.ui.confirmChange$ ();
-  // } // confirmBattleInitiation$
-} // WotrPlayerLocalService
+}

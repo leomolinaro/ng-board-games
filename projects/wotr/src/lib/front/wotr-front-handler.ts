@@ -5,7 +5,7 @@ import { WotrFrontId } from "./wotr-front.models";
 import { WotrFrontStore } from "./wotr-front.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrFrontService {
+export class WotrFrontHandler {
   private frontStore = inject(WotrFrontStore);
   private regionStore = inject(WotrRegionStore);
 

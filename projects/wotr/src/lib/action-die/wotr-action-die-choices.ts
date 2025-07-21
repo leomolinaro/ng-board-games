@@ -2,11 +2,11 @@ import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
 import { skipActionDie } from "./wotr-action-die-actions";
-import { WotrActionDiePlayerService } from "./wotr-action-die-player.service";
+import { WotrActionDieUi } from "./wotr-action-die-ui";
 import { WotrActionDie } from "./wotr-action-die.models";
 
 export class WotrChangeCharacterDieChoice implements WotrPlayerChoice {
-  constructor(private actionPlayerService: WotrActionDiePlayerService) {}
+  constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
     return "Character result";
@@ -22,7 +22,7 @@ export class WotrChangeCharacterDieChoice implements WotrPlayerChoice {
 }
 
 export class WotrChangeArmyDieChoice implements WotrPlayerChoice {
-  constructor(private actionPlayerService: WotrActionDiePlayerService) {}
+  constructor(private actionPlayerService: WotrActionDieUi) {}
   label(): string {
     return "Army result";
   }
@@ -35,7 +35,7 @@ export class WotrChangeArmyDieChoice implements WotrPlayerChoice {
 }
 
 export class WotrChangeMusterDieChoice implements WotrPlayerChoice {
-  constructor(private actionPlayerService: WotrActionDiePlayerService) {}
+  constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
     return "Muster result";
@@ -51,7 +51,7 @@ export class WotrChangeMusterDieChoice implements WotrPlayerChoice {
 }
 
 export class WotrChangeEventDieChoice implements WotrPlayerChoice {
-  constructor(private actionPlayerService: WotrActionDiePlayerService) {}
+  constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
     return "Event result";

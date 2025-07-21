@@ -10,7 +10,7 @@ import { WotrPlayerInfoStore } from "../player/wotr-player-info.store";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
 import { WotrPlayerService } from "../player/wotr-player.service";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
-import { WotrGameUiStore } from "./wotr-game-ui.store";
+import { WotrGameUi } from "./wotr-game-ui.store";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrGameStory, WotrStoryDoc } from "./wotr-story.models";
 
@@ -27,7 +27,7 @@ export class WotrStoryService extends ABgGameService<
   WotrPlayerService
 > {
   private store = inject(WotrGameStore);
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
   private remote = inject(WotrRemoteService);
   private frontStore = inject(WotrFrontStore);
   private playerStore = inject(WotrPlayerInfoStore);

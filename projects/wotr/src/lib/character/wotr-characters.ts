@@ -3,7 +3,7 @@ import { WotrActionDie } from "../action-die/wotr-action-die.models";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrNationStore } from "../nation/wotr-nation.store";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
@@ -13,18 +13,18 @@ import { WotrCharacterStore } from "./wotr-character.store";
 export interface WotrCharacterCard {
   name(): string;
   canBeBroughtIntoPlay(die: WotrActionDie): boolean;
-  bringIntoPlay(): Promise<WotrAction>;
+  bringIntoPlay(ui: WotrGameUi): Promise<WotrAction>;
 }
 
 @Injectable({ providedIn: "root" })
 export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
-  private ui = inject(WotrGameUiStore);
 
   name(): string {
     return this.characterStore.character("gandalf-the-white").name;
   }
+
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
     if (die !== "will-of-the-west") return false;
@@ -40,7 +40,7 @@ export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
     return true;
   }
 
-  async bringIntoPlay(): Promise<WotrAction> {
+  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const gandalf = this.characterStore.character("gandalf-the-grey");
     if (gandalf.status === "inPlay") {
       const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
@@ -58,7 +58,7 @@ export class WotrGandalfTheWhiteCard implements WotrCharacterCard {
           targetRegions.push(regionId);
         }
       }
-      const region = await this.ui.askRegion(
+      const region = await ui.askRegion(
         "Select a region to bring Gandalf the White into play",
         targetRegions
       );
@@ -99,7 +99,7 @@ export class WotrAragornCard implements WotrCharacterCard {
       return !!region.freeUnits?.characters?.some(c => c === "strider");
     }
   }
-  async bringIntoPlay(): Promise<WotrAction> {
+  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const regionId = this.striderValidRegion();
     if (!regionId) throw new Error("Strider is not in a valid region to bring Aragorn into play.");
     return playCharacter(regionId, "aragorn");
@@ -135,7 +135,6 @@ export class WotrWitchKingCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
-  private ui = inject(WotrGameUiStore);
 
   name(): string {
     return this.characterStore.character("the-witch-king").name;
@@ -151,12 +150,12 @@ export class WotrWitchKingCard implements WotrCharacterCard {
     );
   }
 
-  async bringIntoPlay(): Promise<WotrAction> {
+  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const validRegions = this.regionStore
       .regions()
       .filter(r => this.isValidRegion(r))
       .map(r => r.id);
-    const region = await this.ui.askRegion(
+    const region = await ui.askRegion(
       "Select a region to bring the Witch-King into play",
       validRegions
     );
@@ -180,7 +179,6 @@ export class WotrMouthOfSauronCard implements WotrCharacterCard {
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
-  private ui = inject(WotrGameUiStore);
 
   name(): string {
     return this.characterStore.character("the-mouth-of-sauron").name;
@@ -196,12 +194,12 @@ export class WotrMouthOfSauronCard implements WotrCharacterCard {
     );
   }
 
-  async bringIntoPlay(): Promise<WotrAction> {
+  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const validRegions = this.regionStore
       .regions()
       .filter(r => this.isValidRegion(r))
       .map(r => r.id);
-    const region = await this.ui.askRegion(
+    const region = await ui.askRegion(
       "Select a region to bring the Mouth of Sauron into play",
       validRegions
     );

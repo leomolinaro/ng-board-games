@@ -3,8 +3,8 @@ import { WotrCombatDie } from "../battle/wotr-combat-die.models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card.models";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCharacterService } from "../character/wotr-character.service";
 import { WotrCharacterStore } from "../character/wotr-character.store";
 import {
   WotrCompanionRandom,
@@ -42,7 +42,7 @@ export class WotrHuntFlowService {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private characterStore = inject(WotrCharacterStore);
-  private characterService = inject(WotrCharacterService);
+  private characterHandler = inject(WotrCharacterHandler);
   private logStore = inject(WotrLogStore);
   private fellowshipStore = inject(WotrFellowshipStore);
 
@@ -254,7 +254,7 @@ export class WotrHuntFlowService {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await this.characterService.activateCharacterAbility(
+        const actions = await this.characterHandler.activateCharacterAbility(
           companion,
           this.freePeoples
         );

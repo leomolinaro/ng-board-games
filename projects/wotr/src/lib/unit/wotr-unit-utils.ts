@@ -7,7 +7,7 @@ import { WotrArmy, WotrUnits } from "./wotr-unit.models";
 @Injectable({
   providedIn: "root"
 })
-export class WotrArmyUtils {
+export class WotrUnitUtils {
   addRegulars(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy {
     return this.addUnits("regulars", nation, quantity, army);
   }

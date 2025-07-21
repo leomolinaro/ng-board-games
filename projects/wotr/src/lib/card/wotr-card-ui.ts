@@ -2,15 +2,15 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrGameStory } from "../game/wotr-story.models";
 import { WotrPlayer } from "../player/wotr-player";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId } from "./wotr-card.models";
 
 @Injectable({ providedIn: "root" })
-export class WotrCardPlayerService {
-  private ui = inject(WotrGameUiStore);
+export class WotrCardUi {
+  private ui = inject(WotrGameUi);
   private frontStore = inject(WotrFrontStore);
 
   async firstPhaseDrawCards(player: WotrPlayer): Promise<WotrGameStory> {

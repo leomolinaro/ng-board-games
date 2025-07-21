@@ -7,9 +7,9 @@ import { findAction } from "../game/wotr-story.models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrArmyUtils } from "../unit/wotr-army.utils";
+import { WotrUnitHandler } from "../unit/wotr-unit-handler";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit.models";
-import { WotrUnitService } from "../unit/wotr-unit.service";
 import { WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle.models";
 
@@ -26,8 +26,8 @@ export interface WotrCombatCardParams {
 
 @Injectable({ providedIn: "root" })
 export class WotrCombatCardsService {
-  private unitService = inject(WotrUnitService);
-  private armyUtil = inject(WotrArmyUtils);
+  private unitService = inject(WotrUnitHandler);
+  private unitUtils = inject(WotrUnitUtils);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -124,8 +124,8 @@ export class WotrCombatCardsService {
     "Great Host": async params => {
       const attackedArmy = params.attackedArmy();
       const attackingArmy = params.attackingArmy();
-      const nAttackedArmyUnits = attackedArmy ? this.armyUtil.getNArmyUnits(attackedArmy) : 0;
-      const nAttackingArmyUnits = attackingArmy ? this.armyUtil.getNArmyUnits(attackingArmy) : 0;
+      const nAttackedArmyUnits = attackedArmy ? this.unitUtils.getNArmyUnits(attackedArmy) : 0;
+      const nAttackingArmyUnits = attackingArmy ? this.unitUtils.getNArmyUnits(attackingArmy) : 0;
       if (
         (params.isAttacker &&
           nAttackedArmyUnits &&

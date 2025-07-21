@@ -1,12 +1,11 @@
 import { inject, Injectable } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card.models";
+import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCharacterService } from "../character/wotr-character.service";
-import { WotrCharacterStore } from "../character/wotr-character.store";
 import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontService } from "../front/wotr-front.service";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import {
   findAction,
@@ -15,15 +14,16 @@ import {
   WotrSkipCombatCardReactionStory
 } from "../game/wotr-story.models";
 import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrNationService } from "../nation/wotr-nation.service";
+import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtils } from "../unit/wotr-army.utils";
+import { WotrUnitHandler } from "../unit/wotr-unit-handler";
+import { WotrUnitRules } from "../unit/wotr-unit-rules";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrArmy } from "../unit/wotr-unit.models";
-import { WotrUnitService } from "../unit/wotr-unit.service";
 import {
   WotrArmyAdvance,
   WotrArmyAttack,
@@ -46,24 +46,22 @@ import { WotrCombatCardsService } from "./wotr-combat-cards.service";
 import { WotrCombatDie } from "./wotr-combat-die.models";
 
 @Injectable({ providedIn: "root" })
-export class WotrBattleService {
+export class WotrBattleHandler {
   private actionService = inject(WotrActionService);
-  private nationService = inject(WotrNationService);
+  private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
   private battleStore = inject(WotrBattleStore);
-  private frontService = inject(WotrFrontService);
+  private frontHandler = inject(WotrFrontHandler);
   private combatCards = inject(WotrCombatCardsService);
-  private characterStore = inject(WotrCharacterStore);
-  private characterService = inject(WotrCharacterService);
+  private characterHandler = inject(WotrCharacterHandler);
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
-  private armyUtil = inject(WotrArmyUtils);
+  private unitUtils = inject(WotrUnitUtils);
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
-
-  private currentBattle: WotrBattle | undefined;
-  private currentCombatRound: WotrCombatRound | undefined;
+  private unitRules = inject(WotrUnitRules);
+  private unitHandler = inject(WotrUnitHandler);
 
   init() {
     this.actionService.registerAction<WotrArmyAttack>(
@@ -113,8 +111,8 @@ export class WotrBattleService {
   };
 
   private async applyArmyAttack(action: WotrArmyAttack, front: WotrFrontId) {
-    this.nationService.checkNationActivationByAttack(action.toRegion);
-    this.nationService.checkNationAdvanceByAttack(action.toRegion);
+    this.nationHandler.checkNationActivationByAttack(action.toRegion);
+    this.nationHandler.checkNationAdvanceByAttack(action.toRegion);
     if (front === "free-peoples") {
       await this.resolveBattleFlow(action, this.freePeoples, this.shadow);
     } else {
@@ -208,11 +206,9 @@ export class WotrBattleService {
       region: action.toRegion,
       siege: !!this.attackedRegion(action).underSiegeArmy
     };
-    this.currentBattle = battle;
     this.battleStore.startBattle(battle);
     await this.resolveBattle(battle);
     this.battleStore.endBattle();
-    this.currentBattle = undefined;
   }
 
   private async resolveBattle(battle: WotrBattle) {
@@ -226,9 +222,7 @@ export class WotrBattleService {
         battle.defender,
         battle.siege
       );
-      this.currentCombatRound = combatRound;
       continueBattle = await this.resolveCombat(combatRound, battle);
-      this.currentCombatRound = undefined;
       round++;
     } while (continueBattle);
   }
@@ -285,8 +279,8 @@ export class WotrBattleService {
       }
       if (this.attackedRegion(combatRound.action).settlement) {
         this.regionStore.setControlledBy(combatRound.attacker.frontId, combatRound.action.toRegion); // TODO controllare se avanza
-        this.nationService.checkNationAdvanceByCapture(combatRound.action.toRegion);
-        this.frontService.refreshVictoryPoints();
+        this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
+        this.frontHandler.refreshVictoryPoints();
       }
     }
 
@@ -496,25 +490,23 @@ export class WotrBattleService {
     return damagePoints;
   }
 
-  private unitService = inject(WotrUnitService);
-
   getCombatStrength(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
       const attackingArmy = this.attackingArmy(combatRound);
-      return this.unitService.getArmyCombatStrength(attackingArmy);
+      return this.unitRules.getArmyCombatStrength(attackingArmy);
     } else {
       const attackedArmy = this.attackedArmy(combatRound);
-      return attackedArmy ? this.unitService.getArmyCombatStrength(attackedArmy) : 0;
+      return attackedArmy ? this.unitRules.getArmyCombatStrength(attackedArmy) : 0;
     }
   }
 
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
       const attackingArmy = this.attackingArmy(combatRound);
-      return this.unitService.getArmyLeadership(attackingArmy, false);
+      return this.unitRules.getArmyLeadership(attackingArmy, false);
     } else {
       const attackedArmy = this.attackedArmy(combatRound);
-      return attackedArmy ? this.unitService.getArmyLeadership(attackedArmy, false) : 0;
+      return attackedArmy ? this.unitRules.getArmyLeadership(attackedArmy, false) : 0;
     }
   }
 
@@ -558,7 +550,7 @@ export class WotrBattleService {
 
   private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
     const attackingArmy = this.attackingArmy(combatRound);
-    await this.unitService.chooseFrontCasualties(
+    await this.unitHandler.chooseFrontCasualties(
       combatRound.attacker.player,
       combatRound.defender.nTotalHits || 0,
       attackingArmy,
@@ -566,7 +558,7 @@ export class WotrBattleService {
       false
     );
     const attackedArmy = this.attackedArmy(combatRound);
-    await this.unitService.chooseFrontCasualties(
+    await this.unitHandler.chooseFrontCasualties(
       combatRound.defender.player,
       combatRound.attacker.nTotalHits || 0,
       attackedArmy,
@@ -581,7 +573,7 @@ export class WotrBattleService {
       combatRound.round === 1 &&
       combatRound.shadow.combatCard
     ) {
-      await this.characterService.activateCharacterAbility("the-witch-king", this.shadow);
+      await this.characterHandler.activateCharacterAbility("the-witch-king", this.shadow);
     }
   }
 
@@ -597,7 +589,7 @@ export class WotrBattleService {
   }
   private attackingArmy(combatRound: WotrCombatRound) {
     if (combatRound.action.retroguard) {
-      return this.armyUtil.splitUnits(
+      return this.unitUtils.splitUnits(
         this.attackingRegion(combatRound).army,
         combatRound.action.retroguard
       )!;

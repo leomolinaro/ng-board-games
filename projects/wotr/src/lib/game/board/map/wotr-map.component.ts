@@ -26,7 +26,7 @@ import { WotrHuntState } from "../../../hunt/wotr-hunt.store";
 import { WotrPoliticalTrackComponent } from "../../../nation/wotr-political-track.component";
 import { WotrRegion, WotrRegionId } from "../../../region/wotr-region.models";
 import { WotrRegionsComponent } from "../../../region/wotr-regions.component";
-import { WotrGameUiStore } from "../../wotr-game-ui.store";
+import { WotrGameUi } from "../../wotr-game-ui.store";
 import { WotrMapSlotsGeneratorService } from "./wotr-map-slots-generator.service";
 import { WotrMapService } from "./wotr-map.service";
 
@@ -106,7 +106,7 @@ export class WotrMapComponent {
   private mapService = inject(WotrMapService);
   private assets = inject(WotrAssetsService);
   private slotsGeneratorService = inject(WotrMapSlotsGeneratorService);
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
 
   regions = input.required<WotrRegion[]>();
   hunt = input.required<WotrHuntState[]>();

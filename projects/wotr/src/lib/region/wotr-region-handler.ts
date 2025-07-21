@@ -5,7 +5,7 @@ import { WotrRegionAction } from "./wotr-region-actions";
 import { WotrRegionStore } from "./wotr-region.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrRegionService {
+export class WotrRegionHandler {
   private regionStore = inject(WotrRegionStore);
   private actionService = inject(WotrActionService);
 

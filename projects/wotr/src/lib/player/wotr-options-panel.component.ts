@@ -1,7 +1,7 @@
 import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 
 @Component({
   selector: "wotr-options-panel",
@@ -47,7 +47,7 @@ import { WotrGameUiStore } from "../game/wotr-game-ui.store";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrOptionsPanelComponent {
-  protected ui = inject(WotrGameUiStore);
+  protected ui = inject(WotrGameUi);
 
   protected quantity = 0;
 

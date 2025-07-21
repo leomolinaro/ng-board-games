@@ -4,7 +4,7 @@ import { arrayUtil } from "../../../../commons/utils/src";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
 import { WotrFellowship } from "../fellowship/wotr-fellowhip.models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrMordorTrackComponent } from "./wotr-mordor-track.component";
 import { WotrRegionComponent } from "./wotr-region.component";
 import { WotrRegion, WotrRegionId } from "./wotr-region.models";
@@ -52,7 +52,7 @@ import { WotrStrongholdComponent } from "./wotr-stronghold.component";
 })
 export class WotrRegionsComponent {
   private mapService = inject(WotrMapService);
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
 
   regions = input.required<WotrRegion[]>();
   fellowship = input.required<WotrFellowship>();

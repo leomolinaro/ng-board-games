@@ -16,7 +16,7 @@ import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils"
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrCardId } from "../card/wotr-card.models";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character.models";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import {
   WotrArmyUnitType,
   WotrGenericUnitType,
@@ -194,7 +194,7 @@ function initValidUnits(): ValidUnits {
 })
 export class WotrFrontAreaComponent {
   protected assets = inject(WotrAssetsService);
-  protected ui = inject(WotrGameUiStore);
+  protected ui = inject(WotrGameUi);
 
   front = input.required<WotrFront>();
   nations = input.required<WotrNation[]>();

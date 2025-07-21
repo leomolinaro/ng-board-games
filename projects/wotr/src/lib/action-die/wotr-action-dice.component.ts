@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/c
 import { WotrAssetsService } from "../assets/wotr-assets.service";
 import { WotrFront, WotrFrontId } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
 
 interface FrontNode {
@@ -66,7 +66,7 @@ interface ActionTokendNode {
 })
 export class WotrActionDiceComponent {
   protected assets = inject(WotrAssetsService);
-  private ui = inject(WotrGameUiStore);
+  private ui = inject(WotrGameUi);
   private frontStore = inject(WotrFrontStore);
 
   protected fronts = this.frontStore.fronts;

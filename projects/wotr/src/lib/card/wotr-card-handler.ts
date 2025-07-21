@@ -5,7 +5,7 @@ import {
   WotrStoryApplier
 } from "../commons/wotr-action.models";
 import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFrontId, oppositeFront } from "../front/wotr-front.models";
+import { oppositeFront } from "../front/wotr-front.models";
 import { WotrFrontStore } from "../front/wotr-front.store";
 import {
   WotrCardReactionStory,
@@ -15,10 +15,10 @@ import {
 import { WotrLogStore } from "../log/wotr-log.store";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardParams } from "./wotr-card-effects.service";
-import { WotrCardId, WotrCardType, cardToLabel } from "./wotr-card.models";
+import { WotrCardId, cardToLabel } from "./wotr-card.models";
 
 @Injectable({ providedIn: "root" })
-export class WotrCardService {
+export class WotrCardHandler {
   private actionService = inject(WotrActionService);
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
@@ -101,23 +101,5 @@ export class WotrCardService {
 
   private nCards(cards: WotrCardId[]) {
     return `${cards.length} ${cards.length === 1 ? "card" : "cards"}`;
-  }
-
-  hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
-    return this.frontStore
-      .front(frontId)
-      .handCards.some(cardId => this.isPlayableCard(cardId, frontId));
-  }
-  getPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
-    return this.frontStore
-      .front(frontId)
-      .handCards.filter(cardId => this.isPlayableCard(cardId, frontId));
-  }
-  isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
-    return false;
-  }
-  canDrawCard(frontId: WotrFrontId): boolean {
-    const front = this.frontStore.front(frontId);
-    return front.characterDeck.length > 0 || front.strategyDeck.length > 0;
   }
 }

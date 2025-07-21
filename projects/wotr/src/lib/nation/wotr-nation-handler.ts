@@ -16,11 +16,11 @@ import {
   WotrPoliticalActivation,
   WotrPoliticalAdvance
 } from "./wotr-nation-actions";
-import { WotrNation, WotrNationId } from "./wotr-nation.models";
+import { WotrNationId } from "./wotr-nation.models";
 import { WotrNationStore } from "./wotr-nation.store";
 
 @Injectable({ providedIn: "root" })
-export class WotrNationService {
+export class WotrNationHandler {
   private actionService = inject(WotrActionService);
   private nationStore = inject(WotrNationStore);
   private logStore = inject(WotrLogStore);
@@ -169,22 +169,5 @@ export class WotrNationService {
         " is advanced on the Political Track"
       ]
     };
-  }
-
-  canFrontAdvancePoliticalTrack(frontId: WotrFrontId): boolean {
-    if (frontId === "free-peoples") {
-      return this.nationStore
-        .freePeoplesNations()
-        .some(nation => this.canAdvancePoliticalTrack(nation));
-    } else {
-      return this.nationStore.shadowNations().some(nation => this.canAdvancePoliticalTrack(nation));
-    }
-  }
-  canAdvancePoliticalTrack(nation: WotrNation): boolean {
-    return (
-      nation.politicalStep === 3 ||
-      nation.politicalStep === 2 ||
-      (nation.politicalStep === 1 && nation.active)
-    );
   }
 }

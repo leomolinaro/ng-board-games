@@ -3,10 +3,9 @@ import { randomUtil } from "@leobg/commons/utils";
 import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action.models";
 import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrRegionId } from "../region/wotr-region.models";
 import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrArmyUtils } from "../unit/wotr-army.utils";
 import {
   downgradeEliteUnit,
   eliminateEliteUnit,
@@ -14,6 +13,7 @@ import {
   eliminateNazgul,
   eliminateRegularUnit
 } from "../unit/wotr-unit-actions";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrUnits } from "../unit/wotr-unit.models";
 import {
   advanceArmy,
@@ -31,11 +31,11 @@ import { WotrBattleStore } from "./wotr-battle.store";
 import { WotrCombatDie } from "./wotr-combat-die.models";
 
 @Injectable({ providedIn: "root" })
-export class WotrBattlePlayerService {
-  private ui = inject(WotrGameUiStore);
+export class WotrBattleUi {
+  private ui = inject(WotrGameUi);
   private battleStore = inject(WotrBattleStore);
   private regionStore = inject(WotrRegionStore);
-  private armyUtil = inject(WotrArmyUtils);
+  private unitUtils = inject(WotrUnitUtils);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -122,7 +122,7 @@ export class WotrBattlePlayerService {
     return actions;
   }
 
-  async battleAdvance(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async battleAdvance(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const fromRegion = this.regionStore.region(battle.action.fromRegion);
     const movingUnits = await this.ui.askRegionUnits("Choose units to advance", {
@@ -132,11 +132,11 @@ export class WotrBattlePlayerService {
       withLeaders: false,
       required: false
     });
-    if (this.armyUtil.isEmptyArmy(movingUnits)) {
+    if (this.unitUtils.isEmptyArmy(movingUnits)) {
       return [notAdvanceArmy(fromRegion.id)];
     } else {
-      const attackingArmy = this.armyUtil.splitUnits(fromRegion.army, battle.retroguard)!;
-      const leftUnits = this.armyUtil.splitUnits(attackingArmy, movingUnits);
+      const attackingArmy = this.unitUtils.splitUnits(fromRegion.army, battle.retroguard)!;
+      const leftUnits = this.unitUtils.splitUnits(attackingArmy, movingUnits);
       return [advanceArmy(leftUnits)];
     }
   }

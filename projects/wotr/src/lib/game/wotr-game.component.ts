@@ -2,22 +2,22 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieService } from "../action-die/wotr-action-die.service";
-import { WotrBattleService } from "../battle/wotr-battle.service";
+import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
+import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrCardEffectsService } from "../card/wotr-card-effects.service";
-import { WotrCardService } from "../card/wotr-card.service";
-import { WotrCharacterService } from "../character/wotr-character.service";
+import { WotrCardHandler } from "../card/wotr-card-handler";
+import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFellowshipService } from "../fellowship/wotr-fellowship.service";
+import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrGameTurnService } from "../game-turn/wotr-game-flow.service";
-import { WotrHuntService } from "../hunt/wotr-hunt.service";
-import { WotrNationService } from "../nation/wotr-nation.service";
+import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
+import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info.models";
 import { WotrPlayerLocalService } from "../player/wotr-player-local.service";
-import { WotrRegionService } from "../region/wotr-region.service";
+import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { WotrPlayerDoc } from "../remote/wotr-remote.models";
 import { WotrRemoteService } from "../remote/wotr-remote.service";
-import { WotrUnitService } from "../unit/wotr-unit.service";
+import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrBoardComponent } from "./board/wotr-board.component";
 import { WotrGameStore } from "./wotr-game.store";
 import { WotrStoryService } from "./wotr-story.service";
@@ -47,16 +47,16 @@ export class WotrGameComponent implements OnInit, OnDestroy {
   private actionService = inject(WotrActionService);
 
   constructor() {
-    inject(WotrActionDieService).init();
-    inject(WotrCardService).init();
-    inject(WotrBattleService).init();
-    inject(WotrCharacterService).init();
+    inject(WotrActionDieHandler).init();
+    inject(WotrCardHandler).init();
+    inject(WotrBattleHandler).init();
+    inject(WotrCharacterHandler).init();
     inject(WotrGameTurnService).init();
-    inject(WotrFellowshipService).init();
-    inject(WotrHuntService).init();
-    inject(WotrNationService).init();
-    inject(WotrRegionService).init();
-    inject(WotrUnitService).init();
+    inject(WotrFellowshipHandler).init();
+    inject(WotrHuntHandler).init();
+    inject(WotrNationHandler).init();
+    inject(WotrRegionHandler).init();
+    inject(WotrUnitHandler).init();
     this.story.init(this.localPlayerService);
   }
 

@@ -3,7 +3,7 @@ import { Component, computed, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { BgAuthService } from "@leobg/commons";
-import { WotrGameUiStore } from "../game/wotr-game-ui.store";
+import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { WotrPlayerBadgeComponent } from "./wotr-player-badge.component";
 import { WotrPlayerInfoStore } from "./wotr-player-info.store";
 
@@ -62,7 +62,7 @@ import { WotrPlayerInfoStore } from "./wotr-player-info.store";
 })
 export class WotrPlayerToolbarComponent {
   private authService = inject(BgAuthService);
-  protected ui = inject(WotrGameUiStore);
+  protected ui = inject(WotrGameUi);
   protected playerInfoStore = inject(WotrPlayerInfoStore);
 
   protected players = this.playerInfoStore.players;

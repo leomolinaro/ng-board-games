@@ -87,7 +87,7 @@ export interface WotrPlayerChoice<P = WotrFrontId> {
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrGameUiStore extends signalStore(
+export class WotrGameUi extends signalStore(
   { protectedState: false },
   withState<WotrGameUiState>(initialState)
 ) {

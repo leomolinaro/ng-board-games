@@ -44,7 +44,7 @@ import {
 import { WotrRegion } from "../../region/wotr-region.models";
 import { WotrRegionStore } from "../../region/wotr-region.store";
 import { WotrRegionUnits } from "../../unit/wotr-unit.models";
-import { WotrGameUiStore } from "../wotr-game-ui.store";
+import { WotrGameUi } from "../wotr-game-ui.store";
 import { WotrMapComponent } from "./map/wotr-map.component";
 import { WotrReplayButtonComponent } from "./wotr-replay-buttons.component";
 
@@ -130,7 +130,7 @@ export class WotrBoardComponent {
   protected fellowshipStore = inject(WotrFellowshipStore);
   protected nationStore = inject(WotrNationStore);
   protected logStore = inject(WotrLogStore);
-  protected ui = inject(WotrGameUiStore);
+  protected ui = inject(WotrGameUi);
 
   protected freePeoples = this.frontStore.freePeoplesFront;
   protected shadow = this.frontStore.shadowFront;
