@@ -1,5 +1,5 @@
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrCharacterId } from "./wotr-character.models";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrCharacterId } from "./wotr-character-models";
 
 export type WotrCharacterAction =
   | WotrCharacterMovement

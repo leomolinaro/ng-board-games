@@ -1,30 +1,30 @@
 import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
-import { WotrCardId } from "../card/wotr-card.models";
+import { WotrCardId } from "../card/wotr-card-models";
 import {
   WotrAction,
   WotrActionApplierMap,
   WotrActionLoggerMap,
   WotrStoryApplier
-} from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
+} from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrCharacterReactionStory,
   WotrGameStory,
   WotrSkipCharacterReactionStory
-} from "../game/wotr-story.models";
-import { WotrLogStore } from "../log/wotr-log.store";
+} from "../game/wotr-story-models";
+import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegion } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrRegion } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-actions";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
-import { WotrCharacterStore } from "./wotr-character.store";
+import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {

@@ -1,16 +1,16 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
 import { WotrCharacterHandler } from "./wotr-character-handler";
+import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterRules } from "./wotr-character-rules";
-import { WotrCharacterId } from "./wotr-character.models";
-import { WotrCharacterStore } from "./wotr-character.store";
+import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterUi {

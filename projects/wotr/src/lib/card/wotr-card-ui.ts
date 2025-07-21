@@ -1,12 +1,12 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrGameStory } from "../game/wotr-story.models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameStory } from "../game/wotr-story-models";
 import { WotrPlayer } from "../player/wotr-player";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
-import { WotrCardId } from "./wotr-card.models";
+import { WotrCardId } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardUi {

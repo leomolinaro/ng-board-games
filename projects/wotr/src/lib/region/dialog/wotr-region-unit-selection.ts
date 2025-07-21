@@ -1,9 +1,9 @@
-import { WotrCharacterId } from "../../character/wotr-character.models";
-import { WotrCharacterStore } from "../../character/wotr-character.store";
-import { WotrFrontId } from "../../front/wotr-front.models";
-import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation.models";
-import { WotrUnits } from "../../unit/wotr-unit.models";
-import { WotrRegion, WotrRegionId } from "../wotr-region.models";
+import { WotrCharacterId } from "../../character/wotr-character-models";
+import { WotrCharacterStore } from "../../character/wotr-character-store";
+import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrUnits } from "../../unit/wotr-unit-models";
+import { WotrRegion, WotrRegionId } from "../wotr-region-models";
 
 export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection

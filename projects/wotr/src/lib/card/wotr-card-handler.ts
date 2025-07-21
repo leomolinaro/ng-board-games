@@ -3,19 +3,19 @@ import {
   WotrActionApplierMap,
   WotrActionLoggerMap,
   WotrStoryApplier
-} from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { oppositeFront } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
+} from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { oppositeFront } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrCardReactionStory,
   WotrDieCardStory,
   WotrSkipCardReactionStory
-} from "../game/wotr-story.models";
-import { WotrLogStore } from "../log/wotr-log.store";
+} from "../game/wotr-story-models";
+import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrCardAction } from "./wotr-card-actions";
-import { WotrCardParams } from "./wotr-card-effects.service";
-import { WotrCardId, cardToLabel } from "./wotr-card.models";
+import { WotrCardParams } from "./wotr-card-effects-service";
+import { WotrCardId, cardToLabel } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardHandler {

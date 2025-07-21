@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrStoryDoc } from "../game/wotr-story-models";
 
 interface WotrExampleGame {
   id: string;

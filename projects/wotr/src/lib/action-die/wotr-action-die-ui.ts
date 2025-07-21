@@ -9,15 +9,15 @@ import {
 } from "../character/wotr-character-choices";
 import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
-import { WotrAction } from "../commons/wotr-action.models";
+import { WotrAction } from "../commons/wotr-action-models";
 import {
   WotrFellowshipProgressChoice,
   WotrHideFellowshipChoice,
   WotrSeparateCompanionsChoice
 } from "../fellowship/wotr-fellowship-choices";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
-import { WotrGameStory } from "../game/wotr-story.models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrGameStory } from "../game/wotr-story-models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrDiplomaticActionChoice } from "../nation/wotr-nation-choices";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
@@ -37,8 +37,8 @@ import {
   WotrChangeMusterDieChoice,
   WotrSkipDieChoice
 } from "./wotr-action-die-choices";
+import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
-import { WotrActionDie, WotrActionToken } from "./wotr-action-die.models";
 
 @Injectable({
   providedIn: "root"

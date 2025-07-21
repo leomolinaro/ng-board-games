@@ -1,6 +1,6 @@
 // https://www.youtube.com/watch?v=6kDLffpqd9A&ab_channel=WaroftheRingChamp
 
-import { WotrActionToken } from "../action-die/wotr-action-die.models";
+import { WotrActionToken } from "../action-die/wotr-action-die-models";
 import {
   advanceArmy,
   attack,
@@ -23,7 +23,7 @@ import {
   revealFellowship,
   separateCompanions
 } from "../fellowship/wotr-fellowship-actions";
-import { WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrStoryDoc } from "../game/wotr-story-models";
 import { addHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import {
@@ -33,7 +33,7 @@ import {
   leftUnits,
   moveArmies
 } from "../unit/wotr-unit-actions";
-import { elite, nazgul, regular } from "../unit/wotr-unit.models";
+import { elite, nazgul, regular } from "../unit/wotr-unit-models";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
 
 const b = new WotrStoriesBuilder();

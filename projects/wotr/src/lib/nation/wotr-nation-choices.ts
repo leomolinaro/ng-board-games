@@ -1,10 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui";
 import { advanceNation } from "./wotr-nation-actions";
-import { WotrNationUi } from "./wotr-nation-ui";
 import { WotrNationRules } from "./wotr-nation-rules";
+import { WotrNationUi } from "./wotr-nation-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrDiplomaticActionChoice implements WotrPlayerChoice {

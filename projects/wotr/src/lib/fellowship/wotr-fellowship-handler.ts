@@ -1,15 +1,15 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrHuntFlowService } from "../hunt/wotr-hunt-flow.service";
-import { WotrHuntStore } from "../hunt/wotr-hunt.store";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
+import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCompanionSeparation, WotrFellowshipAction } from "./wotr-fellowship-actions";
-import { WotrFellowshipStore } from "./wotr-fellowship.store";
+import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipHandler {
@@ -18,7 +18,7 @@ export class WotrFellowshipHandler {
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
-  private huntFlow = inject(WotrHuntFlowService);
+  private huntFlow = inject(WotrHuntFlow);
   private characterStore = inject(WotrCharacterStore);
   private characterHandler = inject(WotrCharacterHandler);
 

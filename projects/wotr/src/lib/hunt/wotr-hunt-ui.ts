@@ -1,12 +1,12 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
 import { randomUtil } from "../../../../commons/utils/src";
-import { WotrAction } from "../commons/wotr-action.models";
+import { WotrAction } from "../commons/wotr-action-models";
 import { revealFellowship } from "../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { drawHuntTile } from "./wotr-hunt-actions";
-import { WotrHuntStore } from "./wotr-hunt.store";
+import { WotrHuntStore } from "./wotr-hunt-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrHuntUi {

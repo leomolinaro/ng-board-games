@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui";
 import { hideFellowship, moveFelloswhip } from "./wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
+import { WotrFellowshipStore } from "./wotr-fellowship-store";
 import { WotrFellowshipUi } from "./wotr-fellowship-ui";
-import { WotrFellowshipStore } from "./wotr-fellowship.store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipProgressChoice implements WotrPlayerChoice {

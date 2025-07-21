@@ -1,18 +1,18 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCardRules } from "../card/wotr-card-rules";
-import { WotrCharacterStore } from "../character/wotr-character.store";
-import { oppositeFront, WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrHuntStore } from "../hunt/wotr-hunt.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { oppositeFront, WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrHuntStore } from "../hunt/wotr-hunt-store";
+import { WotrNationRules } from "../nation/wotr-nation-rules";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   WotrActionDie,
   WotrActionToken,
   WotrFreePeopleActionDie,
   WotrShadowActionDie
-} from "./wotr-action-die.models";
-import { WotrNationRules } from "../nation/wotr-nation-rules";
+} from "./wotr-action-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieRules {

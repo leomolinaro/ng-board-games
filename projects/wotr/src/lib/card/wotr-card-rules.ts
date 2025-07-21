@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrCardId, WotrCardType } from "./wotr-card.models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrCardId, WotrCardType } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardRules {

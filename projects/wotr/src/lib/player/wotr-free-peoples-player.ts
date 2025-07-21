@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrPlayer } from "./wotr-player";
 
 @Injectable({ providedIn: "root" })

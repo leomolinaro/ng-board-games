@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrFreePeoplesPlayer } from "./wotr-free-peoples-player";
 import { WotrShadowPlayer } from "./wotr-shadow-player";
 

@@ -1,8 +1,13 @@
-import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrHuntTileId } from "./wotr-hunt.models";
+import { WotrCombatDie } from "../battle/wotr-combat-die-models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrHuntTileId } from "./wotr-hunt-models";
 
-export type WotrHuntAction = WotrHuntAllocation | WotrHuntRoll | WotrHuntReRoll | WotrHuntTileDraw | WotrHuntTileAdd;
+export type WotrHuntAction =
+  | WotrHuntAllocation
+  | WotrHuntRoll
+  | WotrHuntReRoll
+  | WotrHuntTileDraw
+  | WotrHuntTileAdd;
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
   quantity: number;

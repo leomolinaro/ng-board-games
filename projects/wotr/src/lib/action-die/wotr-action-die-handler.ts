@@ -3,18 +3,18 @@ import {
   WotrActionApplierMap,
   WotrActionLoggerMap,
   WotrStoryApplier
-} from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFrontStore } from "../front/wotr-front.store";
+} from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrDieStory,
   WotrPassStory,
   WotrSkipTokensStory,
   WotrTokenStory
-} from "../game/wotr-story.models";
-import { WotrLogStore } from "../log/wotr-log.store";
+} from "../game/wotr-story-models";
+import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
-import { WotrActionDie } from "./wotr-action-die.models";
+import { WotrActionDie } from "./wotr-action-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieHandler {

@@ -1,23 +1,23 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCharacterStore } from "../character/wotr-character.store";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
 import {
   WotrActionApplier,
   WotrActionLoggerMap,
   WotrEffectLoggerMap
-} from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrLogStore } from "../log/wotr-log.store";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+} from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   WotrNationAction,
   WotrPoliticalActivation,
   WotrPoliticalAdvance
 } from "./wotr-nation-actions";
-import { WotrNationId } from "./wotr-nation.models";
-import { WotrNationStore } from "./wotr-nation.store";
+import { WotrNationId } from "./wotr-nation-models";
+import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationHandler {

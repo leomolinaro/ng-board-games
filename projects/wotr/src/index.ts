@@ -1,1 +1,1 @@
-export * from "./lib/wotr.module";
+export * from "./lib/wotr-module";

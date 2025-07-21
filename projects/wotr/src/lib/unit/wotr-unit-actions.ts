@@ -1,6 +1,6 @@
-import { WotrNationId } from "../nation/wotr-nation.models";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrUnitComposer, WotrUnits } from "./wotr-unit.models";
+import { WotrNationId } from "../nation/wotr-nation-models";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrUnitComposer, WotrUnits } from "./wotr-unit-models";
 
 export type WotrUnitAction =
   | WotrArmyMovements

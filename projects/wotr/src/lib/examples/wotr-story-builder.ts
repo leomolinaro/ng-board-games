@@ -1,10 +1,10 @@
 import { rollActionDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die.models";
-import { WotrCombatDie } from "../battle/wotr-combat-die.models";
-import { WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrElvenRing, WotrFrontId } from "../front/wotr-front.models";
+import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
+import { WotrCombatDie } from "../battle/wotr-combat-die-models";
+import { WotrCardLabel, labelToCardId } from "../card/wotr-card-models";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import {
   WotrBattleStory,
   WotrCardReactionStory,
@@ -21,9 +21,14 @@ import {
   WotrSkipTokensStory,
   WotrStoryDoc,
   WotrTokenStory
-} from "../game/wotr-story.models";
-import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
-import { WotrHuntTileId } from "../hunt/wotr-hunt.models";
+} from "../game/wotr-story-models";
+import {
+  allocateHuntDice,
+  drawHuntTile,
+  reRollHuntDice,
+  rollHuntDice
+} from "../hunt/wotr-hunt-actions";
+import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 
 export class WotrFrontStoryComposer {
   constructor(
@@ -70,19 +75,34 @@ export class WotrFrontStoryComposer {
     return { type: "die", die, actions, ...this.story() };
   }
 
-  characterElvenRingDie(elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  characterElvenRingDie(
+    elvenRing: WotrElvenRing,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("character", elvenRing, ...actions);
   }
-  eventElvenRingDie(elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  eventElvenRingDie(
+    elvenRing: WotrElvenRing,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("event", elvenRing, ...actions);
   }
-  musterElvenRingDie(elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  musterElvenRingDie(
+    elvenRing: WotrElvenRing,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("muster", elvenRing, ...actions);
   }
-  musterArmyElvenRingDie(elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  musterArmyElvenRingDie(
+    elvenRing: WotrElvenRing,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("muster-army", elvenRing, ...actions);
   }
-  armyElvenRingDie(elvenRing: WotrElvenRing, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  armyElvenRingDie(
+    elvenRing: WotrElvenRing,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("army", elvenRing, ...actions);
   }
   protected actionElvenRingDie(
@@ -93,10 +113,16 @@ export class WotrFrontStoryComposer {
     return { type: "die", die, elvenRing, actions, ...this.story() };
   }
 
-  musterAbilityDie(character: WotrCharacterId, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  musterAbilityDie(
+    character: WotrCharacterId,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionAbilityDie("muster", character, ...actions);
   }
-  musterArmyAbilityDie(character: WotrCharacterId, ...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+  musterArmyAbilityDie(
+    character: WotrCharacterId,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieStory {
     return this.actionAbilityDie("muster-army", character, ...actions);
   }
   protected actionAbilityDie(
@@ -119,7 +145,10 @@ export class WotrFrontStoryComposer {
   armyDieCard(card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory {
     return this.actionDieCard("army", card, ...actions);
   }
-  musterArmyDieCard(card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrDieCardStory {
+  musterArmyDieCard(
+    card: WotrCardLabel,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrDieCardStory {
     return this.actionDieCard("muster-army", card, ...actions);
   }
   protected actionDieCard(
@@ -137,19 +166,28 @@ export class WotrFrontStoryComposer {
     return { type: "token-skip", ...this.story() };
   }
 
-  cardReaction(card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrCardReactionStory {
+  cardReaction(
+    card: WotrCardLabel,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrCardReactionStory {
     return { type: "reaction-card", card: labelToCardId(card), actions, ...this.story() };
   }
   skipCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCardReactionStory {
     return { type: "reaction-card-skip", card: labelToCardId(card), ...this.story() };
   }
-  combatCardReaction(card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrCombatCardReactionStory {
+  combatCardReaction(
+    card: WotrCardLabel,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrCombatCardReactionStory {
     return { type: "reaction-combat-card", card: labelToCardId(card), actions, ...this.story() };
   }
   skipCombatCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCombatCardReactionStory {
     return { type: "reaction-combat-card-skip", card: labelToCardId(card), ...this.story() };
   }
-  characterReaction(character: WotrCharacterId, ...actions: WotrAction[]): WotrStoryDoc & WotrCharacterReactionStory {
+  characterReaction(
+    character: WotrCharacterId,
+    ...actions: WotrAction[]
+  ): WotrStoryDoc & WotrCharacterReactionStory {
     return { type: "reaction-character", character, actions, ...this.story() };
   }
   skipCharacterReaction(

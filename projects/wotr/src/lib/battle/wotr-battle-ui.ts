@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
 import { eliminateCharacter } from "../character/wotr-character-actions";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   downgradeEliteUnit,
   eliminateEliteUnit,
@@ -13,8 +13,8 @@ import {
   eliminateNazgul,
   eliminateRegularUnit
 } from "../unit/wotr-unit-actions";
+import { WotrUnits } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrUnits } from "../unit/wotr-unit.models";
 import {
   advanceArmy,
   ceaseBattle,
@@ -27,8 +27,8 @@ import {
   WotrCombatReRoll,
   WotrCombatRoll
 } from "./wotr-battle-actions";
-import { WotrBattleStore } from "./wotr-battle.store";
-import { WotrCombatDie } from "./wotr-combat-die.models";
+import { WotrBattleStore } from "./wotr-battle-store";
+import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrBattleUi {

@@ -1,4 +1,4 @@
-import { WotrRegionId } from "./wotr-region.models";
+import { WotrRegionId } from "./wotr-region-models";
 
 export type WotrRegionAction = WotrRegionChoose;
 

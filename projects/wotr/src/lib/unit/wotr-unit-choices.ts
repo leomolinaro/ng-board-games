@@ -1,10 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
-import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrNationStore } from "../nation/wotr-nation-store";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   moveArmies,
   recruitEliteUnit,

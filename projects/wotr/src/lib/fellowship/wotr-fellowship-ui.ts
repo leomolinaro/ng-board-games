@@ -1,13 +1,13 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterRules } from "../character/wotr-character-rules";
-import { WotrCompanionId } from "../character/wotr-character.models";
-import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { changeGuide, separateCompanions } from "./wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
-import { WotrFellowshipStore } from "./wotr-fellowship.store";
+import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipUi {

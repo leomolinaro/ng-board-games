@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService } from "@leobg/commons";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { from } from "rxjs";
-import { WotrStoryDoc } from "../game/wotr-story.models";
+import { WotrStoryDoc } from "../game/wotr-story-models";
 import { WotrExamplesService } from "./wotr-examples.service";
 
 interface WotrExampleGame {
@@ -20,23 +20,23 @@ interface WotrExampleGame {
   selector: "wotr-example-button",
   imports: [MatFabButton, MatIcon, MatMenuModule],
   template: `
-    @if (isAdmin ()) {
-    <button
-      mat-fab
-      color="accent"
-      class="load-example"
-      [matMenuTriggerFor]="exampleMenu">
-      <mat-icon>bookmark</mat-icon>
-    </button>
-    <mat-menu #exampleMenu="matMenu">
-      @for (game of exampleGames; track game.name) {
+    @if (isAdmin()) {
       <button
-        mat-menu-item
-        (click)="onGameClick(game)">
-        <span>{{ game.name }}</span>
+        mat-fab
+        color="accent"
+        class="load-example"
+        [matMenuTriggerFor]="exampleMenu">
+        <mat-icon>bookmark</mat-icon>
       </button>
-      }
-    </mat-menu>
+      <mat-menu #exampleMenu="matMenu">
+        @for (game of exampleGames; track game.name) {
+          <button
+            mat-menu-item
+            (click)="onGameClick(game)">
+            <span>{{ game.name }}</span>
+          </button>
+        }
+      </mat-menu>
     }
   `,
   styles: [

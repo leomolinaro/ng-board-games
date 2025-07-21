@@ -1,15 +1,15 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { filterActions } from "../game/wotr-story.models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { filterActions } from "../game/wotr-story-models";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
-import { WotrNationStore } from "../nation/wotr-nation.store";
+import { WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
+import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrPlayer } from "../player/wotr-player";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   WotrArmyMovement,
   WotrEliteUnitDisband,
@@ -26,8 +26,8 @@ import {
   WotrRegularUnitRecruitment,
   WotrUnitAction
 } from "./wotr-unit-actions";
+import { WotrArmy } from "./wotr-unit-models";
 import { WotrUnitUtils } from "./wotr-unit-utils";
-import { WotrArmy } from "./wotr-unit.models";
 
 export interface WotrRecruitmentConstraints {
   points: number;

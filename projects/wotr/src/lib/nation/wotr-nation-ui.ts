@@ -1,8 +1,8 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrNation, WotrNationId } from "./wotr-nation.models";
-import { WotrNationStore } from "./wotr-nation.store";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrNation, WotrNationId } from "./wotr-nation-models";
+import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationUi {

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrNationId, frontOfNation } from "../nation/wotr-nation.models";
-import { WotrArmy, WotrUnits } from "./wotr-unit.models";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
+import { WotrArmy, WotrUnits } from "./wotr-unit-models";
 
 @Injectable({
   providedIn: "root"

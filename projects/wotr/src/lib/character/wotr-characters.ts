@@ -1,14 +1,14 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship.store";
-import { WotrFrontStore } from "../front/wotr-front.store";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrNationStore } from "../nation/wotr-nation-store";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { playCharacter } from "./wotr-character-actions";
-import { WotrCharacterStore } from "./wotr-character.store";
+import { WotrCharacterStore } from "./wotr-character-store";
 
 export interface WotrCharacterCard {
   name(): string;

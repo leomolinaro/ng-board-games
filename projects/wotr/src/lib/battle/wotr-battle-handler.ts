@@ -1,29 +1,29 @@
 import { inject, Injectable } from "@angular/core";
-import { getCard, isCharacterCard } from "../card/wotr-card.models";
+import { getCard, isCharacterCard } from "../card/wotr-card-models";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrFrontStore } from "../front/wotr-front.store";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   findAction,
   WotrBattleStory,
   WotrCombatCardReactionStory,
   WotrSkipCombatCardReactionStory
-} from "../game/wotr-story.models";
-import { WotrLogStore } from "../log/wotr-log.store";
+} from "../game/wotr-story-models";
+import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
+import { WotrArmy } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrArmy } from "../unit/wotr-unit.models";
 import {
   WotrArmyAdvance,
   WotrArmyAttack,
@@ -40,10 +40,10 @@ import {
   WotrCombatReRoll,
   WotrCombatRoll
 } from "./wotr-battle-actions";
-import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle.models";
-import { WotrBattleStore } from "./wotr-battle.store";
-import { WotrCombatCardsService } from "./wotr-combat-cards.service";
-import { WotrCombatDie } from "./wotr-combat-die.models";
+import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
+import { WotrBattleStore } from "./wotr-battle-store";
+import { WotrCombatCardsService } from "./wotr-combat-cards-service";
+import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrBattleHandler {

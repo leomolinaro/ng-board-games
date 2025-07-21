@@ -1,10 +1,10 @@
 import { inject, Injectable } from "@angular/core";
 import { attack } from "../battle/wotr-battle-actions";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi } from "../game/wotr-game-ui.store";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   armyMovement,
   eliminateRegularUnit,
@@ -12,9 +12,9 @@ import {
   WotrNazgulMovement
 } from "./wotr-unit-actions";
 import { WotrUnitHandler } from "./wotr-unit-handler";
+import { WotrArmy, WotrRegionUnits } from "./wotr-unit-models";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
-import { WotrArmy, WotrRegionUnits } from "./wotr-unit.models";
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitUi {

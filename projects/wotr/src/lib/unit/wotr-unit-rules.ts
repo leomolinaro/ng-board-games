@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrCharacterStore } from "../character/wotr-character.store";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrNation, WotrNationId } from "../nation/wotr-nation.models";
-import { WotrNationStore } from "../nation/wotr-nation.store";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
+import { WotrNationStore } from "../nation/wotr-nation-store";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrRecruitmentConstraints } from "./wotr-unit-handler";
 import {
   WotrArmy,
@@ -13,7 +13,7 @@ import {
   WotrRegionUnits,
   WotrReinforcementUnit,
   WotrUnits
-} from "./wotr-unit.models";
+} from "./wotr-unit-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitRules {

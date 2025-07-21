@@ -1,4 +1,4 @@
-import { WotrNationId } from "./wotr-nation.models";
+import { WotrNationId } from "./wotr-nation-models";
 
 export type WotrNationAction = WotrPoliticalAdvance | WotrPoliticalActivation;
 export interface WotrPoliticalAdvance {

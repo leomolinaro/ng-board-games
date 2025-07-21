@@ -1,10 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrRegion } from "../region/wotr-region.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character.models";
-import { WotrCharacterStore } from "./wotr-character.store";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrRegion } from "../region/wotr-region-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterStore } from "./wotr-character-store";
 import {
   WotrAragornCard,
   WotrCharacterCard,

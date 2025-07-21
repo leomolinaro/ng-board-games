@@ -1,8 +1,8 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die.models";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrPlayerChoice } from "../game/wotr-game-ui";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterUi } from "./wotr-character-ui";
 

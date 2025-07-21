@@ -1,10 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrAction } from "../commons/wotr-action-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrCardType } from "./wotr-card-models";
 import { WotrCardRules } from "./wotr-card-rules";
 import { WotrCardUi } from "./wotr-card-ui";
-import { WotrCardType } from "./wotr-card.models";
 
 @Injectable({ providedIn: "root" })
 export class WotrDrawEventCardChoice implements WotrPlayerChoice {

@@ -1,8 +1,8 @@
-import { WotrCardId } from "../card/wotr-card.models";
-import { WotrCharacterId } from "../character/wotr-character.models";
-import { WotrFrontId } from "../front/wotr-front.models";
-import { WotrGameStory } from "../game/wotr-story.models";
-import { WotrStoryService } from "../game/wotr-story.service";
+import { WotrCardId } from "../card/wotr-card-models";
+import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStoryService } from "../game/wotr-story-service";
 
 export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { WotrAction } from "../commons/wotr-action.models";
+import { WotrAction } from "../commons/wotr-action-models";
 import { corruptFellowship } from "../fellowship/wotr-fellowship-actions";
-import { WotrPlayerChoice } from "../game/wotr-game-ui.store";
+import { WotrPlayerChoice } from "../game/wotr-game-ui";
 
 export interface WotrHuntEffectChoiceParams {
   damage: number;

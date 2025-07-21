@@ -1,8 +1,8 @@
-import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card.models";
-import { frontOfNation } from "../nation/wotr-nation.models";
-import { WotrRegionId } from "../region/wotr-region.models";
-import { WotrArmy, WotrLeaderUnits, WotrUnitComposer, WotrUnits } from "../unit/wotr-unit.models";
-import { WotrCombatDie } from "./wotr-combat-die.models";
+import { WotrCardId, WotrCardLabel, labelToCardId } from "../card/wotr-card-models";
+import { frontOfNation } from "../nation/wotr-nation-models";
+import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrArmy, WotrLeaderUnits, WotrUnitComposer, WotrUnits } from "../unit/wotr-unit-models";
+import { WotrCombatDie } from "./wotr-combat-die-models";
 
 export type WotrBattleAction =
   | WotrArmyAttack

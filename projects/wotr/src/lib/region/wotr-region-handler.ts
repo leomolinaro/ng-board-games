@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action.models";
-import { WotrActionService } from "../commons/wotr-action.service";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
+import { WotrActionService } from "../commons/wotr-action-service";
 import { WotrRegionAction } from "./wotr-region-actions";
-import { WotrRegionStore } from "./wotr-region.store";
+import { WotrRegionStore } from "./wotr-region-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrRegionHandler {

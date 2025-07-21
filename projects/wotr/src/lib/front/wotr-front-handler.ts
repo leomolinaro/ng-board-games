@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
-import { frontOfNation } from "../nation/wotr-nation.models";
-import { WotrRegionStore } from "../region/wotr-region.store";
-import { WotrFrontId } from "./wotr-front.models";
-import { WotrFrontStore } from "./wotr-front.store";
+import { frontOfNation } from "../nation/wotr-nation-models";
+import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrFrontId } from "./wotr-front-models";
+import { WotrFrontStore } from "./wotr-front-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFrontHandler {
