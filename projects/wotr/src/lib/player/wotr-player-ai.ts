@@ -3,10 +3,10 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrGameStory } from "../game/wotr-story-models";
-import { WotrPlayerService } from "./wotr-player-service";
+import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
 @Injectable({ providedIn: "root" })
-export class WotrPlayerAiService implements WotrPlayerService {
+export class WotrPlayerAi implements WotrPlayerStoryService {
   private game = inject(WotrGameStore);
 
   firstPhase(): Promise<never> {

@@ -4,7 +4,6 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrGameStory } from "../game/wotr-story-models";
-import { WotrPlayer } from "../player/wotr-player";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId } from "./wotr-card-models";
 
@@ -13,10 +12,10 @@ export class WotrCardUi {
   private ui = inject(WotrGameUi);
   private frontStore = inject(WotrFrontStore);
 
-  async firstPhaseDrawCards(player: WotrPlayer): Promise<WotrGameStory> {
+  async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrGameStory> {
     await this.ui.askContinue("Draw cards");
-    const characterDeck = this.frontStore.characterDeck(player.frontId);
-    const strategyDeck = this.frontStore.strategyDeck(player.frontId);
+    const characterDeck = this.frontStore.characterDeck(frontId);
+    const strategyDeck = this.frontStore.strategyDeck(frontId);
     const drawnCards: WotrCardId[] = [];
     const actions: WotrAction[] = [];
     if (characterDeck.length) {
@@ -25,9 +24,9 @@ export class WotrCardUi {
     if (strategyDeck.length) {
       drawnCards.push(strategyDeck[0]);
     }
-    this.frontStore.drawCards(drawnCards, player.frontId);
+    this.frontStore.drawCards(drawnCards, frontId);
     actions.push(drawCardIds(...drawnCards));
-    const discardAction = await this.checkMaximumCards(player.frontId);
+    const discardAction = await this.checkMaximumCards(frontId);
     if (discardAction) actions.push(discardAction);
     return { type: "phase", actions };
   }

@@ -21,7 +21,6 @@ import { WotrGameStory } from "../game/wotr-story-models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrDiplomaticActionChoice } from "../nation/wotr-nation-choices";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
-import { WotrPlayer } from "../player/wotr-player";
 import {
   WotrAttackArmyChoice,
   WotrLeaderArmyAttackChoice,
@@ -65,8 +64,8 @@ export class WotrActionDieUi {
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
   private cardRules = inject(WotrCardRules);
 
-  async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
-    const canSkipTokens = this.actionDieRules.canSkipTokens(player.frontId);
+  async actionResolution(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const canSkipTokens = this.actionDieRules.canSkipTokens(frontId);
     if (canSkipTokens) {
       const skipTokens = await this.ui.askConfirm(
         "Do you want to skip action tokens?",
@@ -77,7 +76,7 @@ export class WotrActionDieUi {
         return { type: "token-skip" };
       }
     } else {
-      const canPass = this.actionDieRules.canPassAction(player.frontId);
+      const canPass = this.actionDieRules.canPassAction(frontId);
       if (canPass) {
         const pass = await this.ui.askConfirm("Do you want to pass?", "Pass", "Play action die");
         if (pass) {
@@ -85,16 +84,16 @@ export class WotrActionDieUi {
         }
       }
     }
-    const playableTokens = this.actionDieRules.playableTokens(player.frontId);
+    const playableTokens = this.actionDieRules.playableTokens(frontId);
     const actionChoice = await this.ui.askActionDie(
       "Choose an action die to resolve",
-      player.frontId,
+      frontId,
       playableTokens
     );
     if (actionChoice.type === "die") {
-      return this.resolveActionDie(actionChoice.die, player.frontId);
+      return this.resolveActionDie(actionChoice.die, frontId);
     } else {
-      return this.resolveActionToken(actionChoice.token, player.frontId);
+      return this.resolveActionToken(actionChoice.token, frontId);
     }
   }
 

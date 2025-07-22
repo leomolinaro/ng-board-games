@@ -14,7 +14,7 @@ import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fell
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
-import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrBattleStory, WotrGameStory } from "../game/wotr-story-models";
 import { allocateHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import {
   WotrFellowshipCorruptionChoice,
@@ -22,23 +22,22 @@ import {
 } from "../hunt/wotr-hunt-effect-choices";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
-import { WotrPlayer } from "./wotr-player";
-import { WotrPlayerService } from "./wotr-player-service";
+import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
 @Injectable({ providedIn: "root" })
-export class WotrPlayerLocalService implements WotrPlayerService {
+export class WotrPlayerUi implements WotrPlayerStoryService {
   private ui = inject(WotrGameUi);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
   private huntUi = inject(WotrHuntUi);
   private actionDieRules = inject(WotrActionDieRules);
-  private playerActionDieService = inject(WotrActionDieUi);
+  private actionDieUi = inject(WotrActionDieUi);
   private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
-  private cardPlayerService = inject(WotrCardUi);
-  private battlePlayerService = inject(WotrBattleUi);
+  private cardUi = inject(WotrCardUi);
+  private battleUi = inject(WotrBattleUi);
 
-  async firstPhase(player: WotrPlayer): Promise<WotrGameStory> {
-    return this.cardPlayerService.firstPhaseDrawCards(player);
+  async firstPhase(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return this.cardUi.firstPhaseDrawCards(frontId);
   }
 
   async fellowshipPhase(): Promise<WotrGameStory> {
@@ -69,18 +68,18 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     return { type: "phase", actions: [allocateHuntDice(quantity)] };
   }
 
-  async rollActionDice(player: WotrPlayer): Promise<WotrGameStory> {
-    const nActionDice = this.actionDieRules.rollableActionDice(player.frontId);
+  async rollActionDice(frontId: WotrFrontId): Promise<WotrGameStory> {
+    const nActionDice = this.actionDieRules.rollableActionDice(frontId);
     await this.ui.askContinue(`Roll ${nActionDice} action dice`);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
-      actionDice.push(this.actionDieRules.rollActionDie(player.frontId));
+      actionDice.push(this.actionDieRules.rollActionDie(frontId));
     }
     return { type: "phase", actions: [rollActionDice(...actionDice)] };
   }
 
-  async actionResolution(player: WotrPlayer): Promise<WotrGameStory> {
-    return this.playerActionDieService.actionResolution(player);
+  async actionResolution(frontId: WotrFrontId): Promise<WotrGameStory> {
+    return this.actionDieUi.actionResolution(frontId);
   }
 
   async separateCompanions(): Promise<WotrGameStory> {
@@ -134,68 +133,68 @@ export class WotrPlayerLocalService implements WotrPlayerService {
     throw new Error("Method not implemented.");
   }
 
-  async forfeitLeadership(): Promise<WotrGameStory> {
+  async forfeitLeadership(): Promise<WotrBattleStory> {
     throw new Error("Method not implemented.");
   }
 
-  async wantRetreatIntoSiege(): Promise<WotrGameStory> {
+  async wantRetreatIntoSiege(): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: [await this.battlePlayerService.wantRetreatIntoSiege()]
+      actions: [await this.battleUi.wantRetreatIntoSiege()]
     };
   }
 
-  async wantRetreat(): Promise<WotrGameStory> {
+  async wantRetreat(): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: [await this.battlePlayerService.wantRetreat()]
+      actions: [await this.battleUi.wantRetreat()]
     };
   }
 
-  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrBattleStory> {
     console.warn("WotrPlayerLocalService.chooseCombatCard is not implemented.");
     return { type: "battle", actions: [noCombatCard()] };
   }
 
-  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory> {
+  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: [await this.battlePlayerService.rollCombatDice(nDice, frontId)]
+      actions: [await this.battleUi.rollCombatDice(nDice, frontId)]
     };
   }
 
-  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrGameStory> {
+  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: [await this.battlePlayerService.reRollCombatDice(nDice, frontId)]
+      actions: [await this.battleUi.reRollCombatDice(nDice, frontId)]
     };
   }
 
-  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrGameStory> {
+  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.chooseCasualties(hitPoints, frontId)
+      actions: await this.battleUi.chooseCasualties(hitPoints, frontId)
     };
   }
 
-  async eliminateArmy(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async eliminateArmy(frontId: WotrFrontId): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.eliminateArmy(frontId)
+      actions: await this.battleUi.eliminateArmy(frontId)
     };
   }
 
-  async battleAdvance(): Promise<WotrGameStory> {
+  async battleAdvance(): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: await this.battlePlayerService.battleAdvance()
+      actions: await this.battleUi.battleAdvance()
     };
   }
 
-  async wantContinueBattle(): Promise<WotrGameStory> {
+  async wantContinueBattle(): Promise<WotrBattleStory> {
     return {
       type: "battle",
-      actions: [await this.battlePlayerService.wantContinueBattle()]
+      actions: [await this.battleUi.wantContinueBattle()]
     };
   }
 }

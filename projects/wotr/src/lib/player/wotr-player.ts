@@ -9,7 +9,7 @@ export abstract class WotrPlayer {
   public abstract frontId: WotrFrontId;
 
   firstPhase(): Promise<WotrGameStory> {
-    return this.storyService.story(this.frontId, p => p.firstPhase(this));
+    return this.storyService.story(this.frontId, p => p.firstPhase(this.frontId));
   }
   fellowshipPhase(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.fellowshipPhase());
@@ -18,7 +18,7 @@ export abstract class WotrPlayer {
     return this.storyService.story(this.frontId, p => p.huntAllocationPhase());
   }
   rollActionDice(): Promise<WotrGameStory> {
-    return this.storyService.story(this.frontId, p => p.rollActionDice(this));
+    return this.storyService.story(this.frontId, p => p.rollActionDice(this.frontId));
   }
   rollHuntDice(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.rollHuntDice());
@@ -38,9 +38,8 @@ export abstract class WotrPlayer {
   separateCompanions(): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.separateCompanions());
   }
-
   actionResolution(): Promise<WotrGameStory> {
-    return this.storyService.story(this.frontId, p => p.actionResolution(this));
+    return this.storyService.story(this.frontId, p => p.actionResolution(this.frontId));
   }
   activateTableCard(cardId: WotrCardId): Promise<WotrGameStory> {
     return this.storyService.story(this.frontId, p => p.activateTableCard(cardId));

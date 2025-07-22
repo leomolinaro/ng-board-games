@@ -4,11 +4,11 @@ import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrActionService } from "../commons/wotr-action-service";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrPlayerAiService } from "../player/wotr-player-ai.service";
+import { WotrPlayerAi } from "../player/wotr-player-ai";
 import { WotrPlayerInfo } from "../player/wotr-player-info-models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
-import { WotrPlayerLocalService } from "../player/wotr-player-local-service";
-import { WotrPlayerService } from "../player/wotr-player-service";
+import { WotrPlayerStoryService } from "../player/wotr-player-story-service";
+import { WotrPlayerUi } from "../player/wotr-player-ui";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrGameStore } from "./wotr-game-store";
 import { WotrGameUi } from "./wotr-game-ui";
@@ -16,7 +16,7 @@ import { WotrGameStory, WotrStoryDoc } from "./wotr-story-models";
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;
-  task: (playerService: WotrPlayerService) => Promise<WotrGameStory>;
+  task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>;
 }
 
 @Injectable({ providedIn: "root" })
@@ -24,7 +24,7 @@ export class WotrStoryService extends ABgGameService<
   WotrFrontId,
   WotrPlayerInfo,
   WotrGameStory,
-  WotrPlayerService
+  WotrPlayerStoryService
 > {
   private store = inject(WotrGameStore);
   private ui = inject(WotrGameUi);
@@ -32,11 +32,11 @@ export class WotrStoryService extends ABgGameService<
   private frontStore = inject(WotrFrontStore);
   private playerStore = inject(WotrPlayerInfoStore);
   protected override auth = inject(BgAuthService);
-  protected override aiPlayer = inject(forwardRef(() => WotrPlayerAiService));
-  protected override localPlayer!: WotrPlayerLocalService;
+  protected override aiPlayer = inject(forwardRef(() => WotrPlayerAi));
+  protected override localPlayer!: WotrPlayerUi;
   private actionService = inject(WotrActionService);
 
-  init(localPlayer: WotrPlayerLocalService) {
+  init(localPlayer: WotrPlayerUi) {
     this.localPlayer = localPlayer;
   }
 
@@ -85,7 +85,7 @@ export class WotrStoryService extends ABgGameService<
 
   private async executeTask2(
     playerId: WotrFrontId,
-    task: (playerService: WotrPlayerService) => Promise<WotrGameStory>
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
   ): Promise<WotrGameStory> {
     await this.replayCall();
     return super.executeTask(playerId, p => task(p));
@@ -126,7 +126,9 @@ export class WotrStoryService extends ABgGameService<
   }
 
   async parallelStories(
-    getTask: (front: WotrFrontId) => (playerService: WotrPlayerService) => Promise<WotrGameStory>
+    getTask: (
+      front: WotrFrontId
+    ) => (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
   ) {
     const stories = await this.executeTasks2(
       this.frontStore.frontIds().map(front => ({ playerId: front, task: getTask(front) }))
@@ -143,7 +145,7 @@ export class WotrStoryService extends ABgGameService<
 
   async story(
     front: WotrFrontId,
-    task: (playerService: WotrPlayerService) => Promise<WotrGameStory>
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
   ) {
     const story = await this.executeTask2(front, task);
     await this.applyStory(story, front);

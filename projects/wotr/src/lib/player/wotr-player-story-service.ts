@@ -2,13 +2,12 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameStory } from "../game/wotr-story-models";
-import { WotrPlayer } from "./wotr-player";
 
-export interface WotrPlayerService {
-  firstPhase(player: WotrPlayer): Promise<WotrGameStory>;
+export interface WotrPlayerStoryService {
+  firstPhase(frontId: WotrFrontId): Promise<WotrGameStory>;
   fellowshipPhase(): Promise<WotrGameStory>;
   huntAllocationPhase(): Promise<WotrGameStory>;
-  rollActionDice(player: WotrPlayer): Promise<WotrGameStory>;
+  rollActionDice(frontId: WotrFrontId): Promise<WotrGameStory>;
   rollHuntDice(): Promise<WotrGameStory>;
   reRollHuntDice(): Promise<WotrGameStory>;
   drawHuntTile(): Promise<WotrGameStory>;
@@ -17,7 +16,7 @@ export interface WotrPlayerService {
   separateCompanions(): Promise<WotrGameStory>;
 
   // changeGuide (): Promise<WotrGameStory>;
-  actionResolution(player: WotrPlayer): Promise<WotrGameStory>;
+  actionResolution(frontId: WotrFrontId): Promise<WotrGameStory>;
   activateTableCard(cardId: WotrCardId): Promise<WotrGameStory>;
   activateCombatCard(cardId: WotrCardId): Promise<WotrGameStory>;
   activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrGameStory>;

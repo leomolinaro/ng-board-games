@@ -13,7 +13,7 @@ import { WotrGameTurn } from "../game-turn/wotr-game-flow";
 import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info-models";
-import { WotrPlayerLocalService } from "../player/wotr-player-local-service";
+import { WotrPlayerUi } from "../player/wotr-player-ui";
 import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrPlayerDoc } from "../remote/wotr-remote-models";
@@ -43,7 +43,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private story = inject(WotrStoryService);
   private flow = inject(WotrGameTurn);
   private cardEffects = inject(WotrCardEffectsService);
-  private localPlayerService = inject(WotrPlayerLocalService);
+  private localPlayerService = inject(WotrPlayerUi);
   private actionService = inject(WotrActionService);
 
   constructor() {
