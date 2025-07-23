@@ -37,4 +37,8 @@ export class WotrHuntUi {
     const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
     return drawHuntTile(huntTile);
   }
+
+  async reRollHuntDice(): Promise<WotrAction> {
+    throw new Error("Method not implemented.");
+  }
 }

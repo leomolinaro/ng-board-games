@@ -1,12 +1,13 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionService } from "../commons/wotr-action-service";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCompanionSeparation, WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
@@ -29,20 +30,11 @@ export class WotrFellowshipHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
-      "fellowship-declare": async (story, front) => {
-        this.regionStore.moveFellowshipToRegion(story.region);
-        this.fellowshipStore.setProgress(0);
-        this.nationHandler.checkNationActivationByFellowshipDeclaration(story.region);
-      },
-      "fellowship-declare-not": async (story, front) => {
-        /*empty*/
-      },
+      "fellowship-declare": async (story, front) => this.declareFellowship(story.region),
       "fellowship-corruption": async (action, front) => {
         this.fellowshipStore.changeCorruption(action.quantity);
       },
-      "fellowship-guide": async (action, front) => {
-        this.fellowshipStore.setGuide(action.companion);
-      },
+      "fellowship-guide": async (action, front) => this.changeGuide(action.companion),
       "fellowship-hide": async (action, front) => {
         this.fellowshipStore.hide();
       },
@@ -67,6 +59,16 @@ export class WotrFellowshipHandler {
     };
   }
 
+  declareFellowship(regionId: WotrRegionId): void {
+    this.regionStore.moveFellowshipToRegion(regionId);
+    this.fellowshipStore.setProgress(0);
+    this.nationHandler.checkNationActivationByFellowshipDeclaration(regionId);
+  }
+
+  changeGuide(companionId: WotrCompanionId): void {
+    this.fellowshipStore.setGuide(companionId);
+  }
+
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {
     return {
       "fellowship-corruption": (action, front, f) => [
@@ -81,18 +83,14 @@ export class WotrFellowshipHandler {
       ],
       "fellowship-declare": (action, front, f) => [
         f.player(front),
-        " declares the fellowship in ",
+        " declares the Fellowship in ",
         f.region(action.region)
       ],
-      "fellowship-declare-not": (action, front, f) => [
-        f.player(front),
-        " does not declare the fellowship"
-      ],
-      "fellowship-hide": (action, front, f) => [f.player(front), " hides the fellowship"],
-      "fellowship-progress": (action, front, f) => [f.player(front), " moves the fellowhip"],
+      "fellowship-hide": (action, front, f) => [f.player(front), " hides the Fellowship"],
+      "fellowship-progress": (action, front, f) => [f.player(front), " moves the Fellowship"],
       "fellowship-reveal": (action, front, f) => [
         f.player(front),
-        " reveals the fellowship in ",
+        " reveals the Fellowship in ",
         f.region(action.region)
       ],
       "companion-random": (action, front, f) => [
@@ -105,7 +103,7 @@ export class WotrFellowshipHandler {
         f.player(front),
         " separates ",
         this.characters(action.companions),
-        " from the fellowship"
+        " from the Fellowship"
       ]
     };
   }

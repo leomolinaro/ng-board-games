@@ -19,7 +19,6 @@ import {
   declareFellowship,
   hideFellowship,
   moveFelloswhip,
-  notDeclareFellowship,
   revealFellowship,
   separateCompanions
 } from "../fellowship/wotr-fellowship-actions";
@@ -42,7 +41,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 1
   b.fpT().phaseStory(drawCards("Swords in Eriador", "Challenge of the King")),
   b.s().phaseStory(drawCards("Return to Valinor", "Balrog of Moria")),
-  b.fp().phaseStory(notDeclareFellowship()),
+  b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("character", "muster-army", "character", "character"),
   b.s().rollActionDice("muster-army", "muster-army", "muster", "character", "army", "eye"),
@@ -83,6 +82,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 2 4:00
   b.sT().phaseStory(drawCards("Give it to Uss!", "Threats and Promises")),
   b.fp().phaseStory(drawCards("Axe and Bow", "Grimbeorn the Old, Son of Beorn")),
+  b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("event", "muster", "character", "will-of-the-west"),
   b.s().rollActionDice("army", "event", "eye", "army", "muster", "army", "event"),
@@ -125,7 +125,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 3 6:57
   b.sT().phaseStory(drawCards("Lure of the Ring", "Stormcrow")),
   b.fp().phaseStory(drawCards("The Ents Awake: Treebeard", "Kindred of Glorfindel")),
-  b.fp().phaseStory(declareFellowship("old-ford")),
+  b.fp().fellowshipPhase(declareFellowship("old-ford")),
   b.s().huntAllocation(1),
   b.sT().rollActionDice("event", "character", "event", "event", "eye", "army", "character"),
   b

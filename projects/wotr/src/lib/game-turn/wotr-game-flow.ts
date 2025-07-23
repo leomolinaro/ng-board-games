@@ -107,9 +107,7 @@ export class WotrGameTurn {
 
   private async fellowshipPhase() {
     this.logStore.logPhase(2);
-    if (!this.fellowshipStore.isRevealed()) {
-      await this.freePeoples.fellowshipPhase();
-    }
+    await this.freePeoples.fellowshipPhase();
     this.checkMoveToMordorTrack();
     return true;
   }

@@ -4,17 +4,17 @@ import { rollActionDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieRules } from "../action-die/wotr-action-die-rules";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
-import { noCombatCard } from "../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardUi } from "../card/wotr-card-ui";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { declareFellowship, notDeclareFellowship } from "../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
+import { WotrFellowshipRules } from "../fellowship/wotr-fellowship-rules";
+import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
-import { WotrBattleStory, WotrGameStory } from "../game/wotr-story-models";
+import { WotrBattleStory, WotrGameStory, WotrReactionStory } from "../game/wotr-story-models";
 import { allocateHuntDice, rollHuntDice } from "../hunt/wotr-hunt-actions";
 import {
   WotrFellowshipCorruptionChoice,
@@ -27,7 +27,8 @@ import { WotrPlayerStoryService } from "./wotr-player-story-service";
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
   private ui = inject(WotrGameUi);
-  private fellowshipStore = inject(WotrFellowshipStore);
+  private fellowshipHandler = inject(WotrFellowshipHandler);
+  private fellowshipUi = inject(WotrFellowshipUi);
   private huntStore = inject(WotrHuntStore);
   private huntUi = inject(WotrHuntUi);
   private actionDieRules = inject(WotrActionDieRules);
@@ -36,25 +37,17 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private cardUi = inject(WotrCardUi);
   private battleUi = inject(WotrBattleUi);
 
+  private fellowshipRules = inject(WotrFellowshipRules);
+
   async firstPhase(frontId: WotrFrontId): Promise<WotrGameStory> {
     return this.cardUi.firstPhaseDrawCards(frontId);
   }
 
   async fellowshipPhase(): Promise<WotrGameStory> {
-    const declare = await this.ui.askConfirm(
-      "Do you want to declare the fellowship?",
-      "Declare",
-      "Not declare"
-    );
-    if (!declare) {
-      return { type: "phase", actions: [notDeclareFellowship()] };
-    }
-    const validRegions = this.fellowshipStore.validRegionsForDeclaration();
-    const region = await this.ui.askRegion(
-      "Choose a region to declare the fellowship",
-      validRegions
-    );
-    return { type: "phase", actions: [declareFellowship(region)] };
+    return {
+      type: "phase",
+      actions: await this.fellowshipUi.fellowshipPhase()
+    };
   }
 
   async huntAllocationPhase(): Promise<WotrGameStory> {
@@ -96,7 +89,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async reRollHuntDice(): Promise<WotrGameStory> {
-    throw new Error("Method not implemented.");
+    return { type: "hunt", actions: [await this.huntUi.reRollHuntDice()] };
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
@@ -133,7 +126,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
 
-  async forfeitLeadership(): Promise<WotrBattleStory> {
+  async forfeitLeadership(): Promise<WotrReactionStory> {
     throw new Error("Method not implemented.");
   }
 
@@ -152,8 +145,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async chooseCombatCard(frontId: WotrFrontId): Promise<WotrBattleStory> {
-    console.warn("WotrPlayerLocalService.chooseCombatCard is not implemented.");
-    return { type: "battle", actions: [noCombatCard()] };
+    return { type: "battle", actions: await this.battleUi.chooseCombatCard(frontId) };
   }
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBattleStory> {

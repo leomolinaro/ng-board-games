@@ -43,6 +43,9 @@ export class WotrFrontStoryComposer {
   phaseStory(...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory {
     return { type: "phase", actions, ...this.story() };
   }
+  fellowshipPhase(...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory {
+    return { type: "phase", actions, ...this.story() };
+  }
   rollActionDice(...dice: WotrActionDie[]): WotrStoryDoc & WotrPhaseStory {
     return this.phaseStory(rollActionDice(...dice));
   }

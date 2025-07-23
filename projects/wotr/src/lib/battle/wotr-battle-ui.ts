@@ -19,6 +19,7 @@ import {
   advanceArmy,
   ceaseBattle,
   continueBattle,
+  noCombatCard,
   notAdvanceArmy,
   notRetreat,
   notRetreatIntoSiege,
@@ -172,5 +173,10 @@ export class WotrBattleUi {
       "Not retreat"
     );
     return confirm ? retreat(region.id) : notRetreat(region.id);
+  }
+
+  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrAction[]> {
+    console.warn("chooseCombatCard is not implemented.");
+    return [noCombatCard()];
   }
 }

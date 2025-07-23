@@ -17,6 +17,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)]
-  // providers: [{ provide: WotrRemoteService, useClass: WotrRemoteMockService }]
+  // providers: [{ provide: WotrRemoteService, useClass: WotrRemoteMock }]
 })
 export class WotrModule {}

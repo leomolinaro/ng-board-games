@@ -74,7 +74,7 @@ export const initialState: WotrGameUiState = {
   fellowshipCompanionsSelection: null
 };
 
-interface WotrPlayerOption<O = unknown> {
+export interface WotrPlayerOption<O = unknown> {
   value: O;
   label: string;
   disabled?: boolean;

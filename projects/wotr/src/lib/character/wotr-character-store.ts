@@ -138,4 +138,8 @@ export class WotrCharacterStore {
       status: "inFellowship"
     }));
   }
+
+  maxLevel(companions: WotrCharacterId[]): number {
+    return companions.reduce((max, c) => Math.max(max, this.character(c).level), 0);
+  }
 }

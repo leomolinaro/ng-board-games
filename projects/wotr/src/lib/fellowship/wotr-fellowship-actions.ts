@@ -8,12 +8,6 @@ export interface WotrFellowshipDeclare {
 export function declareFellowship(region: WotrRegionId): WotrFellowshipDeclare {
   return { type: "fellowship-declare", region };
 }
-export interface WotrFellowshipDeclareNot {
-  type: "fellowship-declare-not";
-}
-export function notDeclareFellowship(): WotrFellowshipDeclareNot {
-  return { type: "fellowship-declare-not" };
-}
 export interface WotrFellowshipProgress {
   type: "fellowship-progress";
 }
@@ -73,7 +67,6 @@ export type WotrFellowshipAction =
   | WotrFellowshipProgress
   | WotrFellowshipCorruption
   | WotrFellowshipDeclare
-  | WotrFellowshipDeclareNot
   | WotrFellowshipHide
   | WotrFellowshipReveal
   | WotrFellowshipGuide
