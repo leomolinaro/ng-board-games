@@ -9,7 +9,7 @@ import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCompanionSeparation, WotrFellowshipAction } from "./wotr-fellowship-actions";
+import { WotrFellowshipAction } from "./wotr-fellowship-actions";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
@@ -30,36 +30,40 @@ export class WotrFellowshipHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
-      "fellowship-declare": async (story, front) => this.declareFellowship(story.region),
-      "fellowship-corruption": async (action, front) => {
-        this.fellowshipStore.changeCorruption(action.quantity);
-      },
+      "fellowship-declare": async (story, front) => this.declare(story.region),
+      "fellowship-corruption": async (action, front) =>
+        this.fellowshipStore.corrupt(action.quantity),
       "fellowship-guide": async (action, front) => this.changeGuide(action.companion),
-      "fellowship-hide": async (action, front) => {
-        this.fellowshipStore.hide();
-      },
-      "fellowship-progress": async (action, front) => {
-        if (this.fellowshipStore.isOnMordorTrack()) {
-          await this.huntFlow.resolveHunt();
-          this.huntStore.addFellowshipDie();
-        } else {
-          this.fellowshipStore.increaseProgress();
-          await this.huntFlow.resolveHunt();
-          this.huntStore.addFellowshipDie();
-        }
-      },
-      "fellowship-reveal": async (action, front) => {
-        this.regionStore.moveFellowshipToRegion(action.region);
-        this.fellowshipStore.reveal();
-      },
-      "companion-random": async (action, front) => {
-        /*empty*/
-      },
-      "companion-separation": async (action, front) => this.separateCompanion(action)
+      "fellowship-hide": async (action, front) => this.hide(),
+      "fellowship-progress": async (action, front) => this.progress(),
+      "fellowship-reveal": async (action, front) => this.reveal(action.region),
+      "companion-random": async (action, front) => {} /*empty*/,
+      "companion-separation": async (action, front) =>
+        this.separateCompanions(action.companions, action.toRegion)
     };
   }
 
-  declareFellowship(regionId: WotrRegionId): void {
+  hide(): void {
+    this.fellowshipStore.hide();
+  }
+
+  async progress(): Promise<void> {
+    if (this.fellowshipStore.isOnMordorTrack()) {
+      await this.huntFlow.resolveHunt();
+      this.huntStore.addFellowshipDie();
+    } else {
+      this.fellowshipStore.increaseProgress();
+      await this.huntFlow.resolveHunt();
+      this.huntStore.addFellowshipDie();
+    }
+  }
+
+  reveal(regionId: WotrRegionId): void {
+    this.regionStore.moveFellowshipToRegion(regionId);
+    this.fellowshipStore.reveal();
+  }
+
+  declare(regionId: WotrRegionId): void {
     this.regionStore.moveFellowshipToRegion(regionId);
     this.fellowshipStore.setProgress(0);
     this.nationHandler.checkNationActivationByFellowshipDeclaration(regionId);
@@ -67,6 +71,25 @@ export class WotrFellowshipHandler {
 
   changeGuide(companionId: WotrCompanionId): void {
     this.fellowshipStore.setGuide(companionId);
+  }
+
+  private characters(characters: WotrCharacterId[]) {
+    return characters.map(c => this.characterStore.character(c).name).join(", ");
+  }
+
+  private nCorruptionPoints(quantity: number) {
+    return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
+  }
+
+  separateCompanions(companions: WotrCompanionId[], toRegionId: WotrRegionId): void {
+    const toRegion = this.regionStore.region(toRegionId);
+    for (const companionId of companions) {
+      this.fellowshipStore.removeCompanion(companionId);
+      this.characterStore.setInPlay(companionId);
+      const character = this.characterStore.character(companionId);
+      this.characterHandler.addCharacterToRegion(character, toRegion);
+    }
+    this.nationHandler.checkNationActivationByCharacters(toRegionId, companions);
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {
@@ -106,24 +129,5 @@ export class WotrFellowshipHandler {
         " from the Fellowship"
       ]
     };
-  }
-
-  private characters(characters: WotrCharacterId[]) {
-    return characters.map(c => this.characterStore.character(c).name).join(", ");
-  }
-
-  private nCorruptionPoints(quantity: number) {
-    return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
-  }
-
-  separateCompanion(action: WotrCompanionSeparation) {
-    const toRegion = this.regionStore.region(action.toRegion);
-    for (const companionId of action.companions) {
-      this.fellowshipStore.removeCompanion(companionId);
-      this.characterStore.setInPlay(companionId);
-      const character = this.characterStore.character(companionId);
-      this.characterHandler.addCharacterToRegion(character, toRegion);
-    }
-    this.nationHandler.checkNationActivationByCharacters(action.toRegion, action.companions);
   }
 }

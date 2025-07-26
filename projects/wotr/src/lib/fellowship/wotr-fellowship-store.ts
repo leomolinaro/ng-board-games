@@ -49,7 +49,7 @@ export class WotrFellowshipStore {
   increaseProgress() {
     this.update("increaseProgress", state => ({ ...state, progress: state.progress + 1 }));
   }
-  changeCorruption(delta: number) {
+  corrupt(delta: number) {
     this.update("changeCorruption", state => ({ ...state, corruption: state.corruption + delta }));
   }
   hide() {

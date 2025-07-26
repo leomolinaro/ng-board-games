@@ -46,12 +46,12 @@ export function changeGuide(companion: WotrCompanionId): WotrFellowshipGuide {
 }
 export interface WotrCompanionSeparation {
   type: "companion-separation";
-  companions: WotrCharacterId[];
+  companions: WotrCompanionId[];
   toRegion: WotrRegionId;
 }
 export function separateCompanions(
   toRegion: WotrRegionId,
-  ...companions: WotrCharacterId[]
+  ...companions: WotrCompanionId[]
 ): WotrCompanionSeparation {
   return { type: "companion-separation", companions, toRegion };
 }

@@ -54,7 +54,7 @@ export class WotrFellowshipUi {
             "Choose a region to declare the fellowship",
             validRegions
           );
-          this.fellowshipHandler.declareFellowship(region);
+          this.fellowshipHandler.declare(region);
           actions.push(declareFellowship(region));
           break;
         }
@@ -82,24 +82,14 @@ export class WotrFellowshipUi {
       companions: fellowshipCompanions,
       singleSelection: false
     });
-    const groupLevel = this.characterRules.characterGroupLevel(companions);
-    const fellowshipProgress = this.fellowshipStore.progress();
-    const totalMovement = fellowshipProgress + groupLevel;
-    const fellowshipRegion = this.regionStore.fellowshipRegion();
-    const targetRegions = this.regionStore.reachableRegions(
-      fellowshipRegion,
-      totalMovement,
-      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance),
-      (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
-    );
+    const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(companions);
     const targetRegion = await this.ui.askRegion(
       "Select a region to move the separated companions",
       targetRegions
     );
     const actions: WotrAction[] = [];
-    const action = separateCompanions(targetRegion, ...companions);
-    actions.push(action);
-    this.fellowshipHandler.separateCompanion(action);
+    actions.push(separateCompanions(targetRegion, ...companions));
+    this.fellowshipHandler.separateCompanions(companions, targetRegion);
 
     if (companions.some(c => this.fellowshipStore.guide() === c)) {
       const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
