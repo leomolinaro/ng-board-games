@@ -29,6 +29,7 @@ import {
   WotrRecruitReinforcementsChoice
 } from "../unit/wotr-unit-choices";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
+import { rollActionDice } from "./wotr-action-die-actions";
 import {
   WotrChangeArmyDieChoice,
   WotrChangeCharacterDieChoice,
@@ -63,6 +64,16 @@ export class WotrActionDieUi {
   private diplomaticActionChoice = inject(WotrDiplomaticActionChoice);
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
   private cardRules = inject(WotrCardRules);
+
+  async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
+    const nActionDice = this.actionDieRules.rollableActionDice(frontId);
+    await this.ui.askContinue(`Roll ${nActionDice} action dice`);
+    const actionDice: WotrActionDie[] = [];
+    for (let i = 0; i < nActionDice; i++) {
+      actionDice.push(this.actionDieRules.rollActionDie(frontId));
+    }
+    return rollActionDice(...actionDice);
+  }
 
   async actionResolution(frontId: WotrFrontId): Promise<WotrGameStory> {
     const canSkipTokens = this.actionDieRules.canSkipTokens(frontId);

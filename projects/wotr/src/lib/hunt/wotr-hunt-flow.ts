@@ -58,9 +58,7 @@ export class WotrHuntFlow {
   }
 
   private async resolveStandardHunt() {
-    if (!this.huntStore.hasHuntDice()) {
-      return;
-    }
+    if (!this.huntStore.hasHuntDice()) return;
     this.logStore.logHuntResolution();
     const huntRoll = await this.rollHuntDice(this.shadow);
     let nSuccesses = this.getNSuccesses(huntRoll);
@@ -70,9 +68,7 @@ export class WotrHuntFlow {
       const nReRollSuccesses = this.getNSuccesses(huntReRoll);
       nSuccesses += nReRollSuccesses;
     }
-    if (!nSuccesses) {
-      return;
-    }
+    if (!nSuccesses) return;
     const huntTileId = await this.drawHuntTile(this.shadow);
     await this.resolveHuntTile(huntTileId, {
       nSuccesses
@@ -97,12 +93,9 @@ export class WotrHuntFlow {
     options: WotrHuntTileResolutionOptions
   ): Promise<WotrHuntTile> {
     const huntTile = this.huntStore.huntTile(huntTileId);
-    if (options.ignoreEyeTile && huntTile.eye) {
+    if (options.ignoreEyeTile && huntTile.eye) return huntTile;
+    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special")
       return huntTile;
-    }
-    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special") {
-      return huntTile;
-    }
     let damage = huntTile.eye ? options.nSuccesses! : huntTile.quantity!;
 
     const wasRevealed = this.fellowshipStore.isRevealed();
