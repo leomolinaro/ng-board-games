@@ -1,3 +1,5 @@
+import { WotrCompanionId } from "../character/wotr-character-models";
+
 export type WotrHuntTileId =
   | "0r"
   | "1"
@@ -22,4 +24,12 @@ export interface WotrHuntTile {
   quantity?: number;
   stop?: boolean;
   dice?: boolean;
+}
+
+export interface WotrHuntEffectParams {
+  damage: number;
+  tableCardsUsed?: true;
+  guideSpecialAbilityUsed?: true;
+  randomCompanions?: WotrCompanionId[];
+  casualtyTaken?: true;
 }

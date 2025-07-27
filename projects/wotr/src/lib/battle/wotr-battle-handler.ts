@@ -8,7 +8,7 @@ import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
-  findAction,
+  assertAction,
   WotrBattleStory,
   WotrCombatCardReactionStory,
   WotrSkipCombatCardReactionStory
@@ -304,7 +304,7 @@ export class WotrBattleHandler {
 
   private async chooseCombatCard(combatFront: WotrCombatFront) {
     const story = await combatFront.player.chooseCombatCard();
-    const action = findAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
+    const action = assertAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
       story,
       "combat-card-choose",
       "combat-card-choose-not"
@@ -610,7 +610,7 @@ export class WotrBattleHandler {
 
   private async wantRetreatIntoSiege(player: WotrPlayer): Promise<boolean> {
     const story = await player.wantRetreatIntoSiege();
-    const action = findAction<WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege>(
+    const action = assertAction<WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege>(
       story,
       "army-retreat-into-siege",
       "army-not-retreat-into-siege"
@@ -625,7 +625,7 @@ export class WotrBattleHandler {
 
   private async wantRetreat(player: WotrPlayer): Promise<boolean> {
     const story = await player.wantRetreat();
-    const action = findAction<WotrArmyRetreat | WotrArmyNotRetreat>(
+    const action = assertAction<WotrArmyRetreat | WotrArmyNotRetreat>(
       story,
       "army-retreat",
       "army-not-retreat"
@@ -640,7 +640,7 @@ export class WotrBattleHandler {
 
   private async reRollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
     const story = await player.reRollCombatDice(nDice);
-    const action = findAction<WotrCombatReRoll>(story, "combat-re-roll");
+    const action = assertAction<WotrCombatReRoll>(story, "combat-re-roll");
     return action.dice;
   }
 
@@ -649,8 +649,8 @@ export class WotrBattleHandler {
   ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
     const stories = await this.allPlayers.rollCombatDice(nDice);
     return {
-      "free-peoples": findAction<WotrCombatRoll>(stories["free-peoples"], "combat-roll").dice,
-      "shadow": findAction<WotrCombatRoll>(stories.shadow, "combat-roll").dice
+      "free-peoples": assertAction<WotrCombatRoll>(stories["free-peoples"], "combat-roll").dice,
+      "shadow": assertAction<WotrCombatRoll>(stories.shadow, "combat-roll").dice
     };
   }
 
@@ -659,14 +659,15 @@ export class WotrBattleHandler {
   ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
     const stories = await this.allPlayers.reRollCombatDice(nDice);
     return {
-      "free-peoples": findAction<WotrCombatReRoll>(stories["free-peoples"], "combat-re-roll").dice,
-      "shadow": findAction<WotrCombatReRoll>(stories.shadow, "combat-re-roll").dice
+      "free-peoples": assertAction<WotrCombatReRoll>(stories["free-peoples"], "combat-re-roll")
+        .dice,
+      "shadow": assertAction<WotrCombatReRoll>(stories.shadow, "combat-re-roll").dice
     };
   }
 
   private async battleAdvance(player: WotrPlayer): Promise<boolean> {
     const story = await player.battleAdvance();
-    const action = findAction<WotrArmyAdvance | WotrArmyNotAdvance>(
+    const action = assertAction<WotrArmyAdvance | WotrArmyNotAdvance>(
       story,
       "army-advance",
       "army-not-advance"
@@ -681,7 +682,7 @@ export class WotrBattleHandler {
 
   private async wantContinueBattle(player: WotrPlayer): Promise<boolean> {
     const story = await player.wantContinueBattle();
-    const action = findAction<WotrBattleContinue | WotrBattleCease>(
+    const action = assertAction<WotrBattleContinue | WotrBattleCease>(
       story,
       "battle-continue",
       "battle-cease"

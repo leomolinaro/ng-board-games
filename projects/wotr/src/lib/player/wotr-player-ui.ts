@@ -7,6 +7,7 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrBattleStory, WotrGameStory, WotrReactionStory } from "../game/wotr-story-models";
+import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
@@ -55,16 +56,16 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return { type: "hunt", actions: [await this.huntUi.rollHuntDice()] };
   }
 
-  async reRollHuntDice(): Promise<WotrGameStory> {
-    return { type: "hunt", actions: [await this.huntUi.reRollHuntDice()] };
+  async reRollHuntDice(nReRolls: number): Promise<WotrGameStory> {
+    return { type: "hunt", actions: [await this.huntUi.reRollHuntDice(nReRolls)] };
   }
 
   async drawHuntTile(): Promise<WotrGameStory> {
     return { type: "hunt", actions: [await this.huntUi.drawHuntTile()] };
   }
 
-  async huntEffect(damage: number): Promise<WotrGameStory> {
-    return { type: "hunt", actions: await this.huntUi.huntEffect(damage) };
+  async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrGameStory> {
+    return { type: "hunt", actions: await this.huntUi.huntEffect(huntResolution) };
   }
 
   async revealFellowship(): Promise<WotrGameStory> {

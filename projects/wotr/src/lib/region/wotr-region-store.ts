@@ -906,4 +906,33 @@ export class WotrRegionStore {
     }
     return Array.from(reachable);
   }
+
+  pathsBetweenRegions(
+    startRegionId: WotrRegionId,
+    endRegionId: WotrRegionId,
+    maxDistance: number
+  ): WotrRegionId[][] {
+    const allPaths: WotrRegionId[][] = [];
+    const visited = new Set<WotrRegionId>();
+    const queue: { path: WotrRegionId[]; distance: number }[] = [
+      { path: [startRegionId], distance: 0 }
+    ];
+    while (queue.length > 0) {
+      const { path, distance } = queue.shift()!;
+      const currentRegionId = path[path.length - 1];
+      if (currentRegionId === endRegionId && distance <= maxDistance) {
+        allPaths.push(path);
+      }
+      if (distance < maxDistance) {
+        const neighbors = this.region(currentRegionId).neighbors;
+        for (const neighbor of neighbors) {
+          if (!visited.has(neighbor.id)) {
+            visited.add(neighbor.id);
+            queue.push({ path: [...path, neighbor.id], distance: distance + 1 });
+          }
+        }
+      }
+    }
+    return allPaths;
+  }
 }

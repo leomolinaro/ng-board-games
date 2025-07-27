@@ -8,6 +8,15 @@ export interface WotrAction {
   type: string;
 }
 
+export function findAction<A extends WotrAction>(
+  actions: WotrAction[],
+  ...actionTypes: A["type"][]
+): A | undefined {
+  const foundAction = actions.find(a => actionTypes.includes(a.type)) as A;
+  if (foundAction) return foundAction;
+  return undefined;
+}
+
 export interface WotrFragmentCreator<F> {
   player(front: WotrFrontId): F;
   region(region: WotrRegionId): F;

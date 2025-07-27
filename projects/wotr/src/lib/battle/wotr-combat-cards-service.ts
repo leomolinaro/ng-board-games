@@ -3,7 +3,7 @@ import { unexpectedStory } from "@leobg/commons";
 import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { findAction } from "../game/wotr-story-models";
+import { assertAction } from "../game/wotr-story-models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -53,7 +53,7 @@ export class WotrCombatCardsService {
 
   async forfeitLeadership(player: WotrPlayer): Promise<WotrLeaderUnits> {
     const story = await player.forfeitLeadership();
-    const action = findAction<WotrLeaderForfeit>(story, "leader-forfeit");
+    const action = assertAction<WotrLeaderForfeit>(story, "leader-forfeit");
     return action.leaders;
   }
 

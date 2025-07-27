@@ -92,31 +92,33 @@ export class WotrCharacterHandler {
         this.nationHandler.checkNationActivationByCharacters(action.region, action.characters);
       },
       "character-movement": async (action, front) => this.moveCharacters(action, front),
-      "character-elimination": async (action, front) => {
-        for (const characterId of action.characters) {
-          const character = this.characterStore.character(characterId);
-          if (character.status === "inFellowship") {
-            this.fellowshipStore.removeCompanion(characterId);
-          } else if (character.status === "inPlay") {
-            let region = this.regionStore
-              .regions()
-              .find(r => r.army?.characters?.includes(characterId));
-            if (region) {
-              this.regionStore.removeCharacterFromArmy(characterId, region.id);
-            } else {
-              region = this.regionStore
-                .regions()
-                .find(r => r.freeUnits?.characters?.includes(characterId));
-              if (region) {
-                this.regionStore.removeCharacterFromFreeUnits(characterId, region.id);
-              }
-            }
-          }
-          this.characterStore.setEliminated(characterId);
-        }
-        await this.checkWornWithSorrowAndToil();
-      }
+      "character-elimination": async (action, front) => this.eliminateCharacter(action.characters)
     };
+  }
+
+  async eliminateCharacter(characters: WotrCharacterId[]): Promise<void> {
+    for (const characterId of characters) {
+      const character = this.characterStore.character(characterId);
+      if (character.status === "inFellowship") {
+        this.fellowshipStore.removeCompanion(characterId);
+      } else if (character.status === "inPlay") {
+        let region = this.regionStore
+          .regions()
+          .find(r => r.army?.characters?.includes(characterId));
+        if (region) {
+          this.regionStore.removeCharacterFromArmy(characterId, region.id);
+        } else {
+          region = this.regionStore
+            .regions()
+            .find(r => r.freeUnits?.characters?.includes(characterId));
+          if (region) {
+            this.regionStore.removeCharacterFromFreeUnits(characterId, region.id);
+          }
+        }
+      }
+      this.characterStore.setEliminated(characterId);
+    }
+    await this.checkWornWithSorrowAndToil();
   }
 
   async moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): Promise<void> {

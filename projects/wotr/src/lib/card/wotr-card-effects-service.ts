@@ -3,7 +3,7 @@ import { objectUtil } from "@leobg/commons/utils";
 import { WotrCombatRoll } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameStory, findAction } from "../game/wotr-story-models";
+import { WotrGameStory, assertAction } from "../game/wotr-story-models";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
@@ -39,7 +39,7 @@ export class WotrCardEffectsService {
 
   private async rollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
     const story = await player.rollCombatDice(nDice);
-    const action = findAction<WotrCombatRoll>(story, "combat-roll");
+    const action = assertAction<WotrCombatRoll>(story, "combat-roll");
     return action.dice;
   }
 
@@ -55,19 +55,19 @@ export class WotrCardEffectsService {
       }
     },
     "Dreadful Spells": async params => {
-      findAction<WotrRegionChoose>(params.story, "region-choose");
+      assertAction<WotrRegionChoose>(params.story, "region-choose");
       await this.rollCombatDice(1, this.shadow); // TODO nDice
       await this.freePeoples.chooseCasualties(1); // TODO hitPoints
     },
     "Isildur's Bane": async params => {
-      const action = findAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+      const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
       this.huntFlow.resolveHuntTile(action.tile, {
         ignoreEyeTile: true,
         ignoreFreePeopleSpecialTile: true
       });
     },
     "The Breaking of the Fellowship": async params => {
-      const action = findAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+      const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
       const huntTile = this.huntStore.huntTile(action.tile);
       if (huntTile.eye || huntTile.type === "free-people-special") {
         return;

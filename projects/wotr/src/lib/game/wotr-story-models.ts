@@ -2,7 +2,7 @@ import { BgStoryDoc, unexpectedStory } from "@leobg/commons";
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrAction } from "../commons/wotr-action-models";
+import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 
 export interface WotrPhaseStory {
@@ -103,21 +103,17 @@ export function filterActions<A extends WotrAction>(
   throw unexpectedStory(story, actionTypes.join(" or "));
 }
 
-export function findAction<A extends WotrAction>(
+export function assertAction<A extends WotrAction>(
   story: WotrGameStory,
   ...actionTypes: A["type"][]
 ): A {
   const actions = assertActionsStory(story);
-  const foundAction = actions.find(a => actionTypes.includes(a.type)) as A;
-  if (foundAction) {
-    return foundAction;
-  }
+  const foundAction = findAction<A>(actions, ...actionTypes);
+  if (foundAction) return foundAction;
   throw unexpectedStory(story, actionTypes.join(" or "));
 }
 
 export function assertActionsStory(story: WotrGameStory): WotrAction[] {
-  if ("actions" in story) {
-    return story.actions;
-  }
+  if ("actions" in story) return story.actions;
   throw unexpectedStory(story, "some actions");
 }

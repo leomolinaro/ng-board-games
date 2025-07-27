@@ -1,16 +1,26 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { revealFellowship } from "../fellowship/wotr-fellowship-actions";
+import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../character/wotr-character-handler";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { findAction, WotrAction } from "../commons/wotr-action-models";
+import {
+  revealFellowship,
+  WotrCompanionRandom,
+  WotrFellowshipCorruption
+} from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { allocateHuntDice, drawHuntTile, rollHuntDice } from "./wotr-hunt-actions";
+import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "./wotr-hunt-actions";
 import {
-  WotrFellowshipCorruptionChoice,
-  WotrHuntEffectChoiceParams
+  WotrEliminateGuideChoice,
+  WotrRandomCompanionChoice,
+  WotrUseRingChoice
 } from "./wotr-hunt-effect-choices";
+import { WotrHuntEffectParams } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
 @Injectable({ providedIn: "root" })
@@ -19,8 +29,13 @@ export class WotrHuntUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
   private ui = inject(WotrGameUi);
+  private characterStore = inject(WotrCharacterStore);
+  private characterHandler = inject(WotrCharacterHandler);
+  private fellowshipUi = inject(WotrFellowshipUi);
 
-  private fellowshipCorruptionChoice = inject(WotrFellowshipCorruptionChoice);
+  private eliminateGuideChoice = inject(WotrEliminateGuideChoice);
+  private randomCompanionChoice = inject(WotrRandomCompanionChoice);
+  private useRingChoice = inject(WotrUseRingChoice);
 
   async huntAllocationPhase(): Promise<WotrAction[]> {
     const min = this.huntStore.minimumNumberOfHuntDice();
@@ -40,6 +55,15 @@ export class WotrHuntUi {
       huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
     }
     return rollHuntDice(...huntDice);
+  }
+
+  async reRollHuntDice(nReRolls: number): Promise<WotrAction> {
+    await this.ui.askContinue(`Re-roll ${nReRolls} hunt dice`);
+    const huntDice: WotrCombatDie[] = [];
+    for (let i = 0; i < nReRolls; i++) {
+      huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
+    }
+    return reRollHuntDice(...huntDice);
   }
 
   async revealFellowship(): Promise<WotrAction[]> {
@@ -65,18 +89,66 @@ export class WotrHuntUi {
     return drawHuntTile(huntTile);
   }
 
-  async reRollHuntDice(): Promise<WotrAction> {
-    throw new Error("Method not implemented.");
-  }
+  async huntEffect(params: WotrHuntEffectParams): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    let damage = params.damage;
+    let casualtyTaken = params.casualtyTaken;
 
-  async huntEffect(damage: number): Promise<WotrAction[]> {
-    // TODO
-    const choices: WotrPlayerChoice<WotrHuntEffectChoiceParams>[] = [
-      this.fellowshipCorruptionChoice
-    ];
-    const actions = await this.ui.askChoice(`Absorbe ${damage} hunt damage points`, choices, {
-      damage
-    });
+    const randomCompanionIds = params.randomCompanions;
+    if (randomCompanionIds) {
+      const guide = this.fellowshipStore.guide();
+      const wasGuide = randomCompanionIds.includes(guide);
+      const randomCompanions = randomCompanionIds.map(id => this.characterStore.character(id));
+      await this.ui.askContinue(`Eliminate ${randomCompanions.map(c => c.name).join(", ")}`);
+      actions.push(eliminateCharacter(...randomCompanionIds));
+      damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
+      casualtyTaken = true;
+      this.characterHandler.eliminateCharacter(randomCompanionIds);
+      if (wasGuide) {
+        actions.push(await this.fellowshipUi.changeGuide());
+      }
+    }
+
+    let continuee = true;
+    while (continuee && damage > 0) {
+      // play table cards
+      // guide special ability
+      // guide elimination
+      // random companion elimination
+      // use ring
+      const choices: WotrPlayerChoice<WotrHuntEffectParams>[] = [];
+      if (!casualtyTaken) {
+        choices.push(this.eliminateGuideChoice);
+        choices.push(this.randomCompanionChoice);
+      }
+      choices.push(this.useRingChoice);
+      const chosenActions = await this.ui.askChoice(
+        `Absorb ${params.damage} hunt damage points`,
+        choices,
+        params
+      );
+      actions.push(...chosenActions);
+      const characterElimination = findAction<WotrCharacterElimination>(
+        chosenActions,
+        "character-elimination"
+      );
+      const randomCompanion = findAction<WotrCompanionRandom>(chosenActions, "companion-random");
+      const useRing = findAction<WotrFellowshipCorruption>(chosenActions, "fellowship-corruption");
+      if (randomCompanion) {
+        continuee = false;
+      } else {
+        if (characterElimination) {
+          damage -= characterElimination.characters.reduce(
+            (sum, c) => sum + this.characterStore.character(c).level,
+            0
+          );
+          casualtyTaken = true;
+        }
+        if (useRing) {
+          damage -= useRing.quantity;
+        }
+      }
+    }
     return actions;
   }
 }

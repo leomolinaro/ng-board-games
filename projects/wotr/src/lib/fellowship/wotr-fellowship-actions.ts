@@ -1,4 +1,4 @@
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 
 export interface WotrFellowshipDeclare {
@@ -57,9 +57,9 @@ export function separateCompanions(
 }
 export interface WotrCompanionRandom {
   type: "companion-random";
-  companions: WotrCharacterId[];
+  companions: WotrCompanionId[];
 }
-export function chooseRandomCompanion(...companions: WotrCharacterId[]): WotrCompanionRandom {
+export function chooseRandomCompanion(...companions: WotrCompanionId[]): WotrCompanionRandom {
   return { type: "companion-random", companions };
 }
 
