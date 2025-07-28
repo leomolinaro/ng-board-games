@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, output } from "@angular/core";
 import { MatRipple } from "@angular/material/core";
 import { MatIcon } from "@angular/material/icon";
 
@@ -7,18 +7,22 @@ import { MatIcon } from "@angular/material/icon";
   imports: [MatIcon, MatRipple],
   template: `
     <div>
+      <!-- <mat-icon
+        matRipple
+        fontIcon="keyboard_arrow_left"
+        (click)="replayNext.emit(-1)"></mat-icon> -->
       <mat-icon
         matRipple
         fontIcon="keyboard_arrow_right"
-        (click)="replayNext.next(1)"></mat-icon>
+        (click)="replayNext.emit(1)"></mat-icon>
       <mat-icon
         matRipple
         fontIcon="keyboard_double_arrow_right"
-        (click)="replayNext.next(10)"></mat-icon>
+        (click)="replayNext.emit(10)"></mat-icon>
       <mat-icon
         matRipple
         fontIcon="last_page"
-        (click)="replayLast.next()"></mat-icon>
+        (click)="replayLast.emit()"></mat-icon>
     </div>
   `,
   styles: `
@@ -28,6 +32,6 @@ import { MatIcon } from "@angular/material/icon";
   `
 })
 export class WotrReplayButton {
-  @Output() replayNext = new EventEmitter<number>();
-  @Output() replayLast = new EventEmitter<void>();
+  replayNext = output<number>();
+  replayLast = output<void>();
 }

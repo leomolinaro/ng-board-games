@@ -112,8 +112,12 @@ export class WotrStoryService extends ABgGameService<
   }
 
   nextReplay(nReplayStories: number) {
-    this.nReplayStories = nReplayStories;
-    this.$replayCall.next();
+    if (nReplayStories > 0) {
+      this.nReplayStories = nReplayStories;
+      this.$replayCall.next();
+    } else if (nReplayStories < 0) {
+      throw new Error("Not implemented: negative replay stories");
+    }
   }
 
   lastReplay() {

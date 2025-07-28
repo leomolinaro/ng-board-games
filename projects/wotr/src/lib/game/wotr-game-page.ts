@@ -27,11 +27,10 @@ import { WotrStoryService } from "./wotr-story-service";
   imports: [WotrBoard],
   template: `
     <wotr-board
-      (replayNext)="onReplayNext($event)"
-      (replayLast)="onReplayLast()">
+      (replayNext)="story.nextReplay($event)"
+      (replayLast)="story.lastReplay()">
     </wotr-board>
   `,
-  styles: [""],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
@@ -40,7 +39,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private remote = inject(WotrRemoteService);
   private route = inject(ActivatedRoute);
   private auth = inject(BgAuthService);
-  private story = inject(WotrStoryService);
+  protected story = inject(WotrStoryService);
   private flow = inject(WotrGameTurn);
   private cardEffects = inject(WotrCardEffectsService);
   private localPlayerService = inject(WotrPlayerUi);
@@ -116,13 +115,5 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.store.clear();
     this.story.clear();
     this.actionService.clear();
-  }
-
-  onReplayNext(nStories: number) {
-    this.story.nextReplay(nStories);
-  }
-
-  onReplayLast() {
-    this.story.lastReplay();
   }
 }
