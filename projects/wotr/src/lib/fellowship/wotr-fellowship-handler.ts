@@ -3,7 +3,7 @@ import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -14,7 +14,7 @@ import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
@@ -24,21 +24,20 @@ export class WotrFellowshipHandler {
   private characterHandler = inject(WotrCharacterHandler);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
-      "fellowship-declare": async (story, front) => this.declare(story.region),
-      "fellowship-corruption": async (action, front) =>
-        this.fellowshipStore.corrupt(action.quantity),
-      "fellowship-guide": async (action, front) => this.changeGuide(action.companion),
-      "fellowship-hide": async (action, front) => this.hide(),
-      "fellowship-progress": async (action, front) => this.progress(),
-      "fellowship-reveal": async (action, front) => this.reveal(action.region),
-      "companion-random": async (action, front) => {} /*empty*/,
-      "companion-separation": async (action, front) =>
+      "fellowship-declare": (story, front) => this.declare(story.region),
+      "fellowship-corruption": (action, front) => this.fellowshipStore.corrupt(action.quantity),
+      "fellowship-guide": (action, front) => this.changeGuide(action.companion),
+      "fellowship-hide": (action, front) => this.hide(),
+      "fellowship-progress": (action, front) => this.progress(),
+      "fellowship-reveal": (action, front) => this.reveal(action.region),
+      "companion-random": (action, front) => {} /*empty*/,
+      "companion-separation": (action, front) =>
         this.separateCompanions(action.companions, action.toRegion)
     };
   }

@@ -1,7 +1,7 @@
 import { Injectable, forwardRef, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrPlayerAi } from "../player/wotr-player-ai";
@@ -34,7 +34,7 @@ export class WotrStoryService extends ABgGameService<
   protected override auth = inject(BgAuthService);
   protected override aiPlayer = inject(forwardRef(() => WotrPlayerAi));
   protected override localPlayer!: WotrPlayerUi;
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
 
   init(localPlayer: WotrPlayerUi) {
     this.localPlayer = localPlayer;
@@ -157,6 +157,6 @@ export class WotrStoryService extends ABgGameService<
   }
 
   private async applyStory(story: WotrGameStory, front: WotrFrontId) {
-    await this.actionService.applyStory(story, front);
+    await this.actionRegistry.applyStory(story, front);
   }
 }

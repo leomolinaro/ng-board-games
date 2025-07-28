@@ -3,7 +3,7 @@ import { getCard, isCharacterCard } from "../card/wotr-card-models";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -47,7 +47,7 @@ import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrBattleHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
   private battleStore = inject(WotrBattleStore);
@@ -64,32 +64,32 @@ export class WotrBattleHandler {
   private unitHandler = inject(WotrUnitHandler);
 
   init() {
-    this.actionService.registerAction<WotrArmyAttack>(
+    this.actionRegistry.registerAction<WotrArmyAttack>(
       "army-attack",
       this.applyArmyAttack.bind(this)
     );
-    this.actionService.registerAction<WotrArmyRetreatIntoSiege>(
+    this.actionRegistry.registerAction<WotrArmyRetreatIntoSiege>(
       "army-retreat-into-siege",
       this.applyArmyRetreatIntoSiege.bind(this)
     );
-    this.actionService.registerAction<WotrArmyRetreat>(
+    this.actionRegistry.registerAction<WotrArmyRetreat>(
       "army-retreat",
       this.applyArmyRetreat.bind(this)
     );
-    this.actionService.registerAction<WotrArmyAdvance>(
+    this.actionRegistry.registerAction<WotrArmyAdvance>(
       "army-advance",
       this.applyArmyAdvance.bind(this)
     );
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerStory("battle", this.battleStory);
-    this.actionService.registerStory("reaction-combat-card", this.reactionCombatCard);
-    this.actionService.registerStory("reaction-combat-card-skip", this.reactionCombatCardSkip);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerStory("battle", this.battleStory);
+    this.actionRegistry.registerStory("reaction-combat-card", this.reactionCombatCard);
+    this.actionRegistry.registerStory("reaction-combat-card-skip", this.reactionCombatCardSkip);
   }
 
   private battleStory: WotrStoryApplier<WotrBattleStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front, "battle");
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 
@@ -99,7 +99,7 @@ export class WotrBattleHandler {
   ) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 
@@ -120,16 +120,16 @@ export class WotrBattleHandler {
     }
   }
 
-  private async applyArmyRetreatIntoSiege(action: WotrArmyRetreatIntoSiege) {
+  private applyArmyRetreatIntoSiege(action: WotrArmyRetreatIntoSiege) {
     this.regionStore.moveArmyIntoSiege(action.region);
   }
 
-  private async applyArmyRetreat(action: WotrArmyRetreat) {
+  private applyArmyRetreat(action: WotrArmyRetreat) {
     const battleRegion = this.battleStore.state()!.action.toRegion;
     this.regionStore.moveArmy(battleRegion, action.toRegion);
   }
 
-  private async applyArmyAdvance(action: WotrArmyAdvance) {
+  private applyArmyAdvance(action: WotrArmyAdvance) {
     const fromRegion = this.battleStore.state()!.action.fromRegion;
     const toRegion = this.battleStore.state()!.action.toRegion;
     this.regionStore.moveArmy(fromRegion, toRegion, action.leftUnits);

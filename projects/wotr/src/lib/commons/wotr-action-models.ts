@@ -42,7 +42,7 @@ export type WotrEffectLoggerMap<E extends WotrAction> = {
 export type WotrActionApplier<A extends WotrAction> = (
   action: A,
   front: WotrFrontId
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrActionApplierMap<A extends WotrAction> = {
   [key in A["type"]]: WotrActionApplier<{ type: key } & A>;
 };

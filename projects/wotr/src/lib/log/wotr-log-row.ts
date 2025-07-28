@@ -16,7 +16,7 @@ import { cardToLabel, combatCardToLabel } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFragmentCreator } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
@@ -188,7 +188,7 @@ export type WotrLogParsedFragment =
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFragment> {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private assets = inject(WotrAssetsStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
@@ -243,7 +243,7 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
       case "hunt-resolution":
         return [this.string("Hunt Resolution")];
       case "action": {
-        const fragments = this.actionService.getActionLogFragments<WotrLogParsedFragment>(
+        const fragments = this.actionRegistry.getActionLogFragments<WotrLogParsedFragment>(
           l.action,
           l.front,
           this
@@ -304,7 +304,7 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
         }
       }
       case "effect": {
-        const fragments = this.actionService.getEffectLogFragments<WotrLogParsedFragment>(
+        const fragments = this.actionRegistry.getEffectLogFragments<WotrLogParsedFragment>(
           l.effect,
           this
         );

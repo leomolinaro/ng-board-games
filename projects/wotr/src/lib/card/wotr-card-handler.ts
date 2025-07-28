@@ -4,7 +4,7 @@ import {
   WotrActionLoggerMap,
   WotrStoryApplier
 } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
@@ -19,16 +19,16 @@ import { WotrCardId, cardToLabel } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerStory("die-card", this.dieCard);
-    this.actionService.registerStory("reaction-card", this.reactionCard);
-    this.actionService.registerStory("reaction-card-skip", this.reactionCardSkip);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerStory("die-card", this.dieCard);
+    this.actionRegistry.registerStory("reaction-card", this.reactionCard);
+    this.actionRegistry.registerStory("reaction-card-skip", this.reactionCardSkip);
   }
 
   private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
@@ -41,7 +41,7 @@ export class WotrCardHandler {
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
     const cardEffect = this.cardEffects[story.card];
     if (cardEffect) {
@@ -54,7 +54,7 @@ export class WotrCardHandler {
   private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 
@@ -64,13 +64,12 @@ export class WotrCardHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
-      "card-discard": async (action, front) => this.frontStore.discardCards(action.cards, front),
-      "card-discard-from-table": async (action, front) =>
+      "card-discard": (action, front) => this.frontStore.discardCards(action.cards, front),
+      "card-discard-from-table": (action, front) =>
         this.frontStore.discardCardFromTable(action.card, front),
-      "card-draw": async (action, front) => this.frontStore.drawCards(action.cards, front),
-      "card-play-on-table": async (action, front) =>
-        this.frontStore.playCardOnTable(action.card, front),
-      "card-random-discard": async (action, front) =>
+      "card-draw": (action, front) => this.frontStore.drawCards(action.cards, front),
+      "card-play-on-table": (action, front) => this.frontStore.playCardOnTable(action.card, front),
+      "card-random-discard": (action, front) =>
         this.frontStore.discardCards([action.card], oppositeFront(front))
     };
   }

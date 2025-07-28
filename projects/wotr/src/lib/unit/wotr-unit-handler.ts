@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { filterActions } from "../game/wotr-story-models";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -36,30 +36,30 @@ export interface WotrRecruitmentConstraints {
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);
   private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrUnitAction> {
     return {
-      "army-movements": async (action, front) => {
+      "army-movements": (action, front) => {
         for (const movement of action.movements) {
           this.moveArmy(movement, front);
         }
       },
-      "nazgul-movement": async (action, front) => {
+      "nazgul-movement": (action, front) => {
         this.moveNazgul(action);
       },
-      "regular-unit-recruitment": async (action, front) => this.recruitRegularUnit(action),
-      "regular-unit-elimination": async (action, front) => this.eliminateRegularUnit(action),
-      "regular-unit-upgrade": async (action, front) => {
+      "regular-unit-recruitment": (action, front) => this.recruitRegularUnit(action),
+      "regular-unit-elimination": (action, front) => this.eliminateRegularUnit(action),
+      "regular-unit-upgrade": (action, front) => {
         this.recruitEliteUnit({
           type: "elite-unit-recruitment",
           region: action.region,
@@ -73,10 +73,10 @@ export class WotrUnitHandler {
           nation: action.nation
         });
       },
-      "regular-unit-disband": async (action, front) => this.disbandRegularUnit(action),
-      "elite-unit-recruitment": async (action, front) => this.recruitEliteUnit(action),
-      "elite-unit-elimination": async (action, front) => this.eliminateEliteUnit(action),
-      "elite-unit-downgrade": async (action, front) => {
+      "regular-unit-disband": (action, front) => this.disbandRegularUnit(action),
+      "elite-unit-recruitment": (action, front) => this.recruitEliteUnit(action),
+      "elite-unit-elimination": (action, front) => this.eliminateEliteUnit(action),
+      "elite-unit-downgrade": (action, front) => {
         this.eliminateEliteUnit({
           type: "elite-unit-elimination",
           region: action.region,
@@ -90,15 +90,15 @@ export class WotrUnitHandler {
           nation: action.nation
         });
       },
-      "elite-unit-disband": async (action, front) => this.disbandEliteUnit(action),
-      "leader-recruitment": async (action, front) => this.recruitLeader(action),
-      "leader-elimination": async (action, front) => {
+      "elite-unit-disband": (action, front) => this.disbandEliteUnit(action),
+      "leader-recruitment": (action, front) => this.recruitLeader(action),
+      "leader-elimination": (action, front) => {
         const region = this.regionStore.region(action.region);
         this.removeLeadersFromRegion(action.quantity, action.nation, region);
         this.nationStore.addLeadersToCasualties(action.quantity, action.nation);
       },
-      "nazgul-recruitment": async (action, front) => this.recruitNazgul(action),
-      "nazgul-elimination": async (action, front) => {
+      "nazgul-recruitment": (action, front) => this.recruitNazgul(action),
+      "nazgul-elimination": (action, front) => {
         const region = this.regionStore.region(action.region);
         this.removeNazgulFromRegion(action.quantity, region);
         this.nationStore.addNazgulToReinforcements(action.quantity);

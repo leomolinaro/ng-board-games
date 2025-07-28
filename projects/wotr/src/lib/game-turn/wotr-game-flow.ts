@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -34,7 +34,7 @@ export class WotrGameTurn {
   private companionStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
 
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -43,13 +43,13 @@ export class WotrGameTurn {
   private setupService = inject(WotrSetupRules);
 
   init() {
-    this.actionService.registerStory("phase", this.phaseStory);
+    this.actionRegistry.registerStory("phase", this.phaseStory);
   }
 
   private phaseStory: WotrStoryApplier<WotrPhaseStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front, "battle");
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 

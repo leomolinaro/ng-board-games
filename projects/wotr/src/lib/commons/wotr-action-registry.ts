@@ -13,7 +13,7 @@ import {
 import { WotrEventService } from "./wotr-event-service";
 
 @Injectable({ providedIn: "root" })
-export class WotrActionService {
+export class WotrActionRegistry {
   private eventService = inject(WotrEventService);
 
   private actionAppliers: Map<string, WotrActionApplier<WotrAction>> = new Map();
@@ -34,15 +34,20 @@ export class WotrActionService {
     );
   }
 
-  registerAction<A extends WotrAction>(actionType: A["type"], actionApplier: WotrActionApplier<A>) {
+  registerAction<A extends WotrAction>(
+    actionType: A["type"],
+    actionApplier: WotrActionApplier<A>,
+    actionLogger?: WotrActionLogger<A>
+  ) {
     this.actionAppliers.set(actionType, actionApplier as any);
+    if (actionLogger) {
+      this.actionLoggers.set(actionType, actionLogger as any);
+    }
   }
 
   async applyAction(action: WotrAction, frontId: WotrFrontId) {
     const actionApplier = this.actionAppliers.get(action.type);
-    if (actionApplier) {
-      await actionApplier(action, frontId);
-    }
+    if (actionApplier) await actionApplier(action, frontId);
     await this.eventService.publish(action);
   }
 
@@ -52,9 +57,7 @@ export class WotrActionService {
 
   async applyStory(story: WotrStory, frontId: WotrFrontId) {
     const storyApplier = this.storyAppliers.get(story.type);
-    if (!storyApplier) {
-      throw new Error(`Unknown story applier ${story.type}`);
-    }
+    if (!storyApplier) throw new Error(`Unknown story applier ${story.type}`);
     await storyApplier(story, frontId);
   }
 
@@ -70,16 +73,15 @@ export class WotrActionService {
     fragmentCreator: WotrFragmentCreator<F>
   ): (F | string)[] {
     const actionLogger = this.actionLoggers.get(action.type);
-    if (!actionLogger) {
-      throw new Error(`Unknown action log ${action.type}`);
-    }
+    if (!actionLogger) throw new Error(`Unknown action log ${action.type}`);
     return actionLogger(action, front, fragmentCreator);
   }
 
-  registerEffectLoggers(effectLoggers: Record<string, WotrEffectLogger<WotrAction>>) {
-    objectUtil.forEachProp(effectLoggers, (effectType, effectLogger) =>
-      this.effectLoggers.set(effectType, effectLogger)
-    );
+  registerEffectLogger<A extends WotrAction>(
+    effectType: A["type"],
+    effectLogger: WotrEffectLogger<A>
+  ) {
+    this.effectLoggers.set(effectType, effectLogger as any);
   }
 
   getEffectLogFragments<F>(
@@ -87,9 +89,7 @@ export class WotrActionService {
     fragmentCreator: WotrFragmentCreator<F>
   ): (F | string)[] {
     const effectLogger = this.effectLoggers.get(effect.type);
-    if (!effectLogger) {
-      throw new Error(`Unknown effect log ${effect.type}`);
-    }
+    if (!effectLogger) throw new Error(`Unknown effect log ${effect.type}`);
     return effectLogger(effect, fragmentCreator);
   }
 }

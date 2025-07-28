@@ -1,52 +1,56 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
-import {
-  WotrActionApplier,
-  WotrActionLoggerMap,
-  WotrEffectLoggerMap
-} from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionApplier } from "../commons/wotr-action-models";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import {
-  WotrNationAction,
-  WotrPoliticalActivation,
-  WotrPoliticalAdvance
-} from "./wotr-nation-actions";
+import { WotrPoliticalActivation, WotrPoliticalAdvance } from "./wotr-nation-actions";
 import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);
   private logStore = inject(WotrLogStore);
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
 
   init() {
-    this.actionService.registerAction<WotrPoliticalActivation>(
+    this.actionRegistry.registerAction<WotrPoliticalActivation>(
       "political-activation",
-      this.politicalActivation
+      this.politicalActivation,
+      (action, front, f) => [f.player(front), " activates ", f.nation(action.nation)]
     );
-    this.actionService.registerAction<WotrPoliticalAdvance>(
+    this.actionRegistry.registerAction<WotrPoliticalAdvance>(
       "political-advance",
-      this.politicalAdvance
+      this.politicalAdvance,
+      (action, front, f) => [
+        f.player(front),
+        " advances ",
+        f.nation(action.nation),
+        " on the Political Track"
+      ]
     );
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerEffectLoggers(this.getEffectLoggers() as any);
+
+    this.actionRegistry.registerEffectLogger<WotrPoliticalActivation>(
+      "political-activation",
+      (effect, f) => [f.nation(effect.nation), " is activated"]
+    );
+    this.actionRegistry.registerEffectLogger<WotrPoliticalAdvance>(
+      "political-advance",
+      (effect, f) => [f.nation(effect.nation), " is advanced on the Political Track"]
+    );
   }
 
-  private politicalActivation: WotrActionApplier<WotrPoliticalActivation> = async action => {
+  private politicalActivation: WotrActionApplier<WotrPoliticalActivation> = action =>
     this.nationStore.activate(true, action.nation);
-  };
 
-  private politicalAdvance: WotrActionApplier<WotrPoliticalAdvance> = async action => {
+  private politicalAdvance: WotrActionApplier<WotrPoliticalAdvance> = action =>
     this.nationStore.advance(action.quantity, action.nation);
-  };
 
   checkNationActivationByArmyMovement(regionId: WotrRegionId, armyFront: WotrFrontId) {
     const region = this.regionStore.region(regionId);
@@ -143,31 +147,5 @@ export class WotrNationHandler {
     const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
     this.logStore.logEffect(action);
     this.nationStore.advance(quantity, nation);
-  }
-
-  private getActionLoggers(): WotrActionLoggerMap<WotrNationAction> {
-    return {
-      "political-activation": (action, front, f) => [
-        f.player(front),
-        " activates ",
-        f.nation(action.nation)
-      ],
-      "political-advance": (action, front, f) => [
-        f.player(front),
-        " advances ",
-        f.nation(action.nation),
-        " on the Political Track"
-      ]
-    };
-  }
-
-  private getEffectLoggers(): WotrEffectLoggerMap<WotrNationAction> {
-    return {
-      "political-activation": (effect, f) => [f.nation(effect.nation), " is activated"],
-      "political-advance": (effect, f) => [
-        f.nation(effect.nation),
-        " is advanced on the Political Track"
-      ]
-    };
   }
 }

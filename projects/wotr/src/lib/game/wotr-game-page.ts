@@ -7,7 +7,7 @@ import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrCardEffectsService } from "../card/wotr-card-effects-service";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrGameTurn } from "../game-turn/wotr-game-flow";
 import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
@@ -43,7 +43,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private flow = inject(WotrGameTurn);
   private cardEffects = inject(WotrCardEffectsService);
   private localPlayerService = inject(WotrPlayerUi);
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -114,6 +114,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.store.clear();
     this.story.clear();
-    this.actionService.clear();
+    this.actionRegistry.clear();
   }
 }

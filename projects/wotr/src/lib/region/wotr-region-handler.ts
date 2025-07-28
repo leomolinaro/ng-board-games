@@ -1,22 +1,20 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrRegionAction } from "./wotr-region-actions";
-import { WotrRegionStore } from "./wotr-region-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrRegionHandler {
-  private regionStore = inject(WotrRegionStore);
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrRegionAction> {
     return {
-      "region-choose": async (action, front) => {
+      "region-choose": (action, front) => {
         /*empty*/
       }
     };

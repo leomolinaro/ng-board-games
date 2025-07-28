@@ -4,7 +4,7 @@ import {
   WotrActionLoggerMap,
   WotrStoryApplier
 } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrDieStory,
@@ -18,23 +18,23 @@ import { WotrActionDie } from "./wotr-action-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logStore = inject(WotrLogStore);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerStory("die", this.die);
-    this.actionService.registerStory("die-pass", this.diePass);
-    this.actionService.registerStory("token", this.token);
-    this.actionService.registerStory("token-skip", this.tokenSkip);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerStory("die", this.die);
+    this.actionRegistry.registerStory("die-pass", this.diePass);
+    this.actionRegistry.registerStory("token", this.token);
+    this.actionRegistry.registerStory("token-skip", this.tokenSkip);
   }
 
   private die: WotrStoryApplier<WotrDieStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
     this.frontStore.removeActionDie(story.die, front);
   };
@@ -46,7 +46,7 @@ export class WotrActionDieHandler {
   private token: WotrStoryApplier<WotrTokenStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
     this.frontStore.removeActionToken(story.token, front);
   };
@@ -57,7 +57,7 @@ export class WotrActionDieHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrActionDieAction> {
     return {
-      "action-roll": async (action, front) => {
+      "action-roll": (action, front) => {
         this.frontStore.setActionDice(action.dice, front);
       },
       "action-dice-discard": async (action, front) => {

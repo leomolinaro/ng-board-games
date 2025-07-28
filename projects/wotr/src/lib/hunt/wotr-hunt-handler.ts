@@ -4,7 +4,7 @@ import {
   WotrActionLoggerMap,
   WotrStoryApplier
 } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrHuntStory } from "../game/wotr-story-models";
 import { WotrLogStore } from "../log/wotr-log-store";
@@ -13,28 +13,28 @@ import { WotrHuntStore } from "./wotr-hunt-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrHuntHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private logStore = inject(WotrLogStore);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerStory("hunt", this.huntStory);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerStory("hunt", this.huntStory);
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrHuntAction> {
     return {
-      "hunt-allocation": async (action, front) => this.huntStore.addHuntDice(action.quantity),
-      "hunt-roll": async (action, front) => {
+      "hunt-allocation": (action, front) => this.huntStore.addHuntDice(action.quantity),
+      "hunt-roll": (action, front) => {
         /*empty*/
       },
-      "hunt-re-roll": async (action, front) => {
+      "hunt-re-roll": (action, front) => {
         /*empty*/
       },
-      "hunt-tile-draw": async (action, front) => this.huntStore.drawHuntTile(action.tile),
-      "hunt-tile-add": async (action, front) => {
+      "hunt-tile-draw": (action, front) => this.huntStore.drawHuntTile(action.tile),
+      "hunt-tile-add": (action, front) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
           this.huntStore.moveAvailableTileToPool(action.tile);
         } else {
@@ -47,7 +47,7 @@ export class WotrHuntHandler {
   private huntStory: WotrStoryApplier<WotrHuntStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front, "hunt");
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 

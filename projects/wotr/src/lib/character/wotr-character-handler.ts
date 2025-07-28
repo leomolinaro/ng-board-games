@@ -7,7 +7,7 @@ import {
   WotrActionLoggerMap,
   WotrStoryApplier
 } from "../commons/wotr-action-models";
-import { WotrActionService } from "../commons/wotr-action-service";
+import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -28,7 +28,7 @@ import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {
-  private actionService = inject(WotrActionService);
+  private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
@@ -39,10 +39,10 @@ export class WotrCharacterHandler {
   private shadow = inject(WotrShadowPlayer);
 
   init() {
-    this.actionService.registerActions(this.getActionAppliers() as any);
-    this.actionService.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionService.registerStory("reaction-character", this.reactionCharacter);
-    this.actionService.registerStory("reaction-character-skip", this.reactionCharacterSkip);
+    this.actionRegistry.registerActions(this.getActionAppliers() as any);
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerStory("reaction-character", this.reactionCharacter);
+    this.actionRegistry.registerStory("reaction-character-skip", this.reactionCharacterSkip);
   }
 
   private reactionCharacter: WotrStoryApplier<WotrCharacterReactionStory> = async (
@@ -51,7 +51,7 @@ export class WotrCharacterHandler {
   ) => {
     for (const action of story.actions) {
       this.logStore.logAction(action, story, front);
-      await this.actionService.applyAction(action, front);
+      await this.actionRegistry.applyAction(action, front);
     }
   };
 
@@ -64,7 +64,7 @@ export class WotrCharacterHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {
     return {
-      "character-play": async (action, front) => {
+      "character-play": (action, front) => {
         const region = this.regionStore.region(action.region);
         for (const characterId of action.characters) {
           switch (characterId) {
@@ -91,8 +91,8 @@ export class WotrCharacterHandler {
         }
         this.nationHandler.checkNationActivationByCharacters(action.region, action.characters);
       },
-      "character-movement": async (action, front) => this.moveCharacters(action, front),
-      "character-elimination": async (action, front) => this.eliminateCharacter(action.characters)
+      "character-movement": (action, front) => this.moveCharacters(action, front),
+      "character-elimination": (action, front) => this.eliminateCharacter(action.characters)
     };
   }
 
@@ -121,7 +121,7 @@ export class WotrCharacterHandler {
     await this.checkWornWithSorrowAndToil();
   }
 
-  async moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): Promise<void> {
+  moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): void {
     const fromRegion = this.regionStore.region(action.fromRegion);
     const toRegion = this.regionStore.region(action.toRegion);
     for (const characterId of action.characters) {
