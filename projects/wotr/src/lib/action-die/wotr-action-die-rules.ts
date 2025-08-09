@@ -44,25 +44,15 @@ export class WotrActionDieRules {
     switch (frontId) {
       case "free-peoples": {
         let nDice = 4;
-        if (this.characterStore.isInPlay("aragorn")) {
-          nDice += 1;
-        }
-        if (this.characterStore.isInPlay("gandalf-the-white")) {
-          nDice += 1;
-        }
+        if (this.characterStore.isInPlay("aragorn")) nDice += 1;
+        if (this.characterStore.isInPlay("gandalf-the-white")) nDice += 1;
         return nDice;
       }
       case "shadow": {
         let nDice = 7;
-        if (this.characterStore.isInPlay("the-witch-king")) {
-          nDice += 1;
-        }
-        if (this.characterStore.isInPlay("saruman")) {
-          nDice += 1;
-        }
-        if (this.characterStore.isInPlay("the-mouth-of-sauron")) {
-          nDice += 1;
-        }
+        if (this.characterStore.isInPlay("the-witch-king")) nDice += 1;
+        if (this.characterStore.isInPlay("saruman")) nDice += 1;
+        if (this.characterStore.isInPlay("the-mouth-of-sauron")) nDice += 1;
         const huntDice = this.huntStore.nHuntDice();
         return nDice - huntDice;
       }
@@ -92,6 +82,7 @@ export class WotrActionDieRules {
     const tokens = this.frontStore.actionTokens(frontId);
     return tokens.filter(token => this.isPlayableToken(token, frontId));
   }
+
   isPlayableToken(token: WotrActionToken, frontId: WotrFrontId): boolean {
     switch (token) {
       case "draw-card":

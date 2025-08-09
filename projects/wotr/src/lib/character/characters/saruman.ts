@@ -1,0 +1,179 @@
+import { Injectable, inject } from "@angular/core";
+import { WotrActionDieEffects } from "../../action-die/wotr-action-die-effects";
+import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
+import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrGameUi, WotrPlayerChoice } from "../../game/wotr-game-ui";
+import { WotrNationStore } from "../../nation/wotr-nation-store";
+import { WotrRegionId } from "../../region/wotr-region-models";
+import { WotrRegionStore } from "../../region/wotr-region-store";
+import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
+import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { playCharacter } from "../wotr-character-actions";
+import { WotrCharacterId } from "../wotr-character-models";
+import { WotrCharacterStore } from "../wotr-character-store";
+import { WotrCharacterCard } from "./wotr-character-card";
+
+// Saruman - Corrupted Wizard (Level 0, Leadership 1, +1 Action Die)
+// If Isengard is "At War'' and Orthanc is unconquered, you may use one Muster Action die result to place Saruman in Orthanc. Saruman cannot leave Orthanc.
+// The Voice of Saruman. As long as Orthanc is under your control and not under siege, you may use a Muster Action die result to recruit one Regular Isengard unit in
+// every Isengard Settlement or to replace two Regular Isengard units in Orthanc with two Elite units. Servants of the White Hand. Each Isengard Elite unit is considered to be a Leader as well as an Army unit for all movement and combat purposes
+
+@Injectable({ providedIn: "root" })
+export class WotrSaruman extends WotrCharacterCard {
+  protected characterStore = inject(WotrCharacterStore);
+  private nationStore = inject(WotrNationStore);
+  private regionStore = inject(WotrRegionStore);
+  private actionDieEffects = inject(WotrActionDieEffects);
+  private ui = inject(WotrGameUi);
+  private unitUi = inject(WotrUnitUi);
+
+  protected override characterId: WotrCharacterId = "saruman";
+
+  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+    return (
+      die === "muster" &&
+      this.characterStore.isAvailable("saruman") &&
+      this.nationStore.isAtWar("isengard") &&
+      this.regionStore.isUnconquered("orthanc")
+    );
+  }
+
+  async bringIntoPlay(): Promise<WotrAction> {
+    return playCharacter("orthanc", "saruman");
+  }
+
+  createAbilities(): WotrCardAbility[] {
+    return [
+      new TheVoiceOfSarumanAbility(
+        this.characterStore,
+        this.nationStore,
+        this.regionStore,
+        this.actionDieEffects,
+        this.ui,
+        this.unitUi
+      ),
+      new ServantsOfTheWhiteHandAbility(this.characterStore)
+    ];
+  }
+}
+
+class TheVoiceOfSarumanAbility implements WotrCardAbility {
+  constructor(
+    private characterStore: WotrCharacterStore,
+    private nationStore: WotrNationStore,
+    private regionStore: WotrRegionStore,
+    private actionDieEffects: WotrActionDieEffects,
+    private ui: WotrGameUi,
+    private unitUi: WotrUnitUi
+  ) {}
+
+  private choice: WotrPlayerChoice = {
+    label: () => "The Voice of Saruman",
+    isAvailable: () => {
+      const nation = this.nationStore.nation("isengard");
+      if (nation.politicalStep !== "atWar") return false;
+      if (!this.regionStore.isUnconquered("orthanc")) return false;
+      if (this.regionStore.isUnderSiege("orthanc")) return false;
+      if (this.canRecruitRegulars() || this.canUpgradeRegulars()) return true;
+      return false;
+    },
+    resolve: async () => {
+      const choices: WotrPlayerChoice[] = [];
+      choices.push({
+        label: () => "Recruit up to three regular units",
+        isAvailable: () => this.canRecruitRegulars(),
+        resolve: async () => this.recruitRegulars()
+      });
+      choices.push({
+        label: () => "Replace two regular units in Orthanc with two elite units",
+        isAvailable: () => this.canUpgradeRegulars(),
+        resolve: async () => this.upgradeRegulars()
+      });
+      const actions = await this.ui.askChoice(
+        "Choose an action for The Voice of Saruman",
+        choices,
+        "shadow"
+      );
+      return actions;
+    }
+  };
+
+  private canRecruitRegulars(): boolean {
+    const isengardNation = this.nationStore.nation("isengard");
+    return this.nationStore.hasRegularReinforcements(isengardNation);
+  }
+
+  private canUpgradeRegulars(): boolean {
+    const isengardNation = this.nationStore.nation("isengard");
+    if (!this.nationStore.hasEliteReinforcements(isengardNation)) return false;
+    const orthanc = this.regionStore.region("orthanc");
+    return orthanc.army?.regulars?.some(r => r.nation === "isengard") ?? false;
+  }
+
+  private nUpgradeableRegulars(): number {
+    const orthanc = this.regionStore.region("orthanc");
+    const nRegulars = orthanc.army?.regulars?.find(r => r.nation === "isengard")?.quantity ?? 0;
+    const nAvailableElites = this.nationStore.nation("isengard").reinforcements?.elite ?? 0;
+    return Math.min(nRegulars, nAvailableElites, 2);
+  }
+
+  private async recruitRegulars(): Promise<WotrAction[]> {
+    const exludedRegions = new Set<WotrRegionId>();
+    let counter = 0;
+    let canPass = false;
+    const isengardNation = this.nationStore.nation("isengard");
+    const actions: WotrAction[] = [];
+    while (counter < 3) {
+      const validRegions = this.regionStore
+        .recruitmentRegions(isengardNation)
+        .filter(r => !exludedRegions.has(r.id));
+      const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+        units: [{ type: "regular", nation: "isengard" }],
+        frontId: "shadow",
+        canPass
+      });
+      if (!unit) return actions;
+      const regionId = await this.ui.askRegion(
+        "Choose a region to recruit in",
+        validRegions.map(r => r.id)
+      );
+      exludedRegions.add(regionId);
+      actions.push(this.unitUi.recruitUnit(unit, regionId));
+      actions.push(...(await this.unitUi.checkStackingLimit(regionId, "shadow")));
+      canPass = true;
+      counter++;
+    }
+    return actions;
+  }
+
+  private async upgradeRegulars(): Promise<WotrAction[]> {
+    const maxRegulars = this.nUpgradeableRegulars();
+    const quantity = await this.ui.askQuantity("How many regular units to upgrade?", {
+      min: 1,
+      max: maxRegulars,
+      default: maxRegulars
+    });
+    return [upgradeRegularUnit("orthanc", "isengard", quantity)];
+  }
+
+  activate(): void {
+    this.actionDieEffects.registerMusterChoice(this.choice, "shadow");
+  }
+
+  deactivate(): void {
+    this.actionDieEffects.unregisterMusterChoice(this.choice, "shadow");
+  }
+}
+
+class ServantsOfTheWhiteHandAbility implements WotrCardAbility {
+  constructor(private characterStore: WotrCharacterStore) {}
+
+  activate(): void {
+    // Logic to activate Servants of the White Hand ability
+  }
+
+  deactivate(): void {
+    // Logic to deactivate Servants of the White Hand ability
+  }
+}

@@ -20,10 +20,11 @@ import { WotrLogStore } from "../log/wotr-log-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegion } from "../region/wotr-region-models";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
@@ -37,6 +38,8 @@ export class WotrCharacterHandler {
   private logStore = inject(WotrLogStore);
 
   private shadow = inject(WotrShadowPlayer);
+
+  private characterRules = inject(WotrCharacterRules);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -64,61 +67,67 @@ export class WotrCharacterHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {
     return {
-      "character-play": (action, front) => {
-        const region = this.regionStore.region(action.region);
-        for (const characterId of action.characters) {
-          switch (characterId) {
-            case "aragorn": {
-              const striderRegion = this.regionStore.characterRegion("strider")!;
-              const strider = this.characterStore.character("strider");
-              this.characterStore.setEliminated("strider");
-              this.removeCharacterFromRegion(strider, striderRegion);
-              break;
-            }
-            case "gandalf-the-white": {
-              const gandalf = this.characterStore.character("gandalf-the-grey");
-              if (gandalf.status === "inPlay") {
-                const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
-                this.characterStore.setEliminated("gandalf-the-grey");
-                this.removeCharacterFromRegion(gandalf, gandalfRegion);
-              }
-              break;
-            }
-          }
-          const character = this.characterStore.character(characterId);
-          this.characterStore.setInPlay(characterId);
-          this.addCharacterToRegion(character, region);
-        }
-        this.nationHandler.checkNationActivationByCharacters(action.region, action.characters);
-      },
+      "character-play": (action, front) => this.playCharacter(action.characters, action.region),
       "character-movement": (action, front) => this.moveCharacters(action, front),
-      "character-elimination": (action, front) => this.eliminateCharacter(action.characters)
+      "character-elimination": (action, front) => this.eliminateCharacters(action.characters)
     };
   }
 
-  async eliminateCharacter(characters: WotrCharacterId[]): Promise<void> {
+  private playCharacter(characters: WotrCharacterId[], regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
+    const removingCharacters: WotrCharacterId[] = [];
     for (const characterId of characters) {
-      const character = this.characterStore.character(characterId);
-      if (character.status === "inFellowship") {
-        this.fellowshipStore.removeCompanion(characterId);
-      } else if (character.status === "inPlay") {
-        let region = this.regionStore
-          .regions()
-          .find(r => r.army?.characters?.includes(characterId));
-        if (region) {
-          this.regionStore.removeCharacterFromArmy(characterId, region.id);
-        } else {
-          region = this.regionStore
-            .regions()
-            .find(r => r.freeUnits?.characters?.includes(characterId));
-          if (region) {
-            this.regionStore.removeCharacterFromFreeUnits(characterId, region.id);
+      switch (characterId) {
+        case "aragorn": {
+          removingCharacters.push("strider");
+          break;
+        }
+        case "gandalf-the-white": {
+          const gandalf = this.characterStore.character("gandalf-the-grey");
+          if (gandalf.status === "inPlay") {
+            removingCharacters.push("gandalf-the-grey");
           }
+          break;
         }
       }
-      this.characterStore.setEliminated(characterId);
+      const character = this.characterStore.character(characterId);
+      this.characterStore.setInPlay(characterId);
+      this.addCharacterToRegion(character, region);
+    }
+    this.nationHandler.checkNationActivationByCharacters(regionId, characters);
+    for (const characterId of removingCharacters) {
+      this.removeCharacter(characterId);
+    }
+    for (const characterId of characters) {
+      const characterCard = this.characterRules.characterCard(characterId);
+      const abilities = characterCard.getAbilities();
+      for (const ability of abilities) {
+        ability.activate();
+      }
+    }
+  }
+
+  async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
+    for (const characterId of characters) {
+      this.removeCharacter(characterId);
     }
     await this.checkWornWithSorrowAndToil();
+  }
+
+  private removeCharacter(characterId: WotrCharacterId): void {
+    const character = this.characterStore.character(characterId);
+    if (character.status === "inFellowship") {
+      this.fellowshipStore.removeCompanion(characterId);
+    } else if (character.status === "inPlay") {
+      const region = this.regionStore.characterRegion(characterId);
+      if (region) this.removeCharacterFromRegion(character, region);
+    }
+    this.characterStore.setEliminated(characterId);
+    const characterCard = this.characterRules.characterCard(characterId);
+    const abilities = characterCard.getAbilities();
+    for (const ability of abilities) {
+      ability.deactivate();
+    }
   }
 
   moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): void {

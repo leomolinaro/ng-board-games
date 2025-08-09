@@ -45,6 +45,7 @@ export interface WotrCardSelection {
 export interface WotrReinforcementUnitSelection {
   units: WotrReinforcementUnit[];
   frontId: WotrFrontId;
+  canPass: boolean;
 }
 
 export interface WotrFellowshipCompanionSelection {
@@ -55,6 +56,7 @@ export interface WotrFellowshipCompanionSelection {
 export interface WotrInputQuantitySelection {
   min: number;
   max: number;
+  default: number;
 }
 
 export interface WotrPlayerUiState {}
@@ -129,8 +131,8 @@ export class WotrGameUi extends signalStore(
   }
 
   inputQuantity = uiEvent<number>();
-  async askQuantity(message: string, min: number, max: number): Promise<number> {
-    this.updateUi(s => ({ ...s, message, inputQuantitySelection: { min, max } }));
+  async askQuantity(message: string, selection: WotrInputQuantitySelection): Promise<number> {
+    this.updateUi(s => ({ ...s, message, inputQuantitySelection: selection }));
     const quantity = await this.inputQuantity.get();
     this.updateUi(s => ({ ...s, message: null, canCancel: true, inputQuantitySelection: false }));
     return quantity;
@@ -184,16 +186,26 @@ export class WotrGameUi extends signalStore(
   async askReinforcementUnit(
     message: string,
     reinforcementUnitSelection: WotrReinforcementUnitSelection
-  ): Promise<WotrReinforcementUnit> {
-    this.updateUi(s => ({ ...s, message, reinforcementUnitSelection }));
-    const reinforcementUnit = await this.reinforcementUnit.get();
+  ): Promise<WotrReinforcementUnit | false> {
+    const options: WotrPlayerOption<boolean>[] = [];
+    if (reinforcementUnitSelection.canPass) {
+      options.push({ value: false, label: "Pass" });
+    }
+    this.updateUi(s => ({
+      ...s,
+      message,
+      reinforcementUnitSelection,
+      options: options?.length ? options : null
+    }));
+    const choice = await Promise.race([this.reinforcementUnit.get(), this.option.get()]);
     this.updateUi(s => ({
       ...s,
       message: null,
       canCancel: true,
-      reinforcementUnitSelection: null
+      reinforcementUnitSelection: null,
+      options: null
     }));
-    return reinforcementUnit;
+    return "value" in choice ? false : choice;
   }
 
   regionUnits = uiEvent<WotrRegionUnits>();

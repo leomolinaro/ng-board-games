@@ -42,12 +42,12 @@ const Y0 = 18;
   `,
   styles: [
     `
-      @import "wotr-variables";
+      @use "wotr-variables" as wotr;
 
       .border {
         fill: none;
         &.shadow {
-          stroke: $red;
+          stroke: wotr.$red;
           stroke-width: 4px;
         }
       }

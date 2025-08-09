@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
+import { WotrActionDieEffects } from "../action-die/wotr-action-die-effects";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrCardEffectsService } from "../card/wotr-card-effects-service";
@@ -44,6 +45,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private cardEffects = inject(WotrCardEffectsService);
   private localPlayerService = inject(WotrPlayerUi);
   private actionRegistry = inject(WotrActionRegistry);
+  private actionDieEffects = inject(WotrActionDieEffects);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -115,5 +117,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.store.clear();
     this.story.clear();
     this.actionRegistry.clear();
+    this.actionDieEffects.clear();
   }
 }

@@ -269,7 +269,7 @@ export class WotrBattleHandler {
           continueBattle = true;
         }
       } else {
-        continueBattle = true;
+        continueBattle = false;
       }
     }
 

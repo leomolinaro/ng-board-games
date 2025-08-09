@@ -25,7 +25,7 @@ export class WotrEliminateGuideChoice implements WotrPlayerChoice<WotrHuntEffect
     const actions: WotrAction[] = [];
     const guide = this.fellowshipStore.guide();
     actions.push(eliminateCharacter(guide));
-    this.characterHandler.eliminateCharacter([guide]);
+    this.characterHandler.eliminateCharacters([guide]);
     actions.push(await this.fellowshipUi.changeGuide());
     return actions;
   }

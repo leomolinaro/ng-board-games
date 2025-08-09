@@ -3,27 +3,27 @@ import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrAragorn } from "./characters/aragorn";
+import { WotrGandalfTheWhite } from "./characters/gandalf-the-white";
+import { WotrSaruman } from "./characters/saruman";
+import { WotrStrider } from "./characters/strider";
+import { WotrMouthOfSauron } from "./characters/the-mouth-of-sauron";
+import { WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
-import {
-  WotrAragornCard,
-  WotrCharacterCard,
-  WotrGandalfTheWhiteCard,
-  WotrMouthOfSauronCard,
-  WotrSarumanCard,
-  WotrWitchKingCard
-} from "./wotr-characters";
+import { WotrCharacterCard } from "./characters/wotr-character-card";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterRules {
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
 
-  private gandalfTheWhite = inject(WotrGandalfTheWhiteCard);
-  private aragorn = inject(WotrAragornCard);
-  private saruman = inject(WotrSarumanCard);
-  private witchKing = inject(WotrWitchKingCard);
-  private mouthOfSauron = inject(WotrMouthOfSauronCard);
+  private gandalfTheWhite = inject(WotrGandalfTheWhite);
+  private aragorn = inject(WotrAragorn);
+  private saruman = inject(WotrSaruman);
+  private witchKing = inject(WotrWitchKing);
+  private mouthOfSauron = inject(WotrMouthOfSauron);
+  private strider = inject(WotrStrider);
 
   canMoveNazgulOrMinions(): boolean {
     if (this.canMoveStandardNazgul()) return true;
@@ -65,6 +65,25 @@ export class WotrCharacterRules {
 
   shadowCharacterCards(): WotrCharacterCard[] {
     return [this.saruman, this.witchKing, this.mouthOfSauron];
+  }
+
+  characterCard(characterId: WotrCharacterId): WotrCharacterCard {
+    switch (characterId) {
+      case "gandalf-the-white":
+        return this.gandalfTheWhite;
+      case "aragorn":
+        return this.aragorn;
+      case "saruman":
+        return this.saruman;
+      case "the-witch-king":
+        return this.witchKing;
+      case "the-mouth-of-sauron":
+        return this.mouthOfSauron;
+      case "strider":
+        return this.strider;
+      default:
+        throw new Error(`Unknown character card: ${characterId}`);
+    }
   }
 
   canBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {

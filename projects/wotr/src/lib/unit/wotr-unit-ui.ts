@@ -3,16 +3,21 @@ import { attack } from "../battle/wotr-battle-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   armyMovement,
   eliminateRegularUnit,
+  recruitEliteUnit,
+  recruitLeader,
+  recruitNazgul,
+  recruitRegularUnit,
   WotrArmyMovement,
   WotrNazgulMovement
 } from "./wotr-unit-actions";
-import { WotrUnitHandler } from "./wotr-unit-handler";
-import { WotrArmy, WotrRegionUnits } from "./wotr-unit-models";
+import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
+import { WotrArmy, WotrRegionUnits, WotrReinforcementUnit } from "./wotr-unit-models";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
 
@@ -22,6 +27,7 @@ export class WotrUnitUi {
   private unitRules = inject(WotrUnitRules);
   private unitUtils = inject(WotrUnitUtils);
   private regionStore = inject(WotrRegionStore);
+  private nationStore = inject(WotrNationStore);
   private unitHandler = inject(WotrUnitHandler);
 
   async moveNazgulMinions(frontId: WotrFrontId): Promise<WotrNazgulMovement[]> {
@@ -162,5 +168,65 @@ export class WotrUnitUi {
       actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
     );
     return actions;
+  }
+
+  async recrtuiUnits(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    let points = 0;
+    const exludedRegions = new Set<WotrRegionId>();
+    let canPass = false;
+    while (points < 2) {
+      const constraints: WotrRecruitmentConstraints = {
+        points: 2 - points,
+        exludedRegions: exludedRegions
+      };
+      const validUnits = this.unitRules.validFrontReinforcementUnits(frontId, constraints);
+      if (!validUnits.length) return actions;
+      const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+        units: validUnits,
+        frontId: frontId,
+        canPass
+      });
+      if (unit === false) return actions;
+      points += unit.type === "elite" ? 2 : 1;
+      const nation = this.nationStore.nation(unit.nation);
+      const validRegions = this.regionStore
+        .recruitmentRegions(nation)
+        .filter(r => !exludedRegions.has(r.id));
+      const regionId = await this.ui.askRegion(
+        "Choose a region to recruit in",
+        validRegions.map(r => r.id)
+      );
+      exludedRegions.add(regionId);
+      actions.push(this.recruitUnit(unit, regionId));
+      actions.push(...(await this.checkStackingLimit(regionId, frontId)));
+      canPass = true;
+    }
+    return actions;
+  }
+
+  recruitUnit(unit: WotrReinforcementUnit, regionId: WotrRegionId) {
+    switch (unit.type) {
+      case "regular": {
+        const action = recruitRegularUnit(regionId, unit.nation, 1);
+        this.unitHandler.recruitRegularUnit(action);
+        return action;
+      }
+      case "elite": {
+        const action = recruitEliteUnit(regionId, unit.nation, 1);
+        this.unitHandler.recruitEliteUnit(action);
+        return action;
+      }
+      case "leader": {
+        const action = recruitLeader(regionId, unit.nation, 1);
+        this.unitHandler.recruitLeader(action);
+        return action;
+      }
+      case "nazgul": {
+        const action = recruitNazgul(regionId, 1);
+        this.unitHandler.recruitNazgul(action);
+        return action;
+      }
+    }
   }
 }

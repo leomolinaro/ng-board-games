@@ -552,6 +552,10 @@ export class WotrRegionStore {
   recruitmentRegions(nation: WotrNation): WotrRegion[] {
     return this.regions().filter(r => this.isRecruitmentRegion(r, nation));
   }
+  isUnderSiege(regionId: WotrRegionId): boolean {
+    const region = this.region(regionId);
+    return !!region.underSiegeArmy;
+  }
 
   private updateRegion(
     actionName: string,

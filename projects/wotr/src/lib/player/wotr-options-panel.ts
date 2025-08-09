@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, linkedSignal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { WotrGameUi } from "../game/wotr-game-ui";
 
@@ -7,7 +7,7 @@ import { WotrGameUi } from "../game/wotr-game-ui";
   imports: [FormsModule],
   template: `
     @if (ui.inputQuantitySelection(); as inputQuantity) {
-      <form (ngSubmit)="onInputSumbit(quantity)">
+      <form (ngSubmit)="onInputSumbit(quantity())">
         <input
           type="number"
           [(ngModel)]="quantity"
@@ -48,12 +48,17 @@ import { WotrGameUi } from "../game/wotr-game-ui";
 export class WotrOptionsPanel {
   protected ui = inject(WotrGameUi);
 
-  protected quantity = 0;
+  protected quantitySelection = this.ui.inputQuantitySelection();
+  // protected quantity = this.quantitySelection ? this.quantitySelection.default : 0;
+  protected quantity = linkedSignal(() => {
+    const inputQuantity = this.ui.inputQuantitySelection();
+    return inputQuantity ? inputQuantity.default : 0;
+  });
 
   onInputSumbit(quantity: number) {
     const inputQuantity = this.ui.inputQuantitySelection();
     if (!inputQuantity || quantity < inputQuantity.min || quantity > inputQuantity.max) return;
     this.ui.inputQuantity.emit(quantity);
-    this.quantity = 0;
+    this.quantity.set(0);
   }
 }

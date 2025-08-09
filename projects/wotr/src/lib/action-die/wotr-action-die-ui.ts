@@ -37,6 +37,7 @@ import {
   WotrChangeMusterDieChoice,
   WotrSkipDieChoice
 } from "./wotr-action-die-choices";
+import { WotrActionDieEffects } from "./wotr-action-die-effects";
 import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
 
@@ -64,6 +65,7 @@ export class WotrActionDieUi {
   private diplomaticActionChoice = inject(WotrDiplomaticActionChoice);
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
   private cardRules = inject(WotrCardRules);
+  private actionDieEffects = inject(WotrActionDieEffects);
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
@@ -190,10 +192,14 @@ export class WotrActionDieUi {
       new WotrPlayEventCardChoice(["muster"], frontId, this.cardRules, this.ui, this.cardPlayer),
       this.recruitReinforcementsChoice
     ];
+    if (frontId === "free-peoples") {
+      choices.push(...this.actionDieEffects.freePeoplesMusterChoices());
+    }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
+      choices.push(...this.actionDieEffects.shadowMusterChoices());
     }
     choices.push(new WotrSkipDieChoice("muster"));
     return this.ui.askChoice("Choose an action for the muster die", choices, frontId);
@@ -213,11 +219,16 @@ export class WotrActionDieUi {
       ),
       this.recruitReinforcementsChoice
     ];
+    if (frontId === "free-peoples") {
+      choices.push(...this.actionDieEffects.freePeoplesMusterChoices());
+    }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
+      choices.push(...this.actionDieEffects.shadowMusterChoices());
     }
+
     choices.push(new WotrSkipDieChoice("muster-army"));
     const actions = await this.ui.askChoice(
       "Choose an action for the muster-army die",

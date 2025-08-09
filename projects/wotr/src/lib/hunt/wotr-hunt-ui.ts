@@ -40,11 +40,11 @@ export class WotrHuntUi {
   async huntAllocationPhase(): Promise<WotrAction[]> {
     const min = this.huntStore.minimumNumberOfHuntDice();
     const max = this.huntStore.maximumNumberOfHuntDice();
-    const quantity = await this.ui.askQuantity(
-      "How many hunt dice do you want to allocate?",
+    const quantity = await this.ui.askQuantity("How many hunt dice do you want to allocate?", {
       min,
-      max
-    );
+      max,
+      default: min
+    });
     return [allocateHuntDice(quantity)];
   }
 
@@ -103,7 +103,7 @@ export class WotrHuntUi {
       actions.push(eliminateCharacter(...randomCompanionIds));
       damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
       casualtyTaken = true;
-      this.characterHandler.eliminateCharacter(randomCompanionIds);
+      this.characterHandler.eliminateCharacters(randomCompanionIds);
       if (wasGuide) {
         actions.push(await this.fellowshipUi.changeGuide());
       }

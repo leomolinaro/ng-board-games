@@ -5,7 +5,7 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { filterActions } from "../game/wotr-story-models";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
+import { WotrGenericUnitType, WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
@@ -280,67 +280,82 @@ export class WotrUnitHandler {
       ],
       "regular-unit-recruitment": (action, front, f) => [
         f.player(front),
-        " recruits regular units in ",
+        ` recruits ${this.logUnit(action.quantity, "regular")} in `,
         f.region(action.region)
       ],
       "regular-unit-upgrade": (action, front, f) => [
         f.player(front),
-        " upgrades regular units in ",
+        ` upgrades ${this.logUnit(action.quantity, "regular")} in `,
         f.region(action.region)
       ],
       "regular-unit-disband": (action, front, f) => [
         f.player(front),
-        " disbands regular units in ",
+        ` disbands ${this.logUnit(action.quantity, "regular")} in `,
         f.region(action.region)
       ],
       "elite-unit-elimination": (action, front, f) => [
         f.player(front),
-        " removes elite units from ",
+        ` removes ${this.logUnit(action.quantity, "elite")} from `,
         f.region(action.region)
       ],
       "elite-unit-recruitment": (action, front, f) => [
         f.player(front),
-        " recruits elite units in ",
+        ` recruits ${this.logUnit(action.quantity, "elite")} in `,
         f.region(action.region)
       ],
       "elite-unit-downgrade": (action, front, f) => [
         f.player(front),
-        " downgrades elite units in ",
+        ` downgrades ${this.logUnit(action.quantity, "elite")} in `,
         f.region(action.region)
       ],
       "elite-unit-disband": (action, front, f) => [
         f.player(front),
-        " disbands elite units in ",
+        ` disbands ${this.logUnit(action.quantity, "elite")} in `,
         f.region(action.region)
       ],
       "leader-elimination": (action, front, f) => [
         f.player(front),
-        " removes leaders from ",
+        ` removes ${this.logUnit(action.quantity, "leader")} from `,
         f.region(action.region)
       ],
       "leader-recruitment": (action, front, f) => [
         f.player(front),
-        " recruits leaders in ",
+        ` recruits ${this.logUnit(action.quantity, "leader")} in `,
         f.region(action.region)
       ],
       "nazgul-elimination": (action, front, f) => [
         f.player(front),
-        " removes Nazgul from ",
+        ` removes ${this.logUnit(action.quantity, "nazgul")} from `,
         f.region(action.region)
       ],
       "nazgul-recruitment": (action, front, f) => [
         f.player(front),
-        " recruits Nazgul in ",
+        ` recruits ${this.logUnit(action.quantity, "nazgul")} in `,
         f.region(action.region)
       ],
       "nazgul-movement": (action, front, f) => [
         f.player(front),
-        ` moves ${action.nNazgul} Nazgul from `,
+        ` moves ${this.logUnit(action.nNazgul, "nazgul")} from `,
         f.region(action.fromRegion),
         " to ",
         f.region(action.toRegion)
       ]
     };
+  }
+
+  private logUnit(quantity: number, unitType: WotrGenericUnitType) {
+    switch (unitType) {
+      case "regular":
+        return `${quantity} regular unit${quantity > 1 ? "s" : ""}`;
+      case "elite":
+        return `${quantity} elite unit${quantity > 1 ? "s" : ""}`;
+      case "leader":
+        return `${quantity} leader${quantity > 1 ? "s" : ""}`;
+      case "nazgul":
+        return `${quantity} Nazgul`;
+      default:
+        return "";
+    }
   }
 
   async chooseCasualties(hitPoints: number, regionId: WotrRegionId, player: WotrPlayer) {
