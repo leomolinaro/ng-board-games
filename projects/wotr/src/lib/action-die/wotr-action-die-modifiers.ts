@@ -3,7 +3,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui";
 
 @Injectable({ providedIn: "root" })
-export class WotrActionDieEffects {
+export class WotrActionDieModifiers {
   private _freePeoplesMusterChoices: WotrPlayerChoice[] = [];
   freePeoplesMusterChoices(): WotrPlayerChoice[] {
     return this._freePeoplesMusterChoices;

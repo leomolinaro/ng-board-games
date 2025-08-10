@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrActionDieEffects } from "../../action-die/wotr-action-die-effects";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { WotrActionDieModifiers } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi, WotrPlayerChoice } from "../../game/wotr-game-ui";
@@ -8,6 +8,7 @@ import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
+import { WotrLeadershipModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
@@ -17,14 +18,16 @@ import { WotrCharacterCard } from "./wotr-character-card";
 // Saruman - Corrupted Wizard (Level 0, Leadership 1, +1 Action Die)
 // If Isengard is "At War'' and Orthanc is unconquered, you may use one Muster Action die result to place Saruman in Orthanc. Saruman cannot leave Orthanc.
 // The Voice of Saruman. As long as Orthanc is under your control and not under siege, you may use a Muster Action die result to recruit one Regular Isengard unit in
-// every Isengard Settlement or to replace two Regular Isengard units in Orthanc with two Elite units. Servants of the White Hand. Each Isengard Elite unit is considered to be a Leader as well as an Army unit for all movement and combat purposes
+// every Isengard Settlement or to replace two Regular Isengard units in Orthanc with two Elite units.
+// Servants of the White Hand. Each Isengard Elite unit is considered to be a Leader as well as an Army unit for all movement and combat purposes
 
 @Injectable({ providedIn: "root" })
 export class WotrSaruman extends WotrCharacterCard {
   protected characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
-  private actionDieEffects = inject(WotrActionDieEffects);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private unitModifiers = inject(WotrUnitModifiers);
   private ui = inject(WotrGameUi);
   private unitUi = inject(WotrUnitUi);
 
@@ -46,24 +49,22 @@ export class WotrSaruman extends WotrCharacterCard {
   createAbilities(): WotrCardAbility[] {
     return [
       new TheVoiceOfSarumanAbility(
-        this.characterStore,
         this.nationStore,
         this.regionStore,
-        this.actionDieEffects,
+        this.actionDieModifiers,
         this.ui,
         this.unitUi
       ),
-      new ServantsOfTheWhiteHandAbility(this.characterStore)
+      new ServantsOfTheWhiteHandAbility(this.unitModifiers)
     ];
   }
 }
 
 class TheVoiceOfSarumanAbility implements WotrCardAbility {
   constructor(
-    private characterStore: WotrCharacterStore,
     private nationStore: WotrNationStore,
     private regionStore: WotrRegionStore,
-    private actionDieEffects: WotrActionDieEffects,
+    private actionDieEffects: WotrActionDieModifiers,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
   ) {}
@@ -167,13 +168,18 @@ class TheVoiceOfSarumanAbility implements WotrCardAbility {
 }
 
 class ServantsOfTheWhiteHandAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
+  constructor(private unitModifiers: WotrUnitModifiers) {}
+
+  private leadershipModifier: WotrLeadershipModifier = army => {
+    if (army.front !== "shadow") return 0;
+    return army.elites?.find(unit => unit.nation === "isengard")?.quantity || 0;
+  };
 
   activate(): void {
-    // Logic to activate Servants of the White Hand ability
+    this.unitModifiers.registerLeadershipModifier(this.leadershipModifier);
   }
 
   deactivate(): void {
-    // Logic to deactivate Servants of the White Hand ability
+    this.unitModifiers.unregisterLeadershipModifier(this.leadershipModifier);
   }
 }

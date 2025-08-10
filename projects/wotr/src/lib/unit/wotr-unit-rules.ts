@@ -14,12 +14,14 @@ import {
   WotrReinforcementUnit,
   WotrUnits
 } from "./wotr-unit-models";
+import { WotrUnitModifiers } from "./wotr-unit-modifiers";
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitRules {
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
   private characterStore = inject(WotrCharacterStore);
+  private unitModifiers = inject(WotrUnitModifiers);
 
   canFrontRecruitReinforcements(frontId: WotrFrontId): boolean {
     const constraints: WotrRecruitmentConstraints = { points: 2, exludedRegions: new Set() };
@@ -178,9 +180,6 @@ export class WotrUnitRules {
 
   getArmyLeadership(army: WotrArmy, moveable: boolean): number {
     let leadership = 0;
-    if (army.elites) {
-      leadership += this.getEliteUnitsLeadership(army.elites);
-    }
     if (army.leaders) {
       leadership += this.getLeadersLeadership(army.leaders);
     }
@@ -190,6 +189,7 @@ export class WotrUnitRules {
     if (army.characters) {
       leadership += this.getCharactersLeadership(army.characters, moveable);
     }
+    leadership += this.unitModifiers.getLeadershipModifier(army);
     return leadership;
   }
 
@@ -203,15 +203,6 @@ export class WotrUnitRules {
     }
     // TODO characters
     return combatStrength;
-  }
-
-  private getEliteUnitsLeadership(elites: WotrNationUnit[]) {
-    return elites.reduce((l, armyUnit) => {
-      if (armyUnit.nation === "isengard" && this.characterStore.isInPlay("saruman")) {
-        return l + armyUnit.quantity;
-      }
-      return l;
-    }, 0);
   }
 
   private getLeadersLeadership(leaders: WotrNationUnit[]) {

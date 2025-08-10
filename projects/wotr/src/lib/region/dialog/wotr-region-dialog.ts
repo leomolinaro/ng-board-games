@@ -333,6 +333,7 @@ export class WotrRegionDialog implements OnInit {
       } else if (unitNode.downgrading) {
         unitNode.downgrading = false;
         unitNode.removing = true;
+        this.selectedNodes.update(nodes => [...nodes]);
       } else {
         if (unitNode.type === "regular") {
           unitNode.removing = true;

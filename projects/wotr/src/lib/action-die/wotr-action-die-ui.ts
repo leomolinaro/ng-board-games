@@ -37,8 +37,8 @@ import {
   WotrChangeMusterDieChoice,
   WotrSkipDieChoice
 } from "./wotr-action-die-choices";
-import { WotrActionDieEffects } from "./wotr-action-die-effects";
 import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
+import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
 
 @Injectable({
@@ -65,7 +65,7 @@ export class WotrActionDieUi {
   private diplomaticActionChoice = inject(WotrDiplomaticActionChoice);
   private drawEventCardChoice = inject(WotrDrawEventCardChoice);
   private cardRules = inject(WotrCardRules);
-  private actionDieEffects = inject(WotrActionDieEffects);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
@@ -193,13 +193,13 @@ export class WotrActionDieUi {
       this.recruitReinforcementsChoice
     ];
     if (frontId === "free-peoples") {
-      choices.push(...this.actionDieEffects.freePeoplesMusterChoices());
+      choices.push(...this.actionDieModifiers.freePeoplesMusterChoices());
     }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
-      choices.push(...this.actionDieEffects.shadowMusterChoices());
+      choices.push(...this.actionDieModifiers.shadowMusterChoices());
     }
     choices.push(new WotrSkipDieChoice("muster"));
     return this.ui.askChoice("Choose an action for the muster die", choices, frontId);
@@ -220,13 +220,13 @@ export class WotrActionDieUi {
       this.recruitReinforcementsChoice
     ];
     if (frontId === "free-peoples") {
-      choices.push(...this.actionDieEffects.freePeoplesMusterChoices());
+      choices.push(...this.actionDieModifiers.freePeoplesMusterChoices());
     }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
-      choices.push(...this.actionDieEffects.shadowMusterChoices());
+      choices.push(...this.actionDieModifiers.shadowMusterChoices());
     }
 
     choices.push(new WotrSkipDieChoice("muster-army"));

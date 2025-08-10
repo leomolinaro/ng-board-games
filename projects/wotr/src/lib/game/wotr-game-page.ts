@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieEffects } from "../action-die/wotr-action-die-effects";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
+import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrCardEffectsService } from "../card/wotr-card-effects-service";
 import { WotrCardHandler } from "../card/wotr-card-handler";
@@ -19,6 +19,7 @@ import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrPlayerDoc } from "../remote/wotr-remote-models";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
+import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrBoard } from "./board/wotr-board";
 import { WotrGameStore } from "./wotr-game-store";
 import { WotrStoryService } from "./wotr-story-service";
@@ -45,7 +46,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private cardEffects = inject(WotrCardEffectsService);
   private localPlayerService = inject(WotrPlayerUi);
   private actionRegistry = inject(WotrActionRegistry);
-  private actionDieEffects = inject(WotrActionDieEffects);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private unitModifiers = inject(WotrUnitModifiers);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -117,6 +119,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.store.clear();
     this.story.clear();
     this.actionRegistry.clear();
-    this.actionDieEffects.clear();
+    this.actionDieModifiers.clear();
+    this.unitModifiers.clear();
   }
 }

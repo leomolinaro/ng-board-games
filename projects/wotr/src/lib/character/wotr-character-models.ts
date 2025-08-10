@@ -21,6 +21,7 @@ export interface WotrCharacter {
   name: string;
   level: number;
   leadership: number;
+  actionDiceBonus?: number;
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
   front: WotrFrontId;
   activationNation?: WotrNationId | "all";

@@ -1,4 +1,5 @@
 import { Injectable, Signal, computed } from "@angular/core";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 
@@ -25,26 +26,40 @@ export function initialeState(): WotrCharacterState {
       "the-witch-king"
     ],
     map: {
-      "gandalf-the-grey": initialCompanion("gandalf-the-grey", "Gandalf the Grey", 3, 1, "all"),
-      "strider": initialCompanion("strider", "Strider", 3, 1, "north"),
-      "boromir": initialCompanion("boromir", "Boromir", 2, 1, "gondor"),
-      "legolas": initialCompanion("legolas", "Legolas", 2, 1, "elves"),
-      "gimli": initialCompanion("gimli", "Gimli", 2, 1, "dwarves"),
-      "meriadoc": initialCompanion("meriadoc", "Meriadoc", 1, 1, "all"),
-      "peregrin": initialCompanion("peregrin", "Peregrin", 1, 1, "all"),
-      "aragorn": initialCompanion("aragorn", "Aragorn", 3, 2, "all"),
-      "gandalf-the-white": initialCompanion("gandalf-the-white", "Gandalf the White", 3, 1, "all"),
-      "gollum": initialCompanion("gollum", "Gollum", 0, 0, null),
-      "saruman": initialMinion("saruman", "Saruman", 0, 1, false),
+      "gandalf-the-grey": initialCompanion("gandalf-the-grey", "Gandalf the Grey", 3, 1, 0, "all"),
+      "strider": initialCompanion("strider", "Strider", 3, 1, 0, "north"),
+      "boromir": initialCompanion("boromir", "Boromir", 2, 1, 0, "gondor"),
+      "legolas": initialCompanion("legolas", "Legolas", 2, 1, 0, "elves"),
+      "gimli": initialCompanion("gimli", "Gimli", 2, 1, 0, "dwarves"),
+      "meriadoc": initialCompanion("meriadoc", "Meriadoc", 1, 1, 0, "all"),
+      "peregrin": initialCompanion("peregrin", "Peregrin", 1, 1, 0, "all"),
+      "aragorn": initialCompanion("aragorn", "Aragorn", 3, 2, 1, "all"),
+      "gandalf-the-white": initialCompanion(
+        "gandalf-the-white",
+        "Gandalf the White",
+        3,
+        1,
+        1,
+        "all"
+      ),
+      "gollum": initialCompanion("gollum", "Gollum", 0, 0, 0, null),
+      "saruman": initialMinion("saruman", "Saruman", 0, 1, 1, false),
       "the-mouth-of-sauron": initialMinion(
         "the-mouth-of-sauron",
         "The Mouth of Sauron",
         3,
         2,
+        1,
         false
       ),
-      // prettier-ignore
-      "the-witch-king": initialMinion("the-witch-king", "The Witch King", Number.MAX_SAFE_INTEGER, 2, true)
+      "the-witch-king": initialMinion(
+        "the-witch-king",
+        "The Witch King",
+        Number.MAX_SAFE_INTEGER,
+        2,
+        1,
+        true
+      )
     }
   };
 }
@@ -54,6 +69,7 @@ function initialCompanion(
   name: string,
   level: number,
   leadership: number,
+  actionDiceBonus: number,
   activationNation: WotrNationId | "all" | null
 ): WotrCharacter {
   const character: WotrCharacter = {
@@ -65,6 +81,9 @@ function initialCompanion(
     front: "free-peoples",
     flying: false
   };
+  if (actionDiceBonus) {
+    character.actionDiceBonus = actionDiceBonus;
+  }
   if (activationNation) {
     character.activationNation = activationNation;
   }
@@ -76,9 +95,22 @@ function initialMinion(
   name: string,
   level: number,
   leadership: number,
+  actionDiceBonus: number,
   flying: boolean
 ): WotrCharacter {
-  return { id, name, level, leadership, status: "available", front: "shadow", flying };
+  const character: WotrCharacter = {
+    id,
+    name,
+    level,
+    leadership,
+    status: "available",
+    front: "shadow",
+    flying
+  };
+  if (actionDiceBonus) {
+    character.actionDiceBonus = actionDiceBonus;
+  }
+  return character;
 }
 
 @Injectable({ providedIn: "root" })
@@ -141,5 +173,16 @@ export class WotrCharacterStore {
 
   maxLevel(companions: WotrCharacterId[]): number {
     return companions.reduce((max, c) => Math.max(max, this.character(c).level), 0);
+  }
+
+  actionDiceBonus(frontId: WotrFrontId): number {
+    let actionDiceBonus = 0;
+    for (const character of this.characters()) {
+      if (character.front !== frontId) continue;
+      if (!character.actionDiceBonus) continue;
+      if (character.status !== "inPlay") continue;
+      actionDiceBonus += character.actionDiceBonus;
+    }
+    return actionDiceBonus;
   }
 }

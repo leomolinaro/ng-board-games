@@ -44,17 +44,14 @@ export class WotrActionDieRules {
     switch (frontId) {
       case "free-peoples": {
         let nDice = 4;
-        if (this.characterStore.isInPlay("aragorn")) nDice += 1;
-        if (this.characterStore.isInPlay("gandalf-the-white")) nDice += 1;
+        nDice += this.characterStore.actionDiceBonus("free-peoples");
         return nDice;
       }
       case "shadow": {
         let nDice = 7;
-        if (this.characterStore.isInPlay("the-witch-king")) nDice += 1;
-        if (this.characterStore.isInPlay("saruman")) nDice += 1;
-        if (this.characterStore.isInPlay("the-mouth-of-sauron")) nDice += 1;
-        const huntDice = this.huntStore.nHuntDice();
-        return nDice - huntDice;
+        nDice += this.characterStore.actionDiceBonus("shadow");
+        nDice -= this.huntStore.nHuntDice();
+        return nDice;
       }
     }
   }
