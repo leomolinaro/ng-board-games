@@ -1,16 +1,23 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { WotrCombatRound } from "../../battle/wotr-battle-models";
+import {
+  WotrBattleModifiers,
+  WotrBattleOnCombatRoundEnd
+} from "../../battle/wotr-battle-modifiers";
+import { WotrBattleStore } from "../../battle/wotr-battle-store";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrNationStore } from "../../nation/wotr-nation-store";
+import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
-import { WotrCharacterCard } from "./wotr-character-card";
+import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-card";
 
 // The Witch-king - The Black Captain (Level ∞, Leadership 2, +1 Action Die)
 // If Sauron and at least one Free Peoples Nation are "At War," you may use one Muster Action die result to place the Witch-king in any region with a Shadow
@@ -25,6 +32,10 @@ export class WotrWitchKing extends WotrCharacterCard {
   private nationStore = inject(WotrNationStore);
   private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
+  // private characterHandler = inject(WotrCharacterHandler);
+  private battleStore = inject(WotrBattleStore);
+  private shadow = inject(WotrShadowPlayer);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   protected override characterId: WotrCharacterId = "the-witch-king";
 
@@ -65,6 +76,42 @@ export class WotrWitchKing extends WotrCharacterCard {
   }
 
   createAbilities(): WotrCardAbility[] {
-    return [];
+    return [
+      new SorcererAbility(this.battleStore, this.regionStore, this.shadow, this.battleModifiers)
+    ];
+  }
+}
+
+class SorcererAbility implements WotrCardAbility {
+  constructor(
+    private battleStore: WotrBattleStore,
+    private regionStore: WotrRegionStore,
+    private shadow: WotrShadowPlayer,
+    private battleModifiers: WotrBattleModifiers
+  ) {}
+
+  private onCombatRoundEnd: WotrBattleOnCombatRoundEnd = async (combatRound: WotrCombatRound) => {
+    if (
+      this.isCharacterInBattle("the-witch-king", combatRound) &&
+      combatRound.round === 1 &&
+      combatRound.shadow.combatCard
+    ) {
+      await activateCharacterAbility("the-witch-king", this.shadow);
+    }
+  };
+
+  private isCharacterInBattle(character: WotrCharacterId, combatRound: WotrCombatRound) {
+    if (this.battleStore.isCharacterInRetroguard(character)) {
+      return false;
+    }
+    return this.regionStore.isCharacterInRegion(character, combatRound.action.fromRegion);
+  }
+
+  activate(): void {
+    this.battleModifiers.registerCombatRoundEndHandler(this.onCombatRoundEnd);
+  }
+
+  deactivate(): void {
+    this.battleModifiers.unregisterCombatRoundEndHandler(this.onCombatRoundEnd);
   }
 }

@@ -1,7 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card-models";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
@@ -41,6 +40,7 @@ import {
   WotrCombatRoll
 } from "./wotr-battle-actions";
 import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
+import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardsService } from "./wotr-combat-cards-service";
 import { WotrCombatDie } from "./wotr-combat-die-models";
@@ -62,6 +62,7 @@ export class WotrBattleHandler {
   private shadow = inject(WotrShadowPlayer);
   private unitRules = inject(WotrUnitRules);
   private unitHandler = inject(WotrUnitHandler);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   init() {
     this.actionRegistry.registerAction<WotrArmyAttack>(
@@ -284,7 +285,7 @@ export class WotrBattleHandler {
       }
     }
 
-    await this.checkSorcerer(combatRound);
+    await this.battleModifiers.onCombatRoundEnd(combatRound);
 
     return continueBattle;
   }
@@ -565,23 +566,6 @@ export class WotrBattleHandler {
       battle.region,
       combatRound.siege
     );
-  }
-
-  private async checkSorcerer(combatRound: WotrCombatRound) {
-    if (
-      this.isCharacterInBattle("the-witch-king", combatRound) &&
-      combatRound.round === 1 &&
-      combatRound.shadow.combatCard
-    ) {
-      await this.characterHandler.activateCharacterAbility("the-witch-king", this.shadow);
-    }
-  }
-
-  private isCharacterInBattle(character: WotrCharacterId, combatRound: WotrCombatRound) {
-    if (this.battleStore.isCharacterInRetroguard(character)) {
-      return false;
-    }
-    return this.regionStore.isCharacterInRegion(character, combatRound.action.fromRegion);
   }
 
   private attackingRegion(combatRound: WotrCombatRound) {

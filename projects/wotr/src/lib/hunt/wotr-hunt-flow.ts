@@ -23,6 +23,7 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
+import { activateCharacterAbility } from "../character/characters/wotr-character-card";
 
 interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
@@ -261,10 +262,7 @@ export class WotrHuntFlow {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await this.characterHandler.activateCharacterAbility(
-          companion,
-          this.freePeoples
-        );
+        const actions = await activateCharacterAbility(companion, this.freePeoples);
         if (actions) {
           absorbedDamage++;
         }

@@ -1,8 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { unexpectedStory } from "@leobg/commons";
 import { WotrCardId } from "../card/wotr-card-models";
 import {
-  WotrAction,
   WotrActionApplierMap,
   WotrActionLoggerMap,
   WotrStoryApplier
@@ -194,20 +192,5 @@ export class WotrCharacterHandler {
 
   private characters(characters: WotrCharacterId[]) {
     return characters.map(c => this.characterStore.character(c).name).join(", ");
-  }
-
-  async activateCharacterAbility(
-    characterId: WotrCharacterId,
-    player: WotrPlayer
-  ): Promise<false | WotrAction[]> {
-    const story = await player.activateCharacterAbility(characterId);
-    switch (story.type) {
-      case "reaction-character":
-        return story.actions;
-      case "reaction-character-skip":
-        return false;
-      default:
-        throw unexpectedStory(story, " character activation or not");
-    }
   }
 }

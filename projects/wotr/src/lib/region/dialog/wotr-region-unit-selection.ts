@@ -143,13 +143,14 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
-    if (!this.unitSelection.required) return true;
+    if (selectedNodes.length === 0 && !this.unitSelection.required) return true;
     const someArmyUnits = selectedNodes.some(node => {
       if (node.type === "regular") return true;
       if (node.type === "elite") return true;
       return false;
     });
     if (!someArmyUnits) return "Select at least one regular or elite unit to move.";
+    if (!this.unitSelection.required) return true;
     if (this.unitSelection.withLeaders) {
       const someLeaders = selectedNodes.some(node => {
         if (node.type === "character") return true;

@@ -5,6 +5,7 @@ import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
+import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrCardEffectsService } from "../card/wotr-card-effects-service";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
@@ -48,6 +49,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private actionRegistry = inject(WotrActionRegistry);
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -121,5 +123,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.actionRegistry.clear();
     this.actionDieModifiers.clear();
     this.unitModifiers.clear();
+    this.battleModifiers.clear();
   }
 }
