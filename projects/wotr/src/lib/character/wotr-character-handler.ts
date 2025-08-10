@@ -100,6 +100,7 @@ export class WotrCharacterHandler {
     }
     for (const characterId of characters) {
       const characterCard = this.characterRules.characterCard(characterId);
+      characterCard.resolveBringIntoPlayEffect();
       const abilities = characterCard.getAbilities();
       for (const ability of abilities) {
         ability.activate();

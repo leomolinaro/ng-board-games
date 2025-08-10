@@ -3,6 +3,7 @@ import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
@@ -11,10 +12,18 @@ import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
+// The Witch-king - The Black Captain (Level ∞, Leadership 2, +1 Action Die)
+// If Sauron and at least one Free Peoples Nation are "At War," you may use one Muster Action die result to place the Witch-king in any region with a Shadow
+// Army that includes at least one Sauron unit.
+// Activate all Free Peoples Nations.
+// Sorcerer. If the Witch-king is in a battle and you use a Combat card during the first round of the battle, after doing so you may immediately draw an Event card
+// from the deck matching the type of that card.
+
 @Injectable({ providedIn: "root" })
 export class WotrWitchKing extends WotrCharacterCard {
   protected characterStore = inject(WotrCharacterStore);
   private nationStore = inject(WotrNationStore);
+  private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
 
   protected override characterId: WotrCharacterId = "the-witch-king";
@@ -39,6 +48,10 @@ export class WotrWitchKing extends WotrCharacterCard {
       validRegions
     );
     return playCharacter(region, "the-witch-king");
+  }
+
+  override resolveBringIntoPlayEffect(): void {
+    this.nationHandler.activateAllFreePeoplesNations();
   }
 
   private isValidRegion(region: WotrRegion): boolean {

@@ -148,4 +148,13 @@ export class WotrNationHandler {
     this.logStore.logEffect(action);
     this.nationStore.advance(quantity, nation);
   }
+
+  activateAllFreePeoplesNations(): void {
+    const nations = this.nationStore.freePeoplesNations();
+    for (const nation of nations) {
+      if (!nation.active) {
+        this.activateNation(nation.id);
+      }
+    }
+  }
 }

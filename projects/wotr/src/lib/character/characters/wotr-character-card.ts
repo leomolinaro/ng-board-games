@@ -19,6 +19,9 @@ export abstract class WotrCharacterCard {
 
   abstract canBeBroughtIntoPlay(die: WotrActionDie): boolean;
   abstract bringIntoPlay(ui: WotrGameUi): Promise<WotrAction>;
+
+  resolveBringIntoPlayEffect(): void {}
+
   getAbilities(): WotrCardAbility[] {
     if (!this.abilities) {
       this.abilities = this.createAbilities();
