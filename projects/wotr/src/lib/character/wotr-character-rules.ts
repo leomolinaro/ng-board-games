@@ -4,14 +4,21 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrAragorn } from "./characters/aragorn";
+import { WotrBoromir } from "./characters/boromir";
+import { WotrGandalfTheGrey } from "./characters/gandalf-the-grey";
 import { WotrGandalfTheWhite } from "./characters/gandalf-the-white";
+import { WotrGimli } from "./characters/gimli";
+import { WotrGollum } from "./characters/gollum";
+import { WotrLegolas } from "./characters/legolas";
+import { WotrMeriadoc } from "./characters/meriadoc";
+import { WotrPeregrin } from "./characters/peregrin";
 import { WotrSaruman } from "./characters/saruman";
 import { WotrStrider } from "./characters/strider";
 import { WotrMouthOfSauron } from "./characters/the-mouth-of-sauron";
 import { WotrWitchKing } from "./characters/the-witch-king";
+import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
-import { WotrCharacterCard } from "./characters/wotr-character-card";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterRules {
@@ -24,6 +31,13 @@ export class WotrCharacterRules {
   private witchKing = inject(WotrWitchKing);
   private mouthOfSauron = inject(WotrMouthOfSauron);
   private strider = inject(WotrStrider);
+  private gandalfTheGrey = inject(WotrGandalfTheGrey);
+  private peregrin = inject(WotrPeregrin);
+  private meriadoc = inject(WotrMeriadoc);
+  private boromir = inject(WotrBoromir);
+  private legolas = inject(WotrLegolas);
+  private gimli = inject(WotrGimli);
+  private gollum = inject(WotrGollum);
 
   canMoveNazgulOrMinions(): boolean {
     if (this.canMoveStandardNazgul()) return true;
@@ -81,8 +95,22 @@ export class WotrCharacterRules {
         return this.mouthOfSauron;
       case "strider":
         return this.strider;
+      case "gandalf-the-grey":
+        return this.gandalfTheGrey;
+      case "peregrin":
+        return this.peregrin;
+      case "meriadoc":
+        return this.meriadoc;
+      case "boromir":
+        return this.boromir;
+      case "legolas":
+        return this.legolas;
+      case "gimli":
+        return this.gimli;
       default:
         throw new Error(`Unknown character card: ${characterId}`);
+      // case "gollum":
+      //   return this.gollum;
     }
   }
 

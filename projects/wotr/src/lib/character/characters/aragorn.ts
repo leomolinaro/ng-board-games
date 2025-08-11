@@ -8,7 +8,12 @@ import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
-import { WotrCharacterCard } from "./wotr-character-card";
+import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-card";
+
+// Aragorn - Heir to Isildur (Level 3, Leadership 2, +1 Action Die)
+// If Strider is in Minas Tirith, Dol Amroth, or Pelargir, and that Settlement is unconquered, you may use one Will of the West Action die result to replace Strider
+// with Aragorn.
+// Captain of the West. If Aragorn is in a battle, add one to the Combat Strength of the Free Peoples Army (you can still roll a maximum of 5 Combat dice).
 
 @Injectable({ providedIn: "root" })
 export class WotrAragorn extends WotrCharacterCard {
@@ -17,7 +22,7 @@ export class WotrAragorn extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "aragorn";
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (!this.characterStore.isAvailable("aragorn")) return false;
     if (die !== "will-of-the-west") return false;
     if (this.striderValidRegion()) return true;
@@ -40,13 +45,13 @@ export class WotrAragorn extends WotrCharacterCard {
     }
   }
 
-  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const regionId = this.striderValidRegion();
     if (!regionId) throw new Error("Strider is not in a valid region to bring Aragorn into play.");
     return playCharacter(regionId, "aragorn");
   }
 
-  createAbilities(): WotrCardAbility[] {
-    return [];
+  override inPlayAbilities(): WotrCardAbility[] {
+    return [new CaptainOfTheWestAbility(this.characterId, this.characterStore)];
   }
 }

@@ -12,6 +12,11 @@ import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
+// The Mouth of Sauron - Lieutenant of Barad-dûr (Level 3, Leadership 2, +1 Action Die)
+// If the Fellowship is on the Mordor Track or all the Free Peoples Nations are "At War," you may use one Muster action die result to place the Mouth of Sauron in
+// any region with an unconquered Sauron Stronghold.
+// Messenger of the Dark Tower. Once per turn, you may use a Muster Action die result as an Army Action die result instead.
+
 @Injectable({ providedIn: "root" })
 export class WotrMouthOfSauron extends WotrCharacterCard {
   private frontStore = inject(WotrFrontStore);
@@ -21,7 +26,7 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "the-mouth-of-sauron";
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
       this.characterStore.isAvailable("the-mouth-of-sauron") &&
@@ -31,7 +36,7 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
     );
   }
 
-  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const validRegions = this.regionStore
       .regions()
       .filter(r => this.isValidRegion(r))
@@ -51,7 +56,13 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
     );
   }
 
-  createAbilities(): WotrCardAbility[] {
-    return [];
+  override inPlayAbilities(): WotrCardAbility[] {
+    return [new MessengerOfTheDarkTowerAbility()];
   }
+}
+
+class MessengerOfTheDarkTowerAbility implements WotrCardAbility {
+  activate(): void {}
+
+  deactivate(): void {}
 }

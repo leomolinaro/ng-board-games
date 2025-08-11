@@ -33,7 +33,7 @@ export class WotrSaruman extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "saruman";
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
       this.characterStore.isAvailable("saruman") &&
@@ -42,11 +42,11 @@ export class WotrSaruman extends WotrCharacterCard {
     );
   }
 
-  async bringIntoPlay(): Promise<WotrAction> {
+  override async bringIntoPlay(): Promise<WotrAction> {
     return playCharacter("orthanc", "saruman");
   }
 
-  createAbilities(): WotrCardAbility[] {
+  override inPlayAbilities(): WotrCardAbility[] {
     return [
       new TheVoiceOfSarumanAbility(
         this.nationStore,

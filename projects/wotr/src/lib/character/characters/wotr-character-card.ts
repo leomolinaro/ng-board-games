@@ -17,16 +17,26 @@ export abstract class WotrCharacterCard {
     return this.characterStore.character(this.characterId).name;
   }
 
-  protected abstract createAbilities(): WotrCardAbility[];
+  protected abstract inPlayAbilities(): WotrCardAbility[];
+  protected guideAbilities(): WotrCardAbility[] {
+    return [];
+  }
+  protected eliminatedAbilities(): WotrCardAbility[] {
+    return [];
+  }
 
-  abstract canBeBroughtIntoPlay(die: WotrActionDie): boolean;
-  abstract bringIntoPlay(ui: WotrGameUi): Promise<WotrAction>;
+  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+    throw new Error("Character already in play.");
+  }
+  bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+    throw new Error("Character already in play.");
+  }
 
   resolveBringIntoPlayEffect(): void {}
 
   getAbilities(): WotrCardAbility[] {
     if (!this.abilities) {
-      this.abilities = this.createAbilities();
+      this.abilities = this.inPlayAbilities();
     }
     return this.abilities;
   }
@@ -45,4 +55,13 @@ export async function activateCharacterAbility(
     default:
       throw unexpectedStory(story, " character activation or not");
   }
+}
+
+export class CaptainOfTheWestAbility implements WotrCardAbility {
+  constructor(
+    private characterId: WotrCharacterId,
+    private characterStore: WotrCharacterStore
+  ) {}
+  activate(): void {}
+  deactivate(): void {}
 }

@@ -39,7 +39,7 @@ export class WotrWitchKing extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "the-witch-king";
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
       this.characterStore.isAvailable("the-witch-king") &&
@@ -49,7 +49,7 @@ export class WotrWitchKing extends WotrCharacterCard {
     );
   }
 
-  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const validRegions = this.regionStore
       .regions()
       .filter(r => this.isValidRegion(r))
@@ -75,7 +75,7 @@ export class WotrWitchKing extends WotrCharacterCard {
     );
   }
 
-  createAbilities(): WotrCardAbility[] {
+  override inPlayAbilities(): WotrCardAbility[] {
     return [
       new SorcererAbility(this.battleStore, this.regionStore, this.shadow, this.battleModifiers)
     ];

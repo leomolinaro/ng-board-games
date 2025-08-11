@@ -10,6 +10,14 @@ import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
+// Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
+// If Gandalf the Grey has been eliminated or has left the Fellowship, and any Minion is (or has been) in play, you may use one Will of the West Action die result to
+// play Gandalf the White.
+// If Gandalf the Grey is in play, replace him; otherwise, place Gandalf the White in Fangorn or in an unconquered Elven Stronghold.
+// Shadowfax. If Gandalf the White is moving alone or with one Hobbit, his Level is considered 4 (for purposes of movement only).
+// The White Rider. If Gandalf the White is in a battle, at the start of the battle you can forfeit his Leadership to negate all Nazgul Leadership (including that of the
+// Witch-king) for the duration of that battle.
+
 @Injectable({ providedIn: "root" })
 export class WotrGandalfTheWhite extends WotrCharacterCard {
   protected characterStore = inject(WotrCharacterStore);
@@ -17,7 +25,7 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "gandalf-the-white";
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
     if (die !== "will-of-the-west") return false;
     const gandalf = this.characterStore.character("gandalf-the-grey");
@@ -32,7 +40,7 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
     return true;
   }
 
-  async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const gandalf = this.characterStore.character("gandalf-the-grey");
     if (gandalf.status === "inPlay") {
       const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
@@ -61,7 +69,17 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
     );
   }
 
-  createAbilities(): WotrCardAbility[] {
-    return [];
+  override inPlayAbilities(): WotrCardAbility[] {
+    return [new ShadowfaxAbility(), new TheWhiteRiderAbility()];
   }
+}
+
+class ShadowfaxAbility implements WotrCardAbility {
+  activate(): void {}
+  deactivate(): void {}
+}
+
+class TheWhiteRiderAbility implements WotrCardAbility {
+  activate(): void {}
+  deactivate(): void {}
 }
