@@ -1,6 +1,9 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrActionDieModifiers } from "../../action-die/wotr-action-die-modifiers";
+import {
+  WotrActionDieChoiceModifier,
+  WotrActionDieModifiers
+} from "../../action-die/wotr-action-die-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi, WotrPlayerChoice } from "../../game/wotr-game-ui";
@@ -64,40 +67,45 @@ class TheVoiceOfSarumanAbility implements WotrCardAbility {
   constructor(
     private nationStore: WotrNationStore,
     private regionStore: WotrRegionStore,
-    private actionDieEffects: WotrActionDieModifiers,
+    private actionDieModifiers: WotrActionDieModifiers,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
   ) {}
 
-  private choice: WotrPlayerChoice = {
-    label: () => "The Voice of Saruman",
-    isAvailable: () => {
-      const nation = this.nationStore.nation("isengard");
-      if (nation.politicalStep !== "atWar") return false;
-      if (!this.regionStore.isUnconquered("orthanc")) return false;
-      if (this.regionStore.isUnderSiege("orthanc")) return false;
-      if (this.canRecruitRegulars() || this.canUpgradeRegulars()) return true;
-      return false;
-    },
-    resolve: async () => {
-      const choices: WotrPlayerChoice[] = [];
-      choices.push({
-        label: () => "Recruit up to three regular units",
-        isAvailable: () => this.canRecruitRegulars(),
-        resolve: async () => this.recruitRegulars()
-      });
-      choices.push({
-        label: () => "Replace two regular units in Orthanc with two elite units",
-        isAvailable: () => this.canUpgradeRegulars(),
-        resolve: async () => this.upgradeRegulars()
-      });
-      const actions = await this.ui.askChoice(
-        "Choose an action for The Voice of Saruman",
-        choices,
-        "shadow"
-      );
-      return actions;
-    }
+  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+    if (die !== "muster" && die !== "muster-army") return [];
+    if (frontId !== "shadow") return [];
+    const choice: WotrPlayerChoice = {
+      label: () => "The Voice of Saruman",
+      isAvailable: () => {
+        const nation = this.nationStore.nation("isengard");
+        if (nation.politicalStep !== "atWar") return false;
+        if (!this.regionStore.isUnconquered("orthanc")) return false;
+        if (this.regionStore.isUnderSiege("orthanc")) return false;
+        if (this.canRecruitRegulars() || this.canUpgradeRegulars()) return true;
+        return false;
+      },
+      resolve: async () => {
+        const choices: WotrPlayerChoice[] = [];
+        choices.push({
+          label: () => "Recruit up to three regular units",
+          isAvailable: () => this.canRecruitRegulars(),
+          resolve: async () => this.recruitRegulars()
+        });
+        choices.push({
+          label: () => "Replace two regular units in Orthanc with two elite units",
+          isAvailable: () => this.canUpgradeRegulars(),
+          resolve: async () => this.upgradeRegulars()
+        });
+        const actions = await this.ui.askChoice(
+          "Choose an action for The Voice of Saruman",
+          choices,
+          "shadow"
+        );
+        return actions;
+      }
+    };
+    return [choice];
   };
 
   private canRecruitRegulars(): boolean {
@@ -159,11 +167,11 @@ class TheVoiceOfSarumanAbility implements WotrCardAbility {
   }
 
   activate(): void {
-    this.actionDieEffects.registerMusterChoice(this.choice, "shadow");
+    this.actionDieModifiers.actionDieChoices.register(this.modifier);
   }
 
   deactivate(): void {
-    this.actionDieEffects.unregisterMusterChoice(this.choice, "shadow");
+    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
   }
 }
 
@@ -176,10 +184,10 @@ class ServantsOfTheWhiteHandAbility implements WotrCardAbility {
   };
 
   activate(): void {
-    this.unitModifiers.registerLeadershipModifier(this.leadershipModifier);
+    this.unitModifiers.leadership.register(this.leadershipModifier);
   }
 
   deactivate(): void {
-    this.unitModifiers.unregisterLeadershipModifier(this.leadershipModifier);
+    this.unitModifiers.leadership.unregister(this.leadershipModifier);
   }
 }

@@ -107,10 +107,8 @@ export class WotrCharacterRules {
         return this.legolas;
       case "gimli":
         return this.gimli;
-      default:
-        throw new Error(`Unknown character card: ${characterId}`);
-      // case "gollum":
-      //   return this.gollum;
+      case "gollum":
+        return this.gollum;
     }
   }
 

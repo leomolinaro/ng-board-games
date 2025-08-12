@@ -1,5 +1,13 @@
 import { Injectable, inject } from "@angular/core";
+import {
+  WotrActionDieChoiceModifier,
+  WotrActionDieModifiers
+} from "../../action-die/wotr-action-die-modifiers";
+import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
+import { WotrPlayerChoice } from "../../game/wotr-game-ui";
+import { advanceNation } from "../../nation/wotr-nation-actions";
+import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
@@ -11,21 +19,57 @@ import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-car
 
 @Injectable({ providedIn: "root" })
 export class WotrGimli extends WotrCharacterCard {
-  private regionStore = inject(WotrRegionStore);
   protected characterStore = inject(WotrCharacterStore);
+  private battleModifiers = inject(WotrBattleModifiers);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private regionStore = inject(WotrRegionStore);
+  private nationStore = inject(WotrNationStore);
 
   protected override characterId: WotrCharacterId = "gimli";
 
   override inPlayAbilities(): WotrCardAbility[] {
     return [
-      new CaptainOfTheWestAbility(this.characterId, this.characterStore),
-      new DwarfOfEreborAbility(this.characterStore)
+      new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
+      new DwarfOfEreborAbility(this.regionStore, this.nationStore, this.actionDieModifiers)
     ];
   }
 }
 
 class DwarfOfEreborAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+  constructor(
+    private regionStore: WotrRegionStore,
+    private nationStore: WotrNationStore,
+    private actionDieModifiers: WotrActionDieModifiers
+  ) {}
+
+  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+    if (frontId !== "free-peoples") return [];
+    const erebor = this.regionStore.region("erebor");
+    if (
+      !erebor.army?.characters?.includes("gimli") &&
+      !erebor.underSiegeArmy?.characters?.includes("gimli")
+    )
+      return [];
+    if (!this.regionStore.isUnconquered(erebor.id)) return [];
+    const choice: WotrPlayerChoice = {
+      label: () => "Dwarf of Erebor",
+      isAvailable: () => {
+        const nation = this.nationStore.nation("dwarves");
+        if (nation.politicalStep === "atWar") return false;
+        return true;
+      },
+      resolve: async () => {
+        return [advanceNation("dwarves")];
+      }
+    };
+    return [choice];
+  };
+
+  activate(): void {
+    this.actionDieModifiers.actionDieChoices.register(this.modifier);
+  }
+
+  deactivate(): void {
+    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
+  }
 }

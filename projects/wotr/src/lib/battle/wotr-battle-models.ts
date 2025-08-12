@@ -19,7 +19,8 @@ export interface WotrBattle {
 export class WotrCombatFront {
   constructor(
     public player: WotrPlayer,
-    public isAttacker: boolean
+    public isAttacker: boolean,
+    public army: () => WotrArmy
   ) {}
 
   frontId = this.player.frontId;
@@ -41,11 +42,13 @@ export class WotrCombatRound {
     public round: number,
     public action: WotrArmyAttack,
     attacker: WotrPlayer,
+    attackingArmy: () => WotrArmy,
     defender: WotrPlayer,
+    defendingArmy: () => WotrArmy,
     public siege: boolean
   ) {
-    this.attacker = new WotrCombatFront(attacker, true);
-    this.defender = new WotrCombatFront(defender, false);
+    this.attacker = new WotrCombatFront(attacker, true, attackingArmy);
+    this.defender = new WotrCombatFront(defender, false, defendingArmy);
     if (attacker.frontId === "shadow") {
       this.shadow = this.attacker;
       this.freePeoples = this.defender;

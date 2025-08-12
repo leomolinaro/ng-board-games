@@ -3,7 +3,7 @@ import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
-import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-card";
+import { WotrCharacterCard } from "./wotr-character-card";
 
 // Gollum - Slave of the Ring
 // As soon as there are no Companions in the Fellowship, immediately add Gollum to the Fellowship.
@@ -19,14 +19,11 @@ export class WotrGollum extends WotrCharacterCard {
   protected override characterId: WotrCharacterId = "gollum";
 
   override inPlayAbilities(): WotrCardAbility[] {
-    return [
-      new CaptainOfTheWestAbility(this.characterId, this.characterStore),
-      new DwarfOfEreborAbility(this.characterStore)
-    ];
+    return [new GuideAbility(this.characterStore)];
   }
 }
 
-class DwarfOfEreborAbility implements WotrCardAbility {
+class GuideAbility implements WotrCardAbility {
   constructor(private characterStore: WotrCharacterStore) {}
   activate(): void {}
   deactivate(): void {}

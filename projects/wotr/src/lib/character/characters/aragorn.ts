@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -19,6 +20,7 @@ import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-car
 export class WotrAragorn extends WotrCharacterCard {
   private regionStore = inject(WotrRegionStore);
   protected characterStore = inject(WotrCharacterStore);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   protected override characterId: WotrCharacterId = "aragorn";
 
@@ -52,6 +54,6 @@ export class WotrAragorn extends WotrCharacterCard {
   }
 
   override inPlayAbilities(): WotrCardAbility[] {
-    return [new CaptainOfTheWestAbility(this.characterId, this.characterStore)];
+    return [new CaptainOfTheWestAbility(this.characterId, this.battleModifiers)];
   }
 }

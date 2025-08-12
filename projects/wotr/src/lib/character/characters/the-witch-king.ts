@@ -108,10 +108,10 @@ class SorcererAbility implements WotrCardAbility {
   }
 
   activate(): void {
-    this.battleModifiers.registerCombatRoundEndHandler(this.onCombatRoundEnd);
+    this.battleModifiers.combatRoundEndHandlers.register(this.onCombatRoundEnd);
   }
 
   deactivate(): void {
-    this.battleModifiers.unregisterCombatRoundEndHandler(this.onCombatRoundEnd);
+    this.battleModifiers.combatRoundEndHandlers.unregister(this.onCombatRoundEnd);
   }
 }

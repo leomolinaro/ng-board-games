@@ -1,5 +1,9 @@
 import { unexpectedStory } from "../../../../../commons/src";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import {
+  WotrBattleModifiers,
+  WotrBattleOnCombatRoundStart
+} from "../../battle/wotr-battle-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -60,8 +64,22 @@ export async function activateCharacterAbility(
 export class CaptainOfTheWestAbility implements WotrCardAbility {
   constructor(
     private characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore
+    private battleModifiers: WotrBattleModifiers
   ) {}
-  activate(): void {}
-  deactivate(): void {}
+
+  private handler: WotrBattleOnCombatRoundStart = async round => {
+    if (round.attacker.army().characters?.includes(this.characterId)) {
+      round.attacker.combatModifiers.push(1);
+    } else if (round.defender.army().characters?.includes(this.characterId)) {
+      round.defender.combatModifiers.push(1);
+    }
+  };
+
+  activate(): void {
+    this.battleModifiers.combatRoundStartHandlers.register(this.handler);
+  }
+
+  deactivate(): void {
+    this.battleModifiers.combatRoundStartHandlers.unregister(this.handler);
+  }
 }

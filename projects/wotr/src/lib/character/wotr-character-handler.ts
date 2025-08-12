@@ -65,13 +65,13 @@ export class WotrCharacterHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {
     return {
-      "character-play": (action, front) => this.playCharacter(action.characters, action.region),
+      "character-play": (action, front) => this.playCharacters(action.characters, action.region),
       "character-movement": (action, front) => this.moveCharacters(action, front),
       "character-elimination": (action, front) => this.eliminateCharacters(action.characters)
     };
   }
 
-  private playCharacter(characters: WotrCharacterId[], regionId: WotrRegionId) {
+  playCharacters(characters: WotrCharacterId[], regionId: WotrRegionId) {
     const region = this.regionStore.region(regionId);
     const removingCharacters: WotrCharacterId[] = [];
     for (const characterId of characters) {

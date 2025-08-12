@@ -144,6 +144,7 @@ export class WotrActionDieUi {
         this.moveArmiesChoice,
         this.attackArmyChoice,
         new WotrPlayEventCardChoice(["army"], frontId, this.cardRules, this.ui, this.cardPlayer),
+        ...this.actionDieModifiers.getActionDieChoices("army", frontId),
         new WotrSkipDieChoice("event")
       ],
       frontId
@@ -174,6 +175,7 @@ export class WotrActionDieUi {
     } else {
       choices.push(this.moveMinionsChoice);
     }
+    choices.push(...this.actionDieModifiers.getActionDieChoices("character", frontId));
     choices.push(new WotrSkipDieChoice("character"));
     return this.ui.askChoice("Choose an action for the character die", choices, frontId);
   }
@@ -192,15 +194,12 @@ export class WotrActionDieUi {
       new WotrPlayEventCardChoice(["muster"], frontId, this.cardRules, this.ui, this.cardPlayer),
       this.recruitReinforcementsChoice
     ];
-    if (frontId === "free-peoples") {
-      choices.push(...this.actionDieModifiers.freePeoplesMusterChoices());
-    }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
-      choices.push(...this.actionDieModifiers.shadowMusterChoices());
     }
+    choices.push(...this.actionDieModifiers.getActionDieChoices("muster", frontId));
     choices.push(new WotrSkipDieChoice("muster"));
     return this.ui.askChoice("Choose an action for the muster die", choices, frontId);
   }
@@ -219,16 +218,12 @@ export class WotrActionDieUi {
       ),
       this.recruitReinforcementsChoice
     ];
-    if (frontId === "free-peoples") {
-      choices.push(...this.actionDieModifiers.freePeoplesMusterChoices());
-    }
     if (frontId === "shadow") {
       choices.push(
         new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
       );
-      choices.push(...this.actionDieModifiers.shadowMusterChoices());
     }
-
+    choices.push(...this.actionDieModifiers.getActionDieChoices("muster-army", frontId));
     choices.push(new WotrSkipDieChoice("muster-army"));
     const actions = await this.ui.askChoice(
       "Choose an action for the muster-army die",
@@ -258,6 +253,7 @@ export class WotrActionDieUi {
         )
       );
     }
+    choices.push(...this.actionDieModifiers.getActionDieChoices("will-of-the-west", frontId));
     choices.push(new WotrSkipDieChoice("will-of-the-west"));
     const actions = await this.ui.askChoice(
       "Choose an action for the Will of the West die",
@@ -285,6 +281,7 @@ export class WotrActionDieUi {
       [
         this.drawEventCardChoice,
         new WotrPlayEventCardChoice("any", frontId, this.cardRules, this.ui, this.cardPlayer),
+        ...this.actionDieModifiers.getActionDieChoices("event", frontId),
         new WotrSkipDieChoice("event")
       ],
       frontId

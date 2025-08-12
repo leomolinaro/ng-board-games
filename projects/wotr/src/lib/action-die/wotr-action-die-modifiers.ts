@@ -1,37 +1,27 @@
 import { Injectable } from "@angular/core";
+import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrActionDie } from "./wotr-action-die-models";
+
+export type WotrActionDieChoiceModifier = (
+  die: WotrActionDie,
+  frontId: WotrFrontId
+) => WotrPlayerChoice[];
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieModifiers {
-  private _freePeoplesMusterChoices: WotrPlayerChoice[] = [];
-  freePeoplesMusterChoices(): WotrPlayerChoice[] {
-    return this._freePeoplesMusterChoices;
-  }
+  public readonly actionDieChoices = new WotrModifier<WotrActionDieChoiceModifier>();
 
-  private _shadowMusterChoices: WotrPlayerChoice[] = [];
-  shadowMusterChoices(): WotrPlayerChoice[] {
-    return this._shadowMusterChoices;
-  }
-
-  registerMusterChoice(choice: WotrPlayerChoice, frontId: WotrFrontId): void {
-    if (frontId === "shadow") {
-      this._shadowMusterChoices.push(choice);
-    } else {
-      this._freePeoplesMusterChoices.push(choice);
-    }
-  }
-
-  unregisterMusterChoice(choice: WotrPlayerChoice, frontId: WotrFrontId): void {
-    if (frontId === "shadow") {
-      this._shadowMusterChoices = this._shadowMusterChoices.filter(c => c !== choice);
-    } else {
-      this._freePeoplesMusterChoices = this._freePeoplesMusterChoices.filter(c => c !== choice);
-    }
+  public getActionDieChoices(die: WotrActionDie, frontId: WotrFrontId): WotrPlayerChoice[] {
+    return this.actionDieChoices
+      .get()
+      .reduce<
+        WotrPlayerChoice[]
+      >((choices, modifier) => choices.concat(modifier(die, frontId)), []);
   }
 
   clear() {
-    this._shadowMusterChoices = [];
-    this._freePeoplesMusterChoices = [];
+    this.actionDieChoices.clear();
   }
 }

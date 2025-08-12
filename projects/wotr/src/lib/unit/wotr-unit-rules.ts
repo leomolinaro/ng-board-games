@@ -189,7 +189,7 @@ export class WotrUnitRules {
     if (army.characters) {
       leadership += this.getCharactersLeadership(army.characters, moveable);
     }
-    leadership += this.unitModifiers.getLeadershipModifier(army);
+    leadership += this.unitModifiers.getLeadership(army);
     return leadership;
   }
 

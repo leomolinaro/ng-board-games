@@ -220,7 +220,9 @@ export class WotrBattleHandler {
         round,
         battle.action,
         battle.attacker,
+        () => this.attackingArmy(null as any),
         battle.defender,
+        () => this.defendingArmy(battle.action, battle.siege),
         battle.siege
       );
       continueBattle = await this.resolveCombat(combatRound, battle);
@@ -351,8 +353,8 @@ export class WotrBattleHandler {
         card: combatFront.combatCard,
         front: combatFront.frontId,
         isAttacker: combatFront.isAttacker,
-        attackedArmy: () => this.attackedArmy(combatRound),
-        attackingArmy: () => this.attackingArmy(combatRound)
+        attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
+        attackingArmy: () => this.attackingArmy(combatRound.action)
       });
     }
   }
@@ -474,10 +476,10 @@ export class WotrBattleHandler {
     if (combatFront.isAttacker) {
       const retroguard = this.battle().retroguard;
       const retroguardLeadership = retroguard ? this.getUnitsHitPoints(retroguard) : 0;
-      const armyLeadership = this.getUnitsHitPoints(this.attackingArmy(combatRound));
+      const armyLeadership = this.getUnitsHitPoints(this.attackingArmy(combatRound.action));
       return armyLeadership - retroguardLeadership;
     } else {
-      return this.getUnitsHitPoints(this.attackedArmy(combatRound));
+      return this.getUnitsHitPoints(this.defendingArmy(combatRound.action, combatRound.siege));
     }
   }
 
@@ -493,20 +495,20 @@ export class WotrBattleHandler {
 
   getCombatStrength(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
-      const attackingArmy = this.attackingArmy(combatRound);
+      const attackingArmy = this.attackingArmy(combatRound.action);
       return this.unitRules.getArmyCombatStrength(attackingArmy);
     } else {
-      const attackedArmy = this.attackedArmy(combatRound);
+      const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
       return attackedArmy ? this.unitRules.getArmyCombatStrength(attackedArmy) : 0;
     }
   }
 
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
-      const attackingArmy = this.attackingArmy(combatRound);
+      const attackingArmy = this.attackingArmy(combatRound.action);
       return this.unitRules.getArmyLeadership(attackingArmy, false);
     } else {
-      const attackedArmy = this.attackedArmy(combatRound);
+      const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
       return attackedArmy ? this.unitRules.getArmyLeadership(attackedArmy, false) : 0;
     }
   }
@@ -550,7 +552,7 @@ export class WotrBattleHandler {
   }
 
   private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
-    const attackingArmy = this.attackingArmy(combatRound);
+    const attackingArmy = this.attackingArmy(combatRound.action);
     await this.unitHandler.chooseFrontCasualties(
       combatRound.attacker.player,
       combatRound.defender.nTotalHits || 0,
@@ -558,7 +560,7 @@ export class WotrBattleHandler {
       battle.region,
       false
     );
-    const attackedArmy = this.attackedArmy(combatRound);
+    const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
     await this.unitHandler.chooseFrontCasualties(
       combatRound.defender.player,
       combatRound.attacker.nTotalHits || 0,
@@ -568,22 +570,19 @@ export class WotrBattleHandler {
     );
   }
 
-  private attackingRegion(combatRound: WotrCombatRound) {
-    return this.regionStore.region(combatRound.action.fromRegion);
+  private attackingRegion(action: WotrArmyAttack) {
+    return this.regionStore.region(action.fromRegion);
   }
-  private attackingArmy(combatRound: WotrCombatRound) {
-    if (combatRound.action.retroguard) {
-      return this.unitUtils.splitUnits(
-        this.attackingRegion(combatRound).army,
-        combatRound.action.retroguard
-      )!;
+  private attackingArmy(action: WotrArmyAttack): WotrArmy {
+    if (action.retroguard) {
+      return this.unitUtils.splitUnits(this.attackingRegion(action).army, action.retroguard)!;
     } else {
-      return this.attackingRegion(combatRound).army!;
+      return this.attackingRegion(action).army!;
     }
   }
-  private attackedArmy(combatRound: WotrCombatRound) {
-    const attackedRegion = this.attackedRegion(combatRound.action);
-    return combatRound.siege ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
+  private defendingArmy(action: WotrArmyAttack, siege: boolean): WotrArmy {
+    const attackedRegion = this.attackedRegion(action);
+    return siege ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
   }
   private attackedRegion(action: WotrArmyAttack) {
     return this.regionStore.region(action.toRegion);

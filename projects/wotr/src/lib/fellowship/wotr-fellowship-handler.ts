@@ -81,14 +81,10 @@ export class WotrFellowshipHandler {
   }
 
   separateCompanions(companions: WotrCompanionId[], toRegionId: WotrRegionId): void {
-    const toRegion = this.regionStore.region(toRegionId);
     for (const companionId of companions) {
       this.fellowshipStore.removeCompanion(companionId);
-      this.characterStore.setInPlay(companionId);
-      const character = this.characterStore.character(companionId);
-      this.characterHandler.addCharacterToRegion(character, toRegion);
     }
-    this.nationHandler.checkNationActivationByCharacters(toRegionId, companions);
+    this.characterHandler.playCharacters(companions, toRegionId);
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {

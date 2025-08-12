@@ -1,25 +1,18 @@
 import { Injectable } from "@angular/core";
+import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrArmy } from "./wotr-unit-models";
 
 export type WotrLeadershipModifier = (army: WotrArmy) => number;
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitModifiers {
-  private leadershipModifiers: WotrLeadershipModifier[] = [];
+  public readonly leadership = new WotrModifier<WotrLeadershipModifier>();
 
-  registerLeadershipModifier(modifier: WotrLeadershipModifier): void {
-    this.leadershipModifiers.push(modifier);
-  }
-
-  unregisterLeadershipModifier(modifier: WotrLeadershipModifier): void {
-    this.leadershipModifiers = this.leadershipModifiers.filter(m => m !== modifier);
-  }
-
-  getLeadershipModifier(army: WotrArmy): number {
-    return this.leadershipModifiers.reduce((total, modifier) => total + modifier(army), 0);
+  getLeadership(army: WotrArmy): number {
+    return this.leadership.get().reduce((total, modifier) => total + modifier(army), 0);
   }
 
   clear() {
-    this.leadershipModifiers = [];
+    this.leadership.clear();
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
 import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-card";
@@ -12,8 +12,8 @@ import { CaptainOfTheWestAbility, WotrCharacterCard } from "./wotr-character-car
 
 @Injectable({ providedIn: "root" })
 export class WotrStrider extends WotrCharacterCard {
-  private regionStore = inject(WotrRegionStore);
   protected characterStore = inject(WotrCharacterStore);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   protected override characterId: WotrCharacterId = "strider";
 
@@ -23,7 +23,7 @@ export class WotrStrider extends WotrCharacterCard {
 
   override inPlayAbilities(): WotrCardAbility[] {
     return [
-      new CaptainOfTheWestAbility(this.characterId, this.characterStore),
+      new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
       new HeirToIsildurAbility(this.characterStore)
     ];
   }
