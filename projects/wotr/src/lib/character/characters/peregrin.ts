@@ -15,27 +15,18 @@ export class WotrPeregrin extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "peregrin";
 
-  override guideAbilities(): WotrCardAbility[] {
-    return [new GuideAbility(this.characterStore)];
-  }
-
-  protected override eliminatedAbilities(): WotrCardAbility[] {
-    return [new TakeThemAliveAbility(this.characterStore)];
-  }
-
-  override inPlayAbilities(): WotrCardAbility[] {
-    return [];
+  override abilities(): WotrCardAbility[] {
+    return [
+      /* new GuideAbility(null as any), */
+      /* new TakeThemAliveAbility(null as any) */
+    ];
   }
 }
 
-class GuideAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class GuideAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }
 
-class TakeThemAliveAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class TakeThemAliveAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }

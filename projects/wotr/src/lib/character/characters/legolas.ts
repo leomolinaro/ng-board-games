@@ -27,7 +27,7 @@ export class WotrLegolas extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "legolas";
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
       new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
       new PrinceOfMirkwoodAbility(this.regionStore, this.nationStore, this.actionDieModifiers)
@@ -35,14 +35,16 @@ export class WotrLegolas extends WotrCharacterCard {
   }
 }
 
-class PrinceOfMirkwoodAbility implements WotrCardAbility {
+class PrinceOfMirkwoodAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
   constructor(
     private regionStore: WotrRegionStore,
     private nationStore: WotrNationStore,
-    private actionDieModifiers: WotrActionDieModifiers
-  ) {}
+    actionDieModifiers: WotrActionDieModifiers
+  ) {
+    super(actionDieModifiers.actionDieChoices);
+  }
 
-  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     const legolasRegion = this.regionStore.characterRegion("legolas")!;
     if (legolasRegion.nationId !== "elves") return [];
@@ -61,12 +63,4 @@ class PrinceOfMirkwoodAbility implements WotrCardAbility {
     };
     return [choice];
   };
-
-  activate(): void {
-    this.actionDieModifiers.actionDieChoices.register(this.modifier);
-  }
-
-  deactivate(): void {
-    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
-  }
 }

@@ -138,6 +138,9 @@ export class WotrCharacterStore {
   isAvailable(characterId: WotrCharacterId): boolean {
     return this.character(characterId).status === "available";
   }
+  isInFellowship(characterId: WotrCharacterId): boolean {
+    return this.character(characterId).status === "inFellowship";
+  }
 
   private updateCharacter(
     actionName: string,

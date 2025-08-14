@@ -17,26 +17,19 @@ export class WotrStrider extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "strider";
 
-  override guideAbilities(): WotrCardAbility[] {
-    return [new GuideAbility(this.characterStore)];
-  }
-
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
-      new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
-      new HeirToIsildurAbility(this.characterStore)
+      // new GuideAbility(null as any),
+      new CaptainOfTheWestAbility(this.characterId, this.battleModifiers)
+      // new HeirToIsildurAbility(null as any)
     ];
   }
 }
 
-class GuideAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class GuideAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }
 
-class HeirToIsildurAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class HeirToIsildurAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }

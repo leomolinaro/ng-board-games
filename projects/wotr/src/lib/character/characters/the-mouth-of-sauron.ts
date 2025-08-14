@@ -56,13 +56,13 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
     );
   }
 
-  override inPlayAbilities(): WotrCardAbility[] {
-    return [new MessengerOfTheDarkTowerAbility()];
+  override abilities(): WotrCardAbility[] {
+    return [
+      /* new MessengerOfTheDarkTowerAbility(null as any) */
+    ];
   }
 }
 
-class MessengerOfTheDarkTowerAbility implements WotrCardAbility {
-  activate(): void {}
-
-  deactivate(): void {}
+class MessengerOfTheDarkTowerAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }

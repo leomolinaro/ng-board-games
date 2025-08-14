@@ -28,7 +28,7 @@ export class WotrBoromir extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "boromir";
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
       new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
       new HighWardenOfTheWhiteTowerAbility(
@@ -40,14 +40,16 @@ export class WotrBoromir extends WotrCharacterCard {
   }
 }
 
-class HighWardenOfTheWhiteTowerAbility implements WotrCardAbility {
+class HighWardenOfTheWhiteTowerAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
   constructor(
     private regionStore: WotrRegionStore,
     private nationStore: WotrNationStore,
-    private actionDieModifiers: WotrActionDieModifiers
-  ) {}
+    actionDieModifiers: WotrActionDieModifiers
+  ) {
+    super(actionDieModifiers.actionDieChoices);
+  }
 
-  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     const boromirRegion = this.regionStore.characterRegion("boromir")!;
     if (boromirRegion.nationId !== "gondor") return [];
@@ -66,12 +68,4 @@ class HighWardenOfTheWhiteTowerAbility implements WotrCardAbility {
     };
     return [choice];
   };
-
-  activate(): void {
-    this.actionDieModifiers.actionDieChoices.register(this.modifier);
-  }
-
-  deactivate(): void {
-    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
-  }
 }

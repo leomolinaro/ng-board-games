@@ -1,6 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrCharacterId } from "../wotr-character-models";
+import {
+  WotrBeforeCharacterElimination,
+  WotrCharacterModifiers
+} from "../wotr-character-modifiers";
 import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
@@ -12,30 +16,35 @@ import { WotrCharacterCard } from "./wotr-character-card";
 @Injectable({ providedIn: "root" })
 export class WotrMeriadoc extends WotrCharacterCard {
   protected characterStore = inject(WotrCharacterStore);
+  private characterModifiers = inject(WotrCharacterModifiers);
 
   protected override characterId: WotrCharacterId = "meriadoc";
 
-  override guideAbilities(): WotrCardAbility[] {
-    return [new GuideAbility(this.characterStore)];
-  }
-
-  protected override eliminatedAbilities(): WotrCardAbility[] {
-    return [new TakeThemAliveAbility(this.characterStore)];
-  }
-
-  override inPlayAbilities(): WotrCardAbility[] {
-    return [];
+  override abilities(): WotrCardAbility[] {
+    return [
+      // new GuideAbility(null as any),
+      new TakeThemAliveAbility(this.characterStore, this.characterModifiers)
+    ];
   }
 }
 
-class GuideAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class GuideAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }
 
-class TakeThemAliveAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class TakeThemAliveAbility extends WotrCardAbility<WotrBeforeCharacterElimination> {
+  constructor(
+    private characterStore: WotrCharacterStore,
+    characterModifiers: WotrCharacterModifiers
+  ) {
+    super(characterModifiers.beforeCharacterElimination);
+  }
+
+  protected override handler: WotrBeforeCharacterElimination = async (
+    characterId: WotrCharacterId
+  ) => {
+    if (characterId !== "meriadoc") return true;
+    if (!this.characterStore.isInFellowship("meriadoc")) return true;
+    return true;
+  };
 }

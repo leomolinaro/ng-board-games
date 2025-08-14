@@ -69,17 +69,15 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
     );
   }
 
-  override inPlayAbilities(): WotrCardAbility[] {
-    return [new ShadowfaxAbility(), new TheWhiteRiderAbility()];
+  override abilities(): WotrCardAbility[] {
+    return [new ShadowfaxAbility(null as any), new TheWhiteRiderAbility(null as any)];
   }
 }
 
-class ShadowfaxAbility implements WotrCardAbility {
-  activate(): void {}
-  deactivate(): void {}
+class ShadowfaxAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }
 
-class TheWhiteRiderAbility implements WotrCardAbility {
-  activate(): void {}
-  deactivate(): void {}
+class TheWhiteRiderAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }

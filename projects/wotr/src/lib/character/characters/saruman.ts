@@ -49,7 +49,7 @@ export class WotrSaruman extends WotrCharacterCard {
     return playCharacter("orthanc", "saruman");
   }
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
       new TheVoiceOfSarumanAbility(
         this.nationStore,
@@ -63,16 +63,18 @@ export class WotrSaruman extends WotrCharacterCard {
   }
 }
 
-class TheVoiceOfSarumanAbility implements WotrCardAbility {
+class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
   constructor(
     private nationStore: WotrNationStore,
     private regionStore: WotrRegionStore,
-    private actionDieModifiers: WotrActionDieModifiers,
+    actionDieModifiers: WotrActionDieModifiers,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
-  ) {}
+  ) {
+    super(actionDieModifiers.actionDieChoices);
+  }
 
-  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (die !== "muster" && die !== "muster-army") return [];
     if (frontId !== "shadow") return [];
     const choice: WotrPlayerChoice = {
@@ -165,29 +167,15 @@ class TheVoiceOfSarumanAbility implements WotrCardAbility {
     });
     return [upgradeRegularUnit("orthanc", "isengard", quantity)];
   }
-
-  activate(): void {
-    this.actionDieModifiers.actionDieChoices.register(this.modifier);
-  }
-
-  deactivate(): void {
-    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
-  }
 }
 
-class ServantsOfTheWhiteHandAbility implements WotrCardAbility {
-  constructor(private unitModifiers: WotrUnitModifiers) {}
+class ServantsOfTheWhiteHandAbility extends WotrCardAbility<WotrLeadershipModifier> {
+  constructor(unitModifiers: WotrUnitModifiers) {
+    super(unitModifiers.leadership);
+  }
 
-  private leadershipModifier: WotrLeadershipModifier = army => {
+  protected override handler: WotrLeadershipModifier = army => {
     if (army.front !== "shadow") return 0;
     return army.elites?.find(unit => unit.nation === "isengard")?.quantity || 0;
   };
-
-  activate(): void {
-    this.unitModifiers.leadership.register(this.leadershipModifier);
-  }
-
-  deactivate(): void {
-    this.unitModifiers.leadership.unregister(this.leadershipModifier);
-  }
 }

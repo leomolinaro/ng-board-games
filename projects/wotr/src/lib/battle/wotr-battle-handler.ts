@@ -287,7 +287,7 @@ export class WotrBattleHandler {
       }
     }
 
-    await this.battleModifiers.onCombatRoundEnd(combatRound);
+    await this.battleModifiers.onAfterCombatRound(combatRound);
 
     return continueBattle;
   }

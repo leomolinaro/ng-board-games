@@ -1,5 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
+import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
+import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
+import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -31,14 +34,18 @@ export class WotrGameTurn {
   private logStore = inject(WotrLogStore);
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
-  private companionStore = inject(WotrCharacterStore);
+  private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
   private actionRegistry = inject(WotrActionRegistry);
+  private characterRules = inject(WotrCharacterRules);
 
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+
+  private characterModifiers = inject(WotrCharacterModifiers);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
 
   private setupService = inject(WotrSetupRules);
 
@@ -67,6 +74,16 @@ export class WotrGameTurn {
     const gameSetup = this.setupService.getGameSetup();
     this.logStore.logSetup();
     this.applySetup(gameSetup);
+    this.registerCharacterAbilities();
+  }
+
+  private registerCharacterAbilities() {
+    for (const character of this.fellowshipStore.companions()) {
+      const characterCard = this.characterRules.characterCard(character);
+      for (const action of characterCard.getAbilities()) {
+        action.activate();
+      }
+    }
   }
 
   private async round(roundNumber: number) {
@@ -156,7 +173,7 @@ export class WotrGameTurn {
     return true;
   }
 
-  async chooseAction(
+  private async chooseAction(
     player: WotrPlayer
   ): Promise<
     WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory
@@ -165,6 +182,12 @@ export class WotrGameTurn {
     switch (story.type) {
       case "die":
       case "die-card":
+        await this.actionDieModifiers.onAfterActionDieResolution(
+          story.die,
+          player.frontId,
+          story.actions
+        );
+        return story;
       case "die-pass":
       case "token":
       case "token-skip":
@@ -236,7 +259,7 @@ export class WotrGameTurn {
     this.frontStore.setActionTokens(setup.shadowTokens, "shadow");
     this.fellowshipStore.setCompanions(setup.fellowship.companions);
     for (const companion of setup.fellowship.companions) {
-      this.companionStore.setInFellowship(companion);
+      this.characterStore.setInFellowship(companion);
     }
     this.fellowshipStore.setGuide(setup.fellowship.guide);
     this.regionStore.addFellowshipToRegion(setup.fellowship.region);

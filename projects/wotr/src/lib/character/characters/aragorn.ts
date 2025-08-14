@@ -53,7 +53,7 @@ export class WotrAragorn extends WotrCharacterCard {
     return playCharacter(regionId, "aragorn");
   }
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [new CaptainOfTheWestAbility(this.characterId, this.battleModifiers)];
   }
 }

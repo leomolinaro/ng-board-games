@@ -27,7 +27,7 @@ export class WotrGimli extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "gimli";
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
       new CaptainOfTheWestAbility(this.characterId, this.battleModifiers),
       new DwarfOfEreborAbility(this.regionStore, this.nationStore, this.actionDieModifiers)
@@ -35,14 +35,16 @@ export class WotrGimli extends WotrCharacterCard {
   }
 }
 
-class DwarfOfEreborAbility implements WotrCardAbility {
+class DwarfOfEreborAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
   constructor(
     private regionStore: WotrRegionStore,
     private nationStore: WotrNationStore,
-    private actionDieModifiers: WotrActionDieModifiers
-  ) {}
+    actionDieModifiers: WotrActionDieModifiers
+  ) {
+    super(actionDieModifiers.actionDieChoices);
+  }
 
-  private modifier: WotrActionDieChoiceModifier = (die, frontId) => {
+  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     const erebor = this.regionStore.region("erebor");
     if (
@@ -64,12 +66,4 @@ class DwarfOfEreborAbility implements WotrCardAbility {
     };
     return [choice];
   };
-
-  activate(): void {
-    this.actionDieModifiers.actionDieChoices.register(this.modifier);
-  }
-
-  deactivate(): void {
-    this.actionDieModifiers.actionDieChoices.unregister(this.modifier);
-  }
 }

@@ -1,10 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
-import {
-  WotrBattleModifiers,
-  WotrBattleOnCombatRoundEnd
-} from "../../battle/wotr-battle-modifiers";
+import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../battle/wotr-battle-store";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
@@ -32,7 +29,6 @@ export class WotrWitchKing extends WotrCharacterCard {
   private nationStore = inject(WotrNationStore);
   private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
-  // private characterHandler = inject(WotrCharacterHandler);
   private battleStore = inject(WotrBattleStore);
   private shadow = inject(WotrShadowPlayer);
   private battleModifiers = inject(WotrBattleModifiers);
@@ -75,22 +71,24 @@ export class WotrWitchKing extends WotrCharacterCard {
     );
   }
 
-  override inPlayAbilities(): WotrCardAbility[] {
+  override abilities(): WotrCardAbility[] {
     return [
       new SorcererAbility(this.battleStore, this.regionStore, this.shadow, this.battleModifiers)
     ];
   }
 }
 
-class SorcererAbility implements WotrCardAbility {
+class SorcererAbility extends WotrCardAbility<WotrAfterCombatRound> {
   constructor(
     private battleStore: WotrBattleStore,
     private regionStore: WotrRegionStore,
     private shadow: WotrShadowPlayer,
-    private battleModifiers: WotrBattleModifiers
-  ) {}
+    battleModifiers: WotrBattleModifiers
+  ) {
+    super(battleModifiers.afterCombatRound);
+  }
 
-  private onCombatRoundEnd: WotrBattleOnCombatRoundEnd = async (combatRound: WotrCombatRound) => {
+  protected override handler: WotrAfterCombatRound = async (combatRound: WotrCombatRound) => {
     if (
       this.isCharacterInBattle("the-witch-king", combatRound) &&
       combatRound.round === 1 &&
@@ -105,13 +103,5 @@ class SorcererAbility implements WotrCardAbility {
       return false;
     }
     return this.regionStore.isCharacterInRegion(character, combatRound.action.fromRegion);
-  }
-
-  activate(): void {
-    this.battleModifiers.combatRoundEndHandlers.register(this.onCombatRoundEnd);
-  }
-
-  deactivate(): void {
-    this.battleModifiers.combatRoundEndHandlers.unregister(this.onCombatRoundEnd);
   }
 }

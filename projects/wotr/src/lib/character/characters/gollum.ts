@@ -18,13 +18,13 @@ export class WotrGollum extends WotrCharacterCard {
 
   protected override characterId: WotrCharacterId = "gollum";
 
-  override inPlayAbilities(): WotrCardAbility[] {
-    return [new GuideAbility(this.characterStore)];
+  override abilities(): WotrCardAbility[] {
+    return [
+      /* new GuideAbility(null as any) */
+    ];
   }
 }
 
-class GuideAbility implements WotrCardAbility {
-  constructor(private characterStore: WotrCharacterStore) {}
-  activate(): void {}
-  deactivate(): void {}
+class GuideAbility extends WotrCardAbility<unknown> {
+  protected override handler = null;
 }
