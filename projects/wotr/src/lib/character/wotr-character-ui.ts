@@ -11,12 +11,14 @@ import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
+import { WotrCharacters } from "./wotr-characters";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterUi {
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
   private characterRules = inject(WotrCharacterRules);
+  private characters = inject(WotrCharacters);
   private characterHandler = inject(WotrCharacterHandler);
   private unitHandler = inject(WotrUnitHandler);
   private ui = inject(WotrGameUi);
@@ -24,12 +26,12 @@ export class WotrCharacterUi {
   bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
     const cards =
       frontId === "free-peoples"
-        ? this.characterRules.freePeoplesCharacterCards()
-        : this.characterRules.shadowCharacterCards();
+        ? this.characters.freePeoplesCharacterCards()
+        : this.characters.shadowCharacterCards();
     return this.ui.askChoice(
       "Choose character to bring into play",
       cards.map<WotrPlayerChoice>(card => ({
-        label: () => card.name(),
+        label: () => this.characterStore.character(card.characterId).name,
         isAvailable: () => card.canBeBroughtIntoPlay(die),
         resolve: async () => {
           const action = await card.bringIntoPlay(this.ui);

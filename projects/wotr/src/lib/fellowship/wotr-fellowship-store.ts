@@ -21,6 +21,9 @@ export class WotrFellowshipStore {
   isRevealed() {
     return this.state().status === "revealed";
   }
+  isHidden() {
+    return this.state().status === "hidden";
+  }
   guide() {
     return this.state().guide;
   }

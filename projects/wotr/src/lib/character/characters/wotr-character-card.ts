@@ -1,25 +1,12 @@
 import { unexpectedStory } from "../../../../../commons/src";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrCombatRound } from "../../battle/wotr-battle-models";
-import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 
 export abstract class WotrCharacterCard {
-  protected abstract characterStore: WotrCharacterStore;
-  protected abstract characterId: WotrCharacterId;
-
-  private _abilities: WotrCardAbility[] | null = null;
-
-  name(): string {
-    return this.characterStore.character(this.characterId).name;
-  }
-
-  protected abstract abilities(): WotrCardAbility[];
+  public abstract characterId: WotrCharacterId;
 
   canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     throw new Error("Character already in play.");
@@ -29,13 +16,6 @@ export abstract class WotrCharacterCard {
   }
 
   resolveBringIntoPlayEffect(): void {}
-
-  getAbilities(): WotrCardAbility[] {
-    if (!this._abilities) {
-      this._abilities = this.abilities();
-    }
-    return this._abilities;
-  }
 }
 
 export async function activateCharacterAbility(
@@ -51,21 +31,4 @@ export async function activateCharacterAbility(
     default:
       throw unexpectedStory(story, " character activation or not");
   }
-}
-
-export class CaptainOfTheWestAbility extends WotrCardAbility<WotrBeforeCombatRound> {
-  constructor(
-    private characterId: WotrCharacterId,
-    battleModifiers: WotrBattleModifiers
-  ) {
-    super(battleModifiers.beforeCombatRound);
-  }
-
-  protected override handler = async (round: WotrCombatRound): Promise<void> => {
-    if (round.attacker.army().characters?.includes(this.characterId)) {
-      round.attacker.combatModifiers.push(1);
-    } else if (round.defender.army().characters?.includes(this.characterId)) {
-      round.defender.combatModifiers.push(1);
-    }
-  };
 }

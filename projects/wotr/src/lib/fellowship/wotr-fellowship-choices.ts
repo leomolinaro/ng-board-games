@@ -29,7 +29,7 @@ export class WotrHideFellowshipChoice implements WotrPlayerChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
 
   label(): string {
-    return "Hide fellowship";
+    return "Hide the Fellowship";
   }
 
   isAvailable(frontId: WotrFrontId): boolean {

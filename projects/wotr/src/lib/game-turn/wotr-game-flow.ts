@@ -2,8 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
-import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
@@ -38,7 +38,7 @@ export class WotrGameTurn {
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
   private actionRegistry = inject(WotrActionRegistry);
-  private characterRules = inject(WotrCharacterRules);
+  private characters = inject(WotrCharacters);
 
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -79,8 +79,8 @@ export class WotrGameTurn {
 
   private registerCharacterAbilities() {
     for (const character of this.fellowshipStore.companions()) {
-      const characterCard = this.characterRules.characterCard(character);
-      for (const action of characterCard.getAbilities()) {
+      const characterAbilities = this.characters.getAbilities(character);
+      for (const action of characterAbilities) {
         action.activate();
       }
     }

@@ -5,11 +5,12 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPlayerChoice } from "../game/wotr-game-ui";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterUi } from "./wotr-character-ui";
+import { WotrCharacters } from "./wotr-characters";
 
 export class WotrBringCharacterIntoPlayChoice implements WotrPlayerChoice {
   constructor(
     private die: WotrActionDie,
-    private characterRules: WotrCharacterRules,
+    private characters: WotrCharacters,
     private characterUi: WotrCharacterUi
   ) {}
 
@@ -18,7 +19,7 @@ export class WotrBringCharacterIntoPlayChoice implements WotrPlayerChoice {
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    return this.characterRules.canBringCharacterIntoPlay(this.die, frontId);
+    return this.characters.canBringCharacterIntoPlay(this.die, frontId);
   }
 
   async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {

@@ -1,4 +1,3 @@
-import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import {
   WotrActionDieChoiceModifier,
@@ -24,17 +23,15 @@ import { WotrCharacterCard } from "./wotr-character-card";
 // every Isengard Settlement or to replace two Regular Isengard units in Orthanc with two Elite units.
 // Servants of the White Hand. Each Isengard Elite unit is considered to be a Leader as well as an Army unit for all movement and combat purposes
 
-@Injectable({ providedIn: "root" })
 export class WotrSaruman extends WotrCharacterCard {
-  protected characterStore = inject(WotrCharacterStore);
-  private nationStore = inject(WotrNationStore);
-  private regionStore = inject(WotrRegionStore);
-  private actionDieModifiers = inject(WotrActionDieModifiers);
-  private unitModifiers = inject(WotrUnitModifiers);
-  private ui = inject(WotrGameUi);
-  private unitUi = inject(WotrUnitUi);
-
-  protected override characterId: WotrCharacterId = "saruman";
+  constructor(
+    public override characterId: WotrCharacterId,
+    private characterStore: WotrCharacterStore,
+    private nationStore: WotrNationStore,
+    private regionStore: WotrRegionStore
+  ) {
+    super();
+  }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
@@ -48,22 +45,9 @@ export class WotrSaruman extends WotrCharacterCard {
   override async bringIntoPlay(): Promise<WotrAction> {
     return playCharacter("orthanc", "saruman");
   }
-
-  override abilities(): WotrCardAbility[] {
-    return [
-      new TheVoiceOfSarumanAbility(
-        this.nationStore,
-        this.regionStore,
-        this.actionDieModifiers,
-        this.ui,
-        this.unitUi
-      ),
-      new ServantsOfTheWhiteHandAbility(this.unitModifiers)
-    ];
-  }
 }
 
-class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
+export class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
   constructor(
     private nationStore: WotrNationStore,
     private regionStore: WotrRegionStore,
@@ -78,7 +62,7 @@ class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifi
     if (die !== "muster" && die !== "muster-army") return [];
     if (frontId !== "shadow") return [];
     const choice: WotrPlayerChoice = {
-      label: () => "The Voice of Saruman",
+      label: () => "Recruit with The Voice of Saruman",
       isAvailable: () => {
         const nation = this.nationStore.nation("isengard");
         if (nation.politicalStep !== "atWar") return false;
@@ -169,7 +153,7 @@ class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifi
   }
 }
 
-class ServantsOfTheWhiteHandAbility extends WotrCardAbility<WotrLeadershipModifier> {
+export class ServantsOfTheWhiteHandAbility extends WotrCardAbility<WotrLeadershipModifier> {
   constructor(unitModifiers: WotrUnitModifiers) {
     super(unitModifiers.leadership);
   }

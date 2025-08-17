@@ -24,6 +24,7 @@ import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-act
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
+import { WotrCharacters } from "./wotr-characters";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {
@@ -38,6 +39,7 @@ export class WotrCharacterHandler {
   private shadow = inject(WotrShadowPlayer);
 
   private characterRules = inject(WotrCharacterRules);
+  private characters = inject(WotrCharacters);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -97,10 +99,8 @@ export class WotrCharacterHandler {
       this.removeCharacter(characterId);
     }
     for (const characterId of characters) {
-      const characterCard = this.characterRules.characterCard(characterId);
-      characterCard.resolveBringIntoPlayEffect();
-      const abilities = characterCard.getAbilities();
-      for (const ability of abilities) {
+      const characterAbilities = this.characters.getAbilities(characterId);
+      for (const ability of characterAbilities) {
         ability.activate();
       }
     }
@@ -122,8 +122,7 @@ export class WotrCharacterHandler {
       if (region) this.removeCharacterFromRegion(character, region);
     }
     this.characterStore.setEliminated(characterId);
-    const characterCard = this.characterRules.characterCard(characterId);
-    const abilities = characterCard.getAbilities();
+    const abilities = this.characters.getAbilities(characterId);
     for (const ability of abilities) {
       ability.deactivate();
     }
@@ -171,26 +170,26 @@ export class WotrCharacterHandler {
       "character-elimination": (action, front, f) => [
         f.player(front),
         " removes ",
-        this.characters(action.characters)
+        this.charactersLog(action.characters)
       ],
       "character-movement": (action, front, f) => [
         f.player(front),
         " moves ",
-        this.characters(action.characters),
+        this.charactersLog(action.characters),
         " to ",
         f.region(action.toRegion)
       ],
       "character-play": (action, front, f) => [
         f.player(front),
         " plays ",
-        this.characters(action.characters),
+        this.charactersLog(action.characters),
         " in ",
         f.region(action.region)
       ]
     };
   }
 
-  private characters(characters: WotrCharacterId[]) {
+  private charactersLog(characters: WotrCharacterId[]) {
     return characters.map(c => this.characterStore.character(c).name).join(", ");
   }
 }

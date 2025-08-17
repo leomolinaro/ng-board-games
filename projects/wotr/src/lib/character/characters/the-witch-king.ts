@@ -1,4 +1,3 @@
-import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
@@ -23,17 +22,16 @@ import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-ca
 // Sorcerer. If the Witch-king is in a battle and you use a Combat card during the first round of the battle, after doing so you may immediately draw an Event card
 // from the deck matching the type of that card.
 
-@Injectable({ providedIn: "root" })
 export class WotrWitchKing extends WotrCharacterCard {
-  protected characterStore = inject(WotrCharacterStore);
-  private nationStore = inject(WotrNationStore);
-  private nationHandler = inject(WotrNationHandler);
-  private regionStore = inject(WotrRegionStore);
-  private battleStore = inject(WotrBattleStore);
-  private shadow = inject(WotrShadowPlayer);
-  private battleModifiers = inject(WotrBattleModifiers);
-
-  protected override characterId: WotrCharacterId = "the-witch-king";
+  constructor(
+    public override characterId: WotrCharacterId,
+    private characterStore: WotrCharacterStore,
+    private regionStore: WotrRegionStore,
+    private nationStore: WotrNationStore,
+    private nationHandler: WotrNationHandler
+  ) {
+    super();
+  }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
@@ -70,15 +68,9 @@ export class WotrWitchKing extends WotrCharacterCard {
       false
     );
   }
-
-  override abilities(): WotrCardAbility[] {
-    return [
-      new SorcererAbility(this.battleStore, this.regionStore, this.shadow, this.battleModifiers)
-    ];
-  }
 }
 
-class SorcererAbility extends WotrCardAbility<WotrAfterCombatRound> {
+export class SorcererAbility extends WotrCardAbility<WotrAfterCombatRound> {
   constructor(
     private battleStore: WotrBattleStore,
     private regionStore: WotrRegionStore,

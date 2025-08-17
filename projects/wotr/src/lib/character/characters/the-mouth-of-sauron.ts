@@ -1,4 +1,3 @@
-import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
@@ -17,14 +16,16 @@ import { WotrCharacterCard } from "./wotr-character-card";
 // any region with an unconquered Sauron Stronghold.
 // Messenger of the Dark Tower. Once per turn, you may use a Muster Action die result as an Army Action die result instead.
 
-@Injectable({ providedIn: "root" })
 export class WotrMouthOfSauron extends WotrCharacterCard {
-  private frontStore = inject(WotrFrontStore);
-  protected characterStore = inject(WotrCharacterStore);
-  private fellowshipStore = inject(WotrFellowshipStore);
-  private regionStore = inject(WotrRegionStore);
-
-  protected override characterId: WotrCharacterId = "the-mouth-of-sauron";
+  constructor(
+    public override characterId: WotrCharacterId,
+    private characterStore: WotrCharacterStore,
+    private fellowshipStore: WotrFellowshipStore,
+    private regionStore: WotrRegionStore,
+    private frontStore: WotrFrontStore
+  ) {
+    super();
+  }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
@@ -55,14 +56,8 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
       r.settlement === "stronghold"
     );
   }
-
-  override abilities(): WotrCardAbility[] {
-    return [
-      /* new MessengerOfTheDarkTowerAbility(null as any) */
-    ];
-  }
 }
 
-class MessengerOfTheDarkTowerAbility extends WotrCardAbility<unknown> {
+export class MessengerOfTheDarkTowerAbility extends WotrCardAbility<unknown> {
   protected override handler = null;
 }

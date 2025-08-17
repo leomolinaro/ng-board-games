@@ -1,3 +1,4 @@
+import { withDevtools } from "@angular-architects/ngrx-toolkit";
 import { inject, Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
@@ -82,6 +83,7 @@ function initialeState(): WotrGameState {
 @Injectable({ providedIn: "root" })
 export class WotrGameStore extends signalStore(
   { protectedState: false },
+  withDevtools("WotrGameStore"),
   // withDevtoo
   withState<WotrGameState>(initialeState())
 ) {

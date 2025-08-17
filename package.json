@@ -16,6 +16,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-architects/ngrx-toolkit": "^19.2.1",
     "@angular/animations": "19.2.1",
     "@angular/cdk": "19.2.2",
     "@angular/common": "19.2.1",
@@ -27,7 +28,7 @@
     "@angular/platform-browser": "19.2.1",
     "@angular/platform-browser-dynamic": "19.2.1",
     "@angular/router": "19.2.1",
-    "@ngrx/signals": "19.0.1",
+    "@ngrx/signals": "19.2.1",
     "rxjs": "7.8.0",
     "tslib": "2.3.1",
     "zone.js": "0.15.0"

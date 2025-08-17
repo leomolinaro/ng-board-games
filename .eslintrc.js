@@ -192,7 +192,7 @@ module.exports = {
     "default-case-last": "warn",
     "default-param-last": "off",
     "dot-location": ["warn", "property"],
-    "dot-notation": "warn",
+    "dot-notation": "off",
     "eol-last": "warn",
     "eqeqeq": ["warn", "smart"],
     "for-direction": "warn",

@@ -1,4 +1,3 @@
-import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
@@ -18,12 +17,14 @@ import { WotrCharacterCard } from "./wotr-character-card";
 // The White Rider. If Gandalf the White is in a battle, at the start of the battle you can forfeit his Leadership to negate all Nazgul Leadership (including that of the
 // Witch-king) for the duration of that battle.
 
-@Injectable({ providedIn: "root" })
 export class WotrGandalfTheWhite extends WotrCharacterCard {
-  protected characterStore = inject(WotrCharacterStore);
-  private regionStore = inject(WotrRegionStore);
-
-  protected override characterId: WotrCharacterId = "gandalf-the-white";
+  constructor(
+    public override characterId: WotrCharacterId,
+    private characterStore: WotrCharacterStore,
+    private regionStore: WotrRegionStore
+  ) {
+    super();
+  }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
@@ -68,16 +69,12 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
       "Gandalf the Grey is not in a valid state to bring Gandalf the White into play."
     );
   }
-
-  override abilities(): WotrCardAbility[] {
-    return [new ShadowfaxAbility(null as any), new TheWhiteRiderAbility(null as any)];
-  }
 }
 
-class ShadowfaxAbility extends WotrCardAbility<unknown> {
+export class ShadowfaxAbility extends WotrCardAbility<unknown> {
   protected override handler = null;
 }
 
-class TheWhiteRiderAbility extends WotrCardAbility<unknown> {
+export class TheWhiteRiderAbility extends WotrCardAbility<unknown> {
   protected override handler = null;
 }

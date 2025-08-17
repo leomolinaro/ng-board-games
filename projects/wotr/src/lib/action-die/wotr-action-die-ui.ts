@@ -7,8 +7,8 @@ import {
   WotrMoveCompanionsChoice,
   WotrMoveMinionsChoice
 } from "../character/wotr-character-choices";
-import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrAction } from "../commons/wotr-action-models";
 import {
   WotrFellowshipProgressChoice,
@@ -47,7 +47,7 @@ import { WotrActionDieRules } from "./wotr-action-die-rules";
 export class WotrActionDieUi {
   private actionDieRules = inject(WotrActionDieRules);
   private cardPlayer = inject(WotrCardUi);
-  private characterRules = inject(WotrCharacterRules);
+  private characters = inject(WotrCharacters);
   private characterUi = inject(WotrCharacterUi);
   private nationPlayer = inject(WotrNationUi);
   private ui = inject(WotrGameUi);
@@ -196,7 +196,7 @@ export class WotrActionDieUi {
     ];
     if (frontId === "shadow") {
       choices.push(
-        new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
+        new WotrBringCharacterIntoPlayChoice("muster", this.characters, this.characterUi)
       );
     }
     choices.push(...this.actionDieModifiers.getActionDieChoices("muster", frontId));
@@ -220,7 +220,7 @@ export class WotrActionDieUi {
     ];
     if (frontId === "shadow") {
       choices.push(
-        new WotrBringCharacterIntoPlayChoice("muster", this.characterRules, this.characterUi)
+        new WotrBringCharacterIntoPlayChoice("muster", this.characters, this.characterUi)
       );
     }
     choices.push(...this.actionDieModifiers.getActionDieChoices("muster-army", frontId));
@@ -246,11 +246,7 @@ export class WotrActionDieUi {
     ];
     if (frontId === "free-peoples") {
       choices.push(
-        new WotrBringCharacterIntoPlayChoice(
-          "will-of-the-west",
-          this.characterRules,
-          this.characterUi
-        )
+        new WotrBringCharacterIntoPlayChoice("will-of-the-west", this.characters, this.characterUi)
       );
     }
     choices.push(...this.actionDieModifiers.getActionDieChoices("will-of-the-west", frontId));
