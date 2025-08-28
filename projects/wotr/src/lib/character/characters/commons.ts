@@ -1,10 +1,10 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
@@ -16,15 +16,15 @@ import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrCharacterStore } from "../wotr-character-store";
 
-export class CaptainOfTheWestAbility extends WotrCardAbility<WotrBeforeCombatRound> {
+export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRound> {
   constructor(
     private characterId: WotrCharacterId,
-    battleModifiers: WotrBattleModifiers
-  ) {
-    super(battleModifiers.beforeCombatRound);
-  }
+    private battleModifiers: WotrBattleModifiers
+  ) {}
 
-  protected override handler = async (round: WotrCombatRound): Promise<void> => {
+  public modifier = this.battleModifiers.beforeCombatRound;
+
+  public handler = async (round: WotrCombatRound): Promise<void> => {
     if (round.attacker.army().characters?.includes(this.characterId)) {
       round.attacker.combatModifiers.push(1);
     } else if (round.defender.army().characters?.includes(this.characterId)) {
@@ -33,7 +33,7 @@ export class CaptainOfTheWestAbility extends WotrCardAbility<WotrBeforeCombatRou
   };
 }
 
-export abstract class AdvanceAnyDieAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
+export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
     private characterId: WotrCharacterId,
     private abilityName: string,
@@ -41,14 +41,14 @@ export abstract class AdvanceAnyDieAbility extends WotrCardAbility<WotrActionDie
     private characterStore: WotrCharacterStore,
     private regionStore: WotrRegionStore,
     private nationStore: WotrNationStore,
-    actionDieModifiers: WotrActionDieModifiers
-  ) {
-    super(actionDieModifiers.actionDieChoices);
-  }
+    public actionDieModifiers: WotrActionDieModifiers
+  ) {}
 
   protected abstract isValidRegion(region: WotrRegion): boolean;
 
-  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
+  public modifier = this.actionDieModifiers.actionDieChoices;
+
+  public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     const character = this.characterStore.character(this.characterId);
     if (character.status !== "inPlay") return [];

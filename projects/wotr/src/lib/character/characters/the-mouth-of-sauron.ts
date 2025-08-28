@@ -1,5 +1,5 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
 import { WotrFrontStore } from "../../front/wotr-front-store";
@@ -58,6 +58,7 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
   }
 }
 
-export class MessengerOfTheDarkTowerAbility extends WotrCardAbility<unknown> {
-  protected override handler = null;
+export class MessengerOfTheDarkTowerAbility implements WotrAbility<unknown> {
+  public modifier = null as any;
+  public handler = null;
 }

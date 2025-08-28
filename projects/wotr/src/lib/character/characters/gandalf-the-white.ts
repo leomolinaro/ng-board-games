@@ -1,5 +1,5 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
@@ -71,10 +71,12 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
   }
 }
 
-export class ShadowfaxAbility extends WotrCardAbility<unknown> {
-  protected override handler = null;
+export class ShadowfaxAbility implements WotrAbility<unknown> {
+  public modifier = null as any;
+  public handler = null;
 }
 
-export class TheWhiteRiderAbility extends WotrCardAbility<unknown> {
-  protected override handler = null;
+export class TheWhiteRiderAbility implements WotrAbility<unknown> {
+  public modifier = null as any;
+  public handler = null;
 }

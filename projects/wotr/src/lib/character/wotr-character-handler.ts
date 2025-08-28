@@ -98,12 +98,7 @@ export class WotrCharacterHandler {
     for (const characterId of removingCharacters) {
       this.removeCharacter(characterId);
     }
-    for (const characterId of characters) {
-      const characterAbilities = this.characters.getAbilities(characterId);
-      for (const ability of characterAbilities) {
-        ability.activate();
-      }
-    }
+    this.characters.activateAbilities(characters);
   }
 
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
@@ -122,10 +117,7 @@ export class WotrCharacterHandler {
       if (region) this.removeCharacterFromRegion(character, region);
     }
     this.characterStore.setEliminated(characterId);
-    const abilities = this.characters.getAbilities(characterId);
-    for (const ability of abilities) {
-      ability.deactivate();
-    }
+    this.characters.deactivateAbilities(characterId);
   }
 
   moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): void {

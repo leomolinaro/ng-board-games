@@ -74,16 +74,7 @@ export class WotrGameTurn {
     const gameSetup = this.setupService.getGameSetup();
     this.logStore.logSetup();
     this.applySetup(gameSetup);
-    this.registerCharacterAbilities();
-  }
-
-  private registerCharacterAbilities() {
-    for (const character of this.fellowshipStore.companions()) {
-      const characterAbilities = this.characters.getAbilities(character);
-      for (const action of characterAbilities) {
-        action.activate();
-      }
-    }
+    this.characters.activateAbilities(this.fellowshipStore.companions());
   }
 
   private async round(roundNumber: number) {

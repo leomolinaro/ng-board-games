@@ -1,8 +1,8 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { hideFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
@@ -14,15 +14,15 @@ import { WotrCharacterId } from "../wotr-character-models";
 // Captain of the West. If Strider is in a battle, add one to the Combat Strength of the Free Peoples Army (you can still roll a maximum of 5 Combat dice).
 // Heir to Isuldur. If Strider is not in the Fellowship, he can be replaced by Aragorn (instructions are provided on the Aragorn Character card).
 
-export class StriderGuideAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
+export class StriderGuideAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
     private fellowshipStore: WotrFellowshipStore,
-    actionDieModifiers: WotrActionDieModifiers
-  ) {
-    super(actionDieModifiers.actionDieChoices);
-  }
+    private actionDieModifiers: WotrActionDieModifiers
+  ) {}
 
-  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
+  public modifier = this.actionDieModifiers.actionDieChoices;
+
+  public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     if (this.fellowshipStore.guide() !== "strider") return [];
     const choice = new StriderHideChoice(this.fellowshipStore);
@@ -45,6 +45,7 @@ class StriderHideChoice implements WotrUiCharacterChoice {
   }
 }
 
-export class HeirToIsildurAbility extends WotrCardAbility<unknown> {
-  protected override handler = null;
+export class HeirToIsildurAbility implements WotrAbility<unknown> {
+  public modifier = null as any;
+  public handler = null;
 }

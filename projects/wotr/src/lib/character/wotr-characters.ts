@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../ability/wotr-ability";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
-import { WotrCardAbility } from "../card/ability/wotr-card-ability";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -43,7 +43,7 @@ import { WotrCharacterStore } from "./wotr-character-store";
 @Injectable({ providedIn: "root" })
 export class WotrCharacters {
   private characters: Partial<Record<WotrCharacterId, WotrCharacterCard>> = {};
-  private abilities: Partial<Record<WotrCharacterId, WotrCardAbility[]>> = {};
+  private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
 
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
@@ -60,17 +60,17 @@ export class WotrCharacters {
   private nationHandler = inject(WotrNationHandler);
   private shadow = inject(WotrShadowPlayer);
 
-  getAbilities(characterId: WotrCharacterId): WotrCardAbility[] {
+  getAbilities(characterId: WotrCharacterId): WotrAbility[] {
     if (!this.abilities[characterId]) {
       this.abilities[characterId] = this.createAbilities(characterId);
     }
     return this.abilities[characterId];
   }
 
-  private createAbilities(characterId: WotrCharacterId): WotrCardAbility[] {
+  private createAbilities(characterId: WotrCharacterId): WotrAbility[] {
     switch (characterId) {
       case "gandalf-the-white":
-        return [new ShadowfaxAbility(null as any), new TheWhiteRiderAbility(null as any)];
+        return [new ShadowfaxAbility(), new TheWhiteRiderAbility()];
       case "aragorn":
         return [new CaptainOfTheWestAbility("aragorn", this.battleModifiers)];
       case "saruman":
@@ -107,7 +107,7 @@ export class WotrCharacters {
       case "meriadoc":
         return [
           // new GuideAbility(null as any),
-          new TakeThemAliveAbility(this.characterStore, this.characterModifiers)
+          this.takeThemAliveAbility
         ];
       case "boromir":
         return [
@@ -143,6 +143,11 @@ export class WotrCharacters {
         return [];
     }
   }
+
+  private takeThemAliveAbility = new TakeThemAliveAbility(
+    this.characterStore,
+    this.characterModifiers
+  );
 
   private get(characterId: WotrCharacterId): WotrCharacterCard {
     switch (characterId) {
@@ -210,6 +215,23 @@ export class WotrCharacters {
       return this.freePeoplesCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
     } else {
       return this.shadowCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
+    }
+  }
+
+  activateAbilities(characters: WotrCharacterId[]) {
+    for (const character of characters) {
+      const abilities = this.getAbilities(character);
+      for (const ability of abilities) {
+        if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
+        ability.modifier.register(ability.handler);
+      }
+    }
+  }
+
+  deactivateAbilities(characterId: WotrCharacterId) {
+    const abilities = this.getAbilities(characterId);
+    for (const ability of abilities) {
+      ability.modifier.unregister(ability.handler);
     }
   }
 }

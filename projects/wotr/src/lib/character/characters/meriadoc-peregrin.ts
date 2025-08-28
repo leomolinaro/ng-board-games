@@ -1,4 +1,4 @@
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrCharacterId } from "../wotr-character-models";
 import {
   WotrBeforeCharacterElimination,
@@ -16,21 +16,20 @@ import { WotrCharacterStore } from "../wotr-character-store";
 // Take Them Alive! If Peregrin is eliminated while in the Fellowship, immediately place him in play again as if he was just separated from the Fellowship. This special
 // ability cannot be used if the Fellowship is on the Mordor Track.
 
-export class HobbitGuideAbility extends WotrCardAbility<unknown> {
-  protected override handler = null;
+export class HobbitGuideAbility implements WotrAbility<unknown> {
+  public modifier = null as any;
+  public handler = null;
 }
 
-export class TakeThemAliveAbility extends WotrCardAbility<WotrBeforeCharacterElimination> {
+export class TakeThemAliveAbility implements WotrAbility<WotrBeforeCharacterElimination> {
   constructor(
     private characterStore: WotrCharacterStore,
-    characterModifiers: WotrCharacterModifiers
-  ) {
-    super(characterModifiers.beforeCharacterElimination);
-  }
+    private characterModifiers: WotrCharacterModifiers
+  ) {}
 
-  protected override handler: WotrBeforeCharacterElimination = async (
-    characterId: WotrCharacterId
-  ) => {
+  public modifier = this.characterModifiers.beforeCharacterElimination;
+
+  public handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
     if (characterId !== "meriadoc") return true;
     if (!this.characterStore.isInFellowship("meriadoc")) return true;
     return true;

@@ -1,8 +1,8 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../battle/wotr-battle-store";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
@@ -70,17 +70,17 @@ export class WotrWitchKing extends WotrCharacterCard {
   }
 }
 
-export class SorcererAbility extends WotrCardAbility<WotrAfterCombatRound> {
+export class SorcererAbility implements WotrAbility<WotrAfterCombatRound> {
   constructor(
     private battleStore: WotrBattleStore,
     private regionStore: WotrRegionStore,
     private shadow: WotrShadowPlayer,
-    battleModifiers: WotrBattleModifiers
-  ) {
-    super(battleModifiers.afterCombatRound);
-  }
+    private battleModifiers: WotrBattleModifiers
+  ) {}
 
-  protected override handler: WotrAfterCombatRound = async (combatRound: WotrCombatRound) => {
+  public modifier = this.battleModifiers.afterCombatRound;
+
+  public handler: WotrAfterCombatRound = async (combatRound: WotrCombatRound) => {
     if (
       this.isCharacterInBattle("the-witch-king", combatRound) &&
       combatRound.round === 1 &&

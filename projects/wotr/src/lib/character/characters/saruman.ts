@@ -1,9 +1,9 @@
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
-import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameUi, WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
@@ -48,18 +48,18 @@ export class WotrSaruman extends WotrCharacterCard {
   }
 }
 
-export class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoiceModifier> {
+export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
     private nationStore: WotrNationStore,
     private regionStore: WotrRegionStore,
-    actionDieModifiers: WotrActionDieModifiers,
+    private actionDieModifiers: WotrActionDieModifiers,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
-  ) {
-    super(actionDieModifiers.actionDieChoices);
-  }
+  ) {}
 
-  protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
+  public modifier = this.actionDieModifiers.actionDieChoices;
+
+  public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (die !== "muster" && die !== "muster-army") return [];
     if (frontId !== "shadow") return [];
     return [new SarumanVoiceChoice(this.regionStore, this.nationStore, this.ui, this.unitUi)];
@@ -188,12 +188,12 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   }
 }
 
-export class ServantsOfTheWhiteHandAbility extends WotrCardAbility<WotrLeadershipModifier> {
-  constructor(unitModifiers: WotrUnitModifiers) {
-    super(unitModifiers.leadership);
-  }
+export class ServantsOfTheWhiteHandAbility implements WotrAbility<WotrLeadershipModifier> {
+  constructor(private unitModifiers: WotrUnitModifiers) {}
 
-  protected override handler: WotrLeadershipModifier = army => {
+  public modifier = this.unitModifiers.leadership;
+
+  public handler: WotrLeadershipModifier = army => {
     if (army.front !== "shadow") return 0;
     return army.elites?.find(unit => unit.nation === "isengard")?.quantity || 0;
   };
