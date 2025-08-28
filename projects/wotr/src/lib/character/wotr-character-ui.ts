@@ -198,4 +198,25 @@ export class WotrCharacterUi {
 
     return moveCharacters(fromRegion, toRegion, ...movingCharacters);
   }
+
+  bringCharacterIntoPlayChoice(die: WotrActionDie): WotrUiChoice {
+    return {
+      label: () => "Bring character into play",
+      isAvailable: (frontId: WotrFrontId) =>
+        this.characters.canBringCharacterIntoPlay(die, frontId),
+      actions: (frontId: WotrFrontId) => this.bringCharacterIntoPlay(die, frontId)
+    };
+  }
+
+  moveCompanionsChoice: WotrUiChoice = {
+    label: () => "Move companions",
+    isAvailable: () => this.characterRules.canMoveCompanions(),
+    actions: () => this.moveCompanions()
+  };
+
+  moveMinionsChoice: WotrUiChoice = {
+    label: () => "Move minions",
+    isAvailable: () => this.characterRules.canMoveNazgulOrMinions(),
+    actions: () => this.moveNazgulAndMinions()
+  };
 }

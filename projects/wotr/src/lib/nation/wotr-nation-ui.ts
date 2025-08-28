@@ -1,13 +1,16 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { advanceNation } from "./wotr-nation-actions";
 import { WotrNation, WotrNationId } from "./wotr-nation-models";
+import { WotrNationRules } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationUi {
   private ui = inject(WotrGameUi);
   private nation = inject(WotrNationStore);
+  private nationRules = inject(WotrNationRules);
 
   async politicalAdvance(frontId: WotrFrontId): Promise<WotrNationId> {
     const validNations = this.advanceableNations(frontId);
@@ -34,4 +37,13 @@ export class WotrNationUi {
     }
     return false;
   }
+
+  diplomaticActionChoice: WotrUiChoice = {
+    label: () => "Diplomatic action",
+    isAvailable: frontId => this.nationRules.canFrontAdvancePoliticalTrack(frontId),
+    actions: async frontId => {
+      const nation = await this.politicalAdvance(frontId);
+      return [advanceNation(nation, 1)];
+    }
+  };
 }

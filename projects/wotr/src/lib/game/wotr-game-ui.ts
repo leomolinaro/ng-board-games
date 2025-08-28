@@ -89,7 +89,7 @@ export interface WotrUiOption<O = unknown> {
 
 export interface WotrUiChoice<P = WotrFrontId> {
   label(): string;
-  isAvailable(params: P): boolean;
+  isAvailable?(params: P): boolean;
   actions(params: P): Promise<WotrAction[]>;
   character?: WotrCharacterId;
 }
@@ -284,7 +284,7 @@ export class WotrGameUi extends signalStore(
       choices.map(c => ({
         value: c,
         label: c.label(),
-        disabled: !c.isAvailable(params)
+        disabled: c.isAvailable ? !c.isAvailable(params) : false
       }))
     );
     return choice.actions(params);
@@ -301,7 +301,7 @@ export class WotrGameUi extends signalStore(
       choices.map(c => ({
         value: c,
         label: c.label(),
-        disabled: !c.isAvailable(params)
+        disabled: c.isAvailable ? !c.isAvailable(params) : false
       }))
     );
     const actions = await choice.actions(params);

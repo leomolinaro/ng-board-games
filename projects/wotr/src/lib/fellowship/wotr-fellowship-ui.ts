@@ -1,13 +1,13 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacter, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrAction } from "../commons/wotr-action-models";
-import { WotrGameUi, WotrUiOption } from "../game/wotr-game-ui";
-import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrGameUi, WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
 import {
   changeGuide,
   declareFellowship,
+  hideFellowship,
+  moveFelloswhip,
   separateCompanions,
   WotrFellowshipGuide
 } from "./wotr-fellowship-actions";
@@ -19,8 +19,6 @@ import { WotrFellowshipStore } from "./wotr-fellowship-store";
 export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private ui = inject(WotrGameUi);
-  private characterRules = inject(WotrCharacterRules);
-  private regionStore = inject(WotrRegionStore);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipRules = inject(WotrFellowshipRules);
@@ -118,4 +116,22 @@ export class WotrFellowshipUi {
     });
     return changeGuide(newGuide[0]);
   }
+
+  progressChoice: WotrUiChoice = {
+    label: () => "Fellowship progress",
+    isAvailable: () => !this.fellowshipStore.isRevealed(),
+    actions: async () => [moveFelloswhip()]
+  };
+
+  hideFellowshipChoice: WotrUiChoice = {
+    label: () => "Hide the Fellowship",
+    isAvailable: () => this.fellowshipStore.isRevealed(),
+    actions: async () => [hideFellowship()]
+  };
+
+  separateCompanionsChoice: WotrUiChoice = {
+    label: () => "Separate companions",
+    isAvailable: () => this.fellowshipStore.numberOfCompanions() > 0,
+    actions: async () => this.separateCompanions()
+  };
 }

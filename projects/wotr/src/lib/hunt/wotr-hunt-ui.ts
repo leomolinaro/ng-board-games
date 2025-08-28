@@ -6,6 +6,8 @@ import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import {
+  chooseRandomCompanion,
+  corruptFellowship,
   revealFellowship,
   WotrCompanionRandom,
   WotrFellowshipCorruption
@@ -15,11 +17,6 @@ import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "./wotr-hunt-actions";
-import {
-  WotrEliminateGuideChoice,
-  WotrRandomCompanionChoice,
-  WotrUseRingChoice
-} from "./wotr-hunt-effect-choices";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
@@ -33,9 +30,35 @@ export class WotrHuntUi {
   private characterHandler = inject(WotrCharacterHandler);
   private fellowshipUi = inject(WotrFellowshipUi);
 
-  private eliminateGuideChoice = inject(WotrEliminateGuideChoice);
-  private randomCompanionChoice = inject(WotrRandomCompanionChoice);
-  private useRingChoice = inject(WotrUseRingChoice);
+  private eliminateGuideChoice: WotrUiChoice<WotrHuntEffectParams> = {
+    label: () => "Eliminate the guide",
+    isAvailable: () => this.fellowshipStore.guide() !== "gollum",
+    actions: async () => {
+      const actions: WotrAction[] = [];
+      const guide = this.fellowshipStore.guide();
+      actions.push(eliminateCharacter(guide));
+      this.characterHandler.eliminateCharacters([guide]);
+      actions.push(await this.fellowshipUi.changeGuide());
+      return actions;
+    }
+  };
+
+  private randomCompanionChoice: WotrUiChoice<WotrHuntEffectParams> = {
+    label: () => "Eliminate a random companion",
+    isAvailable: () => this.fellowshipStore.companions().length > 1,
+    actions: async () => {
+      const companions = this.fellowshipStore.companions();
+      const randomCompanion = randomUtil.getRandomElement(companions);
+      return [chooseRandomCompanion(randomCompanion)];
+    }
+  };
+
+  private useRingChoice: WotrUiChoice<WotrHuntEffectParams> = {
+    label: () => "Use the Ring",
+    actions: async params => {
+      return [corruptFellowship(params.damage)];
+    }
+  };
 
   async huntAllocationPhase(): Promise<WotrAction[]> {
     const min = this.huntStore.minimumNumberOfHuntDice();

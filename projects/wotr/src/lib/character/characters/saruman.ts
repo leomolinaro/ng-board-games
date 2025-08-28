@@ -91,7 +91,7 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
     if (nation.politicalStep !== "atWar") return false;
     if (!this.regionStore.isUnconquered("orthanc")) return false;
     if (this.regionStore.isUnderSiege("orthanc")) return false;
-    if (this.subChoices.some(c => c.isAvailable(frontId))) return true;
+    if (this.subChoices.some(c => c.isAvailable!(frontId))) return true;
     return false;
   }
 

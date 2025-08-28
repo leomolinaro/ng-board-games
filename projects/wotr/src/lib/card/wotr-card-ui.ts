@@ -2,13 +2,15 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
-import { WotrCardId } from "./wotr-card-models";
+import { WotrCardId, WotrCardType } from "./wotr-card-models";
+import { WotrCardRules } from "./wotr-card-rules";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardUi {
   private ui = inject(WotrGameUi);
+  private cardRules = inject(WotrCardRules);
   private frontStore = inject(WotrFrontStore);
 
   async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction[]> {
@@ -79,5 +81,27 @@ export class WotrCardUi {
 
   async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
     throw new Error("Method not implemented.");
+  }
+
+  drawEventCardChoice: WotrUiChoice = {
+    label: () => "Draw a card",
+    isAvailable: frontId => this.cardRules.canDrawCard(frontId),
+    actions: frontId => this.drawCard(frontId)
+  };
+
+  playEventCardChoice(cartTypes: WotrCardType[] | "any"): WotrUiChoice {
+    return {
+      label: () => "Play an event card",
+      isAvailable: frontId => this.cardRules.hasPlayableCards(cartTypes, frontId),
+      actions: async frontId => {
+        const playableCards = this.cardRules.playableCards(cartTypes, frontId);
+        const cardId = await this.ui.askCard(
+          "Select an event card to play",
+          playableCards,
+          frontId
+        );
+        return this.playCard(cardId, frontId);
+      }
+    };
   }
 }

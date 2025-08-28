@@ -2,13 +2,14 @@ import { inject, Injectable } from "@angular/core";
 import { attack } from "../battle/wotr-battle-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   armyMovement,
   eliminateRegularUnit,
+  moveArmies,
   recruitEliteUnit,
   recruitLeader,
   recruitNazgul,
@@ -229,4 +230,40 @@ export class WotrUnitUi {
       }
     }
   }
+
+  attackArmyChoice: WotrUiChoice = {
+    label: () => "Attack",
+    isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontAttack(frontId),
+    actions: async (frontId: WotrFrontId) => this.attack(frontId)
+  };
+
+  moveArmiesChoice: WotrUiChoice = {
+    label: () => "Move armies",
+    isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmies(frontId),
+    actions: async (frontId: WotrFrontId) => {
+      const movements = await this.moveArmies(2, frontId);
+      return [moveArmies(...movements)];
+    }
+  };
+
+  recruitReinforcementsChoice: WotrUiChoice = {
+    label: () => "Recruit reinforcements",
+    isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontRecruitReinforcements(frontId),
+    actions: async (frontId: WotrFrontId) => this.recrtuiUnits(frontId)
+  };
+
+  leaderArmyMoveChoice: WotrUiChoice = {
+    label: () => "Move army with leader",
+    isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmiesWithLeader(frontId),
+    actions: async (frontId: WotrFrontId) => {
+      const movement = await this.moveArmyWithLeader(frontId);
+      return [moveArmies(movement)];
+    }
+  };
+
+  leaderArmyAttackChoice: WotrUiChoice = {
+    label: () => "Attack with leader",
+    isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontAttackWithLeader(frontId),
+    actions: async (frontId: WotrFrontId) => this.attackWithLeader(frontId)
+  };
 }
