@@ -1,11 +1,11 @@
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
 import { skipActionDie } from "./wotr-action-die-actions";
 import { WotrActionDie } from "./wotr-action-die-models";
 import { WotrActionDieUi } from "./wotr-action-die-ui";
 
-export class WotrChangeCharacterDieChoice implements WotrPlayerChoice {
+export class WotrChangeCharacterDieChoice implements WotrUiChoice {
   constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
@@ -16,12 +16,13 @@ export class WotrChangeCharacterDieChoice implements WotrPlayerChoice {
     return true;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.actionPlayerService.resolveCharacterResult(frontId);
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    return (await this.actionPlayerService.resolveCharacterResult("will-of-the-west", frontId))
+      .actions;
   }
 }
 
-export class WotrChangeArmyDieChoice implements WotrPlayerChoice {
+export class WotrChangeArmyDieChoice implements WotrUiChoice {
   constructor(private actionPlayerService: WotrActionDieUi) {}
   label(): string {
     return "Army result";
@@ -29,12 +30,12 @@ export class WotrChangeArmyDieChoice implements WotrPlayerChoice {
   isAvailable(frontId: WotrFrontId): boolean {
     return true;
   }
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.actionPlayerService.resolveArmyResult(frontId);
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    return (await this.actionPlayerService.resolveArmyResult("will-of-the-west", frontId)).actions;
   }
 }
 
-export class WotrChangeMusterDieChoice implements WotrPlayerChoice {
+export class WotrChangeMusterDieChoice implements WotrUiChoice {
   constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
@@ -45,12 +46,13 @@ export class WotrChangeMusterDieChoice implements WotrPlayerChoice {
     return true;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.actionPlayerService.resolveMusterResult(frontId);
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    return (await this.actionPlayerService.resolveMusterResult("will-of-the-west", frontId))
+      .actions;
   }
 }
 
-export class WotrChangeEventDieChoice implements WotrPlayerChoice {
+export class WotrChangeEventDieChoice implements WotrUiChoice {
   constructor(private actionPlayerService: WotrActionDieUi) {}
 
   label(): string {
@@ -61,12 +63,12 @@ export class WotrChangeEventDieChoice implements WotrPlayerChoice {
     return true;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
-    return this.actionPlayerService.resolveEventResult(frontId);
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    return (await this.actionPlayerService.resolveEventResult("will-of-the-west", frontId)).actions;
   }
 }
 
-export class WotrSkipDieChoice implements WotrPlayerChoice {
+export class WotrSkipDieChoice implements WotrUiChoice {
   constructor(private die: WotrActionDie) {}
 
   label(): string {
@@ -77,7 +79,7 @@ export class WotrSkipDieChoice implements WotrPlayerChoice {
     return true;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     return [skipActionDie(this.die)];
   }
 }

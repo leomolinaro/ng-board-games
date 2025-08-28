@@ -6,11 +6,11 @@ import { WotrAction } from "../commons/wotr-action-models";
 import { chooseRandomCompanion, corruptFellowship } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
-import { WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
 
 @Injectable({ providedIn: "root" })
-export class WotrEliminateGuideChoice implements WotrPlayerChoice<WotrHuntEffectParams> {
+export class WotrEliminateGuideChoice implements WotrUiChoice<WotrHuntEffectParams> {
   private fellowshipStore = inject(WotrFellowshipStore);
   private fellowshipUi = inject(WotrFellowshipUi);
   private characterHandler = inject(WotrCharacterHandler);
@@ -21,7 +21,7 @@ export class WotrEliminateGuideChoice implements WotrPlayerChoice<WotrHuntEffect
   isAvailable(params: WotrHuntEffectParams): boolean {
     return this.fellowshipStore.guide() !== "gollum";
   }
-  async resolve(params: WotrHuntEffectParams): Promise<WotrAction[]> {
+  async actions(params: WotrHuntEffectParams): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     const guide = this.fellowshipStore.guide();
     actions.push(eliminateCharacter(guide));
@@ -32,7 +32,7 @@ export class WotrEliminateGuideChoice implements WotrPlayerChoice<WotrHuntEffect
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrRandomCompanionChoice implements WotrPlayerChoice<WotrHuntEffectParams> {
+export class WotrRandomCompanionChoice implements WotrUiChoice<WotrHuntEffectParams> {
   private fellowshipStore = inject(WotrFellowshipStore);
   label(): string {
     return "Eliminate a random companion";
@@ -40,7 +40,7 @@ export class WotrRandomCompanionChoice implements WotrPlayerChoice<WotrHuntEffec
   isAvailable(params: WotrHuntEffectParams): boolean {
     return this.fellowshipStore.companions().length > 1;
   }
-  async resolve(params: WotrHuntEffectParams): Promise<WotrAction[]> {
+  async actions(params: WotrHuntEffectParams): Promise<WotrAction[]> {
     const companions = this.fellowshipStore.companions();
     const randomCompanion = randomUtil.getRandomElement(companions);
     return [chooseRandomCompanion(randomCompanion)];
@@ -48,14 +48,14 @@ export class WotrRandomCompanionChoice implements WotrPlayerChoice<WotrHuntEffec
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrUseRingChoice implements WotrPlayerChoice<WotrHuntEffectParams> {
+export class WotrUseRingChoice implements WotrUiChoice<WotrHuntEffectParams> {
   label(): string {
     return "Use the Ring";
   }
   isAvailable(params: WotrHuntEffectParams): boolean {
     return true;
   }
-  async resolve(params: WotrHuntEffectParams): Promise<WotrAction[]> {
+  async actions(params: WotrHuntEffectParams): Promise<WotrAction[]> {
     return [corruptFellowship(params.damage)];
   }
 }

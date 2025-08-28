@@ -3,7 +3,7 @@ import { WotrCharacter, WotrCompanionId } from "../character/wotr-character-mode
 import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrAction } from "../commons/wotr-action-models";
-import { WotrGameUi, WotrPlayerOption } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiOption } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   changeGuide,
@@ -28,7 +28,7 @@ export class WotrFellowshipUi {
   async fellowshipPhase(): Promise<WotrAction[]> {
     let continueAsking = true;
     const actions: WotrAction[] = [];
-    const validActions: WotrPlayerOption<"declare" | "guide" | "pass">[] = [
+    const validActions: WotrUiOption<"declare" | "guide" | "pass">[] = [
       {
         value: "declare",
         label: "Declare Fellowship",

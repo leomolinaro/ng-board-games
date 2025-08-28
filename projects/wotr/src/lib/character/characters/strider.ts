@@ -3,9 +3,11 @@ import {
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
+import { WotrAction } from "../../commons/wotr-action-models";
 import { hideFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
-import { WotrPlayerChoice } from "../../game/wotr-game-ui";
+import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
+import { WotrCharacterId } from "../wotr-character-models";
 
 // Strider - Ranger of the North (Level 3, Leadership 1)
 // Guide. You may use any of your Action die results to hide a revealed Fellowship.
@@ -23,15 +25,24 @@ export class StriderGuideAbility extends WotrCardAbility<WotrActionDieChoiceModi
   protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     if (this.fellowshipStore.guide() !== "strider") return [];
-    const choice: WotrPlayerChoice = {
-      label: () => "Hide the Fellowship (Strider's guide ability)",
-      isAvailable: () => this.fellowshipStore.isRevealed(),
-      resolve: async () => {
-        return [hideFellowship()];
-      }
-    };
+    const choice = new StriderHideChoice(this.fellowshipStore);
     return [choice];
   };
+}
+
+class StriderHideChoice implements WotrUiCharacterChoice {
+  constructor(private fellowshipStore: WotrFellowshipStore) {}
+
+  character: WotrCharacterId = "strider";
+  label(): string {
+    return "Hide the Fellowship (Strider's guide ability)";
+  }
+  isAvailable(): boolean {
+    return this.fellowshipStore.isRevealed();
+  }
+  async actions(): Promise<WotrAction[]> {
+    return [hideFellowship()];
+  }
 }
 
 export class HeirToIsildurAbility extends WotrCardAbility<unknown> {

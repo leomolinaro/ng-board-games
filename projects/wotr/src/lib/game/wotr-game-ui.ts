@@ -1,9 +1,13 @@
 import { Injectable, computed, inject } from "@angular/core";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
-import { WotrActionChoice, WotrActionToken } from "../action-die/wotr-action-die-models";
+import {
+  WotrActionChoice,
+  WotrActionDie,
+  WotrActionToken
+} from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
@@ -15,12 +19,13 @@ import {
 } from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit-models";
+import { WotrDieStory } from "./wotr-story-models";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
   canCancel: boolean;
   message: string | null;
-  options: WotrPlayerOption[] | null;
+  options: WotrUiOption[] | null;
   regionSelection: WotrRegionId[] | null;
   nationSelection: WotrNationId[] | null;
   actionDieSelection: WotrActionDieSelection | null;
@@ -76,16 +81,21 @@ export const initialState: WotrGameUiState = {
   fellowshipCompanionsSelection: null
 };
 
-export interface WotrPlayerOption<O = unknown> {
+export interface WotrUiOption<O = unknown> {
   value: O;
   label: string;
   disabled?: boolean;
 }
 
-export interface WotrPlayerChoice<P = WotrFrontId> {
+export interface WotrUiChoice<P = WotrFrontId> {
   label(): string;
   isAvailable(params: P): boolean;
-  resolve(params: P): Promise<WotrAction[]>;
+  actions(params: P): Promise<WotrAction[]>;
+  character?: WotrCharacterId;
+}
+
+export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
+  character: WotrCharacterId;
 }
 
 @Injectable({ providedIn: "root" })
@@ -174,8 +184,8 @@ export class WotrGameUi extends signalStore(
     return actionDieOrToken;
   }
 
-  option = uiEvent<WotrPlayerOption>();
-  async askOption<O>(message: string, options: WotrPlayerOption<O>[]): Promise<O> {
+  option = uiEvent<WotrUiOption>();
+  async askOption<O>(message: string, options: WotrUiOption<O>[]): Promise<O> {
     this.updateUi(s => ({ ...s, message, options: options }));
     const option = await this.option.get();
     this.updateUi(s => ({ ...s, message: null, canCancel: true, options: null }));
@@ -187,7 +197,7 @@ export class WotrGameUi extends signalStore(
     message: string,
     reinforcementUnitSelection: WotrReinforcementUnitSelection
   ): Promise<WotrReinforcementUnit | false> {
-    const options: WotrPlayerOption<boolean>[] = [];
+    const options: WotrUiOption<boolean>[] = [];
     if (reinforcementUnitSelection.canPass) {
       options.push({ value: false, label: "Pass" });
     }
@@ -266,10 +276,10 @@ export class WotrGameUi extends signalStore(
 
   async askChoice<P = WotrFrontId>(
     message: string,
-    choices: WotrPlayerChoice<P>[],
+    choices: WotrUiChoice<P>[],
     params: P
   ): Promise<WotrAction[]> {
-    const choice = await this.askOption<WotrPlayerChoice<P>>(
+    const choice = await this.askOption<WotrUiChoice<P>>(
       message,
       choices.map(c => ({
         value: c,
@@ -277,7 +287,31 @@ export class WotrGameUi extends signalStore(
         disabled: !c.isAvailable(params)
       }))
     );
-    return choice.resolve(params);
+    return choice.actions(params);
+  }
+
+  async askDieStoryChoice<P = WotrFrontId>(
+    die: WotrActionDie,
+    message: string,
+    choices: WotrUiChoice<P>[],
+    params: P
+  ): Promise<WotrDieStory> {
+    const choice = await this.askOption<WotrUiChoice<P>>(
+      message,
+      choices.map(c => ({
+        value: c,
+        label: c.label(),
+        disabled: !c.isAvailable(params)
+      }))
+    );
+    const actions = await choice.actions(params);
+    const story: WotrDieStory = {
+      type: "die",
+      die,
+      actions
+    };
+    if (choice.character) story.character = choice.character;
+    return story;
   }
 
   askCard(message: string, cardSelection: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {

@@ -2,16 +2,38 @@ import { Injectable, inject } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
+import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
+
+class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
+  constructor(
+    private die: WotrActionDie,
+    private characterCard: WotrCharacterCard,
+    private characterStore: WotrCharacterStore,
+    private ui: WotrGameUi
+  ) {}
+
+  label(): string {
+    return this.characterStore.character(this.characterCard.characterId).name;
+  }
+
+  isAvailable(): boolean {
+    return this.characterCard.canBeBroughtIntoPlay(this.die);
+  }
+
+  async actions(): Promise<WotrAction[]> {
+    return [await this.characterCard.bringIntoPlay(this.ui)];
+  }
+}
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterUi {
@@ -24,20 +46,16 @@ export class WotrCharacterUi {
   private ui = inject(WotrGameUi);
 
   bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
-    const cards =
+    const characterCards =
       frontId === "free-peoples"
         ? this.characters.freePeoplesCharacterCards()
         : this.characters.shadowCharacterCards();
     return this.ui.askChoice(
       "Choose character to bring into play",
-      cards.map<WotrPlayerChoice>(card => ({
-        label: () => this.characterStore.character(card.characterId).name,
-        isAvailable: () => card.canBeBroughtIntoPlay(die),
-        resolve: async () => {
-          const action = await card.bringIntoPlay(this.ui);
-          return [action];
-        }
-      })),
+      characterCards.map<WotrUiChoice>(
+        characterCard =>
+          new WotrBringCharacterIntoPlayChoice(die, characterCard, this.characterStore, this.ui)
+      ),
       frontId
     );
   }

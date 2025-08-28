@@ -1,13 +1,13 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrCardType } from "./wotr-card-models";
 import { WotrCardRules } from "./wotr-card-rules";
 import { WotrCardUi } from "./wotr-card-ui";
 
 @Injectable({ providedIn: "root" })
-export class WotrDrawEventCardChoice implements WotrPlayerChoice {
+export class WotrDrawEventCardChoice implements WotrUiChoice {
   private cardRules = inject(WotrCardRules);
   private cardUi = inject(WotrCardUi);
 
@@ -19,12 +19,12 @@ export class WotrDrawEventCardChoice implements WotrPlayerChoice {
     return this.cardRules.canDrawCard(frontId);
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.cardUi.drawCard(frontId);
   }
 }
 
-export class WotrPlayEventCardChoice implements WotrPlayerChoice {
+export class WotrPlayEventCardChoice implements WotrUiChoice {
   constructor(
     private cartTypes: WotrCardType[] | "any",
     private frontId: WotrFrontId,
@@ -41,7 +41,7 @@ export class WotrPlayEventCardChoice implements WotrPlayerChoice {
     return this.cardRules.hasPlayableCards(this.cartTypes, frontId);
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     const playableCards = this.cardRules.playableCards(this.cartTypes, frontId);
     const cardId = await this.ui.askCard(
       "Select an event card to play",

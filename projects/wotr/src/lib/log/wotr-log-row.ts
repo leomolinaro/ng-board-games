@@ -180,7 +180,7 @@ export type WotrLogParsedFragment =
       .action-die,
       .action-token,
       .hunt-tile {
-        vertical-align: top;
+        vertical-align: text-bottom;
         height: 16px;
       }
     `

@@ -5,7 +5,8 @@ import {
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameUi, WotrPlayerChoice } from "../../game/wotr-game-ui";
+import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameUi, WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
 import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
@@ -61,59 +62,67 @@ export class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoic
   protected override handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (die !== "muster" && die !== "muster-army") return [];
     if (frontId !== "shadow") return [];
-    const choice: WotrPlayerChoice = {
-      label: () => "Recruit with The Voice of Saruman",
-      isAvailable: () => {
-        const nation = this.nationStore.nation("isengard");
-        if (nation.politicalStep !== "atWar") return false;
-        if (!this.regionStore.isUnconquered("orthanc")) return false;
-        if (this.regionStore.isUnderSiege("orthanc")) return false;
-        if (this.canRecruitRegulars() || this.canUpgradeRegulars()) return true;
-        return false;
-      },
-      resolve: async () => {
-        const choices: WotrPlayerChoice[] = [];
-        choices.push({
-          label: () => "Recruit up to three regular units",
-          isAvailable: () => this.canRecruitRegulars(),
-          resolve: async () => this.recruitRegulars()
-        });
-        choices.push({
-          label: () => "Replace two regular units in Orthanc with two elite units",
-          isAvailable: () => this.canUpgradeRegulars(),
-          resolve: async () => this.upgradeRegulars()
-        });
-        const actions = await this.ui.askChoice(
-          "Choose an action for The Voice of Saruman",
-          choices,
-          "shadow"
-        );
-        return actions;
-      }
-    };
-    return [choice];
+    return [new SarumanVoiceChoice(this.regionStore, this.nationStore, this.ui, this.unitUi)];
   };
+}
 
-  private canRecruitRegulars(): boolean {
+class SarumanVoiceChoice implements WotrUiCharacterChoice {
+  constructor(
+    private regionStore: WotrRegionStore,
+    private nationStore: WotrNationStore,
+    private ui: WotrGameUi,
+    private unitUi: WotrUnitUi
+  ) {
+    this.subChoices = [
+      new SarumanRecruitmentChoice(this.ui, this.regionStore, this.nationStore, this.unitUi),
+      new SarumanUpgradeRegularsChoice(this.regionStore, this.nationStore, this.ui)
+    ];
+  }
+  private subChoices: WotrUiChoice[];
+
+  character: WotrCharacterId = "saruman";
+
+  label(): string {
+    return "Recruit with The Voice of Saruman";
+  }
+
+  isAvailable(frontId: WotrFrontId): boolean {
+    const nation = this.nationStore.nation("isengard");
+    if (nation.politicalStep !== "atWar") return false;
+    if (!this.regionStore.isUnconquered("orthanc")) return false;
+    if (this.regionStore.isUnderSiege("orthanc")) return false;
+    if (this.subChoices.some(c => c.isAvailable(frontId))) return true;
+    return false;
+  }
+
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    const actions = await this.ui.askChoice(
+      "Choose an action for The Voice of Saruman",
+      this.subChoices,
+      "shadow"
+    );
+    return actions;
+  }
+}
+
+class SarumanRecruitmentChoice implements WotrUiChoice {
+  constructor(
+    private ui: WotrGameUi,
+    private regionStore: WotrRegionStore,
+    private nationStore: WotrNationStore,
+    private unitUi: WotrUnitUi
+  ) {}
+
+  label(): string {
+    return "Recruit up to three regular units";
+  }
+
+  isAvailable(): boolean {
     const isengardNation = this.nationStore.nation("isengard");
     return this.nationStore.hasRegularReinforcements(isengardNation);
   }
 
-  private canUpgradeRegulars(): boolean {
-    const isengardNation = this.nationStore.nation("isengard");
-    if (!this.nationStore.hasEliteReinforcements(isengardNation)) return false;
-    const orthanc = this.regionStore.region("orthanc");
-    return orthanc.army?.regulars?.some(r => r.nation === "isengard") ?? false;
-  }
-
-  private nUpgradeableRegulars(): number {
-    const orthanc = this.regionStore.region("orthanc");
-    const nRegulars = orthanc.army?.regulars?.find(r => r.nation === "isengard")?.quantity ?? 0;
-    const nAvailableElites = this.nationStore.nation("isengard").reinforcements?.elite ?? 0;
-    return Math.min(nRegulars, nAvailableElites, 2);
-  }
-
-  private async recruitRegulars(): Promise<WotrAction[]> {
+  async actions(params: WotrFrontId): Promise<WotrAction[]> {
     const exludedRegions = new Set<WotrRegionId>();
     let counter = 0;
     let canPass = false;
@@ -141,8 +150,27 @@ export class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoic
     }
     return actions;
   }
+}
 
-  private async upgradeRegulars(): Promise<WotrAction[]> {
+class SarumanUpgradeRegularsChoice implements WotrUiChoice {
+  constructor(
+    private regionStore: WotrRegionStore,
+    private nationStore: WotrNationStore,
+    private ui: WotrGameUi
+  ) {}
+
+  label(): string {
+    return "Replace two regular units in Orthanc with two elite units";
+  }
+
+  isAvailable(): boolean {
+    const isengardNation = this.nationStore.nation("isengard");
+    if (!this.nationStore.hasEliteReinforcements(isengardNation)) return false;
+    const orthanc = this.regionStore.region("orthanc");
+    return orthanc.army?.regulars?.some(r => r.nation === "isengard") ?? false;
+  }
+
+  async actions(params: WotrFrontId): Promise<WotrAction[]> {
     const maxRegulars = this.nUpgradeableRegulars();
     const quantity = await this.ui.askQuantity("How many regular units to upgrade?", {
       min: 1,
@@ -150,6 +178,13 @@ export class TheVoiceOfSarumanAbility extends WotrCardAbility<WotrActionDieChoic
       default: maxRegulars
     });
     return [upgradeRegularUnit("orthanc", "isengard", quantity)];
+  }
+
+  private nUpgradeableRegulars(): number {
+    const orthanc = this.regionStore.region("orthanc");
+    const nRegulars = orthanc.army?.regulars?.find(r => r.nation === "isengard")?.quantity ?? 0;
+    const nAvailableElites = this.nationStore.nation("isengard").reinforcements?.elite ?? 0;
+    return Math.min(nRegulars, nAvailableElites, 2);
   }
 }
 

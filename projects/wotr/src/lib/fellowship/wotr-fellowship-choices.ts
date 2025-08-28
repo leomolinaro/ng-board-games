@@ -1,14 +1,14 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
 import { hideFellowship, moveFelloswhip } from "./wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 import { WotrFellowshipUi } from "./wotr-fellowship-ui";
 
 @Injectable({ providedIn: "root" })
-export class WotrFellowshipProgressChoice implements WotrPlayerChoice {
+export class WotrFellowshipProgressChoice implements WotrUiChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
   label(): string {
     return "Fellowship progress";
@@ -19,13 +19,13 @@ export class WotrFellowshipProgressChoice implements WotrPlayerChoice {
     return true;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     return [moveFelloswhip()];
   }
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrHideFellowshipChoice implements WotrPlayerChoice {
+export class WotrHideFellowshipChoice implements WotrUiChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
 
   label(): string {
@@ -36,13 +36,13 @@ export class WotrHideFellowshipChoice implements WotrPlayerChoice {
     return this.fellowshipStore.isRevealed();
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     return [hideFellowship()];
   }
 }
 
 @Injectable({ providedIn: "root" })
-export class WotrSeparateCompanionsChoice implements WotrPlayerChoice {
+export class WotrSeparateCompanionsChoice implements WotrUiChoice {
   private fellowshipStore = inject(WotrFellowshipStore);
   private fellowshipService = inject(WotrFellowshipHandler);
   private fellowshipUi = inject(WotrFellowshipUi);
@@ -54,7 +54,7 @@ export class WotrSeparateCompanionsChoice implements WotrPlayerChoice {
     return this.fellowshipStore.numberOfCompanions() > 0;
   }
 
-  async resolve(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
     return this.fellowshipUi.separateCompanions();
   }
 }

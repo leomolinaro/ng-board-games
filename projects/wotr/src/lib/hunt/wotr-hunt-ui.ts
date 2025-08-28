@@ -12,7 +12,7 @@ import {
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
-import { WotrGameUi, WotrPlayerChoice } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "./wotr-hunt-actions";
 import {
@@ -116,7 +116,7 @@ export class WotrHuntUi {
       // guide elimination
       // random companion elimination
       // use ring
-      const choices: WotrPlayerChoice<WotrHuntEffectParams>[] = [];
+      const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
       if (!casualtyTaken) {
         choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);

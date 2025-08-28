@@ -5,7 +5,9 @@ import {
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
 import { WotrCardAbility } from "../../card/ability/wotr-card-ability";
-import { WotrPlayerChoice } from "../../game/wotr-game-ui";
+import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
 import { advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrNationStore } from "../../nation/wotr-nation-store";
@@ -53,17 +55,33 @@ export abstract class AdvanceAnyDieAbility extends WotrCardAbility<WotrActionDie
     const characterRegion = this.regionStore.characterRegion(this.characterId)!;
     if (!this.isValidRegion(characterRegion)) return [];
     if (!this.regionStore.isUnconquered(characterRegion.id)) return [];
-    const choice: WotrPlayerChoice = {
-      label: () => this.abilityName,
-      isAvailable: () => {
-        const nation = this.nationStore.nation(this.nationId);
-        if (nation.politicalStep === "atWar") return false;
-        return true;
-      },
-      resolve: async () => {
-        return [advanceNation(this.nationId)];
-      }
-    };
-    return [choice];
+    return [
+      new AdvanceAnyDieChoice(this.characterId, this.abilityName, this.nationId, this.nationStore)
+    ];
   };
+}
+
+class AdvanceAnyDieChoice implements WotrUiCharacterChoice {
+  constructor(
+    private characterId: WotrCharacterId,
+    private abilityName: string,
+    private nationId: WotrNationId,
+    private nationStore: WotrNationStore
+  ) {}
+
+  character = this.characterId;
+
+  label(): string {
+    return this.abilityName;
+  }
+
+  isAvailable(frontId: WotrFrontId): boolean {
+    const nation = this.nationStore.nation(this.nationId);
+    if (nation.politicalStep === "atWar") return false;
+    return true;
+  }
+
+  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+    return [advanceNation(this.nationId)];
+  }
 }
