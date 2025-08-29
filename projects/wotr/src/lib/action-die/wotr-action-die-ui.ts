@@ -1,11 +1,12 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCardUi } from "../card/wotr-card-ui";
+import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
+import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrDieStory, WotrGameStory } from "../game/wotr-story-models";
+import { WotrDieCardStory, WotrDieStory, WotrGameStory } from "../game/wotr-story-models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
@@ -23,7 +24,8 @@ export class WotrActionDieUi {
   private ui = inject(WotrGameUi);
   private characterUi = inject(WotrCharacterUi);
   private unitUi = inject(WotrUnitUi);
-  private cardUi = inject(WotrCardUi);
+  private cardUi = inject(WotrCardDrawUi);
+  private cardPlayUi = inject(WotrCardPlayUi);
   private nationUi = inject(WotrNationUi);
   private fellowshipUi = inject(WotrFellowshipUi);
 
@@ -93,14 +95,17 @@ export class WotrActionDieUi {
     return this.resolveArmyResult("army", frontId);
   }
 
-  async resolveArmyResult(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrDieStory> {
+  async resolveArmyResult(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     return this.ui.askDieStoryChoice(
       die,
       "Choose an action for the army die",
       [
         this.unitUi.moveArmiesChoice,
         this.unitUi.attackArmyChoice,
-        this.cardUi.playEventCardChoice(["army"]),
+        this.cardPlayUi.playEventCardChoice(["army"]),
         ...this.actionDieModifiers.getActionDieChoices("army", frontId),
         this.skipDieChoice("event")
       ],
@@ -112,11 +117,14 @@ export class WotrActionDieUi {
     return this.resolveCharacterResult("character", frontId);
   }
 
-  async resolveCharacterResult(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrDieStory> {
+  async resolveCharacterResult(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
       this.unitUi.leaderArmyMoveChoice,
       this.unitUi.leaderArmyAttackChoice,
-      this.cardUi.playEventCardChoice(["character"])
+      this.cardPlayUi.playEventCardChoice(["character"])
     ];
     if (frontId === "free-peoples") {
       choices.push(
@@ -142,10 +150,13 @@ export class WotrActionDieUi {
     return this.resolveMusterResult("muster", frontId);
   }
 
-  async resolveMusterResult(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrDieStory> {
+  async resolveMusterResult(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
       this.nationUi.diplomaticActionChoice,
-      this.cardUi.playEventCardChoice(["muster"]),
+      this.cardPlayUi.playEventCardChoice(["muster"]),
       this.unitUi.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
@@ -161,7 +172,7 @@ export class WotrActionDieUi {
       this.nationUi.diplomaticActionChoice,
       this.unitUi.moveArmiesChoice,
       this.unitUi.attackArmyChoice,
-      this.cardUi.playEventCardChoice(["muster", "army"]),
+      this.cardPlayUi.playEventCardChoice(["muster", "army"]),
       this.unitUi.recruitReinforcementsChoice
     ];
     if (frontId === "shadow") {
@@ -232,13 +243,16 @@ export class WotrActionDieUi {
     return this.resolveEventResult("event", frontId);
   }
 
-  async resolveEventResult(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrDieStory> {
+  async resolveEventResult(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     return this.ui.askDieStoryChoice(
       die,
       "Choose an action for the event die",
       [
         this.cardUi.drawEventCardChoice,
-        this.cardUi.playEventCardChoice("any"),
+        this.cardPlayUi.playEventCardChoice("any"),
         ...this.actionDieModifiers.getActionDieChoices("event", frontId),
         this.skipDieChoice("event")
       ],

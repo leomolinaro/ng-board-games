@@ -18,6 +18,9 @@ export class WotrFellowshipStore {
   update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;
   state!: Signal<WotrFellowship>;
 
+  corruption() {
+    return this.state().corruption;
+  }
   isRevealed() {
     return this.state().status === "revealed";
   }

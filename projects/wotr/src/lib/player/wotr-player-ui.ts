@@ -1,8 +1,8 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
+import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCardUi } from "../card/wotr-card-ui";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -15,7 +15,7 @@ import { WotrPlayerStoryService } from "./wotr-player-story-service";
 export class WotrPlayerUi implements WotrPlayerStoryService {
   private actionDieUi = inject(WotrActionDieUi);
   private battleUi = inject(WotrBattleUi);
-  private cardUi = inject(WotrCardUi);
+  private cardUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntUi = inject(WotrHuntUi);
 

@@ -465,7 +465,7 @@ export const stories: WotrStoryDoc[] = [
   // Turn 8 54:32
   b
     .fpT()
-    .phaseStory(drawCards("Horns of Gondor", "Fear! Fire! Foes!"), discardCards("Horns of Gondor")),
+    .phaseStory(drawCards("Horn of Gondor", "Fear! Fire! Foes!"), discardCards("Horn of Gondor")),
   b.s().phaseStory(drawCards("Dreadful Spells", "Musterings of Long-planned War")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),

@@ -29,7 +29,8 @@ export interface WotrCardsDialogData {
           [src]="cardId | bgTransform: cardImage"
           [class]="{
             focused: cardId === focusedCardId,
-            selected: data.selectableCards && selectedCards().includes(cardId)
+            selected: data.selectableCards && selectedCards().includes(cardId),
+            disabled: cardId | bgTransform: isDisabled
           }"
           (click)="onCardClick(cardId)" />
       }
@@ -93,6 +94,10 @@ export interface WotrCardsDialogData {
       .card.selected {
         border: 2px solid #ffffff;
       }
+      .card.disabled {
+        opacity: 0.7;
+        pointer-events: none;
+      }
       .toolbar {
         @include wotr.golden-padding(1vmin);
         display: flex;
@@ -116,6 +121,12 @@ export class WotrCardsDialog {
 
   protected selectedCards = signal<WotrCardId[]>([]);
 
+  isDisabled: BgTransformFn<WotrCardId, boolean> = cardId => {
+    if (!this.data.selectableCards) return false;
+    if (!this.data.selectableCards.cards) return false;
+    return !this.data.selectableCards.cards.includes(cardId);
+  };
+
   protected canConfirm = computed(() => {
     return this.data.selectableCards?.nCards === this.selectedCards().length;
   });
@@ -135,7 +146,11 @@ export class WotrCardsDialog {
       if (this.selectedCards().includes(cardId)) {
         this.selectedCards.update(cards => cards.filter(c => c !== cardId));
       } else {
-        this.selectedCards.update(cards => [...cards, cardId]);
+        if (this.data.selectableCards.nCards === 1) {
+          this.selectedCards.set([cardId]);
+        } else {
+          this.selectedCards.update(cards => [...cards, cardId]);
+        }
       }
     }
   }

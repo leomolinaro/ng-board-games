@@ -19,7 +19,7 @@ import {
 } from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit-models";
-import { WotrDieStory } from "./wotr-story-models";
+import { WotrDieCardStory, WotrDieStory } from "./wotr-story-models";
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -45,6 +45,7 @@ export interface WotrCardSelection {
   nCards: number;
   frontId: WotrFrontId;
   message: string;
+  cards?: WotrCardId[];
 }
 
 export interface WotrReinforcementUnitSelection {
@@ -92,6 +93,7 @@ export interface WotrUiChoice<P = WotrFrontId> {
   isAvailable?(params: P): boolean;
   actions(params: P): Promise<WotrAction[]>;
   character?: WotrCharacterId;
+  card?: () => WotrCardId;
 }
 
 export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
@@ -162,6 +164,12 @@ export class WotrGameUi extends signalStore(
     const cards = await this.cards.get();
     this.updateUi(s => ({ ...s, message: null, canCancel: true, cardSelection: null }));
     return cards;
+  }
+  async askCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
+    this.updateUi(s => ({ ...s, message, cardSelection }));
+    const cards = await this.cards.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, cardSelection: null }));
+    return cards[0];
   }
 
   nation = uiEvent<WotrNationId>();
@@ -295,7 +303,7 @@ export class WotrGameUi extends signalStore(
     message: string,
     choices: WotrUiChoice<P>[],
     params: P
-  ): Promise<WotrDieStory> {
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     const choice = await this.askOption<WotrUiChoice<P>>(
       message,
       choices.map(c => ({
@@ -305,17 +313,23 @@ export class WotrGameUi extends signalStore(
       }))
     );
     const actions = await choice.actions(params);
-    const story: WotrDieStory = {
-      type: "die",
-      die,
-      actions
-    };
-    if (choice.character) story.character = choice.character;
-    return story;
-  }
-
-  askCard(message: string, cardSelection: WotrCardId[], frontId: WotrFrontId): Promise<WotrCardId> {
-    throw new Error("Method not implemented.");
+    if (choice.card) {
+      const story: WotrDieCardStory = {
+        type: "die-card",
+        die,
+        actions,
+        card: choice.card()
+      };
+      return story;
+    } else {
+      const story: WotrDieStory = {
+        type: "die",
+        die,
+        actions
+      };
+      if (choice.character) story.character = choice.character;
+      return story;
+    }
   }
 
   resetUi(turnPlayer: WotrFrontId) {

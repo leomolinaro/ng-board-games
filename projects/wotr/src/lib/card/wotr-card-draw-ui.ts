@@ -4,16 +4,17 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
-import { WotrCardId, WotrCardType } from "./wotr-card-models";
+import { WotrCardId } from "./wotr-card-models";
 import { WotrCardRules } from "./wotr-card-rules";
 
 @Injectable({ providedIn: "root" })
-export class WotrCardUi {
+export class WotrCardDrawUi {
   private ui = inject(WotrGameUi);
   private cardRules = inject(WotrCardRules);
   private frontStore = inject(WotrFrontStore);
 
   async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction[]> {
+    // TODO separate in different stories: introduce the draw flow
     await this.ui.askContinue("Draw cards");
     const characterDeck = this.frontStore.characterDeck(frontId);
     const strategyDeck = this.frontStore.strategyDeck(frontId);
@@ -24,6 +25,30 @@ export class WotrCardUi {
     }
     if (strategyDeck.length) {
       drawnCards.push(strategyDeck[0]);
+    }
+    this.frontStore.drawCards(drawnCards, frontId);
+    actions.push(drawCardIds(...drawnCards));
+    const discardAction = await this.checkMaximumCards(frontId);
+    if (discardAction) actions.push(discardAction);
+    return actions;
+  }
+
+  async drawCards(
+    nCards: number,
+    deckType: "character" | "strategy",
+    frontId: WotrFrontId
+  ): Promise<WotrAction[]> {
+    await this.ui.askContinue("Draw cards");
+    const deck =
+      deckType === "character"
+        ? this.frontStore.characterDeck(frontId)
+        : this.frontStore.strategyDeck(frontId);
+    const drawnCards: WotrCardId[] = [];
+    const actions: WotrAction[] = [];
+    for (let i = 0; i < nCards; i++) {
+      if (deck.length > i) {
+        drawnCards.push(deck[i]);
+      }
     }
     this.frontStore.drawCards(drawnCards, frontId);
     actions.push(drawCardIds(...drawnCards));
@@ -79,29 +104,9 @@ export class WotrCardUi {
     return actions;
   }
 
-  async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
-    throw new Error("Method not implemented.");
-  }
-
   drawEventCardChoice: WotrUiChoice = {
     label: () => "Draw a card",
     isAvailable: frontId => this.cardRules.canDrawCard(frontId),
     actions: frontId => this.drawCard(frontId)
   };
-
-  playEventCardChoice(cartTypes: WotrCardType[] | "any"): WotrUiChoice {
-    return {
-      label: () => "Play an event card",
-      isAvailable: frontId => this.cardRules.hasPlayableCards(cartTypes, frontId),
-      actions: async frontId => {
-        const playableCards = this.cardRules.playableCards(cartTypes, frontId);
-        const cardId = await this.ui.askCard(
-          "Select an event card to play",
-          playableCards,
-          frontId
-        );
-        return this.playCard(cardId, frontId);
-      }
-    };
-  }
 }
