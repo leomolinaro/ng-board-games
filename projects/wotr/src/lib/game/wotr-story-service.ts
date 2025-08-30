@@ -1,4 +1,4 @@
-import { Injectable, forwardRef, inject } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { ABgGameService, BgAuthService } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -32,7 +32,7 @@ export class WotrStoryService extends ABgGameService<
   private frontStore = inject(WotrFrontStore);
   private playerStore = inject(WotrPlayerInfoStore);
   protected override auth = inject(BgAuthService);
-  protected override aiPlayer = inject(forwardRef(() => WotrPlayerAi));
+  protected override aiPlayer!: WotrPlayerAi;
   protected override localPlayer!: WotrPlayerUi;
   private actionRegistry = inject(WotrActionRegistry);
 

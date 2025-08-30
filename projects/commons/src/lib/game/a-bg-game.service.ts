@@ -171,7 +171,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
       return race(
         this.getLocalStory(time, playerId, () => task(playerService)),
         this.currentPlayerChange$().pipe(map(() => null)),
-        this.cancelChange$().pipe(map(() => null))
+        this.cancelChange$().pipe(
+          tap(() => this.endTemporaryState()),
+          map(() => null)
+        )
       );
     } else {
       return this.currentPlayerChange$().pipe(map(() => null));
@@ -293,7 +296,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
         race(
           this.getLocalStory(time, playerId!, () => task.task(playerService)),
           this.currentPlayerChange$().pipe(map(() => null)),
-          this.cancelChange$().pipe(map(() => null))
+          this.cancelChange$().pipe(
+            tap(() => this.endTemporaryState()),
+            map(() => null)
+          )
         )
       );
       if (story) {
