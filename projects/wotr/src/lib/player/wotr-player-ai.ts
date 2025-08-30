@@ -9,7 +9,10 @@ import { WotrPlayerStoryService } from "./wotr-player-story-service";
 export class WotrPlayerAi implements WotrPlayerStoryService {
   private game = inject(WotrGameStore);
 
-  firstPhase(): Promise<never> {
+  firstPhaseDraw(): Promise<never> {
+    throw new Error("Method not implemented.");
+  }
+  firstPhaseDiscard(): Promise<never> {
     throw new Error("Method not implemented.");
   }
   fellowshipPhase(): Promise<WotrStory> {
@@ -88,6 +91,9 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
   wantContinueBattle(): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
+  discardExcessCards(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 }

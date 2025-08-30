@@ -13,13 +13,11 @@ export class WotrCardDrawUi {
   private cardRules = inject(WotrCardRules);
   private frontStore = inject(WotrFrontStore);
 
-  async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction[]> {
-    // TODO separate in different stories: introduce the draw flow
+  async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction> {
     await this.ui.askContinue("Draw cards");
     const characterDeck = this.frontStore.characterDeck(frontId);
     const strategyDeck = this.frontStore.strategyDeck(frontId);
     const drawnCards: WotrCardId[] = [];
-    const actions: WotrAction[] = [];
     if (characterDeck.length) {
       drawnCards.push(characterDeck[0]);
     }
@@ -27,40 +25,11 @@ export class WotrCardDrawUi {
       drawnCards.push(strategyDeck[0]);
     }
     this.frontStore.drawCards(drawnCards, frontId);
-    actions.push(drawCardIds(...drawnCards));
-    const discardAction = await this.checkMaximumCards(frontId);
-    if (discardAction) actions.push(discardAction);
-    return actions;
+    return drawCardIds(...drawnCards);
   }
 
-  async drawCards(
-    nCards: number,
-    deckType: "character" | "strategy",
-    frontId: WotrFrontId
-  ): Promise<WotrAction[]> {
-    await this.ui.askContinue("Draw cards");
-    const deck =
-      deckType === "character"
-        ? this.frontStore.characterDeck(frontId)
-        : this.frontStore.strategyDeck(frontId);
-    const drawnCards: WotrCardId[] = [];
-    const actions: WotrAction[] = [];
-    for (let i = 0; i < nCards; i++) {
-      if (deck.length > i) {
-        drawnCards.push(deck[i]);
-      }
-    }
-    this.frontStore.drawCards(drawnCards, frontId);
-    actions.push(drawCardIds(...drawnCards));
-    const discardAction = await this.checkMaximumCards(frontId);
-    if (discardAction) actions.push(discardAction);
-    return actions;
-  }
-
-  private async checkMaximumCards(frontId: WotrFrontId): Promise<WotrAction | null> {
-    const handCards = this.frontStore.handCards(frontId);
-    if (handCards.length <= 6) return null;
-    const excessCards = handCards.length - 6;
+  async discardExcessCards(frontId: WotrFrontId): Promise<WotrAction> {
+    const excessCards = this.frontStore.nExcessCards(frontId);
     const cards = await this.ui.askCards(`Discard ${excessCards} card(s).`, {
       nCards: excessCards,
       frontId,
@@ -70,7 +39,27 @@ export class WotrCardDrawUi {
     return discardCardIds(...cards);
   }
 
-  async drawCard(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async drawCards(
+    nCards: number,
+    deckType: "character" | "strategy",
+    frontId: WotrFrontId
+  ): Promise<WotrAction> {
+    await this.ui.askContinue("Draw cards");
+    const deck =
+      deckType === "character"
+        ? this.frontStore.characterDeck(frontId)
+        : this.frontStore.strategyDeck(frontId);
+    const drawnCards: WotrCardId[] = [];
+    for (let i = 0; i < nCards; i++) {
+      if (deck.length > i) {
+        drawnCards.push(deck[i]);
+      }
+    }
+    this.frontStore.drawCards(drawnCards, frontId);
+    return drawCardIds(...drawnCards);
+  }
+
+  async drawCard(frontId: WotrFrontId): Promise<WotrAction> {
     const characterDeck = this.frontStore.characterDeck(frontId);
     const strategyDeck = this.frontStore.strategyDeck(frontId);
     if (characterDeck.length === 0 && strategyDeck.length === 0) {
@@ -94,19 +83,15 @@ export class WotrCardDrawUi {
     }
   }
 
-  private async drawCardFromDeck(deck: WotrCardId[], frontId: WotrFrontId): Promise<WotrAction[]> {
-    const actions: WotrAction[] = [];
+  private async drawCardFromDeck(deck: WotrCardId[], frontId: WotrFrontId): Promise<WotrAction> {
     const drawnCard = deck[0];
     this.frontStore.drawCards([drawnCard], frontId);
-    actions.push(drawCardIds(drawnCard));
-    const discardAction = await this.checkMaximumCards(frontId);
-    if (discardAction) actions.push(discardAction);
-    return actions;
+    return drawCardIds(drawnCard);
   }
 
   drawEventCardChoice: WotrUiChoice = {
     label: () => "Draw a card",
     isAvailable: frontId => this.cardRules.canDrawCard(frontId),
-    actions: frontId => this.drawCard(frontId)
+    actions: async frontId => [await this.drawCard(frontId)]
   };
 }

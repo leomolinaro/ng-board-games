@@ -14,6 +14,7 @@ export interface WotrFrontState {
   ids: WotrFrontId[];
   map: Record<WotrFrontId, WotrFront>;
   currentCard: WotrCardId | null;
+  skipDiscardExcessCards: boolean;
 }
 
 export function initialState(): WotrFrontState {
@@ -23,7 +24,8 @@ export function initialState(): WotrFrontState {
       "free-peoples": initialFront("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
       "shadow": initialFront("shadow", "Shadow", [])
     },
-    currentCard: null
+    currentCard: null,
+    skipDiscardExcessCards: false
   };
 }
 
@@ -81,6 +83,23 @@ export class WotrFrontStore {
   }
   handCards(id: WotrFrontId) {
     return this.front(id).handCards;
+  }
+  hasExcessCards(frontId: WotrFrontId): boolean {
+    const handCards = this.handCards(frontId);
+    return handCards.length > 6;
+  }
+  nExcessCards(frontId: WotrFrontId): number {
+    const handCards = this.handCards(frontId);
+    return Math.max(0, handCards.length - 6);
+  }
+  shouldSkipDiscardExcessCards(): boolean {
+    return this.state().skipDiscardExcessCards;
+  }
+  skipDiscardExcessCards(skip: boolean): void {
+    this.update("skipDiscardExcessCards", s => ({
+      ...s,
+      skipDiscardExcessCards: skip
+    }));
   }
   hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
     return !!this.front(frontId).tableCards.includes(cardId);

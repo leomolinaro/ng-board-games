@@ -19,10 +19,17 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntUi = inject(WotrHuntUi);
 
-  async firstPhase(frontId: WotrFrontId): Promise<WotrStory> {
+  async firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory> {
     return {
       type: "base",
-      actions: await this.cardUi.firstPhaseDrawCards(frontId)
+      actions: [await this.cardUi.firstPhaseDrawCards(frontId)]
+    };
+  }
+
+  async firstPhaseDiscard(frontId: WotrFrontId): Promise<WotrStory> {
+    return {
+      type: "base",
+      actions: [await this.cardUi.discardExcessCards(frontId)]
     };
   }
 
@@ -148,6 +155,13 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return {
       type: "base",
       actions: [await this.battleUi.wantContinueBattle()]
+    };
+  }
+
+  async discardExcessCards(frontId: WotrFrontId): Promise<WotrBaseStory> {
+    return {
+      type: "base",
+      actions: [await this.cardUi.discardExcessCards(frontId)]
     };
   }
 }

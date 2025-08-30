@@ -5,7 +5,7 @@ import {
   WotrStoryApplier
 } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { oppositeFront } from "../front/wotr-front-models";
+import { WotrFrontId, oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrCardReactionStory,
@@ -13,6 +13,8 @@ import {
   WotrSkipCardReactionStory
 } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardParams } from "./wotr-card-effects-service";
 import { WotrCardId, cardToLabel } from "./wotr-card-models";
@@ -22,6 +24,9 @@ export class WotrCardHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
+
+  private freePeoples = inject(WotrFreePeoplesPlayer);
+  private shadow = inject(WotrShadowPlayer);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -69,7 +74,7 @@ export class WotrCardHandler {
       "card-discard": (action, front) => this.frontStore.discardCards(action.cards, front),
       "card-discard-from-table": (action, front) =>
         this.frontStore.discardCardFromTable(action.card, front),
-      "card-draw": (action, front) => this.frontStore.drawCards(action.cards, front),
+      "card-draw": (action, front) => this.drawCards(action.cards, front),
       "card-play-on-table": (action, front) => this.frontStore.playCardOnTable(action.card, front),
       "card-random-discard": (action, front) =>
         this.frontStore.discardCards([action.card], oppositeFront(front))
@@ -102,5 +107,17 @@ export class WotrCardHandler {
 
   private nCards(cards: WotrCardId[]) {
     return `${cards.length} ${cards.length === 1 ? "card" : "cards"}`;
+  }
+
+  private async drawCards(cards: WotrCardId[], frontId: WotrFrontId) {
+    this.frontStore.drawCards(cards, frontId);
+    if (this.frontStore.hasExcessCards(frontId)) {
+      if (this.frontStore.shouldSkipDiscardExcessCards()) return;
+      if (frontId === "free-peoples") {
+        await this.freePeoples.discardExcessCards();
+      } else {
+        await this.shadow.discardExcessCards();
+      }
+    }
   }
 }

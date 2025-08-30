@@ -1,6 +1,7 @@
 import { rollActionDice } from "../action-die/wotr-action-die-actions";
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
+import { discardCards, drawCards } from "../card/wotr-card-actions";
 import { WotrCardLabel, labelToCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
@@ -41,8 +42,11 @@ export class WotrFrontStoryComposer {
   private baseStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
     return { type: "base", actions, ...this.story() };
   }
-  drawPhase(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
-    return this.baseStory(...actions);
+  firstPhaseDraw(...cards: WotrCardLabel[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(drawCards(...cards));
+  }
+  firstPhaseDiscard(...cards: WotrCardLabel[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(discardCards(...cards));
   }
   fellowshipPhase(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
     return this.baseStory(...actions);

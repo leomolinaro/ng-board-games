@@ -7,8 +7,11 @@ import { WotrStoryService } from "../game/wotr-story-service";
 export class WotrAllPlayers {
   protected storyService = inject(WotrStoryService);
 
-  firstPhase(): Promise<Record<WotrFrontId, WotrStory>> {
-    return this.storyService.parallelStories(frontId => p => p.firstPhase(frontId));
+  firstPhaseDraw(): Promise<Record<WotrFrontId, WotrStory>> {
+    return this.storyService.parallelStories(frontId => p => p.firstPhaseDraw(frontId));
+  }
+  firstPhaseDiscard(): Promise<Record<WotrFrontId, WotrStory>> {
+    return this.storyService.parallelStories(frontId => p => p.firstPhaseDiscard(frontId));
   }
   rollActionDice(): Promise<Record<WotrFrontId, WotrStory>> {
     return this.storyService.parallelStories(frontId => p => p.rollActionDice(frontId));

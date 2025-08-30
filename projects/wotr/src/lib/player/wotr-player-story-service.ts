@@ -5,7 +5,8 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 
 export interface WotrPlayerStoryService {
-  firstPhase(frontId: WotrFrontId): Promise<WotrStory>;
+  firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory>;
+  firstPhaseDiscard(frontId: WotrFrontId): Promise<WotrStory>;
   fellowshipPhase(): Promise<WotrStory>;
   huntAllocationPhase(): Promise<WotrStory>;
   rollActionDice(frontId: WotrFrontId): Promise<WotrStory>;
@@ -31,6 +32,7 @@ export interface WotrPlayerStoryService {
   eliminateArmy(frontId: WotrFrontId): Promise<WotrStory>;
   battleAdvance(frontId: WotrFrontId): Promise<WotrStory>;
   wantContinueBattle(): Promise<WotrStory>;
+  discardExcessCards(frontId: WotrFrontId): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;

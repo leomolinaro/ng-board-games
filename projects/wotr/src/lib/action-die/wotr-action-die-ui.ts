@@ -272,11 +272,10 @@ export class WotrActionDieUi {
   }
 
   private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrStory> {
-    const actions = await this.cardUi.drawCard(frontId);
     return {
       type: "token",
       token: "draw-card",
-      actions
+      actions: [await this.cardUi.drawCard(frontId)]
     };
   }
 

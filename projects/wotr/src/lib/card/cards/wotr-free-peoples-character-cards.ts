@@ -269,9 +269,7 @@ export class WotrFreePeoplesCharacterCards {
             const leftCards = this.frontStore.strategyDeck("free-peoples").length;
             const cardToDraw = Math.min(2, leftCards);
             if (cardToDraw) {
-              actions.push(
-                ...(await this.cardDrawUi.drawCards(cardToDraw, "strategy", "free-peoples"))
-              );
+              actions.push(await this.cardDrawUi.drawCards(cardToDraw, "strategy", "free-peoples"));
             }
 
             return actions;

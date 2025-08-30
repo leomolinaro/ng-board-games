@@ -78,37 +78,43 @@ export class WotrGameTurn {
   private async round(roundNumber: number) {
     this.logger.logRound(roundNumber);
     let continueGame = await this.firstPhase();
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     continueGame = await this.fellowshipPhase();
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     continueGame = await this.huntAllocation();
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     continueGame = await this.actionRoll();
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     continueGame = await this.actionResolution();
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     continueGame = await this.victoryCheck(roundNumber);
-    if (!continueGame) {
-      return false;
-    }
+    if (!continueGame) return false;
     return true;
   }
 
   private async firstPhase() {
     this.logger.logPhase(1);
     this.huntStore.resetHuntBox();
-    await this.allPlayers.firstPhase();
+    this.frontStore.skipDiscardExcessCards(true);
+    await this.allPlayers.firstPhaseDraw();
+    await this.checkFirstPhaseDiscard();
+    this.frontStore.skipDiscardExcessCards(false);
     return true;
+  }
+
+  private async checkFirstPhaseDiscard() {
+    const players: WotrPlayer[] = [];
+    if (this.frontStore.hasExcessCards("free-peoples")) {
+      players.push(this.freePeoples);
+    }
+    if (this.frontStore.hasExcessCards("shadow")) {
+      players.push(this.shadow);
+    }
+    if (players.length === 1) {
+      await players[0].firstPhaseDiscard();
+    } else if (players.length === 2) {
+      await this.allPlayers.firstPhaseDiscard();
+    }
   }
 
   private async fellowshipPhase() {

@@ -9,8 +9,11 @@ export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
   public abstract frontId: WotrFrontId;
 
-  firstPhase(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.firstPhase(this.frontId));
+  firstPhaseDraw(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.firstPhaseDraw(this.frontId));
+  }
+  firstPhaseDiscard(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.firstPhaseDiscard(this.frontId));
   }
   fellowshipPhase(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.fellowshipPhase());
@@ -80,5 +83,8 @@ export abstract class WotrPlayer {
   }
   wantContinueBattle(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantContinueBattle());
+  }
+  discardExcessCards(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.discardExcessCards(this.frontId));
   }
 }
