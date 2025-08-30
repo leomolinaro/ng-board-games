@@ -39,8 +39,8 @@ const b = new WotrStoriesBuilder();
 
 export const stories: WotrStoryDoc[] = [
   // Turn 1
-  b.fpT().phaseStory(drawCards("Swords in Eriador", "Challenge of the King")),
-  b.s().phaseStory(drawCards("Return to Valinor", "Balrog of Moria")),
+  b.fpT().drawPhase(drawCards("Swords in Eriador", "Challenge of the King")),
+  b.s().drawPhase(drawCards("Return to Valinor", "Balrog of Moria")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("character", "muster-army", "character", "character"),
@@ -80,8 +80,8 @@ export const stories: WotrStoryDoc[] = [
     ),
   b.fp().skipTokens(),
   // Turn 2 4:00
-  b.sT().phaseStory(drawCards("Give it to Uss!", "Threats and Promises")),
-  b.fp().phaseStory(drawCards("Axe and Bow", "Grimbeorn the Old, Son of Beorn")),
+  b.sT().drawPhase(drawCards("Give it to Uss!", "Threats and Promises")),
+  b.fp().drawPhase(drawCards("Axe and Bow", "Grimbeorn the Old, Son of Beorn")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("event", "muster", "character", "will-of-the-west"),
@@ -123,8 +123,8 @@ export const stories: WotrStoryDoc[] = [
   b.s().eventDieCard("Give it to Uss!", addHuntTile("r1rs")),
   b.fp().skipTokens(),
   // Turn 3 6:57
-  b.sT().phaseStory(drawCards("Lure of the Ring", "Stormcrow")),
-  b.fp().phaseStory(drawCards("The Ents Awake: Treebeard", "Kindred of Glorfindel")),
+  b.sT().drawPhase(drawCards("Lure of the Ring", "Stormcrow")),
+  b.fp().drawPhase(drawCards("The Ents Awake: Treebeard", "Kindred of Glorfindel")),
   b.fp().fellowshipPhase(declareFellowship("old-ford")),
   b.s().huntAllocation(1),
   b.sT().rollActionDice("event", "character", "event", "event", "eye", "army", "character"),

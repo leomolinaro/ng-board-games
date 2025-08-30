@@ -1,7 +1,7 @@
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 
@@ -9,76 +9,76 @@ export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
   public abstract frontId: WotrFrontId;
 
-  firstPhase(): Promise<WotrGameStory> {
+  firstPhase(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.firstPhase(this.frontId));
   }
-  fellowshipPhase(): Promise<WotrGameStory> {
+  fellowshipPhase(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.fellowshipPhase());
   }
-  huntAllocationPhase(): Promise<WotrGameStory> {
+  huntAllocationPhase(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.huntAllocationPhase());
   }
-  rollActionDice(): Promise<WotrGameStory> {
+  rollActionDice(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.rollActionDice(this.frontId));
   }
-  rollHuntDice(): Promise<WotrGameStory> {
+  rollHuntDice(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.rollHuntDice());
   }
-  reRollHuntDice(nReRolls: number): Promise<WotrGameStory> {
+  reRollHuntDice(nReRolls: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.reRollHuntDice(nReRolls));
   }
-  drawHuntTile(): Promise<WotrGameStory> {
+  drawHuntTile(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.drawHuntTile());
   }
-  huntEffect(params: WotrHuntEffectParams): Promise<WotrGameStory> {
+  huntEffect(params: WotrHuntEffectParams): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.huntEffect(params));
   }
-  revealFellowship(): Promise<WotrGameStory> {
+  revealFellowship(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.revealFellowship());
   }
-  separateCompanions(): Promise<WotrGameStory> {
+  separateCompanions(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.separateCompanions());
   }
-  actionResolution(): Promise<WotrGameStory> {
+  actionResolution(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.actionResolution(this.frontId));
   }
-  activateTableCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateTableCard(cardId));
   }
-  activateCombatCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateCombatCard(cardId));
   }
-  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrGameStory> {
+  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateCharacterAbility(characterId));
   }
-  forfeitLeadership(): Promise<WotrGameStory> {
+  forfeitLeadership(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.forfeitLeadership());
   }
-  wantRetreatIntoSiege(): Promise<WotrGameStory> {
+  wantRetreatIntoSiege(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantRetreatIntoSiege());
   }
-  wantRetreat(): Promise<WotrGameStory> {
+  wantRetreat(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantRetreat());
   }
-  chooseCombatCard(): Promise<WotrGameStory> {
+  chooseCombatCard(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.chooseCombatCard(this.frontId));
   }
-  rollCombatDice(nDice: number): Promise<WotrGameStory> {
+  rollCombatDice(nDice: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.rollCombatDice(nDice, this.frontId));
   }
-  reRollCombatDice(nDice: number): Promise<WotrGameStory> {
+  reRollCombatDice(nDice: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.reRollCombatDice(nDice, this.frontId));
   }
-  chooseCasualties(hitPoints: number): Promise<WotrGameStory> {
+  chooseCasualties(hitPoints: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.chooseCasualties(hitPoints, this.frontId));
   }
-  eliminateArmy(): Promise<WotrGameStory> {
+  eliminateArmy(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.eliminateArmy(this.frontId));
   }
-  battleAdvance(): Promise<WotrGameStory> {
+  battleAdvance(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.battleAdvance(this.frontId));
   }
-  wantContinueBattle(): Promise<WotrGameStory> {
+  wantContinueBattle(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantContinueBattle());
   }
 }

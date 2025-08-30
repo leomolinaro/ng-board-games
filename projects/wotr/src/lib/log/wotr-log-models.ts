@@ -3,7 +3,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
@@ -22,7 +22,7 @@ export interface WotrLogAction {
   type: "action";
   front: WotrFrontId;
   action: WotrAction;
-  story: WotrGameStory;
+  story: WotrStory;
   during?: "battle" | "hunt";
 }
 export interface WotrLogEffect {
@@ -33,7 +33,7 @@ export interface WotrLogEffect {
 export interface WotrLogStory {
   type: "story";
   front: WotrFrontId;
-  story: WotrGameStory;
+  story: WotrStory;
   during?: "battle" | "hunt";
 }
 export interface WotrLogV2 {

@@ -4,7 +4,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLog, WotrLogFragment } from "./wotr-log-models";
 import { WotrLogStore } from "./wotr-log-store";
@@ -51,7 +51,7 @@ export class WotrLogWriter {
     this.addLog("logCombatCard", { type: "combat-card", card, front, during: "battle" });
   }
 
-  logAction(action: WotrAction, story: WotrGameStory, front: WotrFrontId) {
+  logAction(action: WotrAction, story: WotrStory, front: WotrFrontId) {
     this.addLog(`logAction [${action.type}]`, {
       type: "action",
       action,
@@ -65,7 +65,7 @@ export class WotrLogWriter {
     this.addLog(`logEffect [${effect.type}]`, { type: "effect", effect, during: this.during() });
   }
 
-  logStory(story: WotrGameStory, front: WotrFrontId) {
+  logStory(story: WotrStory, front: WotrFrontId) {
     this.addLog("logStory", { type: "story", story, front, during: this.during() });
   }
 

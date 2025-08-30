@@ -9,12 +9,12 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
+  WotrBaseStory,
   WotrDieCardStory,
   WotrDieStory,
-  WotrGameStory,
   WotrPassStory,
-  WotrPhaseStory,
   WotrSkipTokensStory,
+  WotrStory,
   WotrTokenStory
 } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
@@ -48,10 +48,10 @@ export class WotrGameTurn {
   private setupService = inject(WotrSetupRules);
 
   init() {
-    this.actionRegistry.registerStory("phase", this.phaseStory);
+    this.actionRegistry.registerStory("base", this.baseStory);
   }
 
-  private phaseStory: WotrStoryApplier<WotrPhaseStory> = async (story, front) => {
+  private baseStory: WotrStoryApplier<WotrBaseStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
@@ -199,7 +199,7 @@ export class WotrGameTurn {
     return true;
   }
 
-  private getNextResolutionFrontId(player: WotrPlayer, story: WotrGameStory): WotrPlayer | null {
+  private getNextResolutionFrontId(player: WotrPlayer, story: WotrStory): WotrPlayer | null {
     const otherPlayer =
       oppositeFront(player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
     if (this.frontStore.hasActionDice(otherPlayer.frontId)) {

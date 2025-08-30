@@ -3,8 +3,6 @@ import { RouterModule, Routes } from "@angular/router";
 import { WotrMapService } from "./game/board/map/wotr-map.service";
 import { WotrGamePage } from "./game/wotr-game-page";
 import { WotrHomePage } from "./home/wotr-home-page";
-import { WotrRemoteService } from "./remote/wotr-remote";
-import { WotrRemoteMock } from "./remote/wotr-remote-mock";
 
 const gameResolvers = {
   mapPaths: () => inject(WotrMapService).loadMapPaths$(),
@@ -18,7 +16,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  providers: [{ provide: WotrRemoteService, useClass: WotrRemoteMock }]
+  imports: [RouterModule.forChild(routes)]
+  // providers: [{ provide: WotrRemoteService, useClass: WotrRemoteMock }]
 })
 export class WotrModule {}

@@ -62,8 +62,8 @@ const b = new WotrStoriesBuilder();
 
 export const stories: WotrStoryDoc[] = [
   // Turn 1
-  b.fpT().phaseStory(drawCards("The Power of Tom Bombadil", "Elven Cloaks")),
-  b.s().phaseStory(drawCards("The Day Without Dawn", "Worn with Sorrow and Toil")),
+  b.fpT().drawPhase(drawCards("The Power of Tom Bombadil", "Elven Cloaks")),
+  b.s().drawPhase(drawCards("The Day Without Dawn", "Worn with Sorrow and Toil")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("character", "character", "muster-army", "muster"),
@@ -109,8 +109,8 @@ export const stories: WotrStoryDoc[] = [
   b.fp().actionToken("political-advance", advanceNation("elves", 1)),
   b.fp().skipTokens(),
   // Turn 2
-  b.fpT().phaseStory(drawCards("The Ents Awake: Entmoot", "Kindred of Glorfindel")),
-  b.s().phaseStory(drawCards("Return to Valinor", "Nazgul Search")),
+  b.fpT().drawPhase(drawCards("The Ents Awake: Entmoot", "Kindred of Glorfindel")),
+  b.s().drawPhase(drawCards("Return to Valinor", "Nazgul Search")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("muster-army", "character", "event", "will-of-the-west"),
@@ -149,8 +149,8 @@ export const stories: WotrStoryDoc[] = [
     ),
   b.fp().skipTokens(),
   // Turn 3
-  b.fpT().phaseStory(drawCards("Celeborn's Galadhrim", "Mithril Coat and Sting")),
-  b.s().phaseStory(drawCards("Half-orcs and Goblin-men", "Wormtongue")),
+  b.fpT().drawPhase(drawCards("Celeborn's Galadhrim", "Mithril Coat and Sting")),
+  b.s().drawPhase(drawCards("Half-orcs and Goblin-men", "Wormtongue")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("will-of-the-west", "muster-army", "character", "event"),
@@ -191,8 +191,8 @@ export const stories: WotrStoryDoc[] = [
   b.s().eventDieCard("Half-orcs and Goblin-men", recruitEliteUnit("old-forest-road", "isengard")),
   b.fp().willOfTheWestDie(recruitEliteUnit("woodland-realm", "elves")),
   // Turn 4
-  b.sT().phaseStory(drawCards("Isildur's Bane", "Hill-trolls")),
-  b.fp().phaseStory(drawCards("The Ents Awake: Huorns", "The Red Arrow")),
+  b.sT().drawPhase(drawCards("Isildur's Bane", "Hill-trolls")),
+  b.fp().drawPhase(drawCards("The Ents Awake: Huorns", "The Red Arrow")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b.fpT().rollActionDice("muster", "muster-army", "muster-army", "will-of-the-west"),
@@ -209,13 +209,13 @@ export const stories: WotrStoryDoc[] = [
   // Turn 5
   b
     .fpT()
-    .phaseStory(
+    .drawPhase(
       drawCards("I Will Go Alone", "The Last Battle"),
       discardCards("Kindred of Glorfindel", "The Ents Awake: Huorns")
     ),
   b
     .s()
-    .phaseStory(
+    .drawPhase(
       drawCards("The Black Captain Commands", "Corsairs of Umbar"),
       discardCards("Wormtongue")
     ),
@@ -273,8 +273,8 @@ export const stories: WotrStoryDoc[] = [
   b.fp().battleStory(eliminateRegularUnit("dol-amroth", "gondor", 3)),
   b.s().characterReaction("the-witch-king", drawCards("Orcs Multiplying Again")),
   // Turn 6 30:00
-  b.fpT().phaseStory(drawCards("There and Back Again", "Grimbeorn the Old, Son of Beorn")),
-  b.s().phaseStory(drawCards("Grond, Hammer of the Unnderworld", "Shadows on the Misty Mountains")),
+  b.fpT().drawPhase(drawCards("There and Back Again", "Grimbeorn the Old, Son of Beorn")),
+  b.s().drawPhase(drawCards("Grond, Hammer of the Unnderworld", "Shadows on the Misty Mountains")),
   b.fp().fellowshipPhase(declareFellowship("old-forest-road")),
   b.s().huntAllocation(1),
   b
@@ -348,13 +348,10 @@ export const stories: WotrStoryDoc[] = [
   b.s().eventDieCard("Isildur's Bane", drawHuntTile("0r")),
   b.fp().huntEffect(revealFellowship("southern-rhovanion")),
   // Turn 7 42:05
-  b.sT().phaseStory(drawCards("The Nazgul Strike", "Olog-hai")),
+  b.sT().drawPhase(drawCards("The Nazgul Strike", "Olog-hai")),
   b
     .fp()
-    .phaseStory(
-      drawCards("Bilbo's Song", "Paths of the Woses"),
-      discardCards("Paths of the Woses")
-    ),
+    .drawPhase(drawCards("Bilbo's Song", "Paths of the Woses"), discardCards("Paths of the Woses")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b
@@ -463,8 +460,8 @@ export const stories: WotrStoryDoc[] = [
   // Turn 8 54:32
   b
     .fpT()
-    .phaseStory(drawCards("Horn of Gondor", "Fear! Fire! Foes!"), discardCards("Horn of Gondor")),
-  b.s().phaseStory(drawCards("Dreadful Spells", "Musterings of Long-planned War")),
+    .drawPhase(drawCards("Horn of Gondor", "Fear! Fire! Foes!"), discardCards("Horn of Gondor")),
+  b.s().drawPhase(drawCards("Dreadful Spells", "Musterings of Long-planned War")),
   b.fp().fellowshipPhase(),
   b.s().huntAllocation(1),
   b
@@ -525,10 +522,10 @@ export const stories: WotrStoryDoc[] = [
       moveNazgul("noman-lands", "erebor")
     ),
   // Turn 9 56:34
-  b.fpT().phaseStory(drawCards("Smeagol Helps Nice Master", "A Power too Great")),
+  b.fpT().drawPhase(drawCards("Smeagol Helps Nice Master", "A Power too Great")),
   b
     .s()
-    .phaseStory(
+    .drawPhase(
       drawCards("Cruel Weather", "Many Kings to the Service of Mordor"),
       discardCards("The Nazgul Strike", "Orcs Multiplying Again")
     ),

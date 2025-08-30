@@ -6,15 +6,13 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import {
-  WotrBattleStory,
+  WotrBaseStory,
   WotrCardReactionStory,
   WotrCharacterReactionStory,
   WotrCombatCardReactionStory,
   WotrDieCardStory,
   WotrDieStory,
-  WotrHuntStory,
   WotrPassStory,
-  WotrPhaseStory,
   WotrSkipCardReactionStory,
   WotrSkipCharacterReactionStory,
   WotrSkipCombatCardReactionStory,
@@ -40,20 +38,23 @@ export class WotrFrontStoryComposer {
     return { time: this.time, playerId: this.front };
   }
 
-  phaseStory(...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory {
-    return { type: "phase", actions, ...this.story() };
+  private baseStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions, ...this.story() };
   }
-  fellowshipPhase(...actions: WotrAction[]): WotrStoryDoc & WotrPhaseStory {
-    return { type: "phase", actions, ...this.story() };
+  drawPhase(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(...actions);
   }
-  rollActionDice(...dice: WotrActionDie[]): WotrStoryDoc & WotrPhaseStory {
-    return this.phaseStory(rollActionDice(...dice));
+  fellowshipPhase(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(...actions);
   }
-  battleStory(...actions: WotrAction[]): WotrStoryDoc & WotrBattleStory {
-    return { type: "battle", actions, ...this.story() };
+  rollActionDice(...dice: WotrActionDie[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(rollActionDice(...dice));
   }
-  huntStory(...actions: WotrAction[]): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions, ...this.story() };
+  battleStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(...actions);
+  }
+  huntStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(...actions);
   }
 
   characterDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
@@ -207,25 +208,25 @@ export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {
   willOfTheWestDie(...actions: WotrAction[]) {
     return this.actionDie("will-of-the-west", ...actions);
   }
-  huntEffect(...actions: WotrAction[]): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions, ...this.story() };
+  huntEffect(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions, ...this.story() };
   }
 }
 export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
   constructor(time: number) {
     super("shadow", time);
   }
-  huntAllocation(nDice: number): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions: [allocateHuntDice(nDice)], ...this.story() };
+  huntAllocation(nDice: number): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions: [allocateHuntDice(nDice)], ...this.story() };
   }
-  rollHuntDice(...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions: [rollHuntDice(...dice)], ...this.story() };
+  rollHuntDice(...dice: WotrCombatDie[]): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions: [rollHuntDice(...dice)], ...this.story() };
   }
-  reRollHuntDice(...dice: WotrCombatDie[]): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions: [reRollHuntDice(...dice)], ...this.story() };
+  reRollHuntDice(...dice: WotrCombatDie[]): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions: [reRollHuntDice(...dice)], ...this.story() };
   }
-  drawHuntTile(tile: WotrHuntTileId): WotrStoryDoc & WotrHuntStory {
-    return { type: "hunt", actions: [drawHuntTile(tile)], ...this.story() };
+  drawHuntTile(tile: WotrHuntTileId): WotrStoryDoc & WotrBaseStory {
+    return { type: "base", actions: [drawHuntTile(tile)], ...this.story() };
   }
 }
 

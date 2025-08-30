@@ -3,7 +3,7 @@ import { objectUtil } from "@leobg/commons/utils";
 import { WotrCombatRoll } from "../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameStory, assertAction } from "../game/wotr-story-models";
+import { WotrStory, assertAction } from "../game/wotr-story-models";
 import { WotrHuntTileDraw } from "../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
@@ -18,7 +18,7 @@ import { WotrCardId, WotrCardLabel, labelToCardId } from "./wotr-card-models";
 
 export interface WotrCardParams {
   front: WotrFrontId;
-  story: WotrGameStory;
+  story: WotrStory;
   // shadow: WotrCombatFront;
   // freePeoples: WotrCombatFront;
   // combatRound: WotrCombatRound;

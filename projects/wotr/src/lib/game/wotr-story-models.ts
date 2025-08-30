@@ -5,16 +5,8 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 
-export interface WotrPhaseStory {
-  type: "phase";
-  actions: WotrAction[];
-}
-export interface WotrBattleStory {
-  type: "battle";
-  actions: WotrAction[];
-}
-export interface WotrHuntStory {
-  type: "hunt";
+export interface WotrBaseStory {
+  type: "base";
   actions: WotrAction[];
 }
 export interface WotrDieStory {
@@ -78,10 +70,8 @@ export type WotrReactionStory =
   | WotrCharacterReactionStory
   | WotrSkipCharacterReactionStory;
 
-export type WotrGameStory =
-  | WotrPhaseStory
-  | WotrBattleStory
-  | WotrHuntStory
+export type WotrStory =
+  | WotrBaseStory
   | WotrTokenStory
   | WotrSkipTokensStory
   | WotrReactionStory
@@ -89,10 +79,10 @@ export type WotrGameStory =
   | WotrDieCardStory
   | WotrPassStory;
 
-export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrGameStory>;
+export type WotrStoryDoc = BgStoryDoc<WotrFrontId, WotrStory>;
 
 export function filterActions<A extends WotrAction>(
-  story: WotrGameStory,
+  story: WotrStory,
   ...actionTypes: A["type"][]
 ): A[] {
   const actions = assertActionsStory(story);
@@ -104,7 +94,7 @@ export function filterActions<A extends WotrAction>(
 }
 
 export function assertAction<A extends WotrAction>(
-  story: WotrGameStory,
+  story: WotrStory,
   ...actionTypes: A["type"][]
 ): A {
   const actions = assertActionsStory(story);
@@ -113,7 +103,7 @@ export function assertAction<A extends WotrAction>(
   throw unexpectedStory(story, actionTypes.join(" or "));
 }
 
-export function assertActionsStory(story: WotrGameStory): WotrAction[] {
+export function assertActionsStory(story: WotrStory): WotrAction[] {
   if ("actions" in story) return story.actions;
   throw unexpectedStory(story, "some actions");
 }

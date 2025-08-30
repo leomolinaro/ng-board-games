@@ -1,13 +1,7 @@
 import { inject, Injectable } from "@angular/core";
-import {
-  WotrActionApplierMap,
-  WotrActionLoggerMap,
-  WotrStoryApplier
-} from "../commons/wotr-action-models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrHuntStory } from "../game/wotr-story-models";
-import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
@@ -16,12 +10,10 @@ export class WotrHuntHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);
-  private logger = inject(WotrLogWriter);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionRegistry.registerStory("hunt", this.huntStory);
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrHuntAction> {
@@ -43,13 +35,6 @@ export class WotrHuntHandler {
       }
     };
   }
-
-  private huntStory: WotrStoryApplier<WotrHuntStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
-    }
-  };
 
   private getActionLoggers(): WotrActionLoggerMap<WotrHuntAction> {
     return {

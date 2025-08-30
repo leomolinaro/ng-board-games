@@ -29,6 +29,6 @@ export async function activateCharacterAbility(
     case "reaction-character-skip":
       return false;
     default:
-      throw unexpectedStory(story, " character activation or not");
+      throw unexpectedStory(story, "character activation or not");
   }
 }

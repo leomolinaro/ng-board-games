@@ -12,18 +12,18 @@ import { WotrPlayerUi } from "../player/wotr-player-ui";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrGameStore } from "./wotr-game-store";
 import { WotrGameUi } from "./wotr-game-ui";
-import { WotrGameStory, WotrStoryDoc } from "./wotr-story-models";
+import { WotrStory, WotrStoryDoc } from "./wotr-story-models";
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;
-  task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>;
+  task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>;
 }
 
 @Injectable({ providedIn: "root" })
 export class WotrStoryService extends ABgGameService<
   WotrFrontId,
   WotrPlayerInfo,
-  WotrGameStory,
+  WotrStory,
   WotrPlayerStoryService
 > {
   private store = inject(WotrGameStore);
@@ -85,13 +85,13 @@ export class WotrStoryService extends ABgGameService<
 
   private async executeTask2(
     playerId: WotrFrontId,
-    task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
-  ): Promise<WotrGameStory> {
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>
+  ): Promise<WotrStory> {
     await this.replayCall();
     return super.executeTask(playerId, p => task(p));
   }
 
-  private async executeTasks2(tasks: WotrStoryTask[]): Promise<WotrGameStory[]> {
+  private async executeTasks2(tasks: WotrStoryTask[]): Promise<WotrStory[]> {
     await this.replayCall();
     return super.executeTasks(tasks);
   }
@@ -130,15 +130,13 @@ export class WotrStoryService extends ABgGameService<
   }
 
   async parallelStories(
-    getTask: (
-      front: WotrFrontId
-    ) => (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
+    getTask: (front: WotrFrontId) => (playerService: WotrPlayerStoryService) => Promise<WotrStory>
   ) {
     const stories = await this.executeTasks2(
       this.frontStore.frontIds().map(front => ({ playerId: front, task: getTask(front) }))
     );
     let index = 0;
-    const toReturn: Record<WotrFrontId, WotrGameStory> = {} as any;
+    const toReturn: Record<WotrFrontId, WotrStory> = {} as any;
     for (const frontId of this.frontStore.frontIds()) {
       const story = stories[index++];
       await this.applyStory(story, frontId);
@@ -149,14 +147,14 @@ export class WotrStoryService extends ABgGameService<
 
   async story(
     front: WotrFrontId,
-    task: (playerService: WotrPlayerStoryService) => Promise<WotrGameStory>
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>
   ) {
     const story = await this.executeTask2(front, task);
     await this.applyStory(story, front);
     return story;
   }
 
-  private async applyStory(story: WotrGameStory, front: WotrFrontId) {
+  private async applyStory(story: WotrStory, front: WotrFrontId) {
     await this.actionRegistry.applyStory(story, front);
   }
 }

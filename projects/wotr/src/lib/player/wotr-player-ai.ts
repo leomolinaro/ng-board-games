@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrGameStore } from "../game/wotr-game-store";
-import { WotrGameStory } from "../game/wotr-story-models";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
 @Injectable({ providedIn: "root" })
@@ -12,82 +12,82 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   firstPhase(): Promise<never> {
     throw new Error("Method not implemented.");
   }
-  fellowshipPhase(): Promise<WotrGameStory> {
+  fellowshipPhase(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  huntAllocationPhase(): Promise<WotrGameStory> {
+  huntAllocationPhase(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  rollActionDice(): Promise<WotrGameStory> {
+  rollActionDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  musterArmies(): Promise<WotrGameStory> {
+  musterArmies(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  moveArmies(): Promise<WotrGameStory> {
+  moveArmies(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  initiateBattle(): Promise<WotrGameStory> {
+  initiateBattle(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  rollHuntDice(): Promise<WotrGameStory> {
+  rollHuntDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  reRollHuntDice(): Promise<WotrGameStory> {
+  reRollHuntDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  drawHuntTile(): Promise<WotrGameStory> {
+  drawHuntTile(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  huntEffect(): Promise<WotrGameStory> {
+  huntEffect(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  revealFellowship(): Promise<WotrGameStory> {
+  revealFellowship(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  separateCompanions(): Promise<WotrGameStory> {
+  separateCompanions(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  actionResolution(): Promise<WotrGameStory> {
+  actionResolution(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateTableCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCombatCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrGameStory> {
+  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  forfeitLeadership(): Promise<WotrGameStory> {
+  forfeitLeadership(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  wantRetreatIntoSiege(): Promise<WotrGameStory> {
+  wantRetreatIntoSiege(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  wantRetreat(): Promise<WotrGameStory> {
+  wantRetreat(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  chooseCombatCard(): Promise<WotrGameStory> {
+  chooseCombatCard(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  rollCombatDice(): Promise<WotrGameStory> {
+  rollCombatDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  reRollCombatDice(): Promise<WotrGameStory> {
+  reRollCombatDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  chooseCasualties(): Promise<WotrGameStory> {
+  chooseCasualties(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  eliminateArmy(): Promise<WotrGameStory> {
+  eliminateArmy(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  battleAdvance(): Promise<WotrGameStory> {
+  battleAdvance(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  wantContinueBattle(): Promise<WotrGameStory> {
+  wantContinueBattle(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 }

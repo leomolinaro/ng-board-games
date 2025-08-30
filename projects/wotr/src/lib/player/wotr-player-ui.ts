@@ -6,7 +6,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrBattleStory, WotrGameStory, WotrReactionStory } from "../game/wotr-story-models";
+import { WotrBaseStory, WotrReactionStory, WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
@@ -19,71 +19,71 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntUi = inject(WotrHuntUi);
 
-  async firstPhase(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async firstPhase(frontId: WotrFrontId): Promise<WotrStory> {
     return {
-      type: "phase",
+      type: "base",
       actions: await this.cardUi.firstPhaseDrawCards(frontId)
     };
   }
 
-  async fellowshipPhase(): Promise<WotrGameStory> {
+  async fellowshipPhase(): Promise<WotrStory> {
     return {
-      type: "phase",
+      type: "base",
       actions: await this.fellowshipUi.fellowshipPhase()
     };
   }
 
-  async huntAllocationPhase(): Promise<WotrGameStory> {
-    return { type: "phase", actions: await this.huntUi.huntAllocationPhase() };
+  async huntAllocationPhase(): Promise<WotrStory> {
+    return { type: "base", actions: await this.huntUi.huntAllocationPhase() };
   }
 
-  async rollActionDice(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async rollActionDice(frontId: WotrFrontId): Promise<WotrStory> {
     return {
-      type: "phase",
+      type: "base",
       actions: [await this.actionDieUi.rollActionDice(frontId)]
     };
   }
 
-  async actionResolution(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
     return this.actionDieUi.actionResolution(frontId);
   }
 
-  async separateCompanions(): Promise<WotrGameStory> {
+  async separateCompanions(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 
-  async rollHuntDice(): Promise<WotrGameStory> {
-    return { type: "hunt", actions: [await this.huntUi.rollHuntDice()] };
+  async rollHuntDice(): Promise<WotrStory> {
+    return { type: "base", actions: [await this.huntUi.rollHuntDice()] };
   }
 
-  async reRollHuntDice(nReRolls: number): Promise<WotrGameStory> {
-    return { type: "hunt", actions: [await this.huntUi.reRollHuntDice(nReRolls)] };
+  async reRollHuntDice(nReRolls: number): Promise<WotrStory> {
+    return { type: "base", actions: [await this.huntUi.reRollHuntDice(nReRolls)] };
   }
 
-  async drawHuntTile(): Promise<WotrGameStory> {
-    return { type: "hunt", actions: [await this.huntUi.drawHuntTile()] };
+  async drawHuntTile(): Promise<WotrStory> {
+    return { type: "base", actions: [await this.huntUi.drawHuntTile()] };
   }
 
-  async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrGameStory> {
-    return { type: "hunt", actions: await this.huntUi.huntEffect(huntResolution) };
+  async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory> {
+    return { type: "base", actions: await this.huntUi.huntEffect(huntResolution) };
   }
 
-  async revealFellowship(): Promise<WotrGameStory> {
+  async revealFellowship(): Promise<WotrStory> {
     return {
-      type: "hunt",
+      type: "base",
       actions: await this.huntUi.revealFellowship()
     };
   }
 
-  async activateTableCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  async activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 
-  async activateCombatCard(cardId: WotrCardId): Promise<WotrGameStory> {
+  async activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 
-  async activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrGameStory> {
+  async activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 
@@ -91,62 +91,62 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
 
-  async wantRetreatIntoSiege(): Promise<WotrBattleStory> {
+  async wantRetreatIntoSiege(): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: [await this.battleUi.wantRetreatIntoSiege()]
     };
   }
 
-  async wantRetreat(): Promise<WotrBattleStory> {
+  async wantRetreat(): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: [await this.battleUi.wantRetreat()]
     };
   }
 
-  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrBattleStory> {
-    return { type: "battle", actions: await this.battleUi.chooseCombatCard(frontId) };
+  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrBaseStory> {
+    return { type: "base", actions: await this.battleUi.chooseCombatCard(frontId) };
   }
 
-  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
+  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: [await this.battleUi.rollCombatDice(nDice, frontId)]
     };
   }
 
-  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
+  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: [await this.battleUi.reRollCombatDice(nDice, frontId)]
     };
   }
 
-  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrBattleStory> {
+  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: await this.battleUi.chooseCasualties(hitPoints, frontId)
     };
   }
 
-  async eliminateArmy(frontId: WotrFrontId): Promise<WotrBattleStory> {
+  async eliminateArmy(frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: await this.battleUi.eliminateArmy(frontId)
     };
   }
 
-  async battleAdvance(): Promise<WotrBattleStory> {
+  async battleAdvance(): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: await this.battleUi.battleAdvance()
     };
   }
 
-  async wantContinueBattle(): Promise<WotrBattleStory> {
+  async wantContinueBattle(): Promise<WotrBaseStory> {
     return {
-      type: "battle",
+      type: "base",
       actions: [await this.battleUi.wantContinueBattle()]
     };
   }

@@ -7,7 +7,6 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   assertAction,
-  WotrBattleStory,
   WotrCombatCardReactionStory,
   WotrSkipCombatCardReactionStory
 } from "../game/wotr-story-models";
@@ -80,17 +79,9 @@ export class WotrBattleHandler {
       this.applyArmyAdvance.bind(this)
     );
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionRegistry.registerStory("battle", this.battleStory);
     this.actionRegistry.registerStory("reaction-combat-card", this.reactionCombatCard);
     this.actionRegistry.registerStory("reaction-combat-card-skip", this.reactionCombatCardSkip);
   }
-
-  private battleStory: WotrStoryApplier<WotrBattleStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
-    }
-  };
 
   private reactionCombatCard: WotrStoryApplier<WotrCombatCardReactionStory> = async (
     story,

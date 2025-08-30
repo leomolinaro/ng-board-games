@@ -6,7 +6,7 @@ import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrDieCardStory, WotrDieStory, WotrGameStory } from "../game/wotr-story-models";
+import { WotrDieCardStory, WotrDieStory, WotrStory } from "../game/wotr-story-models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
@@ -39,7 +39,7 @@ export class WotrActionDieUi {
     return rollActionDice(...actionDice);
   }
 
-  async actionResolution(frontId: WotrFrontId): Promise<WotrGameStory> {
+  async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
     const canSkipTokens = this.actionDieRules.canSkipTokens(frontId);
     if (canSkipTokens) {
       const skipTokens = await this.ui.askConfirm(
@@ -72,7 +72,7 @@ export class WotrActionDieUi {
     }
   }
 
-  resolveActionDie(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrGameStory> {
+  resolveActionDie(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrStory> {
     switch (die) {
       case "event":
         return this.resolveEventDie(frontId);
@@ -91,7 +91,7 @@ export class WotrActionDieUi {
     }
   }
 
-  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrStory> {
     return this.resolveArmyResult("army", frontId);
   }
 
@@ -113,7 +113,7 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveCharacterDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveCharacterDie(frontId: WotrFrontId): Promise<WotrStory> {
     return this.resolveCharacterResult("character", frontId);
   }
 
@@ -146,7 +146,7 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrStory> {
     return this.resolveMusterResult("muster", frontId);
   }
 
@@ -167,7 +167,7 @@ export class WotrActionDieUi {
     return this.ui.askDieStoryChoice(die, "Choose an action for the muster die", choices, frontId);
   }
 
-  private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrStory> {
     const choices: WotrUiChoice[] = [
       this.nationUi.diplomaticActionChoice,
       this.unitUi.moveArmiesChoice,
@@ -188,7 +188,7 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveWillOfTheWestDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveWillOfTheWestDie(frontId: WotrFrontId): Promise<WotrStory> {
     const choices: WotrUiChoice[] = [
       this.changeCharacterDieChoice,
       this.changeArmyDieChoice,
@@ -239,7 +239,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveEventDie(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveEventDie(frontId: WotrFrontId): Promise<WotrStory> {
     return this.resolveEventResult("event", frontId);
   }
 
@@ -260,7 +260,7 @@ export class WotrActionDieUi {
     );
   }
 
-  async resolveActionToken(token: WotrActionToken, frontId: WotrFrontId): Promise<WotrGameStory> {
+  async resolveActionToken(token: WotrActionToken, frontId: WotrFrontId): Promise<WotrStory> {
     switch (token) {
       case "draw-card":
         return this.resolveDrawCardToken(frontId);
@@ -271,7 +271,7 @@ export class WotrActionDieUi {
     }
   }
 
-  private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrStory> {
     const actions = await this.cardUi.drawCard(frontId);
     return {
       type: "token",
@@ -280,7 +280,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrStory> {
     const nation = await this.nationUi.politicalAdvance(frontId);
     return {
       type: "token",
@@ -289,7 +289,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrGameStory> {
+  private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrStory> {
     const nazgulMovements = await this.unitUi.moveNazgulMinions(frontId);
     return {
       type: "token",

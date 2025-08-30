@@ -11,8 +11,8 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrCharacterReactionStory,
-  WotrGameStory,
-  WotrSkipCharacterReactionStory
+  WotrSkipCharacterReactionStory,
+  WotrStory
 } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -151,7 +151,7 @@ export class WotrCharacterHandler {
     }
   }
 
-  async activateTableCard(cardId: WotrCardId, player: WotrPlayer): Promise<WotrGameStory> {
+  async activateTableCard(cardId: WotrCardId, player: WotrPlayer): Promise<WotrStory> {
     return player.activateTableCard(cardId);
   }
 
