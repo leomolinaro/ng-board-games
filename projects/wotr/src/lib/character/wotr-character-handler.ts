@@ -14,7 +14,7 @@ import {
   WotrGameStory,
   WotrSkipCharacterReactionStory
 } from "../game/wotr-story-models";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -22,7 +22,6 @@ import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
-import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
 
@@ -34,11 +33,10 @@ export class WotrCharacterHandler {
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
   private frontStore = inject(WotrFrontStore);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
 
   private shadow = inject(WotrShadowPlayer);
 
-  private characterRules = inject(WotrCharacterRules);
   private characters = inject(WotrCharacters);
 
   init() {
@@ -53,7 +51,7 @@ export class WotrCharacterHandler {
     front
   ) => {
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front);
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
@@ -62,7 +60,7 @@ export class WotrCharacterHandler {
     story,
     front
   ) => {
-    this.logStore.logStory(story, front);
+    this.logger.logStory(story, front);
   };
 
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {

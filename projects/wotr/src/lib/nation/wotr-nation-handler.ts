@@ -4,7 +4,7 @@ import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrPoliticalActivation, WotrPoliticalAdvance } from "./wotr-nation-actions";
@@ -15,7 +15,7 @@ import { WotrNationStore } from "./wotr-nation-store";
 export class WotrNationHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
 
@@ -139,13 +139,13 @@ export class WotrNationHandler {
 
   private activateNation(nation: WotrNationId) {
     const action: WotrPoliticalActivation = { type: "political-activation", nation };
-    this.logStore.logEffect(action);
+    this.logger.logEffect(action);
     this.nationStore.activate(true, nation);
   }
 
   advanceNation(quantity: number, nation: WotrNationId) {
     const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
-    this.logStore.logEffect(action);
+    this.logger.logEffect(action);
     this.nationStore.advance(quantity, nation);
   }
 

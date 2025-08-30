@@ -12,7 +12,7 @@ import {
   WotrDieCardStory,
   WotrSkipCardReactionStory
 } from "../game/wotr-story-models";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardParams } from "./wotr-card-effects-service";
 import { WotrCardId, cardToLabel } from "./wotr-card-models";
@@ -21,7 +21,7 @@ import { WotrCardId, cardToLabel } from "./wotr-card-models";
 export class WotrCardHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -39,8 +39,9 @@ export class WotrCardHandler {
   }
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
+    this.frontStore.setCurrentCard(story.card);
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front);
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
     const cardEffect = this.cardEffects[story.card];
@@ -49,17 +50,18 @@ export class WotrCardHandler {
     }
     this.frontStore.discardCards([story.card], front);
     this.frontStore.removeActionDie(story.die, front);
+    this.frontStore.clearCurrentCard();
   };
 
   private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front);
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
 
   private reactionCardSkip: WotrStoryApplier<WotrSkipCardReactionStory> = async (story, front) => {
-    this.logStore.logStory(story, front);
+    this.logger.logStory(story, front);
   };
 
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {

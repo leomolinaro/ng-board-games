@@ -13,6 +13,7 @@ import { WotrElvenRing, WotrFront, WotrFrontId } from "./wotr-front-models";
 export interface WotrFrontState {
   ids: WotrFrontId[];
   map: Record<WotrFrontId, WotrFront>;
+  currentCard: WotrCardId | null;
 }
 
 export function initialState(): WotrFrontState {
@@ -21,7 +22,8 @@ export function initialState(): WotrFrontState {
     map: {
       "free-peoples": initialFront("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
       "shadow": initialFront("shadow", "Shadow", [])
-    }
+    },
+    currentCard: null
   };
 }
 
@@ -83,6 +85,9 @@ export class WotrFrontStore {
   hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
     return !!this.front(frontId).tableCards.includes(cardId);
   }
+  currentCard() {
+    return this.state().currentCard;
+  }
 
   private updateFront(
     actionName: string,
@@ -90,6 +95,14 @@ export class WotrFrontStore {
     updater: (a: WotrFront) => WotrFront
   ) {
     this.update(actionName, s => ({ ...s, map: { ...s.map, [frontId]: updater(s.map[frontId]) } }));
+  }
+
+  clearCurrentCard() {
+    this.update("clearCurrentCard", s => ({ ...s, currentCard: null }));
+  }
+
+  setCurrentCard(currentCard: WotrCardId) {
+    this.update("setCurrentCard", s => ({ ...s, currentCard }));
   }
 
   setCharacterDeck(characterDeck: WotrCharacterCardId[], frontId: WotrFrontId) {

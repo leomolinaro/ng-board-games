@@ -14,6 +14,7 @@ export interface WotrBattle {
   attackerCombatCard?: WotrCardId;
   defenderCombatCard?: WotrCardId;
   siege: boolean;
+  nSiegeCombatRounds?: number;
 }
 
 export class WotrCombatFront {
@@ -45,7 +46,8 @@ export class WotrCombatRound {
     attackingArmy: () => WotrArmy,
     defender: WotrPlayer,
     defendingArmy: () => WotrArmy,
-    public siege: boolean
+    public siege: boolean,
+    public siegeAutoContinueBattle: boolean
   ) {
     this.attacker = new WotrCombatFront(attacker, true, attackingArmy);
     this.defender = new WotrCombatFront(defender, false, defendingArmy);

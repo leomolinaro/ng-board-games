@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card-models";
-import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
@@ -12,7 +11,7 @@ import {
   WotrCombatCardReactionStory,
   WotrSkipCombatCardReactionStory
 } from "../game/wotr-story-models";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
@@ -53,9 +52,8 @@ export class WotrBattleHandler {
   private battleStore = inject(WotrBattleStore);
   private frontHandler = inject(WotrFrontHandler);
   private combatCards = inject(WotrCombatCardsService);
-  private characterHandler = inject(WotrCharacterHandler);
   private frontStore = inject(WotrFrontStore);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
   private unitUtils = inject(WotrUnitUtils);
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -89,7 +87,7 @@ export class WotrBattleHandler {
 
   private battleStory: WotrStoryApplier<WotrBattleStory> = async (story, front) => {
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front, "battle");
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
@@ -99,7 +97,7 @@ export class WotrBattleHandler {
     front
   ) => {
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front);
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
@@ -108,7 +106,7 @@ export class WotrBattleHandler {
     story,
     front
   ) => {
-    this.logStore.logStory(story, front, "battle");
+    this.logger.logStory(story, front);
   };
 
   private async applyArmyAttack(action: WotrArmyAttack, front: WotrFrontId) {
@@ -119,6 +117,15 @@ export class WotrBattleHandler {
     } else {
       await this.resolveBattleFlow(action, this.shadow, this.freePeoples);
     }
+  }
+
+  private getNSiegeCombatRounds() {
+    const currentCard = this.frontStore.currentCard();
+    if (currentCard) {
+      // TODO modifiers
+      if (currentCard === "sstr02" || currentCard === "scha20") return 3;
+    }
+    return 1;
   }
 
   private applyArmyRetreatIntoSiege(action: WotrArmyRetreatIntoSiege) {
@@ -197,15 +204,19 @@ export class WotrBattleHandler {
   }
 
   async resolveBattleFlow(action: WotrArmyAttack, attacker: WotrPlayer, defender: WotrPlayer) {
-    this.logStore.logBattleResolution();
+    this.logger.logBattleResolution();
     const retroguard = action.retroguard;
+    const siege = !!this.attackedRegion(action).underSiegeArmy;
+    const nSiegeCombatRounds = siege ? this.getNSiegeCombatRounds() : undefined;
+
     const battle: WotrBattle = {
       action,
       attacker,
       defender,
       retroguard,
       region: action.toRegion,
-      siege: !!this.attackedRegion(action).underSiegeArmy
+      siege: !!this.attackedRegion(action).underSiegeArmy,
+      nSiegeCombatRounds
     };
     this.battleStore.startBattle(battle);
     await this.resolveBattle(battle);
@@ -220,10 +231,11 @@ export class WotrBattleHandler {
         round,
         battle.action,
         battle.attacker,
-        () => this.attackingArmy(null as any),
+        () => this.attackingArmy(battle.action),
         battle.defender,
         () => this.defendingArmy(battle.action, battle.siege),
-        battle.siege
+        battle.siege,
+        battle.siege && (battle.nSiegeCombatRounds ?? 0) > round
       );
       continueBattle = await this.resolveCombat(combatRound, battle);
       round++;
@@ -231,7 +243,7 @@ export class WotrBattleHandler {
   }
 
   private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
-    let attackedRegion = this.attackedRegion(combatRound.action);
+    const attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
     if (hasStronghold && !combatRound.siege) {
       const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
@@ -258,21 +270,29 @@ export class WotrBattleHandler {
 
     let continueBattle = false;
     let attackerWon = false;
+    const attackerHasUnitLeft = !this.unitUtils.isEmptyArmy(combatRound.attacker.army());
     if (this.isDefenderDefeated(combatRound)) {
       attackerWon = true;
-    } else {
-      const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
-      attackedRegion = this.attackedRegion(combatRound.action);
-      if (wantContinueBattle && !combatRound.siege) {
-        // TODO && defender can retreat
-        const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-        if (wantRetreat) {
-          attackerWon = true;
-        } else {
+    } else if (attackerHasUnitLeft) {
+      if (combatRound.siege) {
+        if (combatRound.siegeAutoContinueBattle) {
           continueBattle = true;
+        } else {
+          continueBattle = await this.wantContinueBattle(combatRound.attacker.player);
         }
       } else {
-        continueBattle = false;
+        const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+        if (wantContinueBattle) {
+          // TODO && defender can retreat
+          const wantRetreat = await this.wantRetreat(combatRound.defender.player);
+          if (wantRetreat) {
+            attackerWon = true;
+          } else {
+            continueBattle = true;
+          }
+        } else {
+          continueBattle = false;
+        }
       }
     }
 
@@ -331,7 +351,7 @@ export class WotrBattleHandler {
     if (combatFront.combatCard) {
       this.frontStore.discardCards([combatFront.combatCard.id], combatFront.frontId);
       this.battleStore.addAttackerCombatCard(combatFront.combatCard.id);
-      this.logStore.logCombatCard(combatFront.combatCard.id, combatFront.frontId);
+      this.logger.logCombatCard(combatFront.combatCard.id, combatFront.frontId);
     }
   }
 
@@ -354,7 +374,8 @@ export class WotrBattleHandler {
         front: combatFront.frontId,
         isAttacker: combatFront.isAttacker,
         attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
-        attackingArmy: () => this.attackingArmy(combatRound.action)
+        attackingArmy: () => this.attackingArmy(combatRound.action),
+        regionId: combatRound.action.toRegion
       });
     }
   }

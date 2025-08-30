@@ -7,6 +7,7 @@ import { assertAction } from "../game/wotr-story-models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
@@ -22,6 +23,7 @@ export interface WotrCombatCardParams {
   isAttacker: boolean;
   attackedArmy: () => WotrArmy | undefined;
   attackingArmy: () => WotrArmy | undefined;
+  regionId: WotrRegionId;
 }
 
 @Injectable({ providedIn: "root" })
@@ -132,7 +134,7 @@ export class WotrCombatCardsService {
           nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
         (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
       ) {
-        await this.unitService.chooseCasualties(1, "andrast", this.freePeoples); // TODO hitPoints
+        await this.unitService.chooseCasualties(1, params.regionId, this.freePeoples); // TODO hitPoints
       }
     },
     "Heroic Death": async params => {
@@ -163,7 +165,7 @@ export class WotrCombatCardsService {
       throw new Error("TODO");
     },
     "Relentless Assault": async params => {
-      const casualties = await this.unitService.chooseCasualties(1, "andrast", this.shadow); // TODO hitPoints
+      const casualties = await this.unitService.chooseCasualties(1, params.regionId, this.shadow); // TODO hitPoints
       const hits = casualties?.reduce(
         (h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2),
         0

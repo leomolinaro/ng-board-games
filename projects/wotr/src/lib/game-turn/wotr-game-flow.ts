@@ -1,7 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrCharacters } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
@@ -19,7 +18,7 @@ import {
   WotrTokenStory
 } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
@@ -31,7 +30,7 @@ import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
 @Injectable({ providedIn: "root" })
 export class WotrGameTurn {
   private frontStore = inject(WotrFrontStore);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
   private characterStore = inject(WotrCharacterStore);
@@ -44,7 +43,6 @@ export class WotrGameTurn {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
-  private characterModifiers = inject(WotrCharacterModifiers);
   private actionDieModifiers = inject(WotrActionDieModifiers);
 
   private setupService = inject(WotrSetupRules);
@@ -55,7 +53,7 @@ export class WotrGameTurn {
 
   private phaseStory: WotrStoryApplier<WotrPhaseStory> = async (story, front) => {
     for (const action of story.actions) {
-      this.logStore.logAction(action, story, front, "battle");
+      this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
@@ -67,18 +65,18 @@ export class WotrGameTurn {
     while (continueGame) {
       continueGame = await this.round(++roundNumber);
     }
-    this.logStore.logEndGame();
+    this.logger.logEndGame();
   }
 
   private setup() {
     const gameSetup = this.setupService.getGameSetup();
-    this.logStore.logSetup();
+    this.logger.logSetup();
     this.applySetup(gameSetup);
     this.characters.activateAbilities(this.fellowshipStore.companions());
   }
 
   private async round(roundNumber: number) {
-    this.logStore.logRound(roundNumber);
+    this.logger.logRound(roundNumber);
     let continueGame = await this.firstPhase();
     if (!continueGame) {
       return false;
@@ -107,14 +105,14 @@ export class WotrGameTurn {
   }
 
   private async firstPhase() {
-    this.logStore.logPhase(1);
+    this.logger.logPhase(1);
     this.huntStore.resetHuntBox();
     await this.allPlayers.firstPhase();
     return true;
   }
 
   private async fellowshipPhase() {
-    this.logStore.logPhase(2);
+    this.logger.logPhase(2);
     await this.freePeoples.fellowshipPhase();
     this.checkMoveToMordorTrack();
     return true;
@@ -131,13 +129,13 @@ export class WotrGameTurn {
   }
 
   private async huntAllocation() {
-    this.logStore.logPhase(3);
+    this.logger.logPhase(3);
     await this.shadow.huntAllocationPhase();
     return true;
   }
 
   private async actionRoll() {
-    this.logStore.logPhase(4);
+    this.logger.logPhase(4);
     await this.rollActionDice();
     this.eyeResultsToHuntBox();
     return true;
@@ -155,7 +153,7 @@ export class WotrGameTurn {
   }
 
   private async actionResolution() {
-    this.logStore.logPhase(5);
+    this.logger.logPhase(5);
     let player: WotrPlayer | null = this.freePeoples;
     do {
       const story = await this.chooseAction(player);
@@ -189,7 +187,7 @@ export class WotrGameTurn {
   }
 
   private async victoryCheck(roundNumber: number) {
-    this.logStore.logPhase(6);
+    this.logger.logPhase(6);
     const shadow = this.frontStore.shadowFront();
     if (shadow.victoryPoints >= 10) {
       return false;

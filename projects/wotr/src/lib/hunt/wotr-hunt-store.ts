@@ -13,6 +13,7 @@ export interface WotrHuntState {
   nHuntDice: number;
   nFreePeopleDice: number;
   previousTurnNFreePeopleDice: number;
+  inProgress: boolean;
 }
 
 export function initialeState(): WotrHuntState {
@@ -57,7 +58,8 @@ export function initialeState(): WotrHuntState {
     huntRemoved: [],
     nHuntDice: 0,
     nFreePeopleDice: 0,
-    previousTurnNFreePeopleDice: 0
+    previousTurnNFreePeopleDice: 0,
+    inProgress: false
   };
 }
 
@@ -68,6 +70,9 @@ export class WotrHuntStore {
   update!: (actionName: string, updater: (a: WotrHuntState) => WotrHuntState) => void;
   state!: Signal<WotrHuntState>;
 
+  inProgress(): boolean {
+    return this.state().inProgress;
+  }
   huntTile(huntTileId: WotrHuntTileId): WotrHuntTile {
     return this.state().map[huntTileId];
   }
@@ -82,6 +87,13 @@ export class WotrHuntStore {
   }
   huntPool(): WotrHuntTileId[] {
     return this.state().huntPool;
+  }
+
+  setInProgress(inProgress: boolean): void {
+    this.update("setInProgress", state => ({
+      ...state,
+      inProgress
+    }));
   }
 
   incrementFreePeopleDice(): void {

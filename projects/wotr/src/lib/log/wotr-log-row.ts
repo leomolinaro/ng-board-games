@@ -97,14 +97,14 @@ export type WotrLogParsedFragment =
             <span>{{ fragment.label }}</span>
           }
           @case ("card") {
-            <span
-              ><i>{{ fragment.label }}</i></span
-            >
+            <span>
+              <i>{{ fragment.label }}</i>
+            </span>
           }
           @case ("player") {
-            <span [class]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">{{
-              fragment.label
-            }}</span>
+            <span [class]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">
+              {{ fragment.label }}
+            </span>
           }
           @case ("region") {
             <span>{{ fragment.region.name }}</span>

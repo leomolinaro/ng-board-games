@@ -2,8 +2,8 @@ import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card-models";
+import { activateCharacterAbility } from "../character/characters/wotr-character-card";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
-import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import {
@@ -14,7 +14,7 @@ import {
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { assertAction, filterActions } from "../game/wotr-story-models";
-import { WotrLogStore } from "../log/wotr-log-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -23,7 +23,6 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
-import { activateCharacterAbility } from "../character/characters/wotr-character-card";
 
 interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
@@ -43,24 +42,25 @@ export class WotrHuntFlow {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private characterStore = inject(WotrCharacterStore);
-  private characterHandler = inject(WotrCharacterHandler);
-  private logStore = inject(WotrLogStore);
+  private logger = inject(WotrLogWriter);
   private fellowshipStore = inject(WotrFellowshipStore);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
   async resolveHunt() {
+    this.huntStore.setInProgress(true);
     if (this.fellowshipStore.isOnMordorTrack()) {
       await this.resolveHuntOnMordorTrack();
     } else {
       await this.resolveStandardHunt();
     }
+    this.huntStore.setInProgress(false);
   }
 
   private async resolveStandardHunt() {
     if (!this.huntStore.hasHuntDice()) return;
-    this.logStore.logHuntResolution();
+    this.logger.logHuntResolution();
     const huntRoll = await this.rollHuntDice(this.shadow);
     let nSuccesses = this.getNSuccesses(huntRoll);
     const nReRolls = this.getNReRolls(huntRoll, nSuccesses);
@@ -77,14 +77,14 @@ export class WotrHuntFlow {
   }
 
   private async resolveHuntOnMordorTrack() {
-    this.logStore.logHuntResolution();
+    this.logger.logHuntResolution();
     const nSuccesses = this.huntStore.nTotalDice();
     const huntTileId = await this.drawHuntTile(this.shadow);
     const huntTile = await this.resolveHuntTile(huntTileId, {
       nSuccesses
     });
     if (!huntTile.stop) {
-      this.logStore.logMoveInMordor();
+      this.logger.logMoveInMordor();
       this.fellowshipStore.moveOnMordorTrack();
     }
   }
@@ -127,7 +127,7 @@ export class WotrHuntFlow {
 
     if (isRevealing) {
       if (this.fellowshipStore.isOnMordorTrack()) {
-        this.logStore.logRevealInMordor();
+        this.logger.logRevealInMordor();
         this.fellowshipStore.reveal();
       } else {
         const fromRegion = this.regionStore.fellowshipRegion();
