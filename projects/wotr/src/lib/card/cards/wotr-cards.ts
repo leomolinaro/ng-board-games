@@ -7,6 +7,9 @@ import {
   WotrCardId
 } from "../wotr-card-models";
 import { WotrFreePeoplesCharacterCards } from "./wotr-free-peoples-character-cards";
+import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
+import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards";
+import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
@@ -18,9 +21,9 @@ export class WotrCards {
   private cards: Partial<Record<WotrCardId, WotrEventCard>> = {};
 
   private freePeopleCharacterCards = inject(WotrFreePeoplesCharacterCards);
-  // private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
-  // private shadowCharacterCards = inject(WotrShadowCharacterCards);
-  // private shadowStrategyCards = inject(WotrShadowStrategyCards);
+  private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
+  private shadowCharacterCards = inject(WotrShadowCharacterCards);
+  private shadowStrategyCards = inject(WotrShadowStrategyCards);
 
   // private characterStore = inject(WotrCharacterStore);
   // private regionStore = inject(WotrRegionStore);
@@ -48,16 +51,11 @@ export class WotrCards {
     if (isFreePeopleCharacterCard(cardId)) {
       return this.freePeopleCharacterCards.createCard(cardId);
     } else if (isFreePeopleStrategyCard(cardId)) {
-      // return this.freePeopleStrategyCards.createCard(cardId);
+      return this.freePeopleStrategyCards.createCard(cardId);
     } else if (isShadowCharacterCard(cardId)) {
-      // return this.shadowCharacterCards.createCard(cardId);
+      return this.shadowCharacterCards.createCard(cardId);
     } else {
-      // return this.shadowStrategyCards.createCard(cardId);
+      return this.shadowStrategyCards.createCard(cardId);
     }
-    return {
-      canBePlayed: () => false,
-      play: async () => []
-    };
-    throw new Error(`Card not found: ${cardId}`);
   }
 }

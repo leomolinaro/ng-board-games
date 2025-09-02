@@ -556,6 +556,9 @@ export class WotrRegionStore {
     const region = this.region(regionId);
     return !!region.underSiegeArmy;
   }
+  strongholdRegions(nationId: WotrNationId): WotrRegion[] {
+    return this.regions().filter(r => r.nationId === nationId && r.settlement === "stronghold");
+  }
 
   private updateRegion(
     actionName: string,

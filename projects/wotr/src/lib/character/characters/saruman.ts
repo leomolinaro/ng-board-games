@@ -118,8 +118,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
   }
 
   isAvailable(): boolean {
-    const isengardNation = this.nationStore.nation("isengard");
-    return this.nationStore.hasRegularReinforcements(isengardNation);
+    return this.nationStore.hasRegularReinforcements("isengard");
   }
 
   async actions(params: WotrFrontId): Promise<WotrAction[]> {
@@ -164,8 +163,7 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   }
 
   isAvailable(): boolean {
-    const isengardNation = this.nationStore.nation("isengard");
-    if (!this.nationStore.hasEliteReinforcements(isengardNation)) return false;
+    if (!this.nationStore.hasEliteReinforcements("isengard")) return false;
     const orthanc = this.regionStore.region("orthanc");
     return orthanc.army?.regulars?.some(r => r.nation === "isengard") ?? false;
   }

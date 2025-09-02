@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
@@ -8,6 +9,13 @@ import { WotrCharacterStore } from "./wotr-character-store";
 export class WotrCharacterRules {
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
+
+  isCharacterInRegionOf(characterId: WotrCharacterId, nationId: WotrNationId): boolean {
+    return (
+      this.characterStore.isInPlay(characterId) &&
+      this.regionStore.characterRegion(characterId)?.nationId === nationId
+    );
+  }
 
   canMoveNazgulOrMinions(): boolean {
     if (this.canMoveStandardNazgul()) return true;

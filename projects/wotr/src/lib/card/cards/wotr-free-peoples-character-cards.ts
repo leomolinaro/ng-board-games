@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCharacterRules } from "../../character/wotr-character-rules";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { healFellowship } from "../../fellowship/wotr-fellowship-actions";
@@ -24,6 +25,7 @@ export class WotrFreePeoplesCharacterCards {
   private gameUi = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
   private frontStore = inject(WotrFrontStore);
+  private characterRules = inject(WotrCharacterRules);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -233,25 +235,18 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha23":
         return {
           canBePlayed: () => {
-            if (!this.characterStore.isInPlay("boromir")) return false;
-            if (this.regionStore.characterRegion("boromir")?.nationId !== "gondor") return false;
-            const gondor = this.nationStore.nation("gondor");
-            if (
-              !this.nationStore.hasRegularReinforcements(gondor) &&
-              !this.nationStore.hasEliteReinforcements(gondor)
-            )
-              return false;
+            if (!this.characterRules.isCharacterInRegionOf("boromir", "gondor")) return false;
+            if (!this.nationStore.hasRegularOrElitesReinforcements("gondor")) return false;
             return true;
           },
           play: async () => {
-            const gondor = this.nationStore.nation("gondor");
             const boromirRegion = this.regionStore.characterRegion("boromir")!;
             const reinforcementUnits: WotrReinforcementUnit[] = [];
             const actions: WotrAction[] = [];
-            if (this.nationStore.hasRegularReinforcements(gondor)) {
+            if (this.nationStore.hasRegularReinforcements("gondor")) {
               reinforcementUnits.push({ nation: "gondor", type: "regular" });
             }
-            if (this.nationStore.hasEliteReinforcements(gondor)) {
+            if (this.nationStore.hasEliteReinforcements("gondor")) {
               reinforcementUnits.push({ nation: "gondor", type: "elite" });
             }
             const units = await this.gameUi.askReinforcementUnit("Choose a unit to recruit", {

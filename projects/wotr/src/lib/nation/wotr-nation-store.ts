@@ -229,19 +229,28 @@ export class WotrNationStore {
     return recruitmentPoints >= 2 && reinforcements.elite > 0;
   }
 
-  hasRegularReinforcements(nation: WotrNation): boolean {
+  hasRegularReinforcements(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
     return nation.reinforcements.regular > 0;
   }
 
-  hasEliteReinforcements(nation: WotrNation): boolean {
+  hasEliteReinforcements(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
     return nation.reinforcements.elite > 0;
   }
 
-  hasLeaderReinforcements(nation: WotrNation): boolean {
+  hasRegularOrElitesReinforcements(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
+    return nation.reinforcements.regular > 0 || nation.reinforcements.elite > 0;
+  }
+
+  hasLeaderReinforcements(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
     return nation.reinforcements.leader > 0;
   }
 
-  hasNazgulReinforcements(nation: WotrNation): boolean {
+  hasNazgulReinforcements(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
     return nation.reinforcements.nazgul > 0;
   }
 
