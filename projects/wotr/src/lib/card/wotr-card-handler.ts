@@ -45,9 +45,13 @@ export class WotrCardHandler {
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
     this.frontStore.setCurrentCard(story.card);
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
+    if (story.actions?.length) {
+      for (const action of story.actions) {
+        this.logger.logAction(action, story, front);
+        await this.actionRegistry.applyAction(action, front);
+      }
+    } else {
+      this.logger.logNoActions(story, front);
     }
     const cardEffect = this.cardEffects[story.card];
     if (cardEffect) {

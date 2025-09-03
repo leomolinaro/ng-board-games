@@ -61,6 +61,10 @@ export class WotrLogWriter {
     });
   }
 
+  logNoActions(story: WotrStory, front: WotrFrontId) {
+    this.addLog("logNoActions", { type: "no-actions", story, front, during: this.during() });
+  }
+
   logEffect(effect: WotrAction) {
     this.addLog(`logEffect [${effect.type}]`, { type: "effect", effect, during: this.during() });
   }

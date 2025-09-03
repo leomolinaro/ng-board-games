@@ -32,9 +32,13 @@ export class WotrActionDieHandler {
   }
 
   private die: WotrStoryApplier<WotrDieStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
+    if (story.actions?.length) {
+      for (const action of story.actions) {
+        this.logger.logAction(action, story, front);
+        await this.actionRegistry.applyAction(action, front);
+      }
+    } else {
+      this.logger.logNoActions(story, front);
     }
     this.frontStore.removeActionDie(story.die, front);
   };

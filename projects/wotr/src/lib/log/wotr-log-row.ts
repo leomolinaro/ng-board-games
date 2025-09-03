@@ -274,6 +274,29 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
         }
         return parsed;
       }
+      case "no-actions": {
+        const parsed: WotrLogParsedFragment[] = [
+          this.player(l.front),
+          this.string("performs no actions")
+        ];
+        if ("card" in l.story) {
+          parsed.push(this.string(", using "), this.card(cardToLabel(l.story.card)));
+        }
+        if ("character" in l.story && l.story.character) {
+          parsed.push(
+            this.string(", using "),
+            this.character(l.story.character),
+            this.string("'s ability")
+          );
+        }
+        if ("die" in l.story) {
+          parsed.push(this.string(" "), this.die(l.story.die, l.front));
+        }
+        if ("token" in l.story) {
+          parsed.push(this.string(" "), this.token(l.story.token, l.front));
+        }
+        return parsed;
+      }
       case "story": {
         switch (l.story.type) {
           case "die-pass":
