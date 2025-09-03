@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { arrayUtil } from "../../../../commons/utils/src";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip-models";
+import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrMordorTrack } from "./wotr-mordor-track";

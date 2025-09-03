@@ -1,25 +1,16 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCharacterRules } from "../../character/wotr-character-rules";
-import { WotrCharacterStore } from "../../character/wotr-character-store";
-import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
-import { WotrFrontStore } from "../../front/wotr-front-store";
+import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
-import { WotrRegionStore } from "../../region/wotr-region-store";
-import { WotrCardDrawUi } from "../wotr-card-draw-ui";
+import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowStrategyCards {
-  private characterStore = inject(WotrCharacterStore);
-  private fellowshipStore = inject(WotrFellowshipStore);
-  private regionStore = inject(WotrRegionStore);
-  private nationStore = inject(WotrNationStore);
+  private q = inject(WotrGameQuery);
   private gameUi = inject(WotrGameUi);
-  private cardDrawUi = inject(WotrCardDrawUi);
-  private frontStore = inject(WotrFrontStore);
-  private characterRules = inject(WotrCharacterRules);
+  private unitUi = inject(WotrUnitUi);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -162,12 +153,21 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Many Kings to the Service of Mordor
+      // Many Kings to the Service of Mordor
       // Recruit two Southron & Easterling Regular units in each of three different Southron & Easterlings Settlements.
       case "sstr17":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () =>
+            this.unitUi.recruitUnitsInDifferentRegions(
+              2,
+              "southrons",
+              "regulars",
+              3,
+              this.q.southrons
+                .settlements()
+                .filter(r => r.controlledBy === "shadow")
+                .map(r => r.id)
+            )
         };
       // TODO The King is Revealed
       // Play if Aragorn is in play.
@@ -184,51 +184,108 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Orcs Multiplying Again
+      // Orcs Multiplying Again
       // Recruit three Sauron Regular units in Dol Guldur and three Sauron Regular units in Mount Gundabad.
       case "sstr20":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () =>
+            this.unitUi.recruitUnitsInDifferentRegions(
+              3,
+              "sauron",
+              "regulars",
+              2,
+              this.q
+                .regions("dol-guldur", "mount-gundabad")
+                .filter(r => r.isFreeForRecruitment("shadow"))
+                .map(r => r.regionId)
+            )
         };
-      // TODO Horde From the East
+      // Horde From the East
       // Play if the Southron & Easterling are "At War."
       // Recruit five Southron & Easterling Regular units in a free region inside the Southron and Easterling Nation. This region must be adjacent to the eastern edge of the map.
       case "sstr21":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.southrons.isAtWar(),
+          play: async () =>
+            this.unitUi.recruitUnitsInDifferentRegions(
+              5,
+              "southrons",
+              "regulars",
+              1,
+              this.q
+                .regions("east-rhun", "south-rhun", "khand", "far-harad")
+                .filter(r => r.isFreeForRecruitment("shadow"))
+                .map(r => r.regionId)
+            )
         };
-      // TODO Monsters Roused
+      // Monsters Roused
       // Recruit one Sauron Regular unit in each of Angmar, Ettenmoors and Weather Hills, and one Sauron Elite unit in Trollshaws.
       case "sstr22":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            actions.push(
+              ...(await this.unitUi.recruitUnitsInDifferentRegions(
+                1,
+                "sauron",
+                "regulars",
+                3,
+                this.q
+                  .regions("angmar", "ettenmoors", "weather-hills")
+                  .filter(r => r.isFreeForRecruitment("shadow"))
+                  .map(r => r.regionId)
+              ))
+            );
+            actions.push(
+              ...(await this.unitUi.recruitUnitsInDifferentRegions(
+                1,
+                "sauron",
+                "elites",
+                1,
+                this.q
+                  .regions("troll-shaws")
+                  .filter(r => r.isFreeForRecruitment("shadow"))
+                  .map(r => r.regionId)
+              ))
+            );
+            return actions;
+          }
         };
-      // TODO Musterings of Long-planned War
+      // Musterings of Long-planned War
       // Play if all Shadow Nations are "At War."
       // Recruit five Southron & Easterling Regular units in Gorgoroth and five Sauron Regular units in Nurn.
       case "sstr23":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
+          play: async () =>
+            this.unitUi.recruitUnitsInDifferentRegions(
+              5,
+              "southrons",
+              "regulars",
+              2,
+              this.q
+                .regions("gorgoroth", "nurn")
+                .filter(r => r.isFreeForRecruitment("shadow"))
+                .map(r => r.regionId)
+            )
         };
-      // TODO Pits of Mordor
+      // Pits of Mordor
       // Play if Sauron is "At War."
       // Recruit two Sauron Regular units in each of three different Sauron Strongholds.
       case "sstr24":
         return {
-          canBePlayed: () => false,
-          play: async () => []
-          // canBePlayed: () => {
-          //   if (!this.nationStore.isAtWar("sauron")) return false;
-          //   if (!this.nationStore.hasRegularReinforcements("sauron")) return false;
-          //   if (this.regionStore.strongholdRegions("sauron").length < 3) return false;
-          //   return true;
-          // },
-          // play: async () => {
-          // }
+          canBePlayed: () => this.q.sauron.isAtWar(),
+          play: async () =>
+            this.unitUi.recruitUnitsInDifferentRegions(
+              2,
+              "sauron",
+              "regulars",
+              3,
+              this.q.sauron
+                .strongholds()
+                .filter(r => r.controlledBy === "shadow")
+                .map(r => r.id)
+            )
         };
     }
   }

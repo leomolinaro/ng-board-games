@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFellowship } from "./wotr-fellowhip-models";
+import { WotrFellowship } from "./wotr-fellowship-models";
 
 interface WotrFellowshipMarkerNode {
   id: string;

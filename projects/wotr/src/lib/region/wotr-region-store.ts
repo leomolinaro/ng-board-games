@@ -535,6 +535,12 @@ export class WotrRegionStore {
     return region.frontId === region.controlledBy;
   }
   isFreeForArmyMovement(id: WotrRegionId, frontId: WotrFrontId): boolean {
+    return this.isFree(id, frontId);
+  }
+  isFreeForRecruitment(id: WotrRegionId, frontId: WotrFrontId): boolean {
+    return this.isFree(id, frontId);
+  }
+  private isFree(id: WotrRegionId, frontId: WotrFrontId): boolean {
     const region = this.region(id);
     if (!region.army) return true;
     return region.army.front === frontId;

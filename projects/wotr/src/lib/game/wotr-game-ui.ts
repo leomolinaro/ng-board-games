@@ -48,10 +48,10 @@ export interface WotrCardSelection {
   cards?: WotrCardId[];
 }
 
-export interface WotrReinforcementUnitSelection {
+export interface WotrReinforcementUnitSelection<CanPass extends boolean = boolean> {
   units: WotrReinforcementUnit[];
   frontId: WotrFrontId;
-  canPass: boolean;
+  canPass: CanPass;
 }
 
 export interface WotrFellowshipCompanionSelection {
@@ -201,10 +201,10 @@ export class WotrGameUi extends signalStore(
   }
 
   reinforcementUnit = uiEvent<WotrReinforcementUnit>();
-  async askReinforcementUnit(
+  async askReinforcementUnit<CanPass extends boolean = boolean>(
     message: string,
-    reinforcementUnitSelection: WotrReinforcementUnitSelection
-  ): Promise<WotrReinforcementUnit | false> {
+    reinforcementUnitSelection: WotrReinforcementUnitSelection<CanPass>
+  ): Promise<WotrReinforcementUnit | (CanPass extends true ? false : never)> {
     const options: WotrUiOption<boolean>[] = [];
     if (reinforcementUnitSelection.canPass) {
       options.push({ value: false, label: "Pass" });
@@ -223,7 +223,7 @@ export class WotrGameUi extends signalStore(
       reinforcementUnitSelection: null,
       options: null
     }));
-    return "value" in choice ? false : choice;
+    return "value" in choice ? (false as any) : choice;
   }
 
   regionUnits = uiEvent<WotrRegionUnits>();

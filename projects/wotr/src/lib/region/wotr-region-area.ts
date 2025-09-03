@@ -15,7 +15,7 @@ import {
   WotrCompanionId,
   WotrMinionId
 } from "../character/wotr-character-models";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip-models";
+import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 import { WotrMapPoint, WotrMapService } from "../game/board/map/wotr-map.service";
 import { WotrArmyUnitType, WotrFreeUnitType, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrFreeUnits } from "../unit/wotr-unit-models";

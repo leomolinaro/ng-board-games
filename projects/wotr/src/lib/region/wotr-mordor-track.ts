@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip-models";
+import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 
 const MORDOR_TRACK_ATTR_X = {
   0: 1046,

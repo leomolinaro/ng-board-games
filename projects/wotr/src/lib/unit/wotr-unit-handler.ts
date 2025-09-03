@@ -23,7 +23,6 @@ import {
   WotrNazgulRecruitment,
   WotrRegularUnitDisband,
   WotrRegularUnitElimination,
-  WotrRegularUnitRecruitment,
   WotrUnitAction
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit-models";
@@ -57,7 +56,8 @@ export class WotrUnitHandler {
       "nazgul-movement": (action, front) => {
         this.moveNazgul(action);
       },
-      "regular-unit-recruitment": (action, front) => this.recruitRegularUnit(action),
+      "regular-unit-recruitment": (action, front) =>
+        this.recruitRegularUnit(action.region, action.nation, action.quantity),
       "regular-unit-elimination": (action, front) => this.eliminateRegularUnit(action),
       "regular-unit-upgrade": (action, front) => {
         this.recruitEliteUnit({
@@ -83,12 +83,7 @@ export class WotrUnitHandler {
           quantity: action.quantity,
           nation: action.nation
         });
-        this.recruitRegularUnit({
-          type: "regular-unit-recruitment",
-          region: action.region,
-          quantity: action.quantity,
-          nation: action.nation
-        });
+        this.recruitRegularUnit(action.region, action.nation, action.quantity);
       },
       "elite-unit-disband": (action, front) => this.disbandEliteUnit(action),
       "leader-recruitment": (action, front) => this.recruitLeader(action),
@@ -156,10 +151,10 @@ export class WotrUnitHandler {
     this.nationStore.addElitesToReinforcements(action.quantity, action.nation);
   }
 
-  recruitRegularUnit(action: WotrRegularUnitRecruitment) {
-    const region = this.regionStore.region(action.region);
-    this.nationStore.removeRegularsFromReinforcements(action.quantity, action.nation);
-    this.addRegularsToRegion(action.quantity, action.nation, region);
+  recruitRegularUnit(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+    const region = this.regionStore.region(regionId);
+    this.nationStore.removeRegularsFromReinforcements(quantity, nationId);
+    this.addRegularsToRegion(quantity, nationId, region);
   }
 
   eliminateRegularUnit(action: WotrRegularUnitElimination) {

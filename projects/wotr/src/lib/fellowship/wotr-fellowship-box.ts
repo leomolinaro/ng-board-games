@@ -8,7 +8,7 @@ import {
   output
 } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFellowship } from "./wotr-fellowhip-models";
+import { WotrFellowship } from "./wotr-fellowship-models";
 
 interface WotrCompanionNode {
   id: string;

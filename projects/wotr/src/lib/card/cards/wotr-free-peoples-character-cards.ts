@@ -1,14 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCharacterRules } from "../../character/wotr-character-rules";
-import { WotrCharacterStore } from "../../character/wotr-character-store";
+import { WotrCharacterQuery } from "../../character/wotr-character-query";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { healFellowship } from "../../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
-import { WotrFrontStore } from "../../front/wotr-front-store";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { addHuntTile } from "../../hunt/wotr-hunt-actions";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
 import { playCardOnTable } from "../wotr-card-actions";
@@ -18,14 +14,9 @@ import { WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesCharacterCards {
-  private characterStore = inject(WotrCharacterStore);
-  private fellowshipStore = inject(WotrFellowshipStore);
-  private regionStore = inject(WotrRegionStore);
-  private nationStore = inject(WotrNationStore);
   private gameUi = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
-  private frontStore = inject(WotrFrontStore);
-  private characterRules = inject(WotrCharacterRules);
+  private q = inject(WotrGameQuery);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -72,9 +63,7 @@ export class WotrFreePeoplesCharacterCards {
       // You must immediately discard this card from the table if both Gimli and Legolas leave the Fellowship.
       case "fpcha06":
         return {
-          canBePlayed: () =>
-            this.characterStore.isInFellowship("gimli") ||
-            this.characterStore.isInFellowship("legolas"),
+          canBePlayed: () => this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship(),
           play: async () => [playCardOnTable("Axe and Bow")]
         };
       // Horn of Gondor
@@ -84,7 +73,7 @@ export class WotrFreePeoplesCharacterCards {
       // You must immediately discard this card from the table if Boromir leaves the Fellowship.
       case "fpcha07":
         return {
-          canBePlayed: () => this.characterStore.isInFellowship("boromir"),
+          canBePlayed: () => this.q.boromir.isInFellowship(),
           play: async () => [playCardOnTable("Horn of Gondor")]
         };
       // Wizard's Staff
@@ -93,7 +82,7 @@ export class WotrFreePeoplesCharacterCards {
       // You must discard this card from the table immediately if Gandalf the Grey leaves the Fellowship.
       case "fpcha08":
         return {
-          canBePlayed: () => this.characterStore.isInFellowship("gandalf-the-grey"),
+          canBePlayed: () => this.q.gandalfTheGrey.isInFellowship(),
           play: async () => [playCardOnTable("Wizard's Staff")]
         };
       // TODO Athelas
@@ -101,8 +90,6 @@ export class WotrFreePeoplesCharacterCards {
       // If Strider is the Guide, heal one Corruption point for each die result of 3+ instead.
       case "fpcha09":
         return {
-          canBePlayed: () => false,
-          // canBePlayed: () => this.fellowshipStore.corruption() > 0,
           play: async () => []
         };
       // TODO There is Another Way
@@ -110,7 +97,6 @@ export class WotrFreePeoplesCharacterCards {
       // Then, if Gollum is the Guide, you may also hide or move the Fellowship (following the normal movement rules).
       case "fpcha10":
         return {
-          canBePlayed: () => false,
           play: async () => []
         };
       // TODO I Will Go Alone
@@ -118,7 +104,7 @@ export class WotrFreePeoplesCharacterCards {
       // Separate one Companion or one group of Companions from the Fellowship. You may move the Companions one extra region. Then, heal one Corruption point.
       case "fpcha11":
         return {
-          canBePlayed: () => this.fellowshipStore.companions().length > 0,
+          canBePlayed: () => this.q.fellowship.hasCompanions(),
           play: async () => []
         };
       // Bilbo's Song
@@ -126,13 +112,12 @@ export class WotrFreePeoplesCharacterCards {
       // If Gollum is the Guide, heal two Corruption points instead.
       case "fpcha12":
         return {
-          canBePlayed: () => this.fellowshipStore.corruption() > 0,
           play: async () => {
             let quantity = 1;
-            if (this.fellowshipStore.guide() === "gollum") {
+            if (this.q.gollum.isGuide()) {
               quantity = 2;
             }
-            quantity = Math.min(quantity, this.fellowshipStore.corruption());
+            quantity = Math.min(quantity, this.q.fellowship.corruption());
             return [healFellowship(quantity)];
           }
         };
@@ -141,7 +126,6 @@ export class WotrFreePeoplesCharacterCards {
       // If the Fellowship is in Lórien, and Lórien is unconquered, also heal one Corruption point.
       case "fpcha13":
         return {
-          canBePlayed: () => false,
           play: async () => []
         };
       // TODO Challenge of the King
@@ -151,7 +135,12 @@ export class WotrFreePeoplesCharacterCards {
       // All drawn tiles not bearing an Eye are put back in the Hunt Pool without effect.
       case "fpcha14":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () => {
+            const cond = (character: WotrCharacterQuery) =>
+              (character.isInNation("gondor") || character.isInNation("rohan")) &&
+              character.isWithFreePeoplesArmy();
+            return cond(this.q.aragorn) || cond(this.q.strider);
+          },
           play: async () => []
         };
       // TODO Gwaihir the Windlord
@@ -159,7 +148,6 @@ export class WotrFreePeoplesCharacterCards {
       // This movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha15":
         return {
-          canBePlayed: () => false,
           play: async () => []
         };
       // TODO We Prove the Swifter
@@ -167,7 +155,6 @@ export class WotrFreePeoplesCharacterCards {
       // The movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha16":
         return {
-          canBePlayed: () => false,
           play: async () => []
         };
       // TODO There and Back Again
@@ -176,7 +163,6 @@ export class WotrFreePeoplesCharacterCards {
       // North Nations one step each on the Political Track.
       case "fpcha17":
         return {
-          canBePlayed: () => false,
           play: async () => []
         };
       // TODO The Eagles are Coming!
@@ -196,7 +182,8 @@ export class WotrFreePeoplesCharacterCards {
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha19":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () =>
+            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
           play: async () => []
         };
       // TODO The Ents Awake: Huorns Play if Gandalf the White is in play and a Companion is in Fangorn.
@@ -205,7 +192,8 @@ export class WotrFreePeoplesCharacterCards {
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha20":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () =>
+            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
           play: async () => []
         };
       // TODO The Ents Awake: Entmoot Play if Gandalf the White is in play and a Companion is in Fangorn.
@@ -214,7 +202,8 @@ export class WotrFreePeoplesCharacterCards {
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha21":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () =>
+            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
           play: async () => []
         };
       // TODO Dead Men of Dunharrow
@@ -225,7 +214,8 @@ export class WotrFreePeoplesCharacterCards {
       // You may then recruit up to three Gondor Regular units in that region, taking control if necessary.
       case "fpcha22":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () =>
+            this.q.strider.isInNation("rohan") || this.q.aragorn.isInNation("rohan"),
           play: async () => []
         };
       // House of the Stewards
@@ -234,19 +224,15 @@ export class WotrFreePeoplesCharacterCards {
       // Then, draw two Strategy Event cards.
       case "fpcha23":
         return {
-          canBePlayed: () => {
-            if (!this.characterRules.isCharacterInRegionOf("boromir", "gondor")) return false;
-            if (!this.nationStore.hasRegularOrElitesReinforcements("gondor")) return false;
-            return true;
-          },
+          canBePlayed: () => this.q.boromir.isInNation("gondor"),
           play: async () => {
-            const boromirRegion = this.regionStore.characterRegion("boromir")!;
+            const boromirRegion = this.q.boromir.region()!;
             const reinforcementUnits: WotrReinforcementUnit[] = [];
             const actions: WotrAction[] = [];
-            if (this.nationStore.hasRegularReinforcements("gondor")) {
+            if (this.q.gondor.hasRegularReinforcements()) {
               reinforcementUnits.push({ nation: "gondor", type: "regular" });
             }
-            if (this.nationStore.hasEliteReinforcements("gondor")) {
+            if (this.q.gondor.hasEliteReinforcements()) {
               reinforcementUnits.push({ nation: "gondor", type: "elite" });
             }
             const units = await this.gameUi.askReinforcementUnit("Choose a unit to recruit", {
@@ -254,14 +240,13 @@ export class WotrFreePeoplesCharacterCards {
               frontId: "free-peoples",
               units: reinforcementUnits
             });
-            if (!units) throw new Error("No unit selected");
             if (units.type === "regular") {
               actions.push(recruitRegularUnit(boromirRegion.id, "gondor"));
             } else {
               actions.push(recruitEliteUnit(boromirRegion.id, "gondor"));
             }
 
-            const leftCards = this.frontStore.strategyDeck("free-peoples").length;
+            const leftCards = this.q.freePeoples.nCardsInStrategyDeck();
             const cardToDraw = Math.min(2, leftCards);
             if (cardToDraw) {
               actions.push(await this.cardDrawUi.drawCards(cardToDraw, "strategy", "free-peoples"));
@@ -276,7 +261,8 @@ export class WotrFreePeoplesCharacterCards {
       // Then, draw two Strategy Event cards.
       case "fpcha24":
         return {
-          canBePlayed: () => false,
+          canBePlayed: () =>
+            this.q.strider.isWithFreePeoplesArmy() || this.q.aragorn.isWithFreePeoplesArmy(),
           play: async () => []
         };
     }

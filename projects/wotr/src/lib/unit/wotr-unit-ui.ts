@@ -2,7 +2,9 @@ import { inject, Injectable } from "@angular/core";
 import { attack } from "../battle/wotr-battle-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -15,7 +17,8 @@ import {
   recruitNazgul,
   recruitRegularUnit,
   WotrArmyMovement,
-  WotrNazgulMovement
+  WotrNazgulMovement,
+  WotrRegularUnitRecruitment
 } from "./wotr-unit-actions";
 import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
 import { WotrArmy, WotrRegionUnits, WotrReinforcementUnit } from "./wotr-unit-models";
@@ -30,6 +33,7 @@ export class WotrUnitUi {
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
   private unitHandler = inject(WotrUnitHandler);
+  private q = inject(WotrGameQuery);
 
   async moveNazgulMinions(frontId: WotrFrontId): Promise<WotrNazgulMovement[]> {
     throw new Error("Method not implemented.");
@@ -210,7 +214,7 @@ export class WotrUnitUi {
     switch (unit.type) {
       case "regular": {
         const action = recruitRegularUnit(regionId, unit.nation, 1);
-        this.unitHandler.recruitRegularUnit(action);
+        this.unitHandler.recruitRegularUnit(action.region, action.nation, action.quantity);
         return action;
       }
       case "elite": {
@@ -229,6 +233,58 @@ export class WotrUnitUi {
         return action;
       }
     }
+  }
+
+  async recruitUnitsInDifferentRegions(
+    nUnitsPerRegion: number,
+    nationId: WotrNationId,
+    type: "regulars" | "elites",
+    nMaxRegions: number,
+    availableRegionIds: WotrRegionId[]
+  ): Promise<WotrRegularUnitRecruitment[]> {
+    const nationQ = this.q.nation(nationId);
+    const nReinforcements =
+      type === "regulars" ? nationQ.nRegularReinforcements() : nationQ.nEliteReinforcements();
+    if (!nReinforcements) {
+      await this.ui.askContinue("No reinforcements available");
+      return [];
+    }
+    if (!availableRegionIds.length) {
+      await this.ui.askContinue("No free regions available");
+      return [];
+    }
+    let nLeftRegions = Math.min(availableRegionIds.length, nMaxRegions);
+    let nLeftUnits = Math.min(nReinforcements, nLeftRegions * nUnitsPerRegion);
+    let continuee = true;
+    const actions: WotrRegularUnitRecruitment[] = [];
+    do {
+      const regionId = await this.ui.askRegion("Select a region", availableRegionIds);
+      let nUnits: number;
+      if (nLeftRegions * nUnitsPerRegion === nLeftUnits) {
+        nUnits = nUnitsPerRegion;
+      } else {
+        const nMinUnits = Math.max(1, nLeftUnits - (nLeftRegions - 1) * nUnitsPerRegion);
+        const nMaxUnits = Math.min(nLeftUnits, nUnitsPerRegion);
+        if (nMinUnits === nMaxUnits) {
+          nUnits = nMaxUnits;
+        } else {
+          nUnits = await this.ui.askQuantity("Select number of units to recruit", {
+            min: nMinUnits,
+            max: nMaxUnits,
+            default: nMaxUnits
+          });
+        }
+      }
+
+      actions.push(recruitRegularUnit(regionId, nationId, nUnits));
+      this.unitHandler.recruitRegularUnit(regionId, nationId, nUnits);
+
+      availableRegionIds = availableRegionIds.filter(r => r !== regionId);
+      nLeftRegions--;
+      nLeftUnits -= nUnits;
+      continuee = nLeftRegions > 0 && nLeftUnits > 0;
+    } while (continuee);
+    return actions;
   }
 
   attackArmyChoice: WotrUiChoice = {

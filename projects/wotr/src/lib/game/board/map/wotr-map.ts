@@ -13,8 +13,8 @@ import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons"
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore } from "../../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character-models";
-import { WotrFellowship } from "../../../fellowship/wotr-fellowhip-models";
 import { WotrFellowshipBox } from "../../../fellowship/wotr-fellowship-box";
+import { WotrFellowship } from "../../../fellowship/wotr-fellowship-models";
 import { WotrFellowshipTrack } from "../../../fellowship/wotr-fellowship-track";
 import { WotrDeckBoxes } from "../../../front/wotr-deck-boxes";
 import { WotrElvenRingsBox } from "../../../front/wotr-elven-rings-box";

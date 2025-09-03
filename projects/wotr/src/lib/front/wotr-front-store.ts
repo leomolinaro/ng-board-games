@@ -60,6 +60,9 @@ export class WotrFrontStore {
   frontIds() {
     return this.state().ids;
   }
+  actionDice(frontId: WotrFrontId) {
+    return this.front(frontId).actionDice;
+  }
   hasActionDice(frontId: WotrFrontId) {
     return !!this.front(frontId).actionDice.length;
   }

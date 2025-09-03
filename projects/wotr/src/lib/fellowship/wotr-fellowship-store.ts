@@ -1,7 +1,7 @@
 import { Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowhip-models";
+import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowship-models";
 
 export function initialeState(): WotrFellowship {
   return {

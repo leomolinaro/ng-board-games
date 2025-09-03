@@ -13,7 +13,7 @@ import {
   WotrCharacterState,
   WotrCharacterStore
 } from "../character/wotr-character-store";
-import { WotrFellowship } from "../fellowship/wotr-fellowhip-models";
+import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 import {
   initialeState as fellowshipInitialeState,
   WotrFellowshipStore

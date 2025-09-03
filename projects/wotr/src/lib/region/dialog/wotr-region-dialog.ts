@@ -12,7 +12,7 @@ import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
-import { WotrFellowship } from "../../fellowship/wotr-fellowhip-models";
+import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
 import { WotrNation, WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrUnits } from "../../unit/wotr-unit-models";
 import { WotrRegion } from "../wotr-region-models";
