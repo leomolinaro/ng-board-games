@@ -15,8 +15,8 @@ import {
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
+import { WotrCards } from "./cards/wotr-cards";
 import { WotrCardAction } from "./wotr-card-actions";
-import { WotrCardParams } from "./wotr-card-effects-service";
 import { WotrCardId, cardToLabel } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
@@ -27,6 +27,7 @@ export class WotrCardHandler {
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+  private cards = inject(WotrCards);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -34,13 +35,6 @@ export class WotrCardHandler {
     this.actionRegistry.registerStory("die-card", this.dieCard);
     this.actionRegistry.registerStory("reaction-card", this.reactionCard);
     this.actionRegistry.registerStory("reaction-card-skip", this.reactionCardSkip);
-  }
-
-  private cardEffects!: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>;
-  registerCardEffects(
-    cardEffects: Partial<Record<WotrCardId, (params: WotrCardParams) => Promise<void>>>
-  ) {
-    this.cardEffects = cardEffects;
   }
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
@@ -53,9 +47,9 @@ export class WotrCardHandler {
     } else {
       this.logger.logNoActions(story, front);
     }
-    const cardEffect = this.cardEffects[story.card];
-    if (cardEffect) {
-      await cardEffect({ front, story });
+    const card = this.cards.getCard(story.card);
+    if (card.effect) {
+      await card.effect({ front, story });
     }
     this.frontStore.discardCards([story.card], front);
     this.frontStore.removeActionDie(story.die, front);

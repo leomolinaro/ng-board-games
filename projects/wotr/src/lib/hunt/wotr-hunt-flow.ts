@@ -28,6 +28,7 @@ interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
   ignoreEyeTile?: true;
   ignoreFreePeopleSpecialTile?: true;
+  onlyRingAbsorbtion?: true;
 }
 
 type HuntEffect =

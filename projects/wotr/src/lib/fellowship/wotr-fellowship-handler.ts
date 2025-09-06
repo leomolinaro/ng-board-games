@@ -5,11 +5,13 @@ import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
+import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFellowshipAction } from "./wotr-fellowship-actions";
+import { WotrRingDestroyed } from "./wotr-fellowship-models";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
@@ -55,6 +57,9 @@ export class WotrFellowshipHandler {
       await this.huntFlow.resolveHunt();
       this.huntStore.addFellowshipDie();
     }
+    if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.progress() === 6) {
+      throw new WotrRingDestroyed();
+    }
   }
 
   reveal(regionId: WotrRegionId): void {
@@ -85,6 +90,13 @@ export class WotrFellowshipHandler {
       this.fellowshipStore.removeCompanion(companionId);
     }
     this.characterHandler.playCharacters(companions, toRegionId);
+  }
+
+  corrupt(nCorruption: number) {
+    this.fellowshipStore.corrupt(nCorruption);
+    if (this.fellowshipStore.corruption() >= 12) {
+      throw new WotrRingBearerCorrupted();
+    }
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {

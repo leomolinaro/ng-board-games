@@ -5,6 +5,7 @@ import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrCharacters } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrRingDestroyed } from "../fellowship/wotr-fellowship-models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -17,6 +18,7 @@ import {
   WotrStory,
   WotrTokenStory
 } from "../game/wotr-story-models";
+import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationStore } from "../nation/wotr-nation-store";
@@ -60,10 +62,18 @@ export class WotrGameTurn {
 
   async game() {
     this.setup();
-    let roundNumber = 0;
-    let continueGame = await this.round(++roundNumber);
-    while (continueGame) {
-      continueGame = await this.round(++roundNumber);
+    try {
+      let roundNumber = 0;
+      let continueGame = await this.round(++roundNumber);
+      while (continueGame) {
+        continueGame = await this.round(++roundNumber);
+      }
+    } catch (error) {
+      if (error instanceof WotrRingDestroyed) {
+      } else if (error instanceof WotrRingBearerCorrupted) {
+      } else {
+        throw error;
+      }
     }
     this.logger.logEndGame();
   }

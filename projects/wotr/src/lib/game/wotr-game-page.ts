@@ -6,7 +6,6 @@ import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
-import { WotrCardEffectsService } from "../card/wotr-card-effects-service";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -44,7 +43,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private auth = inject(BgAuthService);
   protected story = inject(WotrStoryService);
   private flow = inject(WotrGameTurn);
-  private cardEffects = inject(WotrCardEffectsService);
   private localPlayerService = inject(WotrPlayerUi);
   private actionRegistry = inject(WotrActionRegistry);
   private actionDieModifiers = inject(WotrActionDieModifiers);
@@ -68,7 +66,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
 
   async ngOnInit() {
-    this.cardEffects.registerCardEffects();
     const [game, players, stories] = await Promise.all([
       this.remote.getGame(this.gameId),
       this.remote.getPlayers(this.gameId, ref => ref.orderBy("sort")),

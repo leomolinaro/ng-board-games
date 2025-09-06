@@ -32,4 +32,11 @@ export interface WotrHuntEffectParams {
   guideSpecialAbilityUsed?: true;
   randomCompanions?: WotrCompanionId[];
   casualtyTaken?: true;
+  onlyRingAbsorbtion?: true;
+}
+
+export class WotrRingBearerCorrupted extends Error {
+  constructor() {
+    super("The Ring Bearer has been corrupted! Shadow wins!");
+  }
 }

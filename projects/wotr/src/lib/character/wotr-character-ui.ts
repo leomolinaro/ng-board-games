@@ -139,6 +139,35 @@ export class WotrCharacterUi {
     return actions;
   }
 
+  async moveAnyOrAllNazgul(): Promise<WotrAction[]> {
+    const hasNazgul =
+      this.characterRules.canMoveStandardNazgul() ||
+      this.characterRules.canMoveCharacter(this.characterStore.character("the-witch-king"));
+    if (!hasNazgul) {
+      await this.ui.askContinue("No Nazgul to move");
+      return [];
+    }
+    const actions: WotrAction[] = [];
+    let continueMoving = true;
+    do {
+      const moveNazgulActions = await this.moveNazgul();
+      for (const action of moveNazgulActions) {
+        if (action.type === "nazgul-movement") {
+          this.unitHandler.moveNazgul(action);
+        } else {
+          this.characterHandler.moveCharacters(action, "shadow");
+        }
+        actions.push(action);
+      }
+      continueMoving = await this.ui.askConfirm(
+        "Do you want to move more Nazgul?",
+        "Move more",
+        "Stop moving"
+      );
+    } while (continueMoving);
+    return actions;
+  }
+
   private async moveNazgul(): Promise<(WotrNazgulMovement | WotrCharacterMovement)[]> {
     const fromRegions = this.regionStore
       .regions()

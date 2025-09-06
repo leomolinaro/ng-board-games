@@ -140,7 +140,7 @@ export class WotrHuntUi {
       // random companion elimination
       // use ring
       const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
-      if (!casualtyTaken) {
+      if (!casualtyTaken && !params.onlyRingAbsorbtion) {
         choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);
       }

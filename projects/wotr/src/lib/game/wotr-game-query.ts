@@ -5,12 +5,13 @@ import { WotrFellowshipQuery } from "../fellowship/wotr-fellowship-query";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontQuery } from "../front/wotr-front-query";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationQuery } from "../nation/wotr-nation-query";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrNationId } from "../nation/wotr-nation-models";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 
 @Injectable({ providedIn: "root" })
 export class WotrGameQuery {
@@ -19,11 +20,12 @@ export class WotrGameQuery {
   private nationStore = inject(WotrNationStore);
   private frontStore = inject(WotrFrontStore);
   private fellowshipStore = inject(WotrFellowshipStore);
+  private unitUtils = inject(WotrUnitUtils);
 
   freePeoples = new WotrFrontQuery("free-peoples", this.frontStore);
   shadow = new WotrFrontQuery("shadow", this.frontStore);
 
-  fellowship = new WotrFellowshipQuery(this.fellowshipStore);
+  fellowship = new WotrFellowshipQuery(this.fellowshipStore, this.regionStore, this.nationStore);
 
   gandalfTheGrey = new WotrCharacterQuery(
     "gandalf-the-grey",
@@ -149,7 +151,7 @@ export class WotrGameQuery {
 
   region(regionId: WotrRegionId): WotrRegionQuery {
     if (!this._regions[regionId]) {
-      this._regions[regionId] = new WotrRegionQuery(regionId, this.regionStore);
+      this._regions[regionId] = new WotrRegionQuery(regionId, this.regionStore, this.unitUtils);
     }
     return this._regions[regionId];
   }

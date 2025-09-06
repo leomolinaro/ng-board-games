@@ -1,5 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrStory } from "../../game/wotr-story-models";
 import {
   isFreePeopleCharacterCard,
   isFreePeopleStrategyCard,
@@ -14,6 +16,17 @@ import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
   play: () => Promise<WotrAction[]>;
+  effect?: (params: WotrCardParams) => Promise<void>;
+}
+
+export interface WotrCardParams {
+  front: WotrFrontId;
+  story: WotrStory;
+  // shadow: WotrCombatFront;
+  // freePeoples: WotrCombatFront;
+  // combatRound: WotrCombatRound;
+  // card: WotrCard;
+  // isAttacker: boolean;
 }
 
 @Injectable({ providedIn: "root" })
