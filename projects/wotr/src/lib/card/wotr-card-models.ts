@@ -27,7 +27,15 @@ export type WotrCardNumber =
   | "24";
 
 export type WotrFreePeopleCardId = WotrFreePeopleCharacterCardId | WotrFreePeopleStrategyCardId;
+export function isFreePeoplesCard(cardId: WotrCardId): cardId is WotrFreePeopleCardId {
+  return cardId.startsWith("fp");
+}
+
 export type WotrShadowCardId = WotrShadowCharacterCardId | WotrShadowStrategyCardId;
+export function isShadowCard(cardId: WotrCardId): cardId is WotrShadowCardId {
+  return cardId.startsWith("s");
+}
+
 export type WotrStrategyCardId = WotrFreePeopleStrategyCardId | WotrShadowStrategyCardId;
 export type WotrCardId = WotrCharacterCardId | WotrStrategyCardId;
 export type WotrCardType = "character" | "muster" | "army";

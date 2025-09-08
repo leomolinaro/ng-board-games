@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, input, Signal } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrCardId } from "../card/wotr-card-models";
+import { isFreePeoplesCard, WotrCardId } from "../card/wotr-card-models";
+import { WotrCardsDialog, WotrCardsDialogData } from "../card/wotr-cards-dialog";
 import { WotrFront } from "./wotr-front-models";
 
 interface WotrTableCardNode {
@@ -24,7 +26,8 @@ const YSTEP = 47;
         transform="scale(0.8, 0.8)"
         [attr.x]="tableCardNode.svgX"
         [attr.y]="tableCardNode.svgY"
-        [attr.xlink:href]="tableCardNode.image"></svg:image>
+        [attr.xlink:href]="tableCardNode.image"
+        (click)="openCardsDialog(tableCardNode.id)"></svg:image>
     }
   `,
   styles: [
@@ -37,6 +40,8 @@ const YSTEP = 47;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrTableCardsComponent {
+  private dialog = inject(MatDialog);
+
   freePeoples = input.required<WotrFront>();
   shadow = input.required<WotrFront>();
 
@@ -63,5 +68,23 @@ export class WotrTableCardsComponent {
       svgX: X0,
       svgY: Y0 + index * YSTEP
     };
+  }
+
+  protected openCardsDialog(cardId: WotrCardId) {
+    const isFreePeoples = isFreePeoplesCard(cardId);
+    const cardsDialogRef = this.dialog.open<
+      WotrCardsDialog,
+      WotrCardsDialogData,
+      undefined | WotrCardId[]
+    >(WotrCardsDialog, {
+      data: {
+        focusedCardId: cardId,
+        cardIds: isFreePeoples ? this.freePeoples().tableCards : this.shadow().tableCards,
+        selectableCards: null
+      },
+      panelClass: "wotr-cards-overlay-panel",
+      width: "100%",
+      maxWidth: "100%"
+    });
   }
 }

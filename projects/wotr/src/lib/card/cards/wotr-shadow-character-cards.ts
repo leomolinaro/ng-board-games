@@ -14,6 +14,7 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
+import { playCardOnTable } from "../wotr-card-actions";
 import { WotrShadowCharacterCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -221,8 +222,7 @@ export class WotrShadowCharacterCards {
       // Or, you may discard "Balrog of Moria" to use its Combat card effect as if you were playing the card from your hand.
       case "scha17":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [playCardOnTable("Balrog of Moria")]
         };
       // TODO The Lidless Eye
       // Change up to three unused Shadow Action dice results into "Eye" results.

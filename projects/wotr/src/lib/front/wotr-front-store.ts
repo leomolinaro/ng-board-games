@@ -141,6 +141,7 @@ export class WotrFrontStore {
       let strategyDiscardPile = front.strategyDiscardPile;
       let handCards = front.handCards;
       for (const cardId of cardIds) {
+        if (!handCards.includes(cardId)) continue;
         handCards = immutableUtil.listRemoveFirst(c => c === cardId, handCards);
         if (isCharacterCard(cardId)) {
           characterDiscardPile = immutableUtil.listPush([cardId], characterDiscardPile);
@@ -216,7 +217,8 @@ export class WotrFrontStore {
   playCardOnTable(card: WotrCardId, frontId: WotrFrontId): void {
     this.updateFront("playCardOnTable", frontId, front => ({
       ...front,
-      tableCards: immutableUtil.listPush([card], front.tableCards)
+      tableCards: immutableUtil.listPush([card], front.tableCards),
+      handCards: immutableUtil.listRemoveFirst(c => c === card, front.handCards)
     }));
   }
 
