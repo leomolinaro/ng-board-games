@@ -4,7 +4,7 @@ import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   downgradeEliteUnit,
@@ -172,7 +172,24 @@ export class WotrBattleUi {
       "Retreat",
       "Not retreat"
     );
-    return confirm ? retreat(region.id) : notRetreat(region.id);
+    if (confirm) {
+      const retreatableRegions = this.retreatableRegions(region, battle.defender.frontId);
+      const toRegionId = await this.ui.askRegion(
+        "Choose a region to retreat to",
+        retreatableRegions
+      );
+      return retreat(toRegionId);
+    } else {
+      return notRetreat();
+    }
+  }
+
+  private retreatableRegions(fromRegion: WotrRegion, frontId: WotrFrontId): WotrRegionId[] {
+    return fromRegion.neighbors
+      .filter(neighbor => {
+        return this.regionStore.isFreeForArmyRetreat(neighbor, frontId);
+      })
+      .map(neighbor => neighbor.id);
   }
 
   async chooseCombatCard(frontId: WotrFrontId): Promise<WotrAction[]> {

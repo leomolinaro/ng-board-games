@@ -92,17 +92,18 @@ export function retreat(toRegion: WotrRegionId): WotrArmyRetreat {
 }
 export interface WotrArmyNotRetreat {
   type: "army-not-retreat";
-  region: WotrRegionId;
 }
-export function notRetreat(region: WotrRegionId): WotrArmyNotRetreat {
-  return { type: "army-not-retreat", region };
+export function notRetreat(): WotrArmyNotRetreat {
+  return { type: "army-not-retreat" };
 }
 export interface WotrArmyAdvance {
   type: "army-advance";
   leftUnits?: WotrUnits;
 }
 export function advanceArmy(leftUnits?: WotrUnits): WotrArmyAdvance {
-  return { type: "army-advance", leftUnits };
+  const action: WotrArmyAdvance = { type: "army-advance" };
+  if (leftUnits) action.leftUnits = leftUnits;
+  return action;
 }
 export interface WotrArmyNotAdvance {
   type: "army-not-advance";

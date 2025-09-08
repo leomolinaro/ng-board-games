@@ -274,10 +274,13 @@ export class WotrBattleHandler {
       } else {
         const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
         if (wantContinueBattle) {
-          // TODO && defender can retreat
-          const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-          if (wantRetreat) {
-            attackerWon = true;
+          if (this.canRetreat(combatRound.defender)) {
+            const wantRetreat = await this.wantRetreat(combatRound.defender.player);
+            if (wantRetreat) {
+              attackerWon = true;
+            } else {
+              continueBattle = true;
+            }
           } else {
             continueBattle = true;
           }
@@ -616,6 +619,14 @@ export class WotrBattleHandler {
       case "army-not-retreat-into-siege":
         return false;
     }
+  }
+
+  private canRetreat(defender: WotrCombatFront): boolean {
+    const battle = this.battle();
+    const region = this.regionStore.region(battle.action.toRegion);
+    return region.neighbors.some(neighbor => {
+      return this.regionStore.isFreeForArmyRetreat(neighbor, defender.frontId);
+    });
   }
 
   private async wantRetreat(player: WotrPlayer): Promise<boolean> {
