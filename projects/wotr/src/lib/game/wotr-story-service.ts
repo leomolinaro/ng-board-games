@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService } from "@leobg/commons";
+import { ABgGameService, BgAuthService, getStoryId } from "@leobg/commons";
 import { Subject, firstValueFrom, from } from "rxjs";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -118,6 +118,11 @@ export class WotrStoryService extends ABgGameService<
     } else if (nReplayStories < 0) {
       throw new Error("Not implemented: negative replay stories");
     }
+  }
+
+  eraseLast() {
+    this.remote.deleteStory$(getStoryId(this.storyTime, "free-peoples"), this.getGameId());
+    console.log("this", this);
   }
 
   lastReplay() {

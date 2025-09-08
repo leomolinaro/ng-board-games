@@ -108,6 +108,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
       <div class="wotr-logs">
         <wotr-replay-buttons
           class="wotr-replay-buttons"
+          (edit)="editStories.emit()"
           (replayNext)="replayNext.emit($event)"
           (replayLast)="replayLast.emit()"></wotr-replay-buttons>
         <wotr-log-list [logs]="logStore.state()"> </wotr-log-list>
@@ -147,6 +148,7 @@ export class WotrBoard {
 
   replayNext = output<number>();
   replayLast = output<void>();
+  editStories = output<void>();
 
   summaryFixed = false;
   logsFixed = false;

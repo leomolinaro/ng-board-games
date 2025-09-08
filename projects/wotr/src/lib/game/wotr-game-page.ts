@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
@@ -22,6 +23,11 @@ import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrBoard } from "./board/wotr-board";
 import { WotrGameStore } from "./wotr-game-store";
+import {
+  WotrStoriesDialog,
+  WotrStoriesDialogData,
+  WotrStoriesDialogRef
+} from "./wotr-stories-dialog";
 import { WotrStoryService } from "./wotr-story-service";
 
 @Component({
@@ -29,6 +35,7 @@ import { WotrStoryService } from "./wotr-story-service";
   imports: [WotrBoard],
   template: `
     <wotr-board
+      (editStories)="editStories()"
       (replayNext)="story.nextReplay($event)"
       (replayLast)="story.lastReplay()">
     </wotr-board>
@@ -48,6 +55,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
   private battleModifiers = inject(WotrBattleModifiers);
+
+  private dialog = inject(MatDialog);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -121,5 +130,22 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.actionDieModifiers.clear();
     this.unitModifiers.clear();
     this.battleModifiers.clear();
+  }
+
+  private storiesDialogRef: WotrStoriesDialogRef | null = null;
+
+  editStories() {
+    const data: WotrStoriesDialogData = {
+      gameId: this.gameId
+    };
+    this.storiesDialogRef = this.dialog.open<WotrStoriesDialog, WotrStoriesDialogData, void>(
+      WotrStoriesDialog,
+      {
+        data,
+        panelClass: "mat-typography",
+        maxHeight: "80vh",
+        maxWidth: "80vw"
+      }
+    );
   }
 }

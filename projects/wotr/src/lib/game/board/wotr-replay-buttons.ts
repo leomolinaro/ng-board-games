@@ -13,6 +13,11 @@ import { MatIcon } from "@angular/material/icon";
         (click)="replayNext.emit(-1)"></mat-icon> -->
       <mat-icon
         matRipple
+        fontIcon="edit"
+        style="font-size: 120%; text-align: center; vertical-align: text-bottom"
+        (click)="edit.emit()"></mat-icon>
+      <mat-icon
+        matRipple
         fontIcon="keyboard_arrow_right"
         (click)="replayNext.emit(1)"></mat-icon>
       <mat-icon
@@ -34,4 +39,5 @@ import { MatIcon } from "@angular/material/icon";
 export class WotrReplayButton {
   replayNext = output<number>();
   replayLast = output<void>();
+  edit = output<void>();
 }

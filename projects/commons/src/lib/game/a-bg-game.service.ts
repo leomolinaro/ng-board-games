@@ -55,7 +55,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract localPlayer: PlSrv;
   protected abstract aiPlayer: PlSrv;
 
-  private storyTime: number = 0;
+  protected storyTime: number = 0;
   protected abstract storyDocs: BgStoryDoc<Pid, St>[] | null;
 
   protected abstract getGameId(): string;
