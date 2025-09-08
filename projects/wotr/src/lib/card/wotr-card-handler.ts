@@ -18,12 +18,14 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrCards } from "./cards/wotr-cards";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel } from "./wotr-card-models";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
+  private frontHandler = inject(WotrFrontHandler);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -38,6 +40,9 @@ export class WotrCardHandler {
   }
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
+    if (story.elvenRing) {
+      this.frontHandler.useElvenRing(story.elvenRing, front);
+    }
     this.frontStore.setCurrentCard(story.card);
     if (story.actions?.length) {
       for (const action of story.actions) {

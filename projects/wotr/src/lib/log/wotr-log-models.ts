@@ -1,7 +1,7 @@
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
@@ -29,6 +29,14 @@ export interface WotrLogNoActions {
   type: "no-actions";
   front: WotrFrontId;
   story: WotrStory;
+  during?: "battle" | "hunt";
+}
+export interface WotrLogElvenRing {
+  type: "elven-ring";
+  ring: WotrElvenRing;
+  fromDie: WotrActionDie;
+  toDie: WotrActionDie;
+  front: WotrFrontId;
   during?: "battle" | "hunt";
 }
 export interface WotrLogEffect {
@@ -80,6 +88,7 @@ export type WotrLog =
   | WotrLogEffect
   | WotrLogStory
   | WotrLogPhase
+  | WotrLogElvenRing
   | WotrLogBattleResolution
   | WotrLogHuntResolution
   | WotrLogCombatCard

@@ -16,6 +16,7 @@ export interface WotrFront {
   actionDice: WotrActionDie[];
   actionTokens: WotrActionToken[];
   elvenRings: WotrElvenRing[];
+  elvenRingUsed: boolean;
   victoryPoints: number;
 }
 
@@ -25,5 +26,16 @@ export function oppositeFront(front: WotrFrontId): WotrFrontId {
       return "shadow";
     case "shadow":
       return "free-peoples";
+  }
+}
+
+export function elvenRingLabel(ring: WotrElvenRing): string {
+  switch (ring) {
+    case "vilya":
+      return "Vilya";
+    case "nenya":
+      return "Nenya";
+    case "narya":
+      return "Narya";
   }
 }

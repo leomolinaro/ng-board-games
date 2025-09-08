@@ -9,7 +9,7 @@ import {
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrPlayerInfo } from "../player/wotr-player-info-models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
@@ -28,12 +28,18 @@ interface WotrGameUiState {
   options: WotrUiOption[] | null;
   regionSelection: WotrRegionId[] | null;
   nationSelection: WotrNationId[] | null;
+  elvenRingSelection: WotrElvenRingSelection | null;
   actionDieSelection: WotrActionDieSelection | null;
   reinforcementUnitSelection: WotrReinforcementUnitSelection | null;
   regionUnitSelection: WotrRegionUnitSelection | null;
   cardSelection: WotrCardSelection | null;
   inputQuantitySelection: WotrInputQuantitySelection | false;
   fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | null;
+}
+
+export interface WotrElvenRingSelection {
+  rings: WotrElvenRing[];
+  frontId: WotrFrontId;
 }
 
 export interface WotrActionDieSelection {
@@ -73,6 +79,7 @@ export const initialState: WotrGameUiState = {
   message: null,
   regionSelection: null,
   nationSelection: null,
+  elvenRingSelection: null,
   actionDieSelection: null,
   options: null,
   reinforcementUnitSelection: null,
@@ -180,16 +187,42 @@ export class WotrGameUi extends signalStore(
     return nation;
   }
 
+  elvenRing = uiEvent<WotrElvenRing>();
+  async askElvenRing(
+    message: string,
+    elvenRingSelection: WotrElvenRingSelection
+  ): Promise<WotrElvenRing> {
+    this.updateUi(s => ({ ...s, message, elvenRingSelection }));
+    const elvenRing = await this.elvenRing.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, elvenRingSelection: null }));
+    return elvenRing;
+  }
+
   actionChoice = uiEvent<WotrActionChoice>();
   async askActionDie(
     message: string,
     frontId: WotrFrontId,
-    tokens: WotrActionToken[]
+    tokens: WotrActionToken[],
+    elvenRingSelection: WotrElvenRingSelection | null
   ): Promise<WotrActionChoice> {
-    this.updateUi(s => ({ ...s, message, actionDieSelection: { frontId, tokens } }));
-    const actionDieOrToken = await this.actionChoice.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, actionDieSelection: null }));
-    return actionDieOrToken;
+    this.updateUi(s => ({
+      ...s,
+      message,
+      actionDieSelection: { frontId, tokens },
+      elvenRingSelection: elvenRingSelection
+    }));
+    const actionDieOrTokenOrElvenRing = await Promise.race([
+      this.actionChoice.get(),
+      this.elvenRing.get().then<WotrActionChoice>(ring => ({ type: "elvenRing", ring }))
+    ]);
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      actionDieSelection: null,
+      elvenRingSelection: null
+    }));
+    return actionDieOrTokenOrElvenRing;
   }
 
   option = uiEvent<WotrUiOption>();
@@ -198,6 +231,26 @@ export class WotrGameUi extends signalStore(
     const option = await this.option.get();
     this.updateUi(s => ({ ...s, message: null, canCancel: true, options: null }));
     return option.value as O;
+  }
+
+  async askOptionOrElvenRing<O>(
+    message: string,
+    options: WotrUiOption<O>[],
+    elvenRingSelection: WotrElvenRingSelection | null
+  ): Promise<O | WotrElvenRing> {
+    this.updateUi(s => ({ ...s, message, options: options, elvenRingSelection }));
+    const optionOrElvenRing = await Promise.race([
+      this.option.get().then(o => o.value as O),
+      this.elvenRing.get()
+    ]);
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      options: null,
+      elvenRingSelection: null
+    }));
+    return optionOrElvenRing;
   }
 
   reinforcementUnit = uiEvent<WotrReinforcementUnit>();

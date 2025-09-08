@@ -5,8 +5,17 @@ import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrFrontUi } from "../front/wotr-front-ui";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrDieCardStory, WotrDieStory, WotrStory } from "../game/wotr-story-models";
+import {
+  WotrDieCardStory,
+  WotrDieStory,
+  WotrElvenRingAction,
+  WotrPassStory,
+  WotrStory,
+  WotrTokenStory
+} from "../game/wotr-story-models";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
@@ -28,6 +37,8 @@ export class WotrActionDieUi {
   private cardPlayUi = inject(WotrCardPlayUi);
   private nationUi = inject(WotrNationUi);
   private fellowshipUi = inject(WotrFellowshipUi);
+  private q = inject(WotrGameQuery);
+  private frontUi = inject(WotrFrontUi);
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
@@ -39,7 +50,10 @@ export class WotrActionDieUi {
     return rollActionDice(...actionDice);
   }
 
-  async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
+  async actionResolution(
+    frontId: WotrFrontId,
+    elvenRing: WotrElvenRingAction | null
+  ): Promise<WotrStory> {
     const canSkipTokens = this.actionDieRules.canSkipTokens(frontId);
     if (canSkipTokens) {
       const skipTokens = await this.ui.askConfirm(
@@ -53,26 +67,75 @@ export class WotrActionDieUi {
     } else {
       const canPass = this.actionDieRules.canPassAction(frontId);
       if (canPass) {
-        const pass = await this.ui.askConfirm("Do you want to pass?", "Pass", "Play action die");
-        if (pass) {
-          return { type: "die-pass" };
-        }
+        const story = await this.askPassDie(frontId, elvenRing);
+        if (story) return story;
       }
     }
-    const playableTokens = this.actionDieRules.playableTokens(frontId);
-    const actionChoice = await this.ui.askActionDie(
-      "Choose an action die to resolve",
-      frontId,
-      playableTokens
+    return this.askAndResolveActionDie(frontId, elvenRing);
+  }
+
+  private async askPassDie(
+    frontId: WotrFrontId,
+    elvenRing: WotrElvenRingAction | null
+  ): Promise<WotrStory | null> {
+    const availableRings = this.q.front(frontId).playableElvenRings();
+    const pass = await this.ui.askOptionOrElvenRing<"S" | "P">(
+      "Do you want to pass?",
+      [
+        { label: "Pass", value: "S" },
+        { label: "Play action die", value: "P" }
+      ],
+      { frontId, rings: availableRings }
     );
-    if (actionChoice.type === "die") {
-      return this.resolveActionDie(actionChoice.die, frontId);
-    } else {
-      return this.resolveActionToken(actionChoice.token, frontId);
+    switch (pass) {
+      case "S": {
+        const diePass: WotrPassStory = { type: "die-pass" };
+        if (elvenRing) diePass.elvenRing = elvenRing;
+        return diePass;
+      }
+      case "P":
+        return null;
+      default: {
+        const elvenRingAction = await this.frontUi.useElvenRing(pass, frontId);
+        return this.actionResolution(frontId, elvenRingAction);
+      }
     }
   }
 
-  resolveActionDie(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrStory> {
+  private async askAndResolveActionDie(
+    frontId: WotrFrontId,
+    elvenRing: WotrElvenRingAction | null
+  ): Promise<WotrStory> {
+    const playableTokens = this.actionDieRules.playableTokens(frontId);
+    const availableRings = this.q.front(frontId).playableElvenRings();
+    const actionChoice = await this.ui.askActionDie(
+      "Choose an action die to resolve",
+      frontId,
+      playableTokens,
+      { frontId, rings: availableRings }
+    );
+    switch (actionChoice.type) {
+      case "die": {
+        const dieStory = await this.resolveActionDie(actionChoice.die, frontId);
+        if (elvenRing) dieStory.elvenRing = elvenRing;
+        return dieStory;
+      }
+      case "token": {
+        const tokenStory = await this.resolveActionToken(actionChoice.token, frontId);
+        if (elvenRing) tokenStory.elvenRing = elvenRing;
+        return tokenStory;
+      }
+      case "elvenRing": {
+        const elvenRingAction = await this.frontUi.useElvenRing(actionChoice.ring, frontId);
+        return this.askAndResolveActionDie(frontId, elvenRingAction);
+      }
+    }
+  }
+
+  private resolveActionDie(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     switch (die) {
       case "event":
         return this.resolveEventDie(frontId);
@@ -91,11 +154,11 @@ export class WotrActionDieUi {
     }
   }
 
-  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
     return this.resolveArmyResult("army", frontId);
   }
 
-  async resolveArmyResult(
+  private async resolveArmyResult(
     die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
@@ -113,11 +176,13 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveCharacterDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveCharacterDie(
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     return this.resolveCharacterResult("character", frontId);
   }
 
-  async resolveCharacterResult(
+  private async resolveCharacterResult(
     die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
@@ -146,11 +211,11 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
     return this.resolveMusterResult("muster", frontId);
   }
 
-  async resolveMusterResult(
+  private async resolveMusterResult(
     die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
@@ -167,7 +232,9 @@ export class WotrActionDieUi {
     return this.ui.askDieStoryChoice(die, "Choose an action for the muster die", choices, frontId);
   }
 
-  private async resolveMusterArmyDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveMusterArmyDie(
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
       this.nationUi.diplomaticActionChoice,
       this.unitUi.moveArmiesChoice,
@@ -188,7 +255,9 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveWillOfTheWestDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveWillOfTheWestDie(
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
       this.changeCharacterDieChoice,
       this.changeArmyDieChoice,
@@ -239,7 +308,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveEventDie(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveEventDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
     return this.resolveEventResult("event", frontId);
   }
 
@@ -260,7 +329,10 @@ export class WotrActionDieUi {
     );
   }
 
-  async resolveActionToken(token: WotrActionToken, frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveActionToken(
+    token: WotrActionToken,
+    frontId: WotrFrontId
+  ): Promise<WotrTokenStory> {
     switch (token) {
       case "draw-card":
         return this.resolveDrawCardToken(frontId);
@@ -271,7 +343,7 @@ export class WotrActionDieUi {
     }
   }
 
-  private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveDrawCardToken(frontId: WotrFrontId): Promise<WotrTokenStory> {
     return {
       type: "token",
       token: "draw-card",
@@ -279,7 +351,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrTokenStory> {
     const nation = await this.nationUi.politicalAdvance(frontId);
     return {
       type: "token",
@@ -288,7 +360,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrStory> {
+  private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrTokenStory> {
     const nazgulMovements = await this.unitUi.moveNazgulMinions(frontId);
     return {
       type: "token",

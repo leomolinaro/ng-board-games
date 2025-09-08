@@ -4,7 +4,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrStory } from "../game/wotr-story-models";
+import { WotrElvenRingAction, WotrStory } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLog, WotrLogFragment } from "./wotr-log-models";
 import { WotrLogStore } from "./wotr-log-store";
@@ -63,6 +63,15 @@ export class WotrLogWriter {
 
   logNoActions(story: WotrStory, front: WotrFrontId) {
     this.addLog("logNoActions", { type: "no-actions", story, front, during: this.during() });
+  }
+
+  logElvenRingUse(elvenRing: WotrElvenRingAction, front: WotrFrontId) {
+    this.addLog("logElvenRingUse", {
+      type: "elven-ring",
+      ...elvenRing,
+      front,
+      during: this.during()
+    });
   }
 
   logEffect(effect: WotrAction) {

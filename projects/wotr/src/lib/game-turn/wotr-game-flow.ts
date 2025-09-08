@@ -105,6 +105,8 @@ export class WotrGameTurn {
   private async firstPhase() {
     this.logger.logPhase(1);
     this.huntStore.resetHuntBox();
+    this.frontStore.resetElvenRingUsed("free-peoples");
+    this.frontStore.resetElvenRingUsed("shadow");
     this.frontStore.skipDiscardExcessCards(true);
     await this.allPlayers.firstPhaseDraw();
     await this.checkFirstPhaseDiscard();

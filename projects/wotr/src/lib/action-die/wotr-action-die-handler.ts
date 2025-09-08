@@ -5,6 +5,7 @@ import {
   WotrStoryApplier
 } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrDieStory,
@@ -21,6 +22,7 @@ export class WotrActionDieHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
+  private frontHandler = inject(WotrFrontHandler);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -32,6 +34,9 @@ export class WotrActionDieHandler {
   }
 
   private die: WotrStoryApplier<WotrDieStory> = async (story, front) => {
+    if (story.elvenRing) {
+      this.frontHandler.useElvenRing(story.elvenRing, front);
+    }
     if (story.actions?.length) {
       for (const action of story.actions) {
         this.logger.logAction(action, story, front);
@@ -44,10 +49,16 @@ export class WotrActionDieHandler {
   };
 
   private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {
+    if (story.elvenRing) {
+      this.frontHandler.useElvenRing(story.elvenRing, front);
+    }
     this.logger.logStory(story, front);
   };
 
   private token: WotrStoryApplier<WotrTokenStory> = async (story, front) => {
+    if (story.elvenRing) {
+      this.frontHandler.useElvenRing(story.elvenRing, front);
+    }
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
@@ -56,6 +67,9 @@ export class WotrActionDieHandler {
   };
 
   private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (story, front) => {
+    if (story.elvenRing) {
+      this.frontHandler.useElvenRing(story.elvenRing, front);
+    }
     this.logger.logStory(story, front);
   };
 

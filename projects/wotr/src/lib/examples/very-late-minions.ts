@@ -304,8 +304,8 @@ export const stories: WotrStoryDoc[] = [
   b.s().musterDie(upgradeRegularUnit("orthanc", "isengard", 2)),
   b
     .fp()
-    .musterElvenRingDie(
-      "narya",
+    .armyElvenRingDie(
+      ["narya", "muster", "army"],
       moveArmies(
         armyMovement("fords-of-isen", "helms-deep"),
         armyMovement("westemnet", "helms-deep")
@@ -434,7 +434,7 @@ export const stories: WotrStoryDoc[] = [
   b.fp().pass(),
   b.s().musterDie(recruitEliteUnit("north-rhun", "southrons")),
   b.fp().characterDie(hideFellowship()),
-  b.s().musterElvenRingDie("narya", attack("westemnet", "edoras")),
+  b.s().armyElvenRingDie(["narya", "muster", "army"], attack("westemnet", "edoras")),
   b.s().battleStory(noCombatCard()),
   b.fp().battleStory(noCombatCard()),
   b.sT().battleStory(rollCombatDice(5, 2, 3, 4)),
@@ -599,7 +599,7 @@ export const stories: WotrStoryDoc[] = [
         armyMovement("minas-morgul", "south-ithilien")
       )
     ),
-  b.fp().musterArmyElvenRingDie("nenya", moveFelloswhip()),
+  b.fp().characterElvenRingDie(["nenya", "muster", "character"], moveFelloswhip()),
   b.s().drawHuntTile("b0"),
   b.s().musterArmyDie(attack("erebor", "erebor")),
   b.s().battleStory(combatCard("A New Power is Rising")),

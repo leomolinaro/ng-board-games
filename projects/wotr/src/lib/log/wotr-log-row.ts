@@ -1,14 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  OnInit,
-  Output,
-  Signal,
   computed,
+  EventEmitter,
   inject,
   input,
-  isDevMode
+  isDevMode,
+  OnInit,
+  Output,
+  Signal
 } from "@angular/core";
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
@@ -17,7 +17,7 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFragmentCreator } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontId } from "../front/wotr-front-models";
+import { elvenRingLabel, WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
@@ -326,6 +326,17 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
             throw new Error(`Unknown log type ${(l as any).type}`);
         }
       }
+      case "elven-ring": {
+        return [
+          this.player(l.front),
+          this.string(" uses the "),
+          this.elvenRing(l.ring),
+          this.string(" Elven Ring to change "),
+          this.die(l.fromDie, l.front),
+          this.string(" into "),
+          this.die(l.toDie, l.front)
+        ];
+      }
       case "effect": {
         const fragments = this.actionRegistry.getEffectLogFragments<WotrLogParsedFragment>(
           l.effect,
@@ -402,6 +413,10 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
       case 6:
         return "Victory Check";
     }
+  }
+
+  elvenRing(ring: WotrElvenRing): WotrLogParsedStringFragment {
+    return { type: "string", label: elvenRingLabel(ring) };
   }
 
   character(characterId: WotrCharacterId): WotrLogParsedStringFragment {

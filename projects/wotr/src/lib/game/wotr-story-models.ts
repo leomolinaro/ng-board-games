@@ -12,27 +12,35 @@ export interface WotrBaseStory {
 export interface WotrDieStory {
   type: "die";
   die: WotrActionDie;
-  elvenRing?: WotrElvenRing;
+  elvenRing?: WotrElvenRingAction;
   character?: WotrCharacterId;
   actions: WotrAction[];
 }
 export interface WotrDieCardStory {
   type: "die-card";
   die: WotrActionDie;
-  elvenRing?: WotrElvenRing;
+  elvenRing?: WotrElvenRingAction;
   card: WotrCardId;
   actions: WotrAction[];
 }
 export interface WotrPassStory {
   type: "die-pass";
+  elvenRing?: WotrElvenRingAction;
 }
 export interface WotrTokenStory {
   type: "token";
   token: WotrActionToken;
   actions: WotrAction[];
+  elvenRing?: WotrElvenRingAction;
 }
 export interface WotrSkipTokensStory {
   type: "token-skip";
+  elvenRing?: WotrElvenRingAction;
+}
+export interface WotrElvenRingAction {
+  ring: WotrElvenRing;
+  fromDie: WotrActionDie;
+  toDie: WotrActionDie;
 }
 export interface WotrCardReactionStory {
   type: "reaction-card";

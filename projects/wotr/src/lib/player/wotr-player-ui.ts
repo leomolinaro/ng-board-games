@@ -52,7 +52,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
-    return this.actionDieUi.actionResolution(frontId);
+    return this.actionDieUi.actionResolution(frontId, null);
   }
 
   async separateCompanions(): Promise<WotrStory> {

@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
+import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
 
 interface WotrElvenRingNode {
-  id: string;
+  id: WotrElvenRing;
   image: string;
   frontId: WotrFrontId;
   svgX: number;
   svgY: number;
+  selectable: boolean;
 }
 
 const X0 = 297;
@@ -22,6 +24,7 @@ const Y0 = 18;
 @Component({
   selector: "[wotrElvenRingsBox]",
   template: `
+    @let elvenRingSelection = ui.elvenRingSelection();
     @for (elvenRingNode of elvenRingNodes(); track elvenRingNode.id) {
       <svg:image
         transform="scale(0.8, 0.8)"
@@ -30,7 +33,9 @@ const Y0 = 18;
         [attr.xlink:href]="elvenRingNode.image" />
       <svg:rect
         class="border"
-        [class]="{ shadow: elvenRingNode.frontId === 'shadow' }"
+        [class]="{
+          shadow: elvenRingNode.frontId === 'shadow'
+        }"
         transform="scale(0.8, 0.8)"
         [attr.x]="elvenRingNode.svgX"
         [attr.y]="elvenRingNode.svgY"
@@ -38,6 +43,20 @@ const Y0 = 18;
         height="19"
         rx="3"
         ry="3" />
+      <svg:rect
+        class="fill"
+        [class]="{
+          disabled: elvenRingSelection && !elvenRingNode.selectable,
+          selectable: elvenRingSelection && elvenRingNode.selectable
+        }"
+        transform="scale(0.8, 0.8)"
+        [attr.x]="elvenRingNode.svgX"
+        [attr.y]="elvenRingNode.svgY"
+        width="19"
+        height="19"
+        rx="3"
+        ry="3"
+        (click)="selectElvenRing(elvenRingNode)" />
     }
   `,
   styles: [
@@ -51,11 +70,24 @@ const Y0 = 18;
           stroke-width: 4px;
         }
       }
+      .fill {
+        fill: transparent;
+        &.selectable {
+          cursor: pointer;
+        }
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+          fill: black;
+        }
+      }
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrElvenRingsBox {
+  protected ui = inject(WotrGameUi);
+
   freePeoplesElvenRings = input.required<WotrElvenRing[]>();
   shadowElvenRings = input.required<WotrElvenRing[]>();
 
@@ -68,19 +100,35 @@ export class WotrElvenRingsBox {
   };
 
   elvenRingNodes: Signal<WotrElvenRingNode[]> = computed(() => {
+    const elvenRingSelection = this.ui.elvenRingSelection();
+    const selectableFront = elvenRingSelection ? elvenRingSelection.frontId : null;
     return [
-      ...this.freePeoplesElvenRings().map(e => this.elvenRingToNode(e, "free-peoples")),
-      ...this.shadowElvenRings().map(e => this.elvenRingToNode(e, "shadow"))
+      ...this.freePeoplesElvenRings().map(e =>
+        this.elvenRingToNode(e, "free-peoples", selectableFront === "free-peoples")
+      ),
+      ...this.shadowElvenRings().map(e =>
+        this.elvenRingToNode(e, "shadow", selectableFront === "shadow")
+      )
     ];
   });
 
-  private elvenRingToNode(elvenRing: WotrElvenRing, frontId: WotrFrontId) {
+  private elvenRingToNode(
+    elvenRing: WotrElvenRing,
+    frontId: WotrFrontId,
+    selectable: boolean
+  ): WotrElvenRingNode {
     return {
       id: elvenRing,
       image: this.assets.elvenRingImage(elvenRing),
       frontId,
+      selectable,
       svgX: this.svgX[elvenRing],
       svgY: Y0
     };
+  }
+
+  selectElvenRing(elvenRingNode: WotrElvenRingNode) {
+    if (!this.ui.elvenRingSelection() || !elvenRingNode.selectable) return;
+    this.ui.elvenRing.emit(elvenRingNode.id);
   }
 }

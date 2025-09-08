@@ -42,6 +42,7 @@ function initialFront(id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]
     actionDice: [],
     actionTokens: [],
     elvenRings,
+    elvenRingUsed: false,
     victoryPoints: 0
   };
 }
@@ -109,6 +110,24 @@ export class WotrFrontStore {
   }
   currentCard() {
     return this.state().currentCard;
+  }
+  elvenRings(frontId: WotrFrontId): WotrElvenRing[] {
+    return this.front(frontId).elvenRings;
+  }
+  elvenRingUsed(frontId: WotrFrontId): boolean {
+    return this.front(frontId).elvenRingUsed;
+  }
+  setElvenRingUsed(frontId: WotrFrontId): void {
+    this.updateFront("setElvenRingUsed", frontId, front => ({
+      ...front,
+      elvenRingUsed: true
+    }));
+  }
+  resetElvenRingUsed(frontId: WotrFrontId): void {
+    this.updateFront("resetElvenRingUsed", frontId, front => ({
+      ...front,
+      elvenRingUsed: false
+    }));
   }
 
   private updateFront(
@@ -197,6 +216,27 @@ export class WotrFrontStore {
     this.updateFront("removeActionDie", frontId, front => ({
       ...front,
       actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
+    }));
+  }
+
+  addActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
+    this.updateFront("addActionDie", frontId, front => ({
+      ...front,
+      actionDice: immutableUtil.listPush([die], front.actionDice)
+    }));
+  }
+
+  removeElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): void {
+    this.updateFront("removeElvenRing", frontId, front => ({
+      ...front,
+      elvenRings: immutableUtil.listRemoveFirst(r => r === ring, front.elvenRings)
+    }));
+  }
+
+  addElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): void {
+    this.updateFront("addElvenRing", frontId, front => ({
+      ...front,
+      elvenRings: immutableUtil.listPush([ring], front.elvenRings)
     }));
   }
 

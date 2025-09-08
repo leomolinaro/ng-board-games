@@ -12,6 +12,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
+import { WotrFrontId } from "../front/wotr-front-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrGameQuery {
@@ -24,6 +25,14 @@ export class WotrGameQuery {
 
   freePeoples = new WotrFrontQuery("free-peoples", this.frontStore);
   shadow = new WotrFrontQuery("shadow", this.frontStore);
+  front(frontId: WotrFrontId): WotrFrontQuery {
+    switch (frontId) {
+      case "free-peoples":
+        return this.freePeoples;
+      case "shadow":
+        return this.shadow;
+    }
+  }
 
   fellowship = new WotrFellowshipQuery(this.fellowshipStore, this.regionStore, this.nationStore);
 

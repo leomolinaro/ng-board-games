@@ -84,41 +84,51 @@ export class WotrFrontStoryComposer {
   }
 
   characterElvenRingDie(
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("character", elvenRing, ...actions);
   }
   eventElvenRingDie(
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("event", elvenRing, ...actions);
   }
   musterElvenRingDie(
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("muster", elvenRing, ...actions);
   }
   musterArmyElvenRingDie(
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("muster-army", elvenRing, ...actions);
   }
   armyElvenRingDie(
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
     return this.actionElvenRingDie("army", elvenRing, ...actions);
   }
   protected actionElvenRingDie(
     die: WotrActionDie,
-    elvenRing: WotrElvenRing,
+    elvenRing: WotrElvenRingActionBuilder,
     ...actions: WotrAction[]
   ): WotrStoryDoc & WotrDieStory {
-    return { type: "die", die, elvenRing, actions, ...this.story() };
+    return {
+      type: "die",
+      die,
+      elvenRing: {
+        ring: elvenRing[0],
+        fromDie: elvenRing[1],
+        toDie: elvenRing[2]
+      },
+      actions,
+      ...this.story()
+    };
   }
 
   musterAbilityDie(
@@ -249,3 +259,5 @@ export class WotrStoriesBuilder {
     return new WotrShadowStoryComposer(this.time);
   }
 }
+
+export type WotrElvenRingActionBuilder = [WotrElvenRing, WotrActionDie, WotrActionDie];
