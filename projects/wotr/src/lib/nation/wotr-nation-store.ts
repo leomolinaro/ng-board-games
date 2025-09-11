@@ -366,6 +366,13 @@ export class WotrNationStore {
     });
   }
 
+  advanceAtWar(nationId: WotrNationId) {
+    this.updateNation("advancePoliticalAtWar", nationId, nation => ({
+      ...nation,
+      politicalStep: "atWar"
+    }));
+  }
+
   private getNextPoliticalStep(politicalStep: WotrPoliticalStep): WotrPoliticalStep {
     switch (politicalStep) {
       case 3:

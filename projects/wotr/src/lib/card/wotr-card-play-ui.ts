@@ -14,6 +14,7 @@ export class WotrCardPlayUi {
 
   async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
     const card = this.cards.getCard(cardId);
+    this.frontStore.discardCards([cardId], frontId);
     return card.play();
   }
 

@@ -10,8 +10,20 @@ export class WotrNationQuery {
     private regionStore: WotrRegionStore
   ) {}
 
+  id() {
+    return this.nationId;
+  }
+
   isAtWar(): boolean {
     return this.nationStore.isAtWar(this.nationId);
+  }
+
+  isActive(): boolean {
+    return this.nation().active;
+  }
+
+  private nation() {
+    return this.nationStore.nation(this.nationId);
   }
 
   nRegularReinforcements(): number {
@@ -27,6 +39,10 @@ export class WotrNationQuery {
 
   hasEliteReinforcements(): boolean {
     return this.nationStore.hasEliteReinforcements(this.nationId);
+  }
+
+  hasLeaderReinforcements(): boolean {
+    return this.nation().reinforcements.leader > 0;
   }
 
   strongholds(): WotrRegion[] {

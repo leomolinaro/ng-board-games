@@ -540,6 +540,11 @@ export class WotrRegionStore {
   isFreeForRecruitment(id: WotrRegionId, frontId: WotrFrontId): boolean {
     return this.isFree(id, frontId);
   }
+  isFreeForRecruitmentByCard(id: WotrRegionId, frontId: WotrFrontId): boolean {
+    const region = this.region(id);
+    if (!region.army) return true;
+    return region.army.front === frontId || region.underSiegeArmy?.front === frontId;
+  }
   isFreeForArmyRetreat(neighbor: WotrNeighbor, frontId: WotrFrontId): boolean {
     if (neighbor.impassable) return false;
     return this.isFree(neighbor.id, frontId);

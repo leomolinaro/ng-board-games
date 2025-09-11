@@ -7,7 +7,11 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrPoliticalActivation, WotrPoliticalAdvance } from "./wotr-nation-actions";
+import {
+  WotrPoliticalActivation,
+  WotrPoliticalAdvance,
+  WotrPoliticalAdvanceAtWar
+} from "./wotr-nation-actions";
 import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationStore } from "./wotr-nation-store";
 
@@ -44,6 +48,10 @@ export class WotrNationHandler {
       "political-advance",
       (effect, f) => [f.nation(effect.nation), " is advanced on the Political Track"]
     );
+    this.actionRegistry.registerEffectLogger<WotrPoliticalAdvanceAtWar>(
+      "political-advance-at-war",
+      (effect, f) => [f.nation(effect.nation), " is advanced to war"]
+    );
   }
 
   private politicalActivation: WotrActionApplier<WotrPoliticalActivation> = action =>
@@ -77,7 +85,7 @@ export class WotrNationHandler {
     for (const nationId of nations) {
       const nation = this.nationStore.nation(nationId);
       if (nation.politicalStep !== "atWar") {
-        this.advanceNation(1, nationId);
+        this.advanceNationEffect(1, nationId);
       }
     }
   }
@@ -137,16 +145,26 @@ export class WotrNationHandler {
     }
   }
 
-  private activateNation(nation: WotrNationId) {
+  activateNation(nation: WotrNationId) {
     const action: WotrPoliticalActivation = { type: "political-activation", nation };
     this.logger.logEffect(action);
     this.nationStore.activate(true, nation);
   }
 
-  advanceNation(quantity: number, nation: WotrNationId) {
+  advanceNationEffect(quantity: number, nation: WotrNationId) {
     const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
     this.logger.logEffect(action);
+    this.advanceNation(quantity, nation);
+  }
+
+  advanceNation(quantity: number, nation: WotrNationId) {
     this.nationStore.advance(quantity, nation);
+  }
+
+  advanceAtWar(nation: WotrNationId) {
+    const action: WotrPoliticalAdvanceAtWar = { type: "political-advance-at-war", nation };
+    this.logger.logEffect(action);
+    this.nationStore.advanceAtWar(nation);
   }
 
   activateAllFreePeoplesNations(): void {

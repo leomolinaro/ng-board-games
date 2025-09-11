@@ -68,8 +68,8 @@ export class WotrCharacterUi {
         .map(c => c.id)
     );
     const actions: WotrAction[] = [];
-    let continueMoving = true;
-    do {
+    let continueMoving = movableCompanions.size > 0;
+    while (continueMoving) {
       const action = await this.moveCharacterGroup(movableCompanions);
       this.characterHandler.moveCharacters(action, "free-peoples");
       actions.push(action);
@@ -83,7 +83,7 @@ export class WotrCharacterUi {
       } else {
         continueMoving = false;
       }
-    } while (continueMoving);
+    }
     return actions;
   }
 

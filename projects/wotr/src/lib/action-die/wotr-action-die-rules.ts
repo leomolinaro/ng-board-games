@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
-import { WotrCardRules } from "../card/wotr-card-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { oppositeFront, WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationRules } from "../nation/wotr-nation-rules";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -19,9 +19,9 @@ export class WotrActionDieRules {
   private frontStore = inject(WotrFrontStore);
   private characterStore = inject(WotrCharacterStore);
   private huntStore = inject(WotrHuntStore);
-  private cardRules = inject(WotrCardRules);
   private nationRules = inject(WotrNationRules);
   private regionStore = inject(WotrRegionStore);
+  private q = inject(WotrGameQuery);
 
   private FREE_PEOPLES_ACTION_DICE: WotrFreePeopleActionDie[] = [
     "character",
@@ -83,7 +83,7 @@ export class WotrActionDieRules {
   isPlayableToken(token: WotrActionToken, frontId: WotrFrontId): boolean {
     switch (token) {
       case "draw-card":
-        return this.cardRules.canDrawCard(frontId);
+        return this.q.front(frontId).canDrawCard();
       case "political-advance":
         return this.nationRules.canFrontAdvancePoliticalTrack(frontId);
       case "move-nazgul-minions":

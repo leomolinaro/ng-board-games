@@ -7,16 +7,20 @@ export class WotrFrontQuery {
     private frontStore: WotrFrontStore
   ) {}
 
+  private front() {
+    return this.frontStore.front(this.frontId);
+  }
+
   nCardsInStrategyDeck(): number {
-    return this.frontStore.strategyDeck(this.frontId).length;
+    return this.front().strategyDeck.length;
   }
 
   hasUnusedCharacterActionDice(): boolean {
-    return this.frontStore.actionDice(this.frontId).includes("character");
+    return this.front().actionDice.includes("character");
   }
 
   elvenRings(): WotrElvenRing[] {
-    return this.frontStore.elvenRings(this.frontId);
+    return this.front().elvenRings;
   }
 
   playableElvenRings(): WotrElvenRing[] {
@@ -29,5 +33,17 @@ export class WotrFrontQuery {
 
   canUseElvenRings(): boolean {
     return this.hasElvenRings() && !this.frontStore.elvenRingUsed(this.frontId);
+  }
+
+  canDrawCard(): boolean {
+    return this.canDrawStrategyCard() || this.canDrawCharacterCard();
+  }
+
+  canDrawStrategyCard(): boolean {
+    return this.front().strategyDeck.length > 0;
+  }
+
+  canDrawCharacterCard(): boolean {
+    return this.front().characterDeck.length > 0;
   }
 }

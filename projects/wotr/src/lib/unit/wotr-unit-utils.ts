@@ -1,13 +1,16 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrUnits } from "./wotr-unit-models";
 
 @Injectable({
   providedIn: "root"
 })
 export class WotrUnitUtils {
+  private characterStore = inject(WotrCharacterStore);
+
   addRegulars(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy {
     return this.addUnits("regulars", nation, quantity, army);
   }
@@ -144,42 +147,31 @@ export class WotrUnitUtils {
   }
 
   isEmptyArmy(army: WotrUnits) {
-    if (army.regulars?.length) {
-      return false;
-    }
-    if (army.elites?.length) {
-      return false;
-    }
-    if (army.characters?.length) {
-      return false;
-    }
-    if (army.leaders?.length) {
-      return false;
-    }
-    if (army.nNazgul) {
-      return false;
-    }
+    if (army.regulars?.length) return false;
+    if (army.elites?.length) return false;
+    if (army.characters?.length) return false;
+    if (army.leaders?.length) return false;
+    if (army.nNazgul) return false;
     return true;
   }
 
   hasArmyUnits(units: WotrUnits) {
-    if (units.regulars?.length) {
-      return true;
-    }
-    if (units.elites?.length) {
-      return true;
-    }
+    if (units.regulars?.length) return true;
+    if (units.elites?.length) return true;
     return false;
   }
 
   hasNazgul(units: WotrUnits) {
-    if (units.nNazgul) {
-      return true;
-    }
-    if (units.characters && units.characters?.indexOf("the-witch-king") >= 0) {
-      return true;
-    }
+    if (units.nNazgul) return true;
+    if (units.characters && units.characters?.indexOf("the-witch-king") >= 0) return true;
     return false;
+  }
+
+  hasCompanions(units: WotrUnits): boolean {
+    return (
+      units.characters?.some(c => this.characterStore.character(c).front === "free-peoples") ||
+      false
+    );
   }
 
   getNArmyUnits(units: WotrUnits) {

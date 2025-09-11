@@ -2,16 +2,16 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId } from "./wotr-card-models";
-import { WotrCardRules } from "./wotr-card-rules";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardDrawUi {
   private ui = inject(WotrGameUi);
-  private cardRules = inject(WotrCardRules);
   private frontStore = inject(WotrFrontStore);
+  private q = inject(WotrGameQuery);
 
   async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction> {
     await this.ui.askContinue("Draw cards");
@@ -89,9 +89,14 @@ export class WotrCardDrawUi {
     return drawCardIds(drawnCard);
   }
 
+  async drawStrategyEventCardByCard(frontId: WotrFrontId): Promise<WotrAction | null> {
+    if (!this.q.front(frontId).canDrawStrategyCard()) return null;
+    return this.drawCardFromDeck(this.frontStore.strategyDeck(frontId), frontId);
+  }
+
   drawEventCardChoice: WotrUiChoice = {
     label: () => "Draw a card",
-    isAvailable: frontId => this.cardRules.canDrawCard(frontId),
+    isAvailable: frontId => this.q.front(frontId).canDrawCard(),
     actions: async frontId => [await this.drawCard(frontId)]
   };
 }

@@ -15,9 +15,7 @@ import {
   WotrEliteUnitDisband,
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
-  WotrEliteUnitRecruitment,
   WotrLeaderElimination,
-  WotrLeaderRecruitment,
   WotrNazgulElimination,
   WotrNazgulMovement,
   WotrNazgulRecruitment,
@@ -60,12 +58,7 @@ export class WotrUnitHandler {
         this.recruitRegularUnit(action.region, action.nation, action.quantity),
       "regular-unit-elimination": (action, front) => this.eliminateRegularUnit(action),
       "regular-unit-upgrade": (action, front) => {
-        this.recruitEliteUnit({
-          type: "elite-unit-recruitment",
-          region: action.region,
-          quantity: action.quantity,
-          nation: action.nation
-        });
+        this.recruitEliteUnit(action.region, action.nation, action.quantity);
         this.eliminateRegularUnit({
           type: "regular-unit-elimination",
           region: action.region,
@@ -74,7 +67,8 @@ export class WotrUnitHandler {
         });
       },
       "regular-unit-disband": (action, front) => this.disbandRegularUnit(action),
-      "elite-unit-recruitment": (action, front) => this.recruitEliteUnit(action),
+      "elite-unit-recruitment": (action, front) =>
+        this.recruitEliteUnit(action.region, action.nation, action.quantity),
       "elite-unit-elimination": (action, front) => this.eliminateEliteUnit(action),
       "elite-unit-downgrade": (action, front) => {
         this.eliminateEliteUnit({
@@ -86,7 +80,8 @@ export class WotrUnitHandler {
         this.recruitRegularUnit(action.region, action.nation, action.quantity);
       },
       "elite-unit-disband": (action, front) => this.disbandEliteUnit(action),
-      "leader-recruitment": (action, front) => this.recruitLeader(action),
+      "leader-recruitment": (action, front) =>
+        this.recruitLeader(action.region, action.nation, action.quantity),
       "leader-elimination": (action, front) => {
         const region = this.regionStore.region(action.region);
         this.removeLeadersFromRegion(action.quantity, action.nation, region);
@@ -119,16 +114,16 @@ export class WotrUnitHandler {
     this.addNazgulToRegion(action.quantity, region);
   }
 
-  recruitLeader(action: WotrLeaderRecruitment) {
-    const region = this.regionStore.region(action.region);
-    this.nationStore.removeLeadersFromReinforcements(action.quantity, action.nation);
-    this.addLeadersToRegion(action.quantity, action.nation, region);
+  recruitLeader(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+    const region = this.regionStore.region(regionId);
+    this.nationStore.removeLeadersFromReinforcements(quantity, nationId);
+    this.addLeadersToRegion(quantity, nationId, region);
   }
 
-  recruitEliteUnit(action: WotrEliteUnitRecruitment) {
-    const region = this.regionStore.region(action.region);
-    this.nationStore.removeElitesFromReinforcements(action.quantity, action.nation);
-    this.addElitesToRegion(action.quantity, action.nation, region);
+  recruitEliteUnit(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+    const region = this.regionStore.region(regionId);
+    this.nationStore.removeElitesFromReinforcements(quantity, nationId);
+    this.addElitesToRegion(quantity, nationId, region);
   }
 
   eliminateEliteUnit(action: WotrEliteUnitElimination) {

@@ -13,12 +13,35 @@ export class WotrRegionQuery {
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitment(this.regionId, frontId);
   }
+  isFreeForRecruitmentByCard(frontId: WotrFrontId): boolean {
+    return this.regionStore.isFreeForRecruitmentByCard(this.regionId, frontId);
+  }
+
+  hasArmy(frontId: WotrFrontId) {
+    const region = this.regionStore.region(this.regionId);
+    const army = region.army;
+    const underSiegeArmy = region.underSiegeArmy;
+    return (
+      (army && !this.unitUtils.isEmptyArmy(army) && army.front === frontId) ||
+      (underSiegeArmy &&
+        !this.unitUtils.isEmptyArmy(underSiegeArmy) &&
+        underSiegeArmy.front === frontId)
+    );
+  }
 
   hasNazgul() {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasNazgul(region.army)) ||
       (region.freeUnits && this.unitUtils.hasNazgul(region.freeUnits))
+    );
+  }
+
+  hasCompanions() {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasCompanions(region.army)) ||
+      (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits))
     );
   }
 }

@@ -219,12 +219,12 @@ export class WotrUnitUi {
       }
       case "elite": {
         const action = recruitEliteUnit(regionId, unit.nation, 1);
-        this.unitHandler.recruitEliteUnit(action);
+        this.unitHandler.recruitEliteUnit(action.region, action.nation, action.quantity);
         return action;
       }
       case "leader": {
         const action = recruitLeader(regionId, unit.nation, 1);
-        this.unitHandler.recruitLeader(action);
+        this.unitHandler.recruitLeader(action.region, action.nation, action.quantity);
         return action;
       }
       case "nazgul": {
@@ -285,6 +285,64 @@ export class WotrUnitUi {
       continuee = nLeftRegions > 0 && nLeftUnits > 0;
     } while (continuee);
     return actions;
+  }
+
+  async recruitRegularOrEliteByCard(
+    regionId: WotrRegionId,
+    nationId: WotrNationId
+  ): Promise<WotrAction | null> {
+    const frontId = this.nationStore.nation(nationId).front;
+    if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return null;
+    const units: WotrReinforcementUnit[] = [];
+    if (this.q.rohan.hasRegularReinforcements()) units.push({ nation: nationId, type: "regular" });
+    if (this.q.rohan.hasEliteReinforcements()) units.push({ nation: nationId, type: "elite" });
+    if (!units.length) return null;
+    const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+      frontId,
+      units,
+      canPass: false
+    });
+    if (unit.type === "regular") {
+      this.unitHandler.recruitRegularUnit(regionId, nationId, 1);
+      return recruitRegularUnit(regionId, nationId, 1);
+    } else {
+      this.unitHandler.recruitEliteUnit(regionId, nationId, 1);
+      return recruitEliteUnit(regionId, nationId, 1);
+    }
+  }
+
+  async recruitRegularByCard(
+    regionId: WotrRegionId,
+    nationId: WotrNationId
+  ): Promise<WotrAction | null> {
+    const frontId = this.nationStore.nation(nationId).front;
+    if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return null;
+    const units: WotrReinforcementUnit[] = [];
+    if (this.q.rohan.hasRegularReinforcements()) units.push({ nation: nationId, type: "regular" });
+    if (!units.length) return null;
+    await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+      frontId,
+      units,
+      canPass: false
+    });
+    this.unitHandler.recruitRegularUnit(regionId, nationId, 1);
+    return recruitRegularUnit(regionId, nationId, 1);
+  }
+
+  async recruitLeaderByCard(
+    regionId: WotrRegionId,
+    nationId: WotrNationId
+  ): Promise<WotrAction | null> {
+    const frontId: WotrFrontId = "free-peoples";
+    if (!this.q.rohan.hasLeaderReinforcements()) return null;
+    if (!this.q.region(regionId).hasArmy(frontId)) return null;
+    await this.ui.askReinforcementUnit("Choose a leader to recruit", {
+      frontId,
+      units: [{ nation: nationId, type: "leader" }],
+      canPass: false
+    });
+    this.unitHandler.recruitLeader(regionId, nationId, 1);
+    return recruitLeader(regionId, nationId, 1);
   }
 
   attackArmyChoice: WotrUiChoice = {

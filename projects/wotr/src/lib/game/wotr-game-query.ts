@@ -3,6 +3,7 @@ import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFellowshipQuery } from "../fellowship/wotr-fellowship-query";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontQuery } from "../front/wotr-front-query";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrNationId } from "../nation/wotr-nation-models";
@@ -12,7 +13,6 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrFrontId } from "../front/wotr-front-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrGameQuery {
@@ -131,6 +131,7 @@ export class WotrGameQuery {
   north = new WotrNationQuery("north", this.nationStore, this.regionStore);
   rohan = new WotrNationQuery("rohan", this.nationStore, this.regionStore);
   gondor = new WotrNationQuery("gondor", this.nationStore, this.regionStore);
+  freePeoplesNations = [this.dwarves, this.elves, this.north, this.rohan, this.gondor];
   sauron = new WotrNationQuery("sauron", this.nationStore, this.regionStore);
   isengard = new WotrNationQuery("isengard", this.nationStore, this.regionStore);
   southrons = new WotrNationQuery("southrons", this.nationStore, this.regionStore);
