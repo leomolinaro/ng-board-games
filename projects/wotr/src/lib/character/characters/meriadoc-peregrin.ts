@@ -1,10 +1,10 @@
 import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrCharacterId } from "../wotr-character-models";
 import {
   WotrBeforeCharacterElimination,
   WotrCharacterModifiers
 } from "../wotr-character-modifiers";
-import { WotrCharacterStore } from "../wotr-character-store";
 
 // Meriadoc Brandybuck - Hobbit Companion (Level 1, Leadership 1)
 // Guide. During the Hunt, if the Hunt damage is one or more, separate Meriadoc from the Fellowship to reduce the Hunt damage by one.
@@ -23,7 +23,7 @@ export class HobbitGuideAbility implements WotrAbility<unknown> {
 
 export class TakeThemAliveAbility implements WotrAbility<WotrBeforeCharacterElimination> {
   constructor(
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private characterModifiers: WotrCharacterModifiers
   ) {}
 
@@ -31,7 +31,7 @@ export class TakeThemAliveAbility implements WotrAbility<WotrBeforeCharacterElim
 
   public handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
     if (characterId !== "meriadoc") return true;
-    if (!this.characterStore.isInFellowship("meriadoc")) return true;
+    if (!this.q.meriadoc.isInFellowship()) return true;
     return true;
   };
 }

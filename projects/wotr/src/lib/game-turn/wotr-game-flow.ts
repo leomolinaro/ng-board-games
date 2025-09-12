@@ -9,6 +9,7 @@ import { WotrRingDestroyed } from "../fellowship/wotr-fellowship-models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   WotrBaseStory,
   WotrDieCardStory,
@@ -40,6 +41,7 @@ export class WotrGameTurn {
   private huntStore = inject(WotrHuntStore);
   private actionRegistry = inject(WotrActionRegistry);
   private characters = inject(WotrCharacters);
+  private q = inject(WotrGameQuery);
 
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -116,10 +118,10 @@ export class WotrGameTurn {
 
   private async checkFirstPhaseDiscard() {
     const players: WotrPlayer[] = [];
-    if (this.frontStore.hasExcessCards("free-peoples")) {
+    if (this.q.freePeoples.hasExcessCards()) {
       players.push(this.freePeoples);
     }
-    if (this.frontStore.hasExcessCards("shadow")) {
+    if (this.q.shadow.hasExcessCards()) {
       players.push(this.shadow);
     }
     if (players.length === 1) {
@@ -220,18 +222,12 @@ export class WotrGameTurn {
   private getNextResolutionFrontId(player: WotrPlayer, story: WotrStory): WotrPlayer | null {
     const otherPlayer =
       oppositeFront(player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
-    if (this.frontStore.hasActionDice(otherPlayer.frontId)) {
-      return otherPlayer;
-    }
-    if (this.frontStore.hasActionTokens(otherPlayer.frontId) && story.type !== "token-skip") {
-      return otherPlayer;
-    }
-    if (this.frontStore.hasActionDice(player.frontId)) {
-      return player;
-    }
-    if (this.frontStore.hasActionTokens(player.frontId) && story.type !== "token-skip") {
-      return player;
-    }
+    const otherFrontQ = this.q.front(otherPlayer.frontId);
+    if (otherFrontQ.hasActionDice()) return otherPlayer;
+    if (otherFrontQ.hasActionTokens() && story.type !== "token-skip") return otherPlayer;
+    const frontQ = this.q.front(player.frontId);
+    if (frontQ.hasActionDice()) return player;
+    if (frontQ.hasActionTokens() && story.type !== "token-skip") return player;
     return null;
   }
 

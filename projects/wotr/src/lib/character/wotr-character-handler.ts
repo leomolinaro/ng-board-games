@@ -8,7 +8,6 @@ import {
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrCharacterReactionStory,
   WotrSkipCharacterReactionStory,
@@ -24,6 +23,7 @@ import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-act
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
+import { WotrGameQuery } from "../game/wotr-game-query";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {
@@ -32,8 +32,8 @@ export class WotrCharacterHandler {
   private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
-  private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
+  private q = inject(WotrGameQuery);
 
   private shadow = inject(WotrShadowPlayer);
 
@@ -146,7 +146,7 @@ export class WotrCharacterHandler {
   }
 
   private async checkWornWithSorrowAndToil() {
-    if (this.frontStore.hasTableCard("scha15", "shadow")) {
+    if (this.q.shadow.hasTableCard("scha15")) {
       await this.activateTableCard("scha15", this.shadow);
     }
   }

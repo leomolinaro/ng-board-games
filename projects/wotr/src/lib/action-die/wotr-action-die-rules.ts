@@ -66,17 +66,17 @@ export class WotrActionDieRules {
   }
 
   canSkipTokens(frontId: WotrFrontId): boolean {
-    return !this.frontStore.hasActionDice(frontId);
+    return !this.q.front(frontId).hasActionDice();
   }
 
   canPassAction(frontId: WotrFrontId): boolean {
     // Can pass only if the opponent has more action dice left
     const opponent = oppositeFront(frontId);
-    return this.frontStore.nActionDice(opponent) > this.frontStore.nActionDice(frontId);
+    return this.q.front(opponent).nActionDice() > this.q.front(frontId).nActionDice();
   }
 
   playableTokens(frontId: WotrFrontId): WotrActionToken[] {
-    const tokens = this.frontStore.actionTokens(frontId);
+    const tokens = this.q.front(frontId).actionTokens();
     return tokens.filter(token => this.isPlayableToken(token, frontId));
   }
 

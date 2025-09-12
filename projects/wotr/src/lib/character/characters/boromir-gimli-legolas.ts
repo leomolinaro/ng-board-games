@@ -1,8 +1,6 @@
 import { WotrActionDieModifiers } from "../../action-die/wotr-action-die-modifiers";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrRegion } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { AdvanceAnyDieAbility } from "./commons";
 
 // Boromir - Son of Denethor (Level 2, Leadership 1)
@@ -11,19 +9,12 @@ import { AdvanceAnyDieAbility } from "./commons";
 // the Political Track.
 
 export class HighWardenOfTheWhiteTowerAbility extends AdvanceAnyDieAbility {
-  constructor(
-    characterStore: WotrCharacterStore,
-    regionStore: WotrRegionStore,
-    nationStore: WotrNationStore,
-    actionDieModifiers: WotrActionDieModifiers
-  ) {
+  constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
     super(
       "boromir",
       "Advance Gondor (Boromir, High Warden of the White Tower)",
       "gondor",
-      characterStore,
-      regionStore,
-      nationStore,
+      q,
       actionDieModifiers
     );
   }
@@ -39,21 +30,8 @@ export class HighWardenOfTheWhiteTowerAbility extends AdvanceAnyDieAbility {
 // Dwarf of Erebor. If Gimli is in Erebor, and Erebor is unconquered, you may use any Action die result to advance the Dwarven Nation one step on the Political Track.
 
 export class DwarfOfEreborAbility extends AdvanceAnyDieAbility {
-  constructor(
-    characterStore: WotrCharacterStore,
-    regionStore: WotrRegionStore,
-    nationStore: WotrNationStore,
-    actionDieModifiers: WotrActionDieModifiers
-  ) {
-    super(
-      "gimli",
-      "Advance Dwarves (Gimli, Dwarf of Erebor)",
-      "dwarves",
-      characterStore,
-      regionStore,
-      nationStore,
-      actionDieModifiers
-    );
+  constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
+    super("gimli", "Advance Dwarves (Gimli, Dwarf of Erebor)", "dwarves", q, actionDieModifiers);
   }
 
   protected override isValidRegion(region: WotrRegion): boolean {
@@ -66,21 +44,8 @@ export class DwarfOfEreborAbility extends AdvanceAnyDieAbility {
 // Prince of Mirkwood. If Legolas is in an unconquered Elven Stronghold, you may use any Action die result to advance the Elven Nation one step on the Political Track.
 
 export class PrinceOfMirkwoodAbility extends AdvanceAnyDieAbility {
-  constructor(
-    characterStore: WotrCharacterStore,
-    regionStore: WotrRegionStore,
-    nationStore: WotrNationStore,
-    actionDieModifiers: WotrActionDieModifiers
-  ) {
-    super(
-      "legolas",
-      "Advance Elves (Legolas, Prince of Mirkwood)",
-      "elves",
-      characterStore,
-      regionStore,
-      nationStore,
-      actionDieModifiers
-    );
+  constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
+    super("legolas", "Advance Elves (Legolas, Prince of Mirkwood)", "elves", q, actionDieModifiers);
   }
 
   protected override isValidRegion(region: WotrRegion): boolean {

@@ -1,14 +1,11 @@
 import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
-import { WotrFrontStore } from "../../front/wotr-front-store";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrRegion } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // The Mouth of Sauron - Lieutenant of Barad-dûr (Level 3, Leadership 2, +1 Action Die)
@@ -19,10 +16,7 @@ import { WotrCharacterCard } from "./wotr-character-card";
 export class WotrMouthOfSauron extends WotrCharacterCard {
   constructor(
     public override characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    private fellowshipStore: WotrFellowshipStore,
-    private regionStore: WotrRegionStore,
-    private frontStore: WotrFrontStore
+    private q: WotrGameQuery
   ) {
     super();
   }
@@ -30,18 +24,17 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterStore.isAvailable("the-mouth-of-sauron") &&
-      (this.fellowshipStore.isOnMordorTrack() ||
-        this.frontStore.front("free-peoples").victoryPoints > 0) &&
-      this.regionStore.regions().some(r => this.isValidRegion(r))
+      this.q.theMouthOfSauron.isAvailable() &&
+      (this.q.fellowship.isOnMordorTrack() || this.q.freePeoples.victoryPoints() > 0) &&
+      this.q.regions().some(r => this.isValidRegion(r.region()))
     );
   }
 
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
-    const validRegions = this.regionStore
+    const validRegions = this.q
       .regions()
-      .filter(r => this.isValidRegion(r))
-      .map(r => r.id);
+      .filter(r => this.isValidRegion(r.region()))
+      .map(r => r.regionId);
     const region = await ui.askRegion(
       "Select a region to bring the Mouth of Sauron into play",
       validRegions
@@ -52,7 +45,7 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
   private isValidRegion(r: WotrRegion): boolean {
     return (
       r.nationId === "sauron" &&
-      this.regionStore.isUnconquered(r.id) &&
+      this.q.region(r.id).isUnconquered() &&
       r.settlement === "stronghold"
     );
   }

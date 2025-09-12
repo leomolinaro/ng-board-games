@@ -1,12 +1,11 @@
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // Aragorn - Heir to Isildur (Level 3, Leadership 2, +1 Action Die)
@@ -17,15 +16,14 @@ import { WotrCharacterCard } from "./wotr-character-card";
 export class WotrAragorn extends WotrCharacterCard {
   constructor(
     public override characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    protected regionStore: WotrRegionStore,
+    private q: WotrGameQuery,
     protected battleModifiers: WotrBattleModifiers
   ) {
     super();
   }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (!this.characterStore.isAvailable("aragorn")) return false;
+    if (!this.q.aragorn.isAvailable()) return false;
     if (die !== "will-of-the-west") return false;
     if (this.striderValidRegion()) return true;
     return false;
@@ -39,7 +37,7 @@ export class WotrAragorn extends WotrCharacterCard {
   }
 
   private striderInRegion(regionId: WotrRegionId): boolean {
-    const region = this.regionStore.region(regionId);
+    const region = this.q.region(regionId).region();
     if (region.army?.front === "free-peoples") {
       return !!region.army.characters?.some(c => c === "strider");
     } else {

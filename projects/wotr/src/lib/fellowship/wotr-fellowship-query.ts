@@ -41,4 +41,8 @@ export class WotrFellowshipQuery {
     const nation = this.nationStore.nation(region.nationId!);
     return nation.front === "free-peoples";
   }
+
+  isOnMordorTrack(): boolean {
+    return this.fellowshipStore.isOnMordorTrack();
+  }
 }

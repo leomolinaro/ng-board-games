@@ -6,12 +6,10 @@ import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrAragorn } from "./characters/aragorn";
@@ -34,19 +32,14 @@ import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacters {
   private characters: Partial<Record<WotrCharacterId, WotrCharacterCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
 
-  private characterStore = inject(WotrCharacterStore);
-  private regionStore = inject(WotrRegionStore);
   private battleModifiers = inject(WotrBattleModifiers);
-  private nationStore = inject(WotrNationStore);
   private actionDieModifiers = inject(WotrActionDieModifiers);
-  private frontStore = inject(WotrFrontStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private unitModifiers = inject(WotrUnitModifiers);
   private gameUi = inject(WotrGameUi);
@@ -55,6 +48,7 @@ export class WotrCharacters {
   private battleStore = inject(WotrBattleStore);
   private nationHandler = inject(WotrNationHandler);
   private shadow = inject(WotrShadowPlayer);
+  private q = inject(WotrGameQuery);
 
   getAbilities(characterId: WotrCharacterId): WotrAbility[] {
     if (!this.abilities[characterId]) {
@@ -73,19 +67,11 @@ export class WotrCharacters {
         return [new CaptainOfTheWestAbility("aragorn", this.battleModifiers)];
       case "saruman":
         return [
-          new TheVoiceOfSarumanAbility(
-            this.nationStore,
-            this.regionStore,
-            this.actionDieModifiers,
-            this.gameUi,
-            this.unitUi
-          ),
+          new TheVoiceOfSarumanAbility(this.q, this.actionDieModifiers, this.gameUi, this.unitUi),
           new ServantsOfTheWhiteHandAbility(this.unitModifiers)
         ];
       case "the-witch-king":
-        return [
-          new SorcererAbility(this.battleStore, this.regionStore, this.shadow, this.battleModifiers)
-        ];
+        return [new SorcererAbility(this.battleStore, this.q, this.shadow, this.battleModifiers)];
       case "the-mouth-of-sauron":
         return [];
       case "strider":
@@ -110,42 +96,24 @@ export class WotrCharacters {
       case "boromir":
         return [
           new CaptainOfTheWestAbility("boromir", this.battleModifiers),
-          new HighWardenOfTheWhiteTowerAbility(
-            this.characterStore,
-            this.regionStore,
-            this.nationStore,
-            this.actionDieModifiers
-          )
+          new HighWardenOfTheWhiteTowerAbility(this.q, this.actionDieModifiers)
         ];
       case "legolas":
         return [
           new CaptainOfTheWestAbility("legolas", this.battleModifiers),
-          new PrinceOfMirkwoodAbility(
-            this.characterStore,
-            this.regionStore,
-            this.nationStore,
-            this.actionDieModifiers
-          )
+          new PrinceOfMirkwoodAbility(this.q, this.actionDieModifiers)
         ];
       case "gimli":
         return [
           new CaptainOfTheWestAbility("gimli", this.battleModifiers),
-          new DwarfOfEreborAbility(
-            this.characterStore,
-            this.regionStore,
-            this.nationStore,
-            this.actionDieModifiers
-          )
+          new DwarfOfEreborAbility(this.q, this.actionDieModifiers)
         ];
       case "gollum":
         return [];
     }
   }
 
-  private takeThemAliveAbility = new TakeThemAliveAbility(
-    this.characterStore,
-    this.characterModifiers
-  );
+  private takeThemAliveAbility = new TakeThemAliveAbility(this.q, this.characterModifiers);
 
   private get(characterId: WotrCharacterId): WotrCharacterCard {
     switch (characterId) {
@@ -153,35 +121,22 @@ export class WotrCharacters {
         if (!this.characters["gandalf-the-white"])
           this.characters["gandalf-the-white"] = new WotrGandalfTheWhite(
             "gandalf-the-white",
-            this.characterStore,
-            this.regionStore
+            this.q
           );
         return this.characters["gandalf-the-white"];
       case "aragorn":
         if (!this.characters["aragorn"])
-          this.characters["aragorn"] = new WotrAragorn(
-            "aragorn",
-            this.characterStore,
-            this.regionStore,
-            this.battleModifiers
-          );
+          this.characters["aragorn"] = new WotrAragorn("aragorn", this.q, this.battleModifiers);
         return this.characters["aragorn"];
       case "saruman":
         if (!this.characters["saruman"])
-          this.characters["saruman"] = new WotrSaruman(
-            "saruman",
-            this.characterStore,
-            this.nationStore,
-            this.regionStore
-          );
+          this.characters["saruman"] = new WotrSaruman("saruman", this.q);
         return this.characters["saruman"];
       case "the-witch-king":
         if (!this.characters["the-witch-king"])
           this.characters["the-witch-king"] = new WotrWitchKing(
             "the-witch-king",
-            this.characterStore,
-            this.regionStore,
-            this.nationStore,
+            this.q,
             this.nationHandler
           );
         return this.characters["the-witch-king"];
@@ -189,10 +144,7 @@ export class WotrCharacters {
         if (!this.characters["the-mouth-of-sauron"])
           this.characters["the-mouth-of-sauron"] = new WotrMouthOfSauron(
             "the-mouth-of-sauron",
-            this.characterStore,
-            this.fellowshipStore,
-            this.regionStore,
-            this.frontStore
+            this.q
           );
         return this.characters["the-mouth-of-sauron"];
       default:

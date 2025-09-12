@@ -10,6 +10,10 @@ export class WotrRegionQuery {
     private unitUtils: WotrUnitUtils
   ) {}
 
+  region() {
+    return this.regionStore.region(this.regionId);
+  }
+
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitment(this.regionId, frontId);
   }
@@ -43,5 +47,13 @@ export class WotrRegionQuery {
       (region.army && this.unitUtils.hasCompanions(region.army)) ||
       (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits))
     );
+  }
+
+  isUnconquered() {
+    return this.regionStore.isUnconquered(this.regionId);
+  }
+
+  isUnderSiege() {
+    return this.regionStore.isUnderSiege(this.regionId);
   }
 }

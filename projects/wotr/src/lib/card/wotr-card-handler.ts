@@ -5,8 +5,10 @@ import {
   WotrStoryApplier
 } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   WotrCardReactionStory,
   WotrDieCardStory,
@@ -18,7 +20,6 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrCards } from "./cards/wotr-cards";
 import { WotrCardAction } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel } from "./wotr-card-models";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardHandler {
@@ -26,6 +27,7 @@ export class WotrCardHandler {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private frontHandler = inject(WotrFrontHandler);
+  private q = inject(WotrGameQuery);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -114,7 +116,7 @@ export class WotrCardHandler {
 
   private async drawCards(cards: WotrCardId[], frontId: WotrFrontId) {
     this.frontStore.drawCards(cards, frontId);
-    if (this.frontStore.hasExcessCards(frontId)) {
+    if (this.q.front(frontId).hasExcessCards()) {
       if (this.frontStore.shouldSkipDiscardExcessCards()) return;
       if (frontId === "free-peoples") {
         await this.freePeoples.discardExcessCards();

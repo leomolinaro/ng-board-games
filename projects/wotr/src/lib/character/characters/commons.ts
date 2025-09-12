@@ -7,14 +7,12 @@ import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
 import { advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegion } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 
 export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRound> {
   constructor(
@@ -38,9 +36,7 @@ export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieC
     private characterId: WotrCharacterId,
     private abilityName: string,
     private nationId: WotrNationId,
-    private characterStore: WotrCharacterStore,
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
+    private q: WotrGameQuery,
     public actionDieModifiers: WotrActionDieModifiers
   ) {}
 
@@ -50,14 +46,11 @@ export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieC
 
   public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
-    const character = this.characterStore.character(this.characterId);
-    if (character.status !== "inPlay") return [];
-    const characterRegion = this.regionStore.characterRegion(this.characterId)!;
+    if (!this.q.character(this.characterId).isInPlay()) return [];
+    const characterRegion = this.q.character(this.characterId).region()!;
     if (!this.isValidRegion(characterRegion)) return [];
-    if (!this.regionStore.isUnconquered(characterRegion.id)) return [];
-    return [
-      new AdvanceAnyDieChoice(this.characterId, this.abilityName, this.nationId, this.nationStore)
-    ];
+    if (!this.q.region(characterRegion.id).isUnconquered()) return [];
+    return [new AdvanceAnyDieChoice(this.characterId, this.abilityName, this.nationId, this.q)];
   };
 }
 
@@ -66,7 +59,7 @@ class AdvanceAnyDieChoice implements WotrUiCharacterChoice {
     private characterId: WotrCharacterId,
     private abilityName: string,
     private nationId: WotrNationId,
-    private nationStore: WotrNationStore
+    private q: WotrGameQuery
   ) {}
 
   character = this.characterId;
@@ -76,9 +69,7 @@ class AdvanceAnyDieChoice implements WotrUiCharacterChoice {
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    const nation = this.nationStore.nation(this.nationId);
-    if (nation.politicalStep === "atWar") return false;
-    return true;
+    return !this.q.nation(this.nationId).isAtWar();
   }
 
   async actions(frontId: WotrFrontId): Promise<WotrAction[]> {

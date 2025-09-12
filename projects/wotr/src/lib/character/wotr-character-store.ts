@@ -132,15 +132,6 @@ export class WotrCharacterStore {
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];
   }
-  isInPlay(characterId: WotrCharacterId): boolean {
-    return this.character(characterId).status === "inPlay";
-  }
-  isAvailable(characterId: WotrCharacterId): boolean {
-    return this.character(characterId).status === "available";
-  }
-  isInFellowship(characterId: WotrCharacterId): boolean {
-    return this.character(characterId).status === "inFellowship";
-  }
 
   private updateCharacter(
     actionName: string,

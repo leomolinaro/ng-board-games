@@ -61,41 +61,11 @@ export class WotrFrontStore {
   frontIds() {
     return this.state().ids;
   }
-  actionDice(frontId: WotrFrontId) {
-    return this.front(frontId).actionDice;
-  }
-  hasActionDice(frontId: WotrFrontId) {
-    return !!this.front(frontId).actionDice.length;
-  }
-  nActionDice(frontId: WotrFrontId) {
-    return this.front(frontId).actionDice.length;
-  }
-  hasActionTokens(frontId: WotrFrontId) {
-    return !!this.front(frontId).actionTokens.length;
-  }
-  actionTokens(frontId: WotrFrontId) {
-    return this.front(frontId).actionTokens;
-  }
+
   front(id: WotrFrontId) {
     return this.state().map[id];
   }
-  characterDeck(id: WotrFrontId) {
-    return this.front(id).characterDeck;
-  }
-  strategyDeck(id: WotrFrontId) {
-    return this.front(id).strategyDeck;
-  }
-  handCards(id: WotrFrontId) {
-    return this.front(id).handCards;
-  }
-  hasExcessCards(frontId: WotrFrontId): boolean {
-    const handCards = this.handCards(frontId);
-    return handCards.length > 6;
-  }
-  nExcessCards(frontId: WotrFrontId): number {
-    const handCards = this.handCards(frontId);
-    return Math.max(0, handCards.length - 6);
-  }
+
   shouldSkipDiscardExcessCards(): boolean {
     return this.state().skipDiscardExcessCards;
   }
@@ -105,18 +75,11 @@ export class WotrFrontStore {
       skipDiscardExcessCards: skip
     }));
   }
-  hasTableCard(cardId: WotrCardId, frontId: WotrFrontId) {
-    return !!this.front(frontId).tableCards.includes(cardId);
-  }
+
   currentCard() {
     return this.state().currentCard;
   }
-  elvenRings(frontId: WotrFrontId): WotrElvenRing[] {
-    return this.front(frontId).elvenRings;
-  }
-  elvenRingUsed(frontId: WotrFrontId): boolean {
-    return this.front(frontId).elvenRingUsed;
-  }
+
   setElvenRingUsed(frontId: WotrFrontId): void {
     this.updateFront("setElvenRingUsed", frontId, front => ({
       ...front,

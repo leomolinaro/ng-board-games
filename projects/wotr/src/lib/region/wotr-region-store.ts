@@ -509,7 +509,8 @@ export class WotrRegionStore {
     const region = this.region(regionId);
     return (
       region.army?.characters?.includes(character) ||
-      region.freeUnits?.characters?.includes(character)
+      region.freeUnits?.characters?.includes(character) ||
+      false
     );
   }
   characterRegion(character: WotrCharacterId): WotrRegion | null {

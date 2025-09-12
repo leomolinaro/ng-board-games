@@ -2,7 +2,7 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 
 export class WotrCharacterQuery {
@@ -13,24 +13,36 @@ export class WotrCharacterQuery {
     private fellowshipStore: WotrFellowshipStore
   ) {}
 
+  character(): WotrCharacter {
+    return this.characterStore.character(this.characterId);
+  }
+
   region(): WotrRegion | null {
     return this.regionStore.characterRegion(this.characterId);
   }
 
+  isInPlay(): boolean {
+    return this.character().status === "inPlay";
+  }
+
+  isEliminated(): boolean {
+    return this.character().status === "eliminated";
+  }
+
+  isAvailable(): boolean {
+    return this.character().status === "available";
+  }
+
   isInFellowship(): boolean {
-    return this.characterStore.isInFellowship(this.characterId);
+    return this.character().status === "inFellowship";
   }
 
   isGuide(): boolean {
     return this.fellowshipStore.guide() === this.characterId;
   }
 
-  isInPlay(): boolean {
-    return this.characterStore.isInPlay(this.characterId);
-  }
-
   isIn(regionId: WotrRegionId): boolean {
-    return this.region()?.id === regionId;
+    return this.regionStore.isCharacterInRegion(this.characterId, regionId);
   }
 
   isWithFreePeoplesArmy(): boolean {
@@ -42,7 +54,7 @@ export class WotrCharacterQuery {
   }
 
   isInNation(nationId: WotrNationId): boolean {
-    if (!this.characterStore.isInPlay(this.characterId)) return false;
+    if (!this.isInPlay()) return false;
     const region = this.region()!;
     return region && region.nationId === nationId;
   }

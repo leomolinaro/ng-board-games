@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -9,10 +10,11 @@ import { WotrCharacterStore } from "./wotr-character-store";
 export class WotrCharacterRules {
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
+  private q = inject(WotrGameQuery);
 
   isCharacterInRegionOf(characterId: WotrCharacterId, nationId: WotrNationId): boolean {
     return (
-      this.characterStore.isInPlay(characterId) &&
+      this.q.character(characterId).isInPlay() &&
       this.regionStore.characterRegion(characterId)?.nationId === nationId
     );
   }

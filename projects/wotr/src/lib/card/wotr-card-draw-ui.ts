@@ -15,21 +15,17 @@ export class WotrCardDrawUi {
 
   async firstPhaseDrawCards(frontId: WotrFrontId): Promise<WotrAction> {
     await this.ui.askContinue("Draw cards");
-    const characterDeck = this.frontStore.characterDeck(frontId);
-    const strategyDeck = this.frontStore.strategyDeck(frontId);
+    const characterDeck = this.q.front(frontId).characterDeck();
+    const strategyDeck = this.q.front(frontId).strategyDeck();
     const drawnCards: WotrCardId[] = [];
-    if (characterDeck.length) {
-      drawnCards.push(characterDeck[0]);
-    }
-    if (strategyDeck.length) {
-      drawnCards.push(strategyDeck[0]);
-    }
+    if (characterDeck.length) drawnCards.push(characterDeck[0]);
+    if (strategyDeck.length) drawnCards.push(strategyDeck[0]);
     this.frontStore.drawCards(drawnCards, frontId);
     return drawCardIds(...drawnCards);
   }
 
   async discardExcessCards(frontId: WotrFrontId): Promise<WotrAction> {
-    const excessCards = this.frontStore.nExcessCards(frontId);
+    const excessCards = this.q.front(frontId).nExcessCards();
     const cards = await this.ui.askCards(`Discard ${excessCards} card(s).`, {
       nCards: excessCards,
       frontId,
@@ -47,8 +43,8 @@ export class WotrCardDrawUi {
     await this.ui.askContinue("Draw cards");
     const deck =
       deckType === "character"
-        ? this.frontStore.characterDeck(frontId)
-        : this.frontStore.strategyDeck(frontId);
+        ? this.q.front(frontId).characterDeck()
+        : this.q.front(frontId).strategyDeck();
     const drawnCards: WotrCardId[] = [];
     for (let i = 0; i < nCards; i++) {
       if (deck.length > i) {
@@ -60,8 +56,8 @@ export class WotrCardDrawUi {
   }
 
   async drawCard(frontId: WotrFrontId): Promise<WotrAction> {
-    const characterDeck = this.frontStore.characterDeck(frontId);
-    const strategyDeck = this.frontStore.strategyDeck(frontId);
+    const characterDeck = this.q.front(frontId).characterDeck();
+    const strategyDeck = this.q.front(frontId).strategyDeck();
     if (characterDeck.length === 0 && strategyDeck.length === 0) {
       throw new Error("No cards left to draw");
     }
@@ -91,7 +87,7 @@ export class WotrCardDrawUi {
 
   async drawStrategyEventCardByCard(frontId: WotrFrontId): Promise<WotrAction | null> {
     if (!this.q.front(frontId).canDrawStrategyCard()) return null;
-    return this.drawCardFromDeck(this.frontStore.strategyDeck(frontId), frontId);
+    return this.drawCardFromDeck(this.q.front(frontId).strategyDeck(), frontId);
   }
 
   drawEventCardChoice: WotrUiChoice = {

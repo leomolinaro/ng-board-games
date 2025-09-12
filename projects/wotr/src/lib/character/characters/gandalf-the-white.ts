@@ -1,12 +1,11 @@
 import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
@@ -20,33 +19,26 @@ import { WotrCharacterCard } from "./wotr-character-card";
 export class WotrGandalfTheWhite extends WotrCharacterCard {
   constructor(
     public override characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    private regionStore: WotrRegionStore
+    private q: WotrGameQuery
   ) {
     super();
   }
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (!this.characterStore.isAvailable("gandalf-the-white")) return false;
+    if (!this.q.gandalfTheWhite.isAvailable()) return false;
     if (die !== "will-of-the-west") return false;
-    const gandalf = this.characterStore.character("gandalf-the-grey");
-    if (gandalf.status !== "inPlay" && gandalf.status !== "eliminated") return false;
-    if (
-      this.characterStore.minions().every(c => {
-        return c.status !== "inPlay" && c.status !== "eliminated";
-      })
-    ) {
-      return false;
-    }
+    const gandalf = this.q.gandalfTheGrey;
+    if (!gandalf.isInPlay() && !gandalf.isEliminated()) return false;
+    if (this.q.minions.every(c => !c.isInPlay() && !c.isEliminated())) return false;
     return true;
   }
 
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
-    const gandalf = this.characterStore.character("gandalf-the-grey");
-    if (gandalf.status === "inPlay") {
-      const gandalfRegion = this.regionStore.characterRegion("gandalf-the-grey")!;
+    const gandalf = this.q.gandalfTheGrey;
+    if (gandalf.isInPlay()) {
+      const gandalfRegion = gandalf.region()!;
       return playCharacter(gandalfRegion.id, "gandalf-the-white");
-    } else if (gandalf.status === "eliminated") {
+    } else if (gandalf.isEliminated()) {
       const elvenStrongholds: WotrRegionId[] = [
         "rivendell",
         "lorien",
@@ -55,9 +47,7 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
       ];
       const targetRegions: WotrRegionId[] = ["fangorn"];
       for (const regionId of elvenStrongholds) {
-        if (this.regionStore.isUnconquered(regionId)) {
-          targetRegions.push(regionId);
-        }
+        if (this.q.region(regionId).isUnconquered()) targetRegions.push(regionId);
       }
       const region = await ui.askRegion(
         "Select a region to bring Gandalf the White into play",

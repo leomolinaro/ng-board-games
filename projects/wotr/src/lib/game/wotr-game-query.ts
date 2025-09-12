@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFellowshipQuery } from "../fellowship/wotr-fellowship-query";
@@ -114,6 +115,7 @@ export class WotrGameQuery {
     this.regionStore,
     this.fellowshipStore
   );
+  minions = [this.saruman, this.theMouthOfSauron, this.theWitchKing];
   companions = [
     this.gandalfTheGrey,
     this.strider,
@@ -125,6 +127,36 @@ export class WotrGameQuery {
     this.gandalfTheWhite,
     this.aragorn
   ];
+  character(characterId: WotrCharacterId): WotrCharacterQuery {
+    switch (characterId) {
+      case "gandalf-the-grey":
+        return this.gandalfTheGrey;
+      case "strider":
+        return this.strider;
+      case "legolas":
+        return this.legolas;
+      case "gimli":
+        return this.gimli;
+      case "boromir":
+        return this.boromir;
+      case "meriadoc":
+        return this.meriadoc;
+      case "peregrin":
+        return this.peregrin;
+      case "aragorn":
+        return this.aragorn;
+      case "gandalf-the-white":
+        return this.gandalfTheWhite;
+      case "gollum":
+        return this.gollum;
+      case "saruman":
+        return this.saruman;
+      case "the-mouth-of-sauron":
+        return this.theMouthOfSauron;
+      case "the-witch-king":
+        return this.theWitchKing;
+    }
+  }
 
   dwarves = new WotrNationQuery("dwarves", this.nationStore, this.regionStore);
   elves = new WotrNationQuery("elves", this.nationStore, this.regionStore);

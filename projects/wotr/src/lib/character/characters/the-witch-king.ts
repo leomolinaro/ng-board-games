@@ -4,15 +4,13 @@ import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../battle/wotr-battle-store";
 import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegion } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-card";
 
 // The Witch-king - The Black Captain (Level ∞, Leadership 2, +1 Action Die)
@@ -25,9 +23,7 @@ import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-ca
 export class WotrWitchKing extends WotrCharacterCard {
   constructor(
     public override characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
+    private q: WotrGameQuery,
     private nationHandler: WotrNationHandler
   ) {
     super();
@@ -36,18 +32,18 @@ export class WotrWitchKing extends WotrCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterStore.isAvailable("the-witch-king") &&
-      this.nationStore.isAtWar("sauron") &&
-      this.nationStore.freePeoplesNations().some(n => this.nationStore.isAtWar(n.id)) &&
-      this.regionStore.regions().some(r => this.isValidRegion(r))
+      this.q.theWitchKing.isAvailable() &&
+      this.q.sauron.isAtWar() &&
+      this.q.freePeoplesNations.some(n => n.isAtWar()) &&
+      this.q.regions().some(r => this.isValidRegion(r.region()))
     );
   }
 
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
-    const validRegions = this.regionStore
+    const validRegions = this.q
       .regions()
-      .filter(r => this.isValidRegion(r))
-      .map(r => r.id);
+      .filter(r => this.isValidRegion(r.region()))
+      .map(r => r.regionId);
     const region = await ui.askRegion(
       "Select a region to bring the Witch-King into play",
       validRegions
@@ -73,7 +69,7 @@ export class WotrWitchKing extends WotrCharacterCard {
 export class SorcererAbility implements WotrAbility<WotrAfterCombatRound> {
   constructor(
     private battleStore: WotrBattleStore,
-    private regionStore: WotrRegionStore,
+    private q: WotrGameQuery,
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers
   ) {}
@@ -94,6 +90,6 @@ export class SorcererAbility implements WotrAbility<WotrAfterCombatRound> {
     if (this.battleStore.isCharacterInRetroguard(character)) {
       return false;
     }
-    return this.regionStore.isCharacterInRegion(character, combatRound.action.fromRegion);
+    return this.q.character(character).isIn(combatRound.action.fromRegion);
   }
 }

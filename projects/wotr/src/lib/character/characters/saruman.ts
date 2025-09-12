@@ -6,16 +6,14 @@ import {
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
-import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionStore } from "../../region/wotr-region-store";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrLeadershipModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // Saruman - Corrupted Wizard (Level 0, Leadership 1, +1 Action Die)
@@ -27,9 +25,7 @@ import { WotrCharacterCard } from "./wotr-character-card";
 export class WotrSaruman extends WotrCharacterCard {
   constructor(
     public override characterId: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    private nationStore: WotrNationStore,
-    private regionStore: WotrRegionStore
+    private q: WotrGameQuery
   ) {
     super();
   }
@@ -37,9 +33,9 @@ export class WotrSaruman extends WotrCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.characterStore.isAvailable("saruman") &&
-      this.nationStore.isAtWar("isengard") &&
-      this.regionStore.isUnconquered("orthanc")
+      this.q.saruman.isAvailable() &&
+      this.q.isengard.isAtWar() &&
+      this.q.region("orthanc").isUnconquered()
     );
   }
 
@@ -50,8 +46,7 @@ export class WotrSaruman extends WotrCharacterCard {
 
 export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
-    private nationStore: WotrNationStore,
-    private regionStore: WotrRegionStore,
+    private q: WotrGameQuery,
     private actionDieModifiers: WotrActionDieModifiers,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
@@ -62,20 +57,19 @@ export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoice
   public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (die !== "muster" && die !== "muster-army") return [];
     if (frontId !== "shadow") return [];
-    return [new SarumanVoiceChoice(this.regionStore, this.nationStore, this.ui, this.unitUi)];
+    return [new SarumanVoiceChoice(this.q, this.ui, this.unitUi)];
   };
 }
 
 class SarumanVoiceChoice implements WotrUiCharacterChoice {
   constructor(
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
+    private q: WotrGameQuery,
     private ui: WotrGameUi,
     private unitUi: WotrUnitUi
   ) {
     this.subChoices = [
-      new SarumanRecruitmentChoice(this.ui, this.regionStore, this.nationStore, this.unitUi),
-      new SarumanUpgradeRegularsChoice(this.regionStore, this.nationStore, this.ui)
+      new SarumanRecruitmentChoice(this.ui, this.q, this.unitUi),
+      new SarumanUpgradeRegularsChoice(this.q, this.ui)
     ];
   }
   private subChoices: WotrUiChoice[];
@@ -87,10 +81,10 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
   }
 
   isAvailable(frontId: WotrFrontId): boolean {
-    const nation = this.nationStore.nation("isengard");
-    if (nation.politicalStep !== "atWar") return false;
-    if (!this.regionStore.isUnconquered("orthanc")) return false;
-    if (this.regionStore.isUnderSiege("orthanc")) return false;
+    const isengard = this.q.isengard;
+    if (!isengard.isAtWar()) return false;
+    if (!this.q.region("orthanc").isUnconquered()) return false;
+    if (this.q.region("orthanc").isUnderSiege()) return false;
     if (this.subChoices.some(c => c.isAvailable!(frontId))) return true;
     return false;
   }
@@ -108,8 +102,7 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
 class SarumanRecruitmentChoice implements WotrUiChoice {
   constructor(
     private ui: WotrGameUi,
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
+    private q: WotrGameQuery,
     private unitUi: WotrUnitUi
   ) {}
 
@@ -118,18 +111,18 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
   }
 
   isAvailable(): boolean {
-    return this.nationStore.hasRegularReinforcements("isengard");
+    return this.q.isengard.hasRegularReinforcements();
   }
 
   async actions(params: WotrFrontId): Promise<WotrAction[]> {
     const exludedRegions = new Set<WotrRegionId>();
     let counter = 0;
     let canPass = false;
-    const isengardNation = this.nationStore.nation("isengard");
+    const isengardNation = this.q.isengard;
     const actions: WotrAction[] = [];
     while (counter < 3) {
-      const validRegions = this.regionStore
-        .recruitmentRegions(isengardNation)
+      const validRegions = isengardNation
+        .recruitmentRegions()
         .filter(r => !exludedRegions.has(r.id));
       const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
         units: [{ type: "regular", nation: "isengard" }],
@@ -153,8 +146,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
 
 class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   constructor(
-    private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore,
+    private q: WotrGameQuery,
     private ui: WotrGameUi
   ) {}
 
@@ -163,8 +155,8 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   }
 
   isAvailable(): boolean {
-    if (!this.nationStore.hasEliteReinforcements("isengard")) return false;
-    const orthanc = this.regionStore.region("orthanc");
+    if (!this.q.isengard.hasEliteReinforcements()) return false;
+    const orthanc = this.q.region("orthanc").region();
     return orthanc.army?.regulars?.some(r => r.nation === "isengard") ?? false;
   }
 
@@ -179,9 +171,9 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   }
 
   private nUpgradeableRegulars(): number {
-    const orthanc = this.regionStore.region("orthanc");
+    const orthanc = this.q.region("orthanc").region();
     const nRegulars = orthanc.army?.regulars?.find(r => r.nation === "isengard")?.quantity ?? 0;
-    const nAvailableElites = this.nationStore.nation("isengard").reinforcements?.elite ?? 0;
+    const nAvailableElites = this.q.isengard.nEliteReinforcements() ?? 0;
     return Math.min(nRegulars, nAvailableElites, 2);
   }
 }
