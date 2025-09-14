@@ -1,4 +1,5 @@
 import { unexpectedStory } from "../../../../../commons/src";
+import { WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -19,10 +20,11 @@ export abstract class WotrCharacterCard {
 }
 
 export async function activateCharacterAbility(
+  ability: WotrUiAbility,
   characterId: WotrCharacterId,
   player: WotrPlayer
 ): Promise<false | WotrAction[]> {
-  const story = await player.activateCharacterAbility(characterId);
+  const story = await player.activateCharacterAbility(ability, characterId);
   switch (story.type) {
     case "reaction-character":
       return story.actions;

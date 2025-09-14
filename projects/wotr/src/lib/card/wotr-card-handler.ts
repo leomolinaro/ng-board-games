@@ -10,7 +10,8 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import {
   WotrCardAction,
   WotrCardDiscardFromTable,
-  discardCardFromTable
+  discardCardFromTable,
+  drawCardIds
 } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel, isFreePeoplesCard } from "./wotr-card-models";
 
@@ -91,5 +92,10 @@ export class WotrCardHandler {
   discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
     this.frontStore.discardCardFromTable(cardId, front);
     this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));
+  }
+
+  async drawCard(cardId: WotrCardId, frontId: WotrFrontId) {
+    await this.drawCards([cardId], frontId);
+    this.logger.logEffect(drawCardIds(cardId));
   }
 }

@@ -21,7 +21,7 @@ export interface WotrEventCard {
 
 export interface WotrCardParams {
   front: WotrFrontId;
-  story: WotrStory;
+  story: WotrStory & { actions: WotrAction[] };
   // shadow: WotrCombatFront;
   // freePeoples: WotrCombatFront;
   // combatRound: WotrCombatRound;

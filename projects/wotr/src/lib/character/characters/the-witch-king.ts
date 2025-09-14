@@ -1,4 +1,4 @@
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
@@ -66,7 +66,7 @@ export class WotrWitchKing extends WotrCharacterCard {
   }
 }
 
-export class SorcererAbility implements WotrAbility<WotrAfterCombatRound> {
+export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
   constructor(
     private battleStore: WotrBattleStore,
     private q: WotrGameQuery,
@@ -82,8 +82,12 @@ export class SorcererAbility implements WotrAbility<WotrAfterCombatRound> {
       combatRound.round === 1 &&
       combatRound.shadow.combatCard
     ) {
-      await activateCharacterAbility("the-witch-king", this.shadow);
+      await activateCharacterAbility(this, "the-witch-king", this.shadow);
     }
+  };
+
+  play: () => Promise<WotrAction[]> = async () => {
+    return [];
   };
 
   private isCharacterInBattle(character: WotrCharacterId, combatRound: WotrCombatRound) {

@@ -1,4 +1,5 @@
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
+import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrCharacterId } from "../wotr-character-models";
 import {
@@ -21,17 +22,23 @@ export class HobbitGuideAbility implements WotrAbility<unknown> {
   public handler = null;
 }
 
-export class TakeThemAliveAbility implements WotrAbility<WotrBeforeCharacterElimination> {
+export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterElimination> {
   constructor(
     private q: WotrGameQuery,
     private characterModifiers: WotrCharacterModifiers
   ) {}
 
-  public modifier = this.characterModifiers.beforeCharacterElimination;
+  name: string = "Take Them Alive!";
 
-  public handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
+  modifier = this.characterModifiers.beforeCharacterElimination;
+
+  handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
     if (characterId !== "meriadoc") return true;
     if (!this.q.meriadoc.isInFellowship()) return true;
     return true;
+  };
+
+  play: () => Promise<WotrAction[]> = async () => {
+    return [];
   };
 }

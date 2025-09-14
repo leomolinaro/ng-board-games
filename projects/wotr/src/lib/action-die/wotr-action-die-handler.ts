@@ -16,6 +16,7 @@ import {
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
 import { WotrActionDie } from "./wotr-action-die-models";
+import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieHandler {
@@ -23,6 +24,7 @@ export class WotrActionDieHandler {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private frontHandler = inject(WotrFrontHandler);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -46,6 +48,7 @@ export class WotrActionDieHandler {
       this.logger.logNoActions(story, front);
     }
     this.frontStore.removeActionDie(story.die, front);
+    await this.actionDieModifiers.onAfterActionDieResolution(story, front);
   };
 
   private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {

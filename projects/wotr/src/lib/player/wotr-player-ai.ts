@@ -4,6 +4,7 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
+import { WotrAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerAi implements WotrPlayerStoryService {
@@ -60,7 +61,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
+  activateCharacterAbility(ability: WotrAbility, characterId: WotrCharacterId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   forfeitLeadership(): Promise<WotrStory> {

@@ -190,12 +190,10 @@ export class WotrGameTurn {
     const story = await player.actionResolution();
     switch (story.type) {
       case "die":
+        await this.actionDieModifiers.onAfterActionDieResolution(story, player.frontId);
+        return story;
       case "die-card":
-        await this.actionDieModifiers.onAfterActionDieResolution(
-          story.die,
-          player.frontId,
-          story.actions
-        );
+        await this.actionDieModifiers.onAfterActionDieCardResolution(story, player.frontId);
         return story;
       case "die-pass":
       case "token":

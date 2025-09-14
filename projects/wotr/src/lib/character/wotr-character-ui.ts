@@ -1,8 +1,10 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
@@ -235,6 +237,27 @@ export class WotrCharacterUi {
         this.characters.canBringCharacterIntoPlay(die, frontId),
       actions: (frontId: WotrFrontId) => this.bringCharacterIntoPlay(die, frontId)
     };
+  }
+
+  async activateCharacterAbility(
+    ability: WotrUiAbility,
+    characterId: WotrCharacterId
+  ): Promise<WotrStory> {
+    const character = this.characterStore.character(characterId);
+    const confirm = await this.ui.askConfirm(
+      `Do you want to activate ${character.name + "'s ability?"}`,
+      "Activate",
+      "Skip"
+    );
+    if (confirm) {
+      return {
+        type: "reaction-character",
+        character: characterId,
+        actions: await ability.play()
+      };
+    } else {
+      return { type: "reaction-character-skip", character: characterId };
+    }
   }
 
   moveCompanionsChoice: WotrUiChoice = {

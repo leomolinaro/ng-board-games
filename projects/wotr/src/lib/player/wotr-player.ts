@@ -1,3 +1,4 @@
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -51,8 +52,13 @@ export abstract class WotrPlayer {
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateCombatCard(cardId));
   }
-  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.activateCharacterAbility(characterId));
+  activateCharacterAbility(
+    ability: WotrUiAbility,
+    characterId: WotrCharacterId
+  ): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.activateCharacterAbility(ability, characterId)
+    );
   }
   forfeitLeadership(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.forfeitLeadership());

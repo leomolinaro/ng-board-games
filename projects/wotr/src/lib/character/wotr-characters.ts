@@ -4,11 +4,13 @@ import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
+import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
+import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
@@ -19,6 +21,7 @@ import {
   PrinceOfMirkwoodAbility
 } from "./characters/boromir-gimli-legolas";
 import { CaptainOfTheWestAbility } from "./characters/commons";
+import { GandalfGuideAbility } from "./characters/gandalf-the-grey";
 import { WotrGandalfTheWhite } from "./characters/gandalf-the-white";
 import { TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
@@ -32,6 +35,7 @@ import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
+import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacters {
@@ -49,10 +53,15 @@ export class WotrCharacters {
   private nationHandler = inject(WotrNationHandler);
   private shadow = inject(WotrShadowPlayer);
   private q = inject(WotrGameQuery);
+  private cardHandler = inject(WotrCardHandler);
+  private cardDrawUi = inject(WotrCardDrawUi);
+
+  private freePeoples = inject(WotrFreePeoplesPlayer);
 
   getAbilities(characterId: WotrCharacterId): WotrAbility[] {
     if (!this.abilities[characterId]) {
-      this.abilities[characterId] = this.createAbilities(characterId);
+      const abilities = this.createAbilities(characterId);
+      this.abilities[characterId] = abilities;
     }
     return this.abilities[characterId];
   }
@@ -82,7 +91,13 @@ export class WotrCharacters {
         ];
       case "gandalf-the-grey":
         return [
-          // new GuideAbility(this.actionDieModifiers.afterActionDieResolution),
+          new GandalfGuideAbility(
+            this.actionDieModifiers,
+            this.cardHandler,
+            this.freePeoples,
+            this.q,
+            this.cardDrawUi
+          ),
           new CaptainOfTheWestAbility("gandalf-the-grey", this.battleModifiers)
           // new EmissaryFromTheWestAbility(null as any)
         ];

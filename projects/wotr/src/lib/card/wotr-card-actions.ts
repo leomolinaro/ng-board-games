@@ -49,5 +49,9 @@ export interface WotrCardDiscardFromTable {
   card: WotrCardId;
 }
 export function discardCardFromTable(card: WotrCardLabel): WotrCardDiscardFromTable {
-  return { type: "card-discard-from-table", card: labelToCardId(card) };
+  return discardCardFromTableById(labelToCardId(card));
+}
+
+export function discardCardFromTableById(card: WotrCardId): WotrCardDiscardFromTable {
+  return { type: "card-discard-from-table", card };
 }

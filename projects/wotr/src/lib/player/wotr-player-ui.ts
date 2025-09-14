@@ -4,12 +4,14 @@ import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrBaseStory, WotrReactionStory, WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
+import { WotrUiAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
@@ -18,6 +20,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private cardUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntUi = inject(WotrHuntUi);
+  private characterUi = inject(WotrCharacterUi);
 
   async firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory> {
     return {
@@ -90,8 +93,11 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
 
-  async activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory> {
-    throw new Error("Method not implemented.");
+  async activateCharacterAbility(
+    ability: WotrUiAbility,
+    characterId: WotrCharacterId
+  ): Promise<WotrStory> {
+    return this.characterUi.activateCharacterAbility(ability, characterId);
   }
 
   async forfeitLeadership(): Promise<WotrReactionStory> {

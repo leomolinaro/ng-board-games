@@ -1,3 +1,4 @@
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -21,7 +22,10 @@ export interface WotrPlayerStoryService {
   actionResolution(frontId: WotrFrontId): Promise<WotrStory>;
   activateTableCard(cardId: WotrCardId): Promise<WotrStory>;
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory>;
-  activateCharacterAbility(characterId: WotrCharacterId): Promise<WotrStory>;
+  activateCharacterAbility(
+    ability: WotrUiAbility,
+    characterId: WotrCharacterId
+  ): Promise<WotrStory>;
   forfeitLeadership(): Promise<WotrStory>;
   wantRetreatIntoSiege(): Promise<WotrStory>;
   wantRetreat(): Promise<WotrStory>;

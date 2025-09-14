@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
+import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import { pushFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrGameQuery } from "../../game/wotr-game-query";
@@ -15,10 +16,14 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
-import { playCardOnTable } from "../wotr-card-actions";
+import {
+  discardCardFromTableById,
+  playCardOnTable,
+  WotrCardDiscardFromTable
+} from "../wotr-card-actions";
+import { WotrCardHandler } from "../wotr-card-handler";
 import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
-import { WotrCardHandler } from "../wotr-card-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowCharacterCards {
@@ -86,7 +91,7 @@ export class WotrShadowCharacterCards {
           play: async () => [await this.huntUi.drawHuntTile()],
           effect: async params => {
             const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
-            this.huntFlow.resolveHuntTile(action.tile, {
+            await this.huntFlow.resolveHuntTile(action.tile, {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true,
               onlyRingAbsorbtion: true
@@ -167,8 +172,11 @@ export class WotrShadowCharacterCards {
       case "scha11":
         return {
           canBePlayed: () => this.q.fellowship.progress() >= 1,
-          play: async () => this.characterUi.moveAnyOrAllNazgul(),
-          effect: async params => {
+          play: async () => {
+            const actions: WotrAction[] = [];
+            const moveNazgulAction = await this.characterUi.moveAnyOrAllNazgul();
+            actions.push(...moveNazgulAction);
+
             const regionId = this.q.fellowship.regionId();
             if (this.q.region(regionId).hasNazgul()) {
               const option = await this.ui.askOption<"D" | "H">("Choose an effect", [
@@ -182,21 +190,26 @@ export class WotrShadowCharacterCards {
                   label: "Roll for the Hunt"
                 }
               ]);
-              switch (option) {
-                case "D": {
-                  const card = await this.ui.askTableCard("Choose a card to discard", {
-                    frontId: "free-peoples",
-                    nCards: 1,
-                    message: "Discard",
-                    cards: this.q.freePeoples.handCards().filter(c => isFreePeopleCharacterCard(c))
-                  });
-                  this.cardHandler.discardCardFromTable(card, "shadow");
-                  break;
-                }
-                case "H":
-                  await this.huntFlow.resolveHunt();
-                  break;
+              if (option === "D") {
+                const card = await this.ui.askTableCard("Choose a card to discard", {
+                  frontId: "free-peoples",
+                  nCards: 1,
+                  message: "Discard",
+                  cards: this.q.freePeoples.handCards().filter(c => isFreePeopleCharacterCard(c))
+                });
+                actions.push(discardCardFromTableById(card));
               }
+            }
+            return actions;
+          },
+          effect: async params => {
+            const regionId = this.q.fellowship.regionId();
+            if (this.q.region(regionId).hasNazgul()) {
+              const otherAction = findAction<WotrCardDiscardFromTable>(
+                params.story.actions,
+                "card-discard-from-table"
+              );
+              if (!otherAction) await this.huntFlow.resolveHunt();
             }
           }
         };

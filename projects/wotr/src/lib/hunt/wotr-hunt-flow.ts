@@ -6,6 +6,7 @@ import { activateCharacterAbility } from "../character/characters/wotr-character
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrCharacters } from "../character/wotr-characters";
 import {
   WotrCompanionRandom,
   WotrCompanionSeparation,
@@ -23,6 +24,7 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
+import { WotrUiAbility } from "../ability/wotr-ability";
 
 interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
@@ -45,6 +47,7 @@ export class WotrHuntFlow {
   private characterStore = inject(WotrCharacterStore);
   private logger = inject(WotrLogWriter);
   private fellowshipStore = inject(WotrFellowshipStore);
+  private characters = inject(WotrCharacters);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -263,7 +266,10 @@ export class WotrHuntFlow {
     let absorbedDamage = 0;
     for (const companion of companions) {
       if (companion === "peregrin" || companion === "meriadoc") {
-        const actions = await activateCharacterAbility(companion, this.freePeoples);
+        const ability = this.characters
+          .getAbilities(companion)
+          .find(a => a.name === "Take Them Alive")! as WotrUiAbility;
+        const actions = await activateCharacterAbility(ability, companion, this.freePeoples);
         if (actions) {
           absorbedDamage++;
         }
