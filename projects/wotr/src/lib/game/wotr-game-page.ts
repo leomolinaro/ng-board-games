@@ -29,6 +29,7 @@ import {
   WotrStoriesDialogRef
 } from "./wotr-stories-dialog";
 import { WotrStoryService } from "./wotr-story-service";
+import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 
 @Component({
   selector: "wotr-game-page",
@@ -61,6 +62,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   constructor() {
     inject(WotrActionDieHandler).init();
     inject(WotrCardHandler).init();
+    inject(WotrCardStoryHandler).init();
     inject(WotrBattleHandler).init();
     inject(WotrCharacterHandler).init();
     inject(WotrGameTurn).init();

@@ -1,78 +1,40 @@
 import { Injectable, inject } from "@angular/core";
-import {
-  WotrActionApplierMap,
-  WotrActionLoggerMap,
-  WotrStoryApplier
-} from "../commons/wotr-action-models";
+import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId, oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import {
-  WotrCardReactionStory,
-  WotrDieCardStory,
-  WotrSkipCardReactionStory
-} from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrCards } from "./cards/wotr-cards";
-import { WotrCardAction } from "./wotr-card-actions";
-import { WotrCardId, cardToLabel } from "./wotr-card-models";
+import {
+  WotrCardAction,
+  WotrCardDiscardFromTable,
+  discardCardFromTable
+} from "./wotr-card-actions";
+import { WotrCardId, cardToLabel, isFreePeoplesCard } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
-  private frontHandler = inject(WotrFrontHandler);
   private q = inject(WotrGameQuery);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
-  private cards = inject(WotrCards);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionRegistry.registerStory("die-card", this.dieCard);
-    this.actionRegistry.registerStory("reaction-card", this.reactionCard);
-    this.actionRegistry.registerStory("reaction-card-skip", this.reactionCardSkip);
+    this.actionRegistry.registerEffectLogger<WotrCardDiscardFromTable>(
+      "card-discard-from-table",
+      (effect, f) => [
+        f.player(isFreePeoplesCard(effect.card) ? "shadow" : "free-peoples"),
+        ` discards "${cardToLabel(effect.card)}" from table`
+      ]
+    );
   }
-
-  private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
-    if (story.elvenRing) {
-      this.frontHandler.useElvenRing(story.elvenRing, front);
-    }
-    this.frontStore.setCurrentCard(story.card);
-    if (story.actions?.length) {
-      for (const action of story.actions) {
-        this.logger.logAction(action, story, front);
-        await this.actionRegistry.applyAction(action, front);
-      }
-    } else {
-      this.logger.logNoActions(story, front);
-    }
-    const card = this.cards.getCard(story.card);
-    if (card.effect) {
-      await card.effect({ front, story });
-    }
-    this.frontStore.discardCards([story.card], front);
-    this.frontStore.removeActionDie(story.die, front);
-    this.frontStore.clearCurrentCard();
-  };
-
-  private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
-    }
-  };
-
-  private reactionCardSkip: WotrStoryApplier<WotrSkipCardReactionStory> = async (story, front) => {
-    this.logger.logStory(story, front);
-  };
 
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
@@ -124,5 +86,10 @@ export class WotrCardHandler {
         await this.shadow.discardExcessCards();
       }
     }
+  }
+
+  discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
+    this.frontStore.discardCardFromTable(cardId, front);
+    this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));
   }
 }

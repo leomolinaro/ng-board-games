@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
+import { pushFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -15,8 +16,9 @@ import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
 import { playCardOnTable } from "../wotr-card-actions";
-import { WotrShadowCharacterCardId } from "../wotr-card-models";
+import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
+import { WotrCardHandler } from "../wotr-card-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowCharacterCards {
@@ -29,6 +31,7 @@ export class WotrShadowCharacterCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private fellowshipHandler = inject(WotrFellowshipHandler);
+  private cardHandler = inject(WotrCardHandler);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -136,23 +139,66 @@ export class WotrShadowCharacterCards {
             }
           }
         };
-      // TODO Cruel Weather
+      // Cruel Weather
       // Play if the Fellowship is on step 1 or higher on the Fellowship Track.
       // Move the Fellowship to an adjacent region.
       case "scha10":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.fellowship.progress() >= 1,
+          play: async () => {
+            const fellowshipRegionId = this.q.fellowship.regionId();
+            const adjacentRegionIds = this.q
+              .region(fellowshipRegionId)
+              .region()
+              .neighbors.filter(n => !n.impassable)
+              .map(n => n.id);
+            const regionId = await this.ui.askRegion(
+              "Move the Fellowship to an adjacent region",
+              adjacentRegionIds
+            );
+            return [pushFellowship(regionId)];
+          }
         };
-      // TODO The Nazgûl Strike!
+      // The Nazgûl Strike!
       // Play if the Fellowship is on step 1 or higher on the Fellowship Track.
       // Move any or all of the Nazgûl.
       // Then, if at least one Nazgûl is in the region with the Fellowship, you may either discard one Free Peoples Character Event card from the table or roll for the Hunt (as
       // if the Free Peoples player had moved the Fellowship).
       case "scha11":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.fellowship.progress() >= 1,
+          play: async () => this.characterUi.moveAnyOrAllNazgul(),
+          effect: async params => {
+            const regionId = this.q.fellowship.regionId();
+            if (this.q.region(regionId).hasNazgul()) {
+              const option = await this.ui.askOption<"D" | "H">("Choose an effect", [
+                {
+                  value: "D",
+                  label: "Discard a Free Peoples Character Event card from the table",
+                  disabled: !this.q.freePeoples.hasCardsOnTable()
+                },
+                {
+                  value: "H",
+                  label: "Roll for the Hunt"
+                }
+              ]);
+              switch (option) {
+                case "D": {
+                  const card = await this.ui.askTableCard("Choose a card to discard", {
+                    frontId: "free-peoples",
+                    nCards: 1,
+                    message: "Discard",
+                    cards: this.q.freePeoples.handCards().filter(c => isFreePeopleCharacterCard(c))
+                  });
+                  this.cardHandler.discardCardFromTable(card, "shadow");
+                  break;
+                }
+                case "H":
+                  await this.huntFlow.resolveHunt();
+                  break;
+              }
+            }
+          }
         };
       // TODO Morgul Wound
       // Play if the Fellowship is revealed.

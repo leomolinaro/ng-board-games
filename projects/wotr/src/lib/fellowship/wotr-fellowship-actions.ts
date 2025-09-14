@@ -37,6 +37,13 @@ export interface WotrFellowshipReveal {
 export function revealFellowship(region: WotrRegionId): WotrFellowshipReveal {
   return { type: "fellowship-reveal", region };
 }
+export interface WotrFellowshipPush {
+  type: "fellowship-push";
+  region: WotrRegionId;
+}
+export function pushFellowship(region: WotrRegionId): WotrFellowshipPush {
+  return { type: "fellowship-push", region };
+}
 export interface WotrFellowshipGuide {
   type: "fellowship-guide";
   companion: WotrCompanionId;
@@ -66,6 +73,7 @@ export function chooseRandomCompanion(...companions: WotrCompanionId[]): WotrCom
 export type WotrFellowshipAction =
   | WotrFellowshipProgress
   | WotrFellowshipCorruption
+  | WotrFellowshipPush
   | WotrFellowshipDeclare
   | WotrFellowshipHide
   | WotrFellowshipReveal

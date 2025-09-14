@@ -78,6 +78,10 @@ export class WotrFrontQuery {
     return !!this.front().tableCards.includes(cardId);
   }
 
+  hasCardsOnTable() {
+    return this.front().tableCards.length > 0;
+  }
+
   elvenRings(): WotrElvenRing[] {
     return this.front().elvenRings;
   }

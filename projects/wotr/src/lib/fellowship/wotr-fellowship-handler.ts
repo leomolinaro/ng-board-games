@@ -7,10 +7,15 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrFellowshipAction } from "./wotr-fellowship-actions";
+import {
+  corruptFellowship,
+  WotrFellowshipAction,
+  WotrFellowshipCorruption
+} from "./wotr-fellowship-actions";
 import { WotrRingDestroyed } from "./wotr-fellowship-models";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
@@ -24,16 +29,24 @@ export class WotrFellowshipHandler {
   private huntFlow = inject(WotrHuntFlow);
   private characterStore = inject(WotrCharacterStore);
   private characterHandler = inject(WotrCharacterHandler);
+  private logger = inject(WotrLogWriter);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerEffectLogger<WotrFellowshipCorruption>(
+      "fellowship-corruption",
+      (effect, f) => [
+        `Fellowship is ${effect.quantity < 0 ? "healed" : "corrupted"} by ${this.nCorruptionPoints(Math.abs(effect.quantity))}`
+      ]
+    );
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
       "fellowship-declare": (story, front) => this.declare(story.region),
       "fellowship-corruption": (action, front) => this.fellowshipStore.corrupt(action.quantity),
+      "fellowship-push": (action, front) => this.pushFellowship(action.region),
       "fellowship-guide": (action, front) => this.changeGuide(action.companion),
       "fellowship-hide": (action, front) => this.hide(),
       "fellowship-progress": (action, front) => this.progress(),
@@ -77,6 +90,10 @@ export class WotrFellowshipHandler {
     this.fellowshipStore.setGuide(companionId);
   }
 
+  pushFellowship(regionId: WotrRegionId): void {
+    this.regionStore.moveFellowshipToRegion(regionId);
+  }
+
   private characters(characters: WotrCharacterId[]) {
     return characters.map(c => this.characterStore.character(c).name).join(", ");
   }
@@ -99,6 +116,11 @@ export class WotrFellowshipHandler {
     }
   }
 
+  heal(nHealed: number) {
+    this.fellowshipStore.corrupt(-nHealed);
+    this.logger.logEffect(corruptFellowship(-nHealed));
+  }
+
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {
     return {
       "fellowship-corruption": (action, front, f) => [
@@ -110,6 +132,11 @@ export class WotrFellowshipHandler {
         " chooses ",
         f.character(action.companion),
         " as the guide"
+      ],
+      "fellowship-push": (action, front, f) => [
+        f.player(front),
+        " pushes the Fellowship to ",
+        f.region(action.region)
       ],
       "fellowship-declare": (action, front, f) => [
         f.player(front),

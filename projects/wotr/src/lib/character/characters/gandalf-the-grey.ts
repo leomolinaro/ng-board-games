@@ -1,5 +1,8 @@
 import { WotrAbility } from "../../ability/wotr-ability";
-import { WotrAfterActionDieResolution } from "../../action-die/wotr-action-die-modifiers";
+import {
+  WotrActionDieModifiers,
+  WotrAfterActionDieResolution
+} from "../../action-die/wotr-action-die-modifiers";
 
 // Gandalf the Grey - The Grey Wanderer (Level 3, Leadership 1)
 // Guide. After you use an Event Action Die to play an Event card, you may immediately draw an Event card from the deck matching the type of that card.
@@ -8,6 +11,10 @@ import { WotrAfterActionDieResolution } from "../../action-die/wotr-action-die-m
 // card).
 
 export class GandalfGuideAbility implements WotrAbility<WotrAfterActionDieResolution> {
+  constructor(private actionDieModifiers: WotrActionDieModifiers) {}
+
+  modifier = this.actionDieModifiers.afterActionDieResolution;
+
   public handler: WotrAfterActionDieResolution = async (die, frontId, actions) => {
     throw new Error("Guide ability not implemented yet");
   };

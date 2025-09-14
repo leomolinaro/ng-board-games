@@ -25,7 +25,7 @@ export class WotrCardPlayUi {
       isAvailable: frontId => this.hasPlayableCards(cartTypes, frontId),
       actions: async frontId => {
         const playableCards = this.playableCards(cartTypes, frontId);
-        const cardId = await this.ui.askCard("Select an event card to play", {
+        const cardId = await this.ui.askHandCard("Select an event card to play", {
           nCards: 1,
           cards: playableCards,
           frontId,

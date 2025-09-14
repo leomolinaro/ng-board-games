@@ -41,7 +41,7 @@ import {
 import { WotrRegion } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrRegionUnits } from "../../unit/wotr-unit-models";
-import { WotrGameUi } from "../wotr-game-ui";
+import { WotrCardSelection, WotrGameUi } from "../wotr-game-ui";
 import { WotrMap } from "./map/wotr-map";
 import { WotrReplayButton } from "./wotr-replay-buttons";
 
@@ -157,7 +157,7 @@ export class WotrBoard {
   protected selectedFrontIndex = signal<number>(0);
   private focusFront = effect(() => {
     const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
-    const cardSelection = this.ui.cardSelection();
+    const cardSelection = this.ui.handCardSelection();
     if (!reinforcementUnitSelection && !cardSelection) return;
     const frontId = reinforcementUnitSelection
       ? reinforcementUnitSelection.frontId
@@ -173,10 +173,16 @@ export class WotrBoard {
     this.openRegionDialog(region);
   });
 
-  private focusCards = effect(() => {
-    const cardSelection = this.ui.cardSelection();
+  private focusHandCards = effect(() => {
+    const cardSelection = this.ui.handCardSelection();
     if (!cardSelection) return;
-    this.openCardsDialog(null, cardSelection.frontId);
+    this.openHandCardsDialog(null, cardSelection.frontId);
+  });
+
+  private focusTableCards = effect(() => {
+    const cardSelection = this.ui.tableCardSelection();
+    if (!cardSelection) return;
+    this.openTableCardsDialog(null, cardSelection.frontId);
   });
 
   private focusFellowship = effect(() => {
@@ -189,30 +195,51 @@ export class WotrBoard {
   private fellowshipDialogRef: WotrFellowshipDialogRef | null = null;
 
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
-    this.openCardsDialog(cardId, frontId);
+    this.openHandCardsDialog(cardId, frontId);
   }
 
-  private async openCardsDialog(cardId: WotrCardId | null, frontId: WotrFrontId) {
+  private async openHandCardsDialog(cardId: WotrCardId | null, frontId: WotrFrontId) {
     const front = this.frontStore.front(frontId);
+    const result = await this.openCardDialog(cardId, front.handCards, this.ui.handCardSelection());
+    if (result) {
+      this.ui.handCards.emit(result);
+    }
+  }
+
+  private async openTableCardsDialog(cardId: WotrCardId | null, frontId: WotrFrontId) {
+    const front = this.frontStore.front(frontId);
+
+    const result = await this.openCardDialog(
+      cardId,
+      front.tableCards,
+      this.ui.tableCardSelection()
+    );
+    if (result) {
+      this.ui.tableCard.emit(result[0]);
+    }
+  }
+
+  private async openCardDialog(
+    focusedCardId: WotrCardId | null,
+    cardIds: WotrCardId[],
+    selectableCards: WotrCardSelection | null
+  ) {
     const cardsDialogRef = this.dialog.open<
       WotrCardsDialog,
       WotrCardsDialogData,
       undefined | WotrCardId[]
     >(WotrCardsDialog, {
       data: {
-        focusedCardId: cardId,
-        cardIds: front.handCards,
-        selectableCards: this.ui.cardSelection()
+        focusedCardId,
+        cardIds,
+        selectableCards
       },
       panelClass: "wotr-cards-overlay-panel",
       width: "100%",
       maxWidth: "100%"
     });
     const result = await firstValueFrom(cardsDialogRef.afterClosed());
-    this.regionDialogRef = null;
-    if (result) {
-      this.ui.cards.emit(result);
-    }
+    return result;
   }
 
   private async openRegionDialog(region: WotrRegion) {

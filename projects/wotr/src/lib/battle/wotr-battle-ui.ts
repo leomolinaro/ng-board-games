@@ -40,10 +40,6 @@ export class WotrBattleUi {
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
-    const dice: WotrCombatDie[] = [];
-    for (let i = 0; i < nDice; i++) {
-      dice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
-    }
     return {
       type: "combat-roll",
       dice: this.rollDice(nDice)
@@ -58,7 +54,7 @@ export class WotrBattleUi {
     };
   }
 
-  private rollDice(nDice: number): WotrCombatDie[] {
+  rollDice(nDice: number): WotrCombatDie[] {
     const dice: WotrCombatDie[] = [];
     for (let i = 0; i < nDice; i++) {
       dice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);

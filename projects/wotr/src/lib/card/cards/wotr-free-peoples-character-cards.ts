@@ -1,9 +1,17 @@
 import { inject, Injectable } from "@angular/core";
+import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { WotrCharacterQuery } from "../../character/wotr-character-query";
 import { WotrAction } from "../../commons/wotr-action-models";
-import { healFellowship } from "../../fellowship/wotr-fellowship-actions";
+import {
+  healFellowship,
+  hideFellowship,
+  moveFelloswhip
+} from "../../fellowship/wotr-fellowship-actions";
+import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
+import { assertAction } from "../../game/wotr-story-models";
 import { addHuntTile } from "../../hunt/wotr-hunt-actions";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
@@ -16,7 +24,9 @@ import { WotrEventCard } from "./wotr-cards";
 export class WotrFreePeoplesCharacterCards {
   private gameUi = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
+  private battleUi = inject(WotrBattleUi);
   private q = inject(WotrGameQuery);
+  private fellowshipHandler = inject(WotrFellowshipHandler);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -85,19 +95,57 @@ export class WotrFreePeoplesCharacterCards {
           canBePlayed: () => this.q.gandalfTheGrey.isInFellowship(),
           play: async () => [playCardOnTable("Wizard's Staff")]
         };
-      // TODO Athelas
+      // Athelas
       // Roll three dice and heal one Corruption point for each die result of 5+.
       // If Strider is the Guide, heal one Corruption point for each die result of 3+ instead.
       case "fpcha09":
         return {
-          play: async () => []
+          play: async () => {
+            await this.gameUi.askContinue("Roll three dice");
+            const dice = this.battleUi.rollDice(3);
+            return [rollCombatDice(...dice)];
+          },
+          effect: async params => {
+            const action = assertAction<WotrCombatRoll>(params.story, "combat-roll");
+            const threshold = this.q.strider.isGuide() ? 3 : 5;
+            const nHealed = action.dice.filter(d => d >= threshold).length;
+            const actualHealed = Math.min(nHealed, this.q.fellowship.corruption());
+            if (actualHealed) {
+              await this.gameUi.askContinue("Heal the Fellowship");
+              this.fellowshipHandler.heal(actualHealed);
+            }
+          }
         };
-      // TODO There is Another Way
+      // There is Another Way
       // Heal one Corruption point.
       // Then, if Gollum is the Guide, you may also hide or move the Fellowship (following the normal movement rules).
       case "fpcha10":
         return {
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            if (this.q.fellowship.corruption() > 0) {
+              await this.gameUi.askContinue("Heal the Fellowship");
+              actions.push(healFellowship(1));
+            }
+            if (this.q.gollum.isGuide()) {
+              if (this.q.fellowship.isHidden()) {
+                const move = await this.gameUi.askConfirm(
+                  "Do you want to move the Fellowship?",
+                  "Move",
+                  "Stay"
+                );
+                if (move) actions.push(moveFelloswhip());
+              } else {
+                const hide = await this.gameUi.askConfirm(
+                  "Do you want to hide the Fellowship?",
+                  "Hide",
+                  "Keep revealed"
+                );
+                if (hide) actions.push(hideFellowship());
+              }
+            }
+            return actions;
+          }
         };
       // TODO I Will Go Alone
       // Play if at least one Companion is in the Fellowship.

@@ -45,4 +45,8 @@ export class WotrFellowshipQuery {
   isOnMordorTrack(): boolean {
     return this.fellowshipStore.isOnMordorTrack();
   }
+
+  isHidden(): boolean {
+    return this.fellowshipStore.isHidden();
+  }
 }

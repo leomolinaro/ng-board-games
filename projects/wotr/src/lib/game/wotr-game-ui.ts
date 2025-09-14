@@ -32,7 +32,8 @@ interface WotrGameUiState {
   actionDieSelection: WotrActionDieSelection | null;
   reinforcementUnitSelection: WotrReinforcementUnitSelection | null;
   regionUnitSelection: WotrRegionUnitSelection | null;
-  cardSelection: WotrCardSelection | null;
+  handCardSelection: WotrCardSelection | null;
+  tableCardSelection: WotrCardSelection | null;
   inputQuantitySelection: WotrInputQuantitySelection | false;
   fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | null;
 }
@@ -84,7 +85,8 @@ export const initialState: WotrGameUiState = {
   options: null,
   reinforcementUnitSelection: null,
   regionUnitSelection: null,
-  cardSelection: null,
+  handCardSelection: null,
+  tableCardSelection: null,
   inputQuantitySelection: false,
   fellowshipCompanionsSelection: null
 };
@@ -165,18 +167,26 @@ export class WotrGameUi extends signalStore(
     return region;
   }
 
-  cards = uiEvent<WotrCardId[]>();
-  async askCards(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId[]> {
-    this.updateUi(s => ({ ...s, message, cardSelection }));
-    const cards = await this.cards.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, cardSelection: null }));
+  handCards = uiEvent<WotrCardId[]>();
+  async askHandCards(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId[]> {
+    this.updateUi(s => ({ ...s, message, handCardSelection: cardSelection }));
+    const cards = await this.handCards.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, handCardSelection: null }));
     return cards;
   }
-  async askCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
-    this.updateUi(s => ({ ...s, message, cardSelection }));
-    const cards = await this.cards.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, cardSelection: null }));
+  async askHandCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
+    this.updateUi(s => ({ ...s, message, handCardSelection: cardSelection }));
+    const cards = await this.handCards.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, handCardSelection: null }));
     return cards[0];
+  }
+
+  tableCard = uiEvent<WotrCardId>();
+  async askTableCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
+    this.updateUi(s => ({ ...s, message, tableCardSelection: cardSelection }));
+    const card = await this.tableCard.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, tableCardSelection: null }));
+    return card;
   }
 
   nation = uiEvent<WotrNationId>();

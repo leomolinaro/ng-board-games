@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { WotrElvenRingAction } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";

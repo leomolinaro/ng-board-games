@@ -231,7 +231,7 @@ export class WotrFrontArea {
   });
 
   private focusCards = effect(() => {
-    const cardSelection = this.ui.cardSelection();
+    const cardSelection = this.ui.handCardSelection();
     if (!cardSelection) return;
     if (cardSelection.frontId !== this.front().id) return;
     this.selectedTabIndex.set(0);

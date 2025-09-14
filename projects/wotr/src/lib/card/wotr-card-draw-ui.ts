@@ -26,7 +26,7 @@ export class WotrCardDrawUi {
 
   async discardExcessCards(frontId: WotrFrontId): Promise<WotrAction> {
     const excessCards = this.q.front(frontId).nExcessCards();
-    const cards = await this.ui.askCards(`Discard ${excessCards} card(s).`, {
+    const cards = await this.ui.askHandCards(`Discard ${excessCards} card(s).`, {
       nCards: excessCards,
       frontId,
       message: "Discard cards"
