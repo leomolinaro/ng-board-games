@@ -1,44 +1,19 @@
 import { inject, Injectable } from "@angular/core";
-import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { oppositeFront, WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationRules } from "../nation/wotr-nation-rules";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import {
-  WotrActionDie,
-  WotrActionToken,
-  WotrFreePeopleActionDie,
-  WotrShadowActionDie
-} from "./wotr-action-die-models";
+import { WotrActionToken } from "./wotr-action-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieRules {
-  private frontStore = inject(WotrFrontStore);
   private characterStore = inject(WotrCharacterStore);
   private huntStore = inject(WotrHuntStore);
   private nationRules = inject(WotrNationRules);
   private regionStore = inject(WotrRegionStore);
   private q = inject(WotrGameQuery);
-
-  private FREE_PEOPLES_ACTION_DICE: WotrFreePeopleActionDie[] = [
-    "character",
-    "muster",
-    "event",
-    "muster-army",
-    "will-of-the-west"
-  ];
-
-  private SHADOW_ACTION_DICE: WotrShadowActionDie[] = [
-    "character",
-    "army",
-    "event",
-    "muster",
-    "muster-army",
-    "eye"
-  ];
 
   rollableActionDice(frontId: WotrFrontId): number {
     switch (frontId) {
@@ -54,19 +29,6 @@ export class WotrActionDieRules {
         return nDice;
       }
     }
-  }
-
-  rollActionDie(frontId: WotrFrontId): WotrActionDie {
-    switch (frontId) {
-      case "free-peoples":
-        return randomUtil.getRandomDraws(1, this.FREE_PEOPLES_ACTION_DICE)[0];
-      case "shadow":
-        return randomUtil.getRandomDraws(1, this.SHADOW_ACTION_DICE)[0];
-    }
-  }
-
-  canSkipTokens(frontId: WotrFrontId): boolean {
-    return !this.q.front(frontId).hasActionDice();
   }
 
   canPassAction(frontId: WotrFrontId): boolean {

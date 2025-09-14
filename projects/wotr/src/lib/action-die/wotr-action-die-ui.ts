@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
@@ -20,7 +21,12 @@ import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { rollActionDice, skipActionDie } from "./wotr-action-die-actions";
-import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
+import {
+  WotrActionDie,
+  WotrActionToken,
+  WotrFreePeopleActionDie,
+  WotrShadowActionDie
+} from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
 
@@ -45,16 +51,43 @@ export class WotrActionDieUi {
     await this.ui.askContinue(`Roll ${nActionDice} action dice`);
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
-      actionDice.push(this.actionDieRules.rollActionDie(frontId));
+      actionDice.push(this.rollActionDie(frontId));
     }
     return rollActionDice(...actionDice);
+  }
+
+  private FREE_PEOPLES_ACTION_DICE: WotrFreePeopleActionDie[] = [
+    "character",
+    "character",
+    "muster",
+    "event",
+    "muster-army",
+    "will-of-the-west"
+  ];
+
+  private SHADOW_ACTION_DICE: WotrShadowActionDie[] = [
+    "character",
+    "army",
+    "event",
+    "muster",
+    "muster-army",
+    "eye"
+  ];
+
+  private rollActionDie(frontId: WotrFrontId): WotrActionDie {
+    switch (frontId) {
+      case "free-peoples":
+        return randomUtil.getRandomDraws(1, this.FREE_PEOPLES_ACTION_DICE)[0];
+      case "shadow":
+        return randomUtil.getRandomDraws(1, this.SHADOW_ACTION_DICE)[0];
+    }
   }
 
   async actionResolution(
     frontId: WotrFrontId,
     elvenRing: WotrElvenRingAction | null
   ): Promise<WotrStory> {
-    const canSkipTokens = this.actionDieRules.canSkipTokens(frontId);
+    const canSkipTokens = this.q.front(frontId).canSkipTokens();
     if (canSkipTokens) {
       const skipTokens = await this.ui.askConfirm(
         "Do you want to skip action tokens?",

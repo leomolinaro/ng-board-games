@@ -20,6 +20,10 @@ export class WotrFrontQuery {
     return !!this.front().actionDice.length;
   }
 
+  canSkipTokens() {
+    return !this.hasActionDice();
+  }
+
   nActionDice() {
     return this.front().actionDice.length;
   }
