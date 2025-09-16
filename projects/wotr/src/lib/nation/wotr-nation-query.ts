@@ -1,4 +1,4 @@
-import { WotrRegion } from "../region/wotr-region-models";
+import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationStore } from "./wotr-nation-store";
@@ -29,6 +29,7 @@ export class WotrNationQuery {
   nRegularReinforcements(): number {
     return this.nationStore.nation(this.nationId).reinforcements.regular;
   }
+
   nEliteReinforcements(): number {
     return this.nationStore.nation(this.nationId).reinforcements.elite;
   }
@@ -57,5 +58,13 @@ export class WotrNationQuery {
 
   recruitmentRegions(): WotrRegion[] {
     return this.regionStore.recruitmentRegions(this.nation());
+  }
+
+  canRecruit(regionId: WotrRegionId): boolean {
+    return this.regionStore.isRecruitmentRegion(this.regionStore.region(regionId), this.nation());
+  }
+
+  settlementRegions(): WotrRegion[] {
+    return this.regionStore.regions().filter(r => r.nationId === this.nationId && r.settlement);
   }
 }

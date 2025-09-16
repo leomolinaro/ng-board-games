@@ -42,6 +42,16 @@ export class WotrFellowshipQuery {
     return nation.front === "free-peoples";
   }
 
+  isInFreePeoplesCityOrStronghold() {
+    const region = this.regionStore.region(this.regionId());
+    if (region.settlement === "city" || region.settlement === "stronghold") {
+      const nation = this.nationStore.nation(region.nationId!);
+      return nation.front === "free-peoples";
+    } else {
+      return false;
+    }
+  }
+
   isOnMordorTrack(): boolean {
     return this.fellowshipStore.isOnMordorTrack();
   }

@@ -21,6 +21,7 @@ import {
   WotrRegionUnitSelection,
   selectionModeFactory
 } from "./wotr-region-unit-selection";
+import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -117,12 +118,13 @@ export class WotrRegionDialog implements OnInit {
   private assets = inject(WotrAssetsStore);
   private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
   private characterStore = inject(WotrCharacterStore);
+  private unitModifiers = inject(WotrUnitModifiers);
 
   protected unitNodes!: UnitNode[];
   private selectedNodes = signal<UnitNode[]>([]);
 
   private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(this.data.unitSelection, this.characterStore)
+    ? selectionModeFactory(this.data.unitSelection, this.characterStore, this.unitModifiers)
     : null;
 
   private casualtiesMode = this.data.unitSelection?.type === "chooseCasualties";

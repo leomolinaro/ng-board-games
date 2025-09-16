@@ -4,6 +4,7 @@ import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-mo
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
@@ -30,6 +31,7 @@ export class WotrFellowshipHandler {
   private characterStore = inject(WotrCharacterStore);
   private characterHandler = inject(WotrCharacterHandler);
   private logger = inject(WotrLogWriter);
+  private q = inject(WotrGameQuery);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -84,6 +86,9 @@ export class WotrFellowshipHandler {
     this.regionStore.moveFellowshipToRegion(regionId);
     this.fellowshipStore.setProgress(0);
     this.nationHandler.checkNationActivationByFellowshipDeclaration(regionId);
+    if (this.q.fellowship.corruption() > 0 && this.q.fellowship.isInFreePeoplesSettlement()) {
+      this.healEffect(1);
+    }
   }
 
   changeGuide(companionId: WotrCompanionId): void {
@@ -116,7 +121,7 @@ export class WotrFellowshipHandler {
     }
   }
 
-  heal(nHealed: number) {
+  healEffect(nHealed: number) {
     this.fellowshipStore.corrupt(-nHealed);
     this.logger.logEffect(corruptFellowship(-nHealed));
   }

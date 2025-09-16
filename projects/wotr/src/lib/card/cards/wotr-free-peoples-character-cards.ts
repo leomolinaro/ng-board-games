@@ -111,7 +111,7 @@ export class WotrFreePeoplesCharacterCards {
             const nHealed = action.dice.filter(d => d >= threshold).length;
             const actualHealed = Math.min(nHealed, this.q.fellowship.corruption());
             if (actualHealed) {
-              this.fellowshipHandler.heal(actualHealed);
+              this.fellowshipHandler.healEffect(actualHealed);
             }
           }
         };

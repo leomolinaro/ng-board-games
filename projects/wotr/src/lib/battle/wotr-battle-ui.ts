@@ -132,8 +132,7 @@ export class WotrBattleUi {
     if (this.unitUtils.isEmptyArmy(movingUnits)) {
       return [notAdvanceArmy(fromRegion.id)];
     } else {
-      const attackingArmy = this.unitUtils.splitUnits(fromRegion.army, battle.retroguard)!;
-      const leftUnits = this.unitUtils.splitUnits(attackingArmy, movingUnits);
+      const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingUnits);
       return [advanceArmy(leftUnits)];
     }
   }

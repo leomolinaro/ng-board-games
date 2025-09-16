@@ -284,12 +284,28 @@ export class WotrFreePeoplesStrategyCards {
             return actions;
           }
         };
-      // TODO Éomer, Son of Éomund
+      // Éomer, Son of Éomund
       // Recruit one Rohan unit (Regular or Elite) and one Rohan Leader in a free Rohan region containing a Settlement.
       case "fpstr23":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const availableRegions = this.q.rohan
+              .settlementRegions()
+              .filter(r => this.q.rohan.canRecruit(r.id))
+              .map(r => r.id);
+            if (!availableRegions.length) {
+              await this.gameUi.askContinue("No free Rohan region with a settlement");
+              return [];
+            }
+            const regionId = await this.gameUi.askRegion(
+              "Choose a region to recruit units",
+              availableRegions
+            );
+            const actions: WotrAction[] = [];
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard(regionId, "rohan")));
+            actions.push(...(await this.unitUi.recruitLeaderByCard(regionId, "rohan")));
+            return actions;
+          }
         };
       // Thranduil's Archers
       // Recruit one Elven unit (Regular or Elite) in Woodland Realm.

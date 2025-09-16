@@ -1,8 +1,10 @@
+import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrUnits } from "../../unit/wotr-unit-models";
+import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrRegion, WotrRegionId } from "../wotr-region-models";
 
 export type WotrRegionUnitSelection =
@@ -75,13 +77,18 @@ interface WotrRegionUnitSelectionMode {
 
 export function selectionModeFactory(
   unitSelection: WotrRegionUnitSelection,
-  characterStore: WotrCharacterStore
+  characterStore: WotrCharacterStore,
+  unitModifiers: WotrUnitModifiers
 ): WotrRegionUnitSelectionMode {
   switch (unitSelection.type) {
     case "moveArmy":
-      return new MoveArmySelectionMode(unitSelection, characterStore);
+      return new MoveArmySelectionMode(unitSelection, characterStore, unitModifiers);
     case "attack":
-      return new AttackSelectionMode(unitSelection.withLeaders, unitSelection.frontId);
+      return new AttackSelectionMode(
+        unitSelection.withLeaders,
+        unitSelection.frontId,
+        unitModifiers
+      );
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
@@ -124,11 +131,14 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
 export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitSelection: WotrMovingArmyUnitSelection,
-    private characterStore: WotrCharacterStore
+    private characterStore: WotrCharacterStore,
+    private unitModifiers: WotrUnitModifiers
   ) {}
 
   initialize(unitNodes: UnitNode[]) {
-    if (this.unitSelection.retroguard) throw new Error("Method not implemented.");
+    if (this.unitSelection.retroguard) {
+      unitNodes = removeRetroguardUnits(unitNodes, this.unitSelection.retroguard);
+    }
     for (const unitNode of unitNodes) {
       if (unitNode.group !== "army") continue;
       if (
@@ -152,22 +162,69 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     if (!someArmyUnits) return "Select at least one regular or elite unit to move.";
     if (!this.unitSelection.required) return true;
     if (this.unitSelection.withLeaders) {
-      const someLeaders = selectedNodes.some(node => {
-        if (node.type === "character") return true;
-        if (node.type === "nazgul") return true;
-        if (node.type === "leader") return true;
-        return false;
-      });
+      const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
       if (!someLeaders) return "Select at least one leader to move.";
     }
     return true;
   }
 }
 
+function removeRetroguardUnits(nodes: UnitNode[], retroguard: WotrUnits): UnitNode[] {
+  retroguard.regulars?.forEach(unit => {
+    for (let i = 0; i < unit.quantity; i++) {
+      nodes = immutableUtil.listRemoveFirst(
+        node => node.type === "regular" && node.nationId === unit.nation,
+        nodes
+      );
+    }
+  });
+  retroguard.elites?.forEach(unit => {
+    for (let i = 0; i < unit.quantity; i++) {
+      nodes = immutableUtil.listRemoveFirst(
+        node => node.type === "elite" && node.nationId === unit.nation,
+        nodes
+      );
+    }
+  });
+  retroguard.leaders?.forEach(unit => {
+    for (let i = 0; i < unit.quantity; i++) {
+      nodes = immutableUtil.listRemoveFirst(
+        node => node.type === "leader" && node.nationId === unit.nation,
+        nodes
+      );
+    }
+  });
+  if (retroguard.nNazgul) {
+    for (let i = 0; i < retroguard.nNazgul; i++) {
+      nodes = immutableUtil.listRemoveFirst(node => node.type === "nazgul", nodes);
+    }
+  }
+  retroguard.characters?.forEach(unit => {
+    nodes = immutableUtil.listRemoveFirst(
+      node => node.type === "character" && node.id === unit,
+      nodes
+    );
+  });
+  return nodes;
+}
+
+function hasLeaders(selectedNodes: UnitNode[], unitModifiers: WotrUnitModifiers): boolean {
+  return selectedNodes.some(node => {
+    if (node.type === "character") return true;
+    if (node.type === "nazgul") return true;
+    if (node.type === "leader") return true;
+    if (node.type === "regular" || node.type === "elite") {
+      if (node.nationId && unitModifiers.isLeader(node.type, node.nationId)) return true;
+    }
+    return false;
+  });
+}
+
 export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private withLeaders: boolean,
-    private frontId: WotrFrontId
+    private frontId: WotrFrontId,
+    private unitModifiers: WotrUnitModifiers
   ) {}
 
   initialize(unitNodes: UnitNode[], region: WotrRegion) {
@@ -188,12 +245,7 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
     });
     if (!someArmyUnits) return "Select at least one regular or elite unit to attack.";
     if (this.withLeaders) {
-      const someLeaders = selectedNodes.some(node => {
-        if (node.type === "character") return true;
-        if (node.type === "nazgul") return true;
-        if (node.type === "leader") return true;
-        return false;
-      });
+      const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
       if (!someLeaders) return "Select at least one leader to attack.";
     }
     return true;
@@ -250,7 +302,9 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
   constructor(private unitSelection: WotrChooseCasualtiesUnitSelection) {}
 
   initialize(unitNodes: UnitNode[]) {
-    if (this.unitSelection.retroguard) throw new Error("Method not implemented.");
+    if (this.unitSelection.retroguard) {
+      unitNodes = removeRetroguardUnits(unitNodes, this.unitSelection.retroguard);
+    }
     const group = this.unitSelection.underSiege ? "underSiege" : "army";
     if (this.unitSelection.hitPoints === "full") {
       for (const node of unitNodes) {

@@ -10,7 +10,7 @@ import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
-import { WotrLeadershipModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
+import { WotrLeaderModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
@@ -178,13 +178,11 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   }
 }
 
-export class ServantsOfTheWhiteHandAbility implements WotrAbility<WotrLeadershipModifier> {
+export class ServantsOfTheWhiteHandAbility implements WotrAbility<WotrLeaderModifier> {
   constructor(private unitModifiers: WotrUnitModifiers) {}
 
-  public modifier = this.unitModifiers.leadership;
+  public modifier = this.unitModifiers.leaderModifier;
 
-  public handler: WotrLeadershipModifier = army => {
-    if (army.front !== "shadow") return 0;
-    return army.elites?.find(unit => unit.nation === "isengard")?.quantity || 0;
-  };
+  public handler: WotrLeaderModifier = (type, nationId) =>
+    type === "elite" && nationId === "isengard";
 }
