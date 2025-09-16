@@ -2,11 +2,9 @@ import { Injectable, inject } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card-models";
-import { activateCharacterAbility } from "../character/characters/wotr-character-card";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrCharacters } from "../character/wotr-characters";
 import {
   WotrCompanionRandom,
   WotrCompanionSeparation,
@@ -24,7 +22,6 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
-import { WotrUiAbility } from "../ability/wotr-ability";
 
 interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
@@ -47,10 +44,10 @@ export class WotrHuntFlow {
   private characterStore = inject(WotrCharacterStore);
   private logger = inject(WotrLogWriter);
   private fellowshipStore = inject(WotrFellowshipStore);
-  private characters = inject(WotrCharacters);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+  private charactersModifiers = inject(WotrCharacterModifiers);
 
   async resolveHunt() {
     this.huntStore.setInProgress(true);
@@ -222,11 +219,16 @@ export class WotrHuntFlow {
           break;
         }
         case "companion-random": {
-          const takeThemAliveAbsorbed = await this.checkTakeThemAlive(action.companions);
-          if (takeThemAliveAbsorbed > 0) {
-            absorbedDamage += takeThemAliveAbsorbed;
-          } else {
-            params.randomCompanions = action.companions;
+          for (const companionId of action.companions) {
+            const eliminating =
+              await this.charactersModifiers.onBeforeCharacterElimination(companionId);
+            if (eliminating) {
+              if (!params.randomCompanions) params.randomCompanions = [];
+              params.randomCompanions.push(companionId);
+            } else {
+              absorbedDamage += this.characterStore.character(companionId).level;
+              params.casualtyTaken = true;
+            }
           }
           break;
         }
@@ -260,22 +262,6 @@ export class WotrHuntFlow {
       "card-discard-from-table"
     );
     return actions;
-  }
-
-  private async checkTakeThemAlive(companions: WotrCharacterId[]): Promise<number> {
-    let absorbedDamage = 0;
-    for (const companion of companions) {
-      if (companion === "peregrin" || companion === "meriadoc") {
-        const ability = this.characters
-          .getAbilities(companion)
-          .find(a => a.name === "Take Them Alive")! as WotrUiAbility;
-        const actions = await activateCharacterAbility(ability, companion, this.freePeoples);
-        if (actions) {
-          absorbedDamage++;
-        }
-      }
-    }
-    return absorbedDamage;
   }
 
   async rollHuntDice(player: WotrPlayer): Promise<WotrCombatDie[]> {

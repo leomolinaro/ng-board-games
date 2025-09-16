@@ -4,8 +4,10 @@ import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
+import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
@@ -35,7 +37,6 @@ import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacters {
@@ -55,6 +56,7 @@ export class WotrCharacters {
   private q = inject(WotrGameQuery);
   private cardHandler = inject(WotrCardHandler);
   private cardDrawUi = inject(WotrCardDrawUi);
+  private fellowshipUi = inject(WotrFellowshipUi);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
@@ -102,11 +104,26 @@ export class WotrCharacters {
           // new EmissaryFromTheWestAbility(null as any)
         ];
       case "peregrin":
-        return [];
+        return [
+          // new GuideAbility(null as any),
+          new TakeThemAliveAbility(
+            "peregrin",
+            this.q,
+            this.characterModifiers,
+            this.freePeoples,
+            this.fellowshipUi
+          )
+        ];
       case "meriadoc":
         return [
           // new GuideAbility(null as any),
-          this.takeThemAliveAbility
+          new TakeThemAliveAbility(
+            "meriadoc",
+            this.q,
+            this.characterModifiers,
+            this.freePeoples,
+            this.fellowshipUi
+          )
         ];
       case "boromir":
         return [
@@ -127,8 +144,6 @@ export class WotrCharacters {
         return [];
     }
   }
-
-  private takeThemAliveAbility = new TakeThemAliveAbility(this.q, this.characterModifiers);
 
   private get(characterId: WotrCharacterId): WotrCharacterCard {
     switch (characterId) {

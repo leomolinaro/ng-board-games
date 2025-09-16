@@ -80,6 +80,10 @@ export class WotrFellowshipUi {
       companions: fellowshipCompanions,
       singleSelection: false
     });
+    return this.separateSpecificCompanions(companions);
+  }
+
+  async separateSpecificCompanions(companions: WotrCompanionId[]): Promise<WotrAction[]> {
     const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(companions);
     const targetRegion = await this.ui.askRegion(
       "Select a region to move the separated companions",
@@ -90,6 +94,7 @@ export class WotrFellowshipUi {
     this.fellowshipHandler.separateCompanions(companions, targetRegion);
 
     if (companions.some(c => this.fellowshipStore.guide() === c)) {
+      const fellowshipCompanions = this.fellowshipStore.companions();
       const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
       if (leftCompanionIds.length > 0) {
         const leftCompanions = leftCompanionIds.map(id => this.characterStore.character(id));

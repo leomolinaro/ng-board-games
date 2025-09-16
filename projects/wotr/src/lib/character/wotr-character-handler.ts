@@ -8,6 +8,7 @@ import {
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   WotrCharacterReactionStory,
   WotrSkipCharacterReactionStory,
@@ -23,7 +24,6 @@ import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-act
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
-import { WotrGameQuery } from "../game/wotr-game-query";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {
@@ -37,7 +37,7 @@ export class WotrCharacterHandler {
 
   private shadow = inject(WotrShadowPlayer);
 
-  private characters = inject(WotrCharacters);
+  characters: WotrCharacters = null as any;
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);

@@ -160,7 +160,8 @@ export class WotrFellowshipHandler {
         f.player(front),
         " separates ",
         this.characters(action.companions),
-        " from the Fellowship"
+        " from the Fellowship to ",
+        f.region(action.toRegion)
       ]
     };
   }

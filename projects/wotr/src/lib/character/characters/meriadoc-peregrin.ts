@@ -1,11 +1,14 @@
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
+import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrCharacterId } from "../wotr-character-models";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrCharacterId, WotrCompanionId } from "../wotr-character-models";
 import {
   WotrBeforeCharacterElimination,
   WotrCharacterModifiers
 } from "../wotr-character-modifiers";
+import { activateCharacterAbility } from "./wotr-character-card";
 
 // Meriadoc Brandybuck - Hobbit Companion (Level 1, Leadership 1)
 // Guide. During the Hunt, if the Hunt damage is one or more, separate Meriadoc from the Fellowship to reduce the Hunt damage by one.
@@ -24,21 +27,22 @@ export class HobbitGuideAbility implements WotrAbility<unknown> {
 
 export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterElimination> {
   constructor(
+    private characterId: WotrCompanionId,
     private q: WotrGameQuery,
-    private characterModifiers: WotrCharacterModifiers
+    private characterModifiers: WotrCharacterModifiers,
+    private freePeoples: WotrFreePeoplesPlayer,
+    private fellowshipUi: WotrFellowshipUi
   ) {}
-
-  name: string = "Take Them Alive!";
 
   modifier = this.characterModifiers.beforeCharacterElimination;
 
   handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
-    if (characterId !== "meriadoc") return true;
-    if (!this.q.meriadoc.isInFellowship()) return true;
+    if (characterId !== this.characterId) return true;
+    if (!this.q.character(this.characterId).isInFellowship()) return true;
+    if (await activateCharacterAbility(this, this.characterId, this.freePeoples)) return false;
     return true;
   };
 
-  play: () => Promise<WotrAction[]> = async () => {
-    return [];
-  };
+  play: () => Promise<WotrAction[]> = async () =>
+    this.fellowshipUi.separateSpecificCompanions([this.characterId]);
 }

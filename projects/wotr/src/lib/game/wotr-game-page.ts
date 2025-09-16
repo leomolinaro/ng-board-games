@@ -8,7 +8,9 @@ import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers"
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrCardHandler } from "../card/wotr-card-handler";
+import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrGameTurn } from "../game-turn/wotr-game-flow";
@@ -29,7 +31,6 @@ import {
   WotrStoriesDialogRef
 } from "./wotr-stories-dialog";
 import { WotrStoryService } from "./wotr-story-service";
-import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 
 @Component({
   selector: "wotr-game-page",
@@ -56,6 +57,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
   private battleModifiers = inject(WotrBattleModifiers);
+  private characterHandler = inject(WotrCharacterHandler);
+  private characters = inject(WotrCharacters);
 
   private dialog = inject(MatDialog);
 
@@ -72,6 +75,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrRegionHandler).init();
     inject(WotrUnitHandler).init();
     this.story.init(this.localPlayerService);
+    this.characterHandler.characters = this.characters;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
