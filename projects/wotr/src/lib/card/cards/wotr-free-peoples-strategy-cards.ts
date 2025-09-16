@@ -131,10 +131,8 @@ export class WotrFreePeoplesStrategyCards {
             const actions: WotrAction[] = [];
             const advanceAction = await this.nationUi.advanceNation("rohan");
             if (advanceAction) actions.push(advanceAction);
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("edoras", "rohan");
-            if (unitA) actions.push(unitA);
-            const leaderA = await this.unitUi.recruitLeaderByCard("edoras", "rohan");
-            if (leaderA) actions.push(leaderA);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("edoras", "rohan")));
+            actions.push(...(await this.unitUi.recruitLeaderByCard("edoras", "rohan")));
             return actions;
           }
         };
@@ -179,10 +177,10 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("minas-tirith", "gondor");
-            if (unitA) actions.push(unitA);
-            const leaderA = await this.unitUi.recruitLeaderByCard("minas-tirith", "gondor");
-            if (leaderA) actions.push(leaderA);
+            actions.push(
+              ...(await this.unitUi.recruitRegularOrEliteByCard("minas-tirith", "gondor"))
+            );
+            actions.push(...(await this.unitUi.recruitLeaderByCard("minas-tirith", "gondor")));
             return actions;
           }
         };
@@ -193,8 +191,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("lorien", "elves");
-            if (unitA) actions.push(unitA);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("lorien", "elves")));
             const drawA = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawA) actions.push(drawA);
             return actions;
@@ -213,10 +210,8 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("carrock", "north");
-            if (unitA) actions.push(unitA);
-            const leaderA = await this.unitUi.recruitLeaderByCard("carrock", "north");
-            if (leaderA) actions.push(leaderA);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("carrock", "north")));
+            actions.push(...(await this.unitUi.recruitLeaderByCard("carrock", "north")));
             return actions;
           }
         };
@@ -226,10 +221,10 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("dol-amroth", "gondor");
-            if (unitA) actions.push(unitA);
-            const leaderA = await this.unitUi.recruitLeaderByCard("dol-amroth", "gondor");
-            if (leaderA) actions.push(leaderA);
+            actions.push(
+              ...(await this.unitUi.recruitRegularOrEliteByCard("dol-amroth", "gondor"))
+            );
+            actions.push(...(await this.unitUi.recruitLeaderByCard("dol-amroth", "gondor")));
             return actions;
           }
         };
@@ -256,10 +251,10 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const northA = await this.unitUi.recruitRegularOrEliteByCard("the-shire", "north");
-            if (northA) actions.push(northA);
-            const dwarfA = await this.unitUi.recruitRegularOrEliteByCard("ered-luin", "dwarves");
-            if (dwarfA) actions.push(dwarfA);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("the-shire", "north")));
+            actions.push(
+              ...(await this.unitUi.recruitRegularOrEliteByCard("ered-luin", "dwarves"))
+            );
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);
             return actions;
@@ -272,8 +267,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("rivendell", "elves");
-            if (unitA) actions.push(unitA);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("rivendell", "elves")));
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);
             return actions;
@@ -285,10 +279,8 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("erebor", "dwarves");
-            if (unitA) actions.push(unitA);
-            const recruitLeaderAction = await this.unitUi.recruitLeaderByCard("erebor", "dwarves");
-            if (recruitLeaderAction) actions.push(recruitLeaderAction);
+            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("erebor", "dwarves")));
+            actions.push(...(await this.unitUi.recruitLeaderByCard("erebor", "dwarves")));
             return actions;
           }
         };
@@ -306,8 +298,9 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            const unitA = await this.unitUi.recruitRegularOrEliteByCard("woodland-realm", "elves");
-            if (unitA) actions.push(unitA);
+            actions.push(
+              ...(await this.unitUi.recruitRegularOrEliteByCard("woodland-realm", "elves"))
+            );
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);
             return actions;

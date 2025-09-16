@@ -145,13 +145,33 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO A New Power is Rising
+      // A New Power is Rising
       // Play if Saruman is in play.
       // Recruit two Isengard Regular units in each of North and South Dunland and two Isengard units (Regular or Elite) in Orthanc.
       case "sstr16":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.saruman.isInPlay(),
+          play: async () => {
+            const actions: WotrAction[] = [];
+            const regularRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
+              2,
+              "isengard",
+              "regulars",
+              2,
+              this.q
+                .regions("north-dunland", "south-dunland")
+                .filter(r => r.isFreeForRecruitment("shadow"))
+                .map(r => r.regionId)
+            );
+            actions.push(...regularRecruitments);
+            const eliteRecruitments = await this.unitUi.recruitRegularOrEliteByCard(
+              "orthanc",
+              "isengard",
+              2
+            );
+            actions.push(...eliteRecruitments);
+            return actions;
+          }
         };
       // Many Kings to the Service of Mordor
       // Recruit two Southron & Easterling Regular units in each of three different Southron & Easterlings Settlements.

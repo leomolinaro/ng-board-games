@@ -8,7 +8,7 @@ import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler"
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
-import { WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
+import { addHuntTile, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
 import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
@@ -40,45 +40,49 @@ export class WotrShadowCharacterCards {
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
-      // TODO Shelob's Lair
+      // Shelob's Lair
       // The "Shelob's Lair" special Hunt tile [die icon, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case "scha01":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [addHuntTile("rds")]
         };
-      // TODO The Ring is Mine!
+      // The Ring is Mine!
       // The "The Ring is Mine!" special Hunt tile [eye, reveal, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case "scha02":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [addHuntTile("rers")]
         };
-      // TODO On, On They Went
+      // On, On They Went
       // The "On, On They Went" special Hunt tile [3, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case "scha03":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [addHuntTile("r3s")]
         };
-      // TODO Give it to Uss!
+      // Give it to Uss!
       // The "Give it to Uss!" special Hunt tile [1, reveal, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case "scha04":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [addHuntTile("r1rs")]
         };
-      // TODO Orc Patrol
-      // Play if the Fellowship is not in a region containing a Free Peoples Settlement. Draw a Hunt tile.
+      // Orc Patrol
+      // Play if the Fellowship is not in a region containing a Free Peoples Settlement.
+      // Draw a Hunt tile.
       // If the tile shows an Eye or is a Fellowship Special tile, discard it without effect. Otherwise, follow the rules for a successful Hunt.
       case "scha05":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
+          play: async () => [await this.huntUi.drawHuntTile()],
+          effect: async params => {
+            const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+            await this.huntFlow.resolveHuntTile(action.tile, {
+              ignoreEyeTile: true,
+              ignoreFreePeopleSpecialTile: true
+            });
+          }
         };
       // Isildur's Bane
       // Play if the Fellowship is not in a region containing a Free Peoples Settlement.
