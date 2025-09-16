@@ -73,7 +73,9 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
           (regionClick)="onRegionClick($event)"
           (fellowshipBoxClick)="onFellowshipBoxClick()">
         </wotr-map>
-        <wotr-options-panel class="wotr-options-panel"></wotr-options-panel>
+        @if (ui.inputQuantitySelection() || ui.options()?.length) {
+          <wotr-options-panel class="wotr-options-panel"></wotr-options-panel>
+        }
       </div>
       <wotr-player-toolbar class="wotr-toolbar"></wotr-player-toolbar>
       <div class="wotr-fronts">
