@@ -10,6 +10,7 @@ import {
   moveFelloswhip
 } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
+import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
@@ -36,6 +37,7 @@ export class WotrFreePeoplesCharacterCards {
   private unitHandler = inject(WotrUnitHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+  private fellowshipUi = inject(WotrFellowshipUi);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -131,10 +133,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            if (this.q.fellowship.corruption() > 0) {
-              await this.gameUi.askContinue("Heal the Fellowship");
-              actions.push(healFellowship(1));
-            }
+            actions.push(...(await this.fellowshipUi.healFellowship(1)));
             if (this.q.gollum.isGuide()) {
               if (this.q.fellowship.isHidden()) {
                 const move = await this.gameUi.askConfirm(
@@ -155,13 +154,21 @@ export class WotrFreePeoplesCharacterCards {
             return actions;
           }
         };
-      // TODO I Will Go Alone
+      // I Will Go Alone
       // Play if at least one Companion is in the Fellowship.
       // Separate one Companion or one group of Companions from the Fellowship. You may move the Companions one extra region. Then, heal one Corruption point.
       case "fpcha11":
         return {
           canBePlayed: () => this.q.fellowship.hasCompanions(),
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            const separateActions = await this.fellowshipUi.separateCompanions({
+              extraMovements: 1
+            });
+            actions.push(...separateActions);
+            actions.push(...(await this.fellowshipUi.healFellowship(1)));
+            return actions;
+          }
         };
       // Bilbo's Song
       // Heal one Corruption point.

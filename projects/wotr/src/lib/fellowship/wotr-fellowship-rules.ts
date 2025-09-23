@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
-import { WotrCharacterRules } from "../character/wotr-character-rules";
 
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipRules {
@@ -34,10 +34,13 @@ export class WotrFellowshipRules {
     return reachableRegions;
   }
 
-  companionSeparationTargetRegions(companions: WotrCompanionId[]) {
+  companionSeparationTargetRegions(
+    companions: WotrCompanionId[],
+    options?: { extraMovements?: number }
+  ) {
     const groupLevel = this.characterRules.characterGroupLevel(companions);
     const fellowshipProgress = this.fellowshipStore.progress();
-    const totalMovement = fellowshipProgress + groupLevel;
+    const totalMovement = fellowshipProgress + groupLevel + (options?.extraMovements || 0);
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     const targetRegions = this.regionStore.reachableRegions(
       fellowshipRegion,

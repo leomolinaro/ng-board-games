@@ -2,10 +2,12 @@ import { inject, Injectable } from "@angular/core";
 import { WotrCharacter, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrAction } from "../commons/wotr-action-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
 import {
   changeGuide,
   declareFellowship,
+  healFellowship,
   hideFellowship,
   moveFelloswhip,
   separateCompanions,
@@ -15,6 +17,10 @@ import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
 import { WotrFellowshipRules } from "./wotr-fellowship-rules";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
+interface WotrSeparateCompanionsOptions {
+  extraMovements?: number;
+}
+
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
@@ -22,6 +28,7 @@ export class WotrFellowshipUi {
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private characterStore = inject(WotrCharacterStore);
   private fellowshipRules = inject(WotrFellowshipRules);
+  private q = inject(WotrGameQuery);
 
   async fellowshipPhase(): Promise<WotrAction[]> {
     let continueAsking = true;
@@ -74,17 +81,23 @@ export class WotrFellowshipUi {
     return actions;
   }
 
-  async separateCompanions(): Promise<WotrAction[]> {
+  async separateCompanions(options?: WotrSeparateCompanionsOptions): Promise<WotrAction[]> {
     const fellowshipCompanions = this.fellowshipStore.companions();
     const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
       companions: fellowshipCompanions,
       singleSelection: false
     });
-    return this.separateSpecificCompanions(companions);
+    return this.separateSpecificCompanions(companions, options);
   }
 
-  async separateSpecificCompanions(companions: WotrCompanionId[]): Promise<WotrAction[]> {
-    const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(companions);
+  async separateSpecificCompanions(
+    companions: WotrCompanionId[],
+    options?: WotrSeparateCompanionsOptions
+  ): Promise<WotrAction[]> {
+    const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(
+      companions,
+      options
+    );
     const targetRegion = await this.ui.askRegion(
       "Select a region to move the separated companions",
       targetRegions
@@ -120,6 +133,16 @@ export class WotrFellowshipUi {
       singleSelection: true
     });
     return changeGuide(newGuide[0]);
+  }
+
+  async healFellowship(amount: number): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    const actualAmount = Math.min(amount, this.q.fellowship.corruption());
+    if (actualAmount) {
+      await this.ui.askContinue("Heal the Fellowship");
+      actions.push(healFellowship(actualAmount));
+    }
+    return actions;
   }
 
   progressChoice: WotrUiChoice = {
