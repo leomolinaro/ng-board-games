@@ -44,6 +44,7 @@ export class WotrCardHandler {
         this.frontStore.discardCardFromTable(action.card, front),
       "card-draw": (action, front) => this.drawCards(action.cards, front),
       "card-play-on-table": (action, front) => this.frontStore.playCardOnTable(action.card, front),
+      "card-play": (action, front) => this.frontStore.discardCards([action.card], front),
       "card-random-discard": (action, front) =>
         this.frontStore.discardCards([action.card], oppositeFront(front))
     };
@@ -64,6 +65,7 @@ export class WotrCardHandler {
         f.player(front),
         ` plays "${cardToLabel(action.card)}" on table`
       ],
+      "card-play": (action, front, f) => [f.player(front), ` plays "${cardToLabel(action.card)}"`],
       "card-random-discard": (action, front, f) => [
         f.player(front),
         " random discards 1 card from ",

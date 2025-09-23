@@ -303,9 +303,9 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => false,
           play: async () => [],
           effect: async params => {
-            assertAction<WotrRegionChoose>(params.story, "region-choose");
+            const action = assertAction<WotrRegionChoose>(params.story, "region-choose");
             await this.rollCombatDice(1, this.shadow); // TODO nDice
-            await this.freePeoples.chooseCasualties(1); // TODO hitPoints
+            await this.freePeoples.chooseCasualties(1, action.region, null); // TODO hitPoints
           }
         };
       // TODO Grond, Hammer of the Underworld

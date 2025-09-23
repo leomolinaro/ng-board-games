@@ -3,6 +3,7 @@ import { randomUtil } from "@leobg/commons/utils";
 import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -37,6 +38,7 @@ export class WotrBattleUi {
   private battleStore = inject(WotrBattleStore);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
+  private q = inject(WotrGameQuery);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -62,11 +64,12 @@ export class WotrBattleUi {
     return dice;
   }
 
-  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrAction[]> {
-    const battle = this.battleStore.battle()!;
-    const regionId =
-      battle.attacker.frontId === frontId ? battle.action.fromRegion : battle.action.toRegion;
-    const underSiege = battle.siege && battle.defender.frontId === frontId;
+  async chooseCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    frontId: WotrFrontId
+  ): Promise<WotrAction[]> {
+    const underSiege = this.q.region(regionId).isUnderSiege(frontId);
     const units = await this.ui.askCasualtyUnits(`Choose casualties for ${hitPoints} hit points`, {
       type: "chooseCasualties",
       regionIds: [regionId],
@@ -77,11 +80,8 @@ export class WotrBattleUi {
     return this.eliminateUnitActions(units, regionId);
   }
 
-  async eliminateArmy(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const battle = this.battleStore.battle()!;
-    const regionId =
-      battle.attacker.frontId === frontId ? battle.action.fromRegion : battle.action.toRegion;
-    const underSiege = battle.siege && battle.defender.frontId === frontId;
+  async eliminateArmy(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
+    const underSiege = this.q.region(regionId).isUnderSiege(frontId);
     const units = await this.ui.askCasualtyUnits("Eliminate the entire army", {
       type: "chooseCasualties",
       regionIds: [regionId],

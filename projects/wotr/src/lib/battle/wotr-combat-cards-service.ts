@@ -134,7 +134,7 @@ export class WotrCombatCardsService {
           nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
         (!params.isAttacker && nAttackingArmyUnits && nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
       ) {
-        await this.unitService.chooseCasualties(1, params.regionId, this.freePeoples); // TODO hitPoints
+        await this.unitService.chooseCasualties(1, params.regionId, null, this.freePeoples); // TODO hitPoints
       }
     },
     "Heroic Death": async params => {
@@ -165,7 +165,12 @@ export class WotrCombatCardsService {
       throw new Error("TODO");
     },
     "Relentless Assault": async params => {
-      const casualties = await this.unitService.chooseCasualties(1, params.regionId, this.shadow); // TODO hitPoints
+      const casualties = await this.unitService.chooseCasualties(
+        1,
+        params.regionId,
+        null,
+        this.shadow
+      ); // TODO hitPoints
       const hits = casualties?.reduce(
         (h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2),
         0

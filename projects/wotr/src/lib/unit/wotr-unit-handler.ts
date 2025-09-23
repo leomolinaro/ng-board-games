@@ -1,4 +1,5 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -348,30 +349,35 @@ export class WotrUnitHandler {
     }
   }
 
-  async chooseCasualties(hitPoints: number, regionId: WotrRegionId, player: WotrPlayer) {
+  async chooseCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId | null,
+    player: WotrPlayer
+  ) {
     const region = this.regionStore.region(regionId);
     const underSiege = region.underSiegeArmy?.front === player.frontId;
     const army = underSiege ? region.underSiegeArmy! : region.army!;
-    return this.chooseFrontCasualties(player, hitPoints, army, regionId, underSiege);
+    return this.chooseArmyCasualties(hitPoints, army, regionId, cardId, player);
   }
 
-  async chooseFrontCasualties(
-    player: WotrPlayer,
+  async chooseArmyCasualties(
     nTotalHits: number | 0,
     army: WotrArmy,
     regionId: WotrRegionId,
-    underSiege: boolean
+    cardId: WotrCardId | null,
+    player: WotrPlayer
   ) {
     if (!nTotalHits) return null;
     const nHits = this.unitUtils.nHits(army);
     if (nTotalHits < nHits) {
-      const story = await player.chooseCasualties(nTotalHits);
+      const story = await player.chooseCasualties(nTotalHits, regionId, cardId);
       const actions = filterActions<
         WotrRegularUnitElimination | WotrEliteUnitElimination | WotrEliteUnitDowngrade
       >(story, "regular-unit-elimination", "elite-unit-elimination", "elite-unit-downgrade");
       return actions;
     } else {
-      const story = await player.eliminateArmy();
+      const story = await player.eliminateArmy(regionId, cardId);
       const actions = filterActions<
         | WotrRegularUnitElimination
         | WotrEliteUnitElimination

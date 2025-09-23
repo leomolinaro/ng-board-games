@@ -5,6 +5,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 
 export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
@@ -78,11 +79,19 @@ export abstract class WotrPlayer {
   reRollCombatDice(nDice: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.reRollCombatDice(nDice, this.frontId));
   }
-  chooseCasualties(hitPoints: number): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.chooseCasualties(hitPoints, this.frontId));
+  chooseCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId | null
+  ): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.chooseCasualties(hitPoints, regionId, cardId, this.frontId)
+    );
   }
-  eliminateArmy(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.eliminateArmy(this.frontId));
+  eliminateArmy(regionId: WotrRegionId, cardId: WotrCardId | null): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.eliminateArmy(regionId, cardId, this.frontId)
+    );
   }
   battleAdvance(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.battleAdvance(this.frontId));
@@ -92,5 +101,8 @@ export abstract class WotrPlayer {
   }
   discardExcessCards(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.discardExcessCards(this.frontId));
+  }
+  playCharacterCardFromHand(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.playCharacterCardFromHand(this.frontId));
   }
 }

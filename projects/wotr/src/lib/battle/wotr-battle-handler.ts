@@ -568,20 +568,20 @@ export class WotrBattleHandler {
 
   private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
     const attackingArmy = this.attackingArmy(combatRound.action);
-    await this.unitHandler.chooseFrontCasualties(
-      combatRound.attacker.player,
+    await this.unitHandler.chooseArmyCasualties(
       combatRound.defender.nTotalHits || 0,
       attackingArmy,
-      battle.region,
-      false
+      battle.action.fromRegion,
+      null,
+      combatRound.attacker.player
     );
     const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
-    await this.unitHandler.chooseFrontCasualties(
-      combatRound.defender.player,
+    await this.unitHandler.chooseArmyCasualties(
       combatRound.attacker.nTotalHits || 0,
       attackedArmy,
-      battle.region,
-      combatRound.siege
+      battle.action.toRegion,
+      null,
+      combatRound.defender.player
     );
   }
 

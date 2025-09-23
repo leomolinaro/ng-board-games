@@ -7,7 +7,9 @@ import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
+import { WotrFreePeoplesCharacterCards } from "../card/cards/wotr-free-peoples-character-cards";
 import { WotrCardHandler } from "../card/wotr-card-handler";
+import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacters } from "../character/wotr-characters";
@@ -59,6 +61,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private battleModifiers = inject(WotrBattleModifiers);
   private characterHandler = inject(WotrCharacterHandler);
   private characters = inject(WotrCharacters);
+  private freePeoplesCharacterCards = inject(WotrFreePeoplesCharacterCards);
+  private cardPlayUi = inject(WotrCardPlayUi);
 
   private dialog = inject(MatDialog);
 
@@ -76,6 +80,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrUnitHandler).init();
     this.story.init(this.localPlayerService);
     this.characterHandler.characters = this.characters;
+    this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

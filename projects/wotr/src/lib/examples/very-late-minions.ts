@@ -261,7 +261,7 @@ export const stories: WotrStoryDoc[] = [
   b.s().characterReaction("the-witch-king", drawCards("Orcs Multiplying Again")),
   // Turn 6 30:00
   b.fpT().firstPhaseDraw("There and Back Again", "Grimbeorn the Old, Son of Beorn"),
-  b.s().firstPhaseDraw("Grond, Hammer of the Unnderworld", "Shadows on the Misty Mountains"),
+  b.s().firstPhaseDraw("Grond, Hammer of the Underworld", "Shadows on the Misty Mountains"),
   b.fp().fellowshipPhase(declareFellowship("old-forest-road")),
   b.s().huntAllocation(1),
   b
@@ -363,12 +363,12 @@ export const stories: WotrStoryDoc[] = [
   b.s().eventDie(drawCards("A New Power is Rising")),
   b.fp().pass(),
   b.s().armyDieCard("The Fighting Uruk-hai", attack("helms-deep", "helms-deep")),
-  b.s().battleStory(combatCard("Grond, Hammer of the Unnderworld")),
+  b.s().battleStory(combatCard("Grond, Hammer of the Underworld")),
   b.fp().battleStory(noCombatCard()),
   b
     .s()
     .combatCardReaction(
-      "Grond, Hammer of the Unnderworld",
+      "Grond, Hammer of the Underworld",
       forfeitLeadership(character("the-witch-king"))
     ),
   b.sT().battleStory(rollCombatDice(2, 5, 5, 4, 6)),

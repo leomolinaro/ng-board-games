@@ -1,13 +1,11 @@
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrModifier } from "../commons/wotr-modifier";
 
-export interface WotrAbility<E = unknown> {
-  modifier: WotrModifier<E>;
-  handler: E;
-  name?: string;
-  activate?: () => Promise<void>;
+export interface WotrAbility<H = unknown> {
+  modifier: WotrModifier<H>;
+  handler: H;
 }
 
-export interface WotrUiAbility<E = unknown> extends WotrAbility<E> {
+export interface WotrUiAbility<H = unknown> extends WotrAbility<H> {
   play: () => Promise<WotrAction[]>;
 }

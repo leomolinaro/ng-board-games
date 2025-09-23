@@ -4,6 +4,7 @@ export type WotrCardAction =
   | WotrCardDraw
   | WotrCardDiscard
   | WotrCardPlayOnTable
+  | WotrCardPlay
   | WotrCardRandomDiscard
   | WotrCardDiscardFromTable;
 
@@ -36,6 +37,16 @@ export interface WotrCardPlayOnTable {
 }
 export function playCardOnTable(card: WotrCardLabel): WotrCardPlayOnTable {
   return { type: "card-play-on-table", card: labelToCardId(card) };
+}
+export interface WotrCardPlay {
+  type: "card-play";
+  card: WotrCardId;
+}
+export function playCard(card: WotrCardLabel): WotrCardPlay {
+  return playCardId(labelToCardId(card));
+}
+export function playCardId(card: WotrCardId): WotrCardPlay {
+  return { type: "card-play", card };
 }
 export interface WotrCardRandomDiscard {
   type: "card-random-discard";

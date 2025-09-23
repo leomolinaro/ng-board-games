@@ -25,7 +25,7 @@ export interface WotrCardParams {
   // shadow: WotrCombatFront;
   // freePeoples: WotrCombatFront;
   // combatRound: WotrCombatRound;
-  // card: WotrCard;
+  cardId: WotrCardId;
   // isAttacker: boolean;
 }
 

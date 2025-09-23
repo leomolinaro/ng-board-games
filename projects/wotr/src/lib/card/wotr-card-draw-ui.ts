@@ -4,6 +4,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrStory } from "../game/wotr-story-models";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId } from "./wotr-card-models";
 
@@ -96,4 +97,24 @@ export class WotrCardDrawUi {
     isAvailable: frontId => this.q.front(frontId).canDrawCard(),
     actions: async frontId => [await this.drawCard(frontId)]
   };
+
+  async activateTableCardAbility(cardId: WotrCardId): Promise<WotrStory> {
+    // const character = this.characterStore.character(characterId);
+    throw new Error("Method not implemented.");
+    const confirm = await this.ui.askConfirm(
+      `Do you want to activate ${cardId + "'s ability?"}`,
+      "Activate",
+      "Skip"
+    );
+    if (confirm) {
+      return {
+        type: "reaction-card",
+        card: cardId,
+        actions: []
+        // actions: await ability.play()
+      };
+    } else {
+      return { type: "reaction-card-skip", card: cardId };
+    }
+  }
 }

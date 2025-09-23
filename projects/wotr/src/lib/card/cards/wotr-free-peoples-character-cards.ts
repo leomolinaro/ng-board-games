@@ -1,8 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
+import { eliminateCharacter } from "../../character/wotr-character-actions";
 import { WotrCharacterQuery } from "../../character/wotr-character-query";
-import { WotrAction } from "../../commons/wotr-action-models";
+import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import {
   healFellowship,
   hideFellowship,
@@ -13,20 +14,28 @@ import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
 import { addHuntTile } from "../../hunt/wotr-hunt-actions";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
+import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
 import { playCardOnTable } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrFreePeopleCharacterCardId } from "../wotr-card-models";
+import { WotrCardPlayUi } from "../wotr-card-play-ui";
 import { WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesCharacterCards {
   private gameUi = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
+  cardPlayUi!: WotrCardPlayUi;
   private battleUi = inject(WotrBattleUi);
   private q = inject(WotrGameQuery);
   private fellowshipHandler = inject(WotrFellowshipHandler);
+  private unitHandler = inject(WotrUnitHandler);
+  private freePeoples = inject(WotrFreePeoplesPlayer);
+  private shadow = inject(WotrShadowPlayer);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -222,37 +231,25 @@ export class WotrFreePeoplesCharacterCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO The Ents Awake: Treebeard
+      // The Ents Awake: Treebeard
       // Play if Gandalf the White is in play and a Companion is in Fangorn.
       // Roll three dice; for each result of 4+, score one hit against a Shadow Army in Orthanc. If the Army is destroyed, so are any Nazgûl and Minions along with it.
       // If Saruman is in Orthanc without a Shadow Army, eliminate him.
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha19":
-        return {
-          canBePlayed: () =>
-            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
-          play: async () => []
-        };
-      // TODO The Ents Awake: Huorns Play if Gandalf the White is in play and a Companion is in Fangorn.
+        return this.theEntsAwake();
+      // The Ents Awake: Huorns Play if Gandalf the White is in play and a Companion is in Fangorn.
       // Roll three dice; for each result of 4+, score one hit against a Shadow Army in Orthanc. If the Army is destroyed, so are any Nazgûl and Minions along with it.
       // If Saruman is in Orthanc without a Shadow Army, eliminate him.
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha20":
-        return {
-          canBePlayed: () =>
-            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
-          play: async () => []
-        };
-      // TODO The Ents Awake: Entmoot Play if Gandalf the White is in play and a Companion is in Fangorn.
+        return this.theEntsAwake();
+      // The Ents Awake: Entmoot Play if Gandalf the White is in play and a Companion is in Fangorn.
       // Roll three dice; for each result of 4+, score one hit against a Shadow Army in Orthanc. If the Army is destroyed, so are any Nazgûl and Minions along with it.
       // If Saruman is in Orthanc without a Shadow Army, eliminate him.
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha21":
-        return {
-          canBePlayed: () =>
-            this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
-          play: async () => []
-        };
+        return this.theEntsAwake();
       // TODO Dead Men of Dunharrow
       // Play if Strider/Aragorn is in a Rohan region (including a Stronghold under siege).
       // Move Strider/Aragom (and any number of Companions in the same region) to Erech, Lamedon ar Pelargir.
@@ -313,5 +310,40 @@ export class WotrFreePeoplesCharacterCards {
           play: async () => []
         };
     }
+  }
+
+  private theEntsAwake(): WotrEventCard {
+    return {
+      canBePlayed: () =>
+        this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
+      play: async () => {
+        const shadowArmy = this.q.region("orthanc").army("shadow");
+        if (shadowArmy) {
+          await this.gameUi.askContinue("Roll three dice");
+          const dice = this.battleUi.rollDice(3);
+          return [rollCombatDice(...dice)];
+        } else {
+          if (this.q.saruman.isIn("orthanc")) {
+            return [eliminateCharacter("saruman")];
+          }
+        }
+        return [];
+      },
+      effect: async params => {
+        const action = findAction<WotrCombatRoll>(params.story.actions, "combat-roll");
+        if (action) {
+          const nHits = action.dice.filter(d => d >= 4).length;
+          if (nHits) {
+            await this.unitHandler.chooseCasualties(nHits, "orthanc", params.cardId, this.shadow);
+          }
+        }
+        if (this.q.gandalfTheWhite.isIn("fangorn") || this.q.gandalfTheWhite.isInNation("rohan")) {
+          const playableCards = this.cardPlayUi.playableCards(["character"], "free-peoples");
+          if (playableCards.length) {
+            await this.freePeoples.playCharacterCardFromHand();
+          }
+        }
+      }
+    };
   }
 }

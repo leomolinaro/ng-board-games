@@ -1,10 +1,12 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrStory } from "../game/wotr-story-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
-import { WotrAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerAi implements WotrPlayerStoryService {
@@ -85,6 +87,14 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   chooseCasualties(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  chooseCasualtiesCardReaction(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId,
+    frontId: WotrFrontId
+  ): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
   eliminateArmy(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
@@ -95,6 +105,9 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
   discardExcessCards(): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
+  playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
 }

@@ -1,38 +1,46 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
+import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrBaseStory, WotrReactionStory, WotrStory } from "../game/wotr-story-models";
+import {
+  WotrBaseStory,
+  WotrCardReactionStory,
+  WotrReactionStory,
+  WotrStory
+} from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
-import { WotrUiAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
   private actionDieUi = inject(WotrActionDieUi);
   private battleUi = inject(WotrBattleUi);
-  private cardUi = inject(WotrCardDrawUi);
+  private cardDrawUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntUi = inject(WotrHuntUi);
   private characterUi = inject(WotrCharacterUi);
+  private cardPlayUi = inject(WotrCardPlayUi);
 
   async firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory> {
     return {
       type: "base",
-      actions: [await this.cardUi.firstPhaseDrawCards(frontId)]
+      actions: [await this.cardDrawUi.firstPhaseDrawCards(frontId)]
     };
   }
 
   async firstPhaseDiscard(frontId: WotrFrontId): Promise<WotrStory> {
     return {
       type: "base",
-      actions: [await this.cardUi.discardExcessCards(frontId)]
+      actions: [await this.cardDrawUi.discardExcessCards(frontId)]
     };
   }
 
@@ -100,6 +108,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return this.characterUi.activateCharacterAbility(ability, characterId);
   }
 
+  async activateTableCardAbility(cardId: WotrCardId): Promise<WotrStory> {
+    return this.cardDrawUi.activateTableCardAbility(cardId);
+  }
+
   async forfeitLeadership(): Promise<WotrReactionStory> {
     throw new Error("Method not implemented.");
   }
@@ -136,18 +148,31 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async chooseCasualties(hitPoints: number, frontId: WotrFrontId): Promise<WotrBaseStory> {
-    return {
-      type: "base",
-      actions: await this.battleUi.chooseCasualties(hitPoints, frontId)
-    };
+  async chooseCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId | null,
+    frontId: WotrFrontId
+  ): Promise<WotrBaseStory | WotrCardReactionStory> {
+    const actions = await this.battleUi.chooseCasualties(hitPoints, regionId, frontId);
+    if (cardId) {
+      return { type: "reaction-card", card: cardId, actions };
+    } else {
+      return { type: "base", actions };
+    }
   }
 
-  async eliminateArmy(frontId: WotrFrontId): Promise<WotrBaseStory> {
-    return {
-      type: "base",
-      actions: await this.battleUi.eliminateArmy(frontId)
-    };
+  async eliminateArmy(
+    regionId: WotrRegionId,
+    cardId: WotrCardId | null,
+    frontId: WotrFrontId
+  ): Promise<WotrBaseStory | WotrCardReactionStory> {
+    const actions = await this.battleUi.eliminateArmy(regionId, frontId);
+    if (cardId) {
+      return { type: "reaction-card", card: cardId, actions };
+    } else {
+      return { type: "base", actions };
+    }
   }
 
   async battleAdvance(): Promise<WotrBaseStory> {
@@ -167,7 +192,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async discardExcessCards(frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
       type: "base",
-      actions: [await this.cardUi.discardExcessCards(frontId)]
+      actions: [await this.cardDrawUi.discardExcessCards(frontId)]
+    };
+  }
+
+  async playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrBaseStory> {
+    return {
+      type: "base",
+      actions: await this.cardPlayUi.playCharacterCardFromHand(frontId)
     };
   }
 }
