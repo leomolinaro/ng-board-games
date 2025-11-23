@@ -38,21 +38,6 @@ export class WotrCards {
   private shadowCharacterCards = inject(WotrShadowCharacterCards);
   private shadowStrategyCards = inject(WotrShadowStrategyCards);
 
-  // private characterStore = inject(WotrCharacterStore);
-  // private regionStore = inject(WotrRegionStore);
-  // private battleModifiers = inject(WotrBattleModifiers);
-  // private nationStore = inject(WotrNationStore);
-  // private actionDieModifiers = inject(WotrActionDieModifiers);
-  // private frontStore = inject(WotrFrontStore);
-  // private fellowshipStore = inject(WotrFellowshipStore);
-  // private unitModifiers = inject(WotrUnitModifiers);
-  // private gameUi = inject(WotrGameUi);
-  // private unitUi = inject(WotrUnitUi);
-  // private characterModifiers = inject(WotrCharacterModifiers);
-  // private battleStore = inject(WotrBattleStore);
-  // private nationHandler = inject(WotrNationHandler);
-  // private shadow = inject(WotrShadowPlayer);
-
   getCard(cardId: WotrCardId): WotrEventCard {
     if (!this.cards[cardId]) {
       this.cards[cardId] = this.createCard(cardId);

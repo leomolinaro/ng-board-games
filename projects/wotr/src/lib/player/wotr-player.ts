@@ -1,4 +1,5 @@
 import { WotrUiAbility } from "../ability/wotr-ability";
+import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -70,8 +71,10 @@ export abstract class WotrPlayer {
   wantRetreat(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantRetreat());
   }
-  chooseCombatCard(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.chooseCombatCard(this.frontId));
+  chooseCombatCard(combatRound: WotrCombatRound): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.chooseCombatCard(this.frontId, combatRound)
+    );
   }
   rollCombatDice(nDice: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.rollCombatDice(nDice, this.frontId));

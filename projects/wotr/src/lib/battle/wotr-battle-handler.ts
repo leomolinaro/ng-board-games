@@ -40,7 +40,7 @@ import {
 import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatCardsService } from "./wotr-combat-cards-service";
+import { WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
@@ -50,7 +50,7 @@ export class WotrBattleHandler {
   private regionStore = inject(WotrRegionStore);
   private battleStore = inject(WotrBattleStore);
   private frontHandler = inject(WotrFrontHandler);
-  private combatCards = inject(WotrCombatCardsService);
+  private combatCards = inject(WotrCombatCards);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private unitUtils = inject(WotrUnitUtils);
@@ -269,7 +269,9 @@ export class WotrBattleHandler {
         if (combatRound.siegeAutoContinueBattle) {
           continueBattle = true;
         } else {
-          continueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+          if (this.canContinueSiegeBattle(combatRound)) {
+            continueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+          }
         }
       } else {
         const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
@@ -315,20 +317,20 @@ export class WotrBattleHandler {
   }
 
   private async chooseCombatCards(combatRound: WotrCombatRound) {
-    await this.chooseCombatCard(combatRound.attacker);
-    await this.chooseCombatCard(combatRound.defender);
+    await this.chooseCombatCard(combatRound.attacker, combatRound);
+    await this.chooseCombatCard(combatRound.defender, combatRound);
   }
 
-  private async chooseCombatCard(combatFront: WotrCombatFront) {
-    const story = await combatFront.player.chooseCombatCard();
+  private async chooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound) {
+    const story = await combatFront.player.chooseCombatCard(combatRound);
     const action = assertAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
       story,
       "combat-card-choose",
       "combat-card-choose-not"
     );
     switch (action.type) {
-      // eslint-disable-next-line require-atomic-updates
       case "combat-card-choose":
+        // eslint-disable-next-line require-atomic-updates
         combatFront.combatCard = getCard(action.card);
         break;
       case "combat-card-choose-not":
@@ -360,18 +362,22 @@ export class WotrBattleHandler {
     combatRound: WotrCombatRound
   ) {
     if (combatFront.combatCard?.combatTiming === timing) {
-      await this.combatCards.combatCardReaction({
-        combatRound,
-        shadow: combatRound.shadow,
-        freePeoples: combatRound.freePeoples,
-        card: combatFront.combatCard,
-        front: combatFront.frontId,
-        isAttacker: combatFront.isAttacker,
-        attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
-        attackingArmy: () => this.attackingArmy(combatRound.action),
-        regionId: combatRound.action.toRegion
-      });
+      const params = this.combatCardParams(combatFront.frontId, combatRound);
+      await this.combatCards.combatCardReaction(combatFront.combatCard, params);
     }
+  }
+
+  combatCardParams(frontId: WotrFrontId, combatRound: WotrCombatRound): WotrCombatCardParams {
+    return {
+      front: frontId,
+      combatRound,
+      shadow: combatRound.shadow,
+      freePeoples: combatRound.freePeoples,
+      isAttacker: combatRound.attacker.frontId === frontId,
+      attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
+      attackingArmy: () => this.attackingArmy(combatRound.action),
+      regionId: combatRound.action.toRegion
+    };
   }
 
   private async combatRolls(combatRound: WotrCombatRound) {
@@ -473,17 +479,11 @@ export class WotrBattleHandler {
     const combatRoll = combatFront.combatRoll!;
     const nSuccesses = combatFront.nCombatSuccesses!;
     const nFailures = combatRoll.length - nSuccesses;
-    if (!nFailures) {
-      return 0;
-    }
+    if (!nFailures) return 0;
     const oppositeHitPoints = this.getHitPoints(oppositeCombatFront, combatRound);
-    if (nSuccesses >= oppositeHitPoints) {
-      return 0;
-    }
+    if (nSuccesses >= oppositeHitPoints) return 0;
     const leadership = this.getLeadership(combatFront, combatRound);
-    if (!leadership) {
-      return 0;
-    }
+    if (!leadership) return 0;
     return Math.min(nFailures, leadership);
   }
 
@@ -684,6 +684,11 @@ export class WotrBattleHandler {
       case "army-not-advance":
         return false;
     }
+  }
+
+  private canContinueSiegeBattle(combatRound: WotrCombatRound): boolean {
+    const attackingArmy = this.attackingArmy(combatRound.action);
+    return this.unitUtils.hasEliteUnits(attackingArmy);
   }
 
   private async wantContinueBattle(player: WotrPlayer): Promise<boolean> {

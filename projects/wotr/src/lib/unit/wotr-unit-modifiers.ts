@@ -12,10 +12,10 @@ export class WotrUnitModifiers {
   nLeaders(army: WotrArmy): number {
     let nLeaders = 0;
     army.regulars?.forEach(unit => {
-      if (this.isLeader("regular", unit.nation)) nLeaders++;
+      if (this.isLeader("regular", unit.nation)) nLeaders += unit.quantity;
     });
     army.elites?.forEach(unit => {
-      if (this.isLeader("elite", unit.nation)) nLeaders++;
+      if (this.isLeader("elite", unit.nation)) nLeaders += unit.quantity;
     });
     return nLeaders;
   }

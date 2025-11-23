@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
+import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
@@ -130,8 +131,11 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrBaseStory> {
-    return { type: "base", actions: await this.battleUi.chooseCombatCard(frontId) };
+  async chooseCombatCard(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound
+  ): Promise<WotrBaseStory> {
+    return { type: "base", actions: await this.battleUi.chooseCombatCard(frontId, combatRound) };
   }
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrBaseStory> {
@@ -185,7 +189,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async wantContinueBattle(): Promise<WotrBaseStory> {
     return {
       type: "base",
-      actions: [await this.battleUi.wantContinueBattle()]
+      actions: await this.battleUi.wantContinueBattle()
     };
   }
 

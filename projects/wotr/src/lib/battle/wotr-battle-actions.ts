@@ -120,6 +120,9 @@ export interface WotrCombatCardChoose {
 export function combatCard(card: WotrCardLabel): WotrCombatCardChoose {
   return { type: "combat-card-choose", card: labelToCardId(card) };
 }
+export function combatCardById(cardId: WotrCardId): WotrCombatCardChoose {
+  return { type: "combat-card-choose", card: cardId };
+}
 export interface WotrCombatCardChooseNot {
   type: "combat-card-choose-not";
 }

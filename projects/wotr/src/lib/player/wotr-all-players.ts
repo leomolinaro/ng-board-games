@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
@@ -16,8 +17,10 @@ export class WotrAllPlayers {
   rollActionDice(): Promise<Record<WotrFrontId, WotrStory>> {
     return this.storyService.parallelStories(frontId => p => p.rollActionDice(frontId));
   }
-  chooseCombatCard(): Promise<Record<WotrFrontId, WotrStory>> {
-    return this.storyService.parallelStories(frontId => p => p.chooseCombatCard(frontId));
+  chooseCombatCard(combatRound: WotrCombatRound): Promise<Record<WotrFrontId, WotrStory>> {
+    return this.storyService.parallelStories(
+      frontId => p => p.chooseCombatCard(frontId, combatRound)
+    );
   }
   rollCombatDice(nDice: Record<WotrFrontId, number>): Promise<Record<WotrFrontId, WotrStory>> {
     return this.storyService.parallelStories(

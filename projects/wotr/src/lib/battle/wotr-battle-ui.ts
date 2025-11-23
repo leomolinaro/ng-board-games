@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
+import { getCard } from "../card/wotr-card-models";
 import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -19,6 +20,7 @@ import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import {
   advanceArmy,
   ceaseBattle,
+  combatCardById,
   continueBattle,
   noCombatCard,
   notAdvanceArmy,
@@ -29,7 +31,10 @@ import {
   WotrCombatReRoll,
   WotrCombatRoll
 } from "./wotr-battle-actions";
+import { WotrBattleHandler } from "./wotr-battle-handler";
+import { WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleStore } from "./wotr-battle-store";
+import { WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
@@ -39,6 +44,8 @@ export class WotrBattleUi {
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
   private q = inject(WotrGameQuery);
+  private combatCards = inject(WotrCombatCards);
+  private battleHandler = inject(WotrBattleHandler);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -148,7 +155,7 @@ export class WotrBattleUi {
     return confirm ? retreatIntoSiege(region.id) : notRetreatIntoSiege(region.id);
   }
 
-  async wantContinueBattle(): Promise<WotrAction> {
+  async wantContinueBattle(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
@@ -156,7 +163,18 @@ export class WotrBattleUi {
       "Continue battle",
       "Cease battle"
     );
-    return confirm ? continueBattle(region.id) : ceaseBattle(region.id);
+    if (!confirm) return [ceaseBattle(region.id)];
+    const actions: WotrAction[] = [];
+    if (battle.siege) {
+      const downgradeSelection = await this.ui.askRegionUnits("Choose an elite unit to downgrade", {
+        type: "downgradeUnit",
+        nEliteUnits: 1,
+        regionIds: [region.id]
+      });
+      actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites![0].nation, 1));
+    }
+    actions.push(continueBattle(region.id));
+    return actions;
   }
 
   async wantRetreat(): Promise<WotrAction> {
@@ -187,8 +205,30 @@ export class WotrBattleUi {
       .map(neighbor => neighbor.id);
   }
 
-  async chooseCombatCard(frontId: WotrFrontId): Promise<WotrAction[]> {
-    console.warn("chooseCombatCard is not implemented.");
-    return [noCombatCard()];
+  async chooseCombatCard(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound
+  ): Promise<WotrAction[]> {
+    const doPlayCard = await this.ui.askConfirm(
+      "Do you want to play a combat card?",
+      "Choose combat card",
+      "Skip"
+    );
+    if (!doPlayCard) return [noCombatCard()];
+    const params = this.battleHandler.combatCardParams(frontId, combatRound);
+    const playableCards = this.q
+      .front(frontId)
+      .handCards()
+      .filter(c => {
+        const card = getCard(c);
+        return this.combatCards.canBePlayed(card.combatLabel, params);
+      });
+    const cardId = await this.ui.askHandCard("Choose a combat card to play", {
+      nCards: 1,
+      frontId,
+      message: "Choose a combat card to play",
+      cards: playableCards
+    });
+    return [combatCardById(cardId)];
   }
 }

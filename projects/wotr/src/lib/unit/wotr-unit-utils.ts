@@ -161,6 +161,18 @@ export class WotrUnitUtils {
     return false;
   }
 
+  hasUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (units.regulars?.some(u => u.nation === nation)) return true;
+    if (units.elites?.some(u => u.nation === nation)) return true;
+    if (units.leaders?.some(u => u.nation === nation)) return true;
+    return false;
+  }
+
+  hasEliteUnits(units: WotrUnits) {
+    if (units.elites?.length) return true;
+    return false;
+  }
+
   hasNazgul(units: WotrUnits) {
     if (units.nNazgul) return true;
     if (units.characters && units.characters?.indexOf("the-witch-king") >= 0) return true;

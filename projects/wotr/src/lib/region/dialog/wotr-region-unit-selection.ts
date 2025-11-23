@@ -13,7 +13,8 @@ export type WotrRegionUnitSelection =
   | WotrDisbandingUnitSelection
   | WotrChooseCasualtiesUnitSelection
   | WotrMovingCharactersUnitSelection
-  | WotrMovingNazgulUnitSelection;
+  | WotrMovingNazgulUnitSelection
+  | WotrDowngradingUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -53,6 +54,11 @@ export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelect
   hitPoints: number | "full";
   underSiege: boolean;
   retroguard: WotrUnits | null;
+}
+
+export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
+  type: "downgradeUnit";
+  nEliteUnits: 1;
 }
 
 export interface UnitNode {
@@ -97,6 +103,8 @@ export function selectionModeFactory(
       return new MoveNazgulSelectionMode(unitSelection);
     case "chooseCasualties":
       return new ChooseCasualtiesSelectionMode(unitSelection);
+    case "downgradeUnit":
+      return new DowngradeUnitSelectionMode(unitSelection.nEliteUnits);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -228,10 +236,14 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
   ) {}
 
   initialize(unitNodes: UnitNode[], region: WotrRegion) {
-    const underSiegeArmy = region.underSiegeArmy?.front === this.frontId;
+    const isUnderSiegeArmy = region.underSiegeArmy?.front === this.frontId;
     for (const unitNode of unitNodes) {
       if (unitNode.group !== "army" && unitNode.group !== "underSiege") continue;
-      if (underSiegeArmy && unitNode.group === "army") continue;
+      if (isUnderSiegeArmy) {
+        if (unitNode.group !== "underSiege") continue;
+      } else {
+        if (unitNode.group !== "army") continue;
+      }
       unitNode.selectable = true;
       unitNode.selected = true;
     }
@@ -353,5 +365,25 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
       }
       return true;
     }
+  }
+}
+
+export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private nEliteUnits: 1) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (node.type === "elite" && node.group === "army") {
+        node.selectable = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    const eliteUnits = selectedNodes.filter(node => node.type === "elite");
+    if (eliteUnits.length !== this.nEliteUnits) {
+      return `Select ${this.nEliteUnits} elite unit${this.nEliteUnits > 1 ? "s" : ""} to downgrade.`;
+    }
+    return true;
   }
 }

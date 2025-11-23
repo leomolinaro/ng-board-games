@@ -1,4 +1,5 @@
 import { WotrUiAbility } from "../ability/wotr-ability";
+import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -30,7 +31,7 @@ export interface WotrPlayerStoryService {
   forfeitLeadership(): Promise<WotrStory>;
   wantRetreatIntoSiege(): Promise<WotrStory>;
   wantRetreat(): Promise<WotrStory>;
-  chooseCombatCard(frontId: WotrFrontId): Promise<WotrStory>;
+  chooseCombatCard(frontId: WotrFrontId, combatRound: WotrCombatRound): Promise<WotrStory>;
   rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
   reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
   chooseCasualties(
