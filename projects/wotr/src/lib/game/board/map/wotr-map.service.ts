@@ -12,6 +12,45 @@ export interface WotrMapPoint {
   y: number;
 }
 
+const controlMarkerPoints: Partial<Record<WotrRegionId, WotrMapPoint>> = {
+  "ered-luin": { x: 133, y: 60 },
+  "grey-havens": { x: 123, y: 88 },
+  "bree": { x: 221, y: 58 },
+  "the-shire": { x: 171, y: 80 },
+  "angmar": { x: 221, y: 4 },
+  "mount-gundabad": { x: 285, y: 8 },
+  "rivendell": { x: 288, y: 47 },
+  "moria": { x: 310, y: 103 },
+  "north-dunland": { x: 266, y: 150 },
+  "south-dunland": { x: 261, y: 176 },
+  "orthanc": { x: 273, y: 202 },
+  "lorien": { x: 317, y: 132 },
+  "helms-deep": { x: 285, y: 238 },
+  "westemnet": { x: 327, y: 219 },
+  "edoras": { x: 331, y: 243 },
+  "folde": { x: 354, y: 233 },
+  "dol-amroth": { x: 308, y: 302 },
+  "lamedon": { x: 339, y: 282 },
+  "pelargir": { x: 353, y: 321 },
+  "lossarnach": { x: 369, y: 294 },
+  "minas-tirith": { x: 381, y: 270 },
+  "carrock": { x: 352, y: 50 },
+  "dol-guldur": { x: 385, y: 137 },
+  "woodland-realm": { x: 393, y: 60 },
+  "dale": { x: 427, y: 70 },
+  "erebor": { x: 428, y: 26 },
+  "iron-hills": { x: 468, y: 30 },
+  "north-rhun": { x: 498, y: 102 },
+  "south-rhun": { x: 513, y: 189 },
+  "morannon": { x: 461, y: 238 },
+  "minas-morgul": { x: 456, y: 272 },
+  "nurn": { x: 470, y: 321 },
+  "barad-dur": { x: 507, y: 236 },
+  "umbar": { x: 338, y: 381 },
+  "near-harad": { x: 405, y: 389 },
+  "far-harad": { x: 478, y: 360 }
+};
+
 @Injectable({
   providedIn: "root"
 })
@@ -98,5 +137,9 @@ export class WotrMapService {
 
   getRegionSlots(n: number, regionId: WotrRegionId): WotrMapPoint[] {
     return this.regionSlots[regionId][n];
+  }
+
+  getControlMarkerPoint(regionId: WotrRegionId): WotrMapPoint | undefined {
+    return controlMarkerPoints[regionId];
   }
 }

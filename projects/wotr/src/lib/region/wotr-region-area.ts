@@ -28,6 +28,11 @@ interface WotrRegionNode {
   tooltip: string;
   army: WotrArmyNode | null;
   freeGroups: WotrFreeGroupNode[];
+  controlMarker?: {
+    image: string;
+    x: number;
+    y: number;
+  };
 }
 
 interface WotrArmyNode {
@@ -113,8 +118,16 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
   imports: [MatTooltipModule],
   template: `
     <svg:g>
-      <!-- [matTooltip]="regionNode.tooltip"
-      matTooltipClass="wotr-map-tooltip" -->
+      @if (regionNode().controlMarker; as controlMarker) {
+        <svg:image
+          [class]="regionNode().id"
+          [attr.width]="10"
+          [attr.height]="10"
+          [attr.x]="controlMarker.x"
+          [attr.y]="controlMarker.y"
+          transform="scale(1.7, 1.7)"
+          [attr.xlink:href]="controlMarker.image" />
+      }
       @if (regionNode().army!; as army) {
         <svg:svg
           style="overflow: visible;"
@@ -264,16 +277,24 @@ export class WotrRegionArea {
 
   regionNode: Signal<WotrRegionNode> = computed(() => {
     const region = this.region();
-    const fellowhip = this.fellowship();
+    const fellowship = this.fellowship();
     const path = this.mapService.getRegionPath(region.id);
     const node: WotrRegionNode = {
       id: region.id,
       region,
       path,
       army: this.regionToArmyNode(region),
-      freeGroups: this.regionToFreeGroups(region, fellowhip),
+      freeGroups: this.regionToFreeGroups(region, fellowship),
       tooltip: region.name
     };
+    if (region.controlledBy && region.controlledBy !== region.frontId) {
+      const point = this.mapService.getControlMarkerPoint(region.id)!;
+      node.controlMarker = {
+        image: this.assets.controlMarker(region.controlledBy),
+        x: point.x,
+        y: point.y
+      };
+    }
     this.setNodeCoordinates(region.id, node);
     return node;
   });

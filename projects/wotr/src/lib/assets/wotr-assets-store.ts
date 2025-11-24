@@ -162,4 +162,7 @@ export class WotrAssetsStore {
       return `${BASE_PATH}/victory-markers/${front}-10.png`;
     }
   }
+  controlMarker(front: WotrFrontId) {
+    return `${BASE_PATH}/control-markers/${front}.png`;
+  }
 }
