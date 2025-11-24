@@ -107,6 +107,10 @@ export class WotrUnitHandler {
   moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId) {
     this.regionStore.moveArmy(movement.fromRegion, movement.toRegion, movement.leftUnits);
     this.nationHandler.checkNationActivationByArmyMovement(movement.toRegion, frontId);
+    const toRegion = this.regionStore.region(movement.toRegion);
+    if (toRegion.settlement && toRegion.controlledBy !== frontId) {
+      this.regionStore.setControlledBy(frontId, movement.toRegion);
+    }
   }
 
   recruitNazgul(action: WotrNazgulRecruitment) {
@@ -257,9 +261,9 @@ export class WotrUnitHandler {
             logs.length,
             0,
             " and one army from ",
-            f.region(firstMovement.fromRegion),
+            f.region(action.movements[i].fromRegion),
             " to ",
-            f.region(firstMovement.toRegion)
+            f.region(action.movements[i].toRegion)
           );
         }
         return logs;
