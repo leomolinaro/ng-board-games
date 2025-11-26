@@ -221,7 +221,7 @@ export class WotrStrongholdBox {
   private assets = inject(WotrAssetsStore);
 
   region = input.required<WotrRegion>();
-  // @Input () validRegions: WotrRegionId[] | null = null;
+  army = input.required<WotrArmy>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
 
   @Output() regionClick = new EventEmitter<void>();
@@ -237,7 +237,7 @@ export class WotrStrongholdBox {
       id: region.id,
       region,
       path,
-      army: this.regionToArmyNode(region),
+      army: this.regionToArmyNode(this.army(), region),
       tooltip: region.name
     };
     this.setNodeCoordinates(region.id, node);
@@ -279,19 +279,19 @@ export class WotrStrongholdBox {
     }
   }
 
-  private regionToArmyNode(region: WotrRegion): WotrArmyNode {
-    const armyFront = region.underSiegeArmy!.front;
+  private regionToArmyNode(army: WotrArmy, region: WotrRegion): WotrArmyNode {
+    const armyFront = army.front;
 
-    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes(region.underSiegeArmy!);
+    const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes(army);
 
     let leaderUnits: WotrLeaderUnitNode[];
     let leadership: number;
     switch (armyFront) {
       case "free-peoples":
-        [leaderUnits, leadership] = this.regionToFreePeopleLeaderUnitNodes(region);
+        [leaderUnits, leadership] = this.regionToFreePeopleLeaderUnitNodes(army);
         break;
       case "shadow":
-        [leaderUnits, leadership] = this.regionToShadowLeaderUnitNodes(region);
+        [leaderUnits, leadership] = this.regionToShadowLeaderUnitNodes(army);
         break;
     }
 
@@ -343,19 +343,19 @@ export class WotrStrongholdBox {
     return [unitNodes, nRegulars, nElites];
   }
 
-  private regionToFreePeopleLeaderUnitNodes(region: WotrRegion): [WotrLeaderUnitNode[], number] {
+  private regionToFreePeopleLeaderUnitNodes(army: WotrArmy): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCharacter | WotrNationId)[] = [];
 
-    if (region.army?.leaders) {
-      region.army.leaders.forEach(leader => {
+    if (army.leaders) {
+      army.leaders.forEach(leader => {
         leadership += leader.quantity;
         leaders.push(leader.nation);
       });
     }
 
-    if (region.army?.characters) {
-      region.army.characters.forEach(characterId => {
+    if (army.characters) {
+      army.characters.forEach(characterId => {
         const character = this.characterById()[characterId];
         if (character.front === "free-peoples") {
           leadership += character.leadership;
@@ -389,15 +389,15 @@ export class WotrStrongholdBox {
     return [unitNodes, leadership];
   }
 
-  private regionToShadowLeaderUnitNodes(region: WotrRegion): [WotrLeaderUnitNode[], number] {
+  private regionToShadowLeaderUnitNodes(army: WotrArmy): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCharacter | "nazgul")[] = [];
-    if (region.army?.nNazgul) {
-      leadership += region.army.nNazgul;
+    if (army.nNazgul) {
+      leadership += army.nNazgul;
       leaders.push("nazgul");
     }
-    if (region.army?.characters) {
-      region.army.characters.forEach(characterId => {
+    if (army.characters) {
+      army.characters.forEach(characterId => {
         const character = this.characterById()[characterId];
         leadership += character.leadership;
         leaders.push(character);

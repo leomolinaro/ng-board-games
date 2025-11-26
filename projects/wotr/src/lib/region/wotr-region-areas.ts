@@ -33,6 +33,7 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         <svg:g
           wotrStronghold
           [region]="region"
+          [army]="region.underSiegeArmy"
           [characterById]="characterById()"
           (regionClick)="onStrongholdClick(region)"></svg:g>
       }
