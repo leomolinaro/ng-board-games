@@ -129,13 +129,31 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Olog-hai
+      // Olog-hai
       // Play if Sauron is "At War."
       // Recruit one Sauron unit (Regular or Elite) in a region where a Shadow Army is present.
       case "sstr14":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.sauron.isAtWar(),
+          play: async () => {
+            const regions = this.q
+              .regions()
+              .filter(r => r.hasArmy("shadow"))
+              .map(r => r.regionId);
+            const region = await this.gameUi.askRegion(
+              "Select a region to recruit a Sauron unit",
+              regions
+            );
+            const unit = await this.gameUi.askReinforcementUnit("Select a Sauron unit to recruit", {
+              canPass: false,
+              frontId: "shadow",
+              units: [
+                { nation: "sauron", type: "regular" },
+                { nation: "sauron", type: "elite" }
+              ]
+            });
+            return this.unitUi.recruitUnit(unit, region, "shadow");
+          }
         };
       // TODO Hill-trolls
       // Play if Sauron is "At War."

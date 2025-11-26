@@ -135,8 +135,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
         validRegions.map(r => r.id)
       );
       exludedRegions.add(regionId);
-      actions.push(this.unitUi.recruitUnit(unit, regionId));
-      actions.push(...(await this.unitUi.checkStackingLimit(regionId, "shadow")));
+      actions.push(...(await this.unitUi.recruitUnit(unit, regionId, "shadow")));
       canPass = true;
       counter++;
     }

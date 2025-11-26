@@ -140,7 +140,10 @@ export class WotrUnitUi {
     return this.moveThisArmy(movingArmy, frontId);
   }
 
-  async checkStackingLimit(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
+  private async checkStackingLimit(
+    regionId: WotrRegionId,
+    frontId: WotrFrontId
+  ): Promise<WotrAction[]> {
     const region = this.regionStore.region(regionId);
     if (region.army?.front === frontId) {
       return this.checkArmyStackingLimit(region.army, regionId, 10, false);
@@ -203,36 +206,46 @@ export class WotrUnitUi {
         validRegions.map(r => r.id)
       );
       exludedRegions.add(regionId);
-      actions.push(this.recruitUnit(unit, regionId));
-      actions.push(...(await this.checkStackingLimit(regionId, frontId)));
+      actions.push(...(await this.recruitUnit(unit, regionId, frontId)));
       canPass = true;
     }
     return actions;
   }
 
-  recruitUnit(unit: WotrReinforcementUnit, regionId: WotrRegionId) {
+  async recruitUnit(
+    unit: WotrReinforcementUnit,
+    regionId: WotrRegionId,
+    frontId: WotrFrontId
+  ): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
     switch (unit.type) {
       case "regular": {
         const action = recruitRegularUnit(regionId, unit.nation, 1);
         this.unitHandler.recruitRegularUnit(action.region, action.nation, action.quantity);
-        return action;
+        actions.push(action);
+        break;
       }
       case "elite": {
         const action = recruitEliteUnit(regionId, unit.nation, 1);
         this.unitHandler.recruitEliteUnit(action.region, action.nation, action.quantity);
-        return action;
+        actions.push(action);
+        break;
       }
       case "leader": {
         const action = recruitLeader(regionId, unit.nation, 1);
         this.unitHandler.recruitLeader(action.region, action.nation, action.quantity);
-        return action;
+        actions.push(action);
+        break;
       }
       case "nazgul": {
         const action = recruitNazgul(regionId, 1);
         this.unitHandler.recruitNazgul(action);
-        return action;
+        actions.push(action);
+        break;
       }
     }
+    actions.push(...(await this.checkStackingLimit(regionId, frontId)));
+    return actions;
   }
 
   async recruitUnitsInDifferentRegions(
