@@ -10,7 +10,8 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   armyMovement,
-  eliminateRegularUnit,
+  disbandEliteUnit,
+  disbandRegularUnit,
   moveArmies,
   recruitEliteUnit,
   recruitLeader,
@@ -162,19 +163,21 @@ export class WotrUnitUi {
   ): Promise<WotrAction[]> {
     const nArmyUnits = this.unitUtils.nArmyUnits(army);
     if (nArmyUnits <= stackingLimit) return [];
-    const units = await this.ui.askRegionUnits("Choose a unit to remove", {
+    const units = await this.ui.askRegionUnits("Choose a unit to disband", {
       regionIds: [regionId],
       type: "disband",
       nArmyUnits: nArmyUnits - stackingLimit,
       underSiege
     });
     const actions: WotrAction[] = [];
-    units.regulars?.forEach(unit =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
-    );
-    units.elites?.forEach(unit =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
-    );
+    units.regulars?.forEach(unit => {
+      actions.push(disbandRegularUnit(regionId, unit.nation, unit.quantity));
+      this.unitHandler.disbandRegularUnit(unit.quantity, unit.nation, regionId);
+    });
+    units.elites?.forEach(unit => {
+      actions.push(disbandEliteUnit(regionId, unit.nation, unit.quantity));
+      this.unitHandler.disbandEliteUnit(unit.quantity, unit.nation, regionId);
+    });
     return actions;
   }
 
@@ -221,25 +224,25 @@ export class WotrUnitUi {
     switch (unit.type) {
       case "regular": {
         const action = recruitRegularUnit(regionId, unit.nation, 1);
-        this.unitHandler.recruitRegularUnit(action.region, action.nation, action.quantity);
+        this.unitHandler.recruitRegularUnit(action.quantity, action.nation, action.region);
         actions.push(action);
         break;
       }
       case "elite": {
         const action = recruitEliteUnit(regionId, unit.nation, 1);
-        this.unitHandler.recruitEliteUnit(action.region, action.nation, action.quantity);
+        this.unitHandler.recruitEliteUnit(action.quantity, action.nation, action.region);
         actions.push(action);
         break;
       }
       case "leader": {
         const action = recruitLeader(regionId, unit.nation, 1);
-        this.unitHandler.recruitLeader(action.region, action.nation, action.quantity);
+        this.unitHandler.recruitLeader(action.quantity, action.nation, action.region);
         actions.push(action);
         break;
       }
       case "nazgul": {
         const action = recruitNazgul(regionId, 1);
-        this.unitHandler.recruitNazgul(action);
+        this.unitHandler.recruitNazgul(1, regionId);
         actions.push(action);
         break;
       }
@@ -293,7 +296,7 @@ export class WotrUnitUi {
       }
 
       actions.push(recruitRegularUnit(regionId, nationId, nUnits));
-      this.unitHandler.recruitRegularUnit(regionId, nationId, nUnits);
+      this.unitHandler.recruitRegularUnit(nUnits, nationId, regionId);
 
       availableRegionIds = availableRegionIds.filter(r => r !== regionId);
       nLeftRegions--;
@@ -335,12 +338,13 @@ export class WotrUnitUi {
     const actions: WotrAction[] = [];
     if (nRegulars) {
       actions.push(recruitRegularUnit(regionId, nationId, nRegulars));
-      this.unitHandler.recruitRegularUnit(regionId, nationId, nRegulars);
+      this.unitHandler.recruitRegularUnit(nRegulars, nationId, regionId);
     }
     if (nElites) {
       actions.push(recruitEliteUnit(regionId, nationId, nElites));
-      this.unitHandler.recruitEliteUnit(regionId, nationId, nElites);
+      this.unitHandler.recruitEliteUnit(nElites, nationId, regionId);
     }
+    actions.push(...(await this.checkStackingLimit(regionId, frontId)));
     return actions;
   }
 
@@ -358,7 +362,7 @@ export class WotrUnitUi {
       units,
       canPass: false
     });
-    this.unitHandler.recruitRegularUnit(regionId, nationId, 1);
+    this.unitHandler.recruitRegularUnit(1, nationId, regionId);
     return recruitRegularUnit(regionId, nationId, 1);
   }
 
@@ -371,7 +375,7 @@ export class WotrUnitUi {
       units: [{ nation: nationId, type: "leader" }],
       canPass: false
     });
-    this.unitHandler.recruitLeader(regionId, nationId, 1);
+    this.unitHandler.recruitLeader(1, nationId, regionId);
     return [recruitLeader(regionId, nationId, 1)];
   }
 

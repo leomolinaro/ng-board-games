@@ -13,14 +13,11 @@ import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   WotrArmyMovement,
-  WotrEliteUnitDisband,
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
   WotrLeaderElimination,
   WotrNazgulElimination,
   WotrNazgulMovement,
-  WotrNazgulRecruitment,
-  WotrRegularUnitDisband,
   WotrRegularUnitElimination,
   WotrUnitAction
 } from "./wotr-unit-actions";
@@ -52,56 +49,44 @@ export class WotrUnitHandler {
           this.moveArmy(movement, front);
         }
       },
-      "nazgul-movement": (action, front) => {
-        this.moveNazgul(action);
-      },
+      "nazgul-movement": (action, front) => this.moveNazgul(action),
       "regular-unit-recruitment": (action, front) =>
-        this.recruitRegularUnit(action.region, action.nation, action.quantity),
-      "regular-unit-elimination": (action, front) => this.eliminateRegularUnit(action),
+        this.recruitRegularUnit(action.quantity, action.nation, action.region),
+      "regular-unit-elimination": (action, front) =>
+        this.eliminateRegularUnit(action.quantity, action.nation, action.region),
       "regular-unit-upgrade": (action, front) => {
-        this.recruitEliteUnit(action.region, action.nation, action.quantity);
-        this.eliminateRegularUnit({
-          type: "regular-unit-elimination",
-          region: action.region,
-          quantity: action.quantity,
-          nation: action.nation
-        });
+        this.recruitEliteUnit(action.quantity, action.nation, action.region);
+        this.eliminateRegularUnit(action.quantity, action.nation, action.region);
       },
-      "regular-unit-disband": (action, front) => this.disbandRegularUnit(action),
+      "regular-unit-disband": (action, front) =>
+        this.disbandRegularUnit(action.quantity, action.nation, action.region),
       "elite-unit-recruitment": (action, front) =>
-        this.recruitEliteUnit(action.region, action.nation, action.quantity),
-      "elite-unit-elimination": (action, front) => this.eliminateEliteUnit(action),
+        this.recruitEliteUnit(action.quantity, action.nation, action.region),
+      "elite-unit-elimination": (action, front) =>
+        this.eliminateEliteUnit(action.quantity, action.nation, action.region),
       "elite-unit-downgrade": (action, front) => {
-        this.eliminateEliteUnit({
-          type: "elite-unit-elimination",
-          region: action.region,
-          quantity: action.quantity,
-          nation: action.nation
-        });
-        this.recruitRegularUnit(action.region, action.nation, action.quantity);
+        this.eliminateEliteUnit(action.quantity, action.nation, action.region);
+        this.recruitRegularUnit(action.quantity, action.nation, action.region);
       },
-      "elite-unit-disband": (action, front) => this.disbandEliteUnit(action),
+      "elite-unit-disband": (action, front) =>
+        this.disbandEliteUnit(action.quantity, action.nation, action.region),
       "leader-recruitment": (action, front) =>
-        this.recruitLeader(action.region, action.nation, action.quantity),
+        this.recruitLeader(action.quantity, action.nation, action.region),
       "leader-elimination": (action, front) => {
-        const region = this.regionStore.region(action.region);
-        this.removeLeadersFromRegion(action.quantity, action.nation, region);
+        this.removeLeadersFromRegion(action.quantity, action.nation, action.region);
         this.nationStore.addLeadersToCasualties(action.quantity, action.nation);
       },
-      "nazgul-recruitment": (action, front) => this.recruitNazgul(action),
+      "nazgul-recruitment": (action, front) => this.recruitNazgul(action.quantity, action.region),
       "nazgul-elimination": (action, front) => {
-        const region = this.regionStore.region(action.region);
-        this.removeNazgulFromRegion(action.quantity, region);
+        this.removeNazgulFromRegion(action.quantity, action.region);
         this.nationStore.addNazgulToReinforcements(action.quantity);
       }
     };
   }
 
   moveNazgul(action: WotrNazgulMovement) {
-    const fromRegion = this.regionStore.region(action.fromRegion);
-    this.removeNazgulFromRegion(action.nNazgul, fromRegion);
-    const toRegion = this.regionStore.region(action.toRegion);
-    this.addNazgulToRegion(action.nNazgul, toRegion);
+    this.removeNazgulFromRegion(action.nNazgul, action.fromRegion);
+    this.addNazgulToRegion(action.nNazgul, action.toRegion);
   }
 
   moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId) {
@@ -113,68 +98,67 @@ export class WotrUnitHandler {
     }
   }
 
-  recruitNazgul(action: WotrNazgulRecruitment) {
-    const region = this.regionStore.region(action.region);
-    this.nationStore.removeNazgulFromReinforcements(action.quantity);
-    this.addNazgulToRegion(action.quantity, region);
+  recruitNazgul(quantity: number, regionId: WotrRegionId) {
+    this.nationStore.removeNazgulFromReinforcements(quantity);
+    this.addNazgulToRegion(quantity, regionId);
   }
 
-  recruitLeader(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+  recruitLeader(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeLeadersFromReinforcements(quantity, nationId);
     this.addLeadersToRegion(quantity, nationId, region);
   }
 
-  recruitEliteUnit(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+  recruitEliteUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeElitesFromReinforcements(quantity, nationId);
     this.addElitesToRegion(quantity, nationId, region);
   }
 
-  eliminateEliteUnit(action: WotrEliteUnitElimination) {
-    const region = this.regionStore.region(action.region);
-    const frontId = frontOfNation(action.nation);
-    this.removeElitesFromRegion(action.quantity, action.nation, region);
+  eliminateEliteUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
+    const frontId = frontOfNation(nationId);
+    this.removeElitesFromRegion(quantity, nationId, region);
     switch (frontId) {
       case "free-peoples":
-        this.nationStore.addElitesToCasualties(action.quantity, action.nation);
+        this.nationStore.addElitesToCasualties(quantity, nationId);
         break;
       case "shadow":
-        this.nationStore.addElitesToReinforcements(action.quantity, action.nation);
+        this.nationStore.addElitesToReinforcements(quantity, nationId);
         break;
     }
   }
 
-  disbandEliteUnit(action: WotrEliteUnitDisband) {
-    const region = this.regionStore.region(action.region);
-    this.removeElitesFromRegion(action.quantity, action.nation, region);
-    this.nationStore.addElitesToReinforcements(action.quantity, action.nation);
+  disbandEliteUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
+    this.removeElitesFromRegion(quantity, nationId, region);
+    this.nationStore.addElitesToReinforcements(quantity, nationId);
   }
 
-  recruitRegularUnit(regionId: WotrRegionId, nationId: WotrNationId, quantity: number) {
+  recruitRegularUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeRegularsFromReinforcements(quantity, nationId);
     this.addRegularsToRegion(quantity, nationId, region);
   }
 
-  eliminateRegularUnit(action: WotrRegularUnitElimination) {
-    const region = this.regionStore.region(action.region);
-    const frontId = frontOfNation(action.nation);
-    this.removeRegularsFromRegion(action.quantity, action.nation, region);
+  eliminateRegularUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
+    const frontId = frontOfNation(nationId);
+    this.removeRegularsFromRegion(quantity, nationId, region);
     switch (frontId) {
       case "free-peoples":
-        this.nationStore.addRegularsToCasualties(action.quantity, action.nation);
+        this.nationStore.addRegularsToCasualties(quantity, nationId);
         break;
       case "shadow":
-        this.nationStore.addRegularsToReinforcements(action.quantity, action.nation);
+        this.nationStore.addRegularsToReinforcements(quantity, nationId);
         break;
     }
   }
 
-  disbandRegularUnit(action: WotrRegularUnitDisband) {
-    const region = this.regionStore.region(action.region);
-    this.removeRegularsFromRegion(action.quantity, action.nation, region);
-    this.nationStore.addRegularsToReinforcements(action.quantity, action.nation);
+  disbandRegularUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
+    this.removeRegularsFromRegion(quantity, nationId, region);
+    this.nationStore.addRegularsToReinforcements(quantity, nationId);
   }
 
   private addRegularsToRegion(quantity: number, nation: WotrNationId, region: WotrRegion) {
@@ -217,7 +201,8 @@ export class WotrUnitHandler {
     }
   }
 
-  private removeLeadersFromRegion(quantity: number, nation: WotrNationId, region: WotrRegion) {
+  private removeLeadersFromRegion(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.removeLeadersFromArmyUnderSiege(quantity, nation, region.id);
     } else {
@@ -225,7 +210,8 @@ export class WotrUnitHandler {
     }
   }
 
-  private addNazgulToRegion(quantity: number, region: WotrRegion) {
+  private addNazgulToRegion(quantity: number, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === "shadow") {
       this.regionStore.addNazgulToArmyUnderSiege(quantity, region.id);
     } else if (region.army?.front === "shadow") {
@@ -235,7 +221,8 @@ export class WotrUnitHandler {
     }
   }
 
-  private removeNazgulFromRegion(quantity: number, region: WotrRegion) {
+  private removeNazgulFromRegion(quantity: number, regionId: WotrRegionId) {
+    const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === "shadow") {
       this.regionStore.removeNazgulFromArmyUnderSiege(quantity, region.id);
     } else if (region.army?.front === "shadow") {
