@@ -198,6 +198,7 @@ export class WotrGameQuery {
     return this._regions[regionId];
   }
   regions(...regionIds: WotrRegionId[]): WotrRegionQuery[] {
+    if (regionIds.length === 0) regionIds = this.regionStore.state().ids;
     return regionIds.map(id => this.region(id));
   }
 }
