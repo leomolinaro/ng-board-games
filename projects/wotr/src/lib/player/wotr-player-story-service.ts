@@ -6,6 +6,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 
 export interface WotrPlayerStoryService {
   firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory>;
@@ -49,6 +50,11 @@ export interface WotrPlayerStoryService {
   wantContinueBattle(): Promise<WotrStory>;
   discardExcessCards(frontId: WotrFrontId): Promise<WotrStory>;
   playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory>;
+  eliminateUnits(
+    selections: WotrRegionUnitMatch[],
+    cardId: WotrCardId,
+    frontId: WotrFrontId
+  ): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;

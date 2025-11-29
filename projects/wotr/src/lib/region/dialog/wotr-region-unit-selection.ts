@@ -3,7 +3,11 @@ import { WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
-import { WotrUnits } from "../../unit/wotr-unit-models";
+import {
+  unitTypeMatchLabel,
+  WotrRegionUnitTypeMatch,
+  WotrUnits
+} from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrRegion, WotrRegionId } from "../wotr-region-models";
 
@@ -14,7 +18,8 @@ export type WotrRegionUnitSelection =
   | WotrChooseCasualtiesUnitSelection
   | WotrMovingCharactersUnitSelection
   | WotrMovingNazgulUnitSelection
-  | WotrDowngradingUnitSelection;
+  | WotrDowngradingUnitSelection
+  | WotrEliminateUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -61,6 +66,12 @@ export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
   nEliteUnits: 1;
 }
 
+export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
+  type: "eliminateUnit";
+  unitType: WotrRegionUnitTypeMatch;
+  nationId: WotrNationId;
+}
+
 export interface UnitNode {
   id: string;
   type: WotrGenericUnitType | "character" | "fellowship";
@@ -105,6 +116,8 @@ export function selectionModeFactory(
       return new ChooseCasualtiesSelectionMode(unitSelection);
     case "downgradeUnit":
       return new DowngradeUnitSelectionMode(unitSelection.nEliteUnits);
+    case "eliminateUnit":
+      return new EliminateUnitSelectionMode(unitSelection.unitType, unitSelection.nationId);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -383,6 +396,42 @@ export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
     const eliteUnits = selectedNodes.filter(node => node.type === "elite");
     if (eliteUnits.length !== this.nEliteUnits) {
       return `Select ${this.nEliteUnits} elite unit${this.nEliteUnits > 1 ? "s" : ""} to downgrade.`;
+    }
+    return true;
+  }
+}
+
+export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(
+    private unitType: WotrRegionUnitTypeMatch,
+    private nationId: WotrNationId
+  ) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      node.selectable = this.isSelectable(this.unitType, node);
+    }
+  }
+
+  private isSelectable(type: WotrRegionUnitTypeMatch, node: UnitNode): boolean {
+    if (node.nationId !== this.nationId) return false;
+    switch (type) {
+      case "regular":
+        return node.type === "regular";
+      case "elite":
+        return node.type === "elite";
+      case "leader":
+        return node.type === "leader";
+      case "nazgul":
+        return node.type === "nazgul";
+      case "army":
+        return node.type === "regular" || node.type === "elite";
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    if (selectedNodes.length !== 1) {
+      return `Select one ${unitTypeMatchLabel(this.unitType)} to eliminate.`;
     }
     return true;
   }

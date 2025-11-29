@@ -7,11 +7,16 @@ import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   armyMovement,
   disbandEliteUnit,
   disbandRegularUnit,
+  eliminateEliteUnit,
+  eliminateLeader,
+  eliminateNazgul,
+  eliminateRegularUnit,
   moveArmies,
   recruitEliteUnit,
   recruitLeader,
@@ -22,7 +27,12 @@ import {
   WotrRegularUnitRecruitment
 } from "./wotr-unit-actions";
 import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
-import { WotrArmy, WotrRegionUnits, WotrReinforcementUnit } from "./wotr-unit-models";
+import {
+  WotrArmy,
+  WotrRegionUnitMatch,
+  WotrRegionUnits,
+  WotrReinforcementUnit
+} from "./wotr-unit-models";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
 
@@ -306,7 +316,7 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async recruitRegularOrEliteByCard(
+  async recruitRegularsOrElitesByCard(
     regionId: WotrRegionId,
     nationId: WotrNationId,
     nUnits: number = 1
@@ -331,6 +341,54 @@ export class WotrUnitUi {
         if (unit.type === "regular") nRegulars++;
         else nElites++;
         continuee = nRegulars + nElites < nUnits;
+      } else {
+        continuee = false;
+      }
+    }
+    const actions: WotrAction[] = [];
+    if (nRegulars) {
+      actions.push(recruitRegularUnit(regionId, nationId, nRegulars));
+      this.unitHandler.recruitRegularUnit(nRegulars, nationId, regionId);
+    }
+    if (nElites) {
+      actions.push(recruitEliteUnit(regionId, nationId, nElites));
+      this.unitHandler.recruitEliteUnit(nElites, nationId, regionId);
+    }
+    actions.push(...(await this.checkStackingLimit(regionId, frontId)));
+    return actions;
+  }
+
+  async recruitRegularsAndElitesByCard(
+    regionId: WotrRegionId,
+    nationId: WotrNationId,
+    nRegulars: number,
+    nElites: number
+  ): Promise<WotrAction[]> {
+    const frontId = this.nationStore.nation(nationId).front;
+    if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return [];
+    let continuee = true;
+    let nChosenRegulars = 0;
+    let nChosenElites = 0;
+    while (continuee) {
+      const units: WotrReinforcementUnit[] = [];
+      if (nChosenRegulars < nRegulars && this.q.nation(nationId).hasRegularReinforcements())
+        units.push({ nation: nationId, type: "regular" });
+      if (nChosenElites < nElites && this.q.nation(nationId).hasEliteReinforcements())
+        units.push({ nation: nationId, type: "elite" });
+      if (units.length) {
+        const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+          frontId,
+          units,
+          canPass: true
+        });
+        if (!unit) {
+          continuee = false;
+        } else if (unit.type === "regular") {
+          nChosenRegulars++;
+        } else {
+          nChosenElites++;
+        }
+        continuee = nChosenRegulars < nRegulars || nChosenElites < nElites;
       } else {
         continuee = false;
       }
@@ -414,4 +472,60 @@ export class WotrUnitUi {
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontAttackWithLeader(frontId),
     actions: async (frontId: WotrFrontId) => this.attackWithLeader(frontId)
   };
+
+  async eliminateUnits(selections: WotrRegionUnitMatch[], frontId: string): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    for (const selection of selections) {
+      actions.push(...(await this.eliminateUnit(selection, frontId)));
+    }
+    return actions;
+  }
+
+  async eliminateUnit(selection: WotrRegionUnitMatch, frontId: string): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    const regionFilter = this.regionFilter(selection);
+    const regions = this.q.regions().filter(regionFilter);
+    const units = await this.ui.askRegionUnits(`Select a ${selection.unitType} unit to eliminate`, {
+      regionIds: regions.map(r => r.regionId),
+      type: "eliminateUnit",
+      unitType: selection.unitType,
+      nationId: selection.nationId
+    });
+    if (units.regulars?.length) {
+      const nationUnit = units.regulars[0];
+      actions.push(eliminateRegularUnit(units.regionId, nationUnit.nation, nationUnit.quantity));
+      this.unitHandler.eliminateRegularUnit(nationUnit.quantity, nationUnit.nation, units.regionId);
+    }
+
+    if (units.elites?.length) {
+      const eliteUnit = units.elites[0];
+      actions.push(eliminateEliteUnit(units.regionId, eliteUnit.nation, eliteUnit.quantity));
+      this.unitHandler.eliminateEliteUnit(eliteUnit.quantity, eliteUnit.nation, units.regionId);
+    }
+    if (units.leaders?.length) {
+      const leaderUnit = units.leaders[0];
+      actions.push(eliminateLeader(units.regionId, leaderUnit.nation, leaderUnit.quantity));
+      this.unitHandler.eliminateLeader(leaderUnit.quantity, leaderUnit.nation, units.regionId);
+    }
+    if (units.nNazgul) {
+      actions.push(eliminateNazgul(units.regionId, units.nNazgul));
+      this.unitHandler.eliminateNazgul(units.nNazgul, units.regionId);
+    }
+    return actions;
+  }
+
+  private regionFilter(selection: WotrRegionUnitMatch): (r: WotrRegionQuery) => boolean {
+    switch (selection.unitType) {
+      case "regular":
+        return r => r.hasRegularUnitsOfNation(selection.nationId);
+      case "elite":
+        return r => r.hasEliteUnitsOfNation(selection.nationId);
+      case "leader":
+        return r => r.hasLeadersOfNation(selection.nationId);
+      case "army":
+        return r => r.hasArmyUnitsOfNation(selection.nationId);
+      case "nazgul":
+        return r => r.hasNazgul();
+    }
+  }
 }

@@ -155,12 +155,6 @@ export class WotrUnitUtils {
     return true;
   }
 
-  hasArmyUnits(units: WotrUnits) {
-    if (units.regulars?.length) return true;
-    if (units.elites?.length) return true;
-    return false;
-  }
-
   hasUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
     if (units.regulars?.some(u => u.nation === nation)) return true;
     if (units.elites?.some(u => u.nation === nation)) return true;
@@ -168,8 +162,35 @@ export class WotrUnitUtils {
     return false;
   }
 
+  hasArmyUnits(units: WotrUnits) {
+    if (units.regulars?.length) return true;
+    if (units.elites?.length) return true;
+    return false;
+  }
+
+  hasArmyUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (units.regulars?.some(u => u.nation === nation)) return true;
+    if (units.elites?.some(u => u.nation === nation)) return true;
+    return false;
+  }
+
+  hasRegularUnits(units: WotrUnits) {
+    if (units.regulars?.length) return true;
+    return false;
+  }
+
+  hasRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (units.regulars?.some(u => u.nation === nation)) return true;
+    return false;
+  }
+
   hasEliteUnits(units: WotrUnits) {
     if (units.elites?.length) return true;
+    return false;
+  }
+
+  hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (units.elites?.some(u => u.nation === nation)) return true;
     return false;
   }
 

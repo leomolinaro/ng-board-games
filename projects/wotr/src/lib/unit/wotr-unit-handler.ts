@@ -72,15 +72,10 @@ export class WotrUnitHandler {
         this.disbandEliteUnit(action.quantity, action.nation, action.region),
       "leader-recruitment": (action, front) =>
         this.recruitLeader(action.quantity, action.nation, action.region),
-      "leader-elimination": (action, front) => {
-        this.removeLeadersFromRegion(action.quantity, action.nation, action.region);
-        this.nationStore.addLeadersToCasualties(action.quantity, action.nation);
-      },
+      "leader-elimination": (action, front) =>
+        this.eliminateLeader(action.quantity, action.nation, action.region),
       "nazgul-recruitment": (action, front) => this.recruitNazgul(action.quantity, action.region),
-      "nazgul-elimination": (action, front) => {
-        this.removeNazgulFromRegion(action.quantity, action.region);
-        this.nationStore.addNazgulToReinforcements(action.quantity);
-      }
+      "nazgul-elimination": (action, front) => this.eliminateNazgul(action.quantity, action.region)
     };
   }
 
@@ -199,6 +194,16 @@ export class WotrUnitHandler {
     } else {
       this.regionStore.addLeadersToArmy(quantity, nation, region.id);
     }
+  }
+
+  eliminateLeader(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {
+    this.removeLeadersFromRegion(quantity, nation, regionId);
+    this.nationStore.addLeadersToCasualties(quantity, nation);
+  }
+
+  eliminateNazgul(quantity: number, regionId: WotrRegionId) {
+    this.removeNazgulFromRegion(quantity, regionId);
+    this.nationStore.addNazgulToReinforcements(quantity);
   }
 
   private removeLeadersFromRegion(quantity: number, nation: WotrNationId, regionId: WotrRegionId) {

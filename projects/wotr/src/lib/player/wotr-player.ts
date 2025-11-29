@@ -7,6 +7,7 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 
 export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
@@ -107,5 +108,10 @@ export abstract class WotrPlayer {
   }
   playCharacterCardFromHand(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.playCharacterCardFromHand(this.frontId));
+  }
+  eliminateUnits(selection: WotrRegionUnitMatch[], cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.eliminateUnits(selection, cardId, this.frontId)
+    );
   }
 }

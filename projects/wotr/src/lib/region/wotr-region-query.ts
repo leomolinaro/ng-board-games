@@ -1,4 +1,5 @@
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrRegionId } from "./wotr-region-models";
@@ -35,11 +36,52 @@ export class WotrRegionQuery {
     return null;
   }
 
+  hasRegularUnitsOfNation(nationId: WotrNationId) {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasRegularUnitsOfNation(nationId, region.army)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasRegularUnitsOfNation(nationId, region.underSiegeArmy)) ||
+      false
+    );
+  }
+
+  hasEliteUnitsOfNation(nationId: WotrNationId) {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasEliteUnitsOfNation(nationId, region.army)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasEliteUnitsOfNation(nationId, region.underSiegeArmy)) ||
+      false
+    );
+  }
+
+  hasArmyUnitsOfNation(nationId: WotrNationId) {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasArmyUnitsOfNation(nationId, region.army)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasArmyUnitsOfNation(nationId, region.underSiegeArmy)) ||
+      false
+    );
+  }
+
+  hasLeadersOfNation(nationId: WotrNationId) {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasUnitsOfNation(nationId, region.army)) ||
+      (region.underSiegeArmy && this.unitUtils.hasUnitsOfNation(nationId, region.underSiegeArmy)) ||
+      false
+    );
+  }
+
   hasNazgul() {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasNazgul(region.army)) ||
-      (region.freeUnits && this.unitUtils.hasNazgul(region.freeUnits))
+      (region.underSiegeArmy && this.unitUtils.hasNazgul(region.underSiegeArmy)) ||
+      (region.freeUnits && this.unitUtils.hasNazgul(region.freeUnits)) ||
+      false
     );
   }
 
@@ -47,8 +89,14 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasCompanions(region.army)) ||
-      (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits))
+      (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits)) ||
+      false
     );
+  }
+
+  hasFellowship() {
+    const region = this.regionStore.region(this.regionId);
+    return region.fellowship;
   }
 
   isUnconquered() {

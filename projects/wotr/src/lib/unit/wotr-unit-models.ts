@@ -39,6 +39,30 @@ export interface WotrReinforcementUnit {
   type: WotrGenericUnitType;
 }
 
+export interface WotrRegionUnitMatch {
+  unitType: WotrRegionUnitTypeMatch;
+  nationId: WotrNationId;
+}
+
+export type WotrRegionUnitTypeMatch = "regular" | "elite" | "leader" | "nazgul" | "army";
+
+export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
+  switch (type) {
+    case "regular":
+      return "regular unit";
+    case "elite":
+      return "elite unit";
+    case "leader":
+      return "leader";
+    case "nazgul":
+      return "Nazgul";
+    case "army":
+      return "army unit";
+    default:
+      throw new Error(`Unknown unit type match: ${type}`);
+  }
+}
+
 export function regular(nation: WotrNationId, quantity: number = 1) {
   return new WotrNationUnitComposer("regulars", nation, quantity);
 }

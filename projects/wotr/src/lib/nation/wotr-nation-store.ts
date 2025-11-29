@@ -366,6 +366,19 @@ export class WotrNationStore {
     });
   }
 
+  recede(quantity: number, nationId: WotrNationId) {
+    this.updateNation("recedePoliticalStep", nationId, nation => {
+      let prev: WotrPoliticalStep = nation.politicalStep;
+      for (let i = 0; i < quantity; i++) {
+        prev = this.getPreviousPoliticalStep(prev);
+      }
+      return {
+        ...nation,
+        politicalStep: prev
+      };
+    });
+  }
+
   advanceAtWar(nationId: WotrNationId) {
     this.updateNation("advancePoliticalAtWar", nationId, nation => ({
       ...nation,
@@ -382,6 +395,19 @@ export class WotrNationStore {
       case 1:
       case "atWar":
         return "atWar";
+    }
+  }
+
+  private getPreviousPoliticalStep(politicalStep: WotrPoliticalStep): WotrPoliticalStep {
+    switch (politicalStep) {
+      case "atWar":
+        return 1;
+      case 1:
+        return 2;
+      case 2:
+        return 3;
+      case 3:
+        return 3;
     }
   }
 }

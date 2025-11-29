@@ -1,7 +1,13 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAction } from "../../commons/wotr-action-models";
+import { moveCharacters } from "../../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../../character/wotr-character-handler";
+import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
+import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
+import { WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
@@ -11,6 +17,8 @@ export class WotrShadowStrategyCards {
   private q = inject(WotrGameQuery);
   private gameUi = inject(WotrGameUi);
   private unitUi = inject(WotrUnitUi);
+  private characterHandler = inject(WotrCharacterHandler);
+  private freePeoples = inject(WotrFreePeoplesPlayer);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -59,14 +67,37 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Stormcrow
+      // Stormcrow
       // Play if either the Fellowship or a Companion is inside the borders of a Free Peoples Nation not "At War."
       // Move that Nation's Political Counter back one step on the Political Track.
       // Then, the Free Peoples player must eliminate one Leader or Army unit of that Nation (Regular or Elite).
       case "sstr06":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.regions().some(region => this.isStormcrowRegion(region)),
+          play: async () => {
+            const regions = this.q.regions().filter(region => this.isStormcrowRegion(region));
+            const nations = new Set<WotrNationId>();
+            regions.forEach(region => nations.add(region.region().nationId!));
+            const nationId = await this.gameUi.askNation(
+              "Select a Free Peoples Nation to move back on the Political Track",
+              [...nations]
+            );
+            return [recedeNation(nationId, 1)];
+          },
+          effect: async params => {
+            const action = findAction<WotrPoliticalRecede>(
+              params.story.actions,
+              "political-recede"
+            )!;
+            const nationId = action.nation;
+            await this.freePeoples.eliminateUnits(
+              [
+                { unitType: "leader", nationId },
+                { unitType: "army", nationId }
+              ],
+              params.cardId
+            );
+          }
         };
       // TODO Shadows Gather
       // Move one Shadow Army up to three regions: the movement must end in a region already occupied by another Shadow Army (that must not be under siege). The
@@ -113,13 +144,22 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Return of the Witch-king
+      // Return of the Witch-king
       // Play if the Witch-king is in play.
       // Move the Witch-king to Angmar, then recruit two Sauron Regular units and one Sauron Elite unit there.
       case "sstr12":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.theWitchKing.isInPlay(),
+          play: async () => {
+            const actions: WotrAction[] = [];
+            const witchKingRegion = this.q.theWitchKing.region()!;
+            actions.push(moveCharacters(witchKingRegion.id, "angmar", "the-witch-king"));
+            this.characterHandler.moveCharacters(["the-witch-king"], witchKingRegion.id, "angmar");
+            actions.push(
+              ...(await this.unitUi.recruitRegularsAndElitesByCard("angmar", "sauron", 2, 1))
+            );
+            return actions;
+          }
         };
       // TODO Half-orcs and Goblin-men
       // Play if Isengard is "At War."
@@ -182,7 +222,7 @@ export class WotrShadowStrategyCards {
                 .map(r => r.regionId)
             );
             actions.push(...regularRecruitments);
-            const eliteRecruitments = await this.unitUi.recruitRegularOrEliteByCard(
+            const eliteRecruitments = await this.unitUi.recruitRegularsOrElitesByCard(
               "orthanc",
               "isengard",
               2
@@ -326,5 +366,14 @@ export class WotrShadowStrategyCards {
             )
         };
     }
+  }
+
+  private isStormcrowRegion(region: WotrRegionQuery): boolean {
+    const nationId = region.region().nationId;
+    if (!nationId) return false;
+    const nation = this.q.nation(nationId).nation();
+    if (nation.front !== "free-peoples") return false;
+    if (nation.politicalStep === "atWar") return false;
+    return region.hasFellowship() || region.hasCompanions();
   }
 }

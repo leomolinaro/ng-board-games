@@ -46,6 +46,19 @@ export type WotrUnitType = WotrFreeGenericUnitType | WotrFreeUnitType;
 
 export type WotrPoliticalStep = 3 | 2 | 1 | "atWar";
 
+export function genericUnitLabel(unitType: WotrGenericUnitType): string {
+  switch (unitType) {
+    case "regular":
+      return "Regular";
+    case "elite":
+      return "Elite";
+    case "leader":
+      return "Leader";
+    case "nazgul":
+      return "Nazgûl";
+  }
+}
+
 export function frontOfNation(nationId: WotrNationId): WotrFrontId {
   switch (nationId) {
     case "dwarves":

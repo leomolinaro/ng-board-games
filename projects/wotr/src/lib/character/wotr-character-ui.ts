@@ -73,7 +73,7 @@ export class WotrCharacterUi {
     let continueMoving = movableCompanions.size > 0;
     while (continueMoving) {
       const action = await this.moveCharacterGroup(movableCompanions);
-      this.characterHandler.moveCharacters(action, "free-peoples");
+      this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
       if (movableCompanions.size > 0) {
@@ -113,7 +113,7 @@ export class WotrCharacterUi {
 
       if (moveNonFlyingMinions) {
         const action = await this.moveCharacterGroup(moveableNonFlyingMinions);
-        this.characterHandler.moveCharacters(action, "shadow");
+        this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
         actions.push(action);
         action.characters.forEach(c => moveableNonFlyingMinions.delete(c));
       } else {
@@ -122,7 +122,11 @@ export class WotrCharacterUi {
           if (action.type === "nazgul-movement") {
             this.unitHandler.moveNazgul(action);
           } else {
-            this.characterHandler.moveCharacters(action, "shadow");
+            this.characterHandler.moveCharacters(
+              action.characters,
+              action.fromRegion,
+              action.toRegion
+            );
           }
           actions.push(action);
         }
@@ -157,7 +161,11 @@ export class WotrCharacterUi {
         if (action.type === "nazgul-movement") {
           this.unitHandler.moveNazgul(action);
         } else {
-          this.characterHandler.moveCharacters(action, "shadow");
+          this.characterHandler.moveCharacters(
+            action.characters,
+            action.fromRegion,
+            action.toRegion
+          );
         }
         actions.push(action);
       }

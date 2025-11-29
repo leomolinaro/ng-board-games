@@ -7,7 +7,6 @@ import {
 } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   WotrCharacterReactionStory,
@@ -20,7 +19,7 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCharacterAction, WotrCharacterMovement } from "./wotr-character-actions";
+import { WotrCharacterAction } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
@@ -66,7 +65,8 @@ export class WotrCharacterHandler {
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {
     return {
       "character-play": (action, front) => this.playCharacters(action.characters, action.region),
-      "character-movement": (action, front) => this.moveCharacters(action, front),
+      "character-movement": (action, front) =>
+        this.moveCharacters(action.characters, action.fromRegion, action.toRegion),
       "character-elimination": (action, front) => this.eliminateCharacters(action.characters)
     };
   }
@@ -118,15 +118,19 @@ export class WotrCharacterHandler {
     this.characters.deactivateAbilities(characterId);
   }
 
-  moveCharacters(action: WotrCharacterMovement, front: WotrFrontId): void {
-    const fromRegion = this.regionStore.region(action.fromRegion);
-    const toRegion = this.regionStore.region(action.toRegion);
-    for (const characterId of action.characters) {
+  moveCharacters(
+    characters: WotrCharacterId[],
+    fromRegionId: WotrRegionId,
+    toRegionId: WotrRegionId
+  ): void {
+    const fromRegion = this.regionStore.region(fromRegionId);
+    const toRegion = this.regionStore.region(toRegionId);
+    for (const characterId of characters) {
       const character = this.characterStore.character(characterId);
       this.removeCharacterFromRegion(character, fromRegion);
       this.addCharacterToRegion(character, toRegion);
     }
-    this.nationHandler.checkNationActivationByCharacters(action.toRegion, action.characters);
+    this.nationHandler.checkNationActivationByCharacters(toRegionId, characters);
   }
 
   addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {

@@ -10,6 +10,7 @@ import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrFreePeopleStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
+import { playCardOnTable } from "../wotr-card-actions";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesStrategyCards {
@@ -40,8 +41,7 @@ export class WotrFreePeoplesStrategyCards {
       // from his hand.
       case "fpstr02":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [playCardOnTable("A Power too Great")]
         };
       // TODO The Power of Tom Bombadil
       // Play on the table.
@@ -131,7 +131,7 @@ export class WotrFreePeoplesStrategyCards {
             const actions: WotrAction[] = [];
             const advanceAction = await this.nationUi.advanceNation("rohan");
             if (advanceAction) actions.push(advanceAction);
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("edoras", "rohan")));
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard("edoras", "rohan")));
             actions.push(...(await this.unitUi.recruitLeaderByCard("edoras", "rohan")));
             return actions;
           }
@@ -178,7 +178,7 @@ export class WotrFreePeoplesStrategyCards {
           play: async () => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await this.unitUi.recruitRegularOrEliteByCard("minas-tirith", "gondor"))
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("minas-tirith", "gondor"))
             );
             actions.push(...(await this.unitUi.recruitLeaderByCard("minas-tirith", "gondor")));
             return actions;
@@ -191,7 +191,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("lorien", "elves")));
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard("lorien", "elves")));
             const drawA = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawA) actions.push(drawA);
             return actions;
@@ -210,7 +210,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("carrock", "north")));
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard("carrock", "north")));
             actions.push(...(await this.unitUi.recruitLeaderByCard("carrock", "north")));
             return actions;
           }
@@ -222,7 +222,7 @@ export class WotrFreePeoplesStrategyCards {
           play: async () => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await this.unitUi.recruitRegularOrEliteByCard("dol-amroth", "gondor"))
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("dol-amroth", "gondor"))
             );
             actions.push(...(await this.unitUi.recruitLeaderByCard("dol-amroth", "gondor")));
             return actions;
@@ -251,9 +251,11 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("the-shire", "north")));
             actions.push(
-              ...(await this.unitUi.recruitRegularOrEliteByCard("ered-luin", "dwarves"))
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("the-shire", "north"))
+            );
+            actions.push(
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("ered-luin", "dwarves"))
             );
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);
@@ -267,7 +269,9 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("rivendell", "elves")));
+            actions.push(
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("rivendell", "elves"))
+            );
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);
             return actions;
@@ -279,7 +283,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard("erebor", "dwarves")));
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard("erebor", "dwarves")));
             actions.push(...(await this.unitUi.recruitLeaderByCard("erebor", "dwarves")));
             return actions;
           }
@@ -302,7 +306,7 @@ export class WotrFreePeoplesStrategyCards {
               availableRegions
             );
             const actions: WotrAction[] = [];
-            actions.push(...(await this.unitUi.recruitRegularOrEliteByCard(regionId, "rohan")));
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard(regionId, "rohan")));
             actions.push(...(await this.unitUi.recruitLeaderByCard(regionId, "rohan")));
             return actions;
           }
@@ -315,7 +319,7 @@ export class WotrFreePeoplesStrategyCards {
           play: async () => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await this.unitUi.recruitRegularOrEliteByCard("woodland-realm", "elves"))
+              ...(await this.unitUi.recruitRegularsOrElitesByCard("woodland-realm", "elves"))
             );
             const drawAction = await this.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
             if (drawAction) actions.push(drawAction);

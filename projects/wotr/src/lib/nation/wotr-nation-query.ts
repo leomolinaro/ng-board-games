@@ -14,16 +14,16 @@ export class WotrNationQuery {
     return this.nationId;
   }
 
+  nation() {
+    return this.nationStore.nation(this.nationId);
+  }
+
   isAtWar(): boolean {
     return this.nationStore.isAtWar(this.nationId);
   }
 
   isActive(): boolean {
     return this.nation().active;
-  }
-
-  private nation() {
-    return this.nationStore.nation(this.nationId);
   }
 
   nRegularReinforcements(): number {

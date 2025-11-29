@@ -110,4 +110,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  eliminateUnits(): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
 }

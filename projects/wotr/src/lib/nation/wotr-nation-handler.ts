@@ -10,7 +10,8 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   WotrPoliticalActivation,
   WotrPoliticalAdvance,
-  WotrPoliticalAdvanceAtWar
+  WotrPoliticalAdvanceAtWar,
+  WotrPoliticalRecede
 } from "./wotr-nation-actions";
 import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationStore } from "./wotr-nation-store";
@@ -35,6 +36,16 @@ export class WotrNationHandler {
       (action, front, f) => [
         f.player(front),
         " advances ",
+        f.nation(action.nation),
+        " on the Political Track"
+      ]
+    );
+    this.actionRegistry.registerAction<WotrPoliticalRecede>(
+      "political-recede",
+      action => this.nationStore.recede(action.quantity, action.nation),
+      (action, front, f) => [
+        f.player(front),
+        " recedes ",
         f.nation(action.nation),
         " on the Political Track"
       ]
