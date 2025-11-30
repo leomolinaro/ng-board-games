@@ -19,6 +19,8 @@ import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 interface WotrSeparateCompanionsOptions {
   extraMovements?: number;
+  asLevel?: number;
+  canEndInSiege?: boolean;
 }
 
 @Injectable({ providedIn: "root" })

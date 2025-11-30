@@ -37,6 +37,12 @@ class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
   }
 }
 
+export interface WotrCharacterMovementOptions {
+  asLevel?: number;
+  onlyOneGroup?: boolean;
+  canEndInSiege?: boolean;
+}
+
 @Injectable({ providedIn: "root" })
 export class WotrCharacterUi {
   private regionStore = inject(WotrRegionStore);
@@ -62,7 +68,7 @@ export class WotrCharacterUi {
     );
   }
 
-  async moveCompanions(): Promise<WotrAction[]> {
+  async moveCompanions(options?: WotrCharacterMovementOptions): Promise<WotrAction[]> {
     const movableCompanions = new Set(
       this.characterStore
         .companions()
@@ -76,7 +82,7 @@ export class WotrCharacterUi {
       this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
-      if (movableCompanions.size > 0) {
+      if (movableCompanions.size > 0 && !options?.onlyOneGroup) {
         continueMoving = await this.ui.askConfirm(
           "Do you want to move more companions?",
           "Move more",
@@ -211,7 +217,8 @@ export class WotrCharacterUi {
   }
 
   private async moveCharacterGroup(
-    moveableCharacters: Set<WotrCharacterId>
+    moveableCharacters: Set<WotrCharacterId>,
+    options?: WotrCharacterMovementOptions
   ): Promise<WotrCharacterMovement> {
     const fromRegions = this.regionStore.regions().filter(region => {
       if (region.army?.characters?.some(c => moveableCharacters.has(c))) return true;
@@ -225,12 +232,13 @@ export class WotrCharacterUi {
     });
     const movingCharacters = movingUnits.characters!;
     const fromRegion = movingUnits.regionId;
-    const level = this.characterRules.characterGroupLevel(movingCharacters);
+    const totalMovements =
+      options?.asLevel ?? this.characterRules.characterGroupLevel(movingCharacters);
 
     const targetRegions = this.regionStore.reachableRegions(
       fromRegion,
-      level,
-      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance),
+      totalMovements,
+      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance, options),
       (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
     );
     const toRegion = await this.ui.askRegion("Select a region to move companions", targetRegions);

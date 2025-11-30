@@ -759,6 +759,12 @@ export class WotrRegionStore {
     );
   }
 
+  addCharacterToUnderSiegeArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
+    this.updateArmyUnderSiege("addCharacterToUnderSiegeArmy", regionId, army =>
+      this.unitUtils.addCharacter(characterId, army)
+    );
+  }
+
   removeCharacterFromArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
     this.updateArmy("removeCharacterFromArmy", regionId, army =>
       this.unitUtils.removeCharacter(characterId, army)

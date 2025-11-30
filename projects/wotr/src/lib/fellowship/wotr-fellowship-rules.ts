@@ -5,6 +5,11 @@ import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
+export interface WotrCompanionSeparationOptions {
+  extraMovements?: number;
+  asLevel?: number;
+}
+
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipRules {
   private fellowshipStore = inject(WotrFellowshipStore);
@@ -36,18 +41,26 @@ export class WotrFellowshipRules {
 
   companionSeparationTargetRegions(
     companions: WotrCompanionId[],
-    options?: { extraMovements?: number }
+    options?: WotrCompanionSeparationOptions
   ) {
-    const groupLevel = this.characterRules.characterGroupLevel(companions);
-    const fellowshipProgress = this.fellowshipStore.progress();
-    const totalMovement = fellowshipProgress + groupLevel + (options?.extraMovements || 0);
+    const totalMovement = this.companionSeparationTotalMovement(companions, options);
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     const targetRegions = this.regionStore.reachableRegions(
       fellowshipRegion,
       totalMovement,
-      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance),
+      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance, options),
       (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
     );
     return targetRegions;
+  }
+
+  private companionSeparationTotalMovement(
+    companions: WotrCompanionId[],
+    options?: WotrCompanionSeparationOptions
+  ): number {
+    if (options?.asLevel) return options.asLevel;
+    const groupLevel = this.characterRules.characterGroupLevel(companions);
+    const fellowshipProgress = this.fellowshipStore.progress();
+    return fellowshipProgress + groupLevel + (options?.extraMovements || 0);
   }
 }

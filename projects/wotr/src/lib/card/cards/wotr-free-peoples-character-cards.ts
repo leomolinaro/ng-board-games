@@ -4,6 +4,7 @@ import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { eliminateCharacter } from "../../character/wotr-character-actions";
 import { WotrCharacterQuery } from "../../character/wotr-character-query";
+import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import {
   healFellowship,
@@ -39,6 +40,7 @@ export class WotrFreePeoplesCharacterCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private fellowshipUi = inject(WotrFellowshipUi);
+  private characterUi = inject(WotrCharacterUi);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -227,12 +229,34 @@ export class WotrFreePeoplesCharacterCards {
           },
           play: async () => []
         };
-      // TODO Gwaihir the Windlord
+      // Gwaihir the Windlord
       // Separate from the Fellowship, or move, one Companion or one group of Companions as if their Level were 4.
       // This movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha15":
         return {
-          play: async () => []
+          play: async () => {
+            const actions = await this.gameUi.askChoice(
+              "Choose to separate or move Companions",
+              [
+                {
+                  label: () => "Separate",
+                  actions: () =>
+                    this.fellowshipUi.separateCompanions({ asLevel: 4, canEndInSiege: true })
+                },
+                {
+                  label: () => "Move",
+                  actions: () =>
+                    this.characterUi.moveCompanions({
+                      asLevel: 4,
+                      onlyOneGroup: true,
+                      canEndInSiege: true
+                    })
+                }
+              ],
+              void 0
+            );
+            return actions;
+          }
         };
       // TODO We Prove the Swifter
       // Separate from the Fellowship, or move, one Companion or one group of Companions. You may move them two extra regions.

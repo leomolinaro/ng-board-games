@@ -5,6 +5,7 @@ import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
+import { WotrCharacterMovementOptions } from "./wotr-character-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterRules {
@@ -53,8 +54,13 @@ export class WotrCharacterRules {
     });
   }
 
-  companionCanEnterRegion(region: WotrRegion, distance: number): boolean {
+  companionCanEnterRegion(
+    region: WotrRegion,
+    distance: number,
+    options?: WotrCharacterMovementOptions
+  ): boolean {
     if (distance === 0) return true;
+    if (options?.canEndInSiege) return true;
     if (region.settlement !== "stronghold") return true;
     if (region.controlledBy !== "free-peoples") return true;
     if (region.underSiegeArmy) return false;

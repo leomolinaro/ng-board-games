@@ -136,6 +136,8 @@ export class WotrCharacterHandler {
   addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
     if (region.army?.front === character.front) {
       this.regionStore.addCharacterToArmy(character.id, region.id);
+    } else if (region.underSiegeArmy?.front === character.front) {
+      this.regionStore.addCharacterToUnderSiegeArmy(character.id, region.id);
     } else {
       this.regionStore.addCharacterToFreeUnits(character.id, region.id);
     }
