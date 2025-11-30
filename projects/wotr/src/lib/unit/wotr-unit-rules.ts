@@ -222,6 +222,7 @@ export class WotrUnitRules {
   }
 
   private canMoveArmy(army: WotrArmy, region: WotrRegion): boolean {
+    if (!this.unitModifiers.canMoveIntoRegion(region.id, army.front)) return false;
     const armyAtWar = this.isArmyAtWar(army);
     const armyUnitNations = this.armyUnitNations(army);
     return region.neighbors.some(neighbor => {
@@ -281,7 +282,8 @@ export class WotrUnitRules {
     });
   }
 
-  canArmyAttack(army: WotrArmy, region: WotrRegion): boolean {
+  private canArmyAttack(army: WotrArmy, region: WotrRegion): boolean {
+    if (!this.unitModifiers.canAttackRegion(region.id, army.front)) return false;
     if (!this.isArmyAtWar(army)) return false;
     if (region.underSiegeArmy) return true;
     return region.neighbors.some(neighbor => {

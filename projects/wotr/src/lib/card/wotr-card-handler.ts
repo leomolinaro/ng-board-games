@@ -7,12 +7,8 @@ import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import {
-  WotrCardAction,
-  WotrCardDiscardFromTable,
-  discardCardFromTable,
-  drawCardIds
-} from "./wotr-card-actions";
+import { WotrCards } from "./cards/wotr-cards";
+import { WotrCardAction, WotrCardDiscardFromTable, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel, isFreePeoplesCard } from "./wotr-card-models";
 
 @Injectable({ providedIn: "root" })
@@ -21,6 +17,7 @@ export class WotrCardHandler {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
+  private cards = inject(WotrCards);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -40,10 +37,9 @@ export class WotrCardHandler {
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
       "card-discard": (action, front) => this.frontStore.discardCards(action.cards, front),
-      "card-discard-from-table": (action, front) =>
-        this.frontStore.discardCardFromTable(action.card, front),
+      "card-discard-from-table": (action, front) => this.discardCardFromTable(action.card, front),
       "card-draw": (action, front) => this.drawCards(action.cards, front),
-      "card-play-on-table": (action, front) => this.frontStore.playCardOnTable(action.card, front),
+      "card-play-on-table": (action, front) => this.playCardOnTable(action.card, front),
       "card-play": (action, front) => this.frontStore.discardCards([action.card], front),
       "card-random-discard": (action, front) =>
         this.frontStore.discardCards([action.card], oppositeFront(front))
@@ -91,13 +87,19 @@ export class WotrCardHandler {
     }
   }
 
-  discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
+  private discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
     this.frontStore.discardCardFromTable(cardId, front);
-    this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));
+    this.cards.deactivateAbilities(cardId);
+    // this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));
   }
 
   async drawCard(cardId: WotrCardId, frontId: WotrFrontId) {
     await this.drawCards([cardId], frontId);
     this.logger.logEffect(drawCardIds(cardId));
+  }
+
+  playCardOnTable(card: WotrCardId, front: WotrFrontId): void {
+    this.frontStore.playCardOnTable(card, front);
+    this.cards.activateAbilities(card);
   }
 }

@@ -1,9 +1,16 @@
 import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrArmy } from "./wotr-unit-models";
 
 export type WotrLeaderModifier = (unitType: WotrArmyUnitType, nationId: WotrNationId) => boolean;
+export type WotrCanMoveIntoRegionModifier = (
+  regionId: WotrRegionId,
+  frontId: WotrFrontId
+) => boolean;
+export type WotrCanAttackRegionModifier = (regionId: WotrRegionId, frontId: WotrFrontId) => boolean;
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitModifiers {
@@ -24,7 +31,21 @@ export class WotrUnitModifiers {
     return this.leaderModifier.get().some(modifier => modifier(unitType, nationId));
   }
 
+  public readonly canMoveIntoRegionModifier = new WotrModifier<WotrCanMoveIntoRegionModifier>();
+
+  canMoveIntoRegion(regionId: WotrRegionId, frontId: WotrFrontId): boolean {
+    return this.canMoveIntoRegionModifier.get().every(modifier => modifier(regionId, frontId));
+  }
+
+  public readonly canAttackRegionModifier = new WotrModifier<WotrCanAttackRegionModifier>();
+
+  canAttackRegion(regionId: WotrRegionId, frontId: WotrFrontId): boolean {
+    return this.canAttackRegionModifier.get().every(modifier => modifier(regionId, frontId));
+  }
+
   clear() {
     this.leaderModifier.clear();
+    this.canMoveIntoRegionModifier.clear();
+    this.canAttackRegionModifier.clear();
   }
 }

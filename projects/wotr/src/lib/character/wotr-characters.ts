@@ -5,7 +5,6 @@ import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers"
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
-import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -54,7 +53,6 @@ export class WotrCharacters {
   private nationHandler = inject(WotrNationHandler);
   private shadow = inject(WotrShadowPlayer);
   private q = inject(WotrGameQuery);
-  private cardHandler = inject(WotrCardHandler);
   private cardDrawUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
 
@@ -95,7 +93,6 @@ export class WotrCharacters {
         return [
           new GandalfGuideAbility(
             this.actionDieModifiers,
-            this.cardHandler,
             this.freePeoples,
             this.q,
             this.cardDrawUi

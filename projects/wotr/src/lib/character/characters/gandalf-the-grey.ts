@@ -4,7 +4,6 @@ import {
   WotrAfterActionDieCardResolution
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCardDrawUi } from "../../card/wotr-card-draw-ui";
-import { WotrCardHandler } from "../../card/wotr-card-handler";
 import { isFreePeopleCharacterCard, WotrCardId } from "../../card/wotr-card-models";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
@@ -20,7 +19,6 @@ import { activateCharacterAbility } from "./wotr-character-card";
 export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCardResolution> {
   constructor(
     private actionDieModifiers: WotrActionDieModifiers,
-    private cardHandler: WotrCardHandler,
     private freePeoples: WotrFreePeoplesPlayer,
     private q: WotrGameQuery,
     private cardUi: WotrCardDrawUi

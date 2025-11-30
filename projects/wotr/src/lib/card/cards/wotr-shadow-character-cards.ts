@@ -21,9 +21,9 @@ import {
   playCardOnTable,
   WotrCardDiscardFromTable
 } from "../wotr-card-actions";
-import { WotrCardHandler } from "../wotr-card-handler";
 import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
+import { WotrAbility } from "../../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowCharacterCards {
@@ -36,7 +36,6 @@ export class WotrShadowCharacterCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private fellowshipHandler = inject(WotrFellowshipHandler);
-  private cardHandler = inject(WotrCardHandler);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -285,7 +284,12 @@ export class WotrShadowCharacterCards {
       // Or, you may discard "Balrog of Moria" to use its Combat card effect as if you were playing the card from your hand.
       case "scha17":
         return {
-          play: async () => [playCardOnTable("Balrog of Moria")]
+          play: async () => [playCardOnTable("Balrog of Moria")],
+          onTableAbilities: () => {
+            const abilities: WotrAbility[] = [];
+            console.error("Balrog of Moria on-table abilities not implemented yet");
+            return abilities;
+          }
         };
       // TODO The Lidless Eye
       // Change up to three unused Shadow Action dice results into "Eye" results.

@@ -3,10 +3,10 @@ import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { advanceNation } from "./wotr-nation-actions";
+import { WotrNationHandler } from "./wotr-nation-handler";
 import { WotrNation, WotrNationId } from "./wotr-nation-models";
 import { WotrNationRules } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
-import { WotrNationHandler } from "./wotr-nation-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationUi {
@@ -32,10 +32,11 @@ export class WotrNationUi {
   }
 
   async advanceNation(nationId: WotrNationId): Promise<WotrAction | null> {
-    if (!this.canAdvance(this.nation.nation(nationId))) return null;
-    await this.ui.askContinue("Advance the Rohan nation");
-    this.nationHandler.advanceNation(1, "rohan");
-    return advanceNation("rohan");
+    const nation = this.nation.nation(nationId);
+    if (!this.canAdvance(nation)) return null;
+    await this.ui.askContinue(`Advance the ${nation.name} nation`);
+    this.nationHandler.advanceNation(1, nationId);
+    return advanceNation(nationId);
   }
 
   canAdvance(nation: WotrNation): boolean {

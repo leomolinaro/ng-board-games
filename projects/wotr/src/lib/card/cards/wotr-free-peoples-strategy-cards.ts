@@ -1,16 +1,27 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../../ability/wotr-ability";
+import {
+  WotrActionDieChoiceModifier,
+  WotrActionDieModifiers
+} from "../../action-die/wotr-action-die-modifiers";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { activateNation, advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrNationUi } from "../../nation/wotr-nation-ui";
+import { WotrRegionId } from "../../region/wotr-region-models";
+import {
+  WotrCanAttackRegionModifier,
+  WotrCanMoveIntoRegionModifier,
+  WotrUnitModifiers
+} from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { discardCardFromTableById, discardCardIds, playCardOnTable } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
-import { WotrFreePeopleStrategyCardId } from "../wotr-card-models";
+import { getCard, WotrCard, WotrCardId, WotrFreePeopleStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
-import { playCardOnTable } from "../wotr-card-actions";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesStrategyCards {
@@ -21,6 +32,8 @@ export class WotrFreePeoplesStrategyCards {
   private nationHandler = inject(WotrNationHandler);
   private unitUi = inject(WotrUnitUi);
   private nationUi = inject(WotrNationUi);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private unitModifiers = inject(WotrUnitModifiers);
 
   createCard(cardId: WotrFreePeopleStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -33,7 +46,7 @@ export class WotrFreePeoplesStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO A Power too Great
+      // A Power too Great
       // Play on the table.
       // Advance the Elven Nation one step on the Political Track.
       // While this card is in play, the Shadow player cannot move an Army into or attack (either in a field battle or in a siege) Lórien, Rivendell or The Grey Havens.
@@ -41,9 +54,23 @@ export class WotrFreePeoplesStrategyCards {
       // from his hand.
       case "fpstr02":
         return {
-          play: async () => [playCardOnTable("A Power too Great")]
+          play: async () => {
+            const actions: WotrAction[] = [];
+            actions.push(playCardOnTable("A Power too Great"));
+            const advanceAction = await this.nationUi.advanceNation("elves");
+            if (advanceAction) actions.push(advanceAction);
+            return actions;
+          },
+          onTableAbilities: () => {
+            const regions: WotrRegionId[] = ["lorien", "rivendell", "grey-havens"];
+            return [
+              this.cannotMoveIntoRegionAbility(regions),
+              this.cannotAttackRegionAbility(regions),
+              this.discardTableCardAbility("fpstr02")
+            ];
+          }
         };
-      // TODO The Power of Tom Bombadil
+      // The Power of Tom Bombadil
       // Play on the table.
       // Advance the North Nation one step on the Political Track.
       // While this card is in play, the Shadow player cannot move an Army into or attack The Old Forest, The Shire or Buckland.
@@ -51,8 +78,21 @@ export class WotrFreePeoplesStrategyCards {
       // Event card from his hand.
       case "fpstr03":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            actions.push(playCardOnTable("A Power too Great"));
+            const advanceAction = await this.nationUi.advanceNation("north");
+            if (advanceAction) actions.push(advanceAction);
+            return actions;
+          },
+          onTableAbilities: () => {
+            const regions: WotrRegionId[] = ["old-forest", "the-shire", "buckland"];
+            return [
+              this.cannotMoveIntoRegionAbility(regions),
+              this.cannotAttackRegionAbility(regions),
+              this.discardTableCardAbility("fpstr03")
+            ];
+          }
         };
       // Book of Mazarbul
       // Move any or all Companions who are not in the Fellowship.
@@ -327,5 +367,66 @@ export class WotrFreePeoplesStrategyCards {
           }
         };
     }
+  }
+
+  private cannotMoveIntoRegionAbility(
+    regionIds: WotrRegionId[]
+  ): WotrAbility<WotrCanMoveIntoRegionModifier> {
+    return {
+      modifier: this.unitModifiers.canMoveIntoRegionModifier,
+      handler: (regionId, frontId) => {
+        if (frontId !== "shadow") return true;
+        return !regionIds.includes(regionId);
+      }
+    };
+  }
+
+  private cannotAttackRegionAbility(
+    regionIds: WotrRegionId[]
+  ): WotrAbility<WotrCanAttackRegionModifier> {
+    return {
+      modifier: this.unitModifiers.canAttackRegionModifier,
+      handler: (regionId, frontId) => {
+        if (frontId !== "shadow") return true;
+        return !regionIds.includes(regionId);
+      }
+    };
+  }
+
+  private discardTableCardAbility(cardId: WotrCardId): WotrAbility<WotrActionDieChoiceModifier> {
+    const card: WotrCard = getCard(cardId);
+    return {
+      modifier: this.actionDieModifiers.actionDieChoices,
+      handler: (die, frontId) => {
+        if (frontId !== "shadow") return [];
+        const choice: WotrUiChoice = {
+          label: () => `Discard '${card.label}'`,
+          isAvailable: () => {
+            if (!this.q.shadow.hasHandCardOfType("army")) return false;
+            if (!this.q.shadow.hasHandCardOfType("character")) return false;
+            return true;
+          },
+          actions: async () => {
+            const armyCard = await this.gameUi.askHandCard("Choose an Army Event card to discard", {
+              nCards: 1,
+              cards: this.q.shadow.handCardsOfType("army"),
+              frontId: "shadow",
+              message: "Select an Army Event card to discard"
+            });
+            const characterCard = await this.gameUi.askHandCard(
+              "Choose a Character Event card to discard",
+              {
+                nCards: 1,
+                cards: this.q.shadow.handCardsOfType("character"),
+                frontId: "shadow",
+                message: "Select a Character Event card to discard"
+              }
+            );
+            return [discardCardIds(armyCard, characterCard), discardCardFromTableById(card.id)];
+          }
+        };
+        return [choice];
+      }
+    };
   }
 }

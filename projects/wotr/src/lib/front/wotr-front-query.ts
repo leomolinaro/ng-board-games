@@ -1,4 +1,4 @@
-import { WotrCardId } from "../card/wotr-card-models";
+import { getCard, WotrCardId, WotrCardType } from "../card/wotr-card-models";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
 import { WotrFrontStore } from "./wotr-front-store";
 
@@ -84,6 +84,14 @@ export class WotrFrontQuery {
 
   hasCardsOnTable() {
     return this.front().tableCards.length > 0;
+  }
+
+  handCardsOfType(cardType: WotrCardType) {
+    return this.handCards().filter(cardId => getCard(cardId).type === cardType);
+  }
+
+  hasHandCardOfType(cardType: WotrCardType): boolean {
+    return this.handCards().some(cardId => getCard(cardId).type === cardType);
   }
 
   elvenRings(): WotrElvenRing[] {

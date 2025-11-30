@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrStory } from "../../game/wotr-story-models";
@@ -17,6 +18,7 @@ export interface WotrEventCard {
   canBePlayed?: () => boolean;
   play: () => Promise<WotrAction[]>;
   effect?: (params: WotrCardParams) => Promise<void>;
+  onTableAbilities?: () => WotrAbility[];
 }
 
 export interface WotrCardParams {
@@ -32,6 +34,7 @@ export interface WotrCardParams {
 @Injectable({ providedIn: "root" })
 export class WotrCards {
   private cards: Partial<Record<WotrCardId, WotrEventCard>> = {};
+  private abilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};
 
   private freePeopleCharacterCards = inject(WotrFreePeoplesCharacterCards);
   private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
@@ -43,6 +46,36 @@ export class WotrCards {
       this.cards[cardId] = this.createCard(cardId);
     }
     return this.cards[cardId];
+  }
+
+  activateAbilities(card: WotrCardId) {
+    const abilities = this.getAbilities(card);
+    for (const ability of abilities) {
+      if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
+      ability.modifier.register(ability.handler);
+    }
+  }
+
+  deactivateAbilities(cardId: WotrCardId) {
+    const abilities = this.getAbilities(cardId);
+    for (const ability of abilities) {
+      ability.modifier.unregister(ability.handler);
+    }
+  }
+
+  private getAbilities(cardId: WotrCardId): WotrAbility[] {
+    if (!this.abilities[cardId]) {
+      const abilities = this.createAbilities(cardId);
+      this.abilities[cardId] = abilities;
+    }
+    return this.abilities[cardId];
+  }
+
+  private createAbilities(cardId: WotrCardId): WotrAbility[] {
+    const card = this.getCard(cardId);
+    if (!card.onTableAbilities) throw new Error(`Card ${cardId} has no on-table abilities`);
+    const abilities = card.onTableAbilities();
+    return abilities;
   }
 
   private createCard(cardId: WotrCardId): WotrEventCard {

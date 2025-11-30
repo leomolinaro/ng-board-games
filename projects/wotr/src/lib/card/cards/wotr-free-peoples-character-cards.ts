@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../../ability/wotr-ability";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { eliminateCharacter } from "../../character/wotr-character-actions";
@@ -69,15 +70,20 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => [addHuntTile("b-1")]
         };
-      // Mithril Coat and String
+      // TODO Mithril Coat and String
       // Play on the table.
       // After the Shadow player draws a Hunt tile, you may discard "Mithril Coat and Sting" to draw a second tile. Apply the effects of the second tile instead of the first one,
       // then return the first tile to the Hunt Pool.
       case "fpcha05":
         return {
-          play: async () => [playCardOnTable("Mithril Coat and Sting")]
+          play: async () => [playCardOnTable("Mithril Coat and Sting")],
+          onTableAbilities: () => {
+            const abilities: WotrAbility[] = [];
+            console.error("Mithril Coat and String on-table abilities not implemented yet");
+            return abilities;
+          }
         };
-      // Axe and Bow
+      // TODO Axe and Bow
       // Play on the table if Gimli or Legolas are in the Fellowship.
       // After the Shadow player draws a Hunt tile, you may discard "Axe and Bow" to reduce the Hunt damage by one (to a minimum of zero). Any remaining Hunt damage
       // must be confronted normally.
@@ -85,9 +91,14 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha06":
         return {
           canBePlayed: () => this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship(),
-          play: async () => [playCardOnTable("Axe and Bow")]
+          play: async () => [playCardOnTable("Axe and Bow")],
+          onTableAbilities: () => {
+            const abilities: WotrAbility[] = [];
+            console.error("Axe and Bow on-table abilities not implemented yet");
+            return abilities;
+          }
         };
-      // Horn of Gondor
+      // TODO Horn of Gondor
       // Play on the table if Boromir is in the Fellowship.
       // After the Shadow player draws a Hunt tile, you may discard "Horn of Gondor" to reduce the Hunt damage by one (to a minimum of zero). Any remaining Hunt
       // damage must be confronted normally.
@@ -95,16 +106,26 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha07":
         return {
           canBePlayed: () => this.q.boromir.isInFellowship(),
-          play: async () => [playCardOnTable("Horn of Gondor")]
+          play: async () => [playCardOnTable("Horn of Gondor")],
+          onTableAbilities: () => {
+            const abilities: WotrAbility[] = [];
+            console.error("Horn of Gondor on-table abilities not implemented yet");
+            return abilities;
+          }
         };
-      // Wizard's Staff
+      // TODO Wizard's Staff
       // Play on the table if Gandalf the Grey is in the Fellowship.
       // You may discard "Wizard's Staff' to prevent the Shadow player from drawing a Hunt tile.
       // You must discard this card from the table immediately if Gandalf the Grey leaves the Fellowship.
       case "fpcha08":
         return {
           canBePlayed: () => this.q.gandalfTheGrey.isInFellowship(),
-          play: async () => [playCardOnTable("Wizard's Staff")]
+          play: async () => [playCardOnTable("Wizard's Staff")],
+          onTableAbilities: () => {
+            const abilities: WotrAbility[] = [];
+            console.error("Wizard's Staff on-table abilities not implemented yet");
+            return abilities;
+          }
         };
       // Athelas
       // Roll three dice and heal one Corruption point for each die result of 5+.
