@@ -36,6 +36,12 @@ export class WotrRegionQuery {
     return null;
   }
 
+  isBesiegedBy(frontId: WotrFrontId) {
+    const region = this.regionStore.region(this.regionId);
+    if (!region.underSiegeArmy) return false;
+    return region.underSiegeArmy.front !== frontId;
+  }
+
   hasRegularUnitsOfNation(nationId: WotrNationId) {
     const region = this.regionStore.region(this.regionId);
     return (

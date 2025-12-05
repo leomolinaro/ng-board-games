@@ -96,6 +96,18 @@ export class WotrUnitUi {
     return this.attackWithArmy(attackingUnits, frontId);
   }
 
+  async attackStronghold(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
+    const attackingUnits = await this.ui.askRegionUnits("Select units to attack", {
+      type: "attack",
+      regionIds: [regionId],
+      withLeaders: false,
+      frontId
+    });
+    const fromRegion = this.regionStore.region(attackingUnits.regionId);
+    const retroguard = this.unitUtils.splitUnits(fromRegion.army, attackingUnits);
+    return [attack(regionId, regionId, retroguard)];
+  }
+
   private async askAttackingUnits(
     frontId: WotrFrontId,
     withLeaders: boolean

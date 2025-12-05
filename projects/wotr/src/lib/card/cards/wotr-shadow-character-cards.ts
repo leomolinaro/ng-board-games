@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../../ability/wotr-ability";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
@@ -16,6 +17,7 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
+import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import {
   discardCardFromTableById,
   playCardOnTable,
@@ -23,7 +25,6 @@ import {
 } from "../wotr-card-actions";
 import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
-import { WotrAbility } from "../../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowCharacterCards {
@@ -36,6 +37,7 @@ export class WotrShadowCharacterCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private fellowshipHandler = inject(WotrFellowshipHandler);
+  private unitUi = inject(WotrUnitUi);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -312,14 +314,23 @@ export class WotrShadowCharacterCards {
             await this.freePeoples.chooseCasualties(1, action.region, null); // TODO hitPoints
           }
         };
-      // TODO Grond, Hammer of the Underworld
+      // Grond, Hammer of the Underworld
       // Play if the Witch-king is in play and is with a Shadow Army besieging a Stronghold.
       // Attack that Stronghold. The siege lasts for three Combat rounds instead of one. During the first round, the Free Peoples player cannot use a Combat card unless a
       // Companion is in the battle.
       case "scha20":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => {
+            const witchKing = this.q.character("the-witch-king");
+            if (!witchKing.isInPlay()) return false;
+            const regionId = witchKing.region()!.id;
+            const region = this.q.region(regionId);
+            return region.isBesiegedBy("shadow");
+          },
+          play: async () => {
+            const regionId = this.q.character("the-witch-king").region()!.id;
+            return this.unitUi.attackStronghold(regionId, "shadow");
+          }
         };
       // TODO The Palantír of Orthanc Play on the table if Saruman is in play.
       // When "The Palantír of Orthanc" is in play, after you use an Event Action die result to play an Event card, immediately draw another card from either one of your decks. The Free Peoples player can force "The Palantír of Orthanc" to be discarded by either using a Will of the West Action die result, or using any Action die result and one
