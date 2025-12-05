@@ -31,6 +31,7 @@ export class WotrCardStoryHandler {
       this.frontHandler.useElvenRing(story.elvenRing, front);
     }
     this.frontStore.setCurrentCard(story.card);
+    this.frontStore.discardCards([story.card], front);
     if (story.actions?.length) {
       for (const action of story.actions) {
         this.logger.logAction(action, story, front);
@@ -39,7 +40,6 @@ export class WotrCardStoryHandler {
     } else {
       this.logger.logNoActions(story, front);
     }
-    this.frontStore.discardCards([story.card], front);
     const card = this.cards.getCard(story.card);
     if (card.effect) {
       await card.effect({ front, story, cardId: story.card });
