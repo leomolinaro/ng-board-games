@@ -509,6 +509,7 @@ export class WotrRegionStore {
     const region = this.region(regionId);
     return (
       region.army?.characters?.includes(character) ||
+      region.underSiegeArmy?.characters?.includes(character) ||
       region.freeUnits?.characters?.includes(character) ||
       false
     );
@@ -767,6 +768,11 @@ export class WotrRegionStore {
 
   removeCharacterFromArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
     this.updateArmy("removeCharacterFromArmy", regionId, army =>
+      this.unitUtils.removeCharacter(characterId, army)
+    );
+  }
+  removeCharacterFromUnderSiegeArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
+    this.updateArmyUnderSiege("removeCharacterFromUnderSiegeArmy", regionId, army =>
       this.unitUtils.removeCharacter(characterId, army)
     );
   }

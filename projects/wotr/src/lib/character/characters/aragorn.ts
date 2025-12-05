@@ -40,6 +40,8 @@ export class WotrAragorn extends WotrCharacterCard {
     const region = this.q.region(regionId).region();
     if (region.army?.front === "free-peoples") {
       return !!region.army.characters?.some(c => c === "strider");
+    } else if (region.underSiegeArmy?.front === "free-peoples") {
+      return !!region.underSiegeArmy.characters?.some(c => c === "strider");
     } else {
       return !!region.freeUnits?.characters?.some(c => c === "strider");
     }

@@ -146,6 +146,8 @@ export class WotrCharacterHandler {
   private removeCharacterFromRegion(character: WotrCharacter, region: WotrRegion) {
     if (region.army?.front === character.front) {
       this.regionStore.removeCharacterFromArmy(character.id, region.id);
+    } else if (region.underSiegeArmy?.front === character.front) {
+      this.regionStore.removeCharacterFromUnderSiegeArmy(character.id, region.id);
     } else {
       this.regionStore.removeCharacterFromFreeUnits(character.id, region.id);
     }
