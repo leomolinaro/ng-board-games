@@ -28,6 +28,7 @@ export class WotrCombatFront {
 
   combatCard?: WotrCard;
   maxNDice: number = 5;
+  lessNDice: number = 0;
   combatModifiers: number[] = [];
   leaderModifiers: number[] = [];
 

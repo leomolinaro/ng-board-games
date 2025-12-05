@@ -80,7 +80,15 @@ export class WotrCharacters {
           new ServantsOfTheWhiteHandAbility(this.unitModifiers)
         ];
       case "the-witch-king":
-        return [new SorcererAbility(this.battleStore, this.q, this.shadow, this.battleModifiers)];
+        return [
+          new SorcererAbility(
+            this.battleStore,
+            this.q,
+            this.shadow,
+            this.battleModifiers,
+            this.cardDrawUi
+          )
+        ];
       case "the-mouth-of-sauron":
         return [];
       case "strider":

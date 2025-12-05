@@ -17,6 +17,10 @@ export class WotrCharacterQuery {
     return this.characterStore.character(this.characterId);
   }
 
+  name(): string {
+    return this.character().name;
+  }
+
   region(): WotrRegion | null {
     return this.regionStore.characterRegion(this.characterId);
   }

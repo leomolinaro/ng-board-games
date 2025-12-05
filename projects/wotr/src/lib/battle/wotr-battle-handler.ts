@@ -5,6 +5,7 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   assertAction,
   WotrCombatCardReactionStory,
@@ -60,6 +61,7 @@ export class WotrBattleHandler {
   private unitRules = inject(WotrUnitRules);
   private unitHandler = inject(WotrUnitHandler);
   private battleModifiers = inject(WotrBattleModifiers);
+  private q = inject(WotrGameQuery);
 
   init() {
     this.actionRegistry.registerAction<WotrArmyAttack>(
@@ -176,7 +178,19 @@ export class WotrBattleHandler {
         " cease tha battle in ",
         f.region(action.region)
       ],
-      "leader-forfeit": (action, front, f) => [f.player(front), " forfeits TODO leadership"],
+      "leader-forfeit": (action, front, f) => {
+        const forfeitedUnits: string[] = [];
+        const nElites = action.leaders.elites?.reduce((n, elite) => n + elite.quantity, 0) || 0;
+        if (nElites > 0) forfeitedUnits.push(`${nElites} elite unit${nElites > 1 ? "s" : ""}`);
+        const nLeaders = action.leaders.leaders?.reduce((n, leader) => n + leader.quantity, 0) || 0;
+        if (nLeaders > 0) forfeitedUnits.push(`${nLeaders} leader${nLeaders > 1 ? "s" : ""}`);
+        const nNazgul = action.leaders.nNazgul || 0;
+        if (nNazgul > 0) forfeitedUnits.push(`${nNazgul} Nazgul${nNazgul > 1 ? "s" : ""}`);
+        action.leaders.characters?.forEach(characterId => {
+          forfeitedUnits.push(this.q.character(characterId).name());
+        });
+        return [f.player(front), ` forfeits leadership of ${forfeitedUnits.join(", ")}`];
+      },
       "combat-card-choose": (action, front, f) => [
         f.player(front),
         ` choose a ${isCharacterCard(action.card) ? "character" : "strategy"} combat card`
@@ -186,6 +200,7 @@ export class WotrBattleHandler {
         " does not play any combat card"
       ],
       "combat-roll": (action, front, f) => [f.player(front), " rolls ", action.dice.join(", ")],
+
       "combat-re-roll": (action, front, f) => [
         f.player(front),
         " re-rolls ",
@@ -468,7 +483,11 @@ export class WotrBattleHandler {
   }
 
   private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
-    return Math.min(this.getCombatStrength(combatFront, combatRound), 5);
+    const combatStrength = this.getCombatStrength(combatFront, combatRound);
+    let nRolls = Math.min(combatStrength, 5);
+    if (combatFront.lessNDice) nRolls = Math.max(1, nRolls - combatFront.lessNDice);
+    if (combatFront.maxNDice) nRolls = Math.min(nRolls, combatFront.maxNDice);
+    return nRolls;
   }
 
   private getNReRolls(

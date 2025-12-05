@@ -7,7 +7,7 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionUnitMatch } from "../unit/wotr-unit-models";
+import { WotrForfeitLeadershipParams, WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 
 export abstract class WotrPlayer {
   protected abstract storyService: WotrStoryService;
@@ -63,8 +63,8 @@ export abstract class WotrPlayer {
       p.activateCharacterAbility(ability, characterId)
     );
   }
-  forfeitLeadership(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.forfeitLeadership());
+  forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.forfeitLeadership(params));
   }
   wantRetreatIntoSiege(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.wantRetreatIntoSiege());

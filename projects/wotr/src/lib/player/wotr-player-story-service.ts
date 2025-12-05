@@ -6,7 +6,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionUnitMatch } from "../unit/wotr-unit-models";
+import { WotrForfeitLeadershipParams, WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 
 export interface WotrPlayerStoryService {
   firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory>;
@@ -29,7 +29,7 @@ export interface WotrPlayerStoryService {
     ability: WotrUiAbility,
     characterId: WotrCharacterId
   ): Promise<WotrStory>;
-  forfeitLeadership(): Promise<WotrStory>;
+  forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrStory>;
   wantRetreatIntoSiege(): Promise<WotrStory>;
   wantRetreat(): Promise<WotrStory>;
   chooseCombatCard(frontId: WotrFrontId, combatRound: WotrCombatRound): Promise<WotrStory>;
@@ -58,4 +58,4 @@ export interface WotrPlayerStoryService {
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;
-} // WotrPlayerService
+}

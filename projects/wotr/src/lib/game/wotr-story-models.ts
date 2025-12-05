@@ -70,6 +70,7 @@ export interface WotrSkipCharacterReactionStory {
   character: WotrCharacterId;
 }
 
+// TODO rename in "effect"
 export type WotrReactionStory =
   | WotrCardReactionStory
   | WotrSkipCardReactionStory

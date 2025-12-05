@@ -19,9 +19,9 @@ import {
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrForfeitLeadershipParams, WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
-import { WotrRegionUnitMatch } from "../unit/wotr-unit-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
@@ -116,8 +116,8 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return this.cardDrawUi.activateTableCardAbility(cardId);
   }
 
-  async forfeitLeadership(): Promise<WotrReactionStory> {
-    throw new Error("Method not implemented.");
+  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrReactionStory> {
+    return this.unitUi.forfeitLeadership(params);
   }
 
   async wantRetreatIntoSiege(): Promise<WotrBaseStory> {

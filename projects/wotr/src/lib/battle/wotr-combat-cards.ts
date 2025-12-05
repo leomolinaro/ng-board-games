@@ -1,21 +1,20 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
-import { WotrAction } from "../commons/wotr-action-models";
+import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { assertAction } from "../game/wotr-story-models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrArmy, WotrLeaderUnits } from "../unit/wotr-unit-models";
+import { WotrArmy, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 
 export interface WotrCombatCard {
-  canBePlayed: (params: WotrCombatCardParams) => boolean;
+  canBePlayed?: (params: WotrCombatCardParams) => boolean;
   effect: (card: WotrCard, params: WotrCombatCardParams) => Promise<void>;
 }
 
@@ -41,7 +40,7 @@ export class WotrCombatCards {
 
   canBePlayed(cardLabel: WotrCardCombatLabel, params: WotrCombatCardParams): boolean {
     const combatCard = this.combatCards[cardLabel];
-    return combatCard.canBePlayed(params);
+    return combatCard.canBePlayed?.(params) ?? true;
   }
 
   async combatCardReaction(card: WotrCard, params: WotrCombatCardParams): Promise<void> {
@@ -63,10 +62,15 @@ export class WotrCombatCards {
     }
   }
 
-  async forfeitLeadership(player: WotrPlayer): Promise<WotrLeaderUnits> {
-    const story = await player.forfeitLeadership();
-    const action = assertAction<WotrLeaderForfeit>(story, "leader-forfeit");
-    return action.leaders;
+  private async forfeitLeadership(
+    params: WotrForfeitLeadershipParams,
+    player: WotrPlayer
+  ): Promise<number> {
+    const story = await player.forfeitLeadership(params);
+    if (!("actions" in story)) return 0;
+    const action = findAction<WotrLeaderForfeit>(story.actions, "leader-forfeit");
+    if (!action?.leaders) return 0;
+    return this.unitUtils.leadership(action.leaders);
   }
 
   private combatCards: Record<WotrCardCombatLabel, WotrCombatCard> = {
@@ -160,12 +164,19 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 2 or more.
     // Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll.
     "Cruel as Death": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.nazgulLeadership(params.shadow.army()) >= 2,
       effect: async (card, params) => {
-        await this.forfeitLeadership(this.shadow);
+        const points = await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "shadow",
+            regionId: params.regionId,
+            onlyNazgul: true,
+            points: 2
+          },
+          this.shadow
+        );
+        if (points) params.shadow.combatModifiers.push(1);
       }
     },
     // Daring Defiance (Initiative 0)
@@ -183,10 +194,6 @@ export class WotrCombatCards {
     // Daylight (Initiative 3)
     // The Shadow player rolls a maximum of three dice in his Combat roll.
     "Daylight": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
         params.shadow.maxNDice = 3;
       }
@@ -237,12 +244,20 @@ export class WotrCombatCards {
     // Before the Combat roll, forfeit one or more points of Nazgûl Leadership.
     // During his Combat roll, the Free Peoples player rolls one Combat die less (to a minimum of one) for every point you have chosen to forfeit.
     "Dread and Despair": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.nazgulLeadership(params.shadow.army()) >= 1,
       effect: async (card, params) => {
-        await this.forfeitLeadership(this.shadow);
+        const points = await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "shadow",
+            regionId: params.regionId,
+            onlyNazgul: true,
+            points: "oneOrMore"
+          },
+          this.shadow
+        );
+        params.freePeoples.lessNDice = points;
+        throw new Error("TODO");
       }
     },
     // Durin's Bane (Initiative 2)
@@ -517,12 +532,19 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 1 or more.
     // Forfeit one point of Nazgûl Leadership to add 1 to all dice on your Leader re-roll.
     "They are Terrible": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.nazgulLeadership(params.shadow.army()) >= 1,
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const points = await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "shadow",
+            regionId: params.regionId,
+            onlyNazgul: true,
+            points: 1
+          },
+          this.shadow
+        );
+        if (points) params.shadow.leaderModifiers.push(1);
       }
     },
     // Valour (Initiative 3)

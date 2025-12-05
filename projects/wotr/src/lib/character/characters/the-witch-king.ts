@@ -3,6 +3,8 @@ import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../battle/wotr-battle-store";
+import { WotrCardDrawUi } from "../../card/wotr-card-draw-ui";
+import { WotrCard } from "../../card/wotr-card-models";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -71,10 +73,13 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
     private battleStore: WotrBattleStore,
     private q: WotrGameQuery,
     private shadow: WotrShadowPlayer,
-    private battleModifiers: WotrBattleModifiers
+    private battleModifiers: WotrBattleModifiers,
+    private cardUi: WotrCardDrawUi
   ) {}
 
   public modifier = this.battleModifiers.afterCombatRound;
+
+  private lastCombatCard: WotrCard | null = null;
 
   public handler: WotrAfterCombatRound = async (combatRound: WotrCombatRound) => {
     if (
@@ -82,12 +87,18 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
       combatRound.round === 1 &&
       combatRound.shadow.combatCard
     ) {
+      this.lastCombatCard = combatRound.shadow.combatCard;
       await activateCharacterAbility(this, "the-witch-king", this.shadow);
     }
   };
 
   play: () => Promise<WotrAction[]> = async () => {
-    return [];
+    const characterCard = this.lastCombatCard!.type === "character";
+    const actions: WotrAction[] = [];
+    actions.push(
+      await this.cardUi.drawCards(1, characterCard ? "character" : "strategy", this.shadow.frontId)
+    );
+    return actions;
   };
 
   private isCharacterInBattle(character: WotrCharacterId, combatRound: WotrCombatRound) {

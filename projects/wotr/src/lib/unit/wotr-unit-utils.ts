@@ -3,7 +3,7 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
-import { WotrArmy, WotrUnits } from "./wotr-unit-models";
+import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
 
 @Injectable({
   providedIn: "root"
@@ -200,6 +200,34 @@ export class WotrUnitUtils {
     return false;
   }
 
+  nazgulLeadership(units: WotrUnits): number {
+    let leadership = 0;
+    if (units.nNazgul) leadership += units.nNazgul;
+    if (units.characters && units.characters.indexOf("the-witch-king") >= 0) leadership += 2;
+    return leadership;
+  }
+
+  leadership(units: WotrLeaderUnits): number {
+    let leadership = 0;
+    if (units.elites) {
+      for (const elite of units.elites) {
+        // leadership += elite.quantity;
+      }
+    }
+    if (units.leaders) {
+      for (const leader of units.leaders) {
+        leadership += leader.quantity;
+      }
+    }
+    if (units.nNazgul) leadership += units.nNazgul;
+    if (units.characters) {
+      for (const characterId of units.characters) {
+        leadership += this.characterStore.character(characterId).leadership;
+      }
+    }
+    return leadership;
+  }
+
   hasCompanions(units: WotrUnits): boolean {
     return (
       units.characters?.some(c => this.characterStore.character(c).front === "free-peoples") ||
@@ -228,12 +256,8 @@ export class WotrUnitUtils {
   }
 
   mergeArmies(army1: WotrArmy | undefined, army2: WotrArmy | undefined): WotrArmy | undefined {
-    if (!army1) {
-      return army2;
-    }
-    if (!army2) {
-      return army1;
-    }
+    if (!army1) return army2;
+    if (!army2) return army1;
     let newArmy = army1;
     if (army2.regulars) {
       newArmy = army2.regulars.reduce(

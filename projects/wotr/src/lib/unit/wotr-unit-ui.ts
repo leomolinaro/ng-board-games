@@ -1,9 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { attack } from "../battle/wotr-battle-actions";
+import { attack, forfeitLeadership } from "../battle/wotr-battle-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrReactionStory } from "../game/wotr-story-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
@@ -28,11 +29,18 @@ import {
 } from "./wotr-unit-actions";
 import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
 import {
+  character,
+  elite,
+  leader,
+  nazgul,
   WotrArmy,
+  WotrForfeitLeadershipParams,
   WotrRegionUnitMatch,
   WotrRegionUnits,
-  WotrReinforcementUnit
+  WotrReinforcementUnit,
+  WotrUnitComposer
 } from "./wotr-unit-models";
+import { WotrUnitModifiers } from "./wotr-unit-modifiers";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
 
@@ -44,6 +52,7 @@ export class WotrUnitUi {
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
   private unitHandler = inject(WotrUnitHandler);
+  private unitModifiers = inject(WotrUnitModifiers);
   private q = inject(WotrGameQuery);
 
   async moveNazgulMinions(frontId: WotrFrontId): Promise<WotrNazgulMovement[]> {
@@ -526,6 +535,57 @@ export class WotrUnitUi {
         return r => r.hasArmyUnitsOfNation(selection.nationId);
       case "nazgul":
         return r => r.hasNazgul();
+    }
+  }
+
+  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrReactionStory> {
+    const continuee = await this.ui.askConfirm(
+      "Forfeit leadership?",
+      "Forfeit leadership",
+      "Cancel"
+    );
+    if (!continuee)
+      return {
+        type: "reaction-card-skip",
+        card: params.cardId
+      };
+    const message = this.forfeitLeadershipMessage(params.points);
+    const minPoints = this.forfeitLeadershipMinPoints(params.points);
+    const units = await this.ui.askRegionUnits(message, {
+      regionIds: [params.regionId],
+      type: "forfeitLeadership",
+      frontId: params.frontId,
+      message,
+      minPoints,
+      onlyNazgul: params.onlyNazgul ?? false
+    });
+    const unitComposers: WotrUnitComposer[] = [];
+    units.elites?.forEach(unit => unitComposers.push(elite(unit.nation, unit.quantity)));
+    units.leaders?.forEach(unit => unitComposers.push(leader(unit.nation, unit.quantity)));
+    if (units.nNazgul) unitComposers.push(nazgul(units.nNazgul));
+    units.characters?.forEach(unit => unitComposers.push(character(unit)));
+    return {
+      type: "reaction-card",
+      card: params.cardId,
+      actions: [forfeitLeadership(...unitComposers)]
+    };
+  }
+
+  private forfeitLeadershipMessage(points: number | "oneOrMore"): string {
+    if (points === "oneOrMore") {
+      return "Select one or more leadership points to forfeit";
+    } else if (points === 1) {
+      return "Select 1 leadership point to forfeit";
+    } else {
+      return `Select ${points} leadership points to forfeit`;
+    }
+  }
+
+  private forfeitLeadershipMinPoints(points: number | "oneOrMore"): number {
+    if (points === "oneOrMore") {
+      return 1;
+    } else {
+      return points;
     }
   }
 }

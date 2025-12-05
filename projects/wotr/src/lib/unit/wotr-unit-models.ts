@@ -1,3 +1,4 @@
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGenericUnitType, WotrNationId } from "../nation/wotr-nation-models";
@@ -25,6 +26,8 @@ export interface WotrFreeUnits {
 }
 
 export interface WotrLeaderUnits {
+  elites?: WotrNationUnit[];
+  leaders?: WotrNationUnit[];
   nNazgul?: number;
   characters?: WotrCharacterId[];
 }
@@ -42,6 +45,14 @@ export interface WotrReinforcementUnit {
 export interface WotrRegionUnitMatch {
   unitType: WotrRegionUnitTypeMatch;
   nationId: WotrNationId;
+}
+
+export interface WotrForfeitLeadershipParams {
+  cardId: WotrCardId;
+  frontId: WotrFrontId;
+  regionId: WotrRegionId;
+  onlyNazgul?: boolean;
+  points: 1 | 2 | "oneOrMore";
 }
 
 export type WotrRegionUnitTypeMatch = "regular" | "elite" | "leader" | "nazgul" | "army";

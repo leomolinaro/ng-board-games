@@ -13,15 +13,12 @@ import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
-import { WotrNation, WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrNation, WotrNationId, frontOfNation } from "../../nation/wotr-nation-models";
 import { WotrUnits } from "../../unit/wotr-unit-models";
-import { WotrRegion } from "../wotr-region-models";
-import {
-  UnitNode,
-  WotrRegionUnitSelection,
-  selectionModeFactory
-} from "./wotr-region-unit-selection";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
+import { WotrRegion } from "../wotr-region-models";
+import { UnitNode } from "./wotr-region-unit-node";
+import { WotrRegionUnitSelection, selectionModeFactory } from "./wotr-region-unit-selection";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -138,11 +135,13 @@ export class WotrRegionDialog implements OnInit {
 
   ngOnInit() {
     const region = this.data.region;
-    this.unitNodes = this.unitsToUnitNodes(region.army, "army");
+    this.unitNodes = region.army ? this.unitsToUnitNodes(region.army, "army") : [];
     this.unitNodes = this.unitNodes.concat(
-      this.unitsToUnitNodes(region.underSiegeArmy, "underSiege")
+      region.underSiegeArmy ? this.unitsToUnitNodes(region.underSiegeArmy, "underSiege") : []
     );
-    this.unitNodes = this.unitNodes.concat(this.unitsToUnitNodes(region.freeUnits, "freeUnits"));
+    this.unitNodes = this.unitNodes.concat(
+      region.freeUnits ? this.unitsToUnitNodes(region.freeUnits, "freeUnits") : []
+    );
     if (this.data.region.fellowship) {
       const image = this.assets.fellowshipImage(this.data.fellowship.status === "revealed");
       this.unitNodes.push({
@@ -150,6 +149,7 @@ export class WotrRegionDialog implements OnInit {
         type: "fellowship",
         group: "fellowship",
         nationId: null,
+        frontId: "free-peoples",
         label: "Fellowship",
         ...this.scale(image)
       });
@@ -165,10 +165,9 @@ export class WotrRegionDialog implements OnInit {
   }
 
   private unitsToUnitNodes(
-    units: WotrUnits | undefined,
+    units: WotrUnits,
     group: "army" | "underSiege" | "freeUnits"
   ): UnitNode[] {
-    if (!units) return [];
     const d = this.data;
     const unitNodes: UnitNode[] = [];
     units.regulars?.forEach(armyUnit => {
@@ -179,6 +178,7 @@ export class WotrRegionDialog implements OnInit {
           type: "regular",
           group,
           nationId: armyUnit.nation,
+          frontId: frontOfNation(armyUnit.nation),
           label: d.nationById[armyUnit.nation].regularLabel,
           ...this.scale(image)
         });
@@ -192,6 +192,7 @@ export class WotrRegionDialog implements OnInit {
           type: "elite",
           group,
           nationId: armyUnit.nation,
+          frontId: frontOfNation(armyUnit.nation),
           label: d.nationById[armyUnit.nation].eliteLabel,
           ...this.scale(image)
         });
@@ -205,6 +206,7 @@ export class WotrRegionDialog implements OnInit {
           type: "leader",
           group,
           nationId: leader.nation,
+          frontId: frontOfNation(leader.nation),
           label: d.nationById[leader.nation].leaderLabel!,
           ...this.scale(image)
         });
@@ -218,19 +220,23 @@ export class WotrRegionDialog implements OnInit {
           type: "nazgul",
           group,
           nationId: "sauron",
+          frontId: "shadow",
           label: "Nazgul",
           ...this.scale(image)
         });
       }
     }
-    units.characters?.forEach(character => {
-      const image = this.assets.characterImage(character);
+    units.characters?.forEach(characterId => {
+      const character = this.characterStore.character(characterId);
+      const image = this.assets.characterImage(characterId);
       unitNodes.push({
-        id: character,
+        id: characterId,
         type: "character",
+        character,
         group,
         nationId: null,
-        label: d.characterById[character].name,
+        frontId: character.front,
+        label: d.characterById[characterId].name,
         ...this.scale(image)
       });
     });

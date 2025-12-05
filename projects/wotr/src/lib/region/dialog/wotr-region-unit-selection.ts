@@ -2,7 +2,7 @@ import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFrontId } from "../../front/wotr-front-models";
-import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrNationId } from "../../nation/wotr-nation-models";
 import {
   unitTypeMatchLabel,
   WotrRegionUnitTypeMatch,
@@ -10,6 +10,7 @@ import {
 } from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
 import { WotrRegion, WotrRegionId } from "../wotr-region-models";
+import { UnitNode } from "./wotr-region-unit-node";
 
 export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection
@@ -19,7 +20,8 @@ export type WotrRegionUnitSelection =
   | WotrMovingCharactersUnitSelection
   | WotrMovingNazgulUnitSelection
   | WotrDowngradingUnitSelection
-  | WotrEliminateUnitSelection;
+  | WotrEliminateUnitSelection
+  | WotrForfeitLeadershipSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -72,19 +74,12 @@ export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
   nationId: WotrNationId;
 }
 
-export interface UnitNode {
-  id: string;
-  type: WotrGenericUnitType | "character" | "fellowship";
-  nationId: WotrNationId | null;
-  group: "army" | "underSiege" | "freeUnits" | "fellowship";
-  source: string;
-  label: string;
-  width: number;
-  height: number;
-  selected?: boolean;
-  downgrading?: boolean;
-  removing?: boolean;
-  selectable?: boolean;
+export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection {
+  type: "forfeitLeadership";
+  frontId: WotrFrontId;
+  minPoints: number;
+  onlyNazgul?: boolean;
+  message: string;
 }
 
 interface WotrRegionUnitSelectionMode {
@@ -118,6 +113,8 @@ export function selectionModeFactory(
       return new DowngradeUnitSelectionMode(unitSelection.nEliteUnits);
     case "eliminateUnit":
       return new EliminateUnitSelectionMode(unitSelection.unitType, unitSelection.nationId);
+    case "forfeitLeadership":
+      return new ForfeitLeadershipSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -434,5 +431,44 @@ export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
       return `Select one ${unitTypeMatchLabel(this.unitType)} to eliminate.`;
     }
     return true;
+  }
+}
+
+export class ForfeitLeadershipSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private params: WotrForfeitLeadershipSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (this.isSelectable(node)) {
+        node.selectable = true;
+      }
+    }
+  }
+
+  private isSelectable(node: UnitNode): boolean {
+    if (node.frontId !== this.params.frontId) return false;
+    if (node.type === "leader" && !this.params.onlyNazgul) return true;
+    if (node.type === "nazgul") return true;
+    if (node.type === "character") return !this.params.onlyNazgul || node.id === "the-witch-king";
+    return false;
+  }
+
+  canConfirm(selectedNodes: UnitNode[]): true | string {
+    let totalPoints = 0;
+    for (const node of selectedNodes) {
+      switch (node.type) {
+        case "leader":
+          totalPoints += 1;
+          break;
+        case "nazgul":
+          totalPoints += 1;
+          break;
+        case "character":
+          totalPoints += node.character.leadership;
+          break;
+      }
+    }
+    if (totalPoints >= this.params.minPoints) return true;
+    return this.params.message;
   }
 }
