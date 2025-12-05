@@ -407,13 +407,15 @@ export class WotrBattleHandler {
     combatRound.shadow.nCombatSuccesses = this.getNRollSuccesses(
       shadowRoll,
       combatRound.shadow,
-      combatRound
+      combatRound,
+      false
     );
     combatRound.freePeoples.combatRoll = freePeoplesRoll;
     combatRound.freePeoples.nCombatSuccesses = this.getNRollSuccesses(
       freePeoplesRoll,
       combatRound.freePeoples,
-      combatRound
+      combatRound,
+      false
     );
   }
 
@@ -442,13 +444,15 @@ export class WotrBattleHandler {
         combatRound.shadow.nLeaderSuccesses = this.getNRollSuccesses(
           shadowReRoll,
           combatRound.shadow,
-          combatRound
+          combatRound,
+          true
         );
         combatRound.freePeoples.leaderReRoll = freePeoplesReRoll;
         combatRound.freePeoples.nLeaderSuccesses = this.getNRollSuccesses(
           freePeoplesReRoll,
           combatRound.freePeoples,
-          combatRound
+          combatRound,
+          true
         );
       } else {
         const defenderReRoll = await this.reRollCombatDice(
@@ -460,7 +464,8 @@ export class WotrBattleHandler {
         combatRound.defender.nLeaderSuccesses = this.getNRollSuccesses(
           defenderReRoll,
           combatRound.defender,
-          combatRound
+          combatRound,
+          true
         );
       }
     } else if (attackerNReRolls) {
@@ -473,7 +478,8 @@ export class WotrBattleHandler {
       combatRound.attacker.nLeaderSuccesses = this.getNRollSuccesses(
         attackerReRoll,
         combatRound.attacker,
-        combatRound
+        combatRound,
+        true
       );
     }
     combatRound.defender.nTotalHits =
@@ -550,9 +556,10 @@ export class WotrBattleHandler {
   private getNRollSuccesses(
     roll: WotrCombatDie[],
     combatFront: WotrCombatFront,
-    combatRound: WotrCombatRound
+    combatRound: WotrCombatRound,
+    reRoll: boolean
   ) {
-    const successThreashold = this.getSuccessThreashold(combatFront, combatRound);
+    const successThreashold = this.getSuccessThreashold(combatFront, combatRound, reRoll);
     return roll.reduce((successes, dice) => {
       if (dice >= successThreashold) {
         successes++;
@@ -561,9 +568,14 @@ export class WotrBattleHandler {
     }, 0);
   }
 
-  private getSuccessThreashold(combatFront: WotrCombatFront, combatRound: WotrCombatRound) {
+  private getSuccessThreashold(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+    reRoll: boolean
+  ) {
     const defaultSuccessThreashold = this.getDefaultSuccessThreashold(combatFront, combatRound);
-    return combatFront.combatModifiers.reduce((t, modifier) => {
+    const modifiers = reRoll ? combatFront.leaderModifiers : combatFront.combatModifiers;
+    return modifiers.reduce((t, modifier) => {
       t -= modifier;
       return t;
     }, defaultSuccessThreashold);
