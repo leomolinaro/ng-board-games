@@ -157,7 +157,7 @@ export class WotrShadowStrategyCards {
             actions.push(moveCharacters(witchKingRegion.id, "angmar", "the-witch-king"));
             this.characterHandler.moveCharacters(["the-witch-king"], witchKingRegion.id, "angmar");
             actions.push(
-              ...(await this.unitUi.recruitRegularsAndElitesByCard("angmar", "sauron", 2, 1))
+              ...(await this.unitUi.recruitUnitsInSameRegionByCard("angmar", "sauron", 2, 1, 0))
             );
             return actions;
           }
@@ -271,13 +271,25 @@ export class WotrShadowStrategyCards {
                 .map(r => r.id)
             )
         };
-      // TODO The King is Revealed
+      // The King is Revealed
       // Play if Aragorn is in play.
       // Recruit five Sauron Regular units and a Nazgûl in Minas Morgul.
       case "sstr18":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.aragorn.isInPlay(),
+          play: async () => {
+            const actions: WotrAction[] = [];
+            actions.push(
+              ...(await this.unitUi.recruitUnitsInSameRegionByCard(
+                "minas-morgul",
+                "sauron",
+                5,
+                0,
+                1
+              ))
+            );
+            return actions;
+          }
         };
       // TODO Shadows on the Misty Mountains
       // Recruit two Sauron units (Regular or Elite) and one Nazgûl either in Mount Gram or Moria.

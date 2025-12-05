@@ -379,23 +379,27 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async recruitRegularsAndElitesByCard(
+  async recruitUnitsInSameRegionByCard(
     regionId: WotrRegionId,
     nationId: WotrNationId,
     nRegulars: number,
-    nElites: number
+    nElites: number,
+    nNazguls: number
   ): Promise<WotrAction[]> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return [];
     let continuee = true;
     let nChosenRegulars = 0;
     let nChosenElites = 0;
+    let nChosenNazguls = 0;
     while (continuee) {
       const units: WotrReinforcementUnit[] = [];
       if (nChosenRegulars < nRegulars && this.q.nation(nationId).hasRegularReinforcements())
         units.push({ nation: nationId, type: "regular" });
       if (nChosenElites < nElites && this.q.nation(nationId).hasEliteReinforcements())
         units.push({ nation: nationId, type: "elite" });
+      if (nChosenNazguls < nNazguls && this.q.nation(nationId).hasNazgulReinforcements())
+        units.push({ nation: nationId, type: "nazgul" });
       if (units.length) {
         const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
           frontId,
@@ -405,24 +409,25 @@ export class WotrUnitUi {
         if (!unit) {
           continuee = false;
         } else if (unit.type === "regular") {
+          this.unitHandler.recruitRegularUnit(1, nationId, regionId);
           nChosenRegulars++;
-        } else {
+        } else if (unit.type === "elite") {
+          this.unitHandler.recruitEliteUnit(1, nationId, regionId);
           nChosenElites++;
+        } else if (unit.type === "nazgul") {
+          this.unitHandler.recruitNazgul(1, regionId);
+          nChosenNazguls++;
         }
-        continuee = nChosenRegulars < nRegulars || nChosenElites < nElites;
+        continuee =
+          nChosenRegulars < nRegulars || nChosenElites < nElites || nChosenNazguls < nNazguls;
       } else {
         continuee = false;
       }
     }
     const actions: WotrAction[] = [];
-    if (nRegulars) {
-      actions.push(recruitRegularUnit(regionId, nationId, nRegulars));
-      this.unitHandler.recruitRegularUnit(nRegulars, nationId, regionId);
-    }
-    if (nElites) {
-      actions.push(recruitEliteUnit(regionId, nationId, nElites));
-      this.unitHandler.recruitEliteUnit(nElites, nationId, regionId);
-    }
+    if (nRegulars) actions.push(recruitRegularUnit(regionId, nationId, nRegulars));
+    if (nElites) actions.push(recruitEliteUnit(regionId, nationId, nElites));
+    if (nNazguls) actions.push(recruitNazgul(regionId, nNazguls));
     actions.push(...(await this.checkStackingLimit(regionId, frontId)));
     return actions;
   }

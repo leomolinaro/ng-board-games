@@ -42,6 +42,10 @@ export class WotrNationQuery {
     return this.nationStore.hasEliteReinforcements(this.nationId);
   }
 
+  hasNazgulReinforcements(): boolean {
+    return this.nation().reinforcements.nazgul > 0;
+  }
+
   hasLeaderReinforcements(): boolean {
     return this.nation().reinforcements.leader > 0;
   }
