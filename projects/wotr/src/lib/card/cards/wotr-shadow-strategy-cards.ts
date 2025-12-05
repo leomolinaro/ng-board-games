@@ -161,13 +161,23 @@ export class WotrShadowStrategyCards {
             return actions;
           }
         };
-      // TODO Half-orcs and Goblin-men
+      // Half-orcs and Goblin-men
       // Play if Isengard is "At War."
       // Recruit one Isengard unit (Regular or Elite) in a region where a Shadow Army is present.
       case "sstr13":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.isengard.isAtWar(),
+          play: async () => {
+            const regions = this.q
+              .regions()
+              .filter(r => r.hasArmy("shadow"))
+              .map(r => r.regionId);
+            const region = await this.gameUi.askRegion(
+              "Select a region to recruit an Isengard unit",
+              regions
+            );
+            return this.unitUi.recruitRegularsOrElitesByCard(region, "isengard", 1);
+          }
         };
       // Olog-hai
       // Play if Sauron is "At War."
