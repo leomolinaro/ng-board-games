@@ -8,6 +8,7 @@ import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-acti
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
+import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
@@ -205,13 +206,26 @@ export class WotrShadowStrategyCards {
             return this.unitUi.recruitUnit(unit, region, "shadow");
           }
         };
-      // TODO Hill-trolls
+      // Hill-trolls
       // Play if Sauron is "At War."
       // Replace two Sauron Regular units anywhere on the game board with two Sauron Elite units.
       case "sstr15":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.sauron.isAtWar(),
+          play: async () => {
+            const actions: WotrAction[] = [];
+            for (let i = 0; i < 2; i++) {
+              if (!this.q.nation("sauron").nEliteReinforcements()) return actions;
+              const regions = this.q.regions().filter(r => r.hasRegularUnitsOfNation("sauron"));
+              if (!regions.length) return actions;
+              const region = await this.gameUi.askRegion(
+                "Select a region to upgrade a Sauron regular unit",
+                regions.map(r => r.regionId)
+              );
+              actions.push(upgradeRegularUnit(region, "sauron", 1));
+            }
+            return actions;
+          }
         };
       // A New Power is Rising
       // Play if Saruman is in play.
