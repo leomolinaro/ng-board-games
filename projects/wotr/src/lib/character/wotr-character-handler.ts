@@ -91,6 +91,7 @@ export class WotrCharacterHandler {
       const character = this.characterStore.character(characterId);
       this.characterStore.setInPlay(characterId);
       this.addCharacterToRegion(character, region);
+      this.characters.resolveBringIntoPlayEffects(characterId);
     }
     this.nationHandler.checkNationActivationByCharacters(regionId, characters);
     for (const characterId of removingCharacters) {

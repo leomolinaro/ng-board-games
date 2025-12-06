@@ -66,6 +66,13 @@ export class WotrCharacters {
     return this.abilities[characterId];
   }
 
+  resolveBringIntoPlayEffects(characterId: WotrCharacterId): void {
+    try {
+      const characterCard = this.get(characterId);
+      characterCard.resolveBringIntoPlayEffect();
+    } catch (error) {}
+  }
+
   private createAbilities(characterId: WotrCharacterId): WotrAbility[] {
     switch (characterId) {
       case "gandalf-the-white":
