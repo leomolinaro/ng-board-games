@@ -42,9 +42,13 @@ export interface WotrReinforcementUnit {
   type: WotrGenericUnitType;
 }
 
+export interface WotrEliminateUnitsParams {
+  units: WotrRegionUnitMatch[];
+}
+
 export interface WotrRegionUnitMatch {
   unitType: WotrRegionUnitTypeMatch;
-  nationId: WotrNationId;
+  nationId?: WotrNationId;
 }
 
 export interface WotrForfeitLeadershipParams {
@@ -55,7 +59,13 @@ export interface WotrForfeitLeadershipParams {
   points: 1 | 2 | "oneOrMore";
 }
 
-export type WotrRegionUnitTypeMatch = "regular" | "elite" | "leader" | "nazgul" | "army";
+export type WotrRegionUnitTypeMatch =
+  | WotrRegionNationUnitTypeMatch
+  | "nazgul"
+  | "companion"
+  | "minion"
+  | "nazgulOrMinion";
+export type WotrRegionNationUnitTypeMatch = "regular" | "elite" | "leader" | "army";
 
 export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
   switch (type) {
@@ -65,12 +75,16 @@ export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
       return "elite unit";
     case "leader":
       return "leader";
-    case "nazgul":
-      return "Nazgul";
     case "army":
       return "army unit";
-    default:
-      throw new Error(`Unknown unit type match: ${type}`);
+    case "nazgul":
+      return "Nazgul";
+    case "companion":
+      return "Companion";
+    case "minion":
+      return "Minion";
+    case "nazgulOrMinion":
+      return "Nazgul or Minion";
   }
 }
 

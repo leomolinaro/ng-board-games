@@ -19,7 +19,7 @@ import {
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrForfeitLeadershipParams, WotrRegionUnitMatch } from "../unit/wotr-unit-models";
+import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
@@ -211,14 +211,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async eliminateUnits(
-    selections: WotrRegionUnitMatch[],
+    params: WotrEliminateUnitsParams,
     cardId: WotrCardId,
     frontId: WotrFrontId
   ): Promise<WotrCardReactionStory> {
     return {
       type: "reaction-card",
       card: cardId,
-      actions: await this.unitUi.eliminateUnits(selections, frontId)
+      actions: await this.unitUi.eliminateUnits(params, frontId)
     };
   }
 }

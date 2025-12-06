@@ -6,7 +6,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrForfeitLeadershipParams, WotrRegionUnitMatch } from "../unit/wotr-unit-models";
+import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 
 export interface WotrPlayerStoryService {
   firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory>;
@@ -51,7 +51,7 @@ export interface WotrPlayerStoryService {
   discardExcessCards(frontId: WotrFrontId): Promise<WotrStory>;
   playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory>;
   eliminateUnits(
-    selections: WotrRegionUnitMatch[],
+    params: WotrEliminateUnitsParams,
     cardId: WotrCardId,
     frontId: WotrFrontId
   ): Promise<WotrStory>;

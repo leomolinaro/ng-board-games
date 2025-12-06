@@ -92,10 +92,12 @@ export class WotrShadowStrategyCards {
             )!;
             const nationId = action.nation;
             await this.freePeoples.eliminateUnits(
-              [
-                { unitType: "leader", nationId },
-                { unitType: "army", nationId }
-              ],
+              {
+                units: [
+                  { unitType: "leader", nationId },
+                  { unitType: "army", nationId }
+                ]
+              },
               params.cardId
             );
           }

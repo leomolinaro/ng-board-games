@@ -95,7 +95,18 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasCompanions(region.army)) ||
+      (region.underSiegeArmy && this.unitUtils.hasCompanions(region.underSiegeArmy)) ||
       (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits)) ||
+      false
+    );
+  }
+
+  hasMinions() {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      (region.army && this.unitUtils.hasMinions(region.army)) ||
+      (region.underSiegeArmy && this.unitUtils.hasMinions(region.underSiegeArmy)) ||
+      (region.freeUnits && this.unitUtils.hasMinions(region.freeUnits)) ||
       false
     );
   }

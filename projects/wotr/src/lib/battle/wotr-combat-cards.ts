@@ -8,7 +8,11 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrArmy, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
+import {
+  WotrArmy,
+  WotrForfeitLeadershipParams,
+  WotrRegionUnitMatch
+} from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
@@ -290,11 +294,19 @@ export class WotrCombatCards {
     // If the re-roll scores two or more hits, you can eliminate a Minion (if in the battle) instead of a Nazgûl.
     "Fateful Strike": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        const army = params.freePeoples.army();
+        return !!(army.leaders?.length || army.characters?.length);
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const nHits = params.freePeoples.nLeaderSuccesses;
+        if (!nHits) return;
+        const unitMatches: WotrRegionUnitMatch[] = [];
+        if (nHits >= 2) {
+          unitMatches.push({ unitType: "nazgulOrMinion" });
+        } else {
+          unitMatches.push({ unitType: "nazgul" });
+        }
+        await this.freePeoples.eliminateUnits({ units: unitMatches }, card.id);
       }
     },
     // Foul Stench (Initiative 3)

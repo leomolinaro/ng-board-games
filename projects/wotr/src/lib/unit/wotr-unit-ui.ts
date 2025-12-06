@@ -34,6 +34,7 @@ import {
   leader,
   nazgul,
   WotrArmy,
+  WotrEliminateUnitsParams,
   WotrForfeitLeadershipParams,
   WotrRegionUnitMatch,
   WotrRegionUnits,
@@ -499,10 +500,10 @@ export class WotrUnitUi {
     actions: async (frontId: WotrFrontId) => this.attackWithLeader(frontId)
   };
 
-  async eliminateUnits(selections: WotrRegionUnitMatch[], frontId: string): Promise<WotrAction[]> {
+  async eliminateUnits(params: WotrEliminateUnitsParams, frontId: string): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
-    for (const selection of selections) {
-      actions.push(...(await this.eliminateUnit(selection, frontId)));
+    for (const unitMatch of params.units) {
+      actions.push(...(await this.eliminateUnit(unitMatch, frontId)));
     }
     return actions;
   }
@@ -515,14 +516,13 @@ export class WotrUnitUi {
       regionIds: regions.map(r => r.regionId),
       type: "eliminateUnit",
       unitType: selection.unitType,
-      nationId: selection.nationId
+      nationId: selection.nationId || null
     });
     if (units.regulars?.length) {
       const nationUnit = units.regulars[0];
       actions.push(eliminateRegularUnit(units.regionId, nationUnit.nation, nationUnit.quantity));
       this.unitHandler.eliminateRegularUnit(nationUnit.quantity, nationUnit.nation, units.regionId);
     }
-
     if (units.elites?.length) {
       const eliteUnit = units.elites[0];
       actions.push(eliminateEliteUnit(units.regionId, eliteUnit.nation, eliteUnit.quantity));
@@ -540,18 +540,24 @@ export class WotrUnitUi {
     return actions;
   }
 
-  private regionFilter(selection: WotrRegionUnitMatch): (r: WotrRegionQuery) => boolean {
-    switch (selection.unitType) {
+  private regionFilter(match: WotrRegionUnitMatch): (r: WotrRegionQuery) => boolean {
+    switch (match.unitType) {
       case "regular":
-        return r => r.hasRegularUnitsOfNation(selection.nationId);
+        return r => r.hasRegularUnitsOfNation(match.nationId!);
       case "elite":
-        return r => r.hasEliteUnitsOfNation(selection.nationId);
+        return r => r.hasEliteUnitsOfNation(match.nationId!);
       case "leader":
-        return r => r.hasLeadersOfNation(selection.nationId);
+        return r => r.hasLeadersOfNation(match.nationId!);
       case "army":
-        return r => r.hasArmyUnitsOfNation(selection.nationId);
+        return r => r.hasArmyUnitsOfNation(match.nationId!);
       case "nazgul":
         return r => r.hasNazgul();
+      case "companion":
+        return r => r.hasCompanions();
+      case "minion":
+        return r => r.hasMinions();
+      case "nazgulOrMinion":
+        return r => r.hasNazgul() || r.hasMinions();
     }
   }
 

@@ -235,6 +235,12 @@ export class WotrUnitUtils {
     );
   }
 
+  hasMinions(units: WotrUnits): boolean {
+    return (
+      units.characters?.some(c => this.characterStore.character(c).front === "shadow") || false
+    );
+  }
+
   getNArmyUnits(units: WotrUnits) {
     let n = 0;
     if (units.regulars?.length) {

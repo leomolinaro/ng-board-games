@@ -71,7 +71,7 @@ export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
   type: "eliminateUnit";
   unitType: WotrRegionUnitTypeMatch;
-  nationId: WotrNationId;
+  nationId: WotrNationId | null;
 }
 
 export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection {
@@ -401,7 +401,7 @@ export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
 export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitType: WotrRegionUnitTypeMatch,
-    private nationId: WotrNationId
+    private nationId: WotrNationId | null
   ) {}
 
   initialize(unitNodes: UnitNode[]): void {
@@ -411,18 +411,25 @@ export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
   }
 
   private isSelectable(type: WotrRegionUnitTypeMatch, node: UnitNode): boolean {
-    if (node.nationId !== this.nationId) return false;
     switch (type) {
       case "regular":
-        return node.type === "regular";
+        return node.type === "regular" && node.nationId === this.nationId;
       case "elite":
-        return node.type === "elite";
+        return node.type === "elite" && node.nationId === this.nationId;
       case "leader":
-        return node.type === "leader";
+        return node.type === "leader" && node.nationId === this.nationId;
+      case "army":
+        return (
+          (node.type === "regular" || node.type === "elite") && node.nationId === this.nationId
+        );
       case "nazgul":
         return node.type === "nazgul";
-      case "army":
-        return node.type === "regular" || node.type === "elite";
+      case "companion":
+        return node.type === "character" && node.frontId === "free-peoples";
+      case "minion":
+        return node.type === "character" && node.frontId === "shadow";
+      case "nazgulOrMinion":
+        return (node.type === "character" && node.frontId === "shadow") || node.type === "nazgul";
     }
   }
 
