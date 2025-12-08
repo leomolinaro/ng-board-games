@@ -97,8 +97,8 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
-    throw new Error("Method not implemented.");
+  async activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+    return this.cardPlayUi.activateTableCard(ability, cardId);
   }
 
   async activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
@@ -110,10 +110,6 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     characterId: WotrCharacterId
   ): Promise<WotrStory> {
     return this.characterUi.activateCharacterAbility(ability, characterId);
-  }
-
-  async activateTableCardAbility(cardId: WotrCardId): Promise<WotrStory> {
-    return this.cardDrawUi.activateTableCardAbility(cardId);
   }
 
   async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrReactionStory> {

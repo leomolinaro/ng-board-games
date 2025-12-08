@@ -1,8 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../../ability/wotr-ability";
+import { unexpectedStory } from "../../../../../commons/src";
+import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrStory } from "../../game/wotr-story-models";
+import { WotrPlayer } from "../../player/wotr-player";
 import {
   isFreePeopleCharacterCard,
   isFreePeopleStrategyCard,
@@ -88,5 +90,21 @@ export class WotrCards {
     } else {
       return this.shadowStrategyCards.createCard(cardId);
     }
+  }
+}
+
+export async function activateTableCard(
+  ability: WotrUiAbility,
+  cardId: WotrCardId,
+  player: WotrPlayer
+): Promise<false | WotrAction[]> {
+  const story = await player.activateTableCard(ability, cardId);
+  switch (story.type) {
+    case "reaction-card":
+      return story.actions;
+    case "reaction-card-skip":
+      return false;
+    default:
+      throw unexpectedStory(story, "card activation or not");
   }
 }

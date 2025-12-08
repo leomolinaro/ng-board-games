@@ -1,5 +1,5 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrAbility } from "../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -57,7 +57,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   actionResolution(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
+  activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {

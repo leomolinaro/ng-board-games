@@ -49,8 +49,8 @@ export abstract class WotrPlayer {
   actionResolution(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.actionResolution(this.frontId));
   }
-  activateTableCard(cardId: WotrCardId): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.activateTableCard(cardId));
+  activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.activateTableCard(ability, cardId));
   }
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateCombatCard(cardId));

@@ -23,7 +23,7 @@ export interface WotrPlayerStoryService {
 
   // changeGuide (): Promise<WotrGameStory>;
   actionResolution(frontId: WotrFrontId): Promise<WotrStory>;
-  activateTableCard(cardId: WotrCardId): Promise<WotrStory>;
+  activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory>;
   activateCombatCard(cardId: WotrCardId): Promise<WotrStory>;
   activateCharacterAbility(
     ability: WotrUiAbility,

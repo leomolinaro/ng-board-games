@@ -15,7 +15,9 @@ export class WotrFrontUi {
     if (fromDie.type !== "die") throw new Error("Die expected");
     const toDieOptions: WotrUiOption<WotrActionDie>[] = [
       { value: "character", label: "Character die" },
-      { value: "army", label: "Army die" },
+      frontId === "free-peoples"
+        ? { value: "muster-army", label: "Muster Army die" }
+        : { value: "army", label: "Army die" },
       { value: "muster", label: "Muster die" },
       { value: "event", label: "Event die" }
     ];

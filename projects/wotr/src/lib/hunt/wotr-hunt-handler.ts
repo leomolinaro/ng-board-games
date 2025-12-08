@@ -32,7 +32,8 @@ export class WotrHuntHandler {
         } else {
           this.huntStore.moveAvailableTileToReady(action.tile);
         }
-      }
+      },
+      "hunt-tile-return": (action, front) => this.huntStore.returnDrawnTileToPool(action.tile)
     };
   }
 
@@ -61,6 +62,12 @@ export class WotrHuntHandler {
         " draws ",
         f.huntTile(action.tile),
         " hunt tile"
+      ],
+      "hunt-tile-return": (action, front, f) => [
+        f.player(front),
+        " returns ",
+        f.huntTile(action.tile),
+        " hunt tile to the Hunt Pool"
       ]
     };
   }

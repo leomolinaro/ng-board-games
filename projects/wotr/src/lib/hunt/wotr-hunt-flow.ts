@@ -21,6 +21,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
+import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
 interface WotrHuntTileResolutionOptions {
@@ -48,6 +49,7 @@ export class WotrHuntFlow {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private charactersModifiers = inject(WotrCharacterModifiers);
+  private huntModifiers = inject(WotrHuntModifiers);
 
   async resolveHunt() {
     this.huntStore.setInProgress(true);
@@ -80,7 +82,8 @@ export class WotrHuntFlow {
   private async resolveHuntOnMordorTrack() {
     this.logger.logHuntResolution();
     const nSuccesses = this.huntStore.nTotalDice();
-    const huntTileId = await this.drawHuntTile(this.shadow);
+    let huntTileId = await this.drawHuntTile(this.shadow);
+    huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
     const huntTile = await this.resolveHuntTile(huntTileId, {
       nSuccesses
     });

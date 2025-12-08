@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
 import {
   WotrActionApplierMap,
@@ -156,12 +157,17 @@ export class WotrCharacterHandler {
 
   private async checkWornWithSorrowAndToil() {
     if (this.q.shadow.hasTableCard("scha15")) {
-      await this.activateTableCard("scha15", this.shadow);
+      throw new Error("Worn with Sorrow and Toil not implemented");
+      // await this.activateTableCard("scha15", this.shadow);
     }
   }
 
-  async activateTableCard(cardId: WotrCardId, player: WotrPlayer): Promise<WotrStory> {
-    return player.activateTableCard(cardId);
+  async activateTableCard(
+    ability: WotrUiAbility,
+    cardId: WotrCardId,
+    player: WotrPlayer
+  ): Promise<WotrStory> {
+    return player.activateTableCard(ability, cardId);
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrCharacterAction> {

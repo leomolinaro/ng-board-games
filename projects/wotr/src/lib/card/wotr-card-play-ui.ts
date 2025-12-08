@@ -3,9 +3,11 @@ import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrCards } from "./cards/wotr-cards";
 import { playCardId } from "./wotr-card-actions";
 import { getCard, WotrCardId, WotrCardType } from "./wotr-card-models";
+import { WotrUiAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardPlayUi {
@@ -77,5 +79,23 @@ export class WotrCardPlayUi {
     actions.push(playCardId(cardId));
     actions.push(...(await this.playCard(cardId, frontId)));
     return actions;
+  }
+
+  async activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+    const card = getCard(cardId);
+    const confirm = await this.ui.askConfirm(
+      `Do you want to activate ${card.label} ability?`,
+      "Activate",
+      "Skip"
+    );
+    if (confirm) {
+      return {
+        type: "reaction-card",
+        card: cardId,
+        actions: await ability.play()
+      };
+    } else {
+      return { type: "reaction-card-skip", card: cardId };
+    }
   }
 }

@@ -142,6 +142,14 @@ export class WotrHuntStore {
     }));
   }
 
+  returnDrawnTileToPool(tile: WotrHuntTileId): void {
+    this.update("returnDrawnTileToAvailable", state => ({
+      ...state,
+      huntPool: immutableUtil.listPush([tile], state.huntPool),
+      huntDrawn: immutableUtil.listRemoveFirst(h => h === tile, state.huntDrawn)
+    }));
+  }
+
   moveAvailableTileToPool(tile: WotrHuntTileId): void {
     this.update("moveAvailableTileToPool", state => ({
       ...state,

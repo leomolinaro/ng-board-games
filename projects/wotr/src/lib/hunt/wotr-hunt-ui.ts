@@ -16,7 +16,13 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { allocateHuntDice, drawHuntTile, reRollHuntDice, rollHuntDice } from "./wotr-hunt-actions";
+import {
+  allocateHuntDice,
+  drawHuntTile,
+  reRollHuntDice,
+  rollHuntDice,
+  WotrHuntTileDraw
+} from "./wotr-hunt-actions";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
@@ -106,7 +112,7 @@ export class WotrHuntUi {
     return [revealFellowship(chosenRegion)];
   }
 
-  async drawHuntTile(): Promise<WotrAction> {
+  async drawHuntTile(): Promise<WotrHuntTileDraw> {
     await this.ui.askContinue("Draw hunt tile");
     const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
     return drawHuntTile(huntTile);

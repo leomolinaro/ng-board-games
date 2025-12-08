@@ -7,7 +7,8 @@ export type WotrHuntAction =
   | WotrHuntRoll
   | WotrHuntReRoll
   | WotrHuntTileDraw
-  | WotrHuntTileAdd;
+  | WotrHuntTileAdd
+  | WotrHuntTileReturn;
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
   quantity: number;
@@ -29,6 +30,7 @@ export interface WotrHuntReRoll {
 export function reRollHuntDice(...dice: WotrCombatDie[]): WotrHuntReRoll {
   return { type: "hunt-re-roll", dice };
 }
+
 export interface WotrHuntTileDraw {
   type: "hunt-tile-draw";
   tile: WotrHuntTileId;
@@ -36,12 +38,21 @@ export interface WotrHuntTileDraw {
 export function drawHuntTile(tile: WotrHuntTileId): WotrHuntTileDraw {
   return { type: "hunt-tile-draw", tile };
 }
+
 export interface WotrHuntTileAdd {
   type: "hunt-tile-add";
   tile: WotrHuntTileId;
 }
 export function addHuntTile(tile: WotrHuntTileId): WotrHuntTileAdd {
   return { type: "hunt-tile-add", tile };
+}
+
+export interface WotrHuntTileReturn {
+  type: "hunt-tile-return";
+  tile: WotrHuntTileId;
+}
+export function returnHuntTile(tile: WotrHuntTileId): WotrHuntTileReturn {
+  return { type: "hunt-tile-return", tile };
 }
 
 export interface WotrHuntEffect {

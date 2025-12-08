@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { eliminateCharacter } from "../../character/wotr-character-actions";
@@ -16,17 +16,20 @@ import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
-import { addHuntTile } from "../../hunt/wotr-hunt-actions";
+import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
+import { WotrHuntTileId } from "../../hunt/wotr-hunt-models";
+import { WotrAfterTileDrawn, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
+import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
-import { playCardOnTable } from "../wotr-card-actions";
+import { discardCardFromTableById, playCardOnTable } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrFreePeopleCharacterCardId } from "../wotr-card-models";
 import { WotrCardPlayUi } from "../wotr-card-play-ui";
-import { WotrEventCard } from "./wotr-cards";
+import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesCharacterCards {
@@ -41,6 +44,8 @@ export class WotrFreePeoplesCharacterCards {
   private shadow = inject(WotrShadowPlayer);
   private fellowshipUi = inject(WotrFellowshipUi);
   private characterUi = inject(WotrCharacterUi);
+  private huntModifiers = inject(WotrHuntModifiers);
+  private huntUi = inject(WotrHuntUi);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -72,7 +77,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => [addHuntTile("b-1")]
         };
-      // TODO Mithril Coat and String
+      // Mithril Coat and String
       // Play on the table.
       // After the Shadow player draws a Hunt tile, you may discard "Mithril Coat and Sting" to draw a second tile. Apply the effects of the second tile instead of the first one,
       // then return the first tile to the Hunt Pool.
@@ -80,9 +85,27 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => [playCardOnTable("Mithril Coat and Sting")],
           onTableAbilities: () => {
-            const abilities: WotrAbility[] = [];
-            console.error("Mithril Coat and String on-table abilities not implemented yet");
-            return abilities;
+            let originalTile: WotrHuntTileId | null = null;
+            const redrawAbility: WotrUiAbility<WotrAfterTileDrawn> = {
+              modifier: this.huntModifiers.afterTileDrawn,
+              handler: async tile => {
+                originalTile = tile;
+                const actions = await activateTableCard(redrawAbility, "fpcha05", this.freePeoples);
+                if (!actions) return tile;
+                const drawAction = findAction<WotrHuntTileDraw>(actions, "hunt-tile-draw");
+                if (!drawAction) throw new Error("Unexpected state: no hunt tile draw action");
+                return drawAction.tile;
+              },
+              play: async () => {
+                const drawAction = await this.huntUi.drawHuntTile();
+                return [
+                  drawAction,
+                  returnHuntTile(originalTile!),
+                  discardCardFromTableById("fpcha05")
+                ];
+              }
+            };
+            return [redrawAbility];
           }
         };
       // TODO Axe and Bow
