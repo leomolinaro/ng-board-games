@@ -329,7 +329,7 @@ export class WotrUnitUtils {
     return newArmy;
   }
 
-  nArmyUnits(army: WotrArmy): number {
+  nArmyUnits(army: WotrUnits): number {
     const { regulars, elites } = army;
     let totalArmyUnits = 0;
     totalArmyUnits += regulars?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;

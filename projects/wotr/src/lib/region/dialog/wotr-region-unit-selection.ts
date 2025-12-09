@@ -21,7 +21,8 @@ export type WotrRegionUnitSelection =
   | WotrMovingNazgulUnitSelection
   | WotrDowngradingUnitSelection
   | WotrEliminateUnitSelection
-  | WotrForfeitLeadershipSelection;
+  | WotrForfeitLeadershipSelection
+  | WotrRageOfTheDunlendingsUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -82,6 +83,11 @@ export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection
   message: string;
 }
 
+export interface WotrRageOfTheDunlendingsUnitSelection extends AWotrRegionUnitSelection {
+  type: "rageOfTheDunlendings";
+  maxNArmyUnits: number;
+}
+
 interface WotrRegionUnitSelectionMode {
   initialize(unitNodes: UnitNode[], region: WotrRegion): void;
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
@@ -115,6 +121,8 @@ export function selectionModeFactory(
       return new EliminateUnitSelectionMode(unitSelection.unitType, unitSelection.nationId);
     case "forfeitLeadership":
       return new ForfeitLeadershipSelectionMode(unitSelection);
+    case "rageOfTheDunlendings":
+      return new RageOfTheDunlendingsSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -477,5 +485,28 @@ export class ForfeitLeadershipSelectionMode implements WotrRegionUnitSelectionMo
     }
     if (totalPoints >= this.params.minPoints) return true;
     return this.params.message;
+  }
+}
+
+export class RageOfTheDunlendingsSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrRageOfTheDunlendingsUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (
+        node.group === "army" &&
+        (node.type === "regular" || node.type === "elite") &&
+        node.nationId === "isengard"
+      ) {
+        node.selectable = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    if (selectedNodes.length && selectedNodes.length <= this.unitSelection.maxNArmyUnits) {
+      return true;
+    }
+    return `Select up to ${this.unitSelection.maxNArmyUnits} units to move.`;
   }
 }

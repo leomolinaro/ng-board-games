@@ -611,4 +611,49 @@ export class WotrUnitUi {
       return points;
     }
   }
+
+  async rageOfTheDunledingsMoveUnits(
+    toRegion: WotrRegionId,
+    dunlandRegions: WotrRegionId[]
+  ): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    let fromRegions = dunlandRegions.filter(r => this.q.region(r).hasArmyUnitsOfNation("isengard"));
+    if (!fromRegions.length) return actions;
+    const move = await this.ui.askConfirm("Want to move armies?", "Move", "Skip");
+    if (!move) return actions;
+    const movements: WotrArmyMovement[] = [];
+    let continueMoving = true;
+    let movableUnits = 4;
+    while (continueMoving) {
+      const movingArmy = await this.ui.askRegionUnits("Select units to move", {
+        regionIds: fromRegions,
+        type: "rageOfTheDunlendings",
+        maxNArmyUnits: movableUnits
+      });
+      const regionArmy = this.q.region(movingArmy.regionId).army("shadow")!;
+      const movement: WotrArmyMovement = {
+        fromRegion: movingArmy.regionId,
+        toRegion: toRegion
+      };
+      const leftUnits = this.unitUtils.splitUnits(regionArmy, movingArmy);
+      if (leftUnits) movement.leftUnits = leftUnits;
+      movements.push(movement);
+      this.unitHandler.moveArmy(movement, "shadow");
+      await this.checkStackingLimit(toRegion, "shadow");
+      fromRegions = fromRegions.filter(r => r !== movement.fromRegion);
+      movableUnits -= this.unitUtils.nArmyUnits(regionArmy);
+      if (movement.leftUnits) movableUnits += this.unitUtils.nArmyUnits(movement.leftUnits);
+      if (fromRegions.length && movableUnits > 0) {
+        continueMoving = await this.ui.askConfirm(
+          "Continue moving armies?",
+          "Move another",
+          "Stop moving"
+        );
+      } else {
+        continueMoving = false;
+      }
+    }
+    actions.push(moveArmies(...movements));
+    return actions;
+  }
 }

@@ -7,9 +7,11 @@ import { WotrGameUi } from "../../game/wotr-game-ui";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -20,6 +22,7 @@ export class WotrShadowStrategyCards {
   private unitUi = inject(WotrUnitUi);
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
+  private unitUtils = inject(WotrUnitUtils);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -144,8 +147,30 @@ export class WotrShadowStrategyCards {
       // You may also move to this region up to four Isengard units (Regular or Elite) from North Dunland and/or South Dunland.
       case "sstr11":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.isengard.isAtWar(),
+          play: async () => {
+            const dunlandRegions: WotrRegionId[] = ["north-dunland", "south-dunland"];
+            const regions = this.q
+              .regions()
+              .filter(
+                r =>
+                  dunlandRegions.some(dunland => r.isAdjacentTo(dunland)) &&
+                  r.isFreeForRecruitmentByCard("shadow")
+              )
+              .map(r => r.regionId);
+            const region = await this.gameUi.askRegion(
+              "Select a region to recruit Isengard units",
+              regions
+            );
+            const actions: WotrAction[] = [];
+            actions.push(
+              ...(await this.unitUi.recruitUnitsInSameRegionByCard(region, "isengard", 2, 0, 0))
+            );
+            actions.push(
+              ...(await this.unitUi.rageOfTheDunledingsMoveUnits(region, dunlandRegions))
+            );
+            return actions;
+          }
         };
       // Return of the Witch-king
       // Play if the Witch-king is in play.

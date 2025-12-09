@@ -16,6 +16,11 @@ export class WotrRegionQuery {
     return this.regionStore.region(this.regionId);
   }
 
+  isAdjacentTo(otherRegionId: WotrRegionId): boolean {
+    const region = this.regionStore.region(this.regionId);
+    return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);
+  }
+
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitment(this.regionId, frontId);
   }
