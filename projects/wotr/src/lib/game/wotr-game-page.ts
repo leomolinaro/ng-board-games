@@ -7,6 +7,7 @@ import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
+import { WotrCards } from "../card/cards/wotr-cards";
 import { WotrFreePeoplesCharacterCards } from "../card/cards/wotr-free-peoples-character-cards";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
@@ -33,7 +34,6 @@ import {
   WotrStoriesDialogRef
 } from "./wotr-stories-dialog";
 import { WotrStoryService } from "./wotr-story-service";
-import { WotrCards } from "../card/cards/wotr-cards";
 
 @Component({
   selector: "wotr-game-page",

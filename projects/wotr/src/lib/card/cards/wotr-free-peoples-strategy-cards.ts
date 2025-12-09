@@ -18,8 +18,9 @@ import {
   WotrUnitModifiers
 } from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
-import { discardCardFromTableById, discardCardIds, playCardOnTable } from "../wotr-card-actions";
+import { discardCardFromTableById, discardCardIds, playCardOnTableId } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
+import { WotrCardHandler } from "../wotr-card-handler";
 import { getCard, WotrCard, WotrCardId, WotrFreePeopleStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -27,6 +28,7 @@ import { WotrEventCard } from "./wotr-cards";
 export class WotrFreePeoplesStrategyCards {
   private gameUi = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
+  private cardHandler = inject(WotrCardHandler);
   private characterUi = inject(WotrCharacterUi);
   private q = inject(WotrGameQuery);
   private nationHandler = inject(WotrNationHandler);
@@ -56,7 +58,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(playCardOnTable("A Power too Great"));
+            actions.push(playCardOnTableId("fpstr02"));
             const advanceAction = await this.nationUi.advanceNation("elves");
             if (advanceAction) actions.push(advanceAction);
             return actions;
@@ -80,7 +82,8 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            actions.push(playCardOnTable("A Power too Great"));
+            actions.push(playCardOnTableId("fpstr03"));
+            this.cardHandler.playCardOnTable("fpstr03", "free-peoples");
             const advanceAction = await this.nationUi.advanceNation("north");
             if (advanceAction) actions.push(advanceAction);
             return actions;

@@ -43,7 +43,7 @@ export class WotrFellowshipUi {
       },
       {
         value: "guide",
-        label: "Guide Fellowship",
+        label: "Change Fellowship guide",
         disabled: !this.fellowshipRules.canChangeGuide()
       },
       { value: "pass", label: "Pass" }

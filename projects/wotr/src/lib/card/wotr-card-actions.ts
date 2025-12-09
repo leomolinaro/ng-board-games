@@ -36,7 +36,10 @@ export interface WotrCardPlayOnTable {
   card: WotrCardId;
 }
 export function playCardOnTable(card: WotrCardLabel): WotrCardPlayOnTable {
-  return { type: "card-play-on-table", card: labelToCardId(card) };
+  return playCardOnTableId(labelToCardId(card));
+}
+export function playCardOnTableId(cardId: WotrCardId): WotrCardPlayOnTable {
+  return { type: "card-play-on-table", card: cardId };
 }
 export interface WotrCardPlay {
   type: "card-play";

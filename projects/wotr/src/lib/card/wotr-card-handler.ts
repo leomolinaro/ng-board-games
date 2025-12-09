@@ -88,7 +88,10 @@ export class WotrCardHandler {
   }
 
   discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
-    this.frontStore.discardCardFromTable(cardId, front);
+    this.frontStore.discardCardFromTable(
+      cardId,
+      isFreePeoplesCard(cardId) ? "free-peoples" : "shadow"
+    );
     this.cards.deactivateAbilities(cardId);
     // this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));
   }
