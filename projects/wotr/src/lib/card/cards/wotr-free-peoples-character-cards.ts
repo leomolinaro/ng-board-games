@@ -14,11 +14,15 @@ import {
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
 import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
-import { WotrHuntTileId } from "../../hunt/wotr-hunt-models";
-import { WotrAfterTileDrawn, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
+import { WotrHuntEffectParams, WotrHuntTileId } from "../../hunt/wotr-hunt-models";
+import {
+  WotrAfterTileDrawn,
+  WotrHuntEffectChoiceModifier,
+  WotrHuntModifiers
+} from "../../hunt/wotr-hunt-modifiers";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
@@ -118,9 +122,19 @@ export class WotrFreePeoplesCharacterCards {
           canBePlayed: () => this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship(),
           play: async () => [playCardOnTable("Axe and Bow")],
           onTableAbilities: () => {
-            const abilities: WotrAbility[] = [];
-            console.error("Axe and Bow on-table abilities not implemented yet");
-            return abilities;
+            const absorbeAbility: WotrAbility<WotrHuntEffectChoiceModifier> = {
+              modifier: this.huntModifiers.huntEffectChoices,
+              handler: params => {
+                const choice: WotrUiChoice<WotrHuntEffectParams> = {
+                  // eslint-disable-next-line quotes, @typescript-eslint/quotes
+                  label: () => 'Discard "Axe and Bow"',
+                  card: () => "fpcha06",
+                  actions: async () => [discardCardFromTableById("fpcha06")]
+                };
+                return [choice];
+              }
+            };
+            return [absorbeAbility];
           }
         };
       // TODO Horn of Gondor

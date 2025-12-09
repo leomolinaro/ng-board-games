@@ -1,6 +1,8 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
+import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
+import { WotrCardHandler } from "../card/wotr-card-handler";
 import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterStore } from "../character/wotr-character-store";
@@ -24,6 +26,7 @@ import {
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
+import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
 @Injectable({ providedIn: "root" })
@@ -35,6 +38,8 @@ export class WotrHuntUi {
   private characterStore = inject(WotrCharacterStore);
   private characterHandler = inject(WotrCharacterHandler);
   private fellowshipUi = inject(WotrFellowshipUi);
+  private huntModifiers = inject(WotrHuntModifiers);
+  private cardHandler = inject(WotrCardHandler);
 
   private eliminateGuideChoice: WotrUiChoice<WotrHuntEffectParams> = {
     label: () => "Eliminate the guide",
@@ -59,12 +64,12 @@ export class WotrHuntUi {
     }
   };
 
-  private useRingChoice: WotrUiChoice<WotrHuntEffectParams> = {
+  private useRingChoice: (damage: number) => WotrUiChoice<WotrHuntEffectParams> = damage => ({
     label: () => "Use the Ring",
     actions: async params => {
-      return [corruptFellowship(params.damage)];
+      return [corruptFellowship(damage)];
     }
-  };
+  });
 
   async huntAllocationPhase(): Promise<WotrAction[]> {
     const min = this.huntStore.minimumNumberOfHuntDice();
@@ -146,13 +151,17 @@ export class WotrHuntUi {
       // random companion elimination
       // use ring
       const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
-      if (!casualtyTaken && !params.onlyRingAbsorbtion) {
+      const onlyRingAbsorbtion = casualtyTaken || params.onlyRingAbsorbtion;
+      if (!onlyRingAbsorbtion) {
         choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);
       }
-      choices.push(this.useRingChoice);
+      choices.push(this.useRingChoice(damage));
+      if (!onlyRingAbsorbtion) {
+        choices.push(...this.huntModifiers.getHuntEffectChoices(params));
+      }
       const chosenActions = await this.ui.askChoice(
-        `Absorb ${params.damage} hunt damage points`,
+        `Absorb ${damage}/${params.damage} hunt damage points`,
         choices,
         params
       );
@@ -163,6 +172,10 @@ export class WotrHuntUi {
       );
       const randomCompanion = findAction<WotrCompanionRandom>(chosenActions, "companion-random");
       const useRing = findAction<WotrFellowshipCorruption>(chosenActions, "fellowship-corruption");
+      const discardTableCard = findAction<WotrCardDiscardFromTable>(
+        chosenActions,
+        "card-discard-from-table"
+      );
       if (randomCompanion) {
         continuee = false;
       } else {
@@ -175,6 +188,10 @@ export class WotrHuntUi {
         }
         if (useRing) {
           damage -= useRing.quantity;
+        }
+        if (discardTableCard) {
+          damage -= 1; // assume table card absorb 1 damage point
+          this.cardHandler.discardCardFromTable(discardTableCard.card, "free-peoples");
         }
       }
     }

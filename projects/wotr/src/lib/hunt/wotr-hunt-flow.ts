@@ -241,6 +241,8 @@ export class WotrHuntFlow {
               absorbedDamage += 1;
               break;
             }
+            default:
+              throw new Error("Unknown card for hunt damage absorption");
           }
           params.tableCardsUsed = true;
           break;

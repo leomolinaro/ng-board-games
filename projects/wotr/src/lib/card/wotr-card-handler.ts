@@ -17,7 +17,7 @@ export class WotrCardHandler {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
-  private cards = inject(WotrCards);
+  public cards!: WotrCards; // = inject(WotrCards);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -87,7 +87,7 @@ export class WotrCardHandler {
     }
   }
 
-  private discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
+  discardCardFromTable(cardId: WotrCardId, front: WotrFrontId) {
     this.frontStore.discardCardFromTable(cardId, front);
     this.cards.deactivateAbilities(cardId);
     // this.logger.logEffect(discardCardFromTable(cardToLabel(cardId)));

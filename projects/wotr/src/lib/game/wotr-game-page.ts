@@ -33,6 +33,7 @@ import {
   WotrStoriesDialogRef
 } from "./wotr-stories-dialog";
 import { WotrStoryService } from "./wotr-story-service";
+import { WotrCards } from "../card/cards/wotr-cards";
 
 @Component({
   selector: "wotr-game-page",
@@ -61,6 +62,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private battleModifiers = inject(WotrBattleModifiers);
   private characterHandler = inject(WotrCharacterHandler);
   private characters = inject(WotrCharacters);
+  private cardHandler = inject(WotrCardHandler);
+  private cards = inject(WotrCards);
   private freePeoplesCharacterCards = inject(WotrFreePeoplesCharacterCards);
   private cardPlayUi = inject(WotrCardPlayUi);
 
@@ -80,6 +83,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrUnitHandler).init();
     this.story.init(this.localPlayerService);
     this.characterHandler.characters = this.characters;
+    this.cardHandler.cards = this.cards;
     this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
   }
 

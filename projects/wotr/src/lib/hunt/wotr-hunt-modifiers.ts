@@ -1,8 +1,13 @@
 import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
-import { WotrHuntTileId } from "./wotr-hunt-models";
+import { WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
 
 export type WotrAfterTileDrawn = (tile: WotrHuntTileId) => Promise<WotrHuntTileId>;
+
+export type WotrHuntEffectChoiceModifier = (
+  params: WotrHuntEffectParams
+) => WotrUiChoice<WotrHuntEffectParams>[];
 
 @Injectable({ providedIn: "root" })
 export class WotrHuntModifiers {
@@ -13,6 +18,15 @@ export class WotrHuntModifiers {
       tile = await handler(tile);
     }
     return tile;
+  }
+
+  public readonly huntEffectChoices = new WotrModifier<WotrHuntEffectChoiceModifier>();
+  public getHuntEffectChoices(params: WotrHuntEffectParams): WotrUiChoice<WotrHuntEffectParams>[] {
+    return this.huntEffectChoices
+      .get()
+      .reduce<
+        WotrUiChoice<WotrHuntEffectParams>[]
+      >((choices, modifier) => choices.concat(modifier(params)), []);
   }
 
   clear() {
