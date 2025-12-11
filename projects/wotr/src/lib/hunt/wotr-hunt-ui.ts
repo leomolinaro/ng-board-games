@@ -48,8 +48,10 @@ export class WotrHuntUi {
       const actions: WotrAction[] = [];
       const guide = this.fellowshipStore.guide();
       actions.push(eliminateCharacter(guide));
-      this.characterHandler.eliminateCharacters([guide]);
-      actions.push(await this.fellowshipUi.changeGuide());
+      await this.characterHandler.eliminateCharacters([guide]);
+      if (this.fellowshipStore.guide() !== "gollum") {
+        actions.push(await this.fellowshipUi.changeGuide());
+      }
       return actions;
     }
   };

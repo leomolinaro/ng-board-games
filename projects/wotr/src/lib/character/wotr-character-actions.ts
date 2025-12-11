@@ -4,7 +4,9 @@ import { WotrCharacterId } from "./wotr-character-models";
 export type WotrCharacterAction =
   | WotrCharacterMovement
   | WotrCharacterPlay
-  | WotrCharacterElimination;
+  | WotrCharacterElimination
+  | WotrGollumEnterFellowship;
+
 export interface WotrCharacterMovement {
   type: "character-movement";
   characters: WotrCharacterId[];
@@ -35,4 +37,11 @@ export interface WotrCharacterElimination {
 }
 export function eliminateCharacter(...characters: WotrCharacterId[]): WotrCharacterElimination {
   return { type: "character-elimination", characters };
+}
+
+export interface WotrGollumEnterFellowship {
+  type: "gollum-enter-fellowship";
+}
+export function gollumEnterFellowship(): WotrGollumEnterFellowship {
+  return { type: "gollum-enter-fellowship" };
 }

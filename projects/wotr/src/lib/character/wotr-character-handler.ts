@@ -20,7 +20,11 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCharacterAction } from "./wotr-character-actions";
+import {
+  gollumEnterFellowship,
+  WotrCharacterAction,
+  WotrGollumEnterFellowship
+} from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
@@ -42,6 +46,10 @@ export class WotrCharacterHandler {
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerEffectLogger<WotrGollumEnterFellowship>(
+      "gollum-enter-fellowship",
+      (effect, f) => [f.character("gollum"), " enters the Fellowship as Guide"]
+    );
     this.actionRegistry.registerStory("reaction-character", this.reactionCharacter);
     this.actionRegistry.registerStory("reaction-character-skip", this.reactionCharacterSkip);
   }
@@ -68,7 +76,8 @@ export class WotrCharacterHandler {
       "character-play": (action, front) => this.playCharacters(action.characters, action.region),
       "character-movement": (action, front) =>
         this.moveCharacters(action.characters, action.fromRegion, action.toRegion),
-      "character-elimination": (action, front) => this.eliminateCharacters(action.characters)
+      "character-elimination": (action, front) => this.eliminateCharacters(action.characters),
+      "gollum-enter-fellowship": (action, front) => {}
     };
   }
 
@@ -106,6 +115,16 @@ export class WotrCharacterHandler {
       this.removeCharacter(characterId);
     }
     await this.checkWornWithSorrowAndToil();
+    await this.checkGollumEnterPlay();
+  }
+
+  private async checkGollumEnterPlay() {
+    if (this.q.fellowship.hasCompanions()) return;
+    if (!this.q.gollum.isAvailable()) return;
+    this.fellowshipStore.setCompanions(["gollum"]);
+    this.fellowshipStore.setGuide("gollum");
+    this.characterStore.setInFellowship("gollum");
+    this.logger.logEffect(gollumEnterFellowship());
   }
 
   private removeCharacter(characterId: WotrCharacterId): void {
@@ -190,7 +209,8 @@ export class WotrCharacterHandler {
         this.charactersLog(action.characters),
         " in ",
         f.region(action.region)
-      ]
+      ],
+      "gollum-enter-fellowship": (action, front, f) => []
     };
   }
 
