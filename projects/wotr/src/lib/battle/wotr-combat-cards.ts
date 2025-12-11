@@ -564,8 +564,7 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Combat roll.
     "Valour": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        return params.freePeoples.army().elites?.some(u => u.quantity) ?? false;
       },
       effect: async (card, params) => {
         params.freePeoples.combatModifiers.push(1);
