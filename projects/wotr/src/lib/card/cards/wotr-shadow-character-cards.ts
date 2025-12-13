@@ -17,6 +17,8 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
+import { moveArmies } from "../../unit/wotr-unit-actions";
+import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import {
   discardCardFromTableById,
@@ -38,6 +40,7 @@ export class WotrShadowCharacterCards {
   private shadow = inject(WotrShadowPlayer);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private unitUi = inject(WotrUnitUi);
+  private unitRules = inject(WotrUnitRules);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -358,14 +361,43 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO The Black Captain Commands
+      // The Black Captain Commands
       // Play if the Witch-king is in play.
       // You may either recruit two Nazgûl in the region containing the Witch-king, or move any or all of the Nazgûl.
       // Then, you may move or attack with an Army containing the Witch-king.
       case "scha24":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.theWitchKing.isInPlay(),
+          play: async () => {
+            const choice1 = await this.ui.askOption<"recruit" | "move">("Choose", [
+              { value: "recruit", label: "Recruit two Nazgûl" },
+              { value: "move", label: "Move any or all Nazgûl" }
+            ]);
+            const actions: WotrAction[] = [];
+            const regionId = this.q.theWitchKing.region()!.id;
+            if (choice1 === "recruit") {
+              actions.push(
+                ...(await this.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 2))
+              );
+            } else if (choice1 === "move") {
+              actions.push(...(await this.characterUi.moveAnyOrAllNazgul()));
+            }
+            const region = this.q.region(regionId);
+            if (!region.hasArmy("shadow")) return actions;
+            const canMove = this.unitRules.canMoveArmyFromRegion(region.region(), "shadow");
+            const canAttack = this.unitRules.canArmyAttack(region.army("shadow")!, region.region());
+            if (!canMove && !canAttack) return actions;
+            const choice2 = await this.ui.askOption<"move" | "attack">("Choose", [
+              { value: "move", label: "Move with the Witch-king", disabled: !canMove },
+              { value: "attack", label: "Attack with the Witch-king", disabled: !canAttack }
+            ]);
+            if (choice2 === "move") {
+              actions.push(moveArmies(await this.unitUi.moveArmyWithCharacter("the-witch-king")));
+            } else if (choice2 === "attack") {
+              actions.push(...(await this.unitUi.attackWithCharacter("the-witch-king")));
+            }
+            return actions;
+          }
         };
     }
   }

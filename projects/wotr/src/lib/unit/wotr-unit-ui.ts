@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { attack, forfeitLeadership } from "../battle/wotr-battle-actions";
+import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -85,7 +86,7 @@ export class WotrUnitUi {
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
       type: "moveArmy",
-      withLeaders: false,
+      requiredUnits: [],
       retroguard: null,
       required: true
     });
@@ -101,7 +102,7 @@ export class WotrUnitUi {
     const attackingUnits = await this.ui.askRegionUnits("Select units to attack", {
       type: "attack",
       regionIds: [regionId],
-      withLeaders: false,
+      requiredUnits: [],
       frontId
     });
     const fromRegion = this.regionStore.region(attackingUnits.regionId);
@@ -119,7 +120,7 @@ export class WotrUnitUi {
     return this.ui.askRegionUnits("Select units to attack", {
       type: "attack",
       regionIds: candidateRegions.map(region => region.id),
-      withLeaders,
+      requiredUnits: withLeaders ? ["anyLeader"] : [],
       frontId
     });
   }
@@ -166,11 +167,36 @@ export class WotrUnitUi {
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
       type: "moveArmy",
-      withLeaders: true,
+      requiredUnits: ["anyLeader"],
       retroguard: null,
       required: true
     });
     return this.moveThisArmy(movingArmy, frontId);
+  }
+
+  async moveArmyWithCharacter(characterId: WotrCharacterId): Promise<WotrArmyMovement> {
+    const c = this.q.character(characterId);
+    const fromRegionId = c.region()!.id;
+    const movingArmy = await this.ui.askRegionUnits("Select units to move", {
+      regionIds: [fromRegionId],
+      type: "moveArmy",
+      requiredUnits: [characterId],
+      retroguard: null,
+      required: true
+    });
+    return this.moveThisArmy(movingArmy, c.frontId());
+  }
+
+  async attackWithCharacter(characterId: WotrCharacterId): Promise<WotrAction[]> {
+    const c = this.q.character(characterId);
+    const fromRegionId = c.region()!.id;
+    const attackingUnits = await this.ui.askRegionUnits("Select units to attack", {
+      type: "attack",
+      regionIds: [fromRegionId],
+      requiredUnits: [characterId],
+      frontId: c.frontId()
+    });
+    return this.attackWithArmy(attackingUnits, c.frontId());
   }
 
   private async checkStackingLimit(

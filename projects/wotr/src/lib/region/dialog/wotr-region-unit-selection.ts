@@ -40,14 +40,14 @@ export interface WotrMovingNazgulUnitSelection extends AWotrRegionUnitSelection 
 
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   type: "moveArmy";
-  withLeaders: boolean;
+  requiredUnits: ("anyLeader" | WotrCharacterId)[];
   retroguard: WotrUnits | null;
   required: boolean;
 }
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
   type: "attack";
-  withLeaders: boolean;
+  requiredUnits: ("anyLeader" | WotrCharacterId)[];
   frontId: WotrFrontId;
 }
 
@@ -102,11 +102,7 @@ export function selectionModeFactory(
     case "moveArmy":
       return new MoveArmySelectionMode(unitSelection, characterStore, unitModifiers);
     case "attack":
-      return new AttackSelectionMode(
-        unitSelection.withLeaders,
-        unitSelection.frontId,
-        unitModifiers
-      );
+      return new AttackSelectionMode(unitSelection, characterStore, unitModifiers);
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
@@ -187,9 +183,16 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     });
     if (!someArmyUnits) return "Select at least one regular or elite unit to move.";
     if (!this.unitSelection.required) return true;
-    if (this.unitSelection.withLeaders) {
-      const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-      if (!someLeaders) return "Select at least one leader to move.";
+    for (const reqUnit of this.unitSelection.requiredUnits) {
+      if (reqUnit === "anyLeader") {
+        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
+        if (!someLeaders) return "Select at least one leader to move.";
+      } else {
+        if (!hasCharacter(selectedNodes, reqUnit)) {
+          const character = this.characterStore.character(reqUnit);
+          return `Select (${character.name}) to move.`;
+        }
+      }
     }
     return true;
   }
@@ -246,15 +249,22 @@ function hasLeaders(selectedNodes: UnitNode[], unitModifiers: WotrUnitModifiers)
   });
 }
 
+function hasCharacter(selectedNodes: UnitNode[], characterId: WotrCharacterId): boolean {
+  return selectedNodes.some(node => {
+    if (node.type === "character" && node.id === characterId) return true;
+    return false;
+  });
+}
+
 export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
-    private withLeaders: boolean,
-    private frontId: WotrFrontId,
+    private selection: WotrAttackingUnitSelection,
+    private characterStore: WotrCharacterStore,
     private unitModifiers: WotrUnitModifiers
   ) {}
 
   initialize(unitNodes: UnitNode[], region: WotrRegion) {
-    const isUnderSiegeArmy = region.underSiegeArmy?.front === this.frontId;
+    const isUnderSiegeArmy = region.underSiegeArmy?.front === this.selection.frontId;
     for (const unitNode of unitNodes) {
       if (unitNode.group !== "army" && unitNode.group !== "underSiege") continue;
       if (isUnderSiegeArmy) {
@@ -274,9 +284,27 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
       return false;
     });
     if (!someArmyUnits) return "Select at least one regular or elite unit to attack.";
-    if (this.withLeaders) {
-      const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-      if (!someLeaders) return "Select at least one leader to attack.";
+    for (const reqUnit of this.selection.requiredUnits) {
+      if (reqUnit === "anyLeader") {
+        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
+        if (!someLeaders) return "Select at least one leader to move.";
+      } else {
+        if (!hasCharacter(selectedNodes, reqUnit)) {
+          const character = this.characterStore.character(reqUnit);
+          return `Select (${character.name}) to move.`;
+        }
+      }
+    }
+    for (const reqUnit of this.selection.requiredUnits) {
+      if (reqUnit === "anyLeader") {
+        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
+        if (!someLeaders) return "Select at least one leader to attack.";
+      } else {
+        if (!hasCharacter(selectedNodes, reqUnit)) {
+          const character = this.characterStore.character(reqUnit);
+          return `Select (${character.name}) to attack.`;
+        }
+      }
     }
     return true;
   }

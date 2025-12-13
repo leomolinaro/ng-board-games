@@ -133,7 +133,7 @@ export class WotrBattleUi {
       type: "moveArmy",
       regionIds: [fromRegion.id],
       retroguard: battle.retroguard || null,
-      withLeaders: false,
+      requiredUnits: [],
       required: false
     });
     if (this.unitUtils.isEmptyArmy(movingUnits)) {

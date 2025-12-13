@@ -21,6 +21,10 @@ export class WotrCharacterQuery {
     return this.character().name;
   }
 
+  frontId() {
+    return this.character().front;
+  }
+
   region(): WotrRegion | null {
     return this.regionStore.characterRegion(this.characterId);
   }
