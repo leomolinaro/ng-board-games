@@ -16,6 +16,10 @@ export class WotrRegionQuery {
     return this.regionStore.region(this.regionId);
   }
 
+  isCoastal() {
+    return this.region().seaside;
+  }
+
   isAdjacentTo(otherRegionId: WotrRegionId): boolean {
     const region = this.regionStore.region(this.regionId);
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);

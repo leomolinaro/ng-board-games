@@ -206,13 +206,23 @@ export class WotrFreePeoplesStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Cirdan's Ships
+      // Cirdan's Ships
       // Play if the Elves are "At War."
       // Recruit two Elven units (Regular or Elite) in a coastal region containing a Free Peoples Army.
       case "fpstr13":
         return {
           canBePlayed: () => this.q.elves.isAtWar(),
-          play: async () => []
+          play: async () => {
+            const coastalRegions = this.q
+              .regions()
+              .filter(r => r.isCoastal() && r.hasArmy("free-peoples"));
+            if (!coastalRegions.length) return [];
+            const regionId = await this.gameUi.askRegion(
+              "Choose a region to recruit in",
+              coastalRegions.map(r => r.regionId)
+            );
+            return this.unitUi.recruitRegularsOrElitesByCard(regionId, "elves", 2);
+          }
         };
       // Guards of the Citadel
       // Recruit one Gondor unit (Regular or Elite) and one Gondor Leader in Minas Tirith.
