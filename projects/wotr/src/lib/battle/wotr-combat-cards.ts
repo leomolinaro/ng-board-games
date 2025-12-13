@@ -232,10 +232,6 @@ export class WotrCombatCards {
     // Desperate Battle (Initiative 3)
     // Both Armies add 1 to all dice on their Combat roll and Leader re-roll.
     "Desperate Battle": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
         params.shadow.combatModifiers.push(1);
         params.shadow.leaderModifiers.push(1);
