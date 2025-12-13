@@ -418,12 +418,10 @@ export class WotrCombatCards {
     // No Quarter (Initiative 5)
     // If your Combat roll or Leader re-roll scores at least one hit, score one additional hit.
     "No Quarter": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        // TODO
+        if (params.freePeoples.nCombatSuccesses || params.freePeoples.nLeaderSuccesses) {
+          params.freePeoples.hitsModifiers.push(1);
+        }
       }
     },
     // One for the Dark Lord (Initiative 3)

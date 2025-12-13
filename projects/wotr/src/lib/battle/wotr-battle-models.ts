@@ -31,6 +31,7 @@ export class WotrCombatFront {
   lessNDice: number = 0;
   combatModifiers: number[] = [];
   leaderModifiers: number[] = [];
+  hitsModifiers: number[] = [];
 
   combatRoll?: WotrCombatDie[];
   nCombatSuccesses?: number;
