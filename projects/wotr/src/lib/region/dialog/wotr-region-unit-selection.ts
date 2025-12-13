@@ -22,7 +22,8 @@ export type WotrRegionUnitSelection =
   | WotrDowngradingUnitSelection
   | WotrEliminateUnitSelection
   | WotrForfeitLeadershipSelection
-  | WotrRageOfTheDunlendingsUnitSelection;
+  | WotrRageOfTheDunlendingsUnitSelection
+  | WotrHeroicDeathUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -88,6 +89,10 @@ export interface WotrRageOfTheDunlendingsUnitSelection extends AWotrRegionUnitSe
   maxNArmyUnits: number;
 }
 
+export interface WotrHeroicDeathUnitSelection extends AWotrRegionUnitSelection {
+  type: "heroicDeath";
+}
+
 interface WotrRegionUnitSelectionMode {
   initialize(unitNodes: UnitNode[], region: WotrRegion): void;
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
@@ -119,6 +124,8 @@ export function selectionModeFactory(
       return new ForfeitLeadershipSelectionMode(unitSelection);
     case "rageOfTheDunlendings":
       return new RageOfTheDunlendingsSelectionMode(unitSelection);
+    case "heroicDeath":
+      return new HeroicDeathSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -536,5 +543,24 @@ export class RageOfTheDunlendingsSelectionMode implements WotrRegionUnitSelectio
       return true;
     }
     return `Select up to ${this.unitSelection.maxNArmyUnits} units to move.`;
+  }
+}
+
+export class HeroicDeathSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrHeroicDeathUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (node.type === "character" || node.type === "leader") {
+        node.selectable = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    if (selectedNodes.length === 1) {
+      return true;
+    }
+    return "Select one character or leader to eliminate.";
   }
 }

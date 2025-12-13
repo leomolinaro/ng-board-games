@@ -1,5 +1,6 @@
 import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
+import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -24,7 +25,7 @@ export interface WotrPlayerStoryService {
   // changeGuide (): Promise<WotrGameStory>;
   actionResolution(frontId: WotrFrontId): Promise<WotrStory>;
   activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory>;
-  activateCombatCard(cardId: WotrCardId): Promise<WotrStory>;
+  activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory>;
   activateCharacterAbility(
     ability: WotrUiAbility,
     characterId: WotrCharacterId

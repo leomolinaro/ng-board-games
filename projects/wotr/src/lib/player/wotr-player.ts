@@ -1,5 +1,6 @@
 import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
+import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -52,8 +53,8 @@ export abstract class WotrPlayer {
   activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.activateTableCard(ability, cardId));
   }
-  activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.activateCombatCard(cardId));
+  activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.activateCombatCard(ability, cardId));
   }
   activateCharacterAbility(
     ability: WotrUiAbility,

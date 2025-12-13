@@ -13,10 +13,7 @@ import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrPlayerInfo } from "../player/wotr-player-info-models";
 import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
-import {
-  WotrChooseCasualtiesUnitSelection,
-  WotrRegionUnitSelection
-} from "../region/dialog/wotr-region-unit-selection";
+import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit-models";
 import { WotrDieCardStory, WotrDieStory } from "./wotr-story-models";
@@ -313,7 +310,7 @@ export class WotrGameUi extends signalStore(
   casualtyUnits = uiEvent<{ downgrading: WotrUnits; removing: WotrUnits }>();
   async askCasualtyUnits(
     message: string,
-    unitSelection: WotrChooseCasualtiesUnitSelection
+    unitSelection: WotrRegionUnitSelection
   ): Promise<{ downgrading: WotrUnits; removing: WotrUnits }> {
     this.updateUi(s => ({
       ...s,

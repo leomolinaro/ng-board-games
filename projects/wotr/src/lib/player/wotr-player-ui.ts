@@ -22,6 +22,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
+import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
@@ -101,8 +102,8 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return this.cardPlayUi.activateTableCard(ability, cardId);
   }
 
-  async activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
-    throw new Error("Method not implemented.");
+  async activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory> {
+    return this.battleUi.activateCombatCard(ability, cardId);
   }
 
   async activateCharacterAbility(

@@ -1,12 +1,16 @@
 import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
+import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
+import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { eliminateLeader, WotrLeaderElimination } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import {
   WotrArmy,
@@ -34,10 +38,16 @@ export interface WotrCombatCardParams {
   regionId: WotrRegionId;
 }
 
+export interface WotrCombatCardAbility {
+  play: () => Promise<WotrAction[]>;
+}
+
 @Injectable({ providedIn: "root" })
 export class WotrCombatCards {
   private unitService = inject(WotrUnitHandler);
   private unitUtils = inject(WotrUnitUtils);
+  private ui = inject(WotrGameUi);
+  private q = inject(WotrGameQuery);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -52,10 +62,11 @@ export class WotrCombatCards {
   }
 
   private async activateCombatCard(
+    ability: WotrCombatCardAbility,
     cardId: WotrCardId,
     player: WotrPlayer
   ): Promise<false | WotrAction[]> {
-    const story = await player.activateCombatCard(cardId);
+    const story = await player.activateCombatCard(ability, cardId);
     switch (story.type) {
       case "reaction-combat-card":
         return story.actions;
@@ -347,11 +358,42 @@ export class WotrCombatCards {
     // Companion to cancel a number of hits equal to or less than the Companion's Level.
     "Heroic Death": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        const army = params.freePeoples.army();
+        return !!(army.leaders?.length || army.characters?.length);
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
+              type: "heroicDeath",
+              regionIds: [params.regionId]
+            });
+            if (units.leaders?.length) {
+              const leader = units.leaders[0];
+              return [eliminateLeader(params.regionId, leader.nation, 1)];
+            } else if (units.characters?.length) {
+              const character = units.characters[0];
+              return [eliminateCharacter(character)];
+            }
+            return [];
+          }
+        };
+        const r = await this.activateCombatCard(ability, card.id, this.freePeoples);
+        if (r) {
+          const leaderElim = findAction<WotrLeaderElimination>(r, "leader-elimination");
+          if (leaderElim) {
+            params.shadow.hitsModifiers.push(-1);
+          } else {
+            const characterElim = findAction<WotrCharacterElimination>(r, "character-elimination");
+            if (characterElim) {
+              const characterId = characterElim.characters[0];
+              const character = this.q.character(characterId);
+              params.shadow.hitsModifiers.push(
+                -Math.min(character.character().level, params.shadow.nTotalHits || 0)
+              );
+            }
+          }
+        }
       }
     },
     // Huorn-dark (Initiative 3)
@@ -480,7 +522,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        const r = await this.activateCombatCard(card.id, this.freePeoples);
+        const r = await this.activateCombatCard(null as any, card.id, this.freePeoples);
         // eslint-disable-next-line require-atomic-updates
         if (r) {
           params.combatRound.endBattle = true;

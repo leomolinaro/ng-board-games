@@ -1,11 +1,12 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "@leobg/commons/utils";
-import { getCard } from "../card/wotr-card-models";
+import { getCard, WotrCardId } from "../card/wotr-card-models";
 import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
@@ -34,7 +35,7 @@ import {
 import { WotrBattleHandler } from "./wotr-battle-handler";
 import { WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatCards } from "./wotr-combat-cards";
+import { WotrCombatCardAbility, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable({ providedIn: "root" })
@@ -230,5 +231,23 @@ export class WotrBattleUi {
       cards: playableCards
     });
     return [combatCardById(cardId)];
+  }
+
+  async activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory> {
+    const card = getCard(cardId);
+    const confirm = await this.ui.askConfirm(
+      `Do you want to activate ${card.combatLabel} ability?`,
+      "Activate",
+      "Skip"
+    );
+    if (confirm) {
+      return {
+        type: "reaction-combat-card",
+        card: cardId,
+        actions: await ability.play()
+      };
+    } else {
+      return { type: "reaction-combat-card-skip", card: cardId };
+    }
   }
 }

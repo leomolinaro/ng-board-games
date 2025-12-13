@@ -60,7 +60,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCombatCard(cardId: WotrCardId): Promise<WotrStory> {
+  activateCombatCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   activateCharacterAbility(ability: WotrAbility, characterId: WotrCharacterId): Promise<WotrStory> {
