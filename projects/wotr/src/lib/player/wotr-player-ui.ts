@@ -3,6 +3,7 @@ import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
+import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
@@ -22,7 +23,6 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
-import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrPlayerUi implements WotrPlayerStoryService {
@@ -81,6 +81,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
 
   async reRollHuntDice(nReRolls: number): Promise<WotrStory> {
     return { type: "base", actions: [await this.huntUi.reRollHuntDice(nReRolls)] };
+  }
+
+  async rollShelobsLairDie(): Promise<WotrStory> {
+    return { type: "base", actions: [await this.huntUi.rollShelobsLairDie()] };
   }
 
   async drawHuntTile(): Promise<WotrStory> {

@@ -23,6 +23,7 @@ import {
   drawHuntTile,
   reRollHuntDice,
   rollHuntDice,
+  rollShelobsLairDie,
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
@@ -100,6 +101,12 @@ export class WotrHuntUi {
       huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
     }
     return reRollHuntDice(...huntDice);
+  }
+
+  async rollShelobsLairDie(): Promise<WotrAction> {
+    await this.ui.askContinue("Roll die for Shelob's Lair");
+    const huntTileDie = randomUtil.getRandomInteger(1, 7) as WotrCombatDie;
+    return rollShelobsLairDie(huntTileDie);
   }
 
   async revealFellowship(): Promise<WotrAction[]> {

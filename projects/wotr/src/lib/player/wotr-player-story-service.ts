@@ -36,6 +36,7 @@ export interface WotrPlayerStoryService {
   chooseCombatCard(frontId: WotrFrontId, combatRound: WotrCombatRound): Promise<WotrStory>;
   rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
   reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
+  rollShelobsLairDie(): Promise<WotrStory>;
   chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,

@@ -5,6 +5,7 @@ import { cardToLabel } from "../card/wotr-card-models";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { WotrCharacterStore } from "../character/wotr-character-store";
+import { findAction } from "../commons/wotr-action-models";
 import {
   WotrCompanionRandom,
   WotrCompanionSeparation,
@@ -19,7 +20,12 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrHuntReRoll, WotrHuntRoll, WotrHuntTileDraw } from "./wotr-hunt-actions";
+import {
+  WotrHuntReRoll,
+  WotrHuntRoll,
+  WotrHuntShelobsLairRoll,
+  WotrHuntTileDraw
+} from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
@@ -101,7 +107,18 @@ export class WotrHuntFlow {
     if (options.ignoreEyeTile && huntTile.eye) return huntTile;
     if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special")
       return huntTile;
-    let damage = huntTile.eye ? options.nSuccesses! : huntTile.quantity!;
+    let damage = 0;
+    if (huntTile.eye) {
+      damage = options.nSuccesses!;
+    } else if (huntTile.dice) {
+      const story = await this.shadow.rollShelobsLairDie();
+      if (!("actions" in story)) throw new Error("Expected story with actions");
+      const roll = findAction<WotrHuntShelobsLairRoll>(story.actions, "hunt-shelobs-lair-roll");
+      if (!roll) throw new Error("Expected hunt shelob's lair roll action");
+      damage = roll.die;
+    } else {
+      damage = huntTile.quantity!;
+    }
 
     const wasRevealed = this.fellowshipStore.isRevealed();
 

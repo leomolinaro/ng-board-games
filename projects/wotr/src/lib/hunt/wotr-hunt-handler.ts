@@ -25,6 +25,9 @@ export class WotrHuntHandler {
       "hunt-re-roll": (action, front) => {
         /*empty*/
       },
+      "hunt-shelobs-lair-roll": (action, front) => {
+        /*empty*/
+      },
       "hunt-tile-draw": (action, front) => this.huntStore.drawHuntTile(action.tile),
       "hunt-tile-add": (action, front) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
@@ -50,6 +53,10 @@ export class WotrHuntHandler {
       "hunt-roll": (action, front, f) => [
         f.player(front),
         ` rolls ${this.dice(action.dice)} for the hunt`
+      ],
+      "hunt-shelobs-lair-roll": (action, front, f) => [
+        f.player(front),
+        ` rolls a ${action.die} for Shelob's Lair`
       ],
       "hunt-tile-add": (action, front, f) => [
         f.player(front),

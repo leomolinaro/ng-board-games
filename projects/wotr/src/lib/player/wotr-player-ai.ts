@@ -42,6 +42,9 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   reRollHuntDice(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  rollShelobsLairDie(): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
   drawHuntTile(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }

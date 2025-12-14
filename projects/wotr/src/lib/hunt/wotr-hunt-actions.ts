@@ -8,7 +8,8 @@ export type WotrHuntAction =
   | WotrHuntReRoll
   | WotrHuntTileDraw
   | WotrHuntTileAdd
-  | WotrHuntTileReturn;
+  | WotrHuntTileReturn
+  | WotrHuntShelobsLairRoll;
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
   quantity: number;
@@ -29,6 +30,14 @@ export interface WotrHuntReRoll {
 }
 export function reRollHuntDice(...dice: WotrCombatDie[]): WotrHuntReRoll {
   return { type: "hunt-re-roll", dice };
+}
+
+export interface WotrHuntShelobsLairRoll {
+  type: "hunt-shelobs-lair-roll";
+  die: WotrCombatDie;
+}
+export function rollShelobsLairDie(die: WotrCombatDie): WotrHuntShelobsLairRoll {
+  return { type: "hunt-shelobs-lair-roll", die };
 }
 
 export interface WotrHuntTileDraw {

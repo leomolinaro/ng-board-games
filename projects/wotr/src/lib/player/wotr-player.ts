@@ -84,6 +84,9 @@ export abstract class WotrPlayer {
   reRollCombatDice(nDice: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.reRollCombatDice(nDice, this.frontId));
   }
+  rollShelobsLairDie(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.rollShelobsLairDie());
+  }
   chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
