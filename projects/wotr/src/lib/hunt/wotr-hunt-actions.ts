@@ -1,3 +1,4 @@
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrHuntTileId } from "./wotr-hunt-models";
@@ -9,7 +10,9 @@ export type WotrHuntAction =
   | WotrHuntTileDraw
   | WotrHuntTileAdd
   | WotrHuntTileReturn
-  | WotrHuntShelobsLairRoll;
+  | WotrHuntShelobsLairRoll
+  | WotrHuntLidlessEyeDieChange;
+
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
   quantity: number;
@@ -17,6 +20,15 @@ export interface WotrHuntAllocation {
 export function allocateHuntDice(quantity: number): WotrHuntAllocation {
   return { type: "hunt-allocation", quantity };
 }
+
+export interface WotrHuntLidlessEyeDieChange {
+  type: "hunt-lidless-eye-die-change";
+  dice: WotrActionDie[];
+}
+export function lidlessEye(...dice: WotrActionDie[]): WotrHuntLidlessEyeDieChange {
+  return { type: "hunt-lidless-eye-die-change", dice };
+}
+
 export interface WotrHuntRoll {
   type: "hunt-roll";
   dice: WotrCombatDie[];

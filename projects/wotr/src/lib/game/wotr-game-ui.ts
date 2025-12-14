@@ -232,6 +232,34 @@ export class WotrGameUi extends signalStore(
     return actionDieOrTokenOrElvenRing;
   }
 
+  async askActionDieOrStop(
+    message: string,
+    stopMessage: string,
+    frontId: WotrFrontId
+  ): Promise<WotrActionDie | "stop"> {
+    this.updateUi(s => ({
+      ...s,
+      message,
+      actionDieSelection: { frontId, tokens: [] },
+      options: [{ value: "stop", label: stopMessage }]
+    }));
+    const actionDieOrStop = await Promise.race([this.actionChoice.get(), this.option.get()]);
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      actionDieSelection: null,
+      options: null
+    }));
+    if ("type" in actionDieOrStop && actionDieOrStop.type === "die") {
+      return actionDieOrStop.die;
+    } else if ("value" in actionDieOrStop && actionDieOrStop.value === "stop") {
+      return "stop";
+    } else {
+      throw new Error("Invalid action die or stop selection");
+    }
+  }
+
   option = uiEvent<WotrUiOption>();
   async askOption<O>(message: string, options: WotrUiOption<O>[]): Promise<O> {
     this.updateUi(s => ({ ...s, message, options: options }));

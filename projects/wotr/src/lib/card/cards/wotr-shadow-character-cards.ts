@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
@@ -9,8 +10,9 @@ import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler"
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
-import { addHuntTile, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
+import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
+import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
 import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
@@ -41,6 +43,7 @@ export class WotrShadowCharacterCards {
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private unitUi = inject(WotrUnitUi);
   private unitRules = inject(WotrUnitRules);
+  private huntHandler = inject(WotrHuntHandler);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -296,13 +299,27 @@ export class WotrShadowCharacterCards {
             return abilities;
           }
         };
-      // TODO The Lidless Eye
+      // The Lidless Eye
       // Change up to three unused Shadow Action dice results into "Eye" results.
       // Place these dice in the Hunt Box immediately.
       case "scha18":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const changedDice: WotrActionDie[] = [];
+            let count = 0;
+            while (this.q.shadow.actionDice().length > 0 && count < 3) {
+              const die = await this.ui.askActionDieOrStop(
+                "Choose an Action die to change into an Eye",
+                "Continue",
+                "shadow"
+              );
+              if (die === "stop") break;
+              changedDice.push(die);
+              this.huntHandler.lidlessEyeChange([die]);
+              count++;
+            }
+            return [lidlessEye(...changedDice)];
+          }
         };
       // TODO Dreadful Spells
       // Play if a Shadow Army contianing Nazgûl is adjacent to, or is in the same region as, a Free Peoples Army.

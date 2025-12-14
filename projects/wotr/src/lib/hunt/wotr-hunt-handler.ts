@@ -1,7 +1,9 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
@@ -10,6 +12,7 @@ export class WotrHuntHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);
+  private frontStore = inject(WotrFrontStore);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -19,6 +22,7 @@ export class WotrHuntHandler {
   getActionAppliers(): WotrActionApplierMap<WotrHuntAction> {
     return {
       "hunt-allocation": (action, front) => this.huntStore.addHuntDice(action.quantity),
+      "hunt-lidless-eye-die-change": (action, front) => this.lidlessEyeChange(action.dice),
       "hunt-roll": (action, front) => {
         /*empty*/
       },
@@ -46,6 +50,13 @@ export class WotrHuntHandler {
         f.player(front),
         ` allocates ${this.nDice(action.quantity)} in the Hunt Box`
       ],
+      "hunt-lidless-eye-die-change": (action, front, f) => {
+        const multiple = action.dice.length > 1;
+        return [
+          f.player(front),
+          ` changes ${action.dice.length} action ${multiple ? "die" : "dice"} into Eye${multiple ? "s" : ""} for the hunt`
+        ];
+      },
       "hunt-re-roll": (action, front, f) => [
         f.player(front),
         ` re-rolls ${this.dice(action.dice)} for the hunt`
@@ -85,5 +96,12 @@ export class WotrHuntHandler {
 
   private dice(dice: number[]) {
     return dice.join(", ");
+  }
+
+  lidlessEyeChange(dice: WotrActionDie[]) {
+    for (const die of dice) {
+      this.frontStore.removeActionDie(die, "shadow");
+    }
+    this.huntStore.addHuntDice(dice.length);
   }
 }
