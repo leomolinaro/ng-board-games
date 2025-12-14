@@ -3,7 +3,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrUnitComposer, WotrUnits } from "./wotr-unit-models";
 
 export type WotrUnitAction =
-  | WotrArmyMovements
+  | WotrArmyMovement
   | WotrNazgulMovement
   | WotrRegularUnitRecruitment
   | WotrRegularUnitElimination
@@ -18,25 +18,19 @@ export type WotrUnitAction =
   | WotrNazgulRecruitment
   | WotrNazgulElimination;
 
-export interface WotrArmyMovements {
-  type: "army-movements";
-  movements: WotrArmyMovement[];
-}
 export interface WotrArmyMovement {
+  type: "army-movement";
   fromRegion: WotrRegionId;
   toRegion: WotrRegionId;
   leftUnits?: WotrUnits;
 }
-export function moveArmies(...movements: WotrArmyMovement[]): WotrArmyMovements {
-  return { type: "army-movements", movements };
-}
-export function armyMovement(
+export function moveArmy(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
   // eslint-disable-next-line @typescript-eslint/no-shadow
   leftUnits?: WotrUnits
 ): WotrArmyMovement {
-  const movement: WotrArmyMovement = { fromRegion, toRegion };
+  const movement: WotrArmyMovement = { type: "army-movement", fromRegion, toRegion };
   if (leftUnits) {
     movement.leftUnits = leftUnits;
   }

@@ -44,11 +44,7 @@ export class WotrUnitHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrUnitAction> {
     return {
-      "army-movements": (action, front) => {
-        for (const movement of action.movements) {
-          this.moveArmy(movement, front);
-        }
-      },
+      "army-movement": (action, front) => this.moveArmy(action, front),
       "nazgul-movement": (action, front) => this.moveNazgul(action),
       "regular-unit-recruitment": (action, front) =>
         this.recruitRegularUnit(action.quantity, action.nation, action.region),
@@ -239,25 +235,14 @@ export class WotrUnitHandler {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrUnitAction> {
     return {
-      "army-movements": (action, front, f) => {
-        const firstMovement = action.movements[0];
+      "army-movement": (action, front, f) => {
         const logs = [
           f.player(front),
           " moves one army from ",
-          f.region(firstMovement.fromRegion),
+          f.region(action.fromRegion),
           " to ",
-          f.region(firstMovement.toRegion)
+          f.region(action.toRegion)
         ];
-        for (let i = 1; i < action.movements.length; i++) {
-          logs.splice(
-            logs.length,
-            0,
-            " and one army from ",
-            f.region(action.movements[i].fromRegion),
-            " to ",
-            f.region(action.movements[i].toRegion)
-          );
-        }
         return logs;
       },
       "regular-unit-elimination": (action, front, f) => [

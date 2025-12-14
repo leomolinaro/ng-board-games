@@ -12,14 +12,13 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
-  armyMovement,
   disbandEliteUnit,
   disbandRegularUnit,
   eliminateEliteUnit,
   eliminateLeader,
   eliminateNazgul,
   eliminateRegularUnit,
-  moveArmies,
+  moveArmy,
   recruitEliteUnit,
   recruitLeader,
   recruitNazgul,
@@ -156,7 +155,7 @@ export class WotrUnitUi {
       this.unitRules.armyMovementTargetRegions(movingArmy, frontId)
     );
     const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingArmy);
-    const movement = armyMovement(movingArmy.regionId, toRegionId, leftUnits);
+    const movement = moveArmy(movingArmy.regionId, toRegionId, leftUnits);
     this.unitHandler.moveArmy(movement, frontId);
     await this.checkStackingLimit(toRegionId, frontId);
     return movement;
@@ -499,10 +498,7 @@ export class WotrUnitUi {
   moveArmiesChoice: WotrUiChoice = {
     label: () => "Move armies",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmies(frontId),
-    actions: async (frontId: WotrFrontId) => {
-      const movements = await this.moveArmies(2, frontId);
-      return [moveArmies(...movements)];
-    }
+    actions: async (frontId: WotrFrontId) => this.moveArmies(2, frontId)
   };
 
   recruitReinforcementsChoice: WotrUiChoice = {
@@ -514,10 +510,7 @@ export class WotrUnitUi {
   leaderArmyMoveChoice: WotrUiChoice = {
     label: () => "Move army with leader",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmiesWithLeader(frontId),
-    actions: async (frontId: WotrFrontId) => {
-      const movement = await this.moveArmyWithLeader(frontId);
-      return [moveArmies(movement)];
-    }
+    actions: async (frontId: WotrFrontId) => [await this.moveArmyWithLeader(frontId)]
   };
 
   leaderArmyAttackChoice: WotrUiChoice = {
@@ -647,7 +640,6 @@ export class WotrUnitUi {
     if (!fromRegions.length) return actions;
     const move = await this.ui.askConfirm("Want to move armies?", "Move", "Skip");
     if (!move) return actions;
-    const movements: WotrArmyMovement[] = [];
     let continueMoving = true;
     let movableUnits = 4;
     while (continueMoving) {
@@ -657,18 +649,14 @@ export class WotrUnitUi {
         maxNArmyUnits: movableUnits
       });
       const regionArmy = this.q.region(movingArmy.regionId).army("shadow")!;
-      const movement: WotrArmyMovement = {
-        fromRegion: movingArmy.regionId,
-        toRegion: toRegion
-      };
       const leftUnits = this.unitUtils.splitUnits(regionArmy, movingArmy);
-      if (leftUnits) movement.leftUnits = leftUnits;
-      movements.push(movement);
-      this.unitHandler.moveArmy(movement, "shadow");
+      const action = moveArmy(movingArmy.regionId, toRegion, leftUnits);
+      actions.push(action);
+      this.unitHandler.moveArmy(action, "shadow");
       await this.checkStackingLimit(toRegion, "shadow");
-      fromRegions = fromRegions.filter(r => r !== movement.fromRegion);
+      fromRegions = fromRegions.filter(r => r !== action.fromRegion);
       movableUnits -= this.unitUtils.nArmyUnits(regionArmy);
-      if (movement.leftUnits) movableUnits += this.unitUtils.nArmyUnits(movement.leftUnits);
+      if (action.leftUnits) movableUnits += this.unitUtils.nArmyUnits(action.leftUnits);
       if (fromRegions.length && movableUnits > 0) {
         continueMoving = await this.ui.askConfirm(
           "Continue moving armies?",
@@ -679,7 +667,6 @@ export class WotrUnitUi {
         continueMoving = false;
       }
     }
-    actions.push(moveArmies(...movements));
     return actions;
   }
 }

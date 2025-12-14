@@ -38,13 +38,12 @@ import { addHuntTile, drawHuntTile } from "../hunt/wotr-hunt-actions";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { targetRegion } from "../region/wotr-region-actions";
 import {
-  armyMovement,
   downgradeEliteUnit,
   eliminateEliteUnit,
   eliminateLeader,
   eliminateRegularUnit,
   leftUnits,
-  moveArmies,
+  moveArmy,
   moveNazgul,
   recruitEliteUnit,
   recruitRegularUnit,
@@ -64,7 +63,7 @@ export const stories: WotrStoryDoc[] = [
   b.fpT().rollActionDice("character", "character", "muster-army", "muster"),
   b.s().rollActionDice("army", "character", "army", "character", "event", "eye"),
   b.fp().pass(),
-  b.s().characterDie(moveArmies(armyMovement("barad-dur", "gorgoroth"))),
+  b.s().characterDie(moveArmy("barad-dur", "gorgoroth")),
   b.fp().characterDie(moveFelloswhip()),
   b.s().rollHuntDice(1, 6),
   b.s().drawHuntTile("3"),
@@ -74,33 +73,16 @@ export const stories: WotrStoryDoc[] = [
   b.s().rollHuntDice(5, 2),
   b.s().drawHuntTile("1"),
   b.fp().huntEffect(corruptFellowship(1)),
-  b
-    .s()
-    .characterDie(
-      moveArmies(armyMovement("gorgoroth", "morannon", leftUnits(regular("sauron", 3))))
-    ),
-  b
-    .fp()
-    .musterArmyDie(
-      moveArmies(armyMovement("carrock", "old-forest-road"), armyMovement("edoras", "westemnet"))
-    ),
+  b.s().characterDie(moveArmy("gorgoroth", "morannon", leftUnits(regular("sauron", 3)))),
+  b.fp().musterArmyDie(moveArmy("carrock", "old-forest-road"), moveArmy("edoras", "westemnet")),
   b
     .s()
     .armyDie(
-      moveArmies(
-        armyMovement("dol-guldur", "north-anduin-vale", leftUnits(regular("sauron", 1))),
-        armyMovement("morannon", "dagorlad")
-      )
+      moveArmy("dol-guldur", "north-anduin-vale", leftUnits(regular("sauron", 1))),
+      moveArmy("morannon", "dagorlad")
     ),
   b.fp().musterDie(advanceNation("elves", 1)),
-  b
-    .s()
-    .armyDie(
-      moveArmies(
-        armyMovement("north-anduin-vale", "dimrill-dale"),
-        armyMovement("dagorlad", "noman-lands")
-      )
-    ),
+  b.s().armyDie(moveArmy("north-anduin-vale", "dimrill-dale"), moveArmy("dagorlad", "noman-lands")),
   b.fp().actionToken("political-advance", advanceNation("elves", 1)),
   b.fp().skipTokens(),
   // Turn 2
@@ -126,7 +108,8 @@ export const stories: WotrStoryDoc[] = [
     .eventDieCard(
       "Rage of the Dunledings",
       recruitRegularUnit("moria", "isengard", 2),
-      moveArmies(armyMovement("south-dunland", "moria"), armyMovement("north-dunland", "moria"))
+      moveArmy("south-dunland", "moria"),
+      moveArmy("north-dunland", "moria")
     ),
   b.fp().willOfTheWestDie(moveFelloswhip()),
   b.s().rollHuntDice(2, 6),
@@ -137,10 +120,8 @@ export const stories: WotrStoryDoc[] = [
   b
     .s()
     .armyDie(
-      moveArmies(
-        armyMovement("moria", "dimrill-dale", leftUnits(regular("sauron", 1))),
-        armyMovement("noman-lands", "southern-rhovanion")
-      )
+      moveArmy("moria", "dimrill-dale", leftUnits(regular("sauron", 1))),
+      moveArmy("noman-lands", "southern-rhovanion")
     ),
   b.fp().skipTokens(),
   // Turn 3
@@ -157,10 +138,8 @@ export const stories: WotrStoryDoc[] = [
   b
     .s()
     .armyDie(
-      moveArmies(
-        armyMovement("southern-rhovanion", "northern-rhovanion"),
-        armyMovement("far-harad", "near-harad")
-      )
+      moveArmy("southern-rhovanion", "northern-rhovanion"),
+      moveArmy("far-harad", "near-harad")
     ),
   b
     .fp()
@@ -216,14 +195,12 @@ export const stories: WotrStoryDoc[] = [
   b
     .s()
     .armyDie(
-      moveArmies(
-        armyMovement(
-          "old-forest-road",
-          "carrock",
-          leftUnits(regular("sauron", 7), elite("sauron", 1), elite("isengard", 1), nazgul(2))
-        ),
-        armyMovement("near-harad", "umbar", leftUnits(regular("southrons", 1)))
-      )
+      moveArmy(
+        "old-forest-road",
+        "carrock",
+        leftUnits(regular("sauron", 7), elite("sauron", 1), elite("isengard", 1), nazgul(2))
+      ),
+      moveArmy("near-harad", "umbar", leftUnits(regular("southrons", 1)))
     ),
   b.fp().musterDie(recruitEliteUnit("dale", "north")),
   b.s().eventDieCard("The Day Without Dawn", discardDice("free-peoples", "will-of-the-west")),
@@ -235,7 +212,7 @@ export const stories: WotrStoryDoc[] = [
   b.s().musterArmyDie(attack("old-forest-road", "dale")),
   b.s().battleStory(noCombatCard()),
   b.fp().battleStory(combatCard("The Red Arrow")),
-  b.fp().combatCardReaction("The Red Arrow", moveArmies(armyMovement("dale", "erebor"))),
+  b.fp().combatCardReaction("The Red Arrow", moveArmy("dale", "erebor")),
   b.s().battleStory(advanceArmy()),
   b.fp().pass(),
   b.s().musterArmyDieCard("Corsairs of Umbar", attack("umbar", "dol-amroth")),
@@ -306,18 +283,14 @@ export const stories: WotrStoryDoc[] = [
     .fp()
     .armyElvenRingDie(
       ["narya", "muster", "army"],
-      moveArmies(
-        armyMovement("fords-of-isen", "helms-deep"),
-        armyMovement("westemnet", "helms-deep")
-      )
+      moveArmy("fords-of-isen", "helms-deep"),
+      moveArmy("westemnet", "helms-deep")
     ),
   b
     .s()
     .armyDie(
-      moveArmies(
-        armyMovement("orthanc", "fords-of-isen", leftUnits(character("saruman"))),
-        armyMovement("south-rhun", "east-rhun")
-      )
+      moveArmy("orthanc", "fords-of-isen", leftUnits(character("saruman"))),
+      moveArmy("south-rhun", "east-rhun")
     ),
   b.fp().characterDie(moveFelloswhip()),
   b.s().rollHuntDice(2, 2),
@@ -479,11 +452,7 @@ export const stories: WotrStoryDoc[] = [
   b.fp().characterReaction("gollum", corruptFellowship(1), revealFellowship("morannon")),
   b.s().drawHuntTile("er"),
   b.fp().huntEffect(corruptFellowship(1)),
-  b
-    .s()
-    .armyDie(
-      moveArmies(armyMovement("dol-amroth", "lamedon"), armyMovement("north-rhun", "east-rhun"))
-    ),
+  b.s().armyDie(moveArmy("dol-amroth", "lamedon"), moveArmy("north-rhun", "east-rhun")),
   b.fp().pass(),
   b.s().musterArmyDie(attack("east-rhun", "iron-hills")),
   b.s().battleStory(noCombatCard()),
@@ -594,10 +563,8 @@ export const stories: WotrStoryDoc[] = [
     .s()
     .musterAbilityDie(
       "the-mouth-of-sauron",
-      moveArmies(
-        armyMovement("dale", "erebor", leftUnits(regular("sauron", 7))),
-        armyMovement("minas-morgul", "south-ithilien")
-      )
+      moveArmy("dale", "erebor", leftUnits(regular("sauron", 7))),
+      moveArmy("minas-morgul", "south-ithilien")
     ),
   b.fp().characterElvenRingDie(["nenya", "muster", "character"], moveFelloswhip()),
   b.s().drawHuntTile("b0"),

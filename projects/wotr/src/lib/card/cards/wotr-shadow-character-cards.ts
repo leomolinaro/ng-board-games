@@ -19,7 +19,6 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegionChoose } from "../../region/wotr-region-actions";
-import { moveArmies } from "../../unit/wotr-unit-actions";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import {
@@ -412,7 +411,7 @@ export class WotrShadowCharacterCards {
               { value: "attack", label: "Attack with the Witch-king", disabled: !canAttack }
             ]);
             if (choice2 === "move") {
-              actions.push(moveArmies(await this.unitUi.moveArmyWithCharacter("the-witch-king")));
+              actions.push(await this.unitUi.moveArmyWithCharacter("the-witch-king"));
             } else if (choice2 === "attack") {
               actions.push(...(await this.unitUi.attackWithCharacter("the-witch-king")));
             }
