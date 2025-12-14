@@ -5,7 +5,7 @@ import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
-import { pushFellowship } from "../../fellowship/wotr-fellowship-actions";
+import { corruptFellowship, pushFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
@@ -224,13 +224,16 @@ export class WotrShadowCharacterCards {
             }
           }
         };
-      // TODO Morgul Wound
+      // Morgul Wound
       // Play if the Fellowship is revealed.
       // If the Fellowship's current Corruption is three or less, add two Corruption points, otherwise add one Corruption point.
       case "scha12":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.fellowship.isRevealed(),
+          play: async () => {
+            const nCorruption = this.q.fellowship.corruption() <= 3 ? 2 : 1;
+            return [corruptFellowship(nCorruption)];
+          }
         };
       // TODO Lure of the Ring
       // Play if the Fellowship is revealed.

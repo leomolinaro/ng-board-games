@@ -60,4 +60,8 @@ export class WotrFellowshipQuery {
   isHidden(): boolean {
     return this.fellowshipStore.isHidden();
   }
+
+  isRevealed(): boolean {
+    return this.fellowshipStore.isRevealed();
+  }
 }
