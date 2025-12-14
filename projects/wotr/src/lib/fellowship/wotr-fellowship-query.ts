@@ -36,6 +36,7 @@ export class WotrFellowshipQuery {
   }
 
   isInFreePeoplesSettlement() {
+    if (this.fellowshipStore.isOnMordorTrack()) return false;
     const region = this.regionStore.region(this.regionId());
     if (!region.settlement) return false;
     const nation = this.nationStore.nation(region.nationId!);
