@@ -47,7 +47,7 @@ export class WotrFellowshipHandler {
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
       "fellowship-declare": (story, front) => this.declare(story.region),
-      "fellowship-corruption": (action, front) => this.fellowshipStore.corrupt(action.quantity),
+      "fellowship-corruption": (action, front) => this.corrupt(action.quantity),
       "fellowship-push": (action, front) => this.pushFellowship(action.region),
       "fellowship-guide": (action, front) => this.changeGuide(action.companion),
       "fellowship-hide": (action, front) => this.hide(),
