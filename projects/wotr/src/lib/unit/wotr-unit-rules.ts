@@ -294,4 +294,12 @@ export class WotrUnitRules {
       return true;
     });
   }
+
+  retreatableRegions(fromRegion: WotrRegion, frontId: WotrFrontId): WotrRegionId[] {
+    return fromRegion.neighbors
+      .filter(neighbor => {
+        return this.regionStore.isFreeForArmyRetreat(neighbor, frontId);
+      })
+      .map(neighbor => neighbor.id);
+  }
 }

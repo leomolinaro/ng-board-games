@@ -7,7 +7,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrStory } from "../game/wotr-story-models";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   downgradeEliteUnit,
@@ -37,6 +37,7 @@ import { WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardAbility, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
+import { WotrUnitRules } from "../unit/wotr-unit-rules";
 
 @Injectable({ providedIn: "root" })
 export class WotrBattleUi {
@@ -47,6 +48,7 @@ export class WotrBattleUi {
   private q = inject(WotrGameQuery);
   private combatCards = inject(WotrCombatCards);
   private battleHandler = inject(WotrBattleHandler);
+  private unitRules = inject(WotrUnitRules);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -187,7 +189,7 @@ export class WotrBattleUi {
       "Not retreat"
     );
     if (confirm) {
-      const retreatableRegions = this.retreatableRegions(region, battle.defender.frontId);
+      const retreatableRegions = this.unitRules.retreatableRegions(region, battle.defender.frontId);
       const toRegionId = await this.ui.askRegion(
         "Choose a region to retreat to",
         retreatableRegions
@@ -196,14 +198,6 @@ export class WotrBattleUi {
     } else {
       return notRetreat();
     }
-  }
-
-  private retreatableRegions(fromRegion: WotrRegion, frontId: WotrFrontId): WotrRegionId[] {
-    return fromRegion.neighbors
-      .filter(neighbor => {
-        return this.regionStore.isFreeForArmyRetreat(neighbor, frontId);
-      })
-      .map(neighbor => neighbor.id);
   }
 
   async chooseCombatCard(

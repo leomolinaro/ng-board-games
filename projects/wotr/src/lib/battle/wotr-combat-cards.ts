@@ -18,8 +18,9 @@ import {
   WotrRegionUnitMatch
 } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrLeaderForfeit } from "./wotr-battle-actions";
+import { retreat, WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
+import { WotrUnitRules } from "../unit/wotr-unit-rules";
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
@@ -48,6 +49,7 @@ export class WotrCombatCards {
   private unitUtils = inject(WotrUnitUtils);
   private ui = inject(WotrGameUi);
   private q = inject(WotrGameQuery);
+  private unitRules = inject(WotrUnitRules);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -518,15 +520,29 @@ export class WotrCombatCards {
     // Before the Combat roll, retreat your Army to an adjacent free region or withdraw into a siege.
     "Scouts": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        if (params.combatRound.siege) return false;
+        if (params.freePeoples.isAttacker) return false;
+        return true;
       },
       effect: async (card, params) => {
-        const r = await this.activateCombatCard(null as any, card.id, this.freePeoples);
-        // eslint-disable-next-line require-atomic-updates
-        if (r) {
-          params.combatRound.endBattle = true;
-        }
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const region = this.q.region(params.regionId);
+            const retreatableRegions = this.unitRules.retreatableRegions(
+              region.region(),
+              "free-peoples"
+            );
+            if (!retreatableRegions.length) return [];
+            const retreatRegionId = await this.ui.askRegion(
+              "Choose a region to retreat your Army to",
+              retreatableRegions
+            );
+            return [retreat(retreatRegionId)];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.freePeoples);
+        if (!actions) return;
+        params.combatRound.endBattle = true;
       }
     },
     // Servant of the Secret Fire (Initiative 3)

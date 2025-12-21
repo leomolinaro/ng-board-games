@@ -193,7 +193,7 @@ export class WotrBattleHandler {
       },
       "combat-card-choose": (action, front, f) => [
         f.player(front),
-        ` choose a ${isCharacterCard(action.card) ? "character" : "strategy"} combat card`
+        ` chooses a ${isCharacterCard(action.card) ? "character" : "strategy"} combat card`
       ],
       "combat-card-choose-not": (action, front, f) => [
         f.player(front),
