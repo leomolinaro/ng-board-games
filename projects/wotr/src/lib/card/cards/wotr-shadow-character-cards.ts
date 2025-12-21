@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
@@ -7,12 +7,17 @@ import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import { corruptFellowship, pushFellowship } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
+import {
+  WotrAfterFellowshipDeclaration,
+  WotrFellowshipModifiers
+} from "../../fellowship/wotr-fellowship-modifiers";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
 import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
 import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
+import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
@@ -26,8 +31,9 @@ import {
   playCardOnTable,
   WotrCardDiscardFromTable
 } from "../wotr-card-actions";
+import { WotrCardHandler } from "../wotr-card-handler";
 import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
-import { WotrEventCard } from "./wotr-cards";
+import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowCharacterCards {
@@ -37,12 +43,15 @@ export class WotrShadowCharacterCards {
   private huntFlow = inject(WotrHuntFlow);
   private characterUi = inject(WotrCharacterUi);
   private huntStore = inject(WotrHuntStore);
+  private cardHandler = inject(WotrCardHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private unitUi = inject(WotrUnitUi);
   private unitRules = inject(WotrUnitRules);
   private huntHandler = inject(WotrHuntHandler);
+  private huntModifiers = inject(WotrHuntModifiers);
+  private fellowshipModifiers = inject(WotrFellowshipModifiers);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -277,14 +286,36 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Flocks of Crebain
+      // Flocks of Crebain
       // Play on the table.
       // Before you make a Hunt roll, you may discard "Flocks of Crebain" to add 1 to all dice on that Hunt roll (including re-rolls).
       // You must discard this card from the table immediately if the Fellowship is declared in an unconquered Free Peoples City or Stronghold.
       case "scha16":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [playCardOnTable("Flocks of Crebain")],
+          onTableAbilities: () => {
+            const huntAbility: WotrUiAbility<WotrBeforeHuntRoll> = {
+              modifier: this.huntModifiers.beforeHuntRoll,
+              handler: async modifiers => {
+                const actions = await activateTableCard(huntAbility, "scha16", this.shadow);
+                if (!actions) return;
+                modifiers.rollModifiers.push(1);
+                modifiers.reRollModifiers.push(1);
+              },
+              play: async () => [discardCardFromTableById("scha16")]
+            };
+            const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> = {
+              modifier: this.fellowshipModifiers.afterDeclaration,
+              handler: async regionId => {
+                const region = this.q.region(regionId);
+                if (!region.isFreePeoplesRegion()) return;
+                if (!region.isCity() && !region.isStronghold()) return;
+                if (!region.isUnconquered()) return;
+                this.cardHandler.discardCardFromTableEffect("scha16");
+              }
+            };
+            return [huntAbility, discardAbility];
+          }
         };
       // TODO Balrog of Moria
       // Play on the table.

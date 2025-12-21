@@ -13,11 +13,14 @@ import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
+import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { WotrCharacters } from "../character/wotr-characters";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
+import { WotrFellowshipModifiers } from "../fellowship/wotr-fellowship-modifiers";
 import { WotrGameTurn } from "../game-turn/wotr-game-flow";
 import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
+import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info-models";
 import { WotrPlayerUi } from "../player/wotr-player-ui";
@@ -58,8 +61,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private localPlayerService = inject(WotrPlayerUi);
   private actionRegistry = inject(WotrActionRegistry);
   private actionDieModifiers = inject(WotrActionDieModifiers);
-  private unitModifiers = inject(WotrUnitModifiers);
   private battleModifiers = inject(WotrBattleModifiers);
+  private characterModifiers = inject(WotrCharacterModifiers);
+  private fellowshipModifiers = inject(WotrFellowshipModifiers);
+  private huntModifiers = inject(WotrHuntModifiers);
+  private unitModifiers = inject(WotrUnitModifiers);
   private characterHandler = inject(WotrCharacterHandler);
   private characters = inject(WotrCharacters);
   private cardHandler = inject(WotrCardHandler);
@@ -139,12 +145,15 @@ export class WotrGamePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.actionDieModifiers.clear();
+    this.actionRegistry.clear();
+    this.battleModifiers.clear();
+    this.characterModifiers.clear();
+    this.fellowshipModifiers.clear();
+    this.huntModifiers.clear();
     this.store.clear();
     this.story.clear();
-    this.actionRegistry.clear();
-    this.actionDieModifiers.clear();
     this.unitModifiers.clear();
-    this.battleModifiers.clear();
   }
 
   private storiesDialogRef: WotrStoriesDialogRef | null = null;

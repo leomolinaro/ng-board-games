@@ -18,6 +18,7 @@ import {
   WotrFellowshipCorruption
 } from "./wotr-fellowship-actions";
 import { WotrRingDestroyed } from "./wotr-fellowship-models";
+import { WotrFellowshipModifiers } from "./wotr-fellowship-modifiers";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
 @Injectable({ providedIn: "root" })
@@ -32,6 +33,7 @@ export class WotrFellowshipHandler {
   private characterHandler = inject(WotrCharacterHandler);
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
+  private fellowshipModifiers = inject(WotrFellowshipModifiers);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -82,13 +84,14 @@ export class WotrFellowshipHandler {
     this.fellowshipStore.reveal();
   }
 
-  declare(regionId: WotrRegionId): void {
+  async declare(regionId: WotrRegionId): Promise<void> {
     this.regionStore.moveFellowshipToRegion(regionId);
     this.fellowshipStore.setProgress(0);
     this.nationHandler.checkNationActivationByFellowshipDeclaration(regionId);
     if (this.q.fellowship.corruption() > 0 && this.q.fellowship.isInFreePeoplesSettlement()) {
       this.healEffect(1);
     }
+    await this.fellowshipModifiers.onAfterFellowshipDeclaration(regionId);
   }
 
   changeGuide(companionId: WotrCompanionId): void {

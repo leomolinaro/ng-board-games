@@ -27,7 +27,7 @@ import {
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
-import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
+import { WotrHuntModifiers, WotrHuntRollModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
 interface WotrHuntTileResolutionOptions {
@@ -70,12 +70,14 @@ export class WotrHuntFlow {
   private async resolveStandardHunt() {
     if (!this.huntStore.hasHuntDice()) return;
     this.logger.logHuntResolution();
+    const modifiers = new WotrHuntRollModifiers();
+    await this.huntModifiers.onBeforeHuntRoll(modifiers);
     const huntRoll = await this.rollHuntDice(this.shadow);
-    let nSuccesses = this.getNSuccesses(huntRoll);
+    let nSuccesses = this.getNSuccesses(huntRoll, modifiers.rollModifiers);
     const nReRolls = this.getNReRolls(huntRoll, nSuccesses);
     if (nReRolls) {
       const huntReRoll = await this.reRollHuntDice(nReRolls);
-      const nReRollSuccesses = this.getNSuccesses(huntReRoll);
+      const nReRollSuccesses = this.getNSuccesses(huntReRoll, modifiers.reRollModifiers);
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) return;
@@ -181,13 +183,12 @@ export class WotrHuntFlow {
     return passThoughShadowStronghold;
   }
 
-  private getNSuccesses(huntRoll: WotrCombatDie[]) {
+  private getNSuccesses(huntRoll: WotrCombatDie[], modifiers: number[]) {
     const hunt = this.huntStore.state();
-    const threshold = Math.max(6 - hunt.nFreePeopleDice, 1);
+    const rollModifiers = modifiers.reduce((a, b) => a + b, 0);
+    const threshold = Math.max(6 - hunt.nFreePeopleDice - rollModifiers, 1);
     const nSuccesses = huntRoll.reduce((counter, die) => {
-      if (die >= threshold) {
-        counter++;
-      }
+      if (die >= threshold) counter++;
       return counter;
     }, 0);
     return nSuccesses;
@@ -195,9 +196,7 @@ export class WotrHuntFlow {
 
   private getNReRolls(huntRoll: WotrCombatDie[], nRollSuccesses: number): number {
     const nFailures = huntRoll.length - nRollSuccesses;
-    if (!nFailures) {
-      return 0;
-    }
+    if (!nFailures) return 0;
     const regionId = this.regionStore.fellowshipRegion();
     const region = this.regionStore.region(regionId);
     let nReRolls = 0;

@@ -200,7 +200,7 @@ export class WotrHuntUi {
         }
         if (discardTableCard) {
           damage -= 1; // assume table card absorb 1 damage point
-          this.cardHandler.discardCardFromTable(discardTableCard.card, "free-peoples");
+          this.cardHandler.discardCardFromTable(discardTableCard.card);
         }
       }
     }

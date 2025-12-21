@@ -25,6 +25,16 @@ export class WotrRegionQuery {
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);
   }
 
+  isStronghold() {
+    return this.region().settlement === "stronghold";
+  }
+  isCity() {
+    return this.region().settlement === "city";
+  }
+  isFreePeoplesRegion() {
+    return this.region().frontId === "free-peoples";
+  }
+
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitment(this.regionId, frontId);
   }
