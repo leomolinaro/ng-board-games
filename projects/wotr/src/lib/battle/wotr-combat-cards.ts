@@ -568,12 +568,12 @@ export class WotrCombatCards {
     // Cancel the effects of the Combat card played by the Free Peoples player.
     // If the Free Peoples player did not play a card, add 1 to all dice on your Leader re-roll.
     "Swarm of Bats": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        if (params.freePeoples.combatCard) {
+          params.freePeoples.combatCard = undefined;
+        } else {
+          params.shadow.leaderModifiers.push(1);
+        }
       }
     },
     // They are Terrible (Initiative 4)
