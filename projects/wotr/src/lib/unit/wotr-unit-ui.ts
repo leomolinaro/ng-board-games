@@ -238,7 +238,7 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async recrtuiUnits(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async recruitUnits(frontId: WotrFrontId): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     let points = 0;
     const exludedRegions = new Set<WotrRegionId>();
@@ -504,7 +504,7 @@ export class WotrUnitUi {
   recruitReinforcementsChoice: WotrUiChoice = {
     label: () => "Recruit reinforcements",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontRecruitReinforcements(frontId),
-    actions: async (frontId: WotrFrontId) => this.recrtuiUnits(frontId)
+    actions: async (frontId: WotrFrontId) => this.recruitUnits(frontId)
   };
 
   leaderArmyMoveChoice: WotrUiChoice = {

@@ -563,7 +563,10 @@ export class WotrRegionStore {
   }
   isRecruitmentRegion(region: WotrRegion, nation: WotrNation): boolean {
     return (
-      region.nationId === nation.id && region.controlledBy === nation.front && !!region.settlement
+      region.nationId === nation.id &&
+      region.controlledBy === nation.front &&
+      !!region.settlement &&
+      this.isFreeForRecruitment(region.id, nation.front)
     );
   }
   recruitmentRegions(nation: WotrNation): WotrRegion[] {
