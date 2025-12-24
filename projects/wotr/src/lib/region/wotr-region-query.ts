@@ -12,6 +12,10 @@ export class WotrRegionQuery {
     private unitUtils: WotrUnitUtils
   ) {}
 
+  private query(regionId: WotrRegionId) {
+    return new WotrRegionQuery(regionId, this.regionStore, this.unitUtils);
+  }
+
   region() {
     return this.regionStore.region(this.regionId);
   }
@@ -25,12 +29,29 @@ export class WotrRegionQuery {
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);
   }
 
+  reachableRegions(
+    progress: number,
+    canEnter?: (region: WotrRegionQuery, distance: number) => boolean,
+    canLeave?: (region: WotrRegionQuery, distance: number) => boolean
+  ): WotrRegionQuery[] {
+    return this.regionStore
+      .reachableRegions(
+        this.regionId,
+        progress,
+        canEnter ? r => canEnter(this.query(r.id), progress) : undefined,
+        canLeave ? r => canLeave(this.query(r.id), progress) : undefined
+      )
+      .map(r => this.query(r));
+  }
+
   isStronghold() {
     return this.region().settlement === "stronghold";
   }
+
   isCity() {
     return this.region().settlement === "city";
   }
+
   isFreePeoplesRegion() {
     return this.region().frontId === "free-peoples";
   }
@@ -38,8 +59,13 @@ export class WotrRegionQuery {
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitment(this.regionId, frontId);
   }
+
   isFreeForRecruitmentByCard(frontId: WotrFrontId): boolean {
     return this.regionStore.isFreeForRecruitmentByCard(this.regionId, frontId);
+  }
+
+  isFreeForArmyMovement(frontId: WotrFrontId): boolean {
+    return this.regionStore.isFreeForArmyMovement(this.regionId, frontId);
   }
 
   hasArmy(frontId: WotrFrontId) {
@@ -52,6 +78,17 @@ export class WotrRegionQuery {
     const u = region.underSiegeArmy;
     if (a && a.front === frontId && !this.unitUtils.isEmptyArmy(a)) return a;
     if (u && u.front === frontId && !this.unitUtils.isEmptyArmy(u)) return u;
+    return null;
+  }
+
+  hasArmyNotUnderSiege(frontId: WotrFrontId) {
+    return this.armyNotUnderSiege(frontId) != null;
+  }
+
+  armyNotUnderSiege(frontId: WotrFrontId): WotrArmy | null {
+    const region = this.regionStore.region(this.regionId);
+    const a = region.army;
+    if (a && a.front === frontId && !this.unitUtils.isEmptyArmy(a)) return a;
     return null;
   }
 

@@ -10,8 +10,8 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
+import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -22,7 +22,7 @@ export class WotrShadowStrategyCards {
   private unitUi = inject(WotrUnitUi);
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
-  private unitUtils = inject(WotrUnitUtils);
+  private unitRules = inject(WotrUnitRules);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -105,14 +105,36 @@ export class WotrShadowStrategyCards {
             );
           }
         };
-      // TODO Shadows Gather
+      // Shadows Gather
       // Move one Shadow Army up to three regions: the movement must end in a region already occupied by another Shadow Army (that must not be under siege). The
       // traversed regions must be free for the purposes of Army movement, and no Shadow units may be picked up or dropped off along the way (other than, possibly,
       // splitting the Army initially)
       case "sstr07":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+            const units = await this.gameUi.askRegionUnits("Select a Shadow army to move", {
+              type: "moveArmy",
+              regionIds: regionIds,
+              required: false,
+              requiredUnits: [],
+              retroguard: null
+            });
+            if (!units) return [];
+            const fromRegion = units.regionId;
+            const targetRegions = this.q
+              .region(fromRegion)
+              .reachableRegions(3, region => region.isFreeForArmyMovement("shadow"))
+              .filter(r => r.hasArmyNotUnderSiege("shadow"));
+            if (!targetRegions.length) return [];
+            const toRegionId = await this.gameUi.askRegion(
+              "Select a region to move the army to",
+              targetRegions.map(region => region.regionId)
+            );
+            const actions: WotrAction[] = [];
+            actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+            return actions;
+          }
         };
       // TODO The Shadow Lengthens
       // Move two Shadow Armies up to two regions: each movement must end in a region already occupied by another Shadow Army (that must not be under siege). The

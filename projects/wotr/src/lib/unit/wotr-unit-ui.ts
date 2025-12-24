@@ -149,11 +149,19 @@ export class WotrUnitUi {
     movingArmy: WotrRegionUnits,
     frontId: WotrFrontId
   ): Promise<WotrArmyMovement> {
-    const fromRegion = this.regionStore.region(movingArmy.regionId);
     const toRegionId = await this.ui.askRegion(
       "Select region to move in",
       this.unitRules.armyMovementTargetRegions(movingArmy, frontId)
     );
+    return this.moveThisArmyTo(movingArmy, frontId, toRegionId);
+  }
+
+  async moveThisArmyTo(
+    movingArmy: WotrRegionUnits,
+    frontId: WotrFrontId,
+    toRegionId: WotrRegionId
+  ): Promise<WotrArmyMovement> {
+    const fromRegion = this.regionStore.region(movingArmy.regionId);
     const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingArmy);
     const movement = moveArmy(movingArmy.regionId, toRegionId, leftUnits);
     this.unitHandler.moveArmy(movement, frontId);
