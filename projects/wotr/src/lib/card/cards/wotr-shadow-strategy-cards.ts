@@ -35,14 +35,34 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO The Fighting Uruk-hai
+      // The Fighting Uruk-hai
       // Play if Saruman is in play, and if an Army containing an Isengard unit is besieging a Stronghold.
-      // Attack that Stronghold. The siege lasts for three Combat rounds instead of one. During the first round, the Free Peoples player cannot use a Combat card unless a
+      // Attack that Stronghold. The siege lasts for three Combat rounds instead of one.
+      // During the first round, the Free Peoples player cannot use a Combat card unless a
       // Companion is in the battle.
       case "sstr02":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () =>
+            this.q.saruman.isInPlay() &&
+            this.q
+              .strongholdRegions()
+              .some(
+                region =>
+                  region.isUnderSiege("free-peoples") && region.hasArmyUnitsOfNation("isengard")
+              ),
+          play: async () => {
+            const strongholdRegions = this.q
+              .strongholdRegions()
+              .filter(
+                region =>
+                  region.isUnderSiege("free-peoples") && region.hasArmyUnitsOfNation("isengard")
+              );
+            const regionId = await this.gameUi.askRegion(
+              "Select a stronghold to attack",
+              strongholdRegions.map(region => region.regionId)
+            );
+            return this.unitUi.attackStronghold(regionId, "shadow");
+          }
         };
       // TODO Denethor's Folly
       // Play on the table if Minas Tirith is under siege by a Shadow Army.

@@ -201,4 +201,7 @@ export class WotrGameQuery {
     if (regionIds.length === 0) regionIds = this.regionStore.state().ids;
     return regionIds.map(id => this.region(id));
   }
+  strongholdRegions(): WotrRegionQuery[] {
+    return this.regions().filter(region => region.isStronghold());
+  }
 }

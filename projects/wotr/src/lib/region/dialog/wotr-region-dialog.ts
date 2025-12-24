@@ -55,6 +55,7 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialo
           [width]="unitNode.width"
           [height]="unitNode.height"
           [matTooltip]="unitNode.label"
+          matTooltipPosition="above"
           (click)="onUnitClick(unitNode)" />
       }
     </div>

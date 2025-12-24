@@ -337,6 +337,7 @@ export class WotrBattleHandler {
   }
 
   private async chooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound) {
+    if (!this.canChooseCombatCard(combatFront, combatRound)) return;
     const story = await combatFront.player.chooseCombatCard(combatRound);
     const action = assertAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
       story,
@@ -351,6 +352,20 @@ export class WotrBattleHandler {
       case "combat-card-choose-not":
         break;
     }
+  }
+
+  private canChooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound): boolean {
+    const currentCard = this.frontStore.currentCard();
+    if (!currentCard) return true;
+    // TODO modifiers
+    if (combatFront.frontId === "shadow") return true;
+    if (currentCard === "sstr02" || currentCard === "scha20") {
+      if (combatRound.round !== 1) return true;
+      const freeArmy = combatRound.defender.army();
+      if (this.unitUtils.hasCompanions(freeArmy)) return true;
+      return false;
+    }
+    return true;
   }
 
   private revealCombatCards(combatRound: WotrCombatRound) {
