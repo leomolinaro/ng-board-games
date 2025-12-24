@@ -289,12 +289,16 @@ export class WotrBattleHandler {
           }
         }
       } else {
-        const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
-        if (wantContinueBattle) {
-          if (this.canRetreat(combatRound.defender)) {
-            const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-            if (wantRetreat) {
-              attackerWon = true;
+        if (this.canCease(combatRound)) {
+          const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+          if (wantContinueBattle) {
+            if (this.canRetreat(combatRound.defender)) {
+              const wantRetreat = await this.wantRetreat(combatRound.defender.player);
+              if (wantRetreat) {
+                attackerWon = true;
+              } else {
+                continueBattle = true;
+              }
             } else {
               continueBattle = true;
             }
@@ -365,6 +369,13 @@ export class WotrBattleHandler {
       if (this.unitUtils.hasCompanions(freeArmy)) return true;
       return false;
     }
+    return true;
+  }
+
+  private canCease(combatRound: WotrCombatRound): boolean {
+    const currentCard = this.frontStore.currentCard();
+    if (!currentCard) return true;
+    if (currentCard === "sstr10") return false;
     return true;
   }
 
@@ -728,6 +739,13 @@ export class WotrBattleHandler {
   }
 
   private async battleAdvance(player: WotrPlayer): Promise<boolean> {
+    const currentCard = this.frontStore.currentCard();
+    if (currentCard === "sstr10") {
+      this.applyArmyAdvance({
+        type: "army-advance"
+      });
+      return true;
+    }
     const story = await player.battleAdvance();
     const action = assertAction<WotrArmyAdvance | WotrArmyNotAdvance>(
       story,

@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { attack } from "../../battle/wotr-battle-actions";
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
@@ -12,6 +13,7 @@ import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -23,6 +25,7 @@ export class WotrShadowStrategyCards {
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private unitRules = inject(WotrUnitRules);
+  private unitUtils = inject(WotrUnitUtils);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -173,15 +176,41 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Corsairs of Umbar
+      // Corsairs of Umbar
       // Play if the Southrons & Easterlings are "At War."
       // Move one Shadow Army from Umbar to a Gondar coastal region (check the stacking limit immediately if it is merging with another Army).
       // If there is a Free Peoples Army in the region, a battle starts. The attacking Shadow Army cannot cease the attack, unless the Free Peoples Army was already under
       // siege.
       case "sstr10":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.southrons.isAtWar(),
+          play: async () => {
+            const units = await this.gameUi.askRegionUnits("Select a Shadow army to move", {
+              type: "moveArmy",
+              regionIds: ["umbar"],
+              required: false,
+              requiredUnits: [],
+              retroguard: null
+            });
+            if (!units) return [];
+            const targetRegions = this.q
+              .regions()
+              .filter(r => r.isCoastal() && r.isNation("gondor"));
+            const toRegionId = await this.gameUi.askRegion(
+              "Select a region to move the army to",
+              targetRegions.map(region => region.regionId)
+            );
+            const actions: WotrAction[] = [];
+            const toRegion = this.q.region(toRegionId);
+            if (toRegion.hasArmyNotUnderSiege("free-peoples")) {
+              const fromRegion = this.q.region("umbar");
+              const retroguard = this.unitUtils.splitUnits(fromRegion.army("shadow")!, units);
+              return [attack("umbar", toRegionId, retroguard)];
+            } else {
+              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+            }
+            return actions;
+          }
         };
       // TODO Rage Of The Dunlendings
       // Play if Isengard is "At War."

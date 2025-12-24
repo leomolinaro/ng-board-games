@@ -24,6 +24,10 @@ export class WotrRegionQuery {
     return this.region().seaside;
   }
 
+  isNation(nationId: WotrNationId): boolean {
+    return this.region().nationId === nationId;
+  }
+
   isAdjacentTo(otherRegionId: WotrRegionId): boolean {
     const region = this.regionStore.region(this.regionId);
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);

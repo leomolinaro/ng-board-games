@@ -252,7 +252,7 @@ export function initialeState(): WotrRegionState {
       // prettier-ignore
       "lamedon": initialRegion("lamedon", "Lamedon", "gondor", false, "town",
         ["erech", "dol-amroth", "pelargir"],
-        ["edoras", "folde", "lossarnach", "minas-tirith", "druadan-forest"], false),
+        ["edoras", "folde", "lossarnach", "minas-tirith", "druadan-forest"], true),
       // prettier-ignore
       "pelargir": initialRegion("pelargir", "Pelargir", "gondor", false, "city",
         ["lamedon", "lossarnach", "osgiliath", "west-harondor"],
