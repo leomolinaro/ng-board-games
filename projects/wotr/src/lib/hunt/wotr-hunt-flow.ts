@@ -161,7 +161,7 @@ export class WotrHuntFlow {
         const toRegion = this.regionStore.fellowshipRegion();
         if (this.revealedThroughShadowStronghold(fromRegion, toRegion, progress)) {
           const newHuntTileId = await this.drawHuntTile(this.shadow);
-          this.resolveHuntTile(newHuntTileId, options);
+          await this.resolveHuntTile(newHuntTileId, options);
         }
       }
     }
