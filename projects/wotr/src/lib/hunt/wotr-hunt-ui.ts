@@ -5,6 +5,7 @@ import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
+import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import {
@@ -205,5 +206,18 @@ export class WotrHuntUi {
       }
     }
     return actions;
+  }
+
+  async lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrAction[]> {
+    const companion = this.characterStore.character(character);
+    const option = await this.ui.askOption<"corrupt" | "eliminate">("Choose", [
+      { label: `Add ${companion.level} corruption points`, value: "corrupt" },
+      { label: `Eliminate ${companion.name}`, value: "eliminate" }
+    ]);
+    if (option === "corrupt") {
+      return [corruptFellowship(companion.level)];
+    } else {
+      return [eliminateCharacter(character)];
+    }
   }
 }

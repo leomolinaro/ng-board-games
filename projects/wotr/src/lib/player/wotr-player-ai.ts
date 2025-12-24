@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrAbility, WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrStory } from "../game/wotr-story-models";
@@ -49,6 +49,9 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
     throw new Error("Method not implemented.");
   }
   huntEffect(): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
+  lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   revealFellowship(): Promise<WotrStory> {

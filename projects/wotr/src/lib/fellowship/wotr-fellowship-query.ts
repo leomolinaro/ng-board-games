@@ -1,4 +1,4 @@
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -21,6 +21,10 @@ export class WotrFellowshipQuery {
 
   hasCompanions(): boolean {
     return this.fellowshipStore.companions().length > 0;
+  }
+
+  companions(): WotrCompanionId[] {
+    return this.fellowshipStore.companions();
   }
 
   regionId(): WotrRegionId {

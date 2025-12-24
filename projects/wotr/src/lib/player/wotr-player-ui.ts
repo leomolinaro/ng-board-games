@@ -7,7 +7,7 @@ import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -93,6 +93,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
 
   async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory> {
     return { type: "base", actions: await this.huntUi.huntEffect(huntResolution) };
+  }
+
+  async lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
+    return {
+      type: "reaction-card",
+      card: "scha13",
+      actions: await this.huntUi.lureOfTheRingEffect(character)
+    };
   }
 
   async revealFellowship(): Promise<WotrStory> {

@@ -19,6 +19,7 @@ export interface WotrPlayerStoryService {
   reRollHuntDice(nReRolls: number): Promise<WotrStory>;
   drawHuntTile(): Promise<WotrStory>;
   huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory>;
+  lureOfTheRingEffect(character: WotrCharacterId): Promise<WotrStory>;
   revealFellowship(): Promise<WotrStory>;
   separateCompanions(): Promise<WotrStory>;
 

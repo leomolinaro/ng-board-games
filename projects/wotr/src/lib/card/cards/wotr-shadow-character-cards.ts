@@ -1,11 +1,17 @@
 import { inject, Injectable } from "@angular/core";
+import { randomUtil } from "../../../../../commons/utils/src";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
-import { corruptFellowship, pushFellowship } from "../../fellowship/wotr-fellowship-actions";
+import {
+  chooseRandomCompanion,
+  corruptFellowship,
+  pushFellowship,
+  WotrCompanionRandom
+} from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import {
   WotrAfterFellowshipDeclaration,
@@ -243,15 +249,32 @@ export class WotrShadowCharacterCards {
             return [corruptFellowship(nCorruption)];
           }
         };
-      // TODO Lure of the Ring
+      // Lure of the Ring
       // Play if the Fellowship is revealed.
       // Randomly select one Companion in the Fellowship by drawing a Companion counter.
       // The Free Peoples player must choose either to add Corruption equal to the Companion's Level, or to eliminate him.
       // If Gollum is the Guide, add one Corruption point instead.
       case "scha13":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.fellowship.isRevealed(),
+          play: async () => {
+            if (this.q.fellowship.guideIs("gollum")) {
+              return [corruptFellowship(1)];
+            } else {
+              const companions = this.q.fellowship.companions();
+              const randomCompanion = randomUtil.getRandomElement(companions);
+              return [chooseRandomCompanion(randomCompanion)];
+            }
+          },
+          effect: async params => {
+            if (!this.q.fellowship.guideIs("gollum")) {
+              const action = findAction<WotrCompanionRandom>(
+                params.story.actions,
+                "companion-random"
+              );
+              await this.freePeoples.lureOfTheRingEffect(action!.companions[0]);
+            }
+          }
         };
       // TODO The Breaking of the Fellowship
       // Play if the Fellowship is revealed. Draw a Hunt tile.

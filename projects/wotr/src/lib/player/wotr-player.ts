@@ -2,7 +2,7 @@ import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
@@ -40,6 +40,9 @@ export abstract class WotrPlayer {
   }
   huntEffect(params: WotrHuntEffectParams): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.huntEffect(params));
+  }
+  lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.lureOfTheRingEffect(character));
   }
   revealFellowship(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.revealFellowship());
