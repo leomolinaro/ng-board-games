@@ -278,7 +278,6 @@ export class WotrCombatCards {
           this.shadow
         );
         params.freePeoples.lessNDice = points;
-        throw new Error("TODO");
       }
     },
     // Durin's Bane (Initiative 2)
