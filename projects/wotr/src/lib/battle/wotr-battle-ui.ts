@@ -17,6 +17,7 @@ import {
   eliminateRegularUnit
 } from "../unit/wotr-unit-actions";
 import { WotrUnits } from "../unit/wotr-unit-models";
+import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import {
   advanceArmy,
@@ -37,7 +38,6 @@ import { WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardAbility, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
-import { WotrUnitRules } from "../unit/wotr-unit-rules";
 
 @Injectable({ providedIn: "root" })
 export class WotrBattleUi {

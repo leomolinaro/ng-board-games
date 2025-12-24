@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
 import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
-import { findAction, WotrAction } from "../commons/wotr-action-models";
+import { findAction, findActions, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
@@ -10,17 +10,24 @@ import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { eliminateLeader, WotrLeaderElimination } from "../unit/wotr-unit-actions";
+import {
+  eliminateLeader,
+  WotrEliteUnitDowngrade,
+  WotrEliteUnitElimination,
+  WotrLeaderElimination,
+  WotrRegularUnitElimination
+} from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import {
   WotrArmy,
   WotrForfeitLeadershipParams,
   WotrRegionUnitMatch
 } from "../unit/wotr-unit-models";
+import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { retreat, WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
-import { WotrUnitRules } from "../unit/wotr-unit-rules";
+import { WotrBattleUi } from "./wotr-battle-ui";
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
@@ -45,11 +52,12 @@ export interface WotrCombatCardAbility {
 
 @Injectable({ providedIn: "root" })
 export class WotrCombatCards {
-  private unitService = inject(WotrUnitHandler);
+  private unitHandler = inject(WotrUnitHandler);
   private unitUtils = inject(WotrUnitUtils);
   private ui = inject(WotrGameUi);
   private q = inject(WotrGameQuery);
   private unitRules = inject(WotrUnitRules);
+  battleUi!: WotrBattleUi;
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -350,7 +358,7 @@ export class WotrCombatCards {
             nAttackingArmyUnits &&
             nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
         ) {
-          await this.unitService.chooseCasualties(1, params.regionId, null, this.freePeoples); // TODO hitPoints
+          await this.unitHandler.chooseCasualties(1, params.regionId, null, this.freePeoples); // TODO hitPoints
         }
       }
     },
@@ -495,21 +503,36 @@ export class WotrCombatCards {
     // Relentless Assault (Initiative 3)
     // Before the Combat roll, you may inflict and apply up to two hits against your units. Add 1 to all dice on your Combat roll for each hit you inflicted.
     "Relentless Assault": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        const casualties = await this.unitService.chooseCasualties(
-          1,
-          params.regionId,
-          null,
-          this.shadow
-        ); // TODO hitPoints
-        const hits = casualties?.reduce(
-          (h, c) => h + (c.type === "regular-unit-elimination" ? 1 : 2),
-          0
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const hitPoints = await this.ui.askQuantity("Choose number of hit points to inflict", {
+              default: 0,
+              min: 0,
+              max: 2
+            });
+            if (!hitPoints) return [];
+            return this.battleUi.chooseCasualties(hitPoints, params.regionId, "shadow");
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.shadow);
+        if (!actions) return;
+        const regularEliminations = findActions<WotrRegularUnitElimination>(
+          actions,
+          "regular-unit-elimination"
         );
+        const eliteEliminations = findActions<WotrEliteUnitElimination>(
+          actions,
+          "elite-unit-elimination"
+        );
+        const eliteDowngrades = findActions<WotrEliteUnitDowngrade>(
+          actions,
+          "elite-unit-downgrade"
+        );
+        let hits = 0;
+        hits += regularEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
+        hits += eliteEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
+        hits += eliteDowngrades.reduce((sum, downgrade) => sum + downgrade.quantity, 0);
         if (hits) {
           params.shadow.combatModifiers.push(hits);
         }

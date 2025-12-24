@@ -17,6 +17,13 @@ export function findAction<A extends WotrAction>(
   return undefined;
 }
 
+export function findActions<A extends WotrAction>(
+  actions: WotrAction[],
+  ...actionTypes: A["type"][]
+): A[] {
+  return actions.filter(a => actionTypes.includes(a.type)) as A[];
+}
+
 export interface WotrFragmentCreator<F> {
   player(front: WotrFrontId): F;
   region(region: WotrRegionId): F;

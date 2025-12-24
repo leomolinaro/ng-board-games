@@ -257,6 +257,7 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
           }
         }
         if ("card" in l.story) {
+          // TODO combat card label
           parsed.push(this.string(", using "), this.card(cardToLabel(l.story.card)));
         }
         if ("character" in l.story && l.story.character) {
