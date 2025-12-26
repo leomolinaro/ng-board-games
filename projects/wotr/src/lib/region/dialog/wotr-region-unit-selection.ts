@@ -23,7 +23,8 @@ export type WotrRegionUnitSelection =
   | WotrEliminateUnitSelection
   | WotrForfeitLeadershipSelection
   | WotrRageOfTheDunlendingsUnitSelection
-  | WotrHeroicDeathUnitSelection;
+  | WotrHeroicDeathUnitSelection
+  | WotrBlackBreathUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -93,6 +94,11 @@ export interface WotrHeroicDeathUnitSelection extends AWotrRegionUnitSelection {
   type: "heroicDeath";
 }
 
+export interface WotrBlackBreathUnitSelection extends AWotrRegionUnitSelection {
+  type: "blackBreath";
+  hits: number;
+}
+
 interface WotrRegionUnitSelectionMode {
   initialize(unitNodes: UnitNode[], region: WotrRegion): void;
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
@@ -126,6 +132,8 @@ export function selectionModeFactory(
       return new RageOfTheDunlendingsSelectionMode(unitSelection);
     case "heroicDeath":
       return new HeroicDeathSelectionMode(unitSelection);
+    case "blackBreath":
+      return new BlackBreathSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -551,6 +559,7 @@ export class HeroicDeathSelectionMode implements WotrRegionUnitSelectionMode {
 
   initialize(unitNodes: UnitNode[]): void {
     for (const node of unitNodes) {
+      if (node.frontId !== "free-peoples") continue;
       if (node.type === "character" || node.type === "leader") {
         node.selectable = true;
       }
@@ -558,9 +567,28 @@ export class HeroicDeathSelectionMode implements WotrRegionUnitSelectionMode {
   }
 
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
-    if (selectedNodes.length === 1) {
-      return true;
+    if (selectedNodes.length === 1) return true;
+    return "Select one character or leader to eliminate.";
+  }
+}
+
+export class BlackBreathSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrBlackBreathUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (node.frontId !== "free-peoples") continue;
+      if (node.type === "leader") {
+        node.selectable = true;
+      } else if (node.type === "character") {
+        const level = node.character.level;
+        if (level <= this.unitSelection.hits) node.selectable = true;
+      }
     }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    if (selectedNodes.length === 1) return true;
     return "Select one character or leader to eliminate.";
   }
 }

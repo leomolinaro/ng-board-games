@@ -126,15 +126,27 @@ export class WotrCombatCards {
     },
     // Black Breath (Initiative 6)
     // Play if a Nazgûl is in the battle.
-    // If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle. Alternatively, you can choose to
-    // eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level.
+    // If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle.
+    // Alternatively, you can choose to eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level.
     "Black Breath": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => !!params.shadow.army().nNazgul,
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const hits = params.shadow.nLeaderSuccesses;
+        if (!hits) return;
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
+              type: "blackBreath",
+              regionIds: [params.regionId],
+              hits
+            });
+            if (units.leaders?.length)
+              return [eliminateLeader(params.regionId, units.leaders[0].nation, 1)];
+            if (units.characters?.length) return [eliminateCharacter(units.characters[0])];
+            return [];
+          }
+        };
+        await this.activateCombatCard(ability, card.id, this.shadow);
       }
     },
     // Blade of Westernesse (Initiative 6)
