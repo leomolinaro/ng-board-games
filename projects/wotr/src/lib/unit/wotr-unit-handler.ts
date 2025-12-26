@@ -84,7 +84,7 @@ export class WotrUnitHandler {
     this.regionStore.moveArmy(movement.fromRegion, movement.toRegion, movement.leftUnits);
     this.nationHandler.checkNationActivationByArmyMovement(movement.toRegion, frontId);
     const toRegion = this.regionStore.region(movement.toRegion);
-    if (toRegion.settlement && toRegion.controlledBy !== frontId) {
+    if (toRegion.settlement && toRegion.controlledBy !== frontId && !toRegion.underSiegeArmy) {
       this.regionStore.setControlledBy(frontId, movement.toRegion);
     }
   }
