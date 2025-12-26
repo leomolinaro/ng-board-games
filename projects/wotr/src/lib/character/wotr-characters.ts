@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAbility } from "../ability/wotr-ability";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
+import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
@@ -31,11 +32,16 @@ import {
   WotrSaruman
 } from "./characters/saruman";
 import { StriderGuideAbility } from "./characters/strider";
-import { WotrMouthOfSauron } from "./characters/the-mouth-of-sauron";
+import {
+  MessengerOfTheDarkTowerAbility,
+  MessengerOfTheDarkTowerSetUsedAbility,
+  WotrMouthOfSauron
+} from "./characters/the-mouth-of-sauron";
 import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
+import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacters {
@@ -55,6 +61,8 @@ export class WotrCharacters {
   private q = inject(WotrGameQuery);
   private cardDrawUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
+  actionDieUi!: WotrActionDieUi;
+  private characterStore = inject(WotrCharacterStore);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
@@ -97,7 +105,14 @@ export class WotrCharacters {
           )
         ];
       case "the-mouth-of-sauron":
-        return [];
+        return [
+          new MessengerOfTheDarkTowerAbility(
+            this.characterStore,
+            this.actionDieUi,
+            this.actionDieModifiers
+          ),
+          new MessengerOfTheDarkTowerSetUsedAbility(this.characterStore, this.actionDieModifiers)
+        ];
       case "strider":
         return [
           new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),

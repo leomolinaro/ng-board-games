@@ -191,7 +191,7 @@ export class WotrActionDieUi {
     return this.resolveArmyResult("army", frontId);
   }
 
-  private async resolveArmyResult(
+  async resolveArmyResult(
     die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {

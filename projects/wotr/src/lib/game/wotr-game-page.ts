@@ -5,6 +5,7 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
+import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
@@ -76,6 +77,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private cardPlayUi = inject(WotrCardPlayUi);
   private battleUi = inject(WotrBattleUi);
   private combatCards = inject(WotrCombatCards);
+  private actionDieUi = inject(WotrActionDieUi);
 
   private dialog = inject(MatDialog);
 
@@ -96,6 +98,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.cardHandler.cards = this.cards;
     this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
     this.combatCards.battleUi = this.battleUi;
+    this.characters.actionDieUi = this.actionDieUi;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

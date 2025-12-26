@@ -904,6 +904,7 @@ export class WotrRegionStore {
   }
 
   setControlledBy(front: WotrFrontId, regionId: WotrRegionId) {
+    console.log("setControlledBy", front, regionId);
     this.updateRegion("setControlledBy", regionId, region => ({
       ...region,
       controlledBy: front

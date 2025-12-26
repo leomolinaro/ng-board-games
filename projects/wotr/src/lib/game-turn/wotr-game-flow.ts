@@ -109,6 +109,7 @@ export class WotrGameTurn {
     this.huntStore.resetHuntBox();
     this.frontStore.resetElvenRingUsed("free-peoples");
     this.frontStore.resetElvenRingUsed("shadow");
+    this.characterStore.resetMessengerOfTheDarkTower();
     this.frontStore.skipDiscardExcessCards(true);
     await this.allPlayers.firstPhaseDraw();
     await this.checkFirstPhaseDiscard();

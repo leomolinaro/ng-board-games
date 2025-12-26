@@ -6,6 +6,7 @@ import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 export interface WotrCharacterState {
   ids: WotrCharacterId[];
   map: Record<WotrCharacterId, WotrCharacter>;
+  messengerOfTheDarkTowerUsed: boolean;
 }
 
 export function initialeState(): WotrCharacterState {
@@ -60,7 +61,8 @@ export function initialeState(): WotrCharacterState {
         1,
         true
       )
-    }
+    },
+    messengerOfTheDarkTowerUsed: false
   };
 }
 
@@ -132,6 +134,9 @@ export class WotrCharacterStore {
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];
   }
+  messengerOfTheDarkTowerUsed() {
+    return this.state().messengerOfTheDarkTowerUsed;
+  }
 
   private updateCharacter(
     actionName: string,
@@ -162,6 +167,20 @@ export class WotrCharacterStore {
     this.updateCharacter("setInFellowship", characterId, character => ({
       ...character,
       status: "inFellowship"
+    }));
+  }
+
+  setMessengerOfTheDarkTowerUsed() {
+    this.update("setMessengerOfTheDarkTowerUsed", s => ({
+      ...s,
+      messengerOfTheDarkTowerUsed: true
+    }));
+  }
+
+  resetMessengerOfTheDarkTower() {
+    this.update("resetMessengerOfTheDarkTower", s => ({
+      ...s,
+      messengerOfTheDarkTowerUsed: false
     }));
   }
 
