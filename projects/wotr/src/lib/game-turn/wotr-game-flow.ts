@@ -145,7 +145,7 @@ export class WotrGameTurn {
       this.regionStore.removeFellowshipFromRegion();
       this.fellowshipStore.moveOnMordorTrack();
       this.huntStore.moveDrawnEyeTilesToAvailable();
-      this.huntStore.moveReadyTilesToAvailable();
+      this.huntStore.moveReadyTilesToPool();
     }
   }
 

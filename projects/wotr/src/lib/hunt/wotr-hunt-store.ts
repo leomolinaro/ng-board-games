@@ -167,10 +167,10 @@ export class WotrHuntStore {
     });
   }
 
-  moveReadyTilesToAvailable() {
-    this.update("moveReadyTilesToAvailable", state => {
-      const newHuntPool = immutableUtil.listPush(state.huntAvailable, state.huntPool);
-      return { ...state, huntAvailable: [], huntPool: newHuntPool };
+  moveReadyTilesToPool() {
+    this.update("moveReadyTilesToPool", state => {
+      const newHuntPool = immutableUtil.listPush(state.huntReady, state.huntPool);
+      return { ...state, huntReady: [], huntPool: newHuntPool };
     });
   }
 
