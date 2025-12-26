@@ -30,7 +30,7 @@ import {
 } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { retreat, WotrLeaderForfeit } from "./wotr-battle-actions";
+import { retreat, WotrCombatRoll, WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleUi } from "./wotr-battle-ui";
 
@@ -665,14 +665,24 @@ export class WotrCombatCards {
     },
     // We Come to Kill (Initiative 7)
     // Play if a Shadow Elite unit is in the battle.
-    // After removing casualties from the Combat roll and Leader re-roll, roll an additional attack using only the Shadow Elite units (up to a maximum of five) and score one hit for each result of 5+.
+    // After removing casualties from the Combat roll and Leader re-roll,
+    // roll an additional attack using only the Shadow Elite units (up to a maximum of five) and score one hit for each result of 5+.
     "We Come to Kill": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.hasEliteUnits(params.shadow.army()),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const nElites = this.unitUtils.getNEliteUnits(params.shadow.army());
+            const nDice = Math.min(nElites, 5);
+            if (nDice === 0) return [];
+            return [await this.battleUi.rollCombatDice(nDice, "shadow")];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.shadow);
+        if (!actions) return;
+        const action = findAction<WotrCombatRoll>(actions, "combat-roll");
+        const nHits = action!.dice.filter(r => r >= 5).length;
+        await this.freePeoples.chooseCasualties(nHits, params.regionId, null);
       }
     },
     // Words of Power (Initiative 1)

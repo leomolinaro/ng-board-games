@@ -189,6 +189,11 @@ export class WotrUnitUtils {
     return false;
   }
 
+  getNEliteUnits(units: WotrUnits) {
+    if (!units.elites?.length) return 0;
+    return units.elites.reduce((count, u) => count + u.quantity, 0);
+  }
+
   hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
     if (units.elites?.some(u => u.nation === nation)) return true;
     return false;

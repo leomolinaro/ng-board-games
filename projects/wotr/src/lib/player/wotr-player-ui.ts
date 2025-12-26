@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
+import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
@@ -14,6 +15,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import {
   WotrBaseStory,
   WotrCardReactionStory,
+  WotrCombatCardReactionStory,
   WotrReactionStory,
   WotrStory
 } from "../game/wotr-story-models";
@@ -34,6 +36,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private characterUi = inject(WotrCharacterUi);
   private cardPlayUi = inject(WotrCardPlayUi);
   private unitUi = inject(WotrUnitUi);
+  private battleStore = inject(WotrBattleStore);
 
   async firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory> {
     return {
@@ -169,10 +172,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
     frontId: WotrFrontId
-  ): Promise<WotrBaseStory | WotrCardReactionStory> {
+  ): Promise<WotrBaseStory | WotrCardReactionStory | WotrCombatCardReactionStory> {
     const actions = await this.battleUi.chooseCasualties(hitPoints, regionId, frontId);
     if (cardId) {
-      return { type: "reaction-card", card: cardId, actions };
+      if (this.battleStore.battleInProgress()) {
+        return { type: "reaction-combat-card", card: cardId, actions };
+      } else {
+        return { type: "reaction-card", card: cardId, actions };
+      }
     } else {
       return { type: "base", actions };
     }
