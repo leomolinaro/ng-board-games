@@ -601,12 +601,10 @@ export class WotrCombatCards {
     // Shield-wall (Initiative 6)
     // Before you remove casualties inflicted by your opponent's Combat roll and Leader re-roll, if your opponent scored two or more hits, cancel one hit.
     "Shield-Wall": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        if (params.shadow.nTotalHits! >= 2) {
+          params.freePeoples.hitsModifiers.push(-1);
+        }
       }
     },
     // Sudden Strike (Initiative 2)
