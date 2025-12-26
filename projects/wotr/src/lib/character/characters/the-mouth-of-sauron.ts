@@ -68,8 +68,9 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
   ) {}
 
   public modifier = this.actionDieModifiers.actionDieChoices;
-  public handler: WotrActionDieChoiceModifier = (die: WotrActionDie) => {
+  public handler: WotrActionDieChoiceModifier = (die: WotrActionDie, frontId: WotrFrontId) => {
     if (die !== "muster") return [];
+    if (frontId !== "shadow") return [];
     const messengerChoice: WotrUiCharacterChoice = {
       label: () => "Messenger of the Dark Tower",
       isAvailable: () => !this.characterStore.messengerOfTheDarkTowerUsed(),
