@@ -357,26 +357,17 @@ export class WotrCombatCards {
       }
     },
     // Great Host (Initiative 7)
-    // If, after removing casualties from the Combat roll and Leader re-roll your Army units are at least twice as many as the enemy Army units, score one automatic hit.
+    // If, after removing casualties from the Combat roll and Leader re-roll
+    // your Army units are at least twice as many as the enemy Army units,
+    // score one automatic hit.
     "Great Host": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        const attackedArmy = params.attackedArmy();
-        const attackingArmy = params.attackingArmy();
-        const nAttackedArmyUnits = attackedArmy ? this.unitUtils.getNArmyUnits(attackedArmy) : 0;
-        const nAttackingArmyUnits = attackingArmy ? this.unitUtils.getNArmyUnits(attackingArmy) : 0;
-        if (
-          (params.isAttacker &&
-            nAttackedArmyUnits &&
-            nAttackingArmyUnits >= 2 * nAttackedArmyUnits) ||
-          (!params.isAttacker &&
-            nAttackingArmyUnits &&
-            nAttackedArmyUnits >= 2 * nAttackingArmyUnits)
-        ) {
-          await this.unitHandler.chooseCasualties(1, params.regionId, null, this.freePeoples); // TODO hitPoints
+        const shadowArmny = params.shadow.army();
+        const freePeoplesArmy = params.freePeoples.army();
+        const nShadowUnits = this.unitUtils.getNArmyUnits(shadowArmny);
+        const nFreePeoplesUnits = this.unitUtils.getNArmyUnits(freePeoplesArmy);
+        if (nShadowUnits >= 2 * nFreePeoplesUnits) {
+          await this.freePeoples.chooseCasualties(1, params.regionId, card.id);
         }
       }
     },
@@ -612,11 +603,25 @@ export class WotrCombatCards {
     // Before the Combat roll, roll an additional attack using a number of dice equal to your Leadership (up to a maximum of 5) and apply the result immediately.
     "Sudden Strike": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        const army = params.freePeoples.army();
+        return !!(army.leaders?.length || army.characters?.length);
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const leadership = this.unitUtils.leadership(params.freePeoples.army());
+            const nDice = Math.min(leadership, 5);
+            if (nDice === 0) return [];
+            return [await this.battleUi.rollCombatDice(nDice, "free-peoples")];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.freePeoples);
+        if (!actions) return;
+        const action = findAction<WotrCombatRoll>(actions, "combat-roll");
+        const nHits = action!.dice.filter(r => r >= 5).length;
+        if (nHits) {
+          await this.shadow.chooseCasualties(nHits, params.regionId, card.id);
+        }
       }
     },
     // Swarm of Bats (Initiative 0)
@@ -680,7 +685,9 @@ export class WotrCombatCards {
         if (!actions) return;
         const action = findAction<WotrCombatRoll>(actions, "combat-roll");
         const nHits = action!.dice.filter(r => r >= 5).length;
-        await this.freePeoples.chooseCasualties(nHits, params.regionId, null);
+        if (nHits) {
+          await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
+        }
       }
     },
     // Words of Power (Initiative 1)
