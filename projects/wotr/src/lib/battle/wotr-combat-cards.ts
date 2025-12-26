@@ -194,12 +194,10 @@ export class WotrCombatCards {
     // Every unmodified die result of '1' in the Shadow player's Combat roll scores one hit against the Shadow Army.
     // Any such result cannot be rolled again during the Shadow player's Leader re-roll.
     "Confusion": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const oneResults = params.shadow.combatRoll!.filter(result => result === 1).length;
+        params.freePeoples.hitsModifiers.push(oneResults);
+        params.shadow.lessNLeaderDice = oneResults;
       }
     },
     // Cruel as Death (Initiative 3)
@@ -237,7 +235,7 @@ export class WotrCombatCards {
     // The Shadow player rolls a maximum of three dice in his Combat roll.
     "Daylight": {
       effect: async (card, params) => {
-        params.shadow.maxNDice = 3;
+        params.shadow.maxNCombatDice = 3;
       }
     },
     // Deadly Strife (Initiative 3)
@@ -294,7 +292,7 @@ export class WotrCombatCards {
           },
           this.shadow
         );
-        params.freePeoples.lessNDice = points;
+        params.freePeoples.lessNCombatDice = points;
       }
     },
     // Durin's Bane (Initiative 2)

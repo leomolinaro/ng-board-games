@@ -276,7 +276,9 @@ export class WotrBattleHandler {
 
     let continueBattle = false;
     let attackerWon = false;
-    const attackerHasUnitLeft = !this.unitUtils.isEmptyArmy(combatRound.attacker.army());
+    const attackerArmy = combatRound.attacker.army();
+    const attackerHasUnitLeft =
+      attackerArmy && !this.unitUtils.isEmptyArmy(combatRound.attacker.army());
     if (this.isDefenderDefeated(combatRound)) {
       attackerWon = true;
     } else if (attackerHasUnitLeft) {
@@ -517,8 +519,8 @@ export class WotrBattleHandler {
   private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     const combatStrength = this.getCombatStrength(combatFront, combatRound);
     let nRolls = Math.min(combatStrength, 5);
-    if (combatFront.lessNDice) nRolls = Math.max(1, nRolls - combatFront.lessNDice);
-    if (combatFront.maxNDice) nRolls = Math.min(nRolls, combatFront.maxNDice);
+    if (combatFront.lessNCombatDice) nRolls = Math.max(1, nRolls - combatFront.lessNCombatDice);
+    if (combatFront.maxNCombatDice) nRolls = Math.min(nRolls, combatFront.maxNCombatDice);
     return nRolls;
   }
 
@@ -536,7 +538,9 @@ export class WotrBattleHandler {
     if (nSuccesses >= oppositeHitPoints) return 0;
     const leadership = this.getLeadership(combatFront, combatRound);
     if (!leadership) return 0;
-    return Math.min(nFailures, leadership);
+    let nReRolls = Math.min(nFailures, leadership);
+    if (combatFront.lessNLeaderDice) nReRolls = Math.max(0, nReRolls - combatFront.lessNLeaderDice);
+    return nReRolls;
   }
 
   private getHitPoints(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {

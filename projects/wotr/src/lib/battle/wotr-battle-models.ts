@@ -28,10 +28,14 @@ export class WotrCombatFront {
   frontId = this.player.frontId;
 
   combatCard?: WotrCard;
-  maxNDice: number = 5;
-  lessNDice: number = 0;
+  maxNCombatDice: number = 5;
+  lessNCombatDice: number = 0;
+  lessNLeaderDice: number = 0;
+  /** Modifiers applied to each die during the combat roll */
   combatModifiers: number[] = [];
+  /** Modifiers applied to each die during the leader re-roll */
   leaderModifiers: number[] = [];
+  /** Modifiers to the number of hits inflicted by this front to the other */
   hitsModifiers: number[] = [];
   cancelledCharacters: WotrCharacterId[] = [];
   leaderRollCancelled: boolean = false;
