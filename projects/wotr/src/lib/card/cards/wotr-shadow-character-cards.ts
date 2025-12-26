@@ -2,7 +2,8 @@ import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../../commons/utils/src";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
@@ -26,6 +27,7 @@ import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
 import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
+import { WotrLogWriter } from "../../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
@@ -58,6 +60,8 @@ export class WotrShadowCharacterCards {
   private huntHandler = inject(WotrHuntHandler);
   private huntModifiers = inject(WotrHuntModifiers);
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
+  private battleUi = inject(WotrBattleUi);
+  private logger = inject(WotrLogWriter);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -140,10 +144,7 @@ export class WotrShadowCharacterCards {
       case "scha08":
         return {
           canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
-          play: async () => {
-            const roll = await this.rollCombatDice(3, this.shadow);
-            return [rollCombatDice(...roll)];
-          },
+          play: async () => [await this.battleUi.rollCombatDice(3, "shadow")],
           effect: async params => {
             const action = assertAction<WotrCombatRoll>(params.story, "combat-roll");
             const nCorruption = action.dice.filter(
@@ -151,6 +152,7 @@ export class WotrShadowCharacterCards {
             ).length;
             if (nCorruption) {
               this.fellowshipHandler.corrupt(nCorruption);
+              this.logger.logEffect(corruptFellowship(nCorruption));
             }
           }
         };
