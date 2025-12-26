@@ -1,4 +1,5 @@
 import { WotrCard, WotrCardId } from "../card/wotr-card-models";
+import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrArmy } from "../unit/wotr-unit-models";
@@ -36,6 +37,7 @@ export class WotrCombatFront {
   combatRoll?: WotrCombatDie[];
   nCombatSuccesses?: number;
   leaderReRoll?: WotrCombatDie[];
+  cancelledCharacters: WotrCharacterId[] = [];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
 }

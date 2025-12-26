@@ -1,7 +1,12 @@
 import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
-import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
+import {
+  chooseCharacter,
+  eliminateCharacter,
+  WotrCharacterChoose,
+  WotrCharacterElimination
+} from "../character/wotr-character-actions";
 import { findAction, findActions, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -129,7 +134,7 @@ export class WotrCombatCards {
     // If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle.
     // Alternatively, you can choose to eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level.
     "Black Breath": {
-      canBePlayed: params => !!params.shadow.army().nNazgul,
+      canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
         const hits = params.shadow.nLeaderSuccesses;
         if (!hits) return;
@@ -672,12 +677,22 @@ export class WotrCombatCards {
     // Play if a Nazgûl is in the battle.
     // Choose a Companion. That Companion's Leadership and special abilities are cancelled for this Combat round.
     "Words of Power": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const units = await this.ui.askRegionUnits("Choose a Companion to cancel", {
+              type: "wordsOfPower",
+              regionIds: [params.regionId]
+            });
+            if (units.characters?.length) return [chooseCharacter(units.characters[0])];
+            return [];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.shadow);
+        if (!actions) return;
+        const action = findAction<WotrCharacterChoose>(actions, "character-choose");
+        params.freePeoples.cancelledCharacters.push(action!.characters[0]);
       }
     }
   };

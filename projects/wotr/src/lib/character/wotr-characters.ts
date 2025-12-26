@@ -88,7 +88,7 @@ export class WotrCharacters {
           /* new ShadowfaxAbility(), new TheWhiteRiderAbility() */
         ];
       case "aragorn":
-        return [new CaptainOfTheWestAbility("aragorn", this.battleModifiers)];
+        return [new CaptainOfTheWestAbility("aragorn", this.q, this.battleModifiers)];
       case "saruman":
         return [
           new TheVoiceOfSarumanAbility(this.q, this.actionDieModifiers, this.gameUi, this.unitUi),
@@ -116,7 +116,7 @@ export class WotrCharacters {
       case "strider":
         return [
           new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),
-          new CaptainOfTheWestAbility("strider", this.battleModifiers)
+          new CaptainOfTheWestAbility("strider", this.q, this.battleModifiers)
           // new HeirToIsildurAbility(null as any)
         ];
       case "gandalf-the-grey":
@@ -127,7 +127,7 @@ export class WotrCharacters {
             this.q,
             this.cardDrawUi
           ),
-          new CaptainOfTheWestAbility("gandalf-the-grey", this.battleModifiers)
+          new CaptainOfTheWestAbility("gandalf-the-grey", this.q, this.battleModifiers)
           // new EmissaryFromTheWestAbility(null as any)
         ];
       case "peregrin":
@@ -154,17 +154,17 @@ export class WotrCharacters {
         ];
       case "boromir":
         return [
-          new CaptainOfTheWestAbility("boromir", this.battleModifiers),
+          new CaptainOfTheWestAbility("boromir", this.q, this.battleModifiers),
           new HighWardenOfTheWhiteTowerAbility(this.q, this.actionDieModifiers)
         ];
       case "legolas":
         return [
-          new CaptainOfTheWestAbility("legolas", this.battleModifiers),
+          new CaptainOfTheWestAbility("legolas", this.q, this.battleModifiers),
           new PrinceOfMirkwoodAbility(this.q, this.actionDieModifiers)
         ];
       case "gimli":
         return [
-          new CaptainOfTheWestAbility("gimli", this.battleModifiers),
+          new CaptainOfTheWestAbility("gimli", this.q, this.battleModifiers),
           new DwarfOfEreborAbility(this.q, this.actionDieModifiers)
         ];
       case "gollum":

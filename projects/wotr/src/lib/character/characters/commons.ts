@@ -17,16 +17,19 @@ import { WotrCharacterId } from "../wotr-character-models";
 export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRound> {
   constructor(
     private characterId: WotrCharacterId,
+    private q: WotrGameQuery,
     private battleModifiers: WotrBattleModifiers
   ) {}
 
   public modifier = this.battleModifiers.beforeCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
-    if (round.attacker.army().characters?.includes(this.characterId)) {
-      round.attacker.combatModifiers.push(1);
-    } else if (round.defender.army().characters?.includes(this.characterId)) {
-      round.defender.combatModifiers.push(1);
+    const front = this.q.character(this.characterId).frontId();
+    const combatFront = round.attacker.frontId === front ? round.attacker : round.defender;
+    if (combatFront.army().characters?.includes(this.characterId)) {
+      if (!combatFront.cancelledCharacters.includes(this.characterId)) {
+        combatFront.combatModifiers.push(1);
+      }
     }
   };
 }

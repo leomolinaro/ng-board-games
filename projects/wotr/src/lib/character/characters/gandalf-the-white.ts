@@ -69,4 +69,5 @@ export class ShadowfaxAbility implements WotrAbility<unknown> {
 export class TheWhiteRiderAbility implements WotrAbility<unknown> {
   public modifier = null as any;
   public handler = null;
+  // TODO cancelledCharacters
 }

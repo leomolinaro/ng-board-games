@@ -24,7 +24,8 @@ export type WotrRegionUnitSelection =
   | WotrForfeitLeadershipSelection
   | WotrRageOfTheDunlendingsUnitSelection
   | WotrHeroicDeathUnitSelection
-  | WotrBlackBreathUnitSelection;
+  | WotrBlackBreathUnitSelection
+  | WotrWordsOfPowerUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -99,6 +100,10 @@ export interface WotrBlackBreathUnitSelection extends AWotrRegionUnitSelection {
   hits: number;
 }
 
+export interface WotrWordsOfPowerUnitSelection extends AWotrRegionUnitSelection {
+  type: "wordsOfPower";
+}
+
 interface WotrRegionUnitSelectionMode {
   initialize(unitNodes: UnitNode[], region: WotrRegion): void;
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
@@ -134,6 +139,8 @@ export function selectionModeFactory(
       return new HeroicDeathSelectionMode(unitSelection);
     case "blackBreath":
       return new BlackBreathSelectionMode(unitSelection);
+    case "wordsOfPower":
+      return new WordsOfPowerSelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -590,5 +597,23 @@ export class BlackBreathSelectionMode implements WotrRegionUnitSelectionMode {
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
     if (selectedNodes.length === 1) return true;
     return "Select one character or leader to eliminate.";
+  }
+}
+
+export class WordsOfPowerSelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrWordsOfPowerUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (node.frontId !== "free-peoples") continue;
+      if (node.type === "character") {
+        node.selectable = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    if (selectedNodes.length === 1) return true;
+    return "Select one Companion to cancel.";
   }
 }

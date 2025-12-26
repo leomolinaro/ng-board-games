@@ -5,7 +5,8 @@ export type WotrCharacterAction =
   | WotrCharacterMovement
   | WotrCharacterPlay
   | WotrCharacterElimination
-  | WotrGollumEnterFellowship;
+  | WotrGollumEnterFellowship
+  | WotrCharacterChoose;
 
 export interface WotrCharacterMovement {
   type: "character-movement";
@@ -44,4 +45,12 @@ export interface WotrGollumEnterFellowship {
 }
 export function gollumEnterFellowship(): WotrGollumEnterFellowship {
   return { type: "gollum-enter-fellowship" };
+}
+
+export interface WotrCharacterChoose {
+  type: "character-choose";
+  characters: WotrCharacterId[];
+}
+export function chooseCharacter(...characters: WotrCharacterId[]): WotrCharacterChoose {
+  return { type: "character-choose", characters };
 }

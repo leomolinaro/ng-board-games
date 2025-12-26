@@ -77,7 +77,8 @@ export class WotrCharacterHandler {
       "character-movement": (action, front) =>
         this.moveCharacters(action.characters, action.fromRegion, action.toRegion),
       "character-elimination": (action, front) => this.eliminateCharacters(action.characters),
-      "gollum-enter-fellowship": (action, front) => {}
+      "gollum-enter-fellowship": (action, front) => {},
+      "character-choose": (action, front) => {}
     };
   }
 
@@ -210,7 +211,12 @@ export class WotrCharacterHandler {
         " in ",
         f.region(action.region)
       ],
-      "gollum-enter-fellowship": (action, front, f) => []
+      "gollum-enter-fellowship": (action, front, f) => [],
+      "character-choose": (action, front, f) => [
+        f.player(front),
+        " chooses ",
+        this.charactersLog(action.characters)
+      ]
     };
   }
 
