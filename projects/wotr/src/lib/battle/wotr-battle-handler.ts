@@ -527,6 +527,7 @@ export class WotrBattleHandler {
     oppositeCombatFront: WotrCombatFront,
     combatRound: WotrCombatRound
   ): number {
+    if (combatFront.leaderRollCancelled) return 0;
     const combatRoll = combatFront.combatRoll!;
     const nSuccesses = combatFront.nCombatSuccesses!;
     const nFailures = combatRoll.length - nSuccesses;

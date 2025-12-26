@@ -33,11 +33,12 @@ export class WotrCombatFront {
   combatModifiers: number[] = [];
   leaderModifiers: number[] = [];
   hitsModifiers: number[] = [];
+  cancelledCharacters: WotrCharacterId[] = [];
+  leaderRollCancelled: boolean = false;
 
   combatRoll?: WotrCombatDie[];
   nCombatSuccesses?: number;
   leaderReRoll?: WotrCombatDie[];
-  cancelledCharacters: WotrCharacterId[] = [];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
 }

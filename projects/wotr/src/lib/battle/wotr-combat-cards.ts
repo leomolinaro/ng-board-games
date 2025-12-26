@@ -346,12 +346,14 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 1 or more.
     // If the Nazgûl Leadership equals or exceeds the total Free Peoples Leadership, the Free Peoples Leader re-roll is cancelled.
     "Foul Stench": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const nazgulLeadership = this.unitUtils.nazgulLeadership(params.shadow.army());
+        // TODO gandalf special ability
+        const freePeoplesLeadership = this.unitUtils.leadership(params.freePeoples.army());
+        if (nazgulLeadership >= freePeoplesLeadership) {
+          params.freePeoples.leaderRollCancelled = true;
+        }
       }
     },
     // Great Host (Initiative 7)
