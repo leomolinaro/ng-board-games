@@ -295,12 +295,40 @@ export class WotrFreePeoplesCharacterCards {
             return actions;
           }
         };
-      // TODO We Prove the Swifter
+      // We Prove the Swifter
       // Separate from the Fellowship, or move, one Companion or one group of Companions. You may move them two extra regions.
       // The movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha16":
         return {
-          play: async () => []
+          play: async () => {
+            const option = await this.gameUi.askOption<"separate" | "move">(
+              "Choose to separate or move Companions",
+              [
+                {
+                  label: "Separate",
+                  value: "separate",
+                  disabled: !this.q.fellowship.hasCompanions()
+                },
+                {
+                  label: "Move",
+                  value: "move",
+                  disabled: this.q.companions.every(c => !c.isInPlay())
+                }
+              ]
+            );
+            if (option === "separate") {
+              return this.fellowshipUi.separateCompanions({
+                extraMovements: 2,
+                canEndInSiege: true
+              });
+            } else {
+              return this.characterUi.moveCompanions({
+                extraMovements: 2,
+                onlyOneGroup: true,
+                canEndInSiege: true
+              });
+            }
+          }
         };
       // TODO There and Back Again
       // Separate from the Fellowship one Companion or group of Companions. You may move them one extra region.

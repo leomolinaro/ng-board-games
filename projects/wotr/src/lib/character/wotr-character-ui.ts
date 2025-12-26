@@ -38,6 +38,7 @@ class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
 }
 
 export interface WotrCharacterMovementOptions {
+  extraMovements?: number;
   asLevel?: number;
   onlyOneGroup?: boolean;
   canEndInSiege?: boolean;
@@ -232,9 +233,9 @@ export class WotrCharacterUi {
     });
     const movingCharacters = movingUnits.characters!;
     const fromRegion = movingUnits.regionId;
-    const totalMovements =
+    let totalMovements =
       options?.asLevel ?? this.characterRules.characterGroupLevel(movingCharacters);
-
+    if (options?.extraMovements) totalMovements += options.extraMovements;
     const targetRegions = this.regionStore.reachableRegions(
       fromRegion,
       totalMovements,
