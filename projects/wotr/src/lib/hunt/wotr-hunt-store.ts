@@ -153,8 +153,8 @@ export class WotrHuntStore {
   moveAvailableTileToPool(tile: WotrHuntTileId): void {
     this.update("moveAvailableTileToPool", state => ({
       ...state,
-      huntReady: immutableUtil.listPush([tile], state.huntReady),
-      huntPool: immutableUtil.listRemoveFirst(h => h === tile, state.huntPool)
+      huntPool: immutableUtil.listPush([tile], state.huntPool),
+      huntAvailable: immutableUtil.listRemoveFirst(h => h === tile, state.huntAvailable)
     }));
   }
 
