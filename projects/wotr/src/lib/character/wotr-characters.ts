@@ -10,6 +10,7 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
+import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
@@ -63,6 +64,7 @@ export class WotrCharacters {
   private fellowshipUi = inject(WotrFellowshipUi);
   actionDieUi!: WotrActionDieUi;
   private characterStore = inject(WotrCharacterStore);
+  private gameStore = inject(WotrGameStore);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
@@ -226,6 +228,7 @@ export class WotrCharacters {
   }
 
   activateAbilities(characters: WotrCharacterId[]) {
+    if (this.gameStore.isTemporaryState()) return;
     for (const character of characters) {
       const abilities = this.getAbilities(character);
       for (const ability of abilities) {
@@ -236,6 +239,7 @@ export class WotrCharacters {
   }
 
   deactivateAbilities(characterId: WotrCharacterId) {
+    if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getAbilities(characterId);
     for (const ability of abilities) {
       ability.modifier.unregister(ability.handler);

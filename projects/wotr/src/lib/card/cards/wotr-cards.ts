@@ -15,6 +15,7 @@ import { WotrFreePeoplesCharacterCards } from "./wotr-free-peoples-character-car
 import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
 import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards";
 import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
+import { WotrGameStore } from "../../game/wotr-game-store";
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
@@ -42,6 +43,7 @@ export class WotrCards {
   private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
   private shadowCharacterCards = inject(WotrShadowCharacterCards);
   private shadowStrategyCards = inject(WotrShadowStrategyCards);
+  private gameStore = inject(WotrGameStore);
 
   getCard(cardId: WotrCardId): WotrEventCard {
     if (!this.cards[cardId]) {
@@ -51,6 +53,7 @@ export class WotrCards {
   }
 
   activateAbilities(card: WotrCardId) {
+    if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getAbilities(card);
     for (const ability of abilities) {
       if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
@@ -59,6 +62,7 @@ export class WotrCards {
   }
 
   deactivateAbilities(cardId: WotrCardId) {
+    if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getAbilities(cardId);
     for (const ability of abilities) {
       ability.modifier.unregister(ability.handler);
