@@ -1,7 +1,8 @@
 import { inject, Injectable } from "@angular/core";
+import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrAbility } from "../../ability/wotr-ability";
 import { discardDice } from "../../action-die/wotr-action-die-actions";
-import { attack } from "../../battle/wotr-battle-actions";
+import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
@@ -16,6 +17,8 @@ import {
 } from "../../nation/wotr-nation-modifiers";
 import { WotrNationAdvanceSource } from "../../nation/wotr-nation-rules";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
@@ -34,21 +37,71 @@ export class WotrShadowStrategyCards {
   private unitUi = inject(WotrUnitUi);
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
+  private shadow = inject(WotrShadowPlayer);
   private unitRules = inject(WotrUnitRules);
   private unitUtils = inject(WotrUnitUtils);
   private nationModifiers = inject(WotrNationModifiers);
   private cardHandler = inject(WotrCardHandler);
 
+  private returnToValinorRegions(): WotrRegionId[] {
+    return this.q
+      .strongholdRegions()
+      .filter(
+        r =>
+          r.isNation("elves") &&
+          !r.isUnderSiege("free-peoples") &&
+          !r.isUnderSiege("shadow") &&
+          r.hasArmyUnitsOfNation("elves")
+      )
+      .map(r => r.regionId);
+  }
+
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
-      // TODO Return to Valinor
+      // Return to Valinor
       // Play if you control at least one Elven Stronghold.
       // For each region with an Elven Stronghold which is not under siege, roll a number of dice equal to the number of Elven Army units in that region (up to a maximum
       // of 5) and score one hit against that army for each result of '6.'
       case "sstr01":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () =>
+            this.q
+              .strongholdRegions()
+              .filter(r => r.isNation("elves"))
+              .some(r => r.isControlledBy("shadow")),
+          play: async () => {
+            const regions = this.returnToValinorRegions();
+            if (!regions.length) {
+              await this.ui.askContinue("No valid Elven strongholds available");
+              return [];
+            }
+            const region = await this.ui.askRegion("Select an Elven stronghold", regions);
+            return [targetRegion(region)];
+          },
+          effect: async params => {
+            let regions = [...this.returnToValinorRegions()];
+            let regionChooseStory = params.story;
+            while (regions.length) {
+              const regionChoose = findAction<WotrRegionChoose>(
+                regionChooseStory.actions,
+                "region-choose"
+              )!;
+              const regionId = regionChoose.region;
+              const army = this.q.region(regionId).army("free-peoples")!;
+              const nElvenArmyUnits = this.unitUtils.nArmyUnits(army);
+              const rollStory = await this.shadow.rollCombatDice(Math.min(nElvenArmyUnits, 5));
+              if (!("actions" in rollStory)) throw new Error("Unexpected story");
+              const roll = findAction<WotrCombatRoll>(rollStory.actions, "combat-roll")!;
+              const nHits = roll.dice.filter(die => die === 6).length;
+              await this.freePeoples.chooseCasualties(nHits, regionId, params.cardId);
+              regions = immutableUtil.listRemoveFirst(r => r === regionChoose.region, regions);
+              if (regions.length) {
+                const story = await this.shadow.chooseRegion(regions, params.cardId);
+                if (!("actions" in story)) throw new Error("Unexpected story");
+                regionChooseStory = story;
+              }
+            }
+          }
         };
       // The Fighting Uruk-hai
       // Play if Saruman is in play, and if an Army containing an Isengard unit is besieging a Stronghold.

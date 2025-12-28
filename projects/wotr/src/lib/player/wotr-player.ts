@@ -121,4 +121,9 @@ export abstract class WotrPlayer {
       p.eliminateUnits(params, cardId, this.frontId)
     );
   }
+  chooseRegion(regions: WotrRegionId[], cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.chooseRegion(regions, cardId, this.frontId)
+    );
+  }
 }

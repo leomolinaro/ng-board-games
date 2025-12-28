@@ -119,4 +119,11 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   eliminateUnits(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  chooseRegion(
+    regions: WotrRegionId[],
+    cardId: WotrCardId,
+    frontId: WotrFrontId
+  ): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
 }

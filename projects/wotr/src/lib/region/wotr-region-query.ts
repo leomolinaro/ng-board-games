@@ -28,6 +28,10 @@ export class WotrRegionQuery {
     return this.region().nationId === nationId;
   }
 
+  isControlledBy(frontId: WotrFrontId): boolean {
+    return this.region().controlledBy === frontId;
+  }
+
   isAdjacentTo(otherRegionId: WotrRegionId): boolean {
     const region = this.regionStore.region(this.regionId);
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);

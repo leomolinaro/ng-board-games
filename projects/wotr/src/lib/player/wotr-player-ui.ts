@@ -22,6 +22,7 @@ import {
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRegionUi } from "../region/wotr-region-ui";
 import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
@@ -37,6 +38,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   private cardPlayUi = inject(WotrCardPlayUi);
   private unitUi = inject(WotrUnitUi);
   private battleStore = inject(WotrBattleStore);
+  private regionUi = inject(WotrRegionUi);
 
   async firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory> {
     return {
@@ -235,6 +237,18 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       type: "reaction-card",
       card: cardId,
       actions: await this.unitUi.eliminateUnits(params, frontId)
+    };
+  }
+
+  async chooseRegion(
+    regions: WotrRegionId[],
+    cardId: WotrCardId,
+    frontId: WotrFrontId
+  ): Promise<WotrCardReactionStory> {
+    return {
+      type: "reaction-card",
+      card: cardId,
+      actions: [await this.regionUi.chooseRegion(regions)]
     };
   }
 }
