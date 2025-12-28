@@ -6,6 +6,8 @@ import { WotrNationStore } from "./wotr-nation-store";
 
 export type WotrNationAdvanceSource =
   | "muster-die-result"
+  | "muster-army-die-result"
+  | "will-of-the-west-die-result"
   | "token"
   | "character-ability"
   | "card-ability"

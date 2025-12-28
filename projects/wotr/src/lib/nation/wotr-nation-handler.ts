@@ -192,7 +192,16 @@ export class WotrNationHandler {
     const story = this.storyService.getCurrentStory() as WotrStory;
     switch (story.type) {
       case "die":
-        return "muster-die-result";
+        switch (story.die) {
+          case "muster":
+            return "muster-die-result";
+          case "muster-army":
+            return "muster-army-die-result";
+          case "will-of-the-west":
+            return "will-of-the-west-die-result";
+          default:
+            throw new Error(`Unexpected die type: ${story.die}`);
+        }
       case "die-card":
         return "card-ability";
       case "reaction-card":
