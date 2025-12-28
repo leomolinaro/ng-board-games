@@ -246,13 +246,51 @@ export class WotrShadowStrategyCards {
             return actions;
           }
         };
-      // TODO The Shadow is Moving
+      // The Shadow is Moving
       // Play if all Shadow Nations are "At War."
       // Move up to four different Shadow Armies one region each
       case "sstr09":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
+          play: async () => {
+            const actions: WotrAction[] = [];
+            let doneMoves = 0;
+            let continueMoving = true;
+            while (continueMoving) {
+              const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+              const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+                type: "moveArmy",
+                regionIds: regionIds,
+                required: true,
+                requiredUnits: [],
+                retroguard: null
+              });
+              const fromRegion = units.regionId;
+              const targetRegions = this.q
+                .region(fromRegion)
+                .reachableRegions(1, region => region.isFreeForArmyMovement("shadow"))
+                .filter(r => r.hasArmyNotUnderSiege("shadow"));
+              if (!targetRegions.length) {
+                await this.ui.askContinue("No valid target regions available for movement");
+                return actions;
+              }
+              const toRegionId = await this.ui.askRegion(
+                "Select a region to move the army to",
+                targetRegions.map(region => region.regionId)
+              );
+              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+              continueMoving = false;
+              doneMoves++;
+              if (doneMoves < 4) {
+                continueMoving = await this.ui.askConfirm(
+                  "Continue moving armies?",
+                  "Move another",
+                  "Stop moving"
+                );
+              }
+            }
+            return actions;
+          }
         };
       // Corsairs of Umbar
       // Play if the Southrons & Easterlings are "At War."
