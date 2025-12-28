@@ -30,7 +30,7 @@ import { WotrEventCard } from "./wotr-cards";
 @Injectable({ providedIn: "root" })
 export class WotrShadowStrategyCards {
   private q = inject(WotrGameQuery);
-  private gameUi = inject(WotrGameUi);
+  private ui = inject(WotrGameUi);
   private unitUi = inject(WotrUnitUi);
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -72,7 +72,7 @@ export class WotrShadowStrategyCards {
                 region =>
                   region.isUnderSiege("free-peoples") && region.hasArmyUnitsOfNation("isengard")
               );
-            const regionId = await this.gameUi.askRegion(
+            const regionId = await this.ui.askRegion(
               "Select a stronghold to attack",
               strongholdRegions.map(region => region.regionId)
             );
@@ -144,7 +144,7 @@ export class WotrShadowStrategyCards {
             const regions = this.q.regions().filter(region => this.isStormcrowRegion(region));
             const nations = new Set<WotrNationId>();
             regions.forEach(region => nations.add(region.region().nationId!));
-            const nationId = await this.gameUi.askNation(
+            const nationId = await this.ui.askNation(
               "Select a Free Peoples Nation to move back on the Political Track",
               [...nations]
             );
@@ -175,21 +175,23 @@ export class WotrShadowStrategyCards {
         return {
           play: async () => {
             const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
-            const units = await this.gameUi.askRegionUnits("Select a Shadow army to move", {
+            const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
               type: "moveArmy",
               regionIds: regionIds,
-              required: false,
+              required: true,
               requiredUnits: [],
               retroguard: null
             });
-            if (!units) return [];
             const fromRegion = units.regionId;
             const targetRegions = this.q
               .region(fromRegion)
               .reachableRegions(3, region => region.isFreeForArmyMovement("shadow"))
               .filter(r => r.hasArmyNotUnderSiege("shadow"));
-            if (!targetRegions.length) return [];
-            const toRegionId = await this.gameUi.askRegion(
+            if (!targetRegions.length) {
+              await this.ui.askContinue("No valid target regions available for movement");
+              return [];
+            }
+            const toRegionId = await this.ui.askRegion(
               "Select a region to move the army to",
               targetRegions.map(region => region.regionId)
             );
@@ -198,14 +200,51 @@ export class WotrShadowStrategyCards {
             return actions;
           }
         };
-      // TODO The Shadow Lengthens
+      // The Shadow Lengthens
       // Move two Shadow Armies up to two regions: each movement must end in a region already occupied by another Shadow Army (that must not be under siege). The
       // traversed regions must be free for the purposes of Army movement, and no Shadow units may be picked up or dropped off along the way (other than, possibly,
       // splitting the Army initially).
       case "sstr08":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            let doneMoves = 0;
+            let continueMoving = true;
+            while (continueMoving) {
+              const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+              const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+                type: "moveArmy",
+                regionIds: regionIds,
+                required: true,
+                requiredUnits: [],
+                retroguard: null
+              });
+              const fromRegion = units.regionId;
+              const targetRegions = this.q
+                .region(fromRegion)
+                .reachableRegions(2, region => region.isFreeForArmyMovement("shadow"))
+                .filter(r => r.hasArmyNotUnderSiege("shadow"));
+              if (!targetRegions.length) {
+                await this.ui.askContinue("No valid target regions available for movement");
+                return actions;
+              }
+              const toRegionId = await this.ui.askRegion(
+                "Select a region to move the army to",
+                targetRegions.map(region => region.regionId)
+              );
+              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+              continueMoving = false;
+              doneMoves++;
+              if (doneMoves < 2) {
+                continueMoving = await this.ui.askConfirm(
+                  "Continue moving armies?",
+                  "Move another",
+                  "Stop moving"
+                );
+              }
+            }
+            return actions;
+          }
         };
       // TODO The Shadow is Moving
       // Play if all Shadow Nations are "At War."
@@ -224,10 +263,10 @@ export class WotrShadowStrategyCards {
         return {
           canBePlayed: () => this.q.southrons.isAtWar(),
           play: async () => {
-            const units = await this.gameUi.askRegionUnits("Select a Shadow army to move", {
+            const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
               type: "moveArmy",
               regionIds: ["umbar"],
-              required: false,
+              required: true,
               requiredUnits: [],
               retroguard: null
             });
@@ -235,7 +274,7 @@ export class WotrShadowStrategyCards {
             const targetRegions = this.q
               .regions()
               .filter(r => r.isCoastal() && r.isNation("gondor"));
-            const toRegionId = await this.gameUi.askRegion(
+            const toRegionId = await this.ui.askRegion(
               "Select a region to move the army to",
               targetRegions.map(region => region.regionId)
             );
@@ -251,7 +290,7 @@ export class WotrShadowStrategyCards {
             return actions;
           }
         };
-      // TODO Rage Of The Dunlendings
+      // Rage Of The Dunlendings
       // Play if Isengard is "At War."
       // Recruit two Isengard Regular units in a free region adjacent to North or South Dunland.
       // You may also move to this region up to four Isengard units (Regular or Elite) from North Dunland and/or South Dunland.
@@ -268,7 +307,7 @@ export class WotrShadowStrategyCards {
                   r.isFreeForRecruitmentByCard("shadow")
               )
               .map(r => r.regionId);
-            const region = await this.gameUi.askRegion(
+            const region = await this.ui.askRegion(
               "Select a region to recruit Isengard units",
               regions
             );
@@ -310,7 +349,7 @@ export class WotrShadowStrategyCards {
               .regions()
               .filter(r => r.hasArmy("shadow"))
               .map(r => r.regionId);
-            const region = await this.gameUi.askRegion(
+            const region = await this.ui.askRegion(
               "Select a region to recruit an Isengard unit",
               regions
             );
@@ -328,11 +367,11 @@ export class WotrShadowStrategyCards {
               .regions()
               .filter(r => r.hasArmy("shadow"))
               .map(r => r.regionId);
-            const region = await this.gameUi.askRegion(
+            const region = await this.ui.askRegion(
               "Select a region to recruit a Sauron unit",
               regions
             );
-            const unit = await this.gameUi.askReinforcementUnit("Select a Sauron unit to recruit", {
+            const unit = await this.ui.askReinforcementUnit("Select a Sauron unit to recruit", {
               canPass: false,
               frontId: "shadow",
               units: [
@@ -355,7 +394,7 @@ export class WotrShadowStrategyCards {
               if (!this.q.nation("sauron").nEliteReinforcements()) return actions;
               const regions = this.q.regions().filter(r => r.hasRegularUnitsOfNation("sauron"));
               if (!regions.length) return actions;
-              const region = await this.gameUi.askRegion(
+              const region = await this.ui.askRegion(
                 "Select a region to upgrade a Sauron regular unit",
                 regions.map(r => r.regionId)
               );
@@ -414,26 +453,38 @@ export class WotrShadowStrategyCards {
       case "sstr18":
         return {
           canBePlayed: () => this.q.aragorn.isInPlay(),
-          play: async () => {
-            const actions: WotrAction[] = [];
-            actions.push(
-              ...(await this.unitUi.recruitUnitsInSameRegionByCard(
-                "minas-morgul",
-                "sauron",
-                5,
-                0,
-                1
-              ))
-            );
-            return actions;
-          }
+          play: async () =>
+            this.unitUi.recruitUnitsInSameRegionByCard("minas-morgul", "sauron", 5, 0, 1)
         };
-      // TODO Shadows on the Misty Mountains
+      // Shadows on the Misty Mountains
       // Recruit two Sauron units (Regular or Elite) and one Nazgûl either in Mount Gram or Moria.
       case "sstr19":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            let regionIds: WotrRegionId[] = ["mount-gram", "moria"];
+            regionIds = regionIds.filter(r =>
+              this.q.region(r).isFreeForRecruitmentByCard("shadow")
+            );
+            if (!regionIds.length) {
+              await this.ui.askContinue("No valid regions available for recruitment.");
+              return [];
+            }
+            let regionId = regionIds[0];
+            if (regionIds.length > 1) {
+              regionId = await this.ui.askRegion(
+                "Select a region to recruit Sauron units",
+                regionIds
+              );
+            }
+            const actions: WotrAction[] = [];
+            actions.push(
+              ...(await this.unitUi.recruitRegularsOrElitesByCard(regionId, "sauron", 2))
+            );
+            actions.push(
+              ...(await this.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 1))
+            );
+            return actions;
+          }
         };
       // Orcs Multiplying Again
       // Recruit three Sauron Regular units in Dol Guldur and three Sauron Regular units in Mount Gundabad.
