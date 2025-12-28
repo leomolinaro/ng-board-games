@@ -18,6 +18,10 @@ export class WotrNationQuery {
     return this.nationStore.nation(this.nationId);
   }
 
+  frontId() {
+    return this.nation().front;
+  }
+
   isAtWar(): boolean {
     return this.nationStore.isAtWar(this.nationId);
   }

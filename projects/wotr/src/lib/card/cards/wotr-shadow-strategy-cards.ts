@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrAbility } from "../../ability/wotr-ability";
 import { attack } from "../../battle/wotr-battle-actions";
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
@@ -7,6 +8,12 @@ import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
+import {
+  WotrAfterNationAdvance,
+  WotrCanAdvanceNationModifier,
+  WotrNationModifiers
+} from "../../nation/wotr-nation-modifiers";
+import { WotrNationAdvanceSource } from "../../nation/wotr-nation-rules";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
@@ -14,6 +21,7 @@ import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
+import { playCardOnTableId } from "../wotr-card-actions";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -26,6 +34,7 @@ export class WotrShadowStrategyCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private unitRules = inject(WotrUnitRules);
   private unitUtils = inject(WotrUnitUtils);
+  private nationModifiers = inject(WotrNationModifiers);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -85,14 +94,36 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Threats and Promises
+      // Threats and Promises
       // Play on the table.
       // When "Threats and Promises" is in play, the Free Peoples player cannot advance a passive Nation on the Political Track using a Muster action die result.
       // You must discard this card from the table as soon as a Free Peoples Nation advances on the Political Track either due to an attack or due to a Companion's special ability
       case "sstr05":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => [playCardOnTableId("sstr05")],
+          onTableAbilities: () => {
+            const cannotAdvanceAbility: WotrAbility<WotrCanAdvanceNationModifier> = {
+              modifier: this.nationModifiers.canAdvanceNationModifiers,
+              handler: (nationId: WotrNationId, source: WotrNationAdvanceSource) => {
+                const nation = this.q.nation(nationId);
+                if (nation.frontId() !== "free-peoples") return true;
+                if (source !== "muster-die-result") return true;
+                if (nation.isActive()) return true;
+                return false;
+              }
+            };
+            const discardAbility: WotrAbility<WotrAfterNationAdvance> = {
+              modifier: this.nationModifiers.afterNationAdvance,
+              handler: async (nationId: WotrNationId, source: WotrNationAdvanceSource) => {
+                const nation = this.q.nation(nationId);
+                if (nation.frontId() !== "free-peoples") return;
+                if (source === "auto-advance" || source === "character-ability") {
+                  this.cardHandler.discardCardFromTableEffect("sstr05");
+                }
+              }
+            };
+            return [cannotAdvanceAbility, discardAbility];
+          }
         };
       // Stormcrow
       // Play if either the Fellowship or a Companion is inside the borders of a Free Peoples Nation not "At War."

@@ -385,7 +385,7 @@ export class WotrActionDieUi {
   }
 
   private async resolvePoliticalAdvanceToken(frontId: WotrFrontId): Promise<WotrTokenStory> {
-    const nation = await this.nationUi.politicalAdvance(frontId);
+    const nation = await this.nationUi.politicalAdvance(frontId, "token");
     return {
       type: "token",
       token: "political-advance",

@@ -1,22 +1,31 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNation } from "./wotr-nation-models";
+import { WotrNationModifiers } from "./wotr-nation-modifiers";
 import { WotrNationStore } from "./wotr-nation-store";
+
+export type WotrNationAdvanceSource =
+  | "muster-die-result"
+  | "token"
+  | "character-ability"
+  | "card-ability"
+  | "auto-advance";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationRules {
   private nationStore = inject(WotrNationStore);
+  private nationModifiers = inject(WotrNationModifiers);
 
-  canFrontAdvancePoliticalTrack(frontId: WotrFrontId): boolean {
-    if (frontId === "free-peoples") {
-      return this.nationStore
-        .freePeoplesNations()
-        .some(nation => this.canAdvancePoliticalTrack(nation));
-    } else {
-      return this.nationStore.shadowNations().some(nation => this.canAdvancePoliticalTrack(nation));
-    }
+  canFrontAdvancePoliticalTrack(frontId: WotrFrontId, source: WotrNationAdvanceSource): boolean {
+    const nations =
+      frontId === "free-peoples"
+        ? this.nationStore.freePeoplesNations()
+        : this.nationStore.shadowNations();
+    return nations.some(nation => this.canAdvancePoliticalTrack(nation, source));
   }
-  canAdvancePoliticalTrack(nation: WotrNation): boolean {
+
+  canAdvancePoliticalTrack(nation: WotrNation, source: WotrNationAdvanceSource): boolean {
+    if (!this.nationModifiers.canAdvanceNation(nation.id, source)) return false;
     return (
       nation.politicalStep === 3 ||
       nation.politicalStep === 2 ||

@@ -47,7 +47,7 @@ export class WotrActionDieRules {
       case "draw-card":
         return this.q.front(frontId).canDrawCard();
       case "political-advance":
-        return this.nationRules.canFrontAdvancePoliticalTrack(frontId);
+        return this.nationRules.canFrontAdvancePoliticalTrack(frontId, "token");
       case "move-nazgul-minions":
         return this.regionStore.canMoveNazgul();
     }

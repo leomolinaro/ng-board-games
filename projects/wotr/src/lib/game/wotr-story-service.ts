@@ -82,6 +82,10 @@ export class WotrStoryService extends ABgGameService<
   private nReplayStories = 0;
   private replayToLastStory = false;
   private $replayCall = new Subject<void>();
+  private currentStory: WotrStory | null = null;
+  getCurrentStory() {
+    return this.currentStory;
+  }
 
   private async executeTask2(
     playerId: WotrFrontId,
@@ -160,6 +164,8 @@ export class WotrStoryService extends ABgGameService<
   }
 
   private async applyStory(story: WotrStory, front: WotrFrontId) {
+    this.currentStory = story;
     await this.actionRegistry.applyStory(story, front);
+    this.currentStory = null;
   }
 }

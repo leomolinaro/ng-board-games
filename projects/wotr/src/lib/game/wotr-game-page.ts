@@ -25,6 +25,7 @@ import { WotrGameTurn } from "../game-turn/wotr-game-flow";
 import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
 import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
+import { WotrNationModifiers } from "../nation/wotr-nation-modifiers";
 import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info-models";
 import { WotrPlayerUi } from "../player/wotr-player-ui";
 import { WotrRegionHandler } from "../region/wotr-region-handler";
@@ -78,6 +79,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private battleUi = inject(WotrBattleUi);
   private combatCards = inject(WotrCombatCards);
   private actionDieUi = inject(WotrActionDieUi);
+  private nationModifiers = inject(WotrNationModifiers);
 
   private dialog = inject(MatDialog);
 
@@ -159,9 +161,10 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.characterModifiers.clear();
     this.fellowshipModifiers.clear();
     this.huntModifiers.clear();
+    this.nationModifiers.clear();
+    this.unitModifiers.clear();
     this.store.clear();
     this.story.clear();
-    this.unitModifiers.clear();
   }
 
   private storiesDialogRef: WotrStoriesDialogRef | null = null;

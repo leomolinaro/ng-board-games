@@ -1,9 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrActionApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrStory } from "../game/wotr-story-models";
+import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -14,6 +15,8 @@ import {
   WotrPoliticalRecede
 } from "./wotr-nation-actions";
 import { WotrNationId } from "./wotr-nation-models";
+import { WotrNationModifiers } from "./wotr-nation-modifiers";
+import { WotrNationAdvanceSource } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
@@ -23,16 +26,19 @@ export class WotrNationHandler {
   private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);
   private characterStore = inject(WotrCharacterStore);
+  private nationModifiers = inject(WotrNationModifiers);
+  private storyService = inject(WotrStoryService);
 
   init() {
     this.actionRegistry.registerAction<WotrPoliticalActivation>(
       "political-activation",
-      this.politicalActivation,
+      (action, front) => this.nationStore.activate(true, action.nation),
       (action, front, f) => [f.player(front), " activates ", f.nation(action.nation)]
     );
     this.actionRegistry.registerAction<WotrPoliticalAdvance>(
       "political-advance",
-      this.politicalAdvance,
+      (action, front) =>
+        this.advanceNation(action.quantity, action.nation, this.currentNationAdvanceSource()),
       (action, front, f) => [
         f.player(front),
         " advances ",
@@ -64,12 +70,6 @@ export class WotrNationHandler {
       (effect, f) => [f.nation(effect.nation), " is advanced to war"]
     );
   }
-
-  private politicalActivation: WotrActionApplier<WotrPoliticalActivation> = action =>
-    this.nationStore.activate(true, action.nation);
-
-  private politicalAdvance: WotrActionApplier<WotrPoliticalAdvance> = action =>
-    this.nationStore.advance(action.quantity, action.nation);
 
   checkNationActivationByArmyMovement(regionId: WotrRegionId, armyFront: WotrFrontId) {
     const region = this.regionStore.region(regionId);
@@ -165,11 +165,12 @@ export class WotrNationHandler {
   advanceNationEffect(quantity: number, nation: WotrNationId) {
     const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
     this.logger.logEffect(action);
-    this.advanceNation(quantity, nation);
+    this.advanceNation(quantity, nation, "auto-advance");
   }
 
-  advanceNation(quantity: number, nation: WotrNationId) {
+  advanceNation(quantity: number, nation: WotrNationId, source: WotrNationAdvanceSource) {
     this.nationStore.advance(quantity, nation);
+    this.nationModifiers.onAfterNationAdvance(nation, source);
   }
 
   advanceAtWar(nation: WotrNationId) {
@@ -184,6 +185,24 @@ export class WotrNationHandler {
       if (!nation.active) {
         this.activateNation(nation.id);
       }
+    }
+  }
+
+  private currentNationAdvanceSource(): WotrNationAdvanceSource {
+    const story = this.storyService.getCurrentStory() as WotrStory;
+    switch (story.type) {
+      case "die":
+        return "muster-die-result";
+      case "die-card":
+        return "card-ability";
+      case "reaction-card":
+        return "card-ability";
+      case "reaction-character":
+        return "character-ability";
+      case "token":
+        return "token";
+      default:
+        throw new Error(`Unexpected story type: ${story.type}`);
     }
   }
 }

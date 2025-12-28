@@ -59,7 +59,7 @@ export class WotrFreePeoplesStrategyCards {
           play: async () => {
             const actions: WotrAction[] = [];
             actions.push(playCardOnTableId("fpstr02"));
-            const advanceAction = await this.nationUi.advanceNation("elves");
+            const advanceAction = await this.nationUi.advanceNation("elves", "card-ability");
             if (advanceAction) actions.push(advanceAction);
             return actions;
           },
@@ -84,7 +84,7 @@ export class WotrFreePeoplesStrategyCards {
             const actions: WotrAction[] = [];
             actions.push(playCardOnTableId("fpstr03"));
             this.cardHandler.playCardOnTable("fpstr03", "free-peoples");
-            const advanceAction = await this.nationUi.advanceNation("north");
+            const advanceAction = await this.nationUi.advanceNation("north", "card-ability");
             if (advanceAction) actions.push(advanceAction);
             return actions;
           },
@@ -172,7 +172,7 @@ export class WotrFreePeoplesStrategyCards {
           canBePlayed: () => this.q.gondor.isActive(),
           play: async () => {
             const actions: WotrAction[] = [];
-            const advanceAction = await this.nationUi.advanceNation("rohan");
+            const advanceAction = await this.nationUi.advanceNation("rohan", "card-ability");
             if (advanceAction) actions.push(advanceAction);
             actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard("edoras", "rohan")));
             actions.push(...(await this.unitUi.recruitLeaderByCard("edoras", "rohan")));
