@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAbility } from "../../ability/wotr-ability";
+import { discardDice } from "../../action-die/wotr-action-die-actions";
 import { attack } from "../../battle/wotr-battle-actions";
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
@@ -22,6 +23,7 @@ import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { playCardOnTableId } from "../wotr-card-actions";
+import { WotrCardHandler } from "../wotr-card-handler";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
@@ -35,6 +37,7 @@ export class WotrShadowStrategyCards {
   private unitRules = inject(WotrUnitRules);
   private unitUtils = inject(WotrUnitUtils);
   private nationModifiers = inject(WotrNationModifiers);
+  private cardHandler = inject(WotrCardHandler);
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -86,13 +89,18 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO The Day Without Dawn
+      // The Day Without Dawn
       // Play if all Shadow Nations are "At War."
       // Discard all unused Free Peoples Action dice that show a Will of the West result.
       case "sstr04":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
+          play: async () => {
+            const willDice = this.q.freePeoples
+              .actionDice()
+              .filter(die => die === "will-of-the-west");
+            return [discardDice("free-peoples", ...willDice)];
+          }
         };
       // Threats and Promises
       // Play on the table.
