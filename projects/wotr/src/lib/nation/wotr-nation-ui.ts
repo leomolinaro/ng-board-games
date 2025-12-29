@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
@@ -51,13 +52,28 @@ export class WotrNationUi {
     return advanceNation(nationId);
   }
 
-  diplomaticActionChoice: WotrUiChoice = {
-    label: () => "Diplomatic action",
-    isAvailable: frontId =>
-      this.nationRules.canFrontAdvancePoliticalTrack(frontId, "muster-die-result"),
-    actions: async frontId => {
-      const nation = await this.politicalAdvance(frontId, "muster-die-result");
-      return [advanceNation(nation, 1)];
+  diplomaticActionChoice(die: WotrActionDie): WotrUiChoice {
+    const source = this.nationAdvanceSource(die);
+    return {
+      label: () => "Diplomatic action",
+      isAvailable: frontId => this.nationRules.canFrontAdvancePoliticalTrack(frontId, source),
+      actions: async frontId => {
+        const nation = await this.politicalAdvance(frontId, source);
+        return [advanceNation(nation, 1)];
+      }
+    };
+  }
+
+  private nationAdvanceSource(die: WotrActionDie): WotrNationAdvanceSource {
+    switch (die) {
+      case "muster":
+        return "muster-die-result";
+      case "muster-army":
+        return "muster-army-die-result";
+      case "will-of-the-west":
+        return "will-of-the-west-die-result";
+      default:
+        throw new Error("Unexpected action die");
     }
-  };
+  }
 }

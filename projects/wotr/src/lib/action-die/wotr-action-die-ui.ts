@@ -253,7 +253,7 @@ export class WotrActionDieUi {
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
-      this.nationUi.diplomaticActionChoice,
+      this.nationUi.diplomaticActionChoice(die),
       this.cardPlayUi.playEventCardChoice(["muster"]),
       this.unitUi.recruitReinforcementsChoice
     ];
@@ -269,7 +269,7 @@ export class WotrActionDieUi {
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
-      this.nationUi.diplomaticActionChoice,
+      this.nationUi.diplomaticActionChoice("muster-army"),
       this.unitUi.moveArmiesChoice,
       this.unitUi.attackArmyChoice,
       this.cardPlayUi.playEventCardChoice(["muster", "army"]),
