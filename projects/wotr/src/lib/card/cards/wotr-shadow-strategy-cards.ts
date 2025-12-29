@@ -286,7 +286,7 @@ export class WotrShadowStrategyCards {
       case "sstr07":
         return {
           play: async () => {
-            const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+            const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
             const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
               type: "moveArmy",
               regionIds: regionIds,
@@ -322,7 +322,7 @@ export class WotrShadowStrategyCards {
             const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
-              const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+              const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
               const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
                 type: "moveArmy",
                 regionIds: regionIds,
@@ -371,7 +371,7 @@ export class WotrShadowStrategyCards {
             const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
-              const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
+              const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
               const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
                 type: "moveArmy",
                 regionIds: regionIds,

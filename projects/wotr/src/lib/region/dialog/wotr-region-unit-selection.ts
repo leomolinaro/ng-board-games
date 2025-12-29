@@ -45,7 +45,7 @@ export interface WotrMovingNazgulUnitSelection extends AWotrRegionUnitSelection 
 
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   type: "moveArmy";
-  requiredUnits: ("anyLeader" | WotrCharacterId)[];
+  requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[];
   retroguard: WotrUnits | null;
   required: boolean;
   doneMovements: WotrArmyMovement[];
@@ -53,7 +53,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
   type: "attack";
-  requiredUnits: ("anyLeader" | WotrCharacterId)[];
+  requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[];
   frontId: WotrFrontId;
 }
 
@@ -225,6 +225,12 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
       if (reqUnit === "anyLeader") {
         const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
         if (!someLeaders) return "Select at least one leader to move.";
+      } else if (reqUnit === "anyNazgul") {
+        const someNazgul = selectedNodes.some(
+          node =>
+            node.type === "nazgul" || (node.type === "character" && node.id === "the-witch-king")
+        );
+        if (!someNazgul) return "Select at least one Nazgul to move.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
           const character = this.characterStore.character(reqUnit);
@@ -325,22 +331,17 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
     for (const reqUnit of this.selection.requiredUnits) {
       if (reqUnit === "anyLeader") {
         const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-        if (!someLeaders) return "Select at least one leader to move.";
+        if (!someLeaders) return "Select at least one leader to attack with.";
+      } else if (reqUnit === "anyNazgul") {
+        const someNazgul = selectedNodes.some(
+          node =>
+            node.type === "nazgul" || (node.type === "character" && node.id === "the-witch-king")
+        );
+        if (!someNazgul) return "Select at least one Nazgûl to attack with.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
           const character = this.characterStore.character(reqUnit);
           return `Select (${character.name}) to move.`;
-        }
-      }
-    }
-    for (const reqUnit of this.selection.requiredUnits) {
-      if (reqUnit === "anyLeader") {
-        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-        if (!someLeaders) return "Select at least one leader to attack.";
-      } else {
-        if (!hasCharacter(selectedNodes, reqUnit)) {
-          const character = this.characterStore.character(reqUnit);
-          return `Select (${character.name}) to attack.`;
         }
       }
     }

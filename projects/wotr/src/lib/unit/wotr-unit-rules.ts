@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
@@ -15,6 +16,7 @@ import {
   WotrUnits
 } from "./wotr-unit-models";
 import { WotrUnitModifiers } from "./wotr-unit-modifiers";
+import { WotrUnitUtils } from "./wotr-unit-utils";
 
 @Injectable({ providedIn: "root" })
 export class WotrUnitRules {
@@ -22,6 +24,8 @@ export class WotrUnitRules {
   private nationStore = inject(WotrNationStore);
   private characterStore = inject(WotrCharacterStore);
   private unitModifiers = inject(WotrUnitModifiers);
+  private unitUtils = inject(WotrUnitUtils);
+  private q = inject(WotrGameQuery);
 
   canFrontRecruitReinforcements(frontId: WotrFrontId): boolean {
     const constraints: WotrRecruitmentConstraints = { points: 2, exludedRegions: new Set() };
@@ -93,19 +97,38 @@ export class WotrUnitRules {
     return this.regionStore.regions().some(region => this.canMoveArmyFromRegion(region, frontId));
   }
 
-  armyMovementStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
-    return this.regionStore
+  armyMovementStartingRegions(
+    frontId: WotrFrontId,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
+  ): WotrRegionId[] {
+    return this.q
       .regions()
-      .filter(region => this.canMoveArmyFromRegion(region, frontId))
-      .map(region => region.id);
+      .filter(region => {
+        const army = region.armyNotUnderSiege(frontId);
+        return (
+          army &&
+          this.doesArmyHasRequiredUnits(army, requiredUnits, true) &&
+          this.canMoveArmyFromRegion(region.region(), frontId)
+        );
+      })
+      .map(region => region.regionId);
   }
 
-  armyWithLeaderMovementStartingRegions(frontId: WotrFrontId): WotrRegionId[] {
-    return this.regionStore
-      .regions()
-      .filter(region => region.army && this.doesArmyHaveLeadership(region.army, true))
-      .filter(region => this.canMoveArmyFromRegion(region, frontId))
-      .map(region => region.id);
+  private doesArmyHasRequiredUnits(
+    army: WotrArmy,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[],
+    movable: boolean
+  ): boolean {
+    for (const reqUnit of requiredUnits) {
+      if (reqUnit === "anyLeader") {
+        if (!this.doesArmyHaveLeadership(army, movable)) return false;
+      } else if (reqUnit === "anyNazgul") {
+        if (!this.unitUtils.hasNazgul(army)) return false;
+      } else {
+        if (!army.characters?.includes(reqUnit)) return false;
+      }
+    }
+    return true;
   }
 
   armyMovementTargetRegions(army: WotrRegionUnits, frontId: WotrFrontId): WotrRegionId[] {
@@ -127,16 +150,21 @@ export class WotrUnitRules {
       .map(neighbor => neighbor.id);
   }
 
-  attackStartingRegions(frontId: WotrFrontId): WotrRegion[] {
-    return this.regionStore
+  attackStartingRegions(
+    frontId: WotrFrontId,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
+  ): WotrRegion[] {
+    return this.q
       .regions()
-      .filter(region => this.canFrontAttackFromRegion(region, frontId));
-  }
-
-  attackWithLeadersStartingRegions(frontId: WotrFrontId): WotrRegion[] {
-    return this.regionStore
-      .regions()
-      .filter(region => this.canFrontAttackWithLeadersFromRegion(region, frontId));
+      .filter(region => {
+        const army = region.army(frontId);
+        return (
+          army &&
+          this.doesArmyHasRequiredUnits(army, requiredUnits, true) &&
+          this.canFrontAttackFromRegion(region.region(), frontId)
+        );
+      })
+      .map(region => region.region());
   }
 
   attackTargetRegions(region: WotrRegion, frontId: WotrFrontId): WotrRegion[] {
@@ -271,6 +299,17 @@ export class WotrUnitRules {
       return this.canArmyAttack(region.army, region);
     } else if (region.underSiegeArmy?.front === frontId) {
       if (!this.doesArmyHaveLeadership(region.underSiegeArmy, false)) return false;
+      return this.canArmyAttack(region.underSiegeArmy, region);
+    }
+    return false;
+  }
+
+  private canFrontAttackWithNazgulFromRegion(region: WotrRegion, frontId: WotrFrontId): boolean {
+    if (region.army?.front === frontId) {
+      if (!this.unitUtils.hasNazgul(region.army)) return false;
+      return this.canArmyAttack(region.army, region);
+    } else if (region.underSiegeArmy?.front === frontId) {
+      if (!this.unitUtils.hasNazgul(region.underSiegeArmy)) return false;
       return this.canArmyAttack(region.underSiegeArmy, region);
     }
     return false;

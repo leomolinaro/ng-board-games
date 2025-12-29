@@ -60,12 +60,16 @@ export class WotrUnitUi {
     throw new Error("Method not implemented.");
   }
 
-  async moveArmies(numberOfMoves: number, frontId: WotrFrontId): Promise<WotrAction[]> {
+  async moveArmies(
+    frontId: WotrFrontId,
+    numberOfMoves: number,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
+  ): Promise<WotrAction[]> {
     let continueMoving = true;
     const doneMovements: WotrArmyMovement[] = [];
     const actions: WotrAction[] = [];
     while (continueMoving) {
-      const movActions = await this.moveArmy(frontId, doneMovements);
+      const movActions = await this.moveArmy(frontId, requiredUnits, doneMovements);
       actions.push(...movActions);
       const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
       doneMovements.push(movement);
@@ -81,12 +85,16 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async moveArmy(frontId: WotrFrontId, doneMovements: WotrArmyMovement[]): Promise<WotrAction[]> {
-    const candidateRegions = this.unitRules.armyMovementStartingRegions(frontId);
+  async moveArmy(
+    frontId: WotrFrontId,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[],
+    doneMovements: WotrArmyMovement[]
+  ): Promise<WotrAction[]> {
+    const candidateRegions = this.unitRules.armyMovementStartingRegions(frontId, requiredUnits);
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
       type: "moveArmy",
-      requiredUnits: [],
+      requiredUnits,
       retroguard: null,
       required: true,
       doneMovements
@@ -94,8 +102,11 @@ export class WotrUnitUi {
     return this.moveThisArmy(movingArmy, frontId);
   }
 
-  async attack(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const attackingUnits = await this.askAttackingUnits(frontId, false);
+  async attack(
+    frontId: WotrFrontId,
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
+  ): Promise<WotrAction[]> {
+    const attackingUnits = await this.askAttackingUnits(frontId, requiredUnits);
     return this.attackWithArmy(attackingUnits, frontId);
   }
 
@@ -113,15 +124,13 @@ export class WotrUnitUi {
 
   private async askAttackingUnits(
     frontId: WotrFrontId,
-    withLeaders: boolean
+    requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
   ): Promise<WotrRegionUnits> {
-    const candidateRegions = withLeaders
-      ? this.unitRules.attackWithLeadersStartingRegions(frontId)
-      : this.unitRules.attackStartingRegions(frontId);
+    const candidateRegions = this.unitRules.attackStartingRegions(frontId, requiredUnits);
     return this.ui.askRegionUnits("Select units to attack", {
       type: "attack",
       regionIds: candidateRegions.map(region => region.id),
-      requiredUnits: withLeaders ? ["anyLeader"] : [],
+      requiredUnits,
       frontId
     });
   }
@@ -140,11 +149,6 @@ export class WotrUnitUi {
       targetRegions.map(region => region.id)
     );
     return [attack(fromRegion.id, toRegionId, retroguard)];
-  }
-
-  async attackWithLeader(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const attackingUnits = await this.askAttackingUnits(frontId, true);
-    return this.attackWithArmy(attackingUnits, frontId);
   }
 
   private async moveThisArmy(
@@ -170,33 +174,6 @@ export class WotrUnitUi {
     const actions: WotrAction[] = [movement];
     actions.push(...(await this.checkStackingLimit(movingArmy.regionId, frontId)));
     return actions;
-  }
-
-  async moveArmyWithLeader(frontId: WotrFrontId): Promise<WotrAction[]> {
-    const candidateRegions = this.unitRules.armyWithLeaderMovementStartingRegions(frontId);
-    const movingArmy = await this.ui.askRegionUnits("Select units to move", {
-      regionIds: candidateRegions,
-      type: "moveArmy",
-      requiredUnits: ["anyLeader"],
-      retroguard: null,
-      required: true,
-      doneMovements: []
-    });
-    return this.moveThisArmy(movingArmy, frontId);
-  }
-
-  async moveArmyWithCharacter(characterId: WotrCharacterId): Promise<WotrAction[]> {
-    const c = this.q.character(characterId);
-    const fromRegionId = c.region()!.id;
-    const movingArmy = await this.ui.askRegionUnits("Select units to move", {
-      regionIds: [fromRegionId],
-      type: "moveArmy",
-      requiredUnits: [characterId],
-      retroguard: null,
-      required: true,
-      doneMovements: []
-    });
-    return this.moveThisArmy(movingArmy, c.frontId());
   }
 
   async attackWithCharacter(characterId: WotrCharacterId): Promise<WotrAction[]> {
@@ -505,13 +482,13 @@ export class WotrUnitUi {
   attackArmyChoice: WotrUiChoice = {
     label: () => "Attack",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontAttack(frontId),
-    actions: async (frontId: WotrFrontId) => this.attack(frontId)
+    actions: async (frontId: WotrFrontId) => this.attack(frontId, [])
   };
 
   moveArmiesChoice: WotrUiChoice = {
     label: () => "Move armies",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmies(frontId),
-    actions: async (frontId: WotrFrontId) => this.moveArmies(2, frontId)
+    actions: async (frontId: WotrFrontId) => this.moveArmies(frontId, 2, [])
   };
 
   recruitReinforcementsChoice: WotrUiChoice = {
@@ -523,13 +500,13 @@ export class WotrUnitUi {
   leaderArmyMoveChoice: WotrUiChoice = {
     label: () => "Move army with leader",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmiesWithLeader(frontId),
-    actions: async (frontId: WotrFrontId) => this.moveArmyWithLeader(frontId)
+    actions: async (frontId: WotrFrontId) => this.moveArmy(frontId, ["anyLeader"], [])
   };
 
   leaderArmyAttackChoice: WotrUiChoice = {
     label: () => "Attack with leader",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontAttackWithLeader(frontId),
-    actions: async (frontId: WotrFrontId) => this.attackWithLeader(frontId)
+    actions: async (frontId: WotrFrontId) => this.attack(frontId, ["anyLeader"])
   };
 
   async eliminateUnits(params: WotrEliminateUnitsParams, frontId: string): Promise<WotrAction[]> {

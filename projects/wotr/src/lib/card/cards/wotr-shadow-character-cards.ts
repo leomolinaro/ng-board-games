@@ -490,13 +490,25 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO The Ringwraiths Are Abroad
+      // The Ringwraiths Are Abroad
       // Move any or all of the Nazgûl.
       // Then, you may either move two Armies each containing a Nazgûl, or attack with one Army containing a Nazgûl.
       case "scha23":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            actions.push(...(await this.characterUi.moveAnyOrAllNazgul()));
+            const option = await this.ui.askOption<"move" | "attack">("Choose an action", [
+              { value: "move", label: "Move two armies" },
+              { value: "attack", label: "Attack with one army" }
+            ]);
+            if (option === "move") {
+              actions.push(...(await this.unitUi.moveArmies("shadow", 2, ["anyNazgul"])));
+            } else {
+              actions.push(...(await this.unitUi.attack("shadow", ["anyNazgul"])));
+            }
+            return actions;
+          }
         };
       // The Black Captain Commands
       // Play if the Witch-king is in play.
@@ -529,7 +541,7 @@ export class WotrShadowCharacterCards {
               { value: "attack", label: "Attack with the Witch-king", disabled: !canAttack }
             ]);
             if (choice2 === "move") {
-              actions.push(...(await this.unitUi.moveArmyWithCharacter("the-witch-king")));
+              actions.push(...(await this.unitUi.moveArmy("shadow", ["the-witch-king"], [])));
             } else if (choice2 === "attack") {
               actions.push(...(await this.unitUi.attackWithCharacter("the-witch-king")));
             }
