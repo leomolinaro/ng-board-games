@@ -16,6 +16,7 @@ import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
 import { WotrNation, WotrNationId, frontOfNation } from "../../nation/wotr-nation-models";
 import { WotrUnits } from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrRegion } from "../wotr-region-models";
 import { UnitNode } from "./wotr-region-unit-node";
 import { WotrRegionUnitSelection, selectionModeFactory } from "./wotr-region-unit-selection";
@@ -117,12 +118,18 @@ export class WotrRegionDialog implements OnInit {
   private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
   private characterStore = inject(WotrCharacterStore);
   private unitModifiers = inject(WotrUnitModifiers);
+  private unitUtils = inject(WotrUnitUtils);
 
   protected unitNodes!: UnitNode[];
   private selectedNodes = signal<UnitNode[]>([]);
 
   private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(this.data.unitSelection, this.characterStore, this.unitModifiers)
+    ? selectionModeFactory(
+        this.data.unitSelection,
+        this.characterStore,
+        this.unitModifiers,
+        this.unitUtils
+      )
     : null;
 
   private casualtiesMode = this.data.unitSelection?.type === "chooseCasualties";

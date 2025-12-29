@@ -137,7 +137,8 @@ export class WotrBattleUi {
       regionIds: [fromRegion.id],
       retroguard: battle.retroguard || null,
       requiredUnits: [],
-      required: false
+      required: false,
+      doneMovements: []
     });
     if (this.unitUtils.isEmptyArmy(movingUnits)) {
       return [notAdvanceArmy(fromRegion.id)];

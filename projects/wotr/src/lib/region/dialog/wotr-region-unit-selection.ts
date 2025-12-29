@@ -3,12 +3,14 @@ import { WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrArmyMovement } from "../../unit/wotr-unit-actions";
 import {
   unitTypeMatchLabel,
   WotrRegionUnitTypeMatch,
   WotrUnits
 } from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrRegion, WotrRegionId } from "../wotr-region-models";
 import { UnitNode } from "./wotr-region-unit-node";
 
@@ -46,6 +48,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   requiredUnits: ("anyLeader" | WotrCharacterId)[];
   retroguard: WotrUnits | null;
   required: boolean;
+  doneMovements: WotrArmyMovement[];
 }
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
@@ -112,11 +115,12 @@ interface WotrRegionUnitSelectionMode {
 export function selectionModeFactory(
   unitSelection: WotrRegionUnitSelection,
   characterStore: WotrCharacterStore,
-  unitModifiers: WotrUnitModifiers
+  unitModifiers: WotrUnitModifiers,
+  unitUtils: WotrUnitUtils
 ): WotrRegionUnitSelectionMode {
   switch (unitSelection.type) {
     case "moveArmy":
-      return new MoveArmySelectionMode(unitSelection, characterStore, unitModifiers);
+      return new MoveArmySelectionMode(unitSelection, characterStore, unitModifiers, unitUtils);
     case "attack":
       return new AttackSelectionMode(unitSelection, characterStore, unitModifiers);
     case "disband":
@@ -176,10 +180,12 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitSelection: WotrMovingArmyUnitSelection,
     private characterStore: WotrCharacterStore,
-    private unitModifiers: WotrUnitModifiers
+    private unitModifiers: WotrUnitModifiers,
+    private unitUtils: WotrUnitUtils
   ) {}
 
-  initialize(unitNodes: UnitNode[]) {
+  initialize(unitNodes: UnitNode[], region: WotrRegion) {
+    const excludedUnits = this.excludedUnits(this.unitSelection.doneMovements, region.id);
     if (this.unitSelection.retroguard) {
       unitNodes = removeRetroguardUnits(unitNodes, this.unitSelection.retroguard);
     }
@@ -194,6 +200,16 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
       unitNode.selectable = true;
       unitNode.selected = true;
     }
+  }
+
+  private excludedUnits(doneMovements: WotrArmyMovement[], regionId: WotrRegionId): WotrUnits {
+    for (const movement of this.unitSelection.doneMovements) {
+      if (movement.toRegion === regionId) {
+        console.error("Excluded units not implemented");
+        // TODO
+      }
+    }
+    return {};
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {

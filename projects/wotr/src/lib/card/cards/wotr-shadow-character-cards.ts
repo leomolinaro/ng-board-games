@@ -467,7 +467,7 @@ export class WotrShadowCharacterCards {
               { value: "attack", label: "Attack with the Witch-king", disabled: !canAttack }
             ]);
             if (choice2 === "move") {
-              actions.push(await this.unitUi.moveArmyWithCharacter("the-witch-king"));
+              actions.push(...(await this.unitUi.moveArmyWithCharacter("the-witch-king")));
             } else if (choice2 === "attack") {
               actions.push(...(await this.unitUi.attackWithCharacter("the-witch-king")));
             }

@@ -21,7 +21,7 @@ import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
-import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
+import { upgradeRegularUnit, WotrArmyMovement } from "../../unit/wotr-unit-actions";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
@@ -233,7 +233,8 @@ export class WotrShadowStrategyCards {
               regionIds: regionIds,
               required: true,
               requiredUnits: [],
-              retroguard: null
+              retroguard: null,
+              doneMovements: []
             });
             const fromRegion = units.regionId;
             const targetRegions = this.q
@@ -248,9 +249,7 @@ export class WotrShadowStrategyCards {
               "Select a region to move the army to",
               targetRegions.map(region => region.regionId)
             );
-            const actions: WotrAction[] = [];
-            actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
-            return actions;
+            return this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
           }
         };
       // The Shadow Lengthens
@@ -261,7 +260,7 @@ export class WotrShadowStrategyCards {
         return {
           play: async () => {
             const actions: WotrAction[] = [];
-            let doneMoves = 0;
+            const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
@@ -270,7 +269,8 @@ export class WotrShadowStrategyCards {
                 regionIds: regionIds,
                 required: true,
                 requiredUnits: [],
-                retroguard: null
+                retroguard: null,
+                doneMovements
               });
               const fromRegion = units.regionId;
               const targetRegions = this.q
@@ -285,10 +285,12 @@ export class WotrShadowStrategyCards {
                 "Select a region to move the army to",
                 targetRegions.map(region => region.regionId)
               );
-              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+              const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
+              actions.push(...movActions);
               continueMoving = false;
-              doneMoves++;
-              if (doneMoves < 2) {
+              const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
+              doneMovements.push(movement);
+              if (doneMovements.length < 2) {
                 continueMoving = await this.ui.askConfirm(
                   "Continue moving armies?",
                   "Move another",
@@ -307,7 +309,7 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
           play: async () => {
             const actions: WotrAction[] = [];
-            let doneMoves = 0;
+            const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow");
@@ -316,7 +318,8 @@ export class WotrShadowStrategyCards {
                 regionIds: regionIds,
                 required: true,
                 requiredUnits: [],
-                retroguard: null
+                retroguard: null,
+                doneMovements
               });
               const fromRegion = units.regionId;
               const targetRegions = this.q
@@ -331,10 +334,12 @@ export class WotrShadowStrategyCards {
                 "Select a region to move the army to",
                 targetRegions.map(region => region.regionId)
               );
-              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+              const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
+              actions.push(...movActions);
               continueMoving = false;
-              doneMoves++;
-              if (doneMoves < 4) {
+              const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
+              doneMovements.push(movement);
+              if (doneMovements.length < 4) {
                 continueMoving = await this.ui.askConfirm(
                   "Continue moving armies?",
                   "Move another",
@@ -359,7 +364,8 @@ export class WotrShadowStrategyCards {
               regionIds: ["umbar"],
               required: true,
               requiredUnits: [],
-              retroguard: null
+              retroguard: null,
+              doneMovements: []
             });
             if (!units) return [];
             const targetRegions = this.q
@@ -376,7 +382,7 @@ export class WotrShadowStrategyCards {
               const retroguard = this.unitUtils.splitUnits(fromRegion.army("shadow")!, units);
               return [attack("umbar", toRegionId, retroguard)];
             } else {
-              actions.push(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId));
+              actions.push(...(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId)));
             }
             return actions;
           }
