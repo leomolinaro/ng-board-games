@@ -38,7 +38,7 @@ export class WotrCardHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
-      "card-discard": (action, front) => this.frontStore.discardCards(action.cards, front),
+      "card-discard": (action, front) => this.discardCards(action.cards, front),
       "card-discard-from-table": (action, front) => this.discardCardFromTable(action.card),
       "card-draw": (action, front) => this.drawCards(action.cards, front),
       "card-play-on-table": (action, front) => this.playCardOnTable(action.card, front),
@@ -87,6 +87,10 @@ export class WotrCardHandler {
         await this.shadow.discardExcessCards();
       }
     }
+  }
+
+  discardCards(cards: WotrCardId[], frontId: WotrFrontId) {
+    this.frontStore.discardCards(cards, frontId);
   }
 
   discardCardFromTable(cardId: WotrCardId) {

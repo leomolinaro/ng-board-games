@@ -426,6 +426,7 @@ export class WotrFreePeoplesStrategyCards {
               frontId: "shadow",
               message: "Select an Army Event card to discard"
             });
+            this.cardHandler.discardCards([armyCard], "shadow");
             const characterCard = await this.gameUi.askHandCard(
               "Choose a Character Event card to discard",
               {
@@ -435,6 +436,7 @@ export class WotrFreePeoplesStrategyCards {
                 message: "Select a Character Event card to discard"
               }
             );
+            this.cardHandler.discardCards([characterCard], "shadow");
             return [discardCardIds(armyCard, characterCard), discardCardFromTableById(card.id)];
           }
         };
