@@ -455,7 +455,8 @@ export class WotrShadowCharacterCards {
             };
             const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
               modifier: this.actionDieModifiers.actionDieChoices,
-              handler: die => {
+              handler: (die, frontId) => {
+                if (frontId !== "free-peoples") return [];
                 const choice: WotrUiChoice = {
                   label: () => "Discard The Palantír of Orthanc",
                   isAvailable: () => {

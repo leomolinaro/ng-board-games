@@ -43,6 +43,7 @@ import { discardCardFromTableById, playCardOnTableId } from "../wotr-card-action
 import { WotrCardHandler } from "../wotr-card-handler";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
+import { WotrFrontId } from "../../front/wotr-front-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowStrategyCards {
@@ -181,7 +182,8 @@ export class WotrShadowStrategyCards {
             };
             const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
               modifier: this.actionDieModifiers.actionDieChoices,
-              handler: (die: WotrActionDie) => {
+              handler: (die: WotrActionDie, frontId: WotrFrontId) => {
+                if (frontId !== "free-peoples") return [];
                 const region = this.q.region("minas-tirith");
                 const choices: WotrUiChoice[] = [];
                 if (
