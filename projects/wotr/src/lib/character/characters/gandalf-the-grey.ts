@@ -29,6 +29,7 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
   private playedCard: WotrCardId | null = null;
 
   public handler: WotrAfterActionDieCardResolution = async (story, frontId) => {
+    if (frontId !== "free-peoples") return;
     if (story.die === "event" || story.die === "will-of-the-west") {
       this.playedCard = story.card;
       await activateCharacterAbility(this, "gandalf-the-grey", this.freePeoples);

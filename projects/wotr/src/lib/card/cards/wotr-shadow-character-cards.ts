@@ -439,6 +439,7 @@ export class WotrShadowCharacterCards {
             const drawAbility: WotrUiAbility<WotrAfterActionDieCardResolution> = {
               modifier: this.actionDieModifiers.afterActionDieCardResolution,
               handler: async (story, frontId) => {
+                if (frontId !== "shadow") return;
                 if (story.die === "event" || story.die === "will-of-the-west") {
                   playedCard = story.card;
                   await activateTableCard(drawAbility, "scha21", this.shadow);
