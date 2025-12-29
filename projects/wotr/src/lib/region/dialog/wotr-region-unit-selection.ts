@@ -485,17 +485,16 @@ export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
   }
 
   private isSelectable(type: WotrRegionUnitTypeMatch, node: UnitNode): boolean {
+    if (this.nationId && node.nationId !== this.nationId) return false;
     switch (type) {
       case "regular":
-        return node.type === "regular" && node.nationId === this.nationId;
+        return node.type === "regular";
       case "elite":
-        return node.type === "elite" && node.nationId === this.nationId;
+        return node.type === "elite";
       case "leader":
-        return node.type === "leader" && node.nationId === this.nationId;
+        return node.type === "leader";
       case "army":
-        return (
-          (node.type === "regular" || node.type === "elite") && node.nationId === this.nationId
-        );
+        return node.type === "regular" || node.type === "elite";
       case "nazgul":
         return node.type === "nazgul";
       case "companion":

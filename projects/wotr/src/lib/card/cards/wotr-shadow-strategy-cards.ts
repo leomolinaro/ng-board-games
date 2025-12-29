@@ -2,12 +2,22 @@ import { inject, Injectable } from "@angular/core";
 import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrAbility } from "../../ability/wotr-ability";
 import { discardDice } from "../../action-die/wotr-action-die-actions";
+import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import {
+  WotrActionDieChoiceModifier,
+  WotrActionDieModifiers
+} from "../../action-die/wotr-action-die-modifiers";
 import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrCombatFront, WotrCombatRound } from "../../battle/wotr-battle-models";
+import {
+  WotrBattleModifiers,
+  WotrCanUseCombatCardModifier
+} from "../../battle/wotr-battle-modifiers";
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import {
@@ -21,11 +31,15 @@ import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
-import { upgradeRegularUnit, WotrArmyMovement } from "../../unit/wotr-unit-actions";
+import {
+  eliminateLeader,
+  upgradeRegularUnit,
+  WotrArmyMovement
+} from "../../unit/wotr-unit-actions";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { playCardOnTableId } from "../wotr-card-actions";
+import { discardCardFromTableById, playCardOnTableId } from "../wotr-card-actions";
 import { WotrCardHandler } from "../wotr-card-handler";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
@@ -42,6 +56,8 @@ export class WotrShadowStrategyCards {
   private unitUtils = inject(WotrUnitUtils);
   private nationModifiers = inject(WotrNationModifiers);
   private cardHandler = inject(WotrCardHandler);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   private returnToValinorRegions(): WotrRegionId[] {
     return this.q
@@ -132,15 +148,58 @@ export class WotrShadowStrategyCards {
             return this.unitUi.attackStronghold(regionId, "shadow");
           }
         };
-      // TODO Denethor's Folly
+      // Denethor's Folly
       // Play on the table if Minas Tirith is under siege by a Shadow Army.
       // When you play this card, immediately eliminate one Free Peoples Leader in Minas Tirith.
       // When "Denethor's Folly" is in play, the Free Peoples player cannot use Combat cards for battles fought in Minas Tirith.
       // The free Peoples player can force "Denethor's Folly" to be discarded using a Will of the West Action die result, or any Action die result if Gandalf or Aragorn is in Minas Tirith.
       case "sstr03":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.region("minas-tirith").isUnderSiege("free-peoples"),
+          play: async () => {
+            const actions: WotrAction[] = [playCardOnTableId("sstr03")];
+            const fpArmy = this.q.region("minas-tirith").army("free-peoples")!;
+            if (this.unitUtils.hasLeaders(fpArmy)) {
+              const units = await this.ui.askRegionUnits("Choose a leader to eliminate", {
+                type: "eliminateUnit",
+                regionIds: ["minas-tirith"],
+                unitType: "leader",
+                nationId: null
+              });
+              if (units.leaders?.length) {
+                actions.push(eliminateLeader("minas-tirith", units.leaders[0].nation));
+              }
+            }
+            return actions;
+          },
+          onTableAbilities: () => {
+            const combatAbility: WotrAbility<WotrCanUseCombatCardModifier> = {
+              modifier: this.battleModifiers.canUseCombatCardModifier,
+              handler: (combatFront: WotrCombatFront, combatRound: WotrCombatRound) =>
+                combatFront.frontId !== "free-peoples" &&
+                combatRound.action.toRegion !== "minas-tirith"
+            };
+            const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
+              modifier: this.actionDieModifiers.actionDieChoices,
+              handler: (die: WotrActionDie) => {
+                const region = this.q.region("minas-tirith");
+                const choices: WotrUiChoice[] = [];
+                if (
+                  die === "will-of-the-west" ||
+                  region.hasCharacter("aragorn") ||
+                  region.hasCharacter("gandalf-the-white") ||
+                  region.hasCharacter("gandalf-the-grey")
+                ) {
+                  choices.push({
+                    label: () => "Discard Denethor's Folly",
+                    actions: async () => [discardCardFromTableById("sstr03")]
+                  });
+                }
+                return choices;
+              }
+            };
+            return [combatAbility, discardAbility];
+          }
         };
       // The Day Without Dawn
       // Play if all Shadow Nations are "At War."

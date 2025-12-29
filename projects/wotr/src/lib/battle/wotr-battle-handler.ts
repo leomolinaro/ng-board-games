@@ -363,6 +363,7 @@ export class WotrBattleHandler {
   private canChooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound): boolean {
     const currentCard = this.frontStore.currentCard();
     if (!currentCard) return true;
+    if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound)) return false;
     // TODO modifiers
     if (combatFront.frontId === "shadow") return true;
     if (currentCard === "sstr02" || currentCard === "scha20") {

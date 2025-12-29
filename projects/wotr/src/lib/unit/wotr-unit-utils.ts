@@ -212,6 +212,11 @@ export class WotrUnitUtils {
     return leadership;
   }
 
+  hasLeaders(units: WotrUnits): boolean {
+    if (units.leaders?.length) return true;
+    return false;
+  }
+
   leadership(units: WotrLeaderUnits): number {
     let leadership = 0;
     if (units.elites) {

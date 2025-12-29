@@ -1,3 +1,4 @@
+import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy } from "../unit/wotr-unit-models";
@@ -171,6 +172,16 @@ export class WotrRegionQuery {
       (region.army && this.unitUtils.hasMinions(region.army)) ||
       (region.underSiegeArmy && this.unitUtils.hasMinions(region.underSiegeArmy)) ||
       (region.freeUnits && this.unitUtils.hasMinions(region.freeUnits)) ||
+      false
+    );
+  }
+
+  hasCharacter(characterId: WotrCharacterId) {
+    const region = this.regionStore.region(this.regionId);
+    return (
+      region.army?.characters?.includes(characterId) ||
+      region.underSiegeArmy?.characters?.includes(characterId) ||
+      region.freeUnits?.characters?.includes(characterId) ||
       false
     );
   }
