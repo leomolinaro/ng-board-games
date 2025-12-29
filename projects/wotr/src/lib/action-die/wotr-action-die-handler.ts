@@ -37,7 +37,7 @@ export class WotrActionDieHandler {
 
   private die: WotrStoryApplier<WotrDieStory> = async (story, front) => {
     if (story.elvenRing) {
-      this.frontHandler.useElvenRing(story.elvenRing, front);
+      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
     if (story.actions?.length) {
       for (const action of story.actions) {
@@ -53,14 +53,14 @@ export class WotrActionDieHandler {
 
   private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {
     if (story.elvenRing) {
-      this.frontHandler.useElvenRing(story.elvenRing, front);
+      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
     this.logger.logStory(story, front);
   };
 
   private token: WotrStoryApplier<WotrTokenStory> = async (story, front) => {
     if (story.elvenRing) {
-      this.frontHandler.useElvenRing(story.elvenRing, front);
+      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
@@ -71,7 +71,7 @@ export class WotrActionDieHandler {
 
   private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (story, front) => {
     if (story.elvenRing) {
-      this.frontHandler.useElvenRing(story.elvenRing, front);
+      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
     this.logger.logStory(story, front);
   };

@@ -21,6 +21,7 @@ import { WotrCharacters } from "../character/wotr-characters";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipModifiers } from "../fellowship/wotr-fellowship-modifiers";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrGameTurn } from "../game-turn/wotr-game-flow";
 import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
 import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
@@ -95,6 +96,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrNationHandler).init();
     inject(WotrRegionHandler).init();
     inject(WotrUnitHandler).init();
+    inject(WotrFrontHandler).init();
     this.story.init(this.localPlayerService);
     this.characterHandler.characters = this.characters;
     this.cardHandler.cards = this.cards;

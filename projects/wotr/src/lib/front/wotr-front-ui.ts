@@ -30,7 +30,7 @@ export class WotrFrontUi {
       fromDie: fromDie.die,
       toDie
     };
-    this.frontHandler.useElvenRing(action, frontId);
+    this.frontHandler.convertDieWithElvenRing(action, frontId);
     return action;
   }
 }

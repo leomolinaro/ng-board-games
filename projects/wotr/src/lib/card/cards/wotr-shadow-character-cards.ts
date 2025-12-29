@@ -2,6 +2,11 @@ import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../../commons/utils/src";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import {
+  WotrActionDieChoiceModifier,
+  WotrActionDieModifiers,
+  WotrAfterActionDieCardResolution
+} from "../../action-die/wotr-action-die-modifiers";
 import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
@@ -18,8 +23,9 @@ import {
   WotrAfterFellowshipDeclaration,
   WotrFellowshipModifiers
 } from "../../fellowship/wotr-fellowship-modifiers";
+import { useElvenRing } from "../../front/wotr-front-actions";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
 import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
@@ -37,10 +43,17 @@ import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import {
   discardCardFromTableById,
   playCardOnTable,
+  playCardOnTableId,
   WotrCardDiscardFromTable
 } from "../wotr-card-actions";
+import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrCardHandler } from "../wotr-card-handler";
-import { isFreePeopleCharacterCard, WotrShadowCharacterCardId } from "../wotr-card-models";
+import {
+  isFreePeopleCharacterCard,
+  isShadowCharacterCard,
+  WotrCardId,
+  WotrShadowCharacterCardId
+} from "../wotr-card-models";
 import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
@@ -62,6 +75,8 @@ export class WotrShadowCharacterCards {
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
   private battleUi = inject(WotrBattleUi);
   private logger = inject(WotrLogWriter);
+  private actionDieModifiers = inject(WotrActionDieModifiers);
+  private cardUi = inject(WotrCardDrawUi);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -410,13 +425,59 @@ export class WotrShadowCharacterCards {
             return this.unitUi.attackStronghold(regionId, "shadow");
           }
         };
-      // TODO The Palantír of Orthanc Play on the table if Saruman is in play.
-      // When "The Palantír of Orthanc" is in play, after you use an Event Action die result to play an Event card, immediately draw another card from either one of your decks. The Free Peoples player can force "The Palantír of Orthanc" to be discarded by either using a Will of the West Action die result, or using any Action die result and one
+      // The Palantír of Orthanc
+      // Play on the table if Saruman is in play.
+      // When "The Palantír of Orthanc" is in play, after you use an Event Action die result to play an Event card, immediately draw another card from either one of your decks.
+      // The Free Peoples player can force "The Palantír of Orthanc" to be discarded by either using a Will of the West Action die result, or using any Action die result and one
       // Elven Ring. You must discard this card if Saruman is eliminated.
       case "scha21":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.saruman.isInPlay(),
+          play: async () => [playCardOnTableId("scha21")],
+          onTableAbilities: () => {
+            let playedCard: WotrCardId | null = null;
+            const drawAbility: WotrUiAbility<WotrAfterActionDieCardResolution> = {
+              modifier: this.actionDieModifiers.afterActionDieCardResolution,
+              handler: async (story, frontId) => {
+                if (story.die === "event" || story.die === "will-of-the-west") {
+                  playedCard = story.card;
+                  await activateTableCard(drawAbility, "scha21", this.shadow);
+                }
+              },
+              play: async () => {
+                if (!playedCard) throw new Error("Unexpected state");
+                const action = isShadowCharacterCard(playedCard)
+                  ? await this.cardUi.drawCards(1, "character", "shadow")
+                  : await this.cardUi.drawCards(1, "strategy", "shadow");
+                return [action];
+              }
+            };
+            const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
+              modifier: this.actionDieModifiers.actionDieChoices,
+              handler: die => {
+                const choice: WotrUiChoice = {
+                  label: () => "Discard The Palantír of Orthanc",
+                  isAvailable: () => {
+                    if (die === "will-of-the-west") return true;
+                    return this.q.freePeoples.hasElvenRings();
+                  },
+                  actions: async () => {
+                    const actions: WotrAction[] = [discardCardFromTableById("scha21")];
+                    if (die !== "will-of-the-west") {
+                      const elvenRing = await this.ui.askElvenRing("Choose an Elven Ring to use", {
+                        rings: this.q.freePeoples.elvenRings(),
+                        frontId: "free-peoples"
+                      });
+                      actions.push(useElvenRing(elvenRing));
+                    }
+                    return actions;
+                  }
+                };
+                return [choice];
+              }
+            };
+            return [drawAbility, discardAbility];
+          }
         };
       // TODO Wormtongue
       // Play on the table if Saruman is in play.
