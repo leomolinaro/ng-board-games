@@ -265,14 +265,16 @@ export class WotrBattleHandler {
     await this.resolveCombatCards(1, combatRound);
     if (!combatRound.endBattle) {
       await this.resolveCombatCards(2, combatRound);
-      await this.resolveCombatCards(3, combatRound);
-      await this.combatRolls(combatRound);
-      await this.resolveCombatCards(4, combatRound);
-      await this.leaderReRolls(combatRound);
-      await this.resolveCombatCards(5, combatRound);
-      await this.resolveCombatCards(6, combatRound);
-      await this.chooseCasualties(combatRound, battle);
-      await this.resolveCombatCards(7, combatRound);
+      if (!combatRound.endBattle) {
+        await this.resolveCombatCards(3, combatRound);
+        await this.combatRolls(combatRound);
+        await this.resolveCombatCards(4, combatRound);
+        await this.leaderReRolls(combatRound);
+        await this.resolveCombatCards(5, combatRound);
+        await this.resolveCombatCards(6, combatRound);
+        await this.chooseCasualties(combatRound, battle);
+        await this.resolveCombatCards(7, combatRound);
+      }
     }
 
     let continueBattle = false;

@@ -199,7 +199,7 @@ export function initialeState(): WotrRegionState {
         ["moria"], false),
       // prettier-ignore
       "dimrill-dale": initialRegion("dimrill-dale", "Dimrill Dale", null, false, null,
-        ["gladden-fields", "north-anduin-vale", "south-anduin-vale", "parth-celebrant", "lorien"],
+        ["gladden-fields", "north-anduin-vale", "south-anduin-vale", "parth-celebrant", "lorien", "moria"],
         [], false),
       // prettier-ignore
       "lorien": initialRegion("lorien", "Lorien", "elves", false, "stronghold",

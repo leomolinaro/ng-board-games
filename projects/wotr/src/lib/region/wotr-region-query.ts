@@ -38,6 +38,12 @@ export class WotrRegionQuery {
     return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);
   }
 
+  isWithinNRegionsOf(regionId: WotrRegionId, maxDistance: number): boolean {
+    const reachable = this.regionStore.reachableRegions(this.regionId, maxDistance);
+    console.log(reachable);
+    return reachable.includes(regionId);
+  }
+
   reachableRegions(
     progress: number,
     canEnter?: (region: WotrRegionQuery, distance: number) => boolean,

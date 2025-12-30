@@ -110,7 +110,12 @@ export class WotrShadowStrategyCards {
               if (!("actions" in rollStory)) throw new Error("Unexpected story");
               const roll = findAction<WotrCombatRoll>(rollStory.actions, "combat-roll")!;
               const nHits = roll.dice.filter(die => die === 6).length;
-              await this.freePeoples.chooseCasualties(nHits, regionId, params.cardId);
+              const armyHitPoints = this.unitUtils.nHits(army);
+              if (nHits >= armyHitPoints) {
+                await this.freePeoples.eliminateArmy(regionId, params.cardId);
+              } else {
+                await this.freePeoples.chooseCasualties(nHits, regionId, params.cardId);
+              }
               regions = immutableUtil.listRemoveFirst(r => r === regionChoose.region, regions);
               if (regions.length) {
                 const story = await this.shadow.chooseRegion(regions, params.cardId);

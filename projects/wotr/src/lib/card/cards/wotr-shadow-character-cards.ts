@@ -432,6 +432,7 @@ export class WotrShadowCharacterCards {
             const action = assertAction<WotrRegionChoose>(params.story, "region-choose");
             await this.rollCombatDice(1, this.shadow); // TODO nDice
             await this.freePeoples.chooseCasualties(1, action.region, null); // TODO hitPoints
+            // TODO eliminate entire army
           }
         };
       // Grond, Hammer of the Underworld

@@ -170,12 +170,9 @@ export class WotrCombatCards {
     // Play if a Companion is in the battle.
     // The Shadow player rolls one die less in his Combat roll for each Companion in the battle (to a minimum of one).
     "Brave Stand": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.hasCompanions(params.freePeoples.army()),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        params.shadow.lessNCombatDice = this.unitUtils.nCompanions(params.freePeoples.army());
       }
     },
     // Charge (Initiative 2)
@@ -299,13 +296,29 @@ export class WotrCombatCards {
     // Durin's Bane (Initiative 2)
     // Play if the defending Army is within two regions of Moria.
     // Before the Combat Roll, roll an additional attack using three Combat dice; score hits on 4+ and apply the result immediately
+    // https://boardgamegeek.com/thread/532748/durins-bane-within-two-regions-of-moria
     "Durin's Bane": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.q.region(params.regionId).isWithinNRegionsOf("moria", 2),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const action = await this.battleUi.rollCombatDice(3, "shadow");
+            return [action];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.shadow);
+        if (!actions) return;
+        const rollAction = findAction<WotrCombatRoll>(actions, "combat-roll")!;
+        const nHits = rollAction?.dice.filter(d => d >= 4).length;
+        if (nHits) {
+          const armyHitPoints = this.unitUtils.nHits(params.freePeoples.army());
+          if (nHits >= armyHitPoints) {
+            await this.freePeoples.eliminateArmy(params.regionId, card.id);
+            params.combatRound.endBattle = true;
+          } else {
+            await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
+          }
+        }
       }
     },
     // Ents' Rage (Initiative 3)
@@ -619,7 +632,13 @@ export class WotrCombatCards {
         const action = findAction<WotrCombatRoll>(actions, "combat-roll");
         const nHits = action!.dice.filter(r => r >= 5).length;
         if (nHits) {
-          await this.shadow.chooseCasualties(nHits, params.regionId, card.id);
+          const armyHitPoints = this.unitUtils.nHits(params.shadow.army());
+          if (nHits >= armyHitPoints) {
+            await this.shadow.eliminateArmy(params.regionId, card.id);
+            params.combatRound.endBattle = true;
+          } else {
+            await this.shadow.chooseCasualties(nHits, params.regionId, card.id);
+          }
         }
       }
     },

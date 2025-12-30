@@ -245,6 +245,13 @@ export class WotrUnitUtils {
     );
   }
 
+  nCompanions(units: WotrUnits): number {
+    return (
+      units.characters?.filter(c => this.characterStore.character(c).front === "free-peoples")
+        .length || 0
+    );
+  }
+
   hasMinions(units: WotrUnits): boolean {
     return (
       units.characters?.some(c => this.characterStore.character(c).front === "shadow") || false
