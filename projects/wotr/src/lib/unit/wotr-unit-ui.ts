@@ -468,7 +468,7 @@ export class WotrUnitUi {
 
   async recruitLeaderByCard(regionId: WotrRegionId, nationId: WotrNationId): Promise<WotrAction[]> {
     const frontId: WotrFrontId = "free-peoples";
-    if (!this.q.rohan.hasLeaderReinforcements()) return [];
+    if (!this.q.nation(nationId).hasLeaderReinforcements()) return [];
     if (!this.q.region(regionId).hasArmy(frontId)) return [];
     await this.ui.askReinforcementUnit("Choose a leader to recruit", {
       frontId,
