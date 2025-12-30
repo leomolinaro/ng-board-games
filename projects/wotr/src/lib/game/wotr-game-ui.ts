@@ -99,7 +99,7 @@ export interface WotrUiChoice<P = WotrFrontId> {
   isAvailable?(params: P): boolean;
   actions(params: P): Promise<WotrAction[]>;
   character?: WotrCharacterId;
-  card?: () => WotrCardId;
+  card?: () => WotrCardId | null;
 }
 
 export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
@@ -401,12 +401,13 @@ export class WotrGameUi extends signalStore(
       }))
     );
     const actions = await choice.actions(params);
-    if (choice.card) {
+    const card = choice.card ? choice.card() : null;
+    if (card) {
       const story: WotrDieCardStory = {
         type: "die-card",
         die,
         actions,
-        card: choice.card()
+        card
       };
       return story;
     } else {

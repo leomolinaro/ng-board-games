@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrAction } from "../commons/wotr-action-models";
@@ -292,10 +293,10 @@ export class WotrActionDieUi {
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
-      this.changeCharacterDieChoice,
-      this.changeArmyDieChoice,
-      this.changeMusterDieChoice,
-      this.changeEventDieChoice
+      this.changeCharacterDieChoice(),
+      this.changeArmyDieChoice(),
+      this.changeMusterDieChoice(),
+      this.changeEventDieChoice()
     ];
     if (frontId === "free-peoples") {
       choices.push(this.characterUi.bringCharacterIntoPlayChoice("will-of-the-west"));
@@ -310,29 +311,57 @@ export class WotrActionDieUi {
     );
   }
 
-  private changeCharacterDieChoice: WotrUiChoice = {
-    label: () => "Character result",
-    actions: async (frontId: WotrFrontId) =>
-      (await this.resolveCharacterResult("will-of-the-west", frontId)).actions
-  };
+  private changeCharacterDieChoice(): WotrUiChoice {
+    let chosenCardId: WotrCardId | null = null;
+    return {
+      label: () => "Character result",
+      actions: async (frontId: WotrFrontId) => {
+        const story = await this.resolveCharacterResult("will-of-the-west", frontId);
+        if (story.type === "die-card") chosenCardId = story.card;
+        return story.actions;
+      },
+      card: () => chosenCardId
+    };
+  }
 
-  private changeArmyDieChoice: WotrUiChoice = {
-    label: () => "Army result",
-    actions: async (frontId: WotrFrontId) =>
-      (await this.resolveArmyResult("will-of-the-west", frontId)).actions
-  };
+  private changeArmyDieChoice(): WotrUiChoice {
+    let chosenCardId: WotrCardId | null = null;
+    return {
+      label: () => "Army result",
+      actions: async (frontId: WotrFrontId) => {
+        const story = await this.resolveArmyResult("will-of-the-west", frontId);
+        if (story.type === "die-card") chosenCardId = story.card;
+        return story.actions;
+      },
+      card: () => chosenCardId
+    };
+  }
 
-  private changeMusterDieChoice: WotrUiChoice = {
-    label: () => "Muster result",
-    actions: async (frontId: WotrFrontId) =>
-      (await this.resolveMusterResult("will-of-the-west", frontId)).actions
-  };
+  private changeMusterDieChoice(): WotrUiChoice {
+    let chosenCardId: WotrCardId | null = null;
+    return {
+      label: () => "Muster result",
+      actions: async (frontId: WotrFrontId) => {
+        const story = await this.resolveMusterResult("will-of-the-west", frontId);
+        if (story.type === "die-card") chosenCardId = story.card;
+        return story.actions;
+      },
+      card: () => chosenCardId
+    };
+  }
 
-  private changeEventDieChoice: WotrUiChoice = {
-    label: () => "Event result",
-    actions: async (frontId: WotrFrontId) =>
-      (await this.resolveEventResult("will-of-the-west", frontId)).actions
-  };
+  private changeEventDieChoice(): WotrUiChoice {
+    let chosenCardId: WotrCardId | null = null;
+    return {
+      label: () => "Event result",
+      actions: async (frontId: WotrFrontId) => {
+        const story = await this.resolveEventResult("will-of-the-west", frontId);
+        if (story.type === "die-card") chosenCardId = story.card;
+        return story.actions;
+      },
+      card: () => chosenCardId
+    };
+  }
 
   private skipDieChoice(die: WotrActionDie): WotrUiChoice {
     return {
