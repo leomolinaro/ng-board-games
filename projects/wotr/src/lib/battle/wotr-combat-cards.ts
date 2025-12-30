@@ -481,11 +481,13 @@ export class WotrCombatCards {
     // If your Combat roll or Leader reroll score at least one hit, score two additional hits.
     "Nameless Wood": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        const region = this.q.region(params.regionId);
+        return region.isNation("rohan") || region.id() === "fangorn" || region.id() === "orthanc";
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        if (params.freePeoples.nTotalHits! > 0) {
+          params.freePeoples.hitsModifiers.push(2);
+        }
       }
     },
     // No Quarter (Initiative 5)
