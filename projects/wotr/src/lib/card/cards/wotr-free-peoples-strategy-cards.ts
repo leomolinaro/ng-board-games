@@ -222,7 +222,7 @@ export class WotrFreePeoplesStrategyCards {
             if (!coastalRegions.length) return [];
             const regionId = await this.gameUi.askRegion(
               "Choose a region to recruit in",
-              coastalRegions.map(r => r.regionId)
+              coastalRegions.map(r => r.id())
             );
             return this.unitUi.recruitRegularsOrElitesByCard(regionId, "elves", 2);
           }

@@ -37,6 +37,7 @@ interface AWotrRegionUnitSelection {
 export interface WotrMovingCharactersUnitSelection extends AWotrRegionUnitSelection {
   type: "moveCharacters";
   characters: WotrCharacterId[];
+  requiredCharacters: WotrCharacterId[];
 }
 
 export interface WotrMovingNazgulUnitSelection extends AWotrRegionUnitSelection {
@@ -126,7 +127,7 @@ export function selectionModeFactory(
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
-      return new MoveCharactersSelectionMode(unitSelection.characters);
+      return new MoveCharactersSelectionMode(unitSelection, characterStore);
     case "moveNazgul":
       return new MoveNazgulSelectionMode(unitSelection);
     case "chooseCasualties":
@@ -350,13 +351,16 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
 }
 
 export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode {
-  constructor(private characters: WotrCharacterId[]) {}
+  constructor(
+    private unitSelection: WotrMovingCharactersUnitSelection,
+    private characterStore: WotrCharacterStore
+  ) {}
 
   initialize(unitNodes: UnitNode[]) {
     for (const unitNode of unitNodes) {
       if (
         unitNode.type === "character" &&
-        this.characters.includes(unitNode.id as WotrCharacterId)
+        this.unitSelection.characters.includes(unitNode.id as WotrCharacterId)
       ) {
         unitNode.selectable = true;
         unitNode.selected = true;
@@ -367,6 +371,12 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
   canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 0) {
       return "Select at least one character to move.";
+    }
+    for (const requiredCharacter of this.unitSelection.requiredCharacters) {
+      if (!hasCharacter(selectedNodes, requiredCharacter)) {
+        const character = this.characterStore.character(requiredCharacter);
+        return `Select (${character.name}) to move.`;
+      }
     }
     return true;
   }

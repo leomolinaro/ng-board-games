@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
@@ -243,6 +243,12 @@ export class WotrUnitUtils {
       units.characters?.some(c => this.characterStore.character(c).front === "free-peoples") ||
       false
     );
+  }
+
+  getCompanions(units: WotrUnits): WotrCompanionId[] {
+    return (units.characters?.filter(
+      c => this.characterStore.character(c).front === "free-peoples"
+    ) || []) as WotrCompanionId[];
   }
 
   nCompanions(units: WotrUnits): number {

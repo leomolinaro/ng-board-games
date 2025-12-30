@@ -45,7 +45,7 @@ export class WotrWitchKing extends WotrCharacterCard {
     const validRegions = this.q
       .regions()
       .filter(r => this.isValidRegion(r.region()))
-      .map(r => r.regionId);
+      .map(r => r.id());
     const region = await ui.askRegion(
       "Select a region to bring the Witch-King into play",
       validRegions

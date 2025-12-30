@@ -8,6 +8,10 @@ export class WotrFrontQuery {
     private frontStore: WotrFrontStore
   ) {}
 
+  id() {
+    return this.frontId;
+  }
+
   private front() {
     return this.frontStore.front(this.frontId);
   }

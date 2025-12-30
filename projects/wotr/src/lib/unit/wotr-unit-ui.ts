@@ -522,7 +522,7 @@ export class WotrUnitUi {
     const regionFilter = this.regionFilter(selection);
     const regions = this.q.regions().filter(regionFilter);
     const units = await this.ui.askRegionUnits(`Select a ${selection.unitType} unit to eliminate`, {
-      regionIds: regions.map(r => r.regionId),
+      regionIds: regions.map(r => r.id()),
       type: "eliminateUnit",
       unitType: selection.unitType,
       nationId: selection.nationId || null

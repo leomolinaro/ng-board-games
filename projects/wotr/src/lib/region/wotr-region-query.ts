@@ -8,13 +8,17 @@ import { WotrRegionStore } from "./wotr-region-store";
 
 export class WotrRegionQuery {
   constructor(
-    public readonly regionId: WotrRegionId,
+    private regionId: WotrRegionId,
     private regionStore: WotrRegionStore,
     private unitUtils: WotrUnitUtils
   ) {}
 
   private query(regionId: WotrRegionId) {
     return new WotrRegionQuery(regionId, this.regionStore, this.unitUtils);
+  }
+
+  id() {
+    return this.regionId;
   }
 
   region() {
@@ -170,6 +174,17 @@ export class WotrRegionQuery {
       (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits)) ||
       false
     );
+  }
+
+  companions() {
+    const region = this.regionStore.region(this.regionId);
+    if (region.army && this.unitUtils.hasCompanions(region.army))
+      return this.unitUtils.getCompanions(region.army);
+    if (region.underSiegeArmy && this.unitUtils.hasCompanions(region.underSiegeArmy))
+      return this.unitUtils.getCompanions(region.underSiegeArmy);
+    if (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits))
+      return this.unitUtils.getCompanions(region.freeUnits);
+    return [];
   }
 
   hasMinions() {

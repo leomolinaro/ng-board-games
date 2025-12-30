@@ -111,7 +111,7 @@ export class WotrUnitRules {
           this.canMoveArmyFromRegion(region.region(), frontId)
         );
       })
-      .map(region => region.regionId);
+      .map(region => region.id());
   }
 
   private doesArmyHasRequiredUnits(

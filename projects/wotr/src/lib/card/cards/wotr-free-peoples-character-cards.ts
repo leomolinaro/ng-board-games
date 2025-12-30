@@ -2,7 +2,12 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
-import { eliminateCharacter } from "../../character/wotr-character-actions";
+import {
+  eliminateCharacter,
+  moveCharacters,
+  WotrCharacterMovement
+} from "../../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { WotrCharacterQuery } from "../../character/wotr-character-query";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
@@ -29,6 +34,8 @@ import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
+import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { discardCardFromTableById, playCardOnTable } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrFreePeopleCharacterCardId } from "../wotr-card-models";
@@ -41,6 +48,7 @@ export class WotrFreePeoplesCharacterCards {
   private cardDrawUi = inject(WotrCardDrawUi);
   cardPlayUi!: WotrCardPlayUi;
   private battleUi = inject(WotrBattleUi);
+  private unitUi = inject(WotrUnitUi);
   private q = inject(WotrGameQuery);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private unitHandler = inject(WotrUnitHandler);
@@ -50,6 +58,8 @@ export class WotrFreePeoplesCharacterCards {
   private characterUi = inject(WotrCharacterUi);
   private huntModifiers = inject(WotrHuntModifiers);
   private huntUi = inject(WotrHuntUi);
+  private characterHandler = inject(WotrCharacterHandler);
+  private unitUtils = inject(WotrUnitUtils);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -369,7 +379,7 @@ export class WotrFreePeoplesCharacterCards {
         return this.theEntsAwake();
       // TODO Dead Men of Dunharrow
       // Play if Strider/Aragorn is in a Rohan region (including a Stronghold under siege).
-      // Move Strider/Aragom (and any number of Companions in the same region) to Erech, Lamedon ar Pelargir.
+      // Move Strider/Aragorn (and any number of Companions in the same region) to Erech, Lamedon or Pelargir.
       // If there is a Shadow Army in that region, roll a die. That Army takes a number of hits equal to the die result and must then retreat. If the Army cannot retreat, it is
       // destroyed. If the Army is destroyed, so are any Nazgûl and Minions along with it.
       // You may then recruit up to three Gondor Regular units in that region, taking control if necessary.
@@ -377,7 +387,59 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () =>
             this.q.strider.isInNation("rohan") || this.q.aragorn.isInNation("rohan"),
-          play: async () => []
+          play: async () => {
+            const actions: WotrAction[] = [];
+            const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
+            const fromRegion = this.q.region(aragorn.region()!.id);
+            const companions = fromRegion.companions();
+            const movingUnits = await this.gameUi.askRegionUnits("Choose companions to move", {
+              type: "moveCharacters",
+              regionIds: [fromRegion.id()],
+              characters: companions,
+              requiredCharacters: [aragorn.id()]
+            });
+            const movingCompanions = movingUnits.characters!;
+            const toRegionId = await this.gameUi.askRegion("Choose a region to move to", [
+              "erech",
+              "lamedon",
+              "pelargir"
+            ]);
+            const toRegion = this.q.region(toRegionId);
+            actions.push(moveCharacters(fromRegion.id(), toRegion.id(), ...movingCompanions));
+            this.characterHandler.moveCharacters(movingCompanions, fromRegion.id(), toRegion.id());
+            if (toRegion.hasArmy("shadow")) {
+              const rollAction = await this.battleUi.rollCombatDice(1, "free-peoples");
+              actions.push(rollAction);
+            } else {
+              const recruitActions = await this.unitUi.recruitUnitsInSameRegionByCard(
+                toRegion.id(),
+                "gondor",
+                3,
+                0,
+                0
+              );
+              actions.push(...recruitActions);
+            }
+            return actions;
+          },
+          effect: async params => {
+            const move = findAction<WotrCharacterMovement>(
+              params.story.actions,
+              "character-movement"
+            )!;
+            const toRegion = this.q.region(move.toRegion);
+            if (toRegion.hasArmy("shadow")) {
+              const roll = findAction<WotrCombatRoll>(params.story.actions, "combat-roll")!;
+              const shadowArmy = toRegion.army("shadow")!;
+              const armyHitPoints = this.unitUtils.nHits(shadowArmy);
+              if (roll.dice[0] >= armyHitPoints) {
+                await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
+              } else {
+                throw new Error("TODO not implemented");
+                // await this.shadow.chooseCasualties;
+              }
+            }
+          }
         };
       // House of the Stewards
       // Play if Boromir is in a Gondor region.

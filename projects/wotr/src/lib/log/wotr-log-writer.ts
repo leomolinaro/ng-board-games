@@ -75,6 +75,7 @@ export class WotrLogWriter {
   }
 
   logEffect(effect: WotrAction) {
+    // TODO make log effect direct; maybe remove action logs and add them to each action resolution
     this.addLog(`logEffect [${effect.type}]`, { type: "effect", effect, during: this.during() });
   }
 

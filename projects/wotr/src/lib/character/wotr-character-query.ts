@@ -13,6 +13,10 @@ export class WotrCharacterQuery {
     private fellowshipStore: WotrFellowshipStore
   ) {}
 
+  id() {
+    return this.characterId;
+  }
+
   character(): WotrCharacter {
     return this.characterStore.character(this.characterId);
   }

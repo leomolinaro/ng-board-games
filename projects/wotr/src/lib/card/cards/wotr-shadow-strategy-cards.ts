@@ -70,7 +70,7 @@ export class WotrShadowStrategyCards {
           !r.isUnderSiege("shadow") &&
           r.hasArmyUnitsOfNation("elves")
       )
-      .map(r => r.regionId);
+      .map(r => r.id());
   }
 
   createCard(cardId: WotrShadowStrategyCardId): WotrEventCard {
@@ -149,7 +149,7 @@ export class WotrShadowStrategyCards {
               );
             const regionId = await this.ui.askRegion(
               "Select a stronghold to attack",
-              strongholdRegions.map(region => region.regionId)
+              strongholdRegions.map(region => region.id())
             );
             return this.unitUi.attackStronghold(regionId, "shadow");
           }
@@ -313,7 +313,7 @@ export class WotrShadowStrategyCards {
             }
             const toRegionId = await this.ui.askRegion(
               "Select a region to move the army to",
-              targetRegions.map(region => region.regionId)
+              targetRegions.map(region => region.id())
             );
             return this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
           }
@@ -349,7 +349,7 @@ export class WotrShadowStrategyCards {
               }
               const toRegionId = await this.ui.askRegion(
                 "Select a region to move the army to",
-                targetRegions.map(region => region.regionId)
+                targetRegions.map(region => region.id())
               );
               const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
               actions.push(...movActions);
@@ -398,7 +398,7 @@ export class WotrShadowStrategyCards {
               }
               const toRegionId = await this.ui.askRegion(
                 "Select a region to move the army to",
-                targetRegions.map(region => region.regionId)
+                targetRegions.map(region => region.id())
               );
               const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
               actions.push(...movActions);
@@ -439,7 +439,7 @@ export class WotrShadowStrategyCards {
               .filter(r => r.isCoastal() && r.isNation("gondor"));
             const toRegionId = await this.ui.askRegion(
               "Select a region to move the army to",
-              targetRegions.map(region => region.regionId)
+              targetRegions.map(region => region.id())
             );
             const actions: WotrAction[] = [];
             const toRegion = this.q.region(toRegionId);
@@ -469,7 +469,7 @@ export class WotrShadowStrategyCards {
                   dunlandRegions.some(dunland => r.isAdjacentTo(dunland)) &&
                   r.isFreeForRecruitmentByCard("shadow")
               )
-              .map(r => r.regionId);
+              .map(r => r.id());
             const region = await this.ui.askRegion(
               "Select a region to recruit Isengard units",
               regions
@@ -511,7 +511,7 @@ export class WotrShadowStrategyCards {
             const regions = this.q
               .regions()
               .filter(r => r.hasArmy("shadow"))
-              .map(r => r.regionId);
+              .map(r => r.id());
             const region = await this.ui.askRegion(
               "Select a region to recruit an Isengard unit",
               regions
@@ -529,7 +529,7 @@ export class WotrShadowStrategyCards {
             const regions = this.q
               .regions()
               .filter(r => r.hasArmy("shadow"))
-              .map(r => r.regionId);
+              .map(r => r.id());
             const region = await this.ui.askRegion(
               "Select a region to recruit a Sauron unit",
               regions
@@ -559,7 +559,7 @@ export class WotrShadowStrategyCards {
               if (!regions.length) return actions;
               const region = await this.ui.askRegion(
                 "Select a region to upgrade a Sauron regular unit",
-                regions.map(r => r.regionId)
+                regions.map(r => r.id())
               );
               actions.push(upgradeRegularUnit(region, "sauron", 1));
             }
@@ -582,7 +582,7 @@ export class WotrShadowStrategyCards {
               this.q
                 .regions("north-dunland", "south-dunland")
                 .filter(r => r.isFreeForRecruitment("shadow"))
-                .map(r => r.regionId)
+                .map(r => r.id())
             );
             actions.push(...regularRecruitments);
             const eliteRecruitments = await this.unitUi.recruitRegularsOrElitesByCard(
@@ -662,7 +662,7 @@ export class WotrShadowStrategyCards {
               this.q
                 .regions("dol-guldur", "mount-gundabad")
                 .filter(r => r.isFreeForRecruitment("shadow"))
-                .map(r => r.regionId)
+                .map(r => r.id())
             )
         };
       // Horde From the East
@@ -680,7 +680,7 @@ export class WotrShadowStrategyCards {
               this.q
                 .regions("east-rhun", "south-rhun", "khand", "far-harad")
                 .filter(r => r.isFreeForRecruitment("shadow"))
-                .map(r => r.regionId)
+                .map(r => r.id())
             )
         };
       // Monsters Roused
@@ -698,7 +698,7 @@ export class WotrShadowStrategyCards {
                 this.q
                   .regions("angmar", "ettenmoors", "weather-hills")
                   .filter(r => r.isFreeForRecruitment("shadow"))
-                  .map(r => r.regionId)
+                  .map(r => r.id())
               ))
             );
             actions.push(
@@ -710,7 +710,7 @@ export class WotrShadowStrategyCards {
                 this.q
                   .regions("troll-shaws")
                   .filter(r => r.isFreeForRecruitment("shadow"))
-                  .map(r => r.regionId)
+                  .map(r => r.id())
               ))
             );
             return actions;
@@ -731,7 +731,7 @@ export class WotrShadowStrategyCards {
               this.q
                 .regions("gorgoroth", "nurn")
                 .filter(r => r.isFreeForRecruitment("shadow"))
-                .map(r => r.regionId)
+                .map(r => r.id())
             )
         };
       // Pits of Mordor

@@ -229,7 +229,8 @@ export class WotrCharacterUi {
     const movingUnits = await this.ui.askRegionUnits("Choose characters to move", {
       type: "moveCharacters",
       regionIds: fromRegions.map(r => r.id),
-      characters: Array.from(moveableCharacters)
+      characters: Array.from(moveableCharacters),
+      requiredCharacters: []
     });
     const movingCharacters = movingUnits.characters!;
     const fromRegion = movingUnits.regionId;
