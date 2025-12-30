@@ -157,15 +157,27 @@ export class WotrShadowCharacterCards {
             });
           }
         };
-      // TODO Foul Thing from the Deep
+      // Foul Thing from the Deep
       // Play if the Fellowship is not in a region containing a Free Peoples Settlement. Draw a Hunt tile.
       // If the tile shows an Eye or is a Fellowship special tile, discard it without effect.
       // Otherwise, follow the rules for a successful Hunt, except that the Free Peoples player must reduce Hunt Damage (if any) by eliminating a random Companion
       // (unless there are no Companions in the Fellowship) before using the Ring.
       case "scha07":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
+          play: async () => {
+            const action = await this.huntUi.drawHuntTile();
+            return [action];
+          },
+          effect: async params => {
+            const action = findAction<WotrHuntTileDraw>(params.story.actions, "hunt-tile-draw");
+            if (!action) throw new Error("Unexpected action");
+            await this.huntFlow.resolveHuntTile(action.tile, {
+              ignoreEyeTile: true,
+              ignoreFreePeopleSpecialTile: true,
+              mustEliminateRandomCompanion: true
+            });
+          }
         };
       // Candles of Corpses
       // Play if the Fellowship is not in a region containing a Free Peoples Settlement.
@@ -501,6 +513,7 @@ export class WotrShadowCharacterCards {
       // When "Wormtongue" is in play, Rohan cannot be activated except by an appropriate Companion, or by the Fellowship being declared in Edoras or Helm's Deep, or
       // by an attack on Edoras or Helm's Deep.
       // You must discard this card from the table as soon as Rohan is activated, or if Saruman is eliminated.
+      // https://boardgamegeek.com/thread/1776050/wormtongue-event-card-faq
       case "scha22":
         return {
           canBePlayed: () => this.q.saruman.isInPlay(),

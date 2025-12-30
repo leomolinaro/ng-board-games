@@ -33,6 +33,7 @@ export interface WotrHuntEffectParams {
   randomCompanions?: WotrCompanionId[];
   casualtyTaken?: true;
   onlyRingAbsorbtion?: true;
+  mustEliminateRandomCompanion?: true;
 }
 
 export class WotrRingBearerCorrupted extends Error {

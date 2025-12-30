@@ -35,6 +35,7 @@ interface WotrHuntTileResolutionOptions {
   ignoreEyeTile?: true;
   ignoreFreePeopleSpecialTile?: true;
   onlyRingAbsorbtion?: true;
+  mustEliminateRandomCompanion?: true;
 }
 
 type HuntEffect =
@@ -139,6 +140,8 @@ export class WotrHuntFlow {
     const params: WotrHuntEffectParams = {
       damage: 0
     };
+    if (options.onlyRingAbsorbtion) params.onlyRingAbsorbtion = true;
+    if (options.mustEliminateRandomCompanion) params.mustEliminateRandomCompanion = true;
     while (damage > 0) {
       params.damage = damage;
       const { absorbedDamage, gollumRevealing } = await this.absorbHuntDamage(params);

@@ -60,7 +60,7 @@ export class WotrHuntUi {
 
   private randomCompanionChoice: WotrUiChoice<WotrHuntEffectParams> = {
     label: () => "Eliminate a random companion",
-    isAvailable: () => this.fellowshipStore.companions().length > 1,
+    isAvailable: () => this.fellowshipStore.companions().length > 0,
     actions: async () => {
       const companions = this.fellowshipStore.companions();
       const randomCompanion = randomUtil.getRandomElement(companions);
@@ -161,15 +161,17 @@ export class WotrHuntUi {
       // random companion elimination
       // use ring
       const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
-      const onlyRingAbsorbtion = casualtyTaken || params.onlyRingAbsorbtion;
-      if (!onlyRingAbsorbtion) {
-        choices.push(this.eliminateGuideChoice);
+      if (!casualtyTaken && !params.onlyRingAbsorbtion) {
+        if (!params.mustEliminateRandomCompanion) choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);
       }
-      choices.push(this.useRingChoice(damage));
-      if (!onlyRingAbsorbtion) {
+      const hasCompanion = this.fellowshipStore.companions().length > 0;
+      if (casualtyTaken || !params.mustEliminateRandomCompanion || !hasCompanion)
+        choices.push(this.useRingChoice(damage));
+      // Can use card with Foul Thing from the Deep
+      // https://boardgamegeek.com/thread/969048/confirmation-can-you-use-horn-of-gondor-against-fo
+      if (!casualtyTaken && !params.onlyRingAbsorbtion)
         choices.push(...this.huntModifiers.getHuntEffectChoices(params));
-      }
       const chosenActions = await this.ui.askChoice(
         `Absorb ${damage}/${params.damage} hunt damage points`,
         choices,
