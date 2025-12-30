@@ -125,7 +125,6 @@ export class WotrCharacterHandler {
   private async checkGollumEnterPlay() {
     if (this.q.fellowship.hasCompanions()) return;
     if (!this.q.gollum.isAvailable()) return;
-    this.fellowshipStore.setCompanions(["gollum"]);
     this.fellowshipStore.setGuide("gollum");
     this.characterStore.setInFellowship("gollum");
     this.logger.logEffect(gollumEnterFellowship());
