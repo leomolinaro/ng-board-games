@@ -294,16 +294,14 @@ export class WotrBattleHandler {
           }
         }
       } else {
-        if (this.canCease(combatRound)) {
-          const wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
-          if (wantContinueBattle) {
-            if (this.canRetreat(combatRound.defender)) {
-              const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-              if (wantRetreat) {
-                attackerWon = true;
-              } else {
-                continueBattle = true;
-              }
+        const canCease = this.canCease(combatRound);
+        const wantContinueBattle =
+          !canCease || (await this.wantContinueBattle(combatRound.attacker.player));
+        if (wantContinueBattle) {
+          if (this.canRetreat(combatRound.defender)) {
+            const wantRetreat = await this.wantRetreat(combatRound.defender.player);
+            if (wantRetreat) {
+              attackerWon = true;
             } else {
               continueBattle = true;
             }
@@ -311,7 +309,7 @@ export class WotrBattleHandler {
             continueBattle = true;
           }
         } else {
-          continueBattle = false;
+          continueBattle = true;
         }
       }
     }
