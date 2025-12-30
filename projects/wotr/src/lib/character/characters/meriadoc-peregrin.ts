@@ -44,5 +44,5 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
   };
 
   play: () => Promise<WotrAction[]> = async () =>
-    this.fellowshipUi.separateSpecificCompanions([this.characterId]);
+    this.fellowshipUi.separateThoseCompanions([this.characterId]);
 }

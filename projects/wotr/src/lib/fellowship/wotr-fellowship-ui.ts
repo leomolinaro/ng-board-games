@@ -89,10 +89,10 @@ export class WotrFellowshipUi {
       companions: fellowshipCompanions,
       singleSelection: false
     });
-    return this.separateSpecificCompanions(companions, options);
+    return this.separateThoseCompanions(companions, options);
   }
 
-  async separateSpecificCompanions(
+  async separateThoseCompanions(
     companions: WotrCompanionId[],
     options?: WotrSeparateCompanionsOptions
   ): Promise<WotrAction[]> {

@@ -79,7 +79,7 @@ export class WotrCharacterUi {
     const actions: WotrAction[] = [];
     let continueMoving = movableCompanions.size > 0;
     while (continueMoving) {
-      const action = await this.moveCharacterGroup(movableCompanions);
+      const action = await this.moveCharacterGroup(movableCompanions, options);
       this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
