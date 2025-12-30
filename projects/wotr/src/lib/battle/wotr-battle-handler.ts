@@ -103,7 +103,7 @@ export class WotrBattleHandler {
   };
 
   private async applyArmyAttack(action: WotrArmyAttack, front: WotrFrontId) {
-    this.nationHandler.checkNationActivationByAttack(action.toRegion);
+    this.nationHandler.checkNationActivationByAttack(action);
     this.nationHandler.checkNationAdvanceByAttack(action.toRegion);
     if (front === "free-peoples") {
       await this.resolveBattleFlow(action, this.freePeoples, this.shadow);

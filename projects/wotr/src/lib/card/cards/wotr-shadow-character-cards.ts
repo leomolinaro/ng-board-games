@@ -8,8 +8,13 @@ import {
   WotrAfterActionDieCardResolution
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrBattleStore } from "../../battle/wotr-battle-store";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
+import {
+  WotrAfterCharacterElimination,
+  WotrCharacterModifiers
+} from "../../character/wotr-character-modifiers";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import {
@@ -27,6 +32,7 @@ import { useElvenRing } from "../../front/wotr-front-actions";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
+import { WotrStoryService } from "../../game/wotr-story-service";
 import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
 import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
@@ -34,6 +40,11 @@ import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../hunt/wotr-hunt-modi
 import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrLogWriter } from "../../log/wotr-log-writer";
+import {
+  WotrAfterNationActivation,
+  WotrCanActivateNationModifier,
+  WotrNationModifiers
+} from "../../nation/wotr-nation-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
@@ -77,6 +88,10 @@ export class WotrShadowCharacterCards {
   private logger = inject(WotrLogWriter);
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private cardUi = inject(WotrCardDrawUi);
+  private nationModifiers = inject(WotrNationModifiers);
+  private characterModifiers = inject(WotrCharacterModifiers);
+  private storyService = inject(WotrStoryService);
+  private battleStore = inject(WotrBattleStore);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -481,15 +496,48 @@ export class WotrShadowCharacterCards {
             return [drawAbility, discardAbility];
           }
         };
-      // TODO Wormtongue
+      // Wormtongue
       // Play on the table if Saruman is in play.
       // When "Wormtongue" is in play, Rohan cannot be activated except by an appropriate Companion, or by the Fellowship being declared in Edoras or Helm's Deep, or
       // by an attack on Edoras or Helm's Deep.
       // You must discard this card from the table as soon as Rohan is activated, or if Saruman is eliminated.
       case "scha22":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.saruman.isInPlay(),
+          play: async () => [playCardOnTableId("scha22")],
+          onTableAbilities: () => {
+            const cannotActivate: WotrAbility<WotrCanActivateNationModifier> = {
+              modifier: this.nationModifiers.canActivateNationModifier,
+              handler: (nationId, source) => {
+                if (nationId !== "rohan") return true;
+                if (source === "companion-ability" || source === "fellowship-declaration")
+                  return true;
+                if (typeof source === "object" && source.type === "army-attack") {
+                  if (source.toRegion === "edoras" || source.toRegion === "helms-deep") {
+                    return true;
+                  }
+                }
+                return false;
+              }
+            };
+            const discardForActivation: WotrAbility<WotrAfterNationActivation> = {
+              modifier: this.nationModifiers.afterNationActivation,
+              handler: (nationId, source) => {
+                if (nationId === "rohan") {
+                  this.cardHandler.discardCardFromTableEffect("scha22");
+                }
+              }
+            };
+            const discardForSarumanElimination: WotrAbility<WotrAfterCharacterElimination> = {
+              modifier: this.characterModifiers.afterCharacterElimination,
+              handler: async characterId => {
+                if (characterId === "saruman") {
+                  this.cardHandler.discardCardFromTableEffect("scha22");
+                }
+              }
+            };
+            return [cannotActivate, discardForActivation, discardForSarumanElimination];
+          }
         };
       // The Ringwraiths Are Abroad
       // Move any or all of the Nazgûl.

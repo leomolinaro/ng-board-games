@@ -54,7 +54,7 @@ export class WotrWitchKing extends WotrCharacterCard {
   }
 
   override resolveBringIntoPlayEffect(): void {
-    this.nationHandler.activateAllFreePeoplesNations();
+    this.nationHandler.activateAllFreePeoplesNations("minion-ability");
   }
 
   private isValidRegion(region: WotrRegion): boolean {

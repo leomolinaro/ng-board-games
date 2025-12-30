@@ -16,6 +16,7 @@ import {
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
+import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
@@ -43,7 +44,6 @@ import { discardCardFromTableById, playCardOnTableId } from "../wotr-card-action
 import { WotrCardHandler } from "../wotr-card-handler";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
-import { WotrFrontId } from "../../front/wotr-front-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrShadowStrategyCards {
@@ -225,7 +225,7 @@ export class WotrShadowStrategyCards {
           play: async () => [playCardOnTableId("sstr05")],
           onTableAbilities: () => {
             const cannotAdvanceAbility: WotrAbility<WotrCanAdvanceNationModifier> = {
-              modifier: this.nationModifiers.canAdvanceNationModifiers,
+              modifier: this.nationModifiers.canAdvanceNationModifier,
               handler: (nationId: WotrNationId, source: WotrNationAdvanceSource) => {
                 const nation = this.q.nation(nationId);
                 if (nation.frontId() !== "free-peoples") return true;

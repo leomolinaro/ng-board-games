@@ -26,6 +26,7 @@ import {
   WotrGollumEnterFellowship
 } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
 
@@ -38,6 +39,7 @@ export class WotrCharacterHandler {
   private regionStore = inject(WotrRegionStore);
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
+  private characterModifiers = inject(WotrCharacterModifiers);
 
   private shadow = inject(WotrShadowPlayer);
 
@@ -114,6 +116,7 @@ export class WotrCharacterHandler {
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
     for (const characterId of characters) {
       this.removeCharacter(characterId);
+      this.characterModifiers.onAfterCharacterElimination(characterId);
     }
     await this.checkWornWithSorrowAndToil();
     await this.checkGollumEnterPlay();

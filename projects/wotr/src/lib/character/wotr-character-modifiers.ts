@@ -3,6 +3,7 @@ import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrCharacterId } from "./wotr-character-models";
 
 export type WotrBeforeCharacterElimination = (characterId: WotrCharacterId) => Promise<boolean>;
+export type WotrAfterCharacterElimination = (characterId: WotrCharacterId) => Promise<void>;
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterModifiers {
@@ -15,7 +16,13 @@ export class WotrCharacterModifiers {
     return results.every(result => result === true);
   }
 
+  public readonly afterCharacterElimination = new WotrModifier<WotrAfterCharacterElimination>();
+  public onAfterCharacterElimination(characterId: WotrCharacterId): void {
+    this.afterCharacterElimination.get().forEach(handler => handler(characterId));
+  }
+
   clear() {
     this.beforeCharacterElimination.clear();
+    this.afterCharacterElimination.clear();
   }
 }

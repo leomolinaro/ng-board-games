@@ -259,6 +259,11 @@ export class WotrNationStore {
     return nation.politicalStep === "atWar";
   }
 
+  isActive(nationId: WotrNationId): boolean {
+    const nation = this.nation(nationId);
+    return nation.active;
+  }
+
   private updateNation(
     actionName: string,
     nationId: WotrNationId,
@@ -408,6 +413,20 @@ export class WotrNationStore {
         return 3;
       case 3:
         return 3;
+    }
+  }
+
+  stepsToWar(nationId: WotrNationId): number {
+    const nation = this.nation(nationId);
+    switch (nation.politicalStep) {
+      case 3:
+        return 3;
+      case 2:
+        return 2;
+      case 1:
+        return 1;
+      case "atWar":
+        return 0;
     }
   }
 }

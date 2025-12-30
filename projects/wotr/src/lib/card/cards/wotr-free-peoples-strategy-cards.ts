@@ -108,8 +108,10 @@ export class WotrFreePeoplesStrategyCards {
               this.q.region("erebor").hasCompanions() ||
               this.q.region("ered-luin").hasCompanions()
             ) {
-              if (!this.q.dwarves.isActive()) this.nationHandler.activateNation("dwarves");
-              if (!this.q.dwarves.isAtWar()) this.nationHandler.advanceAtWar("dwarves");
+              if (!this.q.dwarves.isActive())
+                this.nationHandler.activateNationEffect("dwarves", "card-ability");
+              if (!this.q.dwarves.isAtWar())
+                this.nationHandler.advanceAtWar("dwarves", "card-ability");
             }
           }
         };
@@ -141,8 +143,9 @@ export class WotrFreePeoplesStrategyCards {
               this.q.region("the-shire").hasCompanions() ||
               this.q.region("bree").hasCompanions()
             ) {
-              if (!this.q.north.isActive()) this.nationHandler.activateNation("north");
-              if (!this.q.north.isAtWar()) this.nationHandler.advanceAtWar("north");
+              if (!this.q.north.isActive())
+                this.nationHandler.activateNationEffect("north", "card-ability");
+              if (!this.q.north.isAtWar()) this.nationHandler.advanceAtWar("north", "card-ability");
             }
           }
         };

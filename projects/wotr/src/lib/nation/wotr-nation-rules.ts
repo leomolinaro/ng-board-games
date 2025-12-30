@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrArmyAttack } from "../battle/wotr-battle-actions";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNation } from "./wotr-nation-models";
 import { WotrNationModifiers } from "./wotr-nation-modifiers";
@@ -12,6 +13,15 @@ export type WotrNationAdvanceSource =
   | "character-ability"
   | "card-ability"
   | "auto-advance";
+
+export type WotrNationActivationSource =
+  | "region-entered"
+  | "settlement-capture"
+  | WotrArmyAttack
+  | "fellowship-declaration"
+  | "companion-ability"
+  | "minion-ability"
+  | "card-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationRules {

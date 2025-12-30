@@ -1,4 +1,5 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrArmyAttack } from "../battle/wotr-battle-actions";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -16,7 +17,7 @@ import {
 } from "./wotr-nation-actions";
 import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationModifiers } from "./wotr-nation-modifiers";
-import { WotrNationAdvanceSource } from "./wotr-nation-rules";
+import { WotrNationActivationSource, WotrNationAdvanceSource } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable({ providedIn: "root" })
@@ -32,7 +33,7 @@ export class WotrNationHandler {
   init() {
     this.actionRegistry.registerAction<WotrPoliticalActivation>(
       "political-activation",
-      (action, front) => this.nationStore.activate(true, action.nation),
+      (action, front) => this.activateNation(action.nation, "card-ability"),
       (action, front, f) => [f.player(front), " activates ", f.nation(action.nation)]
     );
     this.actionRegistry.registerAction<WotrPoliticalAdvance>(
@@ -76,17 +77,17 @@ export class WotrNationHandler {
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
       if (!nation.active && nation.front === "free-peoples" && armyFront === "shadow") {
-        this.activateNation(region.nationId);
+        this.activateNationEffect(region.nationId, "region-entered");
       }
     }
   }
 
-  checkNationActivationByAttack(regionId: WotrRegionId) {
-    const nations = this.nationOfAttackedUnits(regionId);
+  checkNationActivationByAttack(attack: WotrArmyAttack) {
+    const nations = this.nationOfAttackedUnits(attack.toRegion);
     for (const nationId of nations) {
       const nation = this.nationStore.nation(nationId);
       if (!nation.active) {
-        this.activateNation(nationId);
+        this.activateNationEffect(nationId, attack);
       }
     }
   }
@@ -115,7 +116,7 @@ export class WotrNationHandler {
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
       if (nation.politicalStep !== "atWar") {
-        this.activateNation(region.nationId);
+        this.activateNationEffect(region.nationId, "settlement-capture");
       }
     }
   }
@@ -135,7 +136,7 @@ export class WotrNationHandler {
             character.activationNation === "all" ||
             character.activationNation === region.nationId
           ) {
-            this.activateNation(region.nationId);
+            this.activateNationEffect(region.nationId, "companion-ability");
           }
         }
       }
@@ -151,39 +152,73 @@ export class WotrNationHandler {
         nation.front === "free-peoples" &&
         (region.settlement === "city" || region.settlement === "stronghold")
       ) {
-        this.activateNation(region.nationId);
+        this.activateNationEffect(region.nationId, "fellowship-declaration");
       }
     }
   }
 
-  activateNation(nation: WotrNationId) {
-    const action: WotrPoliticalActivation = { type: "political-activation", nation };
-    this.logger.logEffect(action);
-    this.nationStore.activate(true, nation);
+  activateNation(nation: WotrNationId, source: WotrNationActivationSource) {
+    if (this.nationModifiers.canActivateNation(nation, source)) {
+      this.nationStore.activate(true, nation);
+      this.nationModifiers.onAfterNationActivation(nation, source);
+    } else {
+      // TODO log
+    }
+  }
+
+  activateNationEffect(nation: WotrNationId, source: WotrNationActivationSource) {
+    if (this.nationModifiers.canActivateNation(nation, source)) {
+      const action: WotrPoliticalActivation = { type: "political-activation", nation };
+      this.logger.logEffect(action);
+      this.activateNation(nation, source);
+    } else {
+      // TODO log
+    }
   }
 
   advanceNationEffect(quantity: number, nation: WotrNationId) {
-    const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
-    this.logger.logEffect(action);
-    this.advanceNation(quantity, nation, "auto-advance");
+    if (this.canAdvanceForActiveState(quantity, nation)) {
+      const action: WotrPoliticalAdvance = { type: "political-advance", nation, quantity };
+      this.logger.logEffect(action);
+      this.advanceNation(quantity, nation, "auto-advance");
+    } else {
+      // TODO log
+    }
   }
 
   advanceNation(quantity: number, nation: WotrNationId, source: WotrNationAdvanceSource) {
-    this.nationStore.advance(quantity, nation);
-    this.nationModifiers.onAfterNationAdvance(nation, source);
+    if (this.canAdvanceForActiveState(quantity, nation)) {
+      this.nationStore.advance(quantity, nation);
+      this.nationModifiers.onAfterNationAdvance(nation, source);
+    } else {
+      // TODO log
+    }
   }
 
-  advanceAtWar(nation: WotrNationId) {
-    const action: WotrPoliticalAdvanceAtWar = { type: "political-advance-at-war", nation };
-    this.logger.logEffect(action);
-    this.nationStore.advanceAtWar(nation);
+  advanceAtWar(nation: WotrNationId, source: WotrNationAdvanceSource) {
+    if (this.canAdvanceForActiveState("war", nation)) {
+      const action: WotrPoliticalAdvanceAtWar = { type: "political-advance-at-war", nation };
+      this.logger.logEffect(action);
+      this.nationStore.advanceAtWar(nation);
+      this.nationModifiers.onAfterNationAdvance(nation, source);
+    } else {
+      // TODO log
+    }
   }
 
-  activateAllFreePeoplesNations(): void {
+  private canAdvanceForActiveState(quantity: number | "war", nation: WotrNationId): boolean {
+    const isActive = this.nationStore.isActive(nation);
+    if (isActive) return true;
+    const stepsToWar = this.nationStore.stepsToWar(nation);
+    const goToWar = quantity === "war" || quantity >= stepsToWar;
+    return !goToWar;
+  }
+
+  activateAllFreePeoplesNations(source: WotrNationActivationSource): void {
     const nations = this.nationStore.freePeoplesNations();
     for (const nation of nations) {
       if (!nation.active) {
-        this.activateNation(nation.id);
+        this.activateNationEffect(nation.id, source);
       }
     }
   }
