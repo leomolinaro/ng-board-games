@@ -28,7 +28,7 @@ export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRoun
     const combatFront = round.attacker.frontId === front ? round.attacker : round.defender;
     if (combatFront.army().characters?.includes(this.characterId)) {
       if (!combatFront.cancelledCharacters.includes(this.characterId)) {
-        combatFront.combatModifiers.push(1);
+        combatFront.combatStrengthModifiers.push(1);
       }
     }
   };

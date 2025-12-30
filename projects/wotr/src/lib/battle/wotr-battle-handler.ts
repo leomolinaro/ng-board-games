@@ -249,6 +249,7 @@ export class WotrBattleHandler {
   }
 
   private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
+    this.battleModifiers.onBeforeCombatRound(combatRound);
     const attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
     if (hasStronghold && !combatRound.siege) {
@@ -566,13 +567,12 @@ export class WotrBattleHandler {
   }
 
   getCombatStrength(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
-    if (combatFront.isAttacker) {
-      const attackingArmy = this.attackingArmy(combatRound.action);
-      return this.unitRules.getArmyCombatStrength(attackingArmy);
-    } else {
-      const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
-      return attackedArmy ? this.unitRules.getArmyCombatStrength(attackedArmy) : 0;
-    }
+    const army = combatFront.army();
+    let strength = this.unitRules.getArmyCombatStrength(army);
+    combatFront.combatStrengthModifiers.forEach(modifier => {
+      strength += modifier;
+    });
+    return strength;
   }
 
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {

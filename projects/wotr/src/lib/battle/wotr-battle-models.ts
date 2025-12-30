@@ -31,6 +31,8 @@ export class WotrCombatFront {
   maxNCombatDice: number = 5;
   lessNCombatDice: number = 0;
   lessNLeaderDice: number = 0;
+  /** Modifiers applied to the combat strength */
+  combatStrengthModifiers: number[] = [];
   /** Modifiers applied to each die during the combat roll */
   combatModifiers: number[] = [];
   /** Modifiers applied to each die during the leader re-roll */
