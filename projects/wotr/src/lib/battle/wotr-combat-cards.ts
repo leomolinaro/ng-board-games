@@ -293,6 +293,7 @@ export class WotrCombatCards {
           this.shadow
         );
         params.freePeoples.lessNCombatDice = points;
+        params.shadow.forfeitedLeadership = points;
       }
     },
     // Durin's Bane (Initiative 2)

@@ -578,15 +578,15 @@ export class WotrBattleHandler {
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     if (combatFront.isAttacker) {
       const attackingArmy = this.attackingArmy(combatRound.action);
-      return this.unitRules.getArmyLeadership(
-        attackingArmy,
-        false,
-        combatFront.cancelledCharacters
+      return (
+        this.unitRules.getArmyLeadership(attackingArmy, false, combatFront.cancelledCharacters) -
+        combatFront.forfeitedLeadership
       );
     } else {
       const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
       return attackedArmy
-        ? this.unitRules.getArmyLeadership(attackedArmy, false, combatFront.cancelledCharacters)
+        ? this.unitRules.getArmyLeadership(attackedArmy, false, combatFront.cancelledCharacters) -
+            combatFront.forfeitedLeadership
         : 0;
     }
   }
