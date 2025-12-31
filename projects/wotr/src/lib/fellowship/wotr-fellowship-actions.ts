@@ -37,6 +37,12 @@ export interface WotrFellowshipReveal {
 export function revealFellowship(region: WotrRegionId): WotrFellowshipReveal {
   return { type: "fellowship-reveal", region };
 }
+export interface WotrFellowshipRevealInMordor {
+  type: "fellowship-reveal-in-mordor";
+}
+export function revealFellowshipInMordor(): WotrFellowshipRevealInMordor {
+  return { type: "fellowship-reveal-in-mordor" };
+}
 export interface WotrFellowshipPush {
   type: "fellowship-push";
   region: WotrRegionId;
@@ -77,6 +83,7 @@ export type WotrFellowshipAction =
   | WotrFellowshipDeclare
   | WotrFellowshipHide
   | WotrFellowshipReveal
+  | WotrFellowshipRevealInMordor
   | WotrFellowshipGuide
   | WotrCompanionSeparation
   | WotrCompanionRandom;

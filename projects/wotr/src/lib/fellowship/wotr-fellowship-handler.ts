@@ -55,6 +55,7 @@ export class WotrFellowshipHandler {
       "fellowship-hide": (action, front) => this.hide(),
       "fellowship-progress": (action, front) => this.progress(),
       "fellowship-reveal": (action, front) => this.reveal(action.region),
+      "fellowship-reveal-in-mordor": (action, front) => this.revealInMordor(),
       "companion-random": (action, front) => {} /*empty*/,
       "companion-separation": (action, front) =>
         this.separateCompanions(action.companions, action.toRegion)
@@ -81,6 +82,10 @@ export class WotrFellowshipHandler {
 
   reveal(regionId: WotrRegionId): void {
     this.regionStore.moveFellowshipToRegion(regionId);
+    this.fellowshipStore.reveal();
+  }
+
+  revealInMordor(): void {
     this.fellowshipStore.reveal();
   }
 
@@ -157,6 +162,10 @@ export class WotrFellowshipHandler {
         f.player(front),
         " reveals the Fellowship in ",
         f.region(action.region)
+      ],
+      "fellowship-reveal-in-mordor": (action, front, f) => [
+        f.player(front),
+        " reveals the Fellowship in Mordor"
       ],
       "companion-random": (action, front, f) => [
         f.player(front),

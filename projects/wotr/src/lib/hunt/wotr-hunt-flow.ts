@@ -10,7 +10,8 @@ import {
   WotrCompanionRandom,
   WotrCompanionSeparation,
   WotrFellowshipCorruption,
-  WotrFellowshipReveal
+  WotrFellowshipReveal,
+  WotrFellowshipRevealInMordor
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { assertAction, filterActions } from "../game/wotr-story-models";
@@ -43,6 +44,7 @@ type HuntEffect =
   | WotrCharacterElimination
   | WotrCompanionRandom
   | WotrFellowshipReveal
+  | WotrFellowshipRevealInMordor
   | WotrCardDiscardFromTable;
 
 @Injectable({ providedIn: "root" })
@@ -233,7 +235,8 @@ export class WotrHuntFlow {
           params.casualtyTaken = true;
           break;
         }
-        case "fellowship-reveal": {
+        case "fellowship-reveal":
+        case "fellowship-reveal-in-mordor": {
           if (this.fellowshipStore.guide() === "gollum") {
             absorbedDamage += 1;
             gollumRevealing = true;
@@ -283,6 +286,7 @@ export class WotrHuntFlow {
       "character-elimination",
       "companion-random",
       "fellowship-reveal",
+      "fellowship-reveal-in-mordor",
       "card-discard-from-table"
     );
     return actions;

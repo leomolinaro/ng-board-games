@@ -12,9 +12,13 @@ import {
   chooseRandomCompanion,
   corruptFellowship,
   revealFellowship,
+  revealFellowshipInMordor,
   WotrCompanionRandom,
-  WotrFellowshipCorruption
+  WotrFellowshipCorruption,
+  WotrFellowshipReveal,
+  WotrFellowshipRevealInMordor
 } from "../fellowship/wotr-fellowship-actions";
+import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
@@ -42,6 +46,7 @@ export class WotrHuntUi {
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntModifiers = inject(WotrHuntModifiers);
   private cardHandler = inject(WotrCardHandler);
+  private fellowshipHandler = inject(WotrFellowshipHandler);
 
   private eliminateGuideChoice: WotrUiChoice<WotrHuntEffectParams> = {
     label: () => "Eliminate the guide",
@@ -53,6 +58,23 @@ export class WotrHuntUi {
       await this.characterHandler.eliminateCharacters([guide]);
       if (this.fellowshipStore.guide() !== "gollum") {
         actions.push(await this.fellowshipUi.changeGuide());
+      }
+      return actions;
+    }
+  };
+
+  private gollumRevealingChoice: WotrUiChoice<WotrHuntEffectParams> = {
+    label: () => "Reveal with Gollum",
+    isAvailable: () => this.fellowshipStore.isHidden() && this.fellowshipStore.guide() === "gollum",
+    actions: async () => {
+      const actions: WotrAction[] = [];
+      if (this.fellowshipStore.isOnMordorTrack()) {
+        actions.push(revealFellowshipInMordor());
+        this.fellowshipHandler.revealInMordor();
+      } else {
+        const a = await this.revealFellowship();
+        actions.push(...a);
+        this.fellowshipHandler.reveal(a[0].region);
       }
       return actions;
     }
@@ -110,7 +132,7 @@ export class WotrHuntUi {
     return rollShelobsLairDie(huntTileDie);
   }
 
-  async revealFellowship(): Promise<WotrAction[]> {
+  async revealFellowship(): Promise<[WotrFellowshipReveal]> {
     const progress = this.fellowshipStore.progress();
     const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
     const reachableRegions = this.regionStore.reachableRegions(fellowshipRegion.id, progress);
@@ -162,6 +184,9 @@ export class WotrHuntUi {
       // use ring
       const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
       if (!casualtyTaken && !params.onlyRingAbsorbtion) {
+        if (this.fellowshipStore.isHidden() && this.fellowshipStore.guide() === "gollum") {
+          choices.push(this.gollumRevealingChoice);
+        }
         if (!params.mustEliminateRandomCompanion) choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);
       }
@@ -188,6 +213,11 @@ export class WotrHuntUi {
         chosenActions,
         "card-discard-from-table"
       );
+      const gollumRevealing = findAction<WotrFellowshipReveal>(chosenActions, "fellowship-reveal");
+      const gollumRevealingInMordor = findAction<WotrFellowshipRevealInMordor>(
+        chosenActions,
+        "fellowship-reveal-in-mordor"
+      );
       if (randomCompanion) {
         continuee = false;
       } else {
@@ -204,6 +234,9 @@ export class WotrHuntUi {
         if (discardTableCard) {
           damage -= 1; // assume table card absorb 1 damage point
           this.cardHandler.discardCardFromTable(discardTableCard.card);
+        }
+        if (gollumRevealing || gollumRevealingInMordor) {
+          damage -= 1;
         }
       }
     }
