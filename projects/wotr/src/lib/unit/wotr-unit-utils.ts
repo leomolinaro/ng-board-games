@@ -201,8 +201,15 @@ export class WotrUnitUtils {
 
   hasNazgul(units: WotrUnits) {
     if (units.nNazgul) return true;
-    if (units.characters && units.characters?.indexOf("the-witch-king") >= 0) return true;
+    if (units.characters?.includes("the-witch-king")) return true;
     return false;
+  }
+
+  nazgulCount(units: WotrUnits): number {
+    let count = 0;
+    if (units.nNazgul) count += units.nNazgul;
+    if (units.characters?.includes("the-witch-king")) count += 1;
+    return count;
   }
 
   nazgulLeadership(units: WotrUnits): number {

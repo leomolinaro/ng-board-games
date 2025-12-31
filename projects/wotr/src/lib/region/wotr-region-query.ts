@@ -48,6 +48,11 @@ export class WotrRegionQuery {
     return reachable.includes(regionId);
   }
 
+  adjacentRegions(): WotrRegionQuery[] {
+    const region = this.regionStore.region(this.regionId);
+    return region.neighbors.filter(n => !n.impassable).map(n => this.query(n.id));
+  }
+
   reachableRegions(
     progress: number,
     canEnter?: (region: WotrRegionQuery, distance: number) => boolean,

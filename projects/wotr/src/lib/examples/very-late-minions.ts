@@ -543,8 +543,7 @@ export const stories: WotrStoryDoc[] = [
       moveCharacters("pelargir", "lamedon", "the-mouth-of-sauron")
     ),
   b.fp().pass(),
-  b.s().eventDieCard("Dreadful Spells", targetRegion("erebor")),
-  b.s().cardReaction("Dreadful Spells", rollCombatDice(5, 2, 6, 3, 3)),
+  b.s().eventDieCard("Dreadful Spells", targetRegion("erebor"), rollCombatDice(5, 2, 6, 3, 3)),
   b.fp().cardReaction("Dreadful Spells", downgradeEliteUnit("erebor", "dwarves", 2)),
   b.fp().willOfTheWestDie(hideFellowship()),
   b.s().eventDieCard("On, On They Went", addHuntTile("r3s")),

@@ -8,9 +8,7 @@ import {
   WotrAfterActionDieCardResolution
 } from "../../action-die/wotr-action-die-modifiers";
 import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
-import { WotrBattleStore } from "../../battle/wotr-battle-store";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
-import { WotrCombatDie } from "../../battle/wotr-combat-die-models";
 import {
   WotrAfterCharacterElimination,
   WotrCharacterModifiers
@@ -32,7 +30,6 @@ import { useElvenRing } from "../../front/wotr-front-actions";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
-import { WotrStoryService } from "../../game/wotr-story-service";
 import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
 import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
@@ -46,11 +43,13 @@ import {
   WotrNationModifiers
 } from "../../nation/wotr-nation-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrPlayer } from "../../player/wotr-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
-import { WotrRegionChoose } from "../../region/wotr-region-actions";
+import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
+import { WotrRegionId } from "../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import {
   discardCardFromTableById,
   playCardOnTable,
@@ -90,8 +89,7 @@ export class WotrShadowCharacterCards {
   private cardUi = inject(WotrCardDrawUi);
   private nationModifiers = inject(WotrNationModifiers);
   private characterModifiers = inject(WotrCharacterModifiers);
-  private storyService = inject(WotrStoryService);
-  private battleStore = inject(WotrBattleStore);
+  private unitUtils = inject(WotrUnitUtils);
 
   createCard(cardId: WotrShadowCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -421,18 +419,47 @@ export class WotrShadowCharacterCards {
             return [lidlessEye(...changedDice)];
           }
         };
-      // TODO Dreadful Spells
+      // Dreadful Spells
       // Play if a Shadow Army contianing Nazgûl is adjacent to, or is in the same region as, a Free Peoples Army.
       // Roll a number of dice equal to the number of Nazgûl (up to a maximum of 5) and score one hit for every result of 5+.
       case "scha19":
         return {
-          canBePlayed: () => false,
-          play: async () => [],
+          canBePlayed: () => this.q.regions().some(r => this.isDreadfulSpellsSourceRegion(r)),
+          play: async () => {
+            const sourceRegions = this.q
+              .regions()
+              .filter(r => this.isDreadfulSpellsSourceRegion(r));
+            const sourceRegionId = await this.ui.askRegion(
+              "Choose a region",
+              sourceRegions.map(r => r.id())
+            );
+            const sourceRegion = this.q.region(sourceRegionId);
+            const targetRegionIds: WotrRegionId[] = [];
+            if (sourceRegion.hasArmy("free-peoples")) targetRegionIds.push(sourceRegion.id());
+            sourceRegion.adjacentRegions().forEach(adjRegion => {
+              if (adjRegion.hasArmy("free-peoples")) targetRegionIds.push(adjRegion.id());
+            });
+            const targetRegionId = await this.ui.askRegion(
+              "Choose a Free Peoples army to attack",
+              targetRegionIds
+            );
+            const shadowArmy = this.q.region(sourceRegionId).army("shadow")!;
+            const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
+            const roll = await this.battleUi.rollCombatDice(nNazgul, "shadow");
+            return [targetRegion(targetRegionId), roll];
+          },
           effect: async params => {
-            const action = assertAction<WotrRegionChoose>(params.story, "region-choose");
-            await this.rollCombatDice(1, this.shadow); // TODO nDice
-            await this.freePeoples.chooseCasualties(1, action.region, null); // TODO hitPoints
-            // TODO eliminate entire army
+            const regionChoose = assertAction<WotrRegionChoose>(params.story, "region-choose");
+            const combatRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
+            const nHits = combatRoll.dice.filter(die => die >= 5).length;
+            if (!nHits) return;
+            const freePeoplesArmy = this.q.region(regionChoose.region).army("free-peoples")!;
+            const hitPoints = this.unitUtils.nHits(freePeoplesArmy);
+            if (nHits >= hitPoints) {
+              await this.freePeoples.eliminateArmy(regionChoose.region, params.cardId);
+            } else {
+              await this.freePeoples.chooseCasualties(nHits, regionChoose.region, params.cardId);
+            }
           }
         };
       // Grond, Hammer of the Underworld
@@ -614,9 +641,11 @@ export class WotrShadowCharacterCards {
     }
   }
 
-  private async rollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
-    const story = await player.rollCombatDice(nDice);
-    const action = assertAction<WotrCombatRoll>(story, "combat-roll");
-    return action.dice;
+  private isDreadfulSpellsSourceRegion(r: WotrRegionQuery): boolean {
+    const shadowArmy = r.army("shadow");
+    if (!shadowArmy) return false;
+    if (!this.unitUtils.hasNazgul(shadowArmy)) return false;
+    if (r.hasArmy("free-peoples")) return true;
+    return r.adjacentRegions().some(n => n.hasArmy("free-peoples"));
   }
 }
