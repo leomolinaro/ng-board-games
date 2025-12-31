@@ -300,7 +300,7 @@ export class WotrBattleHandler {
         if (wantContinueBattle) {
           if (this.canRetreat(combatRound.defender)) {
             const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-            if (wantRetreat) {
+            if (wantRetreat === "army-retreat-into-siege" || wantRetreat === "army-retreat") {
               attackerWon = true;
             } else {
               continueBattle = true;
@@ -708,19 +708,17 @@ export class WotrBattleHandler {
     });
   }
 
-  private async wantRetreat(player: WotrPlayer): Promise<boolean> {
+  private async wantRetreat(
+    player: WotrPlayer
+  ): Promise<"army-retreat-into-siege" | "army-retreat" | "army-not-retreat"> {
     const story = await player.wantRetreat();
-    const action = assertAction<WotrArmyRetreat | WotrArmyNotRetreat>(
+    const action = assertAction<WotrArmyRetreatIntoSiege | WotrArmyRetreat | WotrArmyNotRetreat>(
       story,
+      "army-retreat-into-siege",
       "army-retreat",
       "army-not-retreat"
     );
-    switch (action.type) {
-      case "army-retreat":
-        return true;
-      case "army-not-retreat":
-        return false;
-    }
+    return action.type;
   }
 
   private async reRollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {

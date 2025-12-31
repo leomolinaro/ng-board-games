@@ -22,7 +22,8 @@ export class WotrCombatFront {
   constructor(
     public player: WotrPlayer,
     public isAttacker: boolean,
-    public army: () => WotrArmy
+    public army: () => WotrArmy,
+    public regionId: WotrRegionId
   ) {}
 
   frontId = this.player.frontId;
@@ -61,8 +62,8 @@ export class WotrCombatRound {
     public siege: boolean,
     public siegeAutoContinueBattle: boolean
   ) {
-    this.attacker = new WotrCombatFront(attacker, true, attackingArmy);
-    this.defender = new WotrCombatFront(defender, false, defendingArmy);
+    this.attacker = new WotrCombatFront(attacker, true, attackingArmy, action.fromRegion);
+    this.defender = new WotrCombatFront(defender, false, defendingArmy, action.toRegion);
     if (attacker.frontId === "shadow") {
       this.shadow = this.attacker;
       this.freePeoples = this.defender;

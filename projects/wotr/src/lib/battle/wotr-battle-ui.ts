@@ -5,7 +5,7 @@ import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUi, WotrUiOption } from "../game/wotr-game-ui";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -184,12 +184,28 @@ export class WotrBattleUi {
   async wantRetreat(): Promise<WotrAction> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
-    const confirm = await this.ui.askConfirm(
-      `Do you want to retreat from ${region.name}?`,
-      "Retreat",
-      "Not retreat"
+    const options: WotrUiOption<"retreat-into-siege" | "retreat" | "not-retreat">[] = [];
+    if (region.settlement === "stronghold") {
+      options.push({
+        label: "Retreat into siege",
+        value: "retreat-into-siege"
+      });
+    }
+    options.push({
+      label: "Retreat",
+      value: "retreat"
+    });
+    options.push({
+      label: "Not retreat",
+      value: "not-retreat"
+    });
+    const option = await this.ui.askOption<"retreat-into-siege" | "retreat" | "not-retreat">(
+      "Do you want to retreat?",
+      options
     );
-    if (confirm) {
+    if (option === "retreat-into-siege") {
+      return retreatIntoSiege(region.id);
+    } else if (option === "retreat") {
       const retreatableRegions = this.unitRules.retreatableRegions(region, battle.defender.frontId);
       const toRegionId = await this.ui.askRegion(
         "Choose a region to retreat to",
