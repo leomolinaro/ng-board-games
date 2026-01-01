@@ -3,13 +3,14 @@ import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowship-models";
 
-export function initialeState(): WotrFellowship {
+export function initialState(): WotrFellowship {
   return {
     status: "hidden",
     companions: [],
     progress: 0,
     corruption: 0,
-    guide: "gandalf-the-grey"
+    guide: "gandalf-the-grey",
+    moveOrHideAttempt: false
   };
 }
 
@@ -32,6 +33,9 @@ export class WotrFellowshipStore {
   }
   isOnMordorTrack() {
     return this.state().mordorTrack != null;
+  }
+  hasMovedOrHid() {
+    return this.state().moveOrHideAttempt;
   }
   progress() {
     return this.state().progress;
@@ -76,5 +80,15 @@ export class WotrFellowshipStore {
       ...state,
       mordorTrack: state.mordorTrack == null ? 0 : ((state.mordorTrack + 1) as WotrMordorTrack)
     }));
+  }
+
+  setMoveAttempt() {
+    this.update("setMoveAttempt", state => ({ ...state, moveOrHideAttempt: true }));
+  }
+  setHideAttempt() {
+    this.update("setHideAttempt", state => ({ ...state, moveOrHideAttempt: true }));
+  }
+  resetMoveOrHideAttempt() {
+    this.update("resetMoveOrHideAttempt", state => ({ ...state, moveOrHideAttempt: false }));
   }
 }

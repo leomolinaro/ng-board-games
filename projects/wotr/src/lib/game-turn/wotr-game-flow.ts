@@ -29,6 +29,7 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
+import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrGameTurn {
@@ -42,6 +43,7 @@ export class WotrGameTurn {
   private actionRegistry = inject(WotrActionRegistry);
   private characters = inject(WotrCharacters);
   private q = inject(WotrGameQuery);
+  private fellowshipHandler = inject(WotrFellowshipHandler);
 
   private allPlayers = inject(WotrAllPlayers);
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -110,6 +112,7 @@ export class WotrGameTurn {
     this.frontStore.resetElvenRingUsed("free-peoples");
     this.frontStore.resetElvenRingUsed("shadow");
     this.characterStore.resetMessengerOfTheDarkTower();
+    this.fellowshipStore.resetMoveOrHideAttempt();
     this.frontStore.skipDiscardExcessCards(true);
     await this.allPlayers.firstPhaseDraw();
     await this.checkFirstPhaseDiscard();
@@ -180,6 +183,7 @@ export class WotrGameTurn {
       const story = await this.chooseAction(player);
       player = this.getNextResolutionFrontId(player, story);
     } while (player);
+    this.fellowshipHandler.checkFellowshipMovingInMordor();
     return true;
   }
 

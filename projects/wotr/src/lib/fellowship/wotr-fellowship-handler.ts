@@ -63,10 +63,12 @@ export class WotrFellowshipHandler {
   }
 
   hide(): void {
+    this.fellowshipStore.setHideAttempt();
     this.fellowshipStore.hide();
   }
 
   async progress(): Promise<void> {
+    this.fellowshipStore.setMoveAttempt();
     if (this.fellowshipStore.isOnMordorTrack()) {
       await this.huntFlow.resolveHunt();
       this.huntStore.addFellowshipDie();
@@ -129,9 +131,20 @@ export class WotrFellowshipHandler {
     }
   }
 
+  corruptEffect(nCorruption: number) {
+    this.corrupt(nCorruption);
+    this.logger.logEffect(corruptFellowship(nCorruption));
+  }
+
   healEffect(nHealed: number) {
     this.fellowshipStore.corrupt(-nHealed);
     this.logger.logEffect(corruptFellowship(-nHealed));
+  }
+
+  checkFellowshipMovingInMordor() {
+    if (this.fellowshipStore.isOnMordorTrack() && !this.fellowshipStore.hasMovedOrHid()) {
+      this.corruptEffect(1);
+    }
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFellowshipAction> {

@@ -191,8 +191,7 @@ export class WotrShadowCharacterCards {
               this.q.fellowship.guideIs("gollum") ? die => die === 6 : die => die >= 4
             ).length;
             if (nCorruption) {
-              this.fellowshipHandler.corrupt(nCorruption);
-              this.logger.logEffect(corruptFellowship(nCorruption));
+              this.fellowshipHandler.corruptEffect(nCorruption);
             }
           }
         };

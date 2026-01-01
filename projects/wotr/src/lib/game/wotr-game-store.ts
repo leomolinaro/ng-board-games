@@ -15,7 +15,7 @@ import {
 } from "../character/wotr-character-store";
 import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 import {
-  initialeState as fellowshipInitialeState,
+  initialState as fellowshipInitialeState,
   WotrFellowshipStore
 } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";

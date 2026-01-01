@@ -7,6 +7,7 @@ export interface WotrFellowship {
   companions: WotrCompanionId[];
   guide: WotrCompanionId;
   mordorTrack?: WotrMordorTrack;
+  moveOrHideAttempt: boolean;
 }
 
 export type WotrMordorTrack = 0 | 1 | 2 | 3 | 4 | 5;
