@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { attack, forfeitLeadership } from "../battle/wotr-battle-actions";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -19,6 +20,7 @@ import {
   eliminateNazgul,
   eliminateRegularUnit,
   moveArmy,
+  moveNazgul,
   recruitEliteUnit,
   recruitLeader,
   recruitNazgul,
@@ -512,17 +514,24 @@ export class WotrUnitUi {
   async eliminateUnits(params: WotrEliminateUnitsParams, frontId: string): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     for (const unitMatch of params.units) {
-      actions.push(...(await this.eliminateUnit(unitMatch, frontId)));
+      actions.push(...(await this.eliminateUnit(unitMatch, params.regionIds, frontId)));
     }
     return actions;
   }
 
-  async eliminateUnit(selection: WotrRegionUnitMatch, frontId: string): Promise<WotrAction[]> {
+  async eliminateUnit(
+    selection: WotrRegionUnitMatch,
+    regionIds: WotrRegionId[] | null,
+    frontId: string
+  ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
-    const regionFilter = this.regionFilter(selection);
-    const regions = this.q.regions().filter(regionFilter);
+    if (!regionIds) {
+      const regionFilter = this.regionFilter(selection);
+      const regions = this.q.regions().filter(regionFilter);
+      regionIds = regions.map(r => r.id());
+    }
     const units = await this.ui.askRegionUnits(`Select a ${selection.unitType} unit to eliminate`, {
-      regionIds: regions.map(r => r.id()),
+      regionIds,
       type: "eliminateUnit",
       unitType: selection.unitType,
       nationId: selection.nationId || null
@@ -656,6 +665,38 @@ export class WotrUnitUi {
       } else {
         continueMoving = false;
       }
+    }
+    return actions;
+  }
+
+  async theEaglesAreComingEffect(
+    nHits: number,
+    region: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    const shadowArmy = this.q.region(region).army("shadow")!;
+    const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
+    if (nHits) {
+      const unitMatches: WotrRegionUnitMatch[] = [];
+      for (let i = 0; i < nHits; i++) {
+        unitMatches.push({ unitType: "nazgul" });
+      }
+      actions.push(
+        ...(await this.eliminateUnits({ regionIds: [region], units: unitMatches }, cardId))
+      );
+    }
+    const remainingNazgul = nNazgul - nHits;
+    if (remainingNazgul) {
+      const strongholds = this.q
+        .strongholdRegions()
+        .filter(r => r.isNation("sauron") && r.isUnconquered());
+      const stronghold = await this.ui.askRegion(
+        "Select a stronghold to move remaining Nazgul",
+        strongholds.map(r => r.id())
+      );
+      actions.push(moveNazgul(region, stronghold, remainingNazgul));
+      this.unitHandler.moveNazgul(remainingNazgul, region, stronghold);
     }
     return actions;
   }

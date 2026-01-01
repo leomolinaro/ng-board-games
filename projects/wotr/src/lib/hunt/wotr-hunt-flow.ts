@@ -75,7 +75,7 @@ export class WotrHuntFlow {
     this.logger.logHuntResolution();
     const modifiers = new WotrHuntRollModifiers();
     await this.huntModifiers.onBeforeHuntRoll(modifiers);
-    const huntRoll = await this.rollHuntDice(this.shadow);
+    const huntRoll = await this.rollHuntDice();
     let nSuccesses = this.getNSuccesses(huntRoll, modifiers.rollModifiers);
     const nReRolls = this.getNReRolls(huntRoll, nSuccesses);
     if (nReRolls) {
@@ -292,8 +292,8 @@ export class WotrHuntFlow {
     return actions;
   }
 
-  async rollHuntDice(player: WotrPlayer): Promise<WotrCombatDie[]> {
-    const story = await player.rollHuntDice();
+  async rollHuntDice(): Promise<WotrCombatDie[]> {
+    const story = await this.shadow.rollHuntDice();
     const huntRoll = assertAction<WotrHuntRoll>(story, "hunt-roll");
     return huntRoll.dice;
   }

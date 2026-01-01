@@ -127,7 +127,7 @@ export class WotrCharacterUi {
         const moveNazgulActions = await this.moveNazgul();
         for (const action of moveNazgulActions) {
           if (action.type === "nazgul-movement") {
-            this.unitHandler.moveNazgul(action);
+            this.unitHandler.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion);
           } else {
             this.characterHandler.moveCharacters(
               action.characters,
@@ -166,7 +166,7 @@ export class WotrCharacterUi {
       const moveNazgulActions = await this.moveNazgul();
       for (const action of moveNazgulActions) {
         if (action.type === "nazgul-movement") {
-          this.unitHandler.moveNazgul(action);
+          this.unitHandler.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion);
         } else {
           this.characterHandler.moveCharacters(
             action.characters,

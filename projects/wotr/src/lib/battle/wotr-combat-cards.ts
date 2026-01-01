@@ -348,7 +348,10 @@ export class WotrCombatCards {
         } else {
           unitMatches.push({ unitType: "nazgul" });
         }
-        await this.freePeoples.eliminateUnits({ units: unitMatches }, card.id);
+        await this.freePeoples.eliminateUnits(
+          { regionIds: [params.regionId], units: unitMatches },
+          card.id
+        );
       }
     },
     // Foul Stench (Initiative 3)

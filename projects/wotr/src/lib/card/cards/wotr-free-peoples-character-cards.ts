@@ -31,6 +31,9 @@ import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
+import { WotrRegionId } from "../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../region/wotr-region-query";
 import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
@@ -44,7 +47,7 @@ import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesCharacterCards {
-  private gameUi = inject(WotrGameUi);
+  private ui = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
   cardPlayUi!: WotrCardPlayUi;
   private battleUi = inject(WotrBattleUi);
@@ -183,7 +186,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha09":
         return {
           play: async () => {
-            await this.gameUi.askContinue("Roll three dice");
+            await this.ui.askContinue("Roll three dice");
             const dice = this.battleUi.rollDice(3);
             return [rollCombatDice(...dice)];
           },
@@ -207,14 +210,14 @@ export class WotrFreePeoplesCharacterCards {
             actions.push(...(await this.fellowshipUi.healFellowship(1)));
             if (this.q.gollum.isGuide()) {
               if (this.q.fellowship.isHidden()) {
-                const move = await this.gameUi.askConfirm(
+                const move = await this.ui.askConfirm(
                   "Do you want to move the Fellowship?",
                   "Move",
                   "Stay"
                 );
                 if (move) actions.push(moveFelloswhip());
               } else {
-                const hide = await this.gameUi.askConfirm(
+                const hide = await this.ui.askConfirm(
                   "Do you want to hide the Fellowship?",
                   "Hide",
                   "Keep revealed"
@@ -303,7 +306,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha15":
         return {
           play: async () => {
-            const actions = await this.gameUi.askChoice(
+            const actions = await this.ui.askChoice(
               "Choose to separate or move Companions",
               [
                 {
@@ -332,7 +335,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha16":
         return {
           play: async () => {
-            const option = await this.gameUi.askOption<"separate" | "move">(
+            const option = await this.ui.askOption<"separate" | "move">(
               "Choose to separate or move Companions",
               [
                 {
@@ -369,15 +372,45 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => []
         };
-      // TODO The Eagles are Coming!
+      // The Eagles are Coming!
       // Play if a Free Peoples Army containing a Companion is adjacent to, or is in the same region as, a Shadow Army containing Nazgûl.
       // Roll a die for each Nazgûl present (up to a maximum of five dice) and eliminate a Nazgûl for each roll of 5+.
-      // AII surviving Nazgûl must immediately be moved to any one unconquered Sauron Stronghold.
+      // All surviving Nazgûl must immediately be moved to any one unconquered Sauron Stronghold.
       // The Witch-king is not considered a Nazgûl for the purposes of this card.
       case "fpcha18":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.regions().some(r => this.isTheEaglesAreComingRegion(r)),
+          play: async () => {
+            const sourceRegions = this.q.regions().filter(r => this.isTheEaglesAreComingRegion(r));
+            const sourceRegionId = await this.ui.askRegion(
+              "Choose a region",
+              sourceRegions.map(r => r.id())
+            );
+            const sourceRegion = this.q.region(sourceRegionId);
+            const targetRegionIds: WotrRegionId[] = [];
+            {
+              const sArmy = sourceRegion.army("shadow");
+              if (sArmy?.nNazgul) targetRegionIds.push(sourceRegion.id());
+            }
+            sourceRegion.adjacentRegions().forEach(adjRegion => {
+              const sArmy = adjRegion.army("shadow");
+              if (sArmy?.nNazgul) targetRegionIds.push(adjRegion.id());
+            });
+            const targetRegionId = await this.ui.askRegion(
+              "Choose a Shadow army to attack",
+              targetRegionIds
+            );
+            const shadowArmy = this.q.region(targetRegionId).army("shadow")!;
+            const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
+            const roll = await this.battleUi.rollCombatDice(Math.min(nNazgul, 5), "free-peoples");
+            return [targetRegion(targetRegionId), roll];
+          },
+          effect: async params => {
+            const regionChoose = assertAction<WotrRegionChoose>(params.story, "region-choose");
+            const combatRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
+            const nHits = combatRoll.dice.filter(die => die >= 5).length;
+            await this.shadow.theEaglesAreComingEffect(nHits, regionChoose.region, params.cardId);
+          }
         };
       // The Ents Awake: Treebeard
       // Play if Gandalf the White is in play and a Companion is in Fangorn.
@@ -413,14 +446,14 @@ export class WotrFreePeoplesCharacterCards {
             const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
             const fromRegion = this.q.region(aragorn.region()!.id);
             const companions = fromRegion.companions();
-            const movingUnits = await this.gameUi.askRegionUnits("Choose companions to move", {
+            const movingUnits = await this.ui.askRegionUnits("Choose companions to move", {
               type: "moveCharacters",
               regionIds: [fromRegion.id()],
               characters: companions,
               requiredCharacters: [aragorn.id()]
             });
             const movingCompanions = movingUnits.characters!;
-            const toRegionId = await this.gameUi.askRegion("Choose a region to move to", [
+            const toRegionId = await this.ui.askRegion("Choose a region to move to", [
               "erech",
               "lamedon",
               "pelargir"
@@ -479,7 +512,7 @@ export class WotrFreePeoplesCharacterCards {
             if (this.q.gondor.hasEliteReinforcements()) {
               reinforcementUnits.push({ nation: "gondor", type: "elite" });
             }
-            const units = await this.gameUi.askReinforcementUnit("Choose a unit to recruit", {
+            const units = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
               canPass: false,
               frontId: "free-peoples",
               units: reinforcementUnits
@@ -519,7 +552,7 @@ export class WotrFreePeoplesCharacterCards {
       play: async () => {
         const shadowArmy = this.q.region("orthanc").army("shadow");
         if (shadowArmy) {
-          await this.gameUi.askContinue("Roll three dice");
+          await this.ui.askContinue("Roll three dice");
           const dice = this.battleUi.rollDice(3);
           return [rollCombatDice(...dice)];
         } else {
@@ -545,5 +578,19 @@ export class WotrFreePeoplesCharacterCards {
         }
       }
     };
+  }
+
+  // A Free Peoples Army containing a Companion is adjacent to, or is in the same region as, a Shadow Army containing Nazgûl.
+  private isTheEaglesAreComingRegion(region: WotrRegionQuery): boolean {
+    const fpArmy = region.army("free-peoples");
+    if (!fpArmy) return false;
+    if (!this.unitUtils.hasCompanions(fpArmy)) return false;
+    const shadowArmy = region.army("shadow");
+    if (shadowArmy?.nNazgul) return true;
+    return region.adjacentRegions().some(r => {
+      const sArmy = r.army("shadow");
+      if (sArmy?.nNazgul) return true;
+      return false;
+    });
   }
 }

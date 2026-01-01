@@ -17,7 +17,6 @@ import {
   WotrEliteUnitElimination,
   WotrLeaderElimination,
   WotrNazgulElimination,
-  WotrNazgulMovement,
   WotrRegularUnitElimination,
   WotrUnitAction
 } from "./wotr-unit-actions";
@@ -45,7 +44,8 @@ export class WotrUnitHandler {
   getActionAppliers(): WotrActionApplierMap<WotrUnitAction> {
     return {
       "army-movement": (action, front) => this.moveArmy(action, front),
-      "nazgul-movement": (action, front) => this.moveNazgul(action),
+      "nazgul-movement": (action, front) =>
+        this.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion),
       "regular-unit-recruitment": (action, front) =>
         this.recruitRegularUnit(action.quantity, action.nation, action.region),
       "regular-unit-elimination": (action, front) =>
@@ -75,9 +75,9 @@ export class WotrUnitHandler {
     };
   }
 
-  moveNazgul(action: WotrNazgulMovement) {
-    this.removeNazgulFromRegion(action.nNazgul, action.fromRegion);
-    this.addNazgulToRegion(action.nNazgul, action.toRegion);
+  moveNazgul(nNazgul: number, fromRegion: WotrRegionId, toRegion: WotrRegionId) {
+    this.removeNazgulFromRegion(nNazgul, fromRegion);
+    this.addNazgulToRegion(nNazgul, toRegion);
   }
 
   moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId) {

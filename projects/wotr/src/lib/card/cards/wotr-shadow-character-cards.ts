@@ -445,7 +445,7 @@ export class WotrShadowCharacterCards {
             );
             const shadowArmy = this.q.region(sourceRegionId).army("shadow")!;
             const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
-            const roll = await this.battleUi.rollCombatDice(nNazgul, "shadow");
+            const roll = await this.battleUi.rollCombatDice(Math.min(nNazgul, 5), "shadow");
             return [targetRegion(targetRegionId), roll];
           },
           effect: async params => {

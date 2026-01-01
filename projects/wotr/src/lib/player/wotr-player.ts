@@ -2,11 +2,10 @@ import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
-import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
 
@@ -29,20 +28,9 @@ export abstract class WotrPlayer {
   rollActionDice(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.rollActionDice(this.frontId));
   }
-  rollHuntDice(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.rollHuntDice());
-  }
-  reRollHuntDice(nReRolls: number): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.reRollHuntDice(nReRolls));
-  }
+
   drawHuntTile(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.drawHuntTile());
-  }
-  huntEffect(params: WotrHuntEffectParams): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.huntEffect(params));
-  }
-  lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.lureOfTheRingEffect(character));
   }
   revealFellowship(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.revealFellowship());

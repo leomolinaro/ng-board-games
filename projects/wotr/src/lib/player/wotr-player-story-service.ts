@@ -63,6 +63,11 @@ export interface WotrPlayerStoryService {
     cardId: WotrCardId,
     frontId: WotrFrontId
   ): Promise<WotrStory>;
+  theEaglesAreComingEffect(
+    nHits: number,
+    region: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;
