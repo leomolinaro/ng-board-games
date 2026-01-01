@@ -11,6 +11,7 @@ import { findAction, findActions, WotrAction } from "../commons/wotr-action-mode
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi } from "../game/wotr-game-ui";
+import { assertAction } from "../game/wotr-story-models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -515,12 +516,35 @@ export class WotrCombatCards {
     // After removing casualties from the Combat roll and Leader re-roll, you may inflict and apply up to four additional hits against your units. Roll one die for each hit
     // you inflicted to your units and score one hit against the enemy on each result of 4+.
     "Onslaught": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const ability: WotrCombatCardAbility = {
+          play: async () => {
+            const shadowArmy = params.shadow.army();
+            const maxHitPoints = this.unitUtils.nHits(shadowArmy);
+            const hitPoints = await this.ui.askQuantity("Choose number of hit points to inflict", {
+              default: 1,
+              min: 1,
+              max: Math.min(4, maxHitPoints)
+            });
+            if (!hitPoints) return [];
+            return this.battleUi.chooseCasualties(hitPoints, params.regionId, "shadow");
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.shadow);
+        if (!actions) return;
+        const hits = this.casualtyHits(actions);
+        if (hits) {
+          const rollStory = await this.shadow.rollCombatDice(hits);
+          const rollAction = assertAction<WotrCombatRoll>(rollStory, "combat-roll");
+          const nHits = rollAction.dice.filter(r => r >= 4).length;
+          const fpArmy = params.freePeoples.army();
+          const fpArmyHitPoints = this.unitUtils.nHits(fpArmy);
+          if (nHits >= fpArmyHitPoints) {
+            await this.freePeoples.eliminateArmy(params.regionId, card.id);
+          } else {
+            await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
+          }
+        }
       }
     },
     // Relentless Assault (Initiative 3)
@@ -540,22 +564,7 @@ export class WotrCombatCards {
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
         if (!actions) return;
-        const regularEliminations = findActions<WotrRegularUnitElimination>(
-          actions,
-          "regular-unit-elimination"
-        );
-        const eliteEliminations = findActions<WotrEliteUnitElimination>(
-          actions,
-          "elite-unit-elimination"
-        );
-        const eliteDowngrades = findActions<WotrEliteUnitDowngrade>(
-          actions,
-          "elite-unit-downgrade"
-        );
-        let hits = 0;
-        hits += regularEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
-        hits += eliteEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
-        hits += eliteDowngrades.reduce((sum, downgrade) => sum + downgrade.quantity, 0);
+        const hits = this.casualtyHits(actions);
         if (hits) {
           params.shadow.combatModifiers.push(hits);
         }
@@ -733,4 +742,21 @@ export class WotrCombatCards {
       }
     }
   };
+
+  private casualtyHits(actions: WotrAction[]) {
+    const regularEliminations = findActions<WotrRegularUnitElimination>(
+      actions,
+      "regular-unit-elimination"
+    );
+    const eliteEliminations = findActions<WotrEliteUnitElimination>(
+      actions,
+      "elite-unit-elimination"
+    );
+    const eliteDowngrades = findActions<WotrEliteUnitDowngrade>(actions, "elite-unit-downgrade");
+    let hits = 0;
+    hits += regularEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
+    hits += eliteEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
+    hits += eliteDowngrades.reduce((sum, downgrade) => sum + downgrade.quantity, 0);
+    return hits;
+  }
 }
