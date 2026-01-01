@@ -149,10 +149,17 @@ export class WotrHuntUi {
     return [revealFellowship(chosenRegion)];
   }
 
-  async drawHuntTile(): Promise<WotrHuntTileDraw> {
-    await this.ui.askContinue("Draw hunt tile");
-    const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
-    return drawHuntTile(huntTile);
+  async drawHuntTile(n = 1): Promise<WotrHuntTileDraw> {
+    if (n === 1) {
+      await this.ui.askContinue("Draw hunt tile");
+      const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+      return drawHuntTile(huntTile);
+    } else {
+      n = Math.min(n, this.huntStore.huntPool().length);
+      await this.ui.askContinue(`Draw ${n} hunt tiles`);
+      const huntTiles = randomUtil.getRandomElements(n, n, this.huntStore.huntPool());
+      return drawHuntTile(huntTiles[0], huntTiles.slice(1));
+    }
   }
 
   async huntEffect(params: WotrHuntEffectParams): Promise<WotrAction[]> {

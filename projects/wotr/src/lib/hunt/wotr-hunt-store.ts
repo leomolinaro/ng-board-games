@@ -150,6 +150,14 @@ export class WotrHuntStore {
     }));
   }
 
+  removeDrawnTilesFromGame(tile: WotrHuntTileId): void {
+    this.update("removeDrawnTilesFromGame", state => ({
+      ...state,
+      huntDrawn: immutableUtil.listRemoveFirst(h => h === tile, state.huntDrawn),
+      huntRemoved: immutableUtil.listPush([tile], state.huntRemoved)
+    }));
+  }
+
   moveAvailableTileToPool(tile: WotrHuntTileId): void {
     this.update("moveAvailableTileToPool", state => ({
       ...state,

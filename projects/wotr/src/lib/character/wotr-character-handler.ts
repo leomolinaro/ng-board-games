@@ -21,8 +21,10 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
+  eliminateCharacter,
   gollumEnterFellowship,
   WotrCharacterAction,
+  WotrCharacterElimination,
   WotrGollumEnterFellowship
 } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
@@ -51,6 +53,10 @@ export class WotrCharacterHandler {
     this.actionRegistry.registerEffectLogger<WotrGollumEnterFellowship>(
       "gollum-enter-fellowship",
       (effect, f) => [f.character("gollum"), " enters the Fellowship as Guide"]
+    );
+    this.actionRegistry.registerEffectLogger<WotrCharacterElimination>(
+      "character-elimination",
+      (effect, f) => [f.character(effect.characters[0]), " is eliminated"]
     );
     this.actionRegistry.registerStory("reaction-character", this.reactionCharacter);
     this.actionRegistry.registerStory("reaction-character-skip", this.reactionCharacterSkip);
@@ -111,6 +117,11 @@ export class WotrCharacterHandler {
       this.removeCharacter(characterId);
     }
     this.characters.activateAbilities(characters);
+  }
+
+  async eliminateCharacterEffect(character: WotrCharacterId): Promise<void> {
+    this.eliminateCharacters([character]);
+    this.logger.logEffect(eliminateCharacter(character));
   }
 
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {

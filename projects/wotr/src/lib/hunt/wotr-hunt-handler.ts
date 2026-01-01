@@ -32,7 +32,10 @@ export class WotrHuntHandler {
       "hunt-shelobs-lair-roll": (action, front) => {
         /*empty*/
       },
-      "hunt-tile-draw": (action, front) => this.huntStore.drawHuntTile(action.tile),
+      "hunt-tile-draw": (action, front) => {
+        this.huntStore.drawHuntTile(action.tile);
+        action.tiles?.forEach(tile => this.huntStore.drawHuntTile(tile));
+      },
       "hunt-tile-add": (action, front) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
           this.huntStore.moveAvailableTileToPool(action.tile);
@@ -75,12 +78,15 @@ export class WotrHuntHandler {
         f.huntTile(action.tile),
         " hunt tile to the Mordor Track"
       ],
-      "hunt-tile-draw": (action, front, f) => [
-        f.player(front),
-        " draws ",
-        f.huntTile(action.tile),
-        " hunt tile"
-      ],
+      "hunt-tile-draw": (action, front, f) => {
+        const logs = [f.player(front), " draws ", f.huntTile(action.tile)];
+        action.tiles?.forEach(tile => {
+          logs.push(", ");
+          logs.push(f.huntTile(tile));
+        });
+        logs.push(` hunt tile${action.tiles?.length ? "s" : ""}`);
+        return logs;
+      },
       "hunt-tile-return": (action, front, f) => [
         f.player(front),
         " returns ",

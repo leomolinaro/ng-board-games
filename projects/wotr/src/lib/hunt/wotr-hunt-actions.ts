@@ -55,9 +55,12 @@ export function rollShelobsLairDie(die: WotrCombatDie): WotrHuntShelobsLairRoll 
 export interface WotrHuntTileDraw {
   type: "hunt-tile-draw";
   tile: WotrHuntTileId;
+  tiles?: WotrHuntTileId[];
 }
-export function drawHuntTile(tile: WotrHuntTileId): WotrHuntTileDraw {
-  return { type: "hunt-tile-draw", tile };
+export function drawHuntTile(tile: WotrHuntTileId, tiles?: WotrHuntTileId[]): WotrHuntTileDraw {
+  const action: WotrHuntTileDraw = { type: "hunt-tile-draw", tile };
+  if (tiles) action.tiles = tiles;
+  return action;
 }
 
 export interface WotrHuntTileAdd {

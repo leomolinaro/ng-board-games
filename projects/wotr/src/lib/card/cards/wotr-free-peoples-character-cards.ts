@@ -8,7 +8,6 @@ import {
   WotrCharacterMovement
 } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
-import { WotrCharacterQuery } from "../../character/wotr-character-query";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import {
@@ -28,6 +27,7 @@ import {
   WotrHuntEffectChoiceModifier,
   WotrHuntModifiers
 } from "../../hunt/wotr-hunt-modifiers";
+import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
@@ -60,6 +60,7 @@ export class WotrFreePeoplesCharacterCards {
   private huntUi = inject(WotrHuntUi);
   private characterHandler = inject(WotrCharacterHandler);
   private unitUtils = inject(WotrUnitUtils);
+  private huntStore = inject(WotrHuntStore);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -261,7 +262,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => []
         };
-      // TODO Challenge of the King
+      // Challenge of the King
       // Play if Strider/Aragorn is with a Free Peoples Army in a Gondor or Rohan region.
       // Draw three Hunt tiles. If all three drawn tiles show Eyes, put them back in the Hunt Pool and eliminate Strider/Aragorn.
       // Otherwise, discard permanently the drawn tiles bearing an Eye for the remainder of the game.
@@ -269,12 +270,32 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha14":
         return {
           canBePlayed: () => {
-            const cond = (character: WotrCharacterQuery) =>
-              (character.isInNation("gondor") || character.isInNation("rohan")) &&
-              character.isWithFreePeoplesArmy();
-            return cond(this.q.aragorn) || cond(this.q.strider);
+            const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
+            return (
+              (aragorn.isInNation("gondor") || aragorn.isInNation("rohan")) &&
+              aragorn.isWithFreePeoplesArmy()
+            );
           },
-          play: async () => []
+          play: async () => [await this.huntUi.drawHuntTile(3)],
+          effect: async params => {
+            const tileDraw = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+            const tileIds: WotrHuntTileId[] = [tileDraw.tile, ...tileDraw.tiles!];
+            const tiles = tileIds.map(id => this.huntStore.huntTile(id));
+            if (tiles.every(tile => tile.eye === true)) {
+              for (const tile of tiles) {
+                this.huntStore.returnDrawnTileToPool(tile.id);
+              }
+              await this.characterHandler.eliminateCharacterEffect("aragorn");
+            } else {
+              for (const tile of tiles) {
+                if (tile.eye === true) {
+                  this.huntStore.removeDrawnTilesFromGame(tile.id);
+                } else {
+                  this.huntStore.returnDrawnTileToPool(tile.id);
+                }
+              }
+            }
+          }
         };
       // Gwaihir the Windlord
       // Separate from the Fellowship, or move, one Companion or one group of Companions as if their Level were 4.
