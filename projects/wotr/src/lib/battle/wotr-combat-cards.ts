@@ -180,12 +180,16 @@ export class WotrCombatCards {
     // Play if a Free Peoples Elite unit is in the battle.
     // Before the Combat roll, roll an additional attack using only the Free Peoples Elite units (up to a maximum of 5) and apply the result immediately.
     "Charge": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.unitUtils.hasEliteUnits(params.freePeoples.army()),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        const nEliteUnits = this.unitUtils.getNEliteUnits(params.freePeoples.army());
+        if (nEliteUnits > 0) {
+          const rollStory = await this.freePeoples.rollCombatDice(nEliteUnits);
+          const rollAction = assertAction<WotrCombatRoll>(rollStory, "combat-roll");
+          const threashold = params.combatRound.siege ? 6 : 5;
+          const nHits = rollAction.dice.filter(d => d >= threashold).length;
+          await this.applyExtraCombatHits(nHits, params.shadow, card, params);
+        }
       }
     },
     // Confusion (Initiative 4)
@@ -311,15 +315,7 @@ export class WotrCombatCards {
         if (!actions) return;
         const rollAction = findAction<WotrCombatRoll>(actions, "combat-roll")!;
         const nHits = rollAction?.dice.filter(d => d >= 4).length;
-        if (nHits) {
-          const armyHitPoints = this.unitUtils.nHits(params.freePeoples.army());
-          if (nHits >= armyHitPoints) {
-            await this.freePeoples.eliminateArmy(params.regionId, card.id);
-            params.combatRound.endBattle = true;
-          } else {
-            await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
-          }
-        }
+        await this.applyExtraCombatHits(nHits, params.freePeoples, card, params);
       }
     },
     // Ents' Rage (Initiative 3)
@@ -642,15 +638,7 @@ export class WotrCombatCards {
         if (!actions) return;
         const action = findAction<WotrCombatRoll>(actions, "combat-roll");
         const nHits = action!.dice.filter(r => r >= 5).length;
-        if (nHits) {
-          const armyHitPoints = this.unitUtils.nHits(params.shadow.army());
-          if (nHits >= armyHitPoints) {
-            await this.shadow.eliminateArmy(params.regionId, card.id);
-            params.combatRound.endBattle = true;
-          } else {
-            await this.shadow.chooseCasualties(nHits, params.regionId, card.id);
-          }
-        }
+        await this.applyExtraCombatHits(nHits, params.shadow, card, params);
       }
     },
     // Swarm of Bats (Initiative 0)
@@ -758,5 +746,21 @@ export class WotrCombatCards {
     hits += eliteEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
     hits += eliteDowngrades.reduce((sum, downgrade) => sum + downgrade.quantity, 0);
     return hits;
+  }
+
+  private async applyExtraCombatHits(
+    nHits: number,
+    defendingFront: WotrCombatFront,
+    card: WotrCard,
+    params: WotrCombatCardParams
+  ) {
+    if (!nHits) return;
+    const armyHitPoints = this.unitUtils.nHits(defendingFront.army());
+    if (nHits >= armyHitPoints) {
+      await defendingFront.player.eliminateArmy(params.regionId, card.id);
+      params.combatRound.endBattle = true;
+    } else {
+      await defendingFront.player.chooseCasualties(nHits, params.regionId, card.id);
+    }
   }
 }
