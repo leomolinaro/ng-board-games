@@ -22,6 +22,7 @@ import {
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit-models";
 import { WotrUnitUtils } from "./wotr-unit-utils";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 
 export interface WotrRecruitmentConstraints {
   points: number;
@@ -35,6 +36,7 @@ export class WotrUnitHandler {
   private nationHandler = inject(WotrNationHandler);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
+  private frontHandler = inject(WotrFrontHandler);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -86,6 +88,7 @@ export class WotrUnitHandler {
     const toRegion = this.regionStore.region(movement.toRegion);
     if (toRegion.settlement && toRegion.controlledBy !== frontId && !toRegion.underSiegeArmy) {
       this.regionStore.setControlledBy(frontId, movement.toRegion);
+      this.frontHandler.refreshVictoryPoints();
     }
   }
 
