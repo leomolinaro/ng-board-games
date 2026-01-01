@@ -318,7 +318,8 @@ export class WotrBattleHandler {
       if (combatRound.action.toRegion !== combatRound.action.fromRegion) {
         await this.battleAdvance(combatRound.attacker.player);
       }
-      if (this.attackedRegion(combatRound.action).settlement) {
+      const attackedRegion = this.attackedRegion(combatRound.action);
+      if (!attackedRegion.underSiegeArmy && attackedRegion.settlement) {
         this.regionStore.setControlledBy(combatRound.attacker.frontId, combatRound.action.toRegion); // TODO controllare se avanza
         this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
         this.frontHandler.refreshVictoryPoints();
