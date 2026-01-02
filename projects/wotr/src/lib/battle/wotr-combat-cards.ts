@@ -558,7 +558,7 @@ export class WotrCombatCards {
               max: 2
             });
             if (!hitPoints) return [];
-            return this.battleUi.chooseCasualties(hitPoints, params.regionId, "shadow");
+            return this.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
