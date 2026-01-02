@@ -490,7 +490,7 @@ export class WotrFreePeoplesCharacterCards {
                 await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
               } else {
                 throw new Error("TODO not implemented");
-                // await this.shadow.chooseCasualties;
+                // chooseCasualties and move
               }
             }
           }

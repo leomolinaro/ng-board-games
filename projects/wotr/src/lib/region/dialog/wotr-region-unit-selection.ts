@@ -46,7 +46,7 @@ export interface WotrMovingNazgulUnitSelection extends AWotrRegionUnitSelection 
 
 export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   type: "moveArmy";
-  requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[];
+  requiredUnits: ("anyLeader" | "anyNazgul" | "anyCharacter" | WotrCharacterId)[];
   retroguard: WotrUnits | null;
   required: boolean;
   doneMovements: WotrArmyMovement[];
@@ -54,7 +54,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
   type: "attack";
-  requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[];
+  requiredUnits: ("anyLeader" | "anyNazgul" | "anyCharacter" | WotrCharacterId)[];
   frontId: WotrFrontId;
 }
 
@@ -232,6 +232,9 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
             node.type === "nazgul" || (node.type === "character" && node.id === "the-witch-king")
         );
         if (!someNazgul) return "Select at least one Nazgul to move.";
+      } else if (reqUnit === "anyCharacter") {
+        const someCharacters = selectedNodes.some(node => node.type === "character");
+        if (!someCharacters) return "Select at least one character to move.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
           const character = this.characterStore.character(reqUnit);
@@ -339,6 +342,9 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
             node.type === "nazgul" || (node.type === "character" && node.id === "the-witch-king")
         );
         if (!someNazgul) return "Select at least one Nazgûl to attack with.";
+      } else if (reqUnit === "anyCharacter") {
+        const someCharacters = selectedNodes.some(node => node.type === "character");
+        if (!someCharacters) return "Select at least one character to attack with.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
           const character = this.characterStore.character(reqUnit);

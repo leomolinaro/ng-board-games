@@ -12,12 +12,14 @@ import { activateNation, advanceNation } from "../../nation/wotr-nation-actions"
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrNationUi } from "../../nation/wotr-nation-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../region/wotr-region-query";
 import {
   WotrCanAttackRegionModifier,
   WotrCanMoveIntoRegionModifier,
   WotrUnitModifiers
 } from "../../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { discardCardFromTableById, discardCardIds, playCardOnTableId } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrCardHandler } from "../wotr-card-handler";
@@ -26,7 +28,7 @@ import { WotrEventCard } from "./wotr-cards";
 
 @Injectable({ providedIn: "root" })
 export class WotrFreePeoplesStrategyCards {
-  private gameUi = inject(WotrGameUi);
+  private ui = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);
   private cardHandler = inject(WotrCardHandler);
   private characterUi = inject(WotrCharacterUi);
@@ -36,6 +38,7 @@ export class WotrFreePeoplesStrategyCards {
   private nationUi = inject(WotrNationUi);
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
+  private unitUtils = inject(WotrUnitUtils);
 
   createCard(cardId: WotrFreePeopleStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -156,7 +159,7 @@ export class WotrFreePeoplesStrategyCards {
           play: async () => {
             const nations = this.q.freePeoplesNations.filter(n => !n.isAtWar()).map(n => n.id());
             if (!nations.length) return [];
-            const nationId = await this.gameUi.askNation(
+            const nationId = await this.ui.askNation(
               "Choose a nation to activate and advance",
               nations
             );
@@ -200,14 +203,37 @@ export class WotrFreePeoplesStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Through a Day and a Night
+      // Through a Day and a Night
       // Play on a Free Peoples Army containing a Companion.
       // Move the Army containing the Companion(s) up to two regions. The regions must be free for the purposes of Army movement, and no Free Peoples units may be
       // picked up or dropped off along the way (other than, possibly, splitting the Army initially).
       case "fpstr12":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.regions().some(r => this.isThroughDayNightRegion(r)),
+          play: async () => {
+            const regions = this.q.regions().filter(r => this.isThroughDayNightRegion(r));
+            const units = await this.ui.askRegionUnits("Choose an army to move", {
+              type: "moveArmy",
+              regionIds: regions.map(r => r.id()),
+              doneMovements: [],
+              required: true,
+              retroguard: null,
+              requiredUnits: ["anyCharacter"]
+            });
+            const fromRegion = units.regionId;
+            const targetRegions = this.q
+              .region(fromRegion)
+              .reachableRegions(2, region => region.isFreeForArmyMovement("free-peoples"));
+            if (!targetRegions.length) {
+              await this.ui.askContinue("No valid target regions available for movement");
+              return [];
+            }
+            const toRegionId = await this.ui.askRegion(
+              "Select a region to move the army to",
+              targetRegions.map(region => region.id())
+            );
+            return this.unitUi.moveThisArmyTo(units, "free-peoples", toRegionId);
+          }
         };
       // Cirdan's Ships
       // Play if the Elves are "At War."
@@ -220,7 +246,7 @@ export class WotrFreePeoplesStrategyCards {
               .regions()
               .filter(r => r.isCoastal() && r.hasArmy("free-peoples"));
             if (!coastalRegions.length) return [];
-            const regionId = await this.gameUi.askRegion(
+            const regionId = await this.ui.askRegion(
               "Choose a region to recruit in",
               coastalRegions.map(r => r.id())
             );
@@ -354,10 +380,10 @@ export class WotrFreePeoplesStrategyCards {
               .filter(r => this.q.rohan.canRecruit(r.id))
               .map(r => r.id);
             if (!availableRegions.length) {
-              await this.gameUi.askContinue("No free Rohan region with a settlement");
+              await this.ui.askContinue("No free Rohan region with a settlement");
               return [];
             }
-            const regionId = await this.gameUi.askRegion(
+            const regionId = await this.ui.askRegion(
               "Choose a region to recruit units",
               availableRegions
             );
@@ -423,14 +449,14 @@ export class WotrFreePeoplesStrategyCards {
             return true;
           },
           actions: async () => {
-            const armyCard = await this.gameUi.askHandCard("Choose an Army Event card to discard", {
+            const armyCard = await this.ui.askHandCard("Choose an Army Event card to discard", {
               nCards: 1,
               cards: this.q.shadow.handCardsOfType("army"),
               frontId: "shadow",
               message: "Select an Army Event card to discard"
             });
             this.cardHandler.discardCards([armyCard], "shadow");
-            const characterCard = await this.gameUi.askHandCard(
+            const characterCard = await this.ui.askHandCard(
               "Choose a Character Event card to discard",
               {
                 nCards: 1,
@@ -446,5 +472,10 @@ export class WotrFreePeoplesStrategyCards {
         return [choice];
       }
     };
+  }
+
+  private isThroughDayNightRegion(region: WotrRegionQuery): boolean {
+    const fpArmy = region.army("free-peoples");
+    return fpArmy ? this.unitUtils.hasCompanions(fpArmy) : false;
   }
 }
