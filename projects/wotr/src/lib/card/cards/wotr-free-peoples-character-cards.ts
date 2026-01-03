@@ -1,5 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
+import { changeActionDie } from "../../action-die/wotr-action-die-actions";
+import { WotrActionDieHandler } from "../../action-die/wotr-action-die-handler";
 import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import {
@@ -17,6 +19,7 @@ import {
 } from "../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
+import { WotrFrontStore } from "../../front/wotr-front-store";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { assertAction } from "../../game/wotr-story-models";
@@ -64,6 +67,8 @@ export class WotrFreePeoplesCharacterCards {
   private characterHandler = inject(WotrCharacterHandler);
   private unitUtils = inject(WotrUnitUtils);
   private huntStore = inject(WotrHuntStore);
+  private frontStore = inject(WotrFrontStore);
+  private actionDieHandler = inject(WotrActionDieHandler);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -258,12 +263,40 @@ export class WotrFreePeoplesCharacterCards {
             return [healFellowship(quantity)];
           }
         };
-      // TODO Mirror of Galadriel
+      // Mirror of Galadriel
       // Change any one unused Free Peoples Character Action die result into a Will of the West die result.
       // If the Fellowship is in Lórien, and Lórien is unconquered, also heal one Corruption point.
       case "fpcha13":
         return {
-          play: async () => []
+          play: async () => {
+            const hasCharacterDie = this.frontStore
+              .front("free-peoples")
+              .actionDice.some(die => die === "character");
+            const actions: WotrAction[] = [];
+            if (hasCharacterDie) {
+              const change = await this.ui.askConfirm(
+                "Do you want to change a die result?",
+                "Change",
+                "Not change"
+              );
+              if (change) {
+                actions.push(changeActionDie("character", "will-of-the-west"));
+                this.actionDieHandler.changeActionDie(
+                  "character",
+                  "will-of-the-west",
+                  "free-peoples"
+                );
+              }
+            }
+            if (
+              this.q.fellowship.region().id === "lorien" &&
+              this.q.region("lorien").isUnconquered() &&
+              this.q.fellowship.corruption() > 0
+            ) {
+              actions.push(healFellowship(1));
+            }
+            return actions;
+          }
         };
       // Challenge of the King
       // Play if Strider/Aragorn is with a Free Peoples Army in a Gondor or Rohan region.

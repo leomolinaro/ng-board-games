@@ -210,6 +210,13 @@ export class WotrFrontStore {
     }));
   }
 
+  changeActionDie(die: WotrActionDie, toDie: WotrActionDie, frontId: WotrFrontId): void {
+    this.updateFront("changeActionDie", frontId, front => ({
+      ...front,
+      actionDice: immutableUtil.listReplaceFirst(d => d === die, toDie, front.actionDice)
+    }));
+  }
+
   removeActionToken(token: WotrActionToken, frontId: WotrFrontId): void {
     this.updateFront("removeActionToken", frontId, front => ({
       ...front,

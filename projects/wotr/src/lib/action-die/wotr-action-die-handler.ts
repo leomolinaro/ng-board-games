@@ -6,6 +6,7 @@ import {
 } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
   WotrDieStory,
@@ -88,8 +89,15 @@ export class WotrActionDieHandler {
       },
       "action-die-skip": async (action, front) => {
         // empty (the die will already be removed at the end of the action)
+      },
+      "action-die-change": async (action, front) => {
+        this.changeActionDie(action.die, action.toDie, front);
       }
     };
+  }
+
+  changeActionDie(die: WotrActionDie, toDie: WotrActionDie, front: WotrFrontId) {
+    this.frontStore.changeActionDie(die, toDie, front);
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrActionDieAction> {
@@ -104,6 +112,10 @@ export class WotrActionDieHandler {
       "action-die-skip": (action, front, f) => [
         f.player(front),
         ` skips ${this.dice([action.die])}`
+      ],
+      "action-die-change": (action, front, f) => [
+        f.player(front),
+        ` changes ${this.dice([action.die])} to ${this.dice([action.toDie])}`
       ]
     };
   }

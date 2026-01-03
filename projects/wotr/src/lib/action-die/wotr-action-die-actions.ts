@@ -1,7 +1,11 @@
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrActionDie } from "./wotr-action-die-models";
 
-export type WotrActionDieAction = WotrActionRoll | WotrActionDiceDiscard | WotrActionSkip;
+export type WotrActionDieAction =
+  | WotrActionRoll
+  | WotrActionDiceDiscard
+  | WotrActionSkip
+  | WotrActionDieChange;
 
 export interface WotrActionDiceDiscard {
   type: "action-dice-discard";
@@ -26,4 +30,13 @@ export interface WotrActionRoll {
 }
 export function rollActionDice(...dice: WotrActionDie[]): WotrActionRoll {
   return { type: "action-roll", dice };
+}
+
+export interface WotrActionDieChange {
+  type: "action-die-change";
+  die: WotrActionDie;
+  toDie: WotrActionDie;
+}
+export function changeActionDie(die: WotrActionDie, toDie: WotrActionDie): WotrActionDieChange {
+  return { type: "action-die-change", die, toDie };
 }
