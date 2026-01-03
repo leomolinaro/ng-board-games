@@ -174,6 +174,14 @@ export class WotrUnitUtils {
     return false;
   }
 
+  hasArmyUnitsOfDifferentNations(units: WotrUnits) {
+    let count = 0;
+    if (this.hasArmyUnitsOfNation("sauron", units)) count++;
+    if (this.hasArmyUnitsOfNation("isengard", units)) count++;
+    if (this.hasArmyUnitsOfNation("southrons", units)) count++;
+    return count > 1;
+  }
+
   hasRegularUnits(units: WotrUnits) {
     if (units.regulars?.length) return true;
     return false;

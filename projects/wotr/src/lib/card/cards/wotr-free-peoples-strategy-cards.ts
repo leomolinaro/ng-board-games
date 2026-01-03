@@ -4,13 +4,19 @@ import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
+import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { WotrBattleUi } from "../../battle/wotr-battle-ui";
 import { WotrCharacterUi } from "../../character/wotr-character-ui";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
+import { assertAction } from "../../game/wotr-story-models";
 import { activateNation, advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrNationUi } from "../../nation/wotr-nation-ui";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../region/wotr-region-query";
 import {
@@ -39,6 +45,9 @@ export class WotrFreePeoplesStrategyCards {
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
   private unitUtils = inject(WotrUnitUtils);
+  private battleUi = inject(WotrBattleUi);
+  private freePeoples = inject(WotrFreePeoplesPlayer);
+  private shadow = inject(WotrShadowPlayer);
 
   createCard(cardId: WotrFreePeopleStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -118,22 +127,80 @@ export class WotrFreePeoplesStrategyCards {
             }
           }
         };
-      // TODO The Spirit of Mordor
+      // The Spirit of Mordor
       // Choose a Shadow Army anywhere on the board that is composed of Army units from at least two different Shadow Nations.
       // Roll five dice and score one hit against this Army for each result of 5+.
       case "fpstr05":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const regions = this.q.regions().filter(r => {
+              const shadowArmy = r.army("shadow");
+              if (!shadowArmy) return false;
+              return this.unitUtils.hasArmyUnitsOfDifferentNations(shadowArmy);
+            });
+            if (!regions.length) return [];
+            const regionId = await this.ui.askRegion(
+              "Choose a region with a Shadow Army of different nations",
+              regions.map(r => r.id())
+            );
+            const actions: WotrAction[] = [];
+            actions.push(targetRegion(regionId));
+            const combatRoll = await this.battleUi.rollCombatDice(5, "free-peoples");
+            actions.push(combatRoll);
+            return actions;
+          },
+          effect: async params => {
+            const chooseRegion = assertAction<WotrRegionChoose>(params.story, "region-choose");
+            const diceRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
+            const nHits = diceRoll.dice.filter(r => r >= 5).length;
+            const shadowArmy = this.q.region(chooseRegion.region).army("shadow")!;
+            const shadowHitPoints = this.unitUtils.nHits(shadowArmy);
+            if (nHits >= shadowHitPoints) {
+              await this.shadow.eliminateArmy(chooseRegion.region, params.cardId);
+            } else {
+              await this.shadow.chooseCasualties(nHits, chooseRegion.region, params.cardId);
+            }
+          }
         };
-      // TODO Faramir's Rangers
+      // Faramir's Rangers
       // Choose a Shadow Army in Osgiliath or South Ithilien or North Ithilien.
       // Roll three dice and score one hit against this Army for each result of 5+.
       // Then, if there is a Free Peoples Army in Osgiliath, recruit one Gondor unit (Regular or Elite) and one Gondor Leader there.
       case "fpstr06":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            let regions = [
+              this.q.region("osgiliath"),
+              this.q.region("south-ithilien"),
+              this.q.region("north-ithilien")
+            ];
+            regions = regions.filter(r => r.hasArmy("shadow"));
+            if (!regions.length) return [];
+            const regionId = await this.ui.askRegion(
+              "Choose a region with a Shadow Army",
+              regions.map(r => r.id())
+            );
+            const actions: WotrAction[] = [];
+            actions.push(targetRegion(regionId));
+            const combatRoll = await this.battleUi.rollCombatDice(3, "free-peoples");
+            actions.push(combatRoll);
+            return actions;
+          },
+          effect: async params => {
+            const chooseRegion = assertAction<WotrRegionChoose>(params.story, "region-choose");
+            const diceRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
+            const nHits = diceRoll.dice.filter(r => r >= 5).length;
+            const shadowArmy = this.q.region(chooseRegion.region).army("shadow")!;
+            const shadowHitPoints = this.unitUtils.nHits(shadowArmy);
+            if (nHits >= shadowHitPoints) {
+              await this.shadow.eliminateArmy(chooseRegion.region, params.cardId);
+            } else {
+              await this.shadow.chooseCasualties(nHits, chooseRegion.region, params.cardId);
+            }
+            if (this.q.region("osgiliath").hasArmy("free-peoples")) {
+              this.freePeoples.faramirsRangesRecruit(params.cardId);
+            }
+          }
         };
       // Fear! Fire! Foes!
       // Move any or all Companions who are not in the Fellowship.

@@ -133,4 +133,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   ): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
 }

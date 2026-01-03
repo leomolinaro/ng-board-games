@@ -263,4 +263,12 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       actions: await this.unitUi.theEaglesAreComingEffect(nHits, region, cardId)
     };
   }
+
+  async faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrCardReactionStory> {
+    return {
+      type: "reaction-card",
+      card: cardId,
+      actions: await this.unitUi.faramirsRangesRecruit(cardId)
+    };
+  }
 }

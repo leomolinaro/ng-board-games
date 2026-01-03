@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
@@ -17,5 +18,9 @@ export class WotrFreePeoplesPlayer extends WotrPlayer {
 
   huntEffect(params: WotrHuntEffectParams): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.huntEffect(params));
+  }
+
+  faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.faramirsRangesRecruit(cardId));
   }
 }
