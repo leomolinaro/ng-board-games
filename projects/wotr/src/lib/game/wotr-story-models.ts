@@ -42,48 +42,47 @@ export interface WotrElvenRingAction {
   fromDie: WotrActionDie;
   toDie: WotrActionDie;
 }
-export interface WotrCardReactionStory {
-  type: "reaction-card";
+export interface WotrCardEffectStory {
+  type: "card-effect";
   card: WotrCardId;
   actions: WotrAction[];
 }
-export interface WotrSkipCardReactionStory {
-  type: "reaction-card-skip";
+export interface WotrSkipCardEffectStory {
+  type: "card-effect-skip";
   card: WotrCardId;
 }
-export interface WotrCombatCardReactionStory {
-  type: "reaction-combat-card";
+export interface WotrCombatCardEffectStory {
+  type: "combat-card-effect";
   card: WotrCardId;
   actions: WotrAction[];
 }
-export interface WotrSkipCombatCardReactionStory {
-  type: "reaction-combat-card-skip";
+export interface WotrSkipCombatCardEffectStory {
+  type: "combat-card-effect-skip";
   card: WotrCardId;
 }
-export interface WotrCharacterReactionStory {
-  type: "reaction-character";
+export interface WotrCharacterEffectStory {
+  type: "character-effect";
   character: WotrCharacterId;
   actions: WotrAction[];
 }
-export interface WotrSkipCharacterReactionStory {
-  type: "reaction-character-skip";
+export interface WotrSkipCharacterEffectStory {
+  type: "character-effect-skip";
   character: WotrCharacterId;
 }
 
-// TODO rename in "effect"
-export type WotrReactionStory =
-  | WotrCardReactionStory
-  | WotrSkipCardReactionStory
-  | WotrCombatCardReactionStory
-  | WotrSkipCombatCardReactionStory
-  | WotrCharacterReactionStory
-  | WotrSkipCharacterReactionStory;
+export type WotrEffectStory =
+  | WotrCardEffectStory
+  | WotrSkipCardEffectStory
+  | WotrCombatCardEffectStory
+  | WotrSkipCombatCardEffectStory
+  | WotrCharacterEffectStory
+  | WotrSkipCharacterEffectStory;
 
 export type WotrStory =
   | WotrBaseStory
   | WotrTokenStory
   | WotrSkipTokensStory
-  | WotrReactionStory
+  | WotrEffectStory
   | WotrDieStory
   | WotrDieCardStory
   | WotrPassStory;

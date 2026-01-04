@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -7,7 +8,6 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrCards } from "./cards/wotr-cards";
 import { playCardId } from "./wotr-card-actions";
 import { getCard, WotrCardId, WotrCardType } from "./wotr-card-models";
-import { WotrUiAbility } from "../ability/wotr-ability";
 
 @Injectable({ providedIn: "root" })
 export class WotrCardPlayUi {
@@ -90,12 +90,12 @@ export class WotrCardPlayUi {
     );
     if (confirm) {
       return {
-        type: "reaction-card",
+        type: "card-effect",
         card: cardId,
         actions: await ability.play()
       };
     } else {
-      return { type: "reaction-card-skip", card: cardId };
+      return { type: "card-effect-skip", card: cardId };
     }
   }
 }

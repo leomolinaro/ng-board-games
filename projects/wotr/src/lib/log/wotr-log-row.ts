@@ -304,20 +304,20 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
             return [this.player(l.front), this.string(" passes")];
           case "token-skip":
             return [this.player(l.front), this.string(" skips remaining tokens")];
-          case "reaction-card-skip":
+          case "card-effect-skip":
             return [
               this.player(l.front),
               this.string(" skip "),
               this.card(cardToLabel(l.story.card))
             ];
-          case "reaction-character-skip":
+          case "character-effect-skip":
             return [
               this.player(l.front),
               this.string(
                 " skip character reaction"
               ) /* , this.card (combatCardToLabel (l.story.character)) */
             ];
-          case "reaction-combat-card-skip":
+          case "combat-card-effect-skip":
             return [
               this.player(l.front),
               this.string(" skip "),

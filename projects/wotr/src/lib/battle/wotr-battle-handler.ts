@@ -8,8 +8,8 @@ import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   assertAction,
-  WotrCombatCardReactionStory,
-  WotrSkipCombatCardReactionStory
+  WotrCombatCardEffectStory,
+  WotrSkipCombatCardEffectStory
 } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -81,11 +81,11 @@ export class WotrBattleHandler {
       this.applyArmyAdvance.bind(this)
     );
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionRegistry.registerStory("reaction-combat-card", this.reactionCombatCard);
-    this.actionRegistry.registerStory("reaction-combat-card-skip", this.reactionCombatCardSkip);
+    this.actionRegistry.registerStory("combat-card-effect", this.reactionCombatCard);
+    this.actionRegistry.registerStory("combat-card-effect-skip", this.reactionCombatCardSkip);
   }
 
-  private reactionCombatCard: WotrStoryApplier<WotrCombatCardReactionStory> = async (
+  private reactionCombatCard: WotrStoryApplier<WotrCombatCardEffectStory> = async (
     story,
     front
   ) => {
@@ -95,7 +95,7 @@ export class WotrBattleHandler {
     }
   };
 
-  private reactionCombatCardSkip: WotrStoryApplier<WotrSkipCombatCardReactionStory> = async (
+  private reactionCombatCardSkip: WotrStoryApplier<WotrSkipCombatCardEffectStory> = async (
     story,
     front
   ) => {

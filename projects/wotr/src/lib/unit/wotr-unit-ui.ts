@@ -6,7 +6,7 @@ import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrReactionStory } from "../game/wotr-story-models";
+import { WotrEffectStory } from "../game/wotr-story-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrRegionId } from "../region/wotr-region-models";
@@ -579,7 +579,7 @@ export class WotrUnitUi {
     }
   }
 
-  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrReactionStory> {
+  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrEffectStory> {
     const continuee = await this.ui.askConfirm(
       "Forfeit leadership?",
       "Forfeit leadership",
@@ -587,7 +587,7 @@ export class WotrUnitUi {
     );
     if (!continuee)
       return {
-        type: "reaction-card-skip",
+        type: "card-effect-skip",
         card: params.cardId
       };
     const message = this.forfeitLeadershipMessage(params.points);
@@ -606,7 +606,7 @@ export class WotrUnitUi {
     if (units.nNazgul) unitComposers.push(nazgul(units.nNazgul));
     units.characters?.forEach(unit => unitComposers.push(character(unit)));
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: params.cardId,
       actions: [forfeitLeadership(...unitComposers)]
     };

@@ -84,9 +84,9 @@ export class WotrCombatCards {
   ): Promise<false | WotrAction[]> {
     const story = await player.activateCombatCard(ability, cardId);
     switch (story.type) {
-      case "reaction-combat-card":
+      case "combat-card-effect":
         return story.actions;
-      case "reaction-combat-card-skip":
+      case "combat-card-effect-skip":
         return false;
       default:
         throw unexpectedStory(story, " combat card activation or not");

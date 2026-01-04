@@ -536,7 +536,7 @@ export const stories: WotrStoryDoc[] = [
     ]
   },
   {
-    type: "reaction-card",
+    type: "card-effect",
     card: "scha21",
     playerId: "shadow",
     actions: [
@@ -1027,7 +1027,7 @@ export const stories: WotrStoryDoc[] = [
     card: "scha21",
     playerId: "shadow",
     time: 70,
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         cards: ["scha18"],
@@ -1092,7 +1092,7 @@ export const stories: WotrStoryDoc[] = [
         type: "army-retreat"
       }
     ],
-    type: "reaction-combat-card"
+    type: "combat-card-effect"
   },
   {
     actions: [
@@ -1488,7 +1488,7 @@ export const stories: WotrStoryDoc[] = [
       }
     ],
     time: 103,
-    type: "reaction-card",
+    type: "card-effect",
     card: "scha21",
     playerId: "shadow"
   },
@@ -1697,7 +1697,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow",
     time: 119,
     character: "the-witch-king",
-    type: "reaction-character",
+    type: "character-effect",
     actions: [
       {
         cards: ["sstr06"],
@@ -1734,7 +1734,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     card: "sstr06",
-    type: "reaction-card",
+    type: "card-effect",
     time: 122,
     actions: [
       {
@@ -1755,7 +1755,7 @@ export const stories: WotrStoryDoc[] = [
   {
     playerId: "shadow",
     time: 123,
-    type: "reaction-card",
+    type: "card-effect",
     card: "scha21",
     actions: [
       {
@@ -1810,7 +1810,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     time: 128,
-    type: "reaction-character",
+    type: "character-effect",
     character: "peregrin",
     actions: [
       {
@@ -1942,7 +1942,7 @@ export const stories: WotrStoryDoc[] = [
         type: "card-draw"
       }
     ],
-    type: "reaction-card"
+    type: "card-effect"
   },
   {
     time: 137,
@@ -1987,7 +1987,7 @@ export const stories: WotrStoryDoc[] = [
   {
     card: "scha14",
     playerId: "shadow",
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         type: "leader-forfeit",
@@ -2081,7 +2081,7 @@ export const stories: WotrStoryDoc[] = [
     time: 146
   },
   {
-    type: "reaction-character",
+    type: "character-effect",
     character: "the-witch-king",
     playerId: "shadow",
     actions: [
@@ -2338,7 +2338,7 @@ export const stories: WotrStoryDoc[] = [
     ]
   },
   {
-    type: "reaction-card",
+    type: "card-effect",
     time: 166,
     playerId: "shadow",
     actions: [
@@ -2412,7 +2412,7 @@ export const stories: WotrStoryDoc[] = [
         type: "card-draw"
       }
     ],
-    type: "reaction-character",
+    type: "character-effect",
     time: 170,
     playerId: "shadow",
     character: "the-witch-king"
@@ -2553,7 +2553,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow"
   },
   {
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         type: "card-draw",
@@ -2620,7 +2620,7 @@ export const stories: WotrStoryDoc[] = [
     ]
   },
   {
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     playerId: "shadow",
     actions: [
       {
@@ -2653,10 +2653,10 @@ export const stories: WotrStoryDoc[] = [
       }
     ],
     card: "scha17",
-    type: "reaction-card"
+    type: "card-effect"
   },
   {
-    type: "reaction-character",
+    type: "character-effect",
     playerId: "shadow",
     actions: [
       {
@@ -3713,7 +3713,7 @@ export const stories: WotrStoryDoc[] = [
   {
     card: "fpcha10",
     playerId: "free-peoples",
-    type: "reaction-combat-card-skip",
+    type: "combat-card-effect-skip",
     time: 254
   },
   {
@@ -3732,7 +3732,7 @@ export const stories: WotrStoryDoc[] = [
   {
     time: 256,
     playerId: "shadow",
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         type: "card-draw",
@@ -3880,7 +3880,7 @@ export const stories: WotrStoryDoc[] = [
     ],
     card: "sstr04",
     playerId: "shadow",
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     time: 268
   },
   {
@@ -3965,7 +3965,7 @@ export const stories: WotrStoryDoc[] = [
     time: 273
   },
   {
-    type: "reaction-card",
+    type: "card-effect",
     playerId: "shadow",
     actions: [
       {
@@ -4041,7 +4041,7 @@ export const stories: WotrStoryDoc[] = [
     ],
     playerId: "shadow",
     card: "scha21",
-    type: "reaction-card"
+    type: "card-effect"
   },
   {
     actions: [
@@ -4141,7 +4141,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     card: "scha21",
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         type: "card-draw",
@@ -4535,7 +4535,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow"
   },
   {
-    type: "reaction-card",
+    type: "card-effect",
     card: "scha21",
     actions: [
       {
@@ -4907,7 +4907,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     card: "fpcha05",
-    type: "reaction-card-skip",
+    type: "card-effect-skip",
     time: 337,
     playerId: "free-peoples"
   },
@@ -4951,7 +4951,7 @@ export const stories: WotrStoryDoc[] = [
     ],
     card: "scha21",
     playerId: "shadow",
-    type: "reaction-card",
+    type: "card-effect",
     time: 340
   },
   {
@@ -5056,7 +5056,7 @@ export const stories: WotrStoryDoc[] = [
         }
       }
     ],
-    type: "reaction-card",
+    type: "card-effect",
     playerId: "shadow",
     card: "scha10"
   },
@@ -5285,7 +5285,7 @@ export const stories: WotrStoryDoc[] = [
         cards: ["scha13"]
       }
     ],
-    type: "reaction-card",
+    type: "card-effect",
     playerId: "shadow",
     card: "scha21",
     time: 363
@@ -5341,7 +5341,7 @@ export const stories: WotrStoryDoc[] = [
     card: "scha06",
     time: 368,
     playerId: "shadow",
-    type: "reaction-card"
+    type: "card-effect"
   },
   {
     actions: [
@@ -5565,7 +5565,7 @@ export const stories: WotrStoryDoc[] = [
     time: 386,
     card: "fpcha05",
     playerId: "free-peoples",
-    type: "reaction-card-skip"
+    type: "card-effect-skip"
   },
   {
     actions: [
@@ -5952,7 +5952,7 @@ export const stories: WotrStoryDoc[] = [
       }
     ],
     playerId: "shadow",
-    type: "reaction-card",
+    type: "card-effect",
     time: 412,
     card: "scha21"
   },
@@ -6145,7 +6145,7 @@ export const stories: WotrStoryDoc[] = [
   {
     time: 425,
     card: "fpcha05",
-    type: "reaction-card-skip",
+    type: "card-effect-skip",
     playerId: "free-peoples"
   },
   {
@@ -6264,7 +6264,7 @@ export const stories: WotrStoryDoc[] = [
     ]
   },
   {
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     playerId: "shadow",
     time: 434,
     card: "sstr20",
@@ -6297,7 +6297,7 @@ export const stories: WotrStoryDoc[] = [
         quantity: 3
       }
     ],
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     time: 436,
     card: "sstr20",
     playerId: "free-peoples"
@@ -6731,7 +6731,7 @@ export const stories: WotrStoryDoc[] = [
         region: "mount-gundabad"
       }
     ],
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     time: 468
   },
   {
@@ -6931,7 +6931,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     playerId: "shadow",
-    type: "reaction-character",
+    type: "character-effect",
     character: "the-witch-king",
     actions: [
       {
@@ -7048,7 +7048,7 @@ export const stories: WotrStoryDoc[] = [
     time: 492,
     card: "fpcha18",
     playerId: "shadow",
-    type: "reaction-card",
+    type: "card-effect",
     actions: [
       {
         quantity: 1,
@@ -7276,7 +7276,7 @@ export const stories: WotrStoryDoc[] = [
         type: "card-draw"
       }
     ],
-    type: "reaction-card"
+    type: "card-effect"
   },
   {
     card: "fpstr04",
@@ -7797,7 +7797,7 @@ export const stories: WotrStoryDoc[] = [
   },
   {
     time: 537,
-    type: "reaction-combat-card",
+    type: "combat-card-effect",
     playerId: "shadow",
     card: "sstr18",
     actions: [
@@ -8073,7 +8073,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "free-peoples",
     time: 557,
     card: "fpcha05",
-    type: "reaction-card-skip"
+    type: "card-effect-skip"
   },
   {
     time: 558,
@@ -8215,7 +8215,7 @@ export const stories: WotrStoryDoc[] = [
   {
     time: 568,
     card: "scha15",
-    type: "reaction-combat-card-skip",
+    type: "combat-card-effect-skip",
     playerId: "shadow"
   },
   {

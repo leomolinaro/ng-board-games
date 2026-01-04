@@ -26,9 +26,9 @@ export async function activateCharacterAbility(
 ): Promise<false | WotrAction[]> {
   const story = await player.activateCharacterAbility(ability, characterId);
   switch (story.type) {
-    case "reaction-character":
+    case "character-effect":
       return story.actions;
-    case "reaction-character-skip":
+    case "character-effect-skip":
       return false;
     default:
       throw unexpectedStory(story, "character activation or not");

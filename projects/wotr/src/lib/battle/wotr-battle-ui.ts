@@ -253,12 +253,12 @@ export class WotrBattleUi {
     );
     if (confirm) {
       return {
-        type: "reaction-combat-card",
+        type: "combat-card-effect",
         card: cardId,
         actions: await ability.play()
       };
     } else {
-      return { type: "reaction-combat-card-skip", card: cardId };
+      return { type: "combat-card-effect-skip", card: cardId };
     }
   }
 }

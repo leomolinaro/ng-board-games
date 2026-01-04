@@ -3,6 +3,7 @@ import { unexpectedStory } from "../../../../../commons/src";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameStore } from "../../game/wotr-game-store";
 import { WotrStory } from "../../game/wotr-story-models";
 import { WotrPlayer } from "../../player/wotr-player";
 import {
@@ -15,7 +16,6 @@ import { WotrFreePeoplesCharacterCards } from "./wotr-free-peoples-character-car
 import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
 import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards";
 import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
-import { WotrGameStore } from "../../game/wotr-game-store";
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
@@ -104,9 +104,9 @@ export async function activateTableCard(
 ): Promise<false | WotrAction[]> {
   const story = await player.activateTableCard(ability, cardId);
   switch (story.type) {
-    case "reaction-card":
+    case "card-effect":
       return story.actions;
-    case "reaction-card-skip":
+    case "card-effect-skip":
       return false;
     default:
       throw unexpectedStory(story, "card activation or not");

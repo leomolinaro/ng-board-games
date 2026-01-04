@@ -108,13 +108,13 @@ export class WotrCardDrawUi {
     );
     if (confirm) {
       return {
-        type: "reaction-card",
+        type: "card-effect",
         card: cardId,
         actions: []
         // actions: await ability.play()
       };
     } else {
-      return { type: "reaction-card-skip", card: cardId };
+      return { type: "card-effect-skip", card: cardId };
     }
   }
 }

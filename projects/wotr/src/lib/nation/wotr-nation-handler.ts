@@ -243,9 +243,9 @@ export class WotrNationHandler {
         }
       case "die-card":
         return "card-ability";
-      case "reaction-card":
+      case "card-effect":
         return "card-ability";
-      case "reaction-character":
+      case "character-effect":
         return "character-ability";
       case "token":
         return "token";

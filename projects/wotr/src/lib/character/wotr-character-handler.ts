@@ -10,8 +10,8 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import {
-  WotrCharacterReactionStory,
-  WotrSkipCharacterReactionStory,
+  WotrCharacterEffectStory,
+  WotrSkipCharacterEffectStory,
   WotrStory
 } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
@@ -58,21 +58,18 @@ export class WotrCharacterHandler {
       "character-elimination",
       (effect, f) => [f.character(effect.characters[0]), " is eliminated"]
     );
-    this.actionRegistry.registerStory("reaction-character", this.reactionCharacter);
-    this.actionRegistry.registerStory("reaction-character-skip", this.reactionCharacterSkip);
+    this.actionRegistry.registerStory("character-effect", this.reactionCharacter);
+    this.actionRegistry.registerStory("character-effect-skip", this.reactionCharacterSkip);
   }
 
-  private reactionCharacter: WotrStoryApplier<WotrCharacterReactionStory> = async (
-    story,
-    front
-  ) => {
+  private reactionCharacter: WotrStoryApplier<WotrCharacterEffectStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
 
-  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterReactionStory> = async (
+  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterEffectStory> = async (
     story,
     front
   ) => {

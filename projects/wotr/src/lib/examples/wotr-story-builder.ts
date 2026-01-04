@@ -8,15 +8,15 @@ import { WotrAction } from "../commons/wotr-action-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import {
   WotrBaseStory,
-  WotrCardReactionStory,
-  WotrCharacterReactionStory,
-  WotrCombatCardReactionStory,
+  WotrCardEffectStory,
+  WotrCharacterEffectStory,
+  WotrCombatCardEffectStory,
   WotrDieCardStory,
   WotrDieStory,
   WotrPassStory,
-  WotrSkipCardReactionStory,
-  WotrSkipCharacterReactionStory,
-  WotrSkipCombatCardReactionStory,
+  WotrSkipCardEffectStory,
+  WotrSkipCharacterEffectStory,
+  WotrSkipCombatCardEffectStory,
   WotrSkipTokensStory,
   WotrStoryDoc,
   WotrTokenStory
@@ -184,35 +184,32 @@ export class WotrFrontStoryComposer {
     return { type: "token-skip", ...this.story() };
   }
 
-  cardReaction(
-    card: WotrCardLabel,
-    ...actions: WotrAction[]
-  ): WotrStoryDoc & WotrCardReactionStory {
-    return { type: "reaction-card", card: labelToCardId(card), actions, ...this.story() };
+  cardReaction(card: WotrCardLabel, ...actions: WotrAction[]): WotrStoryDoc & WotrCardEffectStory {
+    return { type: "card-effect", card: labelToCardId(card), actions, ...this.story() };
   }
-  skipCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCardReactionStory {
-    return { type: "reaction-card-skip", card: labelToCardId(card), ...this.story() };
+  skipCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCardEffectStory {
+    return { type: "card-effect-skip", card: labelToCardId(card), ...this.story() };
   }
   combatCardReaction(
     card: WotrCardLabel,
     ...actions: WotrAction[]
-  ): WotrStoryDoc & WotrCombatCardReactionStory {
-    return { type: "reaction-combat-card", card: labelToCardId(card), actions, ...this.story() };
+  ): WotrStoryDoc & WotrCombatCardEffectStory {
+    return { type: "combat-card-effect", card: labelToCardId(card), actions, ...this.story() };
   }
-  skipCombatCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCombatCardReactionStory {
-    return { type: "reaction-combat-card-skip", card: labelToCardId(card), ...this.story() };
+  skipCombatCardReaction(card: WotrCardLabel): WotrStoryDoc & WotrSkipCombatCardEffectStory {
+    return { type: "combat-card-effect-skip", card: labelToCardId(card), ...this.story() };
   }
   characterReaction(
     character: WotrCharacterId,
     ...actions: WotrAction[]
-  ): WotrStoryDoc & WotrCharacterReactionStory {
-    return { type: "reaction-character", character, actions, ...this.story() };
+  ): WotrStoryDoc & WotrCharacterEffectStory {
+    return { type: "character-effect", character, actions, ...this.story() };
   }
   skipCharacterReaction(
     character: WotrCharacterId,
     ...actions: WotrAction[]
-  ): WotrStoryDoc & WotrSkipCharacterReactionStory {
-    return { type: "reaction-character-skip", character, ...this.story() };
+  ): WotrStoryDoc & WotrSkipCharacterEffectStory {
+    return { type: "character-effect-skip", character, ...this.story() };
   }
 }
 export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {

@@ -269,12 +269,12 @@ export class WotrCharacterUi {
     );
     if (confirm) {
       return {
-        type: "reaction-character",
+        type: "character-effect",
         character: characterId,
         actions: await ability.play()
       };
     } else {
-      return { type: "reaction-character-skip", character: characterId };
+      return { type: "character-effect-skip", character: characterId };
     }
   }
 

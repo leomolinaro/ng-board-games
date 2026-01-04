@@ -4,9 +4,9 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontStore } from "../front/wotr-front-store";
 import {
-  WotrCardReactionStory,
+  WotrCardEffectStory,
   WotrDieCardStory,
-  WotrSkipCardReactionStory
+  WotrSkipCardEffectStory
 } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrCards } from "./cards/wotr-cards";
@@ -22,8 +22,8 @@ export class WotrCardStoryHandler {
 
   init() {
     this.actionRegistry.registerStory("die-card", this.dieCard);
-    this.actionRegistry.registerStory("reaction-card", this.reactionCard);
-    this.actionRegistry.registerStory("reaction-card-skip", this.reactionCardSkip);
+    this.actionRegistry.registerStory("card-effect", this.reactionCard);
+    this.actionRegistry.registerStory("card-effect-skip", this.reactionCardSkip);
   }
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
@@ -48,14 +48,14 @@ export class WotrCardStoryHandler {
     this.frontStore.clearCurrentCard();
   };
 
-  private reactionCard: WotrStoryApplier<WotrCardReactionStory> = async (story, front) => {
+  private reactionCard: WotrStoryApplier<WotrCardEffectStory> = async (story, front) => {
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
 
-  private reactionCardSkip: WotrStoryApplier<WotrSkipCardReactionStory> = async (story, front) => {
+  private reactionCardSkip: WotrStoryApplier<WotrSkipCardEffectStory> = async (story, front) => {
     this.logger.logStory(story, front);
   };
 }

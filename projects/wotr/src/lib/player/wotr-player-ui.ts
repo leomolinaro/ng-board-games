@@ -14,9 +14,9 @@ import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import {
   WotrBaseStory,
-  WotrCardReactionStory,
-  WotrCombatCardReactionStory,
-  WotrReactionStory,
+  WotrCardEffectStory,
+  WotrCombatCardEffectStory,
+  WotrEffectStory,
   WotrStory
 } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
@@ -102,7 +102,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
 
   async lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: "scha13",
       actions: await this.huntUi.lureOfTheRingEffect(character)
     };
@@ -130,7 +130,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return this.characterUi.activateCharacterAbility(ability, characterId);
   }
 
-  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrReactionStory> {
+  async forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrEffectStory> {
     return this.unitUi.forfeitLeadership(params);
   }
 
@@ -174,13 +174,13 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
     frontId: WotrFrontId
-  ): Promise<WotrBaseStory | WotrCardReactionStory | WotrCombatCardReactionStory> {
+  ): Promise<WotrBaseStory | WotrCardEffectStory | WotrCombatCardEffectStory> {
     const actions = await this.battleUi.chooseCasualties(hitPoints, regionId, frontId);
     if (cardId) {
       if (this.battleStore.battleInProgress()) {
-        return { type: "reaction-combat-card", card: cardId, actions };
+        return { type: "combat-card-effect", card: cardId, actions };
       } else {
-        return { type: "reaction-card", card: cardId, actions };
+        return { type: "card-effect", card: cardId, actions };
       }
     } else {
       return { type: "base", actions };
@@ -191,10 +191,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
     frontId: WotrFrontId
-  ): Promise<WotrBaseStory | WotrCardReactionStory> {
+  ): Promise<WotrBaseStory | WotrCardEffectStory> {
     const actions = await this.battleUi.eliminateArmy(regionId, frontId);
     if (cardId) {
-      return { type: "reaction-card", card: cardId, actions };
+      return { type: "card-effect", card: cardId, actions };
     } else {
       return { type: "base", actions };
     }
@@ -232,9 +232,9 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     params: WotrEliminateUnitsParams,
     cardId: WotrCardId,
     frontId: WotrFrontId
-  ): Promise<WotrCardReactionStory> {
+  ): Promise<WotrCardEffectStory> {
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: cardId,
       actions: await this.unitUi.eliminateUnits(params, frontId)
     };
@@ -244,9 +244,9 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     regions: WotrRegionId[],
     cardId: WotrCardId,
     frontId: WotrFrontId
-  ): Promise<WotrCardReactionStory> {
+  ): Promise<WotrCardEffectStory> {
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: cardId,
       actions: [await this.regionUi.chooseRegion(regions)]
     };
@@ -256,17 +256,17 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     nHits: number,
     region: WotrRegionId,
     cardId: WotrCardId
-  ): Promise<WotrCardReactionStory> {
+  ): Promise<WotrCardEffectStory> {
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: cardId,
       actions: await this.unitUi.theEaglesAreComingEffect(nHits, region, cardId)
     };
   }
 
-  async faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrCardReactionStory> {
+  async faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrCardEffectStory> {
     return {
-      type: "reaction-card",
+      type: "card-effect",
       card: cardId,
       actions: await this.unitUi.faramirsRangesRecruit(cardId)
     };
