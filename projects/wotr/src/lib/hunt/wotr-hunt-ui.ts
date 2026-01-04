@@ -158,7 +158,7 @@ export class WotrHuntUi {
       n = Math.min(n, this.huntStore.huntPool().length);
       await this.ui.askContinue(`Draw ${n} hunt tiles`);
       const huntTiles = randomUtil.getRandomElements(n, n, this.huntStore.huntPool());
-      return drawHuntTile(huntTiles[0], huntTiles.slice(1));
+      return drawHuntTile(...huntTiles);
     }
   }
 

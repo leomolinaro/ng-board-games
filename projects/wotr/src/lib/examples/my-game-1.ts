@@ -388,7 +388,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow",
     actions: [
       {
-        tile: "er",
+        tiles: ["er"],
         type: "hunt-tile-draw"
       }
     ],
@@ -722,7 +722,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow",
     actions: [
       {
-        tile: "er",
+        tiles: ["er"],
         type: "hunt-tile-draw"
       }
     ]
@@ -1435,7 +1435,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "2r"
+        tiles: ["2r"]
       }
     ],
     type: "die-card",
@@ -1793,7 +1793,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "1"
+        tiles: ["1"]
       }
     ]
   },
@@ -2204,7 +2204,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "1r"
+        tiles: ["1r"]
       }
     ],
     playerId: "shadow",
@@ -3779,7 +3779,7 @@ export const stories: WotrStoryDoc[] = [
     type: "base",
     actions: [
       {
-        tile: "1r",
+        tiles: ["1r"],
         type: "hunt-tile-draw"
       }
     ],
@@ -4130,7 +4130,7 @@ export const stories: WotrStoryDoc[] = [
     time: 284,
     actions: [
       {
-        tile: "0r",
+        tiles: ["0r"],
         type: "hunt-tile-draw"
       }
     ],
@@ -4488,7 +4488,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "2"
+        tiles: ["2"]
       }
     ],
     type: "base",
@@ -4515,7 +4515,7 @@ export const stories: WotrStoryDoc[] = [
     playerId: "shadow",
     actions: [
       {
-        tile: "0r",
+        tiles: ["0r"],
         type: "hunt-tile-draw"
       }
     ],
@@ -4900,7 +4900,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "2"
+        tiles: ["2"]
       }
     ],
     playerId: "shadow"
@@ -5439,8 +5439,7 @@ export const stories: WotrStoryDoc[] = [
     time: 376,
     actions: [
       {
-        tile: "er",
-        tiles: ["rers", "3"],
+        tiles: ["er", "rers", "3"],
         type: "hunt-tile-draw"
       }
     ],
@@ -5557,7 +5556,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "3"
+        tiles: ["3"]
       }
     ],
     playerId: "shadow"
@@ -6136,7 +6135,7 @@ export const stories: WotrStoryDoc[] = [
     time: 424,
     actions: [
       {
-        tile: "r1rs",
+        tiles: ["r1rs"],
         type: "hunt-tile-draw"
       }
     ],
@@ -8066,7 +8065,7 @@ export const stories: WotrStoryDoc[] = [
     actions: [
       {
         type: "hunt-tile-draw",
-        tile: "er"
+        tiles: ["er"]
       }
     ]
   },

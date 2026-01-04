@@ -117,7 +117,7 @@ export class WotrFreePeoplesCharacterCards {
                 if (!actions) return tile;
                 const drawAction = findAction<WotrHuntTileDraw>(actions, "hunt-tile-draw");
                 if (!drawAction) throw new Error("Unexpected state: no hunt tile draw action");
-                return drawAction.tile;
+                return drawAction.tiles[0];
               },
               play: async () => {
                 const drawAction = await this.huntUi.drawHuntTile();
@@ -315,8 +315,7 @@ export class WotrFreePeoplesCharacterCards {
           play: async () => [await this.huntUi.drawHuntTile(3)],
           effect: async params => {
             const tileDraw = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
-            const tileIds: WotrHuntTileId[] = [tileDraw.tile, ...tileDraw.tiles!];
-            const tiles = tileIds.map(id => this.huntStore.huntTile(id));
+            const tiles = tileDraw.tiles.map(id => this.huntStore.huntTile(id));
             if (tiles.every(tile => tile.eye === true)) {
               for (const tile of tiles) {
                 this.huntStore.returnDrawnTileToPool(tile.id);

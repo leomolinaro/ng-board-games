@@ -307,7 +307,7 @@ export class WotrHuntFlow {
   async drawHuntTile(player: WotrPlayer): Promise<WotrHuntTileId> {
     const story = await player.drawHuntTile();
     const drawHuntTile = assertAction<WotrHuntTileDraw>(story, "hunt-tile-draw");
-    return drawHuntTile.tile;
+    return drawHuntTile.tiles[0];
   }
 
   async revealFellowship(): Promise<void> {

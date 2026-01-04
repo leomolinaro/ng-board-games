@@ -33,8 +33,7 @@ export class WotrHuntHandler {
         /*empty*/
       },
       "hunt-tile-draw": (action, front) => {
-        this.huntStore.drawHuntTile(action.tile);
-        action.tiles?.forEach(tile => this.huntStore.drawHuntTile(tile));
+        action.tiles.forEach(tile => this.huntStore.drawHuntTile(tile));
       },
       "hunt-tile-add": (action, front) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
@@ -78,15 +77,12 @@ export class WotrHuntHandler {
         f.huntTile(action.tile),
         " hunt tile to the Mordor Track"
       ],
-      "hunt-tile-draw": (action, front, f) => {
-        const logs = [f.player(front), " draws ", f.huntTile(action.tile)];
-        action.tiles?.forEach(tile => {
-          logs.push(", ");
-          logs.push(f.huntTile(tile));
-        });
-        logs.push(` hunt tile${action.tiles?.length ? "s" : ""}`);
-        return logs;
-      },
+      "hunt-tile-draw": (action, front, f) => [
+        f.player(front),
+        " draws ",
+        ...action.tiles.map(tile => f.huntTile(tile)),
+        ` hunt tile${action.tiles.length > 1 ? "s" : ""}`
+      ],
       "hunt-tile-return": (action, front, f) => [
         f.player(front),
         " returns ",

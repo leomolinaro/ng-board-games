@@ -131,7 +131,7 @@ export class WotrShadowCharacterCards {
           play: async () => [await this.huntUi.drawHuntTile()],
           effect: async params => {
             const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
-            await this.huntFlow.resolveHuntTile(action.tile, {
+            await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true
             });
@@ -148,7 +148,7 @@ export class WotrShadowCharacterCards {
           play: async () => [await this.huntUi.drawHuntTile()],
           effect: async params => {
             const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
-            await this.huntFlow.resolveHuntTile(action.tile, {
+            await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true,
               onlyRingAbsorbtion: true
@@ -170,7 +170,7 @@ export class WotrShadowCharacterCards {
           effect: async params => {
             const action = findAction<WotrHuntTileDraw>(params.story.actions, "hunt-tile-draw");
             if (!action) throw new Error("Unexpected action");
-            await this.huntFlow.resolveHuntTile(action.tile, {
+            await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true,
               mustEliminateRandomCompanion: true
@@ -330,7 +330,7 @@ export class WotrShadowCharacterCards {
           play: async () => [],
           effect: async params => {
             const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
-            const huntTile = this.huntStore.huntTile(action.tile);
+            const huntTile = this.huntStore.huntTile(action.tiles[0]);
             if (huntTile.eye || huntTile.type === "free-people-special") {
               return;
             }
