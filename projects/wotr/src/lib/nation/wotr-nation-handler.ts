@@ -130,14 +130,18 @@ export class WotrNationHandler {
         nation.front === "free-peoples" &&
         (region.settlement === "city" || region.settlement === "stronghold")
       ) {
+        let doActivate = false;
         for (const characterId of characters) {
           const character = this.characterStore.character(characterId);
           if (
             character.activationNation === "all" ||
             character.activationNation === region.nationId
           ) {
-            this.activateNationEffect(region.nationId, "companion-ability");
+            doActivate = true;
           }
+        }
+        if (doActivate) {
+          this.activateNationEffect(region.nationId, "companion-ability");
         }
       }
     }
