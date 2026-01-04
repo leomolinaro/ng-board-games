@@ -616,7 +616,7 @@ export class WotrCombatCards {
     "Shield-Wall": {
       effect: async (card, params) => {
         if (params.shadow.nTotalHits! >= 2) {
-          params.freePeoples.hitsModifiers.push(-1);
+          params.shadow.hitsModifiers.push(-1);
         }
       }
     },
