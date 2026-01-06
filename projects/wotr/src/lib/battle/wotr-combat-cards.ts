@@ -322,12 +322,12 @@ export class WotrCombatCards {
     // Play if the defending Army is in a Rohan region, Fangorn or Orthanc.
     // Add 2 to all dice on your Combat roll.
     "Ents' Rage": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        this.q.region(params.regionId).isNation("rohan") ||
+        params.regionId === "fangorn" ||
+        params.regionId === "orthanc",
       effect: async (card, params) => {
-        throw new Error("TODO");
+        params.freePeoples.combatModifiers.push(2);
       }
     },
     // Fateful Strike (Initiative 6)
