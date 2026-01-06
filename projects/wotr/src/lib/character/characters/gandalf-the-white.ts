@@ -36,7 +36,7 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const gandalf = this.q.gandalfTheGrey;
     if (gandalf.isInPlay()) {
-      const gandalfRegion = gandalf.region()!;
+      const gandalfRegion = gandalf.getRegion()!;
       return playCharacter(gandalfRegion.id, "gandalf-the-white");
     } else if (gandalf.isEliminated()) {
       const elvenStrongholds: WotrRegionId[] = [

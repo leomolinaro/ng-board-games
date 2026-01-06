@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterRules } from "../character/wotr-character-rules";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 
 export interface WotrCompanionSeparationOptions {
   extraMovements?: number;
@@ -13,9 +13,9 @@ export interface WotrCompanionSeparationOptions {
 @Injectable({ providedIn: "root" })
 export class WotrFellowshipRules {
   private fellowshipStore = inject(WotrFellowshipStore);
-  private characterStore = inject(WotrCharacterStore);
   private characterRules = inject(WotrCharacterRules);
   private regionStore = inject(WotrRegionStore);
+  private q = inject(WotrGameQuery);
 
   canDeclareFellowship(): boolean {
     if (this.fellowshipStore.isRevealed()) return false;
@@ -25,10 +25,8 @@ export class WotrFellowshipRules {
 
   canChangeGuide(): boolean {
     const companions = this.fellowshipStore.companions();
-    const maxLevel = this.characterStore.maxLevel(companions);
-    const maxLevelCompanions = companions.filter(
-      c => this.characterStore.character(c).level === maxLevel
-    );
+    const maxLevel = this.characterRules.maxLevel(companions);
+    const maxLevelCompanions = companions.filter(c => this.q.character(c).level === maxLevel);
     return maxLevelCompanions.length > 1;
   }
 

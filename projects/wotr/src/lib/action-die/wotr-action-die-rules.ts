@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { oppositeFront, WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
@@ -9,7 +8,6 @@ import { WotrActionToken } from "./wotr-action-die-models";
 
 @Injectable({ providedIn: "root" })
 export class WotrActionDieRules {
-  private characterStore = inject(WotrCharacterStore);
   private huntStore = inject(WotrHuntStore);
   private nationRules = inject(WotrNationRules);
   private regionStore = inject(WotrRegionStore);
@@ -19,12 +17,12 @@ export class WotrActionDieRules {
     switch (frontId) {
       case "free-peoples": {
         let nDice = 4;
-        nDice += this.characterStore.actionDiceBonus("free-peoples");
+        nDice += this.q.freePeoples.actionDiceBonus();
         return nDice;
       }
       case "shadow": {
         let nDice = 7;
-        nDice += this.characterStore.actionDiceBonus("shadow");
+        nDice += this.q.shadow.actionDiceBonus();
         nDice -= this.huntStore.nHuntDice();
         return nDice;
       }

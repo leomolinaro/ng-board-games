@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
 
@@ -9,7 +9,7 @@ import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
   providedIn: "root"
 })
 export class WotrUnitUtils {
-  private characterStore = inject(WotrCharacterStore);
+  private q = inject(WotrGameQuery);
 
   addRegulars(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy {
     return this.addUnits("regulars", nation, quantity, army);
@@ -247,36 +247,29 @@ export class WotrUnitUtils {
     if (units.nNazgul) leadership += units.nNazgul;
     if (units.characters) {
       for (const characterId of units.characters) {
-        leadership += this.characterStore.character(characterId).leadership;
+        leadership += this.q.character(characterId).leadership;
       }
     }
     return leadership;
   }
 
   hasCompanions(units: WotrUnits): boolean {
-    return (
-      units.characters?.some(c => this.characterStore.character(c).front === "free-peoples") ||
-      false
-    );
+    return units.characters?.some(c => this.q.character(c).frontId === "free-peoples") || false;
   }
 
   getCompanions(units: WotrUnits): WotrCompanionId[] {
-    return (units.characters?.filter(
-      c => this.characterStore.character(c).front === "free-peoples"
-    ) || []) as WotrCompanionId[];
+    return (units.characters?.filter(c => this.q.character(c).frontId === "free-peoples") ||
+      []) as WotrCompanionId[];
   }
 
   nCompanions(units: WotrUnits): number {
     return (
-      units.characters?.filter(c => this.characterStore.character(c).front === "free-peoples")
-        .length || 0
+      units.characters?.filter(c => this.q.character(c).frontId === "free-peoples").length || 0
     );
   }
 
   hasMinions(units: WotrUnits): boolean {
-    return (
-      units.characters?.some(c => this.characterStore.character(c).front === "shadow") || false
-    );
+    return units.characters?.some(c => this.q.character(c).frontId === "shadow") || false;
   }
 
   getNArmyUnits(units: WotrUnits) {

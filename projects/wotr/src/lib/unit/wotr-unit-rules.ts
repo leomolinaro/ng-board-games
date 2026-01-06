@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
@@ -22,7 +21,6 @@ import { WotrUnitUtils } from "./wotr-unit-utils";
 export class WotrUnitRules {
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
-  private characterStore = inject(WotrCharacterStore);
   private unitModifiers = inject(WotrUnitModifiers);
   private unitUtils = inject(WotrUnitUtils);
   private q = inject(WotrGameQuery);
@@ -246,7 +244,7 @@ export class WotrUnitRules {
 
   private getCharactersLeadership(characters: WotrCharacterId[], moveable: boolean): number {
     return characters.reduce((l, characterId) => {
-      const character = this.characterStore.character(characterId);
+      const character = this.q.character(characterId);
       const leadership = moveable && character.level === 0 ? 0 : character.leadership;
       return l + leadership;
     }, 0);

@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrCharacter, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
@@ -28,7 +28,6 @@ export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private ui = inject(WotrGameUi);
   private fellowshipHandler = inject(WotrFellowshipHandler);
-  private characterStore = inject(WotrCharacterStore);
   private fellowshipRules = inject(WotrFellowshipRules);
   private q = inject(WotrGameQuery);
 
@@ -112,7 +111,7 @@ export class WotrFellowshipUi {
       const fellowshipCompanions = this.fellowshipStore.companions();
       const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
       if (leftCompanionIds.length > 0) {
-        const leftCompanions = leftCompanionIds.map(id => this.characterStore.character(id));
+        const leftCompanions = leftCompanionIds.map(id => this.q.character(id));
         actions.push(await this.changeGuideBetween(leftCompanions));
       }
     }
@@ -122,11 +121,11 @@ export class WotrFellowshipUi {
 
   async changeGuide(): Promise<WotrFellowshipGuide> {
     const companionIds = this.fellowshipStore.companions();
-    const companions = companionIds.map(id => this.characterStore.character(id));
+    const companions = companionIds.map(id => this.q.character(id));
     return this.changeGuideBetween(companions);
   }
 
-  private async changeGuideBetween(companions: WotrCharacter[]): Promise<WotrFellowshipGuide> {
+  private async changeGuideBetween(companions: WotrCharacterQuery[]): Promise<WotrFellowshipGuide> {
     const guide = this.fellowshipStore.guide();
     const maxLevel = companions.reduce((max, c) => Math.max(max, c.level), 0);
     const targetCompanions = companions.filter(c => c.level === maxLevel && c.id !== guide);

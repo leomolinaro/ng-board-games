@@ -126,7 +126,7 @@ export class WotrBoard {
   protected regionStore = inject(WotrRegionStore);
   protected frontStore = inject(WotrFrontStore);
   protected huntStore = inject(WotrHuntStore);
-  protected characterStore = inject(WotrCharacterStore);
+  private characterStore = inject(WotrCharacterStore);
   protected fellowshipStore = inject(WotrFellowshipStore);
   protected nationStore = inject(WotrNationStore);
   protected logStore = inject(WotrLogStore);

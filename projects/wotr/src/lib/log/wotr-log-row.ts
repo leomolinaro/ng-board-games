@@ -14,11 +14,11 @@ import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-mo
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { cardToLabel, combatCardToLabel } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFragmentCreator } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { elvenRingLabel, WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrPhase } from "../game-turn/wotr-phase-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
@@ -192,7 +192,7 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
   private assets = inject(WotrAssetsStore);
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
-  private characterStore = inject(WotrCharacterStore);
+  private q = inject(WotrGameQuery);
   private playerInfoStore = inject(WotrPlayerInfoStore);
 
   log = input.required<WotrLog>();
@@ -421,7 +421,7 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
   }
 
   character(characterId: WotrCharacterId): WotrLogParsedStringFragment {
-    const companion = this.characterStore.character(characterId);
+    const companion = this.q.character(characterId);
     return { type: "string", label: companion.name };
   }
 

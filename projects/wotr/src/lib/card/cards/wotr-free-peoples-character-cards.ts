@@ -476,13 +476,13 @@ export class WotrFreePeoplesCharacterCards {
           play: async () => {
             const actions: WotrAction[] = [];
             const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
-            const fromRegion = this.q.region(aragorn.region()!.id);
+            const fromRegion = this.q.region(aragorn.getRegion()!.id);
             const companions = fromRegion.companions();
             const movingUnits = await this.ui.askRegionUnits("Choose companions to move", {
               type: "moveCharacters",
               regionIds: [fromRegion.id()],
               characters: companions,
-              requiredCharacters: [aragorn.id()]
+              requiredCharacters: [aragorn.id]
             });
             const movingCompanions = movingUnits.characters!;
             const toRegionId = await this.ui.askRegion("Choose a region to move to", [
@@ -535,7 +535,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () => this.q.boromir.isInNation("gondor"),
           play: async () => {
-            const boromirRegion = this.q.boromir.region()!;
+            const boromirRegion = this.q.boromir.getRegion()!;
             const reinforcementUnits: WotrReinforcementUnit[] = [];
             const actions: WotrAction[] = [];
             if (this.q.gondor.hasRegularReinforcements()) {

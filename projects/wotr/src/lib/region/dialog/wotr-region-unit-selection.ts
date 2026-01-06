@@ -1,7 +1,7 @@
 import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrCharacterId } from "../../character/wotr-character-models";
-import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import { WotrArmyMovement } from "../../unit/wotr-unit-actions";
 import {
@@ -115,19 +115,19 @@ interface WotrRegionUnitSelectionMode {
 
 export function selectionModeFactory(
   unitSelection: WotrRegionUnitSelection,
-  characterStore: WotrCharacterStore,
+  q: WotrGameQuery,
   unitModifiers: WotrUnitModifiers,
   unitUtils: WotrUnitUtils
 ): WotrRegionUnitSelectionMode {
   switch (unitSelection.type) {
     case "moveArmy":
-      return new MoveArmySelectionMode(unitSelection, characterStore, unitModifiers, unitUtils);
+      return new MoveArmySelectionMode(unitSelection, q, unitModifiers, unitUtils);
     case "attack":
-      return new AttackSelectionMode(unitSelection, characterStore, unitModifiers);
+      return new AttackSelectionMode(unitSelection, q, unitModifiers);
     case "disband":
       return new DisbandSelectionMode(unitSelection.nArmyUnits, unitSelection.underSiege);
     case "moveCharacters":
-      return new MoveCharactersSelectionMode(unitSelection, characterStore);
+      return new MoveCharactersSelectionMode(unitSelection, q);
     case "moveNazgul":
       return new MoveNazgulSelectionMode(unitSelection);
     case "chooseCasualties":
@@ -180,7 +180,7 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
 export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitSelection: WotrMovingArmyUnitSelection,
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private unitModifiers: WotrUnitModifiers,
     private unitUtils: WotrUnitUtils
   ) {}
@@ -194,7 +194,7 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
       if (unitNode.group !== "army") continue;
       if (
         unitNode.type === "character" &&
-        this.characterStore.character(unitNode.id as WotrCharacterId).level === 0
+        this.q.character(unitNode.id as WotrCharacterId).level === 0
       ) {
         continue;
       }
@@ -237,7 +237,7 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
         if (!someCharacters) return "Select at least one character to move.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
-          const character = this.characterStore.character(reqUnit);
+          const character = this.q.character(reqUnit);
           return `Select (${character.name}) to move.`;
         }
       }
@@ -307,7 +307,7 @@ function hasCharacter(selectedNodes: UnitNode[], characterId: WotrCharacterId): 
 export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private selection: WotrAttackingUnitSelection,
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private unitModifiers: WotrUnitModifiers
   ) {}
 
@@ -347,7 +347,7 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
         if (!someCharacters) return "Select at least one character to attack with.";
       } else {
         if (!hasCharacter(selectedNodes, reqUnit)) {
-          const character = this.characterStore.character(reqUnit);
+          const character = this.q.character(reqUnit);
           return `Select (${character.name}) to move.`;
         }
       }
@@ -359,7 +359,7 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
 export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitSelection: WotrMovingCharactersUnitSelection,
-    private characterStore: WotrCharacterStore
+    private q: WotrGameQuery
   ) {}
 
   initialize(unitNodes: UnitNode[]) {
@@ -380,7 +380,7 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
     }
     for (const requiredCharacter of this.unitSelection.requiredCharacters) {
       if (!hasCharacter(selectedNodes, requiredCharacter)) {
-        const character = this.characterStore.character(requiredCharacter);
+        const character = this.q.character(requiredCharacter);
         return `Select (${character.name}) to move.`;
       }
     }

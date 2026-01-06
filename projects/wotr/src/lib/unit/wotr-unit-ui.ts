@@ -180,14 +180,14 @@ export class WotrUnitUi {
 
   async attackWithCharacter(characterId: WotrCharacterId): Promise<WotrAction[]> {
     const c = this.q.character(characterId);
-    const fromRegionId = c.region()!.id;
+    const fromRegionId = c.getRegion()!.id;
     const attackingUnits = await this.ui.askRegionUnits("Select units to attack", {
       type: "attack",
       regionIds: [fromRegionId],
       requiredUnits: [characterId],
-      frontId: c.frontId()
+      frontId: c.frontId
     });
-    return this.attackWithArmy(attackingUnits, c.frontId());
+    return this.attackWithArmy(attackingUnits, c.frontId);
   }
 
   private async checkStackingLimit(

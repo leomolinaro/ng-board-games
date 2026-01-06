@@ -12,7 +12,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
 import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrFellowshipCompanionSelection } from "../game/wotr-game-ui";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
@@ -111,7 +111,7 @@ export class WotrFellowshipDialog implements OnInit {
   private assets = inject(WotrAssetsStore);
   private dialogRef: WotrFellowshipDialogRef = inject(MatDialogRef);
   private fellowshipStore = inject(WotrFellowshipStore);
-  private characterStore = inject(WotrCharacterStore);
+  private q = inject(WotrGameQuery);
 
   protected unitNodes!: CompanionNode[];
   private selectedNodes = signal<CompanionNode[]>([]);
@@ -140,13 +140,12 @@ export class WotrFellowshipDialog implements OnInit {
   }
 
   private unitsToUnitNodes(companionIds: WotrCompanionId[]): CompanionNode[] {
-    const d = this.data;
     const unitNodes: CompanionNode[] = [];
     companionIds.forEach(companionId => {
       const image = this.assets.characterImage(companionId);
       unitNodes.push({
         id: companionId,
-        label: this.characterStore.character(companionId).name,
+        label: this.q.character(companionId).name,
         ...this.scale(image)
       });
     });

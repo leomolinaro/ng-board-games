@@ -6,7 +6,6 @@ import { WotrCardHandler } from "../card/wotr-card-handler";
 import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import {
   chooseRandomCompanion,
@@ -21,6 +20,7 @@ import {
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
@@ -41,7 +41,7 @@ export class WotrHuntUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
   private ui = inject(WotrGameUi);
-  private characterStore = inject(WotrCharacterStore);
+  private q = inject(WotrGameQuery);
   private characterHandler = inject(WotrCharacterHandler);
   private fellowshipUi = inject(WotrFellowshipUi);
   private huntModifiers = inject(WotrHuntModifiers);
@@ -171,7 +171,7 @@ export class WotrHuntUi {
     if (randomCompanionIds) {
       const guide = this.fellowshipStore.guide();
       const wasGuide = randomCompanionIds.includes(guide);
-      const randomCompanions = randomCompanionIds.map(id => this.characterStore.character(id));
+      const randomCompanions = randomCompanionIds.map(id => this.q.character(id));
       await this.ui.askContinue(`Eliminate ${randomCompanions.map(c => c.name).join(", ")}`);
       actions.push(eliminateCharacter(...randomCompanionIds));
       damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
@@ -230,7 +230,7 @@ export class WotrHuntUi {
       } else {
         if (characterElimination) {
           damage -= characterElimination.characters.reduce(
-            (sum, c) => sum + this.characterStore.character(c).level,
+            (sum, c) => sum + this.q.character(c).level,
             0
           );
           casualtyTaken = true;
@@ -251,7 +251,7 @@ export class WotrHuntUi {
   }
 
   async lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrAction[]> {
-    const companion = this.characterStore.character(character);
+    const companion = this.q.character(character);
     const option = await this.ui.askOption<"corrupt" | "eliminate">("Choose", [
       { label: `Add ${companion.level} corruption points`, value: "corrupt" },
       { label: `Eliminate ${companion.name}`, value: "eliminate" }

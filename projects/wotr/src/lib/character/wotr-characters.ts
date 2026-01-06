@@ -42,10 +42,9 @@ import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
 import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrCharacterStore } from "./wotr-character-store";
 
 @Injectable({ providedIn: "root" })
-export class WotrCharacters {
+export class WotrCharacterAbilities {
   private characters: Partial<Record<WotrCharacterId, WotrCharacterCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
 
@@ -63,7 +62,6 @@ export class WotrCharacters {
   private cardDrawUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
   actionDieUi!: WotrActionDieUi;
-  private characterStore = inject(WotrCharacterStore);
   private gameStore = inject(WotrGameStore);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -108,12 +106,8 @@ export class WotrCharacters {
         ];
       case "the-mouth-of-sauron":
         return [
-          new MessengerOfTheDarkTowerAbility(
-            this.characterStore,
-            this.actionDieUi,
-            this.actionDieModifiers
-          ),
-          new MessengerOfTheDarkTowerSetUsedAbility(this.characterStore, this.actionDieModifiers)
+          new MessengerOfTheDarkTowerAbility(this.q, this.actionDieUi, this.actionDieModifiers),
+          new MessengerOfTheDarkTowerSetUsedAbility(this.q, this.actionDieModifiers)
         ];
       case "strider":
         return [

@@ -1,5 +1,4 @@
 import { Injectable, Signal, computed } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 
@@ -182,20 +181,5 @@ export class WotrCharacterStore {
       ...s,
       messengerOfTheDarkTowerUsed: false
     }));
-  }
-
-  maxLevel(companions: WotrCharacterId[]): number {
-    return companions.reduce((max, c) => Math.max(max, this.character(c).level), 0);
-  }
-
-  actionDiceBonus(frontId: WotrFrontId): number {
-    let actionDiceBonus = 0;
-    for (const character of this.characters()) {
-      if (character.front !== frontId) continue;
-      if (!character.actionDiceBonus) continue;
-      if (character.status !== "inPlay") continue;
-      actionDiceBonus += character.actionDiceBonus;
-    }
-    return actionDiceBonus;
   }
 }

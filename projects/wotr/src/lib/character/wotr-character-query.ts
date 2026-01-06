@@ -7,59 +7,71 @@ import { WotrCharacterStore } from "./wotr-character-store";
 
 export class WotrCharacterQuery {
   constructor(
-    private characterId: WotrCharacterId,
+    public readonly id: WotrCharacterId,
     private characterStore: WotrCharacterStore,
     private regionStore: WotrRegionStore,
     private fellowshipStore: WotrFellowshipStore
   ) {}
 
-  id() {
-    return this.characterId;
+  private data(): WotrCharacter {
+    return this.characterStore.character(this.id);
   }
 
-  character(): WotrCharacter {
-    return this.characterStore.character(this.characterId);
+  get name(): string {
+    return this.data().name;
   }
 
-  name(): string {
-    return this.character().name;
+  get level(): number {
+    return this.data().level;
   }
 
-  frontId() {
-    return this.character().front;
+  get frontId() {
+    return this.data().front;
   }
 
-  region(): WotrRegion | null {
-    return this.regionStore.characterRegion(this.characterId);
+  get flying(): boolean {
+    return this.data().flying;
+  }
+
+  get leadership(): number {
+    return this.data().leadership;
+  }
+
+  get activationNation(): WotrNationId | "all" | undefined {
+    return this.data().activationNation;
+  }
+
+  getRegion(): WotrRegion | null {
+    return this.regionStore.characterRegion(this.id);
   }
 
   isInPlay(): boolean {
-    return this.character().status === "inPlay";
+    return this.data().status === "inPlay";
   }
 
   isEliminated(): boolean {
-    return this.character().status === "eliminated";
+    return this.data().status === "eliminated";
   }
 
   isAvailable(): boolean {
-    return this.character().status === "available";
+    return this.data().status === "available";
   }
 
   isInFellowship(): boolean {
-    return this.character().status === "inFellowship";
+    return this.data().status === "inFellowship";
   }
 
   isGuide(): boolean {
-    return this.fellowshipStore.guide() === this.characterId;
+    return this.fellowshipStore.guide() === this.id;
   }
 
   isIn(regionId: WotrRegionId): boolean {
-    return this.regionStore.isCharacterInRegion(this.characterId, regionId);
+    return this.regionStore.isCharacterInRegion(this.id, regionId);
   }
 
   isWithFreePeoplesArmy(): boolean {
     if (!this.isInPlay()) return false;
-    const region = this.region();
+    const region = this.getRegion();
     return (
       region?.army?.front === "free-peoples" || region?.underSiegeArmy?.front === "free-peoples"
     );
@@ -67,7 +79,27 @@ export class WotrCharacterQuery {
 
   isInNation(nationId: WotrNationId): boolean {
     if (!this.isInPlay()) return false;
-    const region = this.region()!;
+    const region = this.getRegion()!;
     return region && region.nationId === nationId;
+  }
+
+  canMove(): unknown {
+    const character = this.data();
+    if (character.status !== "inPlay") return false;
+    if (character.level === 0) return false;
+    if (character.flying) {
+      if (this.isUnderSiege()) return false;
+    }
+    return true;
+  }
+
+  isUnderSiege(): boolean {
+    return this.regionStore.regions().some(region => {
+      return !region.underSiegeArmy?.characters?.includes(this.id);
+    });
+  }
+
+  setInFellowship(): void {
+    this.characterStore.setInFellowship(this.id);
   }
 }

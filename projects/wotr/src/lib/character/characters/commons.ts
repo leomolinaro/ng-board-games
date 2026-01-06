@@ -24,7 +24,7 @@ export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRoun
   public modifier = this.battleModifiers.beforeCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
-    const front = this.q.character(this.characterId).frontId();
+    const front = this.q.character(this.characterId).frontId;
     const combatFront = round.attacker.frontId === front ? round.attacker : round.defender;
     if (combatFront.army().characters?.includes(this.characterId)) {
       if (!combatFront.cancelledCharacters.includes(this.characterId)) {
@@ -50,7 +50,7 @@ export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieC
   public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     if (!this.q.character(this.characterId).isInPlay()) return [];
-    const characterRegion = this.q.character(this.characterId).region()!;
+    const characterRegion = this.q.character(this.characterId).getRegion()!;
     if (!this.isValidRegion(characterRegion)) return [];
     if (!this.q.region(characterRegion.id).isUnconquered()) return [];
     return [new AdvanceAnyDieChoice(this.characterId, this.abilityName, this.nationId, this.q)];

@@ -11,8 +11,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
-import { WotrCharacterStore } from "../../character/wotr-character-store";
 import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrNation, WotrNationId, frontOfNation } from "../../nation/wotr-nation-models";
 import { WotrUnits } from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
@@ -116,7 +116,7 @@ export class WotrRegionDialog implements OnInit {
   protected data = inject<WotrRegionDialogData>(MAT_DIALOG_DATA);
   private assets = inject(WotrAssetsStore);
   private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
-  private characterStore = inject(WotrCharacterStore);
+  private q = inject(WotrGameQuery);
   private unitModifiers = inject(WotrUnitModifiers);
   private unitUtils = inject(WotrUnitUtils);
 
@@ -124,12 +124,7 @@ export class WotrRegionDialog implements OnInit {
   private selectedNodes = signal<UnitNode[]>([]);
 
   private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(
-        this.data.unitSelection,
-        this.characterStore,
-        this.unitModifiers,
-        this.unitUtils
-      )
+    ? selectionModeFactory(this.data.unitSelection, this.q, this.unitModifiers, this.unitUtils)
     : null;
 
   private casualtiesMode = this.data.unitSelection?.type === "chooseCasualties";
@@ -235,7 +230,7 @@ export class WotrRegionDialog implements OnInit {
       }
     }
     units.characters?.forEach(characterId => {
-      const character = this.characterStore.character(characterId);
+      const character = this.q.character(characterId);
       const image = this.assets.characterImage(characterId);
       unitNodes.push({
         id: characterId,
@@ -243,7 +238,7 @@ export class WotrRegionDialog implements OnInit {
         character,
         group,
         nationId: null,
-        frontId: character.front,
+        frontId: character.frontId,
         label: d.characterById[characterId].name,
         ...this.scale(image)
       });

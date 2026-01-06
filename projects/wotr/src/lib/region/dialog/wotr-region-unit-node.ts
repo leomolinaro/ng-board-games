@@ -1,4 +1,4 @@
-import { WotrCharacter } from "../../character/wotr-character-models";
+import { WotrCharacterQuery } from "../../character/wotr-character-query";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
 
@@ -23,7 +23,7 @@ export interface FellowshipNode extends AUnitNode {
 
 export interface CharacterNode extends AUnitNode {
   type: "character";
-  character: WotrCharacter;
+  character: WotrCharacterQuery;
 }
 
 export interface GenericUnitNode extends AUnitNode {

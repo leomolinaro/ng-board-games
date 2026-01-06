@@ -187,7 +187,7 @@ export class WotrBattleHandler {
         const nNazgul = action.leaders.nNazgul || 0;
         if (nNazgul > 0) forfeitedUnits.push(`${nNazgul} Nazgul${nNazgul > 1 ? "s" : ""}`);
         action.leaders.characters?.forEach(characterId => {
-          forfeitedUnits.push(this.q.character(characterId).name());
+          forfeitedUnits.push(this.q.character(characterId).name);
         });
         return [f.player(front), ` forfeits leadership of ${forfeitedUnits.join(", ")}`];
       },

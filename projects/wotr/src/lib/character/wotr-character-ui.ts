@@ -3,6 +3,7 @@ import { WotrUiAbility } from "../ability/wotr-ability";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -13,19 +14,18 @@ import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions"
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterRules } from "./wotr-character-rules";
-import { WotrCharacterStore } from "./wotr-character-store";
-import { WotrCharacters } from "./wotr-characters";
+import { WotrCharacterAbilities } from "./wotr-characters";
 
 class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
   constructor(
     private die: WotrActionDie,
     private characterCard: WotrCharacterCard,
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private ui: WotrGameUi
   ) {}
 
   label(): string {
-    return this.characterStore.character(this.characterCard.characterId).name;
+    return this.q.character(this.characterCard.characterId).name;
   }
 
   isAvailable(): boolean {
@@ -47,35 +47,29 @@ export interface WotrCharacterMovementOptions {
 @Injectable({ providedIn: "root" })
 export class WotrCharacterUi {
   private regionStore = inject(WotrRegionStore);
-  private characterStore = inject(WotrCharacterStore);
   private characterRules = inject(WotrCharacterRules);
-  private characters = inject(WotrCharacters);
+  private characterAbilities = inject(WotrCharacterAbilities);
   private characterHandler = inject(WotrCharacterHandler);
   private unitHandler = inject(WotrUnitHandler);
+  private q = inject(WotrGameQuery);
   private ui = inject(WotrGameUi);
 
   bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
     const characterCards =
       frontId === "free-peoples"
-        ? this.characters.freePeoplesCharacterCards()
-        : this.characters.shadowCharacterCards();
+        ? this.characterAbilities.freePeoplesCharacterCards()
+        : this.characterAbilities.shadowCharacterCards();
     return this.ui.askChoice(
       "Choose character to bring into play",
       characterCards.map<WotrUiChoice>(
-        characterCard =>
-          new WotrBringCharacterIntoPlayChoice(die, characterCard, this.characterStore, this.ui)
+        characterCard => new WotrBringCharacterIntoPlayChoice(die, characterCard, this.q, this.ui)
       ),
       frontId
     );
   }
 
   async moveCompanions(options?: WotrCharacterMovementOptions): Promise<WotrAction[]> {
-    const movableCompanions = new Set(
-      this.characterStore
-        .companions()
-        .filter(c => this.characterRules.canMoveCharacter(c))
-        .map(c => c.id)
-    );
+    const movableCompanions = new Set(this.q.companions.filter(c => c.canMove()).map(c => c.id));
     const actions: WotrAction[] = [];
     let continueMoving = movableCompanions.size > 0;
     while (continueMoving) {
@@ -98,14 +92,9 @@ export class WotrCharacterUi {
 
   async moveNazgulAndMinions(): Promise<WotrAction[]> {
     const moveableNonFlyingMinions = new Set(
-      this.characterStore
-        .minions()
-        .filter(c => !c.flying && this.characterRules.canMoveCharacter(c))
-        .map(c => c.id)
+      this.q.minions.filter(c => !c.flying && c.canMove()).map(c => c.id)
     );
-    const hasNazgul =
-      this.characterRules.canMoveStandardNazgul() ||
-      this.characterRules.canMoveCharacter(this.characterStore.character("the-witch-king"));
+    const hasNazgul = this.characterRules.canMoveStandardNazgul() || this.q.theWitchKing.canMove();
     const actions: WotrAction[] = [];
     let continueMoving = true;
     do {
@@ -153,9 +142,7 @@ export class WotrCharacterUi {
   }
 
   async moveAnyOrAllNazgul(): Promise<WotrAction[]> {
-    const hasNazgul =
-      this.characterRules.canMoveStandardNazgul() ||
-      this.characterRules.canMoveCharacter(this.characterStore.character("the-witch-king"));
+    const hasNazgul = this.characterRules.canMoveStandardNazgul() || this.q.theWitchKing.canMove();
     if (!hasNazgul) {
       await this.ui.askContinue("No Nazgul to move");
       return [];
@@ -252,7 +239,7 @@ export class WotrCharacterUi {
     return {
       label: () => "Bring character into play",
       isAvailable: (frontId: WotrFrontId) =>
-        this.characters.canBringCharacterIntoPlay(die, frontId),
+        this.characterAbilities.canBringCharacterIntoPlay(die, frontId),
       actions: (frontId: WotrFrontId) => this.bringCharacterIntoPlay(die, frontId)
     };
   }
@@ -261,7 +248,7 @@ export class WotrCharacterUi {
     ability: WotrUiAbility,
     characterId: WotrCharacterId
   ): Promise<WotrStory> {
-    const character = this.characterStore.character(characterId);
+    const character = this.q.character(characterId);
     const confirm = await this.ui.askConfirm(
       `Do you want to activate ${character.name + "'s ability?"}`,
       "Activate",

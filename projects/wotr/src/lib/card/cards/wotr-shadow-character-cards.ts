@@ -470,12 +470,12 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => {
             const witchKing = this.q.character("the-witch-king");
             if (!witchKing.isInPlay()) return false;
-            const regionId = witchKing.region()!.id;
+            const regionId = witchKing.getRegion()!.id;
             const region = this.q.region(regionId);
             return region.isBesiegedBy("shadow");
           },
           play: async () => {
-            const regionId = this.q.character("the-witch-king").region()!.id;
+            const regionId = this.q.character("the-witch-king").getRegion()!.id;
             return this.unitUi.attackStronghold(regionId, "shadow");
           }
         };
@@ -612,7 +612,7 @@ export class WotrShadowCharacterCards {
               { value: "move", label: "Move any or all Nazgûl" }
             ]);
             const actions: WotrAction[] = [];
-            const regionId = this.q.theWitchKing.region()!.id;
+            const regionId = this.q.theWitchKing.getRegion()!.id;
             if (choice1 === "recruit") {
               actions.push(
                 ...(await this.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 2))

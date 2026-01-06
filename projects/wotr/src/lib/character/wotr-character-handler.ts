@@ -17,7 +17,6 @@ import {
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrPlayer } from "../player/wotr-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
@@ -30,7 +29,7 @@ import {
 import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
-import { WotrCharacters } from "./wotr-characters";
+import { WotrCharacterAbilities } from "./wotr-characters";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterHandler {
@@ -43,9 +42,7 @@ export class WotrCharacterHandler {
   private q = inject(WotrGameQuery);
   private characterModifiers = inject(WotrCharacterModifiers);
 
-  private shadow = inject(WotrShadowPlayer);
-
-  characters: WotrCharacters = null as any;
+  characterAbilities: WotrCharacterAbilities = null as any;
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -107,13 +104,13 @@ export class WotrCharacterHandler {
       const character = this.characterStore.character(characterId);
       this.characterStore.setInPlay(characterId);
       this.addCharacterToRegion(character, region);
-      this.characters.resolveBringIntoPlayEffects(characterId);
+      this.characterAbilities.resolveBringIntoPlayEffects(characterId);
     }
     this.nationHandler.checkNationActivationByCharacters(regionId, characters);
     for (const characterId of removingCharacters) {
       this.removeCharacter(characterId);
     }
-    this.characters.activateAbilities(characters);
+    this.characterAbilities.activateAbilities(characters);
   }
 
   async eliminateCharacterEffect(character: WotrCharacterId): Promise<void> {
@@ -147,7 +144,7 @@ export class WotrCharacterHandler {
       if (region) this.removeCharacterFromRegion(character, region);
     }
     this.characterStore.setEliminated(characterId);
-    this.characters.deactivateAbilities(characterId);
+    this.characterAbilities.deactivateAbilities(characterId);
   }
 
   moveCharacters(

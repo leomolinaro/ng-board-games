@@ -4,7 +4,6 @@ import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card-models";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { findAction } from "../commons/wotr-action-models";
 import {
   WotrCompanionRandom,
@@ -14,6 +13,7 @@ import {
   WotrFellowshipRevealInMordor
 } from "../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { assertAction, filterActions } from "../game/wotr-story-models";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
@@ -51,9 +51,9 @@ type HuntEffect =
 export class WotrHuntFlow {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
-  private characterStore = inject(WotrCharacterStore);
   private logger = inject(WotrLogWriter);
   private fellowshipStore = inject(WotrFellowshipStore);
+  private q = inject(WotrGameQuery);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -230,7 +230,7 @@ export class WotrHuntFlow {
           break;
         case "character-elimination": {
           for (const companionId of action.characters) {
-            absorbedDamage += this.characterStore.character(companionId).level;
+            absorbedDamage += this.q.character(companionId).level;
           }
           params.casualtyTaken = true;
           break;
@@ -251,7 +251,7 @@ export class WotrHuntFlow {
               if (!params.randomCompanions) params.randomCompanions = [];
               params.randomCompanions.push(companionId);
             } else {
-              absorbedDamage += this.characterStore.character(companionId).level;
+              absorbedDamage += this.q.character(companionId).level;
               params.casualtyTaken = true;
             }
           }

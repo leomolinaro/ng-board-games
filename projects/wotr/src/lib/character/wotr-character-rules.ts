@@ -3,13 +3,11 @@ import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
-import { WotrCharacterStore } from "./wotr-character-store";
+import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterMovementOptions } from "./wotr-character-ui";
 
 @Injectable({ providedIn: "root" })
 export class WotrCharacterRules {
-  private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);
   private q = inject(WotrGameQuery);
 
@@ -22,7 +20,7 @@ export class WotrCharacterRules {
 
   canMoveNazgulOrMinions(): boolean {
     if (this.canMoveStandardNazgul()) return true;
-    this.characterStore.minions().some(minion => this.canMoveCharacter(minion));
+    this.q.minions.some(minion => minion.canMove());
     return false;
   }
 
@@ -35,23 +33,8 @@ export class WotrCharacterRules {
     });
   }
 
-  canMoveCharacter(character: WotrCharacter): boolean {
-    if (character.status !== "inPlay") return false;
-    if (character.level === 0) return false;
-    if (character.flying) {
-      if (this.isCharacterUnderSiege(character)) return false;
-    }
-    return true;
-  }
-
   canMoveCompanions(): boolean {
-    return this.characterStore.companions().some(companion => this.canMoveCharacter(companion));
-  }
-
-  isCharacterUnderSiege(character: WotrCharacter): boolean {
-    return this.regionStore.regions().some(region => {
-      return !region.underSiegeArmy?.characters?.includes(character.id);
-    });
+    return this.q.companions.some(companion => companion.canMove());
   }
 
   companionCanEnterRegion(
@@ -88,9 +71,13 @@ export class WotrCharacterRules {
 
   characterGroupLevel(characters: WotrCharacterId[]): number {
     return characters.reduce((l, characterId) => {
-      const character = this.characterStore.character(characterId);
+      const character = this.q.character(characterId);
       if (l < character.level) return character.level;
       return l;
     }, 0);
+  }
+
+  maxLevel(companions: WotrCharacterId[]): number {
+    return companions.reduce((max, c) => Math.max(max, this.q.character(c).level), 0);
   }
 }

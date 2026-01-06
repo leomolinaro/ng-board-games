@@ -420,7 +420,7 @@ export class WotrCombatCards {
               const characterId = characterElim.characters[0];
               const character = this.q.character(characterId);
               params.shadow.hitsModifiers.push(
-                -Math.min(character.character().level, params.shadow.nTotalHits || 0)
+                -Math.min(character.level, params.shadow.nTotalHits || 0)
               );
             }
           }

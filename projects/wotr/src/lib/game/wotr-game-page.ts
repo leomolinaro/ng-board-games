@@ -17,7 +17,7 @@ import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
-import { WotrCharacters } from "../character/wotr-characters";
+import { WotrCharacterAbilities } from "../character/wotr-characters";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipModifiers } from "../fellowship/wotr-fellowship-modifiers";
@@ -72,7 +72,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private huntModifiers = inject(WotrHuntModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
   private characterHandler = inject(WotrCharacterHandler);
-  private characters = inject(WotrCharacters);
+  private characterAbilities = inject(WotrCharacterAbilities);
   private cardHandler = inject(WotrCardHandler);
   private cards = inject(WotrCards);
   private freePeoplesCharacterCards = inject(WotrFreePeoplesCharacterCards);
@@ -98,11 +98,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrUnitHandler).init();
     inject(WotrFrontHandler).init();
     this.story.init(this.localPlayerService);
-    this.characterHandler.characters = this.characters;
+    this.characterHandler.characterAbilities = this.characterAbilities;
     this.cardHandler.cards = this.cards;
     this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
     this.combatCards.battleUi = this.battleUi;
-    this.characters.actionDieUi = this.actionDieUi;
+    this.characterAbilities.actionDieUi = this.actionDieUi;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

@@ -1,10 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrCharacters } from "../character/wotr-characters";
+import { WotrCharacterAbilities } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrRingDestroyed } from "../fellowship/wotr-fellowship-models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
@@ -29,7 +29,6 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
-import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 
 @Injectable({ providedIn: "root" })
 export class WotrGameTurn {
@@ -37,11 +36,10 @@ export class WotrGameTurn {
   private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);
-  private characterStore = inject(WotrCharacterStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
   private actionRegistry = inject(WotrActionRegistry);
-  private characters = inject(WotrCharacters);
+  private characterAbilities = inject(WotrCharacterAbilities);
   private q = inject(WotrGameQuery);
   private fellowshipHandler = inject(WotrFellowshipHandler);
 
@@ -86,7 +84,7 @@ export class WotrGameTurn {
     const gameSetup = this.setupService.getGameSetup();
     this.logger.logSetup();
     this.applySetup(gameSetup);
-    this.characters.activateAbilities(this.fellowshipStore.companions());
+    this.characterAbilities.activateAbilities(this.fellowshipStore.companions());
   }
 
   private async round(roundNumber: number) {
@@ -111,7 +109,7 @@ export class WotrGameTurn {
     this.huntStore.resetHuntBox();
     this.frontStore.resetElvenRingUsed("free-peoples");
     this.frontStore.resetElvenRingUsed("shadow");
-    this.characterStore.resetMessengerOfTheDarkTower();
+    this.q.resetMessengerOfTheDarkTower();
     this.fellowshipStore.resetMoveOrHideAttempt();
     this.frontStore.skipDiscardExcessCards(true);
     await this.allPlayers.firstPhaseDraw();
@@ -265,7 +263,7 @@ export class WotrGameTurn {
     this.frontStore.setActionTokens(setup.shadowTokens, "shadow");
     this.fellowshipStore.setCompanions(setup.fellowship.companions);
     for (const companion of setup.fellowship.companions) {
-      this.characterStore.setInFellowship(companion);
+      this.q.character(companion).setInFellowship();
     }
     this.fellowshipStore.setGuide(setup.fellowship.guide);
     this.regionStore.addFellowshipToRegion(setup.fellowship.region);

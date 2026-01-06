@@ -1,27 +1,29 @@
 import { getCard, WotrCardId, WotrCardType } from "../card/wotr-card-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
 import { WotrFrontStore } from "./wotr-front-store";
 
 export class WotrFrontQuery {
   constructor(
     private frontId: WotrFrontId,
-    private frontStore: WotrFrontStore
+    private frontStore: WotrFrontStore,
+    private characterStore: WotrCharacterStore
   ) {}
 
   id() {
     return this.frontId;
   }
 
-  private front() {
+  private data() {
     return this.frontStore.front(this.frontId);
   }
 
   actionDice() {
-    return this.front().actionDice;
+    return this.data().actionDice;
   }
 
   hasActionDice() {
-    return !!this.front().actionDice.length;
+    return !!this.data().actionDice.length;
   }
 
   canSkipTokens() {
@@ -29,31 +31,42 @@ export class WotrFrontQuery {
   }
 
   nActionDice() {
-    return this.front().actionDice.length;
+    return this.data().actionDice.length;
   }
 
   hasUnusedCharacterActionDice(): boolean {
-    return this.front().actionDice.includes("character");
+    return this.data().actionDice.includes("character");
+  }
+
+  actionDiceBonus(): number {
+    let actionDiceBonus = 0;
+    for (const character of this.characterStore.characters()) {
+      if (character.front !== this.frontId) continue;
+      if (!character.actionDiceBonus) continue;
+      if (character.status !== "inPlay") continue;
+      actionDiceBonus += character.actionDiceBonus;
+    }
+    return actionDiceBonus;
   }
 
   hasActionTokens() {
-    return !!this.front().actionTokens.length;
+    return !!this.data().actionTokens.length;
   }
 
   actionTokens() {
-    return this.front().actionTokens;
+    return this.data().actionTokens;
   }
 
   characterDeck() {
-    return this.front().characterDeck;
+    return this.data().characterDeck;
   }
 
   strategyDeck() {
-    return this.front().strategyDeck;
+    return this.data().strategyDeck;
   }
 
   handCards() {
-    return this.front().handCards;
+    return this.data().handCards;
   }
 
   hasExcessCards(): boolean {
@@ -67,7 +80,7 @@ export class WotrFrontQuery {
   }
 
   nCardsInStrategyDeck(): number {
-    return this.front().strategyDeck.length;
+    return this.data().strategyDeck.length;
   }
 
   canDrawCard(): boolean {
@@ -75,19 +88,19 @@ export class WotrFrontQuery {
   }
 
   canDrawStrategyCard(): boolean {
-    return this.front().strategyDeck.length > 0;
+    return this.data().strategyDeck.length > 0;
   }
 
   canDrawCharacterCard(): boolean {
-    return this.front().characterDeck.length > 0;
+    return this.data().characterDeck.length > 0;
   }
 
   hasTableCard(cardId: WotrCardId) {
-    return !!this.front().tableCards.includes(cardId);
+    return !!this.data().tableCards.includes(cardId);
   }
 
   hasCardsOnTable() {
-    return this.front().tableCards.length > 0;
+    return this.data().tableCards.length > 0;
   }
 
   handCardsOfType(cardType: WotrCardType) {
@@ -99,7 +112,7 @@ export class WotrFrontQuery {
   }
 
   elvenRings(): WotrElvenRing[] {
-    return this.front().elvenRings;
+    return this.data().elvenRings;
   }
 
   playableElvenRings(): WotrElvenRing[] {
@@ -115,10 +128,10 @@ export class WotrFrontQuery {
   }
 
   elvenRingUsed(): boolean {
-    return this.front().elvenRingUsed;
+    return this.data().elvenRingUsed;
   }
 
   victoryPoints(): number {
-    return this.front().victoryPoints;
+    return this.data().victoryPoints;
   }
 }

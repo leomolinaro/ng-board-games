@@ -14,7 +14,6 @@ import { WotrDieStory } from "../../game/wotr-story-models";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterStore } from "../wotr-character-store";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // The Mouth of Sauron - Lieutenant of Barad-dûr (Level 3, Leadership 2, +1 Action Die)
@@ -62,7 +61,7 @@ export class WotrMouthOfSauron extends WotrCharacterCard {
 
 export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private actionDieUi: WotrActionDieUi,
     private actionDieModifiers: WotrActionDieModifiers
   ) {}
@@ -73,7 +72,7 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
     if (frontId !== "shadow") return [];
     const messengerChoice: WotrUiCharacterChoice = {
       label: () => "Messenger of the Dark Tower",
-      isAvailable: () => !this.characterStore.messengerOfTheDarkTowerUsed(),
+      isAvailable: () => !this.q.messengerOfTheDarkTowerUsed(),
       character: "the-mouth-of-sauron",
       actions: async () => (await this.actionDieUi.resolveArmyResult("muster", "shadow")).actions
     };
@@ -85,7 +84,7 @@ export class MessengerOfTheDarkTowerSetUsedAbility
   implements WotrAbility<WotrAfterActionDieResolution>
 {
   constructor(
-    private characterStore: WotrCharacterStore,
+    private q: WotrGameQuery,
     private actionDieModifiers: WotrActionDieModifiers
   ) {}
 
@@ -97,6 +96,6 @@ export class MessengerOfTheDarkTowerSetUsedAbility
     if (frontId !== "shadow") return;
     if (story.character !== "the-mouth-of-sauron") return;
     if (story.die !== "muster") return;
-    this.characterStore.setMessengerOfTheDarkTowerUsed();
+    this.q.setMessengerOfTheDarkTowerUsed();
   };
 }

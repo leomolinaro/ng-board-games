@@ -24,8 +24,8 @@ export class WotrGameQuery {
   private fellowshipStore = inject(WotrFellowshipStore);
   private unitUtils = inject(WotrUnitUtils);
 
-  freePeoples = new WotrFrontQuery("free-peoples", this.frontStore);
-  shadow = new WotrFrontQuery("shadow", this.frontStore);
+  freePeoples = new WotrFrontQuery("free-peoples", this.frontStore, this.characterStore);
+  shadow = new WotrFrontQuery("shadow", this.frontStore, this.characterStore);
   front(frontId: WotrFrontId): WotrFrontQuery {
     switch (frontId) {
       case "free-peoples":
@@ -37,84 +37,36 @@ export class WotrGameQuery {
 
   fellowship = new WotrFellowshipQuery(this.fellowshipStore, this.regionStore, this.nationStore);
 
-  gandalfTheGrey = new WotrCharacterQuery(
-    "gandalf-the-grey",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  strider = new WotrCharacterQuery(
-    "strider",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  legolas = new WotrCharacterQuery(
-    "legolas",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  gimli = new WotrCharacterQuery(
-    "gimli",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  boromir = new WotrCharacterQuery(
-    "boromir",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  meriadoc = new WotrCharacterQuery(
-    "meriadoc",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  peregrin = new WotrCharacterQuery(
-    "peregrin",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  gandalfTheWhite = new WotrCharacterQuery(
-    "gandalf-the-white",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  aragorn = new WotrCharacterQuery(
-    "aragorn",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  gollum = new WotrCharacterQuery(
-    "gollum",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  saruman = new WotrCharacterQuery(
-    "saruman",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  theWitchKing = new WotrCharacterQuery(
-    "the-witch-king",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
-  theMouthOfSauron = new WotrCharacterQuery(
-    "the-mouth-of-sauron",
-    this.characterStore,
-    this.regionStore,
-    this.fellowshipStore
-  );
+  gandalfTheGrey = this.newCharacter("gandalf-the-grey");
+  strider = this.newCharacter("strider");
+  legolas = this.newCharacter("legolas");
+  gimli = this.newCharacter("gimli");
+  boromir = this.newCharacter("boromir");
+  meriadoc = this.newCharacter("meriadoc");
+  peregrin = this.newCharacter("peregrin");
+  gandalfTheWhite = this.newCharacter("gandalf-the-white");
+  aragorn = this.newCharacter("aragorn");
+  gollum = this.newCharacter("gollum");
+  saruman = this.newCharacter("saruman");
+  theWitchKing = this.newCharacter("the-witch-king");
+  theMouthOfSauron = this.newCharacter("the-mouth-of-sauron");
+  private newCharacter(characterId: WotrCharacterId): WotrCharacterQuery {
+    return new WotrCharacterQuery(
+      characterId,
+      this.characterStore,
+      this.regionStore,
+      this.fellowshipStore
+    );
+  }
+  messengerOfTheDarkTowerUsed() {
+    return this.characterStore.messengerOfTheDarkTowerUsed();
+  }
+  setMessengerOfTheDarkTowerUsed() {
+    this.characterStore.setMessengerOfTheDarkTowerUsed();
+  }
+  resetMessengerOfTheDarkTower() {
+    this.characterStore.resetMessengerOfTheDarkTower();
+  }
   minions = [this.saruman, this.theMouthOfSauron, this.theWitchKing];
   companions = [
     this.gandalfTheGrey,

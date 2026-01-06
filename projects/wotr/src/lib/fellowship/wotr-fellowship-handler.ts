@@ -1,7 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -29,7 +28,6 @@ export class WotrFellowshipHandler {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private huntFlow = inject(WotrHuntFlow);
-  private characterStore = inject(WotrCharacterStore);
   private characterHandler = inject(WotrCharacterHandler);
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
@@ -110,7 +108,7 @@ export class WotrFellowshipHandler {
   }
 
   private characters(characters: WotrCharacterId[]) {
-    return characters.map(c => this.characterStore.character(c).name).join(", ");
+    return characters.map(c => this.q.character(c).name).join(", ");
   }
 
   private nCorruptionPoints(quantity: number) {

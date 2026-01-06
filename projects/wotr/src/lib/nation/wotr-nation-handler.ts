@@ -1,7 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { WotrArmyAttack } from "../battle/wotr-battle-actions";
 import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
@@ -19,6 +18,7 @@ import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationModifiers } from "./wotr-nation-modifiers";
 import { WotrNationActivationSource, WotrNationAdvanceSource } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 
 @Injectable({ providedIn: "root" })
 export class WotrNationHandler {
@@ -26,9 +26,9 @@ export class WotrNationHandler {
   private nationStore = inject(WotrNationStore);
   private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);
-  private characterStore = inject(WotrCharacterStore);
   private nationModifiers = inject(WotrNationModifiers);
   private storyService = inject(WotrStoryService);
+  private q = inject(WotrGameQuery);
 
   init() {
     this.actionRegistry.registerAction<WotrPoliticalActivation>(
@@ -132,7 +132,7 @@ export class WotrNationHandler {
       ) {
         let doActivate = false;
         for (const characterId of characters) {
-          const character = this.characterStore.character(characterId);
+          const character = this.q.character(characterId);
           if (
             character.activationNation === "all" ||
             character.activationNation === region.nationId
