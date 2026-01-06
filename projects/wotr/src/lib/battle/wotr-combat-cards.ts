@@ -431,12 +431,12 @@ export class WotrCombatCards {
     // Play if the defending Army is in a Rohan region, Fangorn or Orthanc.
     // The Shadow player rolls a maximum of two dice in his Combat roll.
     "Huorn-dark": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        this.q.region(params.regionId).isNation("rohan") ||
+        params.regionId === "fangorn" ||
+        params.regionId === "orthanc",
       effect: async (card, params) => {
-        throw new Error("TODO");
+        params.shadow.maxNCombatDice = 2;
       }
     },
     // It is a gift (Initiative 3)
