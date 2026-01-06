@@ -631,7 +631,7 @@ export class WotrBattleHandler {
       }
       if (region.underSiegeArmy) {
         return 6;
-      } // TODO non sempre
+      }
     }
     return 5;
   }

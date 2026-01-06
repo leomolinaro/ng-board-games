@@ -224,13 +224,8 @@ export class WotrUnitRules {
 
   getArmyCombatStrength(army: WotrArmy): number {
     let combatStrength = 0;
-    if (army.regulars) {
-      combatStrength += army.regulars.reduce((cs, unit) => cs + unit.quantity, 0);
-    }
-    if (army.elites) {
-      combatStrength += army.elites.reduce((cs, unit) => cs + unit.quantity, 0);
-    }
-    // TODO characters
+    combatStrength += army.regulars?.reduce((cs, unit) => cs + unit.quantity, 0) ?? 0;
+    combatStrength += army.elites?.reduce((cs, unit) => cs + unit.quantity, 0) ?? 0;
     return combatStrength;
   }
 

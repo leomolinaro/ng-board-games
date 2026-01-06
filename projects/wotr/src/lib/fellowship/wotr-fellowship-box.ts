@@ -8,6 +8,7 @@ import {
   output
 } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrFellowship } from "./wotr-fellowship-models";
 
 interface WotrCompanionNode {
@@ -73,6 +74,7 @@ export class WotrFellowshipBox {
   boxClick = output<void>();
   private companions = computed(() => this.fellowship().companions);
   private guide = computed(() => this.fellowship().guide);
+  private q = inject(WotrGameQuery);
 
   private assets = inject(WotrAssetsStore);
 
@@ -100,7 +102,7 @@ export class WotrFellowshipBox {
       nodes.push({
         id: companion,
         image: unitImage.source,
-        tooltip: companion, // TODO
+        tooltip: this.q.character(companion).name,
         svgX: this.getX(index),
         svgY: this.getY(index) - unitImage.height
       });
@@ -115,7 +117,7 @@ export class WotrFellowshipBox {
     return {
       id: guide,
       image: unitImage.source,
-      tooltip: guide, // TODO
+      tooltip: this.q.character(guide).name,
       svgX: GUIDE_X,
       svgY: GUIDE_Y - unitImage.height
     };
