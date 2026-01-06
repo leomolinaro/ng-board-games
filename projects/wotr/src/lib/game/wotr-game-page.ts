@@ -34,7 +34,9 @@ import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrPlayerDoc } from "../remote/wotr-remote-models";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrBoard } from "./board/wotr-board";
+import { WotrGameQuery } from "./wotr-game-query";
 import { WotrGameStore } from "./wotr-game-store";
 import {
   WotrStoriesDialog,
@@ -81,6 +83,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private combatCards = inject(WotrCombatCards);
   private actionDieUi = inject(WotrActionDieUi);
   private nationModifiers = inject(WotrNationModifiers);
+  private unitUtils = inject(WotrUnitUtils);
+  private q = inject(WotrGameQuery);
 
   private dialog = inject(MatDialog);
 
@@ -103,6 +107,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
     this.combatCards.battleUi = this.battleUi;
     this.characterAbilities.actionDieUi = this.actionDieUi;
+    this.unitUtils.q = this.q;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -9,7 +9,7 @@ import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
   providedIn: "root"
 })
 export class WotrUnitUtils {
-  private q = inject(WotrGameQuery);
+  q!: WotrGameQuery;
 
   addRegulars(quantity: number, nation: WotrNationId, army: WotrArmy | undefined): WotrArmy {
     return this.addUnits("regulars", nation, quantity, army);
