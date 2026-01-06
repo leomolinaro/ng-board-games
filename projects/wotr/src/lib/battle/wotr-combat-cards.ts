@@ -443,12 +443,10 @@ export class WotrCombatCards {
     // Play if the defending Army is in the same region as the Fellowship.
     // Add 1 to all dice on your Combat roll and Leader re-roll.
     "It is a Gift": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.q.region(params.regionId).hasFellowship(),
       effect: async (card, params) => {
-        throw new Error("TODO");
+        params.freePeoples.combatModifiers.push(1);
+        params.freePeoples.leaderModifiers.push(1);
       }
     },
     // Mighty Attack (Initiative 4)
