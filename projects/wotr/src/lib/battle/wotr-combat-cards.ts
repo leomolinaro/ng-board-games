@@ -604,11 +604,15 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Combat roll.
     "Servant of the Secret Fire": {
       canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
+        const fpArmyCharacters = params.freePeoples.army().characters;
+        if (!fpArmyCharacters) return false;
+        return (
+          fpArmyCharacters.includes("gandalf-the-grey") ||
+          fpArmyCharacters.includes("gandalf-the-white")
+        );
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        params.freePeoples.combatModifiers.push(1);
       }
     },
     // Shield-wall (Initiative 6)
