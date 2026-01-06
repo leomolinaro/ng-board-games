@@ -346,12 +346,25 @@ export class WotrFreePeoplesStrategyCards {
             return actions;
           }
         };
-      // TODO Riders of Théoden
+      // Riders of Théoden
       // Recruit one Rohan unit (Regular or Elite) and one Rohan Leader either in Edoras or in a Rohan region containing a Companion.
       case "fpstr16":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          play: async () => {
+            const regions = this.q.regions().filter(r => {
+              if (r.id() !== "edoras" && !(r.isNation("rohan") && r.hasCompanions())) return false;
+              return r.isFreeForRecruitmentByCard("free-peoples");
+            });
+            if (!regions.length) return [];
+            const region = await this.ui.askRegion(
+              "Choose a region to recruit in",
+              regions.map(r => r.id())
+            );
+            const actions: WotrAction[] = [];
+            actions.push(...(await this.unitUi.recruitRegularsOrElitesByCard(region, "rohan")));
+            actions.push(...(await this.unitUi.recruitLeaderByCard(region, "rohan")));
+            return actions;
+          }
         };
       // Grimbeorn the Old, Son of Beorn
       // Recruit one North unit (Regular or Elite) and one North Leader in Carrock.
