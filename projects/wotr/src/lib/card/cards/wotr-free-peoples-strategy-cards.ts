@@ -260,15 +260,45 @@ export class WotrFreePeoplesStrategyCards {
           canBePlayed: () => false,
           play: async () => []
         };
-      // TODO Paths of the Woses
+      // Paths of the Woses
       // Play if the Rohan Nation is "At War."
       // Move a Free Peoples Army from any one Rohan region (including a Stronghold under siege) directly to Minas Tirith.
       // If the Shadow player controls or is besieging Minas Tirith, move the Army to a region adjacent to Minas Tirith instead. The destination region must be free for the
       // purposes of army movement.
       case "fpstr11":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => this.q.rohan.isAtWar(),
+          play: async () => {
+            const fromRegions = this.q
+              .regions()
+              .filter(r => r.isNation("rohan") && r.hasArmy("free-peoples"));
+            if (!fromRegions.length) return [];
+            const minasTirith = this.q.region("minas-tirith");
+            const toRegions: WotrRegionQuery[] = [];
+            if (minasTirith.isControlledBy("shadow") || minasTirith.isUnderSiege("free-peoples")) {
+              toRegions.push(
+                ...minasTirith
+                  .adjacentRegions()
+                  .filter(r => r.isFreeForArmyMovement("free-peoples"))
+              );
+            } else {
+              toRegions.push(minasTirith);
+            }
+            if (!toRegions.length) return [];
+            const movingUnits = await this.ui.askRegionUnits("Choose an army to move", {
+              type: "moveArmy",
+              regionIds: fromRegions.map(r => r.id()),
+              doneMovements: [],
+              required: true,
+              retroguard: null,
+              requiredUnits: []
+            });
+            const toRegion = await this.ui.askRegion(
+              "Choose a region to move the army to",
+              toRegions.map(r => r.id())
+            );
+            return this.unitUi.moveThisArmyTo(movingUnits, "free-peoples", toRegion);
+          }
         };
       // Through a Day and a Night
       // Play on a Free Peoples Army containing a Companion.
