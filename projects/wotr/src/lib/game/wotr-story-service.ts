@@ -80,8 +80,13 @@ export class WotrStoryService extends ABgGameService<
   }
 
   private nReplayStories = 0;
-  private replayToLastStory = false;
+  private replayToLastStory = true;
   private $replayCall = new Subject<void>();
+
+  setReplayMode(replayMode: boolean) {
+    this.replayToLastStory = !replayMode;
+  }
+
   private currentStory: WotrStory | null = null;
   getCurrentStory() {
     return this.currentStory;
@@ -126,7 +131,6 @@ export class WotrStoryService extends ABgGameService<
 
   eraseLast() {
     this.remote.deleteStory$(getStoryId(this.storyTime, "free-peoples"), this.getGameId());
-    console.log("this", this);
   }
 
   lastReplay() {

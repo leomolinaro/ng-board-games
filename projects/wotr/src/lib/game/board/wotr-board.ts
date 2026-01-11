@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  model,
   output,
   signal
 } from "@angular/core";
@@ -12,7 +13,7 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
 import { WotrActionDice } from "../../action-die/wotr-action-dice";
-import { WotrCardId, isCharacterCard, isStrategyCard } from "../../card/wotr-card-models";
+import { isCharacterCard, isStrategyCard, WotrCardId } from "../../card/wotr-card-models";
 import { WotrCardsDialog, WotrCardsDialogData } from "../../card/wotr-cards-dialog";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
 import {
@@ -110,6 +111,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
       <div class="wotr-logs">
         <wotr-replay-buttons
           class="wotr-replay-buttons"
+          [(replayMode)]="replayMode"
           (edit)="editStories.emit()"
           (replayNext)="replayNext.emit($event)"
           (replayLast)="replayLast.emit()"></wotr-replay-buttons>
@@ -142,6 +144,8 @@ export class WotrBoard {
   protected freePeoplesNations = this.nationStore.freePeoplesNations;
   protected nationById = this.nationStore.nationById;
   protected shadowNations = this.nationStore.shadowNations;
+
+  replayMode = model();
 
   protected nChaCards: BgTransformFn<WotrCardId[], number> = handCards =>
     handCards.reduce((count, card) => (isCharacterCard(card) ? count + 1 : count), 0);

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
@@ -50,9 +50,11 @@ import { WotrStoryService } from "./wotr-story-service";
   imports: [WotrBoard],
   template: `
     <wotr-board
+      [replayMode]="replayMode"
+      (replayModeChange)="reloadPage(true)"
       (editStories)="editStories()"
       (replayNext)="story.nextReplay($event)"
-      (replayLast)="story.lastReplay()">
+      (replayLast)="reloadPage(false)">
     </wotr-board>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -85,6 +87,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private nationModifiers = inject(WotrNationModifiers);
   private unitUtils = inject(WotrUnitUtils);
   private q = inject(WotrGameQuery);
+  private router = inject(Router);
 
   private dialog = inject(MatDialog);
 
@@ -111,6 +114,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
+  protected replayMode = this.route.snapshot.queryParamMap.get("replay") === "true";
 
   async ngOnInit() {
     const [game, players, stories] = await Promise.all([
@@ -125,13 +129,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
         this.gameId,
         game.owner
       );
+      if (this.replayMode) {
+        this.story.setReplayMode(true);
+      }
       this.story.setStoryDocs(stories);
       await this.flow.game();
-      // this.ui.updateUi (s => ({
-      //   ...s,
-      //   ...this.ui.resetUi (),
-      //   // canCancel: false,
-      // }));
     }
   }
 
@@ -189,5 +191,14 @@ export class WotrGamePage implements OnInit, OnDestroy {
         maxWidth: "80vw"
       }
     );
+  }
+
+  protected reloadPage(replay: boolean) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: replay ? { replay } : {},
+      queryParamsHandling: "replace"
+    });
+    setTimeout(() => location.reload());
   }
 }

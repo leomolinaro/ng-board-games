@@ -42,7 +42,7 @@ import { WotrPlayerInfoStore } from "./wotr-player-info-store";
       @use "wotr-variables" as wotr;
       :host {
         @include wotr.golden-padding(1vmin);
-        height: 100%;
+        // height: 100%;
         display: flex;
         align-items: center;
       }
