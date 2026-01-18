@@ -1,6 +1,5 @@
 // https://www.youtube.com/watch?v=6kDLffpqd9A&ab_channel=WaroftheRingChamp
 
-import { WotrActionToken } from "../action-die/wotr-action-die-models";
 import {
   advanceArmy,
   attack,
@@ -9,9 +8,9 @@ import {
   reRollCombatDice,
   retreat,
   rollCombatDice
-} from "../battle/wotr-battle-actions";
-import { discardCardFromTable, drawCards, playCardOnTable } from "../card/wotr-card-actions";
-import { eliminateCharacter, playCharacter } from "../character/wotr-character-actions";
+} from "../../battle/wotr-battle-actions";
+import { discardCardFromTable, drawCards, playCardOnTable } from "../../card/wotr-card-actions";
+import { eliminateCharacter, playCharacter } from "../../character/wotr-character-actions";
 import {
   changeGuide,
   chooseRandomCompanion,
@@ -21,22 +20,23 @@ import {
   moveFelloswhip,
   revealFellowship,
   separateCompanions
-} from "../fellowship/wotr-fellowship-actions";
-import { WotrStoryDoc } from "../game/wotr-story-models";
-import { addHuntTile } from "../hunt/wotr-hunt-actions";
-import { advanceNation } from "../nation/wotr-nation-actions";
+} from "../../fellowship/wotr-fellowship-actions";
+import { WotrStoryDoc } from "../../game/wotr-story-models";
+import { addHuntTile } from "../../hunt/wotr-hunt-actions";
+import { advanceNation } from "../../nation/wotr-nation-actions";
 import {
   eliminateLeader,
   eliminateRegularUnit,
   leftUnits,
   moveArmy
-} from "../unit/wotr-unit-actions";
-import { elite, nazgul, regular } from "../unit/wotr-unit-models";
-import { WotrStoriesBuilder } from "./wotr-story-builder";
+} from "../../unit/wotr-unit-actions";
+import { elite, nazgul, regular } from "../../unit/wotr-unit-models";
+import { WotrSimulationDefinition } from "../wotr-simulation";
+import { WotrStoriesBuilder } from "../wotr-story-builder";
 
 const b = new WotrStoriesBuilder();
 
-export const stories: WotrStoryDoc[] = [
+const stories: WotrStoryDoc[] = [
   // Turn 1
   b.fpT().firstPhaseDraw("Swords in Eriador", "Challenge of the King"),
   b.s().firstPhaseDraw("Return to Valinor", "Balrog of Moria"),
@@ -175,4 +175,8 @@ export const stories: WotrStoryDoc[] = [
   // Turn 4 17:47
 ];
 
-export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
+// export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
+
+export const simulation: WotrSimulationDefinition = {
+  stories
+};

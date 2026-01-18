@@ -5,6 +5,7 @@ import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-model
 import { WotrCardUtils } from "../card/wotr-card-utils";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 
@@ -43,7 +44,8 @@ export interface WotrFellowshipSetup {
 export class WotrSetupRules {
   private cards = inject(WotrCardUtils);
 
-  getGameSetup(): WotrSetup {
+  getGameSetup(config: WotrGameConfig): WotrSetup {
+    if (config.setup) return config.setup(this);
     return {
       decks: this.decks(),
       regions: [

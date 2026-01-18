@@ -2,8 +2,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
-import { discardDice } from "../action-die/wotr-action-die-actions";
-import { WotrActionToken } from "../action-die/wotr-action-die-models";
+import { discardDice } from "../../action-die/wotr-action-die-actions";
 import {
   advanceArmy,
   attack,
@@ -15,13 +14,13 @@ import {
   retreat,
   retreatIntoSiege,
   rollCombatDice
-} from "../battle/wotr-battle-actions";
-import { discardRandomCard, drawCards, playCardOnTable } from "../card/wotr-card-actions";
+} from "../../battle/wotr-battle-actions";
+import { discardRandomCard, drawCards, playCardOnTable } from "../../card/wotr-card-actions";
 import {
   eliminateCharacter,
   moveCharacters,
   playCharacter
-} from "../character/wotr-character-actions";
+} from "../../character/wotr-character-actions";
 import {
   changeGuide,
   chooseRandomCompanion,
@@ -32,11 +31,11 @@ import {
   moveFelloswhip,
   revealFellowship,
   separateCompanions
-} from "../fellowship/wotr-fellowship-actions";
-import { WotrStoryDoc } from "../game/wotr-story-models";
-import { addHuntTile, drawHuntTile } from "../hunt/wotr-hunt-actions";
-import { advanceNation } from "../nation/wotr-nation-actions";
-import { targetRegion } from "../region/wotr-region-actions";
+} from "../../fellowship/wotr-fellowship-actions";
+import { WotrStoryDoc } from "../../game/wotr-story-models";
+import { addHuntTile, drawHuntTile } from "../../hunt/wotr-hunt-actions";
+import { advanceNation } from "../../nation/wotr-nation-actions";
+import { targetRegion } from "../../region/wotr-region-actions";
 import {
   downgradeEliteUnit,
   eliminateEliteUnit,
@@ -48,13 +47,14 @@ import {
   recruitEliteUnit,
   recruitRegularUnit,
   upgradeRegularUnit
-} from "../unit/wotr-unit-actions";
-import { character, elite, nazgul, regular } from "../unit/wotr-unit-models";
-import { WotrStoriesBuilder } from "./wotr-story-builder";
+} from "../../unit/wotr-unit-actions";
+import { character, elite, nazgul, regular } from "../../unit/wotr-unit-models";
+import { WotrSimulationDefinition } from "../wotr-simulation";
+import { WotrStoriesBuilder } from "../wotr-story-builder";
 
 const b = new WotrStoriesBuilder();
 
-export const stories: WotrStoryDoc[] = [
+const stories: WotrStoryDoc[] = [
   // Turn 1
   b.fpT().firstPhaseDraw("The Power of Tom Bombadil", "Elven Cloaks"),
   b.s().firstPhaseDraw("The Day Without Dawn", "Worn with Sorrow and Toil"),
@@ -600,4 +600,8 @@ export const stories: WotrStoryDoc[] = [
     )
 ];
 
-export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
+// export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
+
+export const simulation: WotrSimulationDefinition = {
+  stories
+};

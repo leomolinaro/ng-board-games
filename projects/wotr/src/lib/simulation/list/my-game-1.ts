@@ -1,4 +1,4 @@
-import { WotrStoryDoc } from "../game/wotr-story-models";
+import { WotrStoryDoc } from "../../game/wotr-story-models";
 
 export const stories: WotrStoryDoc[] = [
   {

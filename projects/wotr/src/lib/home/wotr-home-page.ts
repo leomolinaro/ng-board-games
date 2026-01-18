@@ -4,7 +4,6 @@ import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { WotrExampleButton } from "../examples/wotr-example-button";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import {
@@ -13,6 +12,7 @@ import {
   WotrPlayerDoc,
   WotrReadPlayerDoc
 } from "../remote/wotr-remote-models";
+import { WotrExampleButton } from "../simulation/wotr-simulation-button";
 
 @Component({
   selector: "wotr-home-page",

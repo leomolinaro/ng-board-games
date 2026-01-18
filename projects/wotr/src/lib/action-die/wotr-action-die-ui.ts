@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { randomUtil } from "../../../../commons/utils/src";
+import { randomUtil } from "@leobg/commons/utils";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";

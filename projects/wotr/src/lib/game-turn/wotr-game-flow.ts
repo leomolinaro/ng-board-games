@@ -9,6 +9,7 @@ import { WotrRingDestroyed } from "../fellowship/wotr-fellowship-models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { oppositeFront } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import {
   WotrBaseStory,
@@ -62,8 +63,8 @@ export class WotrGameTurn {
     }
   };
 
-  async game() {
-    this.setup();
+  async game(config: WotrGameConfig) {
+    this.setup(config);
     try {
       let roundNumber = 0;
       let continueGame = await this.round(++roundNumber);
@@ -80,8 +81,8 @@ export class WotrGameTurn {
     this.logger.logEndGame();
   }
 
-  private setup() {
-    const gameSetup = this.setupService.getGameSetup();
+  private setup(config: WotrGameConfig) {
+    const gameSetup = this.setupService.getGameSetup(config);
     this.logger.logSetup();
     this.applySetup(gameSetup);
     this.characterAbilities.activateAbilities(this.fellowshipStore.companions());

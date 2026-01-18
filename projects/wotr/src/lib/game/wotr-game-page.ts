@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+  input
+} from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
@@ -36,6 +43,7 @@ import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrBoard } from "./board/wotr-board";
+import { WotrGameConfig } from "./wotr-game-config";
 import { WotrGameQuery } from "./wotr-game-query";
 import { WotrGameStore } from "./wotr-game-store";
 import {
@@ -114,7 +122,9 @@ export class WotrGamePage implements OnInit, OnDestroy {
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
-  protected replayMode = this.route.snapshot.queryParamMap.get("replay") === "true";
+  protected replayMode = this.route.snapshot.queryParamMap?.get("replay") === "true";
+
+  gameConfig = input<WotrGameConfig>();
 
   async ngOnInit() {
     const [game, players, stories] = await Promise.all([
@@ -133,7 +143,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
         this.story.setReplayMode(true);
       }
       this.story.setStoryDocs(stories);
-      await this.flow.game();
+      await this.flow.game(this.gameConfig() ?? {});
     }
   }
 
