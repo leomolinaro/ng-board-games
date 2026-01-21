@@ -3,7 +3,7 @@ import { WotrGameUi } from "../game/wotr-game-ui";
 import { targetRegion, WotrRegionChoose } from "./wotr-region-actions";
 import { WotrRegionId } from "./wotr-region-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrRegionUi {
   private ui = inject(WotrGameUi);
 

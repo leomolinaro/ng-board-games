@@ -22,7 +22,7 @@ import { WotrSimulations } from "./wotr-simulations";
   providers: [
     { provide: BgAuthService, useClass: BgAuthServiceMock },
     { provide: WotrRemoteService, useClass: WotrRemoteMock },
-    { provide: WotrSetupRules, useFactory: () => new WotrSetupRulesMock() }
+    { provide: WotrSetupRules, useClass: WotrSetupRulesMock }
   ]
 })
 export class WotrSimulationPage {

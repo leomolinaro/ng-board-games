@@ -19,7 +19,7 @@ export interface WotrStoryTask {
   task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrStoryService extends ABgGameService<
   WotrFrontId,
   WotrPlayerInfo,

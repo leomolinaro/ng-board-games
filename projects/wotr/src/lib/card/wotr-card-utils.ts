@@ -8,9 +8,7 @@ import {
   WotrShadowStrategyCardId
 } from "./wotr-card-models";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrCardUtils {
   private readonly CARD_NUMBERS: WotrCardNumber[] = [
     "01",

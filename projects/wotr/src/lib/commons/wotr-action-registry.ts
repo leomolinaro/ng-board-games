@@ -12,7 +12,7 @@ import {
 } from "./wotr-action-models";
 import { WotrEventService } from "./wotr-event-service";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrActionRegistry {
   private eventService = inject(WotrEventService);
 

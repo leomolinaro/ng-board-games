@@ -10,7 +10,7 @@ import { WotrFrontAction } from "./wotr-front-actions";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
 import { WotrFrontStore } from "./wotr-front-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFrontHandler {
   private frontStore = inject(WotrFrontStore);
   private regionStore = inject(WotrRegionStore);

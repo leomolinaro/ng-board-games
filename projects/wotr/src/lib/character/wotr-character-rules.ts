@@ -6,7 +6,7 @@ import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterMovementOptions } from "./wotr-character-ui";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterRules {
   private regionStore = inject(WotrRegionStore);
   private q = inject(WotrGameQuery);

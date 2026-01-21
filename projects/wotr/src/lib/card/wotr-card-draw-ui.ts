@@ -8,7 +8,7 @@ import { WotrStory } from "../game/wotr-story-models";
 import { discardCardIds, drawCardIds } from "./wotr-card-actions";
 import { WotrCardId } from "./wotr-card-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCardDrawUi {
   private ui = inject(WotrGameUi);
   private frontStore = inject(WotrFrontStore);

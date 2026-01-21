@@ -1,9 +1,7 @@
 import { Injectable } from "@angular/core";
 import { WotrSimulation, WotrSimulationDefinition, WotrSimulationInfo } from "./wotr-simulation";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable({ providedIn: "root" })
 export class WotrSimulations {
   private infos: WotrSimulationInfo[];
   private map: Record<string, WotrSimulation>;

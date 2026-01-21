@@ -12,14 +12,14 @@ import {
   WotrPlayerDoc,
   WotrReadPlayerDoc
 } from "../remote/wotr-remote-models";
-import { WotrExampleButton } from "../simulation/wotr-simulation-button";
+import { WotrSimulationButton } from "../simulation/wotr-simulation-button";
 
 @Component({
   selector: "wotr-home-page",
-  imports: [BgHomeModule, WotrExampleButton],
+  imports: [BgHomeModule, WotrSimulationButton],
   template: `
     <bg-home [config]="config"></bg-home>
-    <wotr-example-button></wotr-example-button>
+    <wotr-simulation-button></wotr-simulation-button>
   `,
   styles: [
     `

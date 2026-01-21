@@ -31,8 +31,8 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
 
-@Injectable({ providedIn: "root" })
-export class WotrGameTurn {
+@Injectable()
+export class WotrGameFlow {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private regionStore = inject(WotrRegionStore);

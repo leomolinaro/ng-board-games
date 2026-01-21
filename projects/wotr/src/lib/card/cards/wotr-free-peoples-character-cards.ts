@@ -48,7 +48,7 @@ import { WotrFreePeopleCharacterCardId } from "../wotr-card-models";
 import { WotrCardPlayUi } from "../wotr-card-play-ui";
 import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFreePeoplesCharacterCards {
   private ui = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);

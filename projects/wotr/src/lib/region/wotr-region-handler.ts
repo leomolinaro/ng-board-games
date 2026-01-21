@@ -3,7 +3,7 @@ import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-actio
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrRegionAction } from "./wotr-region-actions";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrRegionHandler {
   private actionRegistry = inject(WotrActionRegistry);
 

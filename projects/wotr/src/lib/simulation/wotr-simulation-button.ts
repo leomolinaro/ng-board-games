@@ -45,7 +45,7 @@ import { WotrSimulations } from "./wotr-simulations";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
-export class WotrExampleButton implements OnDestroy {
+export class WotrSimulationButton implements OnDestroy {
   private auth = inject(BgAuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);

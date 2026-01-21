@@ -47,7 +47,7 @@ import { WotrUnitModifiers } from "./wotr-unit-modifiers";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrUnitUi {
   private ui = inject(WotrGameUi);
   private unitRules = inject(WotrUnitRules);

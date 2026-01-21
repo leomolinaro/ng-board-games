@@ -106,7 +106,7 @@ export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
   character: WotrCharacterId;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrGameUi extends signalStore(
   { protectedState: false },
   withState<WotrGameUiState>(initialState)

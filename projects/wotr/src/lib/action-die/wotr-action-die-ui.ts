@@ -31,9 +31,7 @@ import {
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrActionDieUi {
   private actionDieRules = inject(WotrActionDieRules);
   private actionDieModifiers = inject(WotrActionDieModifiers);

@@ -5,7 +5,7 @@ import { WotrElvenRingAction } from "../game/wotr-story-models";
 import { WotrFrontHandler } from "./wotr-front-handler";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFrontUi {
   private ui = inject(WotrGameUi);
   private frontHandler = inject(WotrFrontHandler);

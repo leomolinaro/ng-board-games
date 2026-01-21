@@ -9,7 +9,7 @@ import { WotrCards } from "./cards/wotr-cards";
 import { playCardId } from "./wotr-card-actions";
 import { getCard, WotrCardId, WotrCardType } from "./wotr-card-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCardPlayUi {
   private frontStore = inject(WotrFrontStore);
   private cards = inject(WotrCards);

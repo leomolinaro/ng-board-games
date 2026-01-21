@@ -7,7 +7,7 @@ import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
 import { WotrPlayer } from "./wotr-player";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFreePeoplesPlayer extends WotrPlayer {
   protected override storyService = inject(WotrStoryService);
   override frontId: WotrFrontId = "free-peoples";

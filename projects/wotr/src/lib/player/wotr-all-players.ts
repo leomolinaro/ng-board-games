@@ -4,7 +4,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrAllPlayers {
   protected storyService = inject(WotrStoryService);
 

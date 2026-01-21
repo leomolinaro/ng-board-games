@@ -18,9 +18,7 @@ interface WotrMapRegionPoint {
 
 const MAX_SLOTS = 5;
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrMapSlotsGenerator {
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },

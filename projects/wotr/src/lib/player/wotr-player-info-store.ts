@@ -14,7 +14,7 @@ export function initialState(): WotrPlayerInfoState {
   };
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrPlayerInfoStore {
   update!: (actionName: string, updater: (a: WotrPlayerInfoState) => WotrPlayerInfoState) => void;
   state!: Signal<WotrPlayerInfoState>;

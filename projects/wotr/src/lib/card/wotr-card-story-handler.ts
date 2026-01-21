@@ -11,7 +11,7 @@ import {
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrCards } from "./cards/wotr-cards";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCardStoryHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);

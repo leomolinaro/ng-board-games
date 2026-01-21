@@ -23,7 +23,7 @@ export type WotrNationActivationSource =
   | "minion-ability"
   | "card-ability";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrNationRules {
   private nationStore = inject(WotrNationStore);
   private nationModifiers = inject(WotrNationModifiers);

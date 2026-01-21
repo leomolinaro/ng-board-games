@@ -3,6 +3,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
+import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { filterActions } from "../game/wotr-story-models";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -22,14 +23,13 @@ import {
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit-models";
 import { WotrUnitUtils } from "./wotr-unit-utils";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
 
 export interface WotrRecruitmentConstraints {
   points: number;
   exludedRegions: Set<WotrRegionId>;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrUnitHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);

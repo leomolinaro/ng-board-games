@@ -43,7 +43,7 @@ import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterAbilities {
   private characters: Partial<Record<WotrCharacterId, WotrCharacterCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};

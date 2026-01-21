@@ -5,9 +5,7 @@ import { WotrGameQuery } from "../game/wotr-game-query";
 import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrUnitUtils {
   q!: WotrGameQuery;
 

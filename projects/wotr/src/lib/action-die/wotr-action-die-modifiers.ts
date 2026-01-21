@@ -20,7 +20,7 @@ export type WotrAfterActionDieCardResolution = (
   frontId: WotrFrontId
 ) => Promise<void>;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrActionDieModifiers {
   public readonly actionDieChoices = new WotrModifier<WotrActionDieChoiceModifier>();
   public getActionDieChoices(die: WotrActionDie, frontId: WotrFrontId): WotrUiChoice[] {

@@ -44,7 +44,7 @@ export interface WotrCharacterMovementOptions {
   canEndInSiege?: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterUi {
   private regionStore = inject(WotrRegionStore);
   private characterRules = inject(WotrCharacterRules);

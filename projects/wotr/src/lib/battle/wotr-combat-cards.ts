@@ -56,7 +56,7 @@ export interface WotrCombatCardAbility {
   play: () => Promise<WotrAction[]>;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCombatCards {
   private unitHandler = inject(WotrUnitHandler);
   private unitUtils = inject(WotrUnitUtils);

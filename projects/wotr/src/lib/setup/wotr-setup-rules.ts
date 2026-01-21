@@ -38,9 +38,7 @@ export interface WotrFellowshipSetup {
   guide: WotrCompanionId;
 }
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrSetupRules {
   private cards = inject(WotrCardUtils);
 

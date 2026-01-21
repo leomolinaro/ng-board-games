@@ -17,7 +17,7 @@ import {
 import { WotrUnitModifiers } from "./wotr-unit-modifiers";
 import { WotrUnitUtils } from "./wotr-unit-utils";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrUnitRules {
   private regionStore = inject(WotrRegionStore);
   private nationStore = inject(WotrNationStore);

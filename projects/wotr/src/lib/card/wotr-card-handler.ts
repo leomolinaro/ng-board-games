@@ -16,7 +16,7 @@ import {
 } from "./wotr-card-actions";
 import { WotrCardId, cardToLabel, isFreePeoplesCard } from "./wotr-card-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCardHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);

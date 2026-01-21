@@ -9,7 +9,7 @@ import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationAdvanceSource, WotrNationRules } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrNationUi {
   private ui = inject(WotrGameUi);
   private nation = inject(WotrNationStore);

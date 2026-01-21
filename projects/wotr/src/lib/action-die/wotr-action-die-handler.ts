@@ -19,7 +19,7 @@ import { WotrActionDieAction } from "./wotr-action-die-actions";
 import { WotrActionDie } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrActionDieHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);

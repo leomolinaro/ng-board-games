@@ -15,7 +15,7 @@ export type WotrHuntEffectChoiceModifier = (
   params: WotrHuntEffectParams
 ) => WotrUiChoice<WotrHuntEffectParams>[];
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrHuntModifiers {
   public readonly afterTileDrawn = new WotrModifier<WotrAfterTileDrawn>();
   async onAfterTileDrawn(tile: WotrHuntTileId): Promise<WotrHuntTileId> {

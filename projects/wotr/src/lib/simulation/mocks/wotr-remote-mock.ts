@@ -1,13 +1,11 @@
 import { Injectable, inject } from "@angular/core";
 import { BgCloudCollectionQuery } from "@leobg/commons";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { WotrStoryDoc } from "../../game/wotr-story-models";
 import { WotrGameDoc, WotrPlayerDoc } from "../../remote/wotr-remote-models";
 import { WotrSimulations } from "../wotr-simulations";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable()
 export class WotrRemoteMock {
   private examples = inject(WotrSimulations);
 
@@ -32,8 +30,8 @@ export class WotrRemoteMock {
     queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined
   ): Promise<WotrPlayerDoc[]> {
     return [
-      { id: "free-peoples", name: "FP", controller: {} },
-      { id: "shadow", name: "S", controller: {} }
+      { id: "free-peoples", name: "FP", controller: { id: "me" } },
+      { id: "shadow", name: "S", controller: { id: "me" } }
     ] as any;
   }
   selectPlayers$(gameId: string, queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined): any {
@@ -71,7 +69,8 @@ export class WotrRemoteMock {
     throw new Error("Mock remote");
   }
   insertStory$(storyId: string, story: WotrStoryDoc, gameId: string): any {
-    throw new Error("Mock remote");
+    // throw new Error("Mock remote");
+    return of(null);
   }
   deleteStory$(storyId: string, gameId: string): any {
     throw new Error("Mock remote");

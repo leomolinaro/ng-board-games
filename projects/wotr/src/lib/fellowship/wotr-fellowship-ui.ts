@@ -23,7 +23,7 @@ interface WotrSeparateCompanionsOptions {
   canEndInSiege?: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private ui = inject(WotrGameUi);

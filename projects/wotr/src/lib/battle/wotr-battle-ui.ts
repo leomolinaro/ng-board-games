@@ -39,7 +39,7 @@ import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardAbility, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrBattleUi {
   private ui = inject(WotrGameUi);
   private battleStore = inject(WotrBattleStore);

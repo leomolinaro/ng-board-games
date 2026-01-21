@@ -4,7 +4,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 
 export type WotrAfterFellowshipDeclaration = (regionId: WotrRegionId) => Promise<void>;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFellowshipModifiers {
   public readonly afterDeclaration = new WotrModifier<WotrAfterFellowshipDeclaration>();
   async onAfterFellowshipDeclaration(regionId: WotrRegionId): Promise<void> {

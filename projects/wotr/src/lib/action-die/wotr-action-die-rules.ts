@@ -6,7 +6,7 @@ import { WotrNationRules } from "../nation/wotr-nation-rules";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrActionToken } from "./wotr-action-die-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrActionDieRules {
   private huntStore = inject(WotrHuntStore);
   private nationRules = inject(WotrNationRules);

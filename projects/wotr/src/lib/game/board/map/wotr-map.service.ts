@@ -51,9 +51,7 @@ const controlMarkerPoints: Partial<Record<WotrRegionId, WotrMapPoint>> = {
   "far-harad": { x: 478, y: 360 }
 };
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable({ providedIn: "root" })
 export class WotrMapService {
   private http = inject(HttpClient);
   private assets = inject(WotrAssetsStore);

@@ -8,7 +8,7 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrPlayerAi implements WotrPlayerStoryService {
   private game = inject(WotrGameStore);
 

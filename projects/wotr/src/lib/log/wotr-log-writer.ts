@@ -9,7 +9,7 @@ import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLog, WotrLogFragment } from "./wotr-log-models";
 import { WotrLogStore } from "./wotr-log-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrLogWriter {
   private logStore = inject(WotrLogStore);
   private battleStore = inject(WotrBattleStore);

@@ -35,7 +35,7 @@ import { WotrHuntEffectParams } from "./wotr-hunt-models";
 import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrHuntUi {
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);

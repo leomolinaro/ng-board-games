@@ -14,9 +14,7 @@ export interface WotrUnitImage {
   height: number;
 }
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable({ providedIn: "root" })
 export class WotrAssetsStore {
   constructor() {
     this.init();

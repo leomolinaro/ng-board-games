@@ -27,7 +27,7 @@ import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/w
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrPlayerUi implements WotrPlayerStoryService {
   private actionDieUi = inject(WotrActionDieUi);
   private battleUi = inject(WotrBattleUi);

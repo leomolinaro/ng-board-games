@@ -45,7 +45,7 @@ import { WotrCardHandler } from "../wotr-card-handler";
 import { WotrShadowStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrShadowStrategyCards {
   private q = inject(WotrGameQuery);
   private ui = inject(WotrGameUi);

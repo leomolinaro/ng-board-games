@@ -3,6 +3,7 @@ import { WotrArmyAttack } from "../battle/wotr-battle-actions";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrLogWriter } from "../log/wotr-log-writer";
@@ -18,9 +19,8 @@ import { WotrNationId } from "./wotr-nation-models";
 import { WotrNationModifiers } from "./wotr-nation-modifiers";
 import { WotrNationActivationSource, WotrNationAdvanceSource } from "./wotr-nation-rules";
 import { WotrNationStore } from "./wotr-nation-store";
-import { WotrGameQuery } from "../game/wotr-game-query";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrNationHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);

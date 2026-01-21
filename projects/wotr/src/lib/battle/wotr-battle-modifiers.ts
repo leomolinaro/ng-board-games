@@ -9,7 +9,7 @@ export type WotrCanUseCombatCardModifier = (
   combatRound: WotrCombatRound
 ) => boolean;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrBattleModifiers {
   public readonly beforeCombatRound = new WotrModifier<WotrBeforeCombatRound>();
   async onBeforeCombatRound(combatRound: WotrCombatRound): Promise<void> {

@@ -114,7 +114,7 @@ function initialMinion(
   return character;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterStore {
   update!: (actionName: string, updater: (a: WotrCharacterState) => WotrCharacterState) => void;
   state!: Signal<WotrCharacterState>;

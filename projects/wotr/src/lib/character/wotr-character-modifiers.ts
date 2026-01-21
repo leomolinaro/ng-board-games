@@ -5,7 +5,7 @@ import { WotrCharacterId } from "./wotr-character-models";
 export type WotrBeforeCharacterElimination = (characterId: WotrCharacterId) => Promise<boolean>;
 export type WotrAfterCharacterElimination = (characterId: WotrCharacterId) => Promise<void>;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterModifiers {
   public readonly beforeCharacterElimination = new WotrModifier<WotrBeforeCharacterElimination>();
   async onBeforeCharacterElimination(characterId: WotrCharacterId): Promise<boolean> {

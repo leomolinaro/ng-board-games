@@ -80,7 +80,7 @@ function initialeState(): WotrGameState {
   };
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrGameStore extends signalStore(
   { protectedState: false },
   withDevtools("WotrGameStore"),

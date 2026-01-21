@@ -44,7 +44,7 @@ import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrBattleHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);

@@ -32,7 +32,7 @@ import { WotrCardHandler } from "../wotr-card-handler";
 import { getCard, WotrCard, WotrCardId, WotrFreePeopleStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFreePeoplesStrategyCards {
   private ui = inject(WotrGameUi);
   private cardDrawUi = inject(WotrCardDrawUi);

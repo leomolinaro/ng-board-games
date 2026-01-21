@@ -6,7 +6,7 @@ import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayer } from "./wotr-player";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrShadowPlayer extends WotrPlayer {
   protected override storyService = inject(WotrStoryService);
   override frontId: WotrFrontId = "shadow";

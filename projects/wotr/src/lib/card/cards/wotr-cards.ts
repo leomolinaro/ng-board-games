@@ -34,7 +34,7 @@ export interface WotrCardParams {
   // isAttacker: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCards {
   private cards: Partial<Record<WotrCardId, WotrEventCard>> = {};
   private abilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};

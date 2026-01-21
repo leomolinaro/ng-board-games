@@ -12,7 +12,7 @@ export type WotrCanMoveIntoRegionModifier = (
 ) => boolean;
 export type WotrCanAttackRegionModifier = (regionId: WotrRegionId, frontId: WotrFrontId) => boolean;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrUnitModifiers {
   public readonly leaderModifier = new WotrModifier<WotrLeaderModifier>();
 

@@ -15,7 +15,7 @@ import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrGameQuery {
   private characterStore = inject(WotrCharacterStore);
   private regionStore = inject(WotrRegionStore);

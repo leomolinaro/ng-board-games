@@ -9,7 +9,7 @@ export function initialeState(): WotrBattleState {
   return null;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrBattleStore {
   update!: (actionName: string, updater: (a: WotrBattleState) => WotrBattleState) => void;
   state!: Signal<WotrBattleState | null>;

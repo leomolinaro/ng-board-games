@@ -66,7 +66,7 @@ import {
 } from "../wotr-card-models";
 import { activateTableCard, WotrEventCard } from "./wotr-cards";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrShadowCharacterCards {
   private q = inject(WotrGameQuery);
   private ui = inject(WotrGameUi);

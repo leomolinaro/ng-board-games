@@ -7,7 +7,7 @@ import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrHuntAction } from "./wotr-hunt-actions";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrHuntHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private huntStore = inject(WotrHuntStore);

@@ -31,7 +31,7 @@ import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacterAbilities } from "./wotr-characters";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrCharacterHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);

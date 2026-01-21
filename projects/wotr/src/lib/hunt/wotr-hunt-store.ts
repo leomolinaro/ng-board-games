@@ -63,7 +63,7 @@ export function initialeState(): WotrHuntState {
   };
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrHuntStore {
   private fellowship = inject(WotrFellowshipStore);
 

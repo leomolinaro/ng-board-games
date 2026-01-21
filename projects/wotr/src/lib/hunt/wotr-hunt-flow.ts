@@ -47,7 +47,7 @@ type HuntEffect =
   | WotrFellowshipRevealInMordor
   | WotrCardDiscardFromTable;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrHuntFlow {
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);

@@ -23,7 +23,7 @@ export type WotrAfterNationActivation = (
   source: WotrNationActivationSource
 ) => void;
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrNationModifiers {
   public readonly canAdvanceNationModifier = new WotrModifier<WotrCanAdvanceNationModifier>();
   public canAdvanceNation(nationId: WotrNationId, source: WotrNationAdvanceSource): boolean {

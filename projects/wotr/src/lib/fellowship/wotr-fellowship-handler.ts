@@ -20,7 +20,7 @@ import { WotrRingDestroyed } from "./wotr-fellowship-models";
 import { WotrFellowshipModifiers } from "./wotr-fellowship-modifiers";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class WotrFellowshipHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);
