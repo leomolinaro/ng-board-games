@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  Injector,
   model,
   output,
   signal
@@ -124,6 +125,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
 })
 export class WotrBoard {
   private dialog = inject(MatDialog);
+  private injector = inject(Injector);
 
   protected regionStore = inject(WotrRegionStore);
   protected frontStore = inject(WotrFrontStore);
@@ -240,6 +242,7 @@ export class WotrBoard {
         cardIds,
         selectableCards
       },
+      injector: this.injector,
       panelClass: "wotr-cards-overlay-panel",
       width: "100%",
       maxWidth: "100%"
@@ -264,6 +267,7 @@ export class WotrBoard {
       WotrRegionDialogResult
     >(WotrRegionDialog, {
       data,
+      injector: this.injector,
       panelClass: "mat-typography"
     });
     const result = await firstValueFrom(this.regionDialogRef.afterClosed());
@@ -302,7 +306,7 @@ export class WotrBoard {
       WotrFellowshipDialog,
       WotrFellowshipDialogData,
       WotrFellowshipDialogResult
-    >(WotrFellowshipDialog, { data, panelClass: "mat-typography" });
+    >(WotrFellowshipDialog, { data, injector: this.injector, panelClass: "mat-typography" });
     const result = await firstValueFrom(this.fellowshipDialogRef.afterClosed());
     this.fellowshipDialogRef = null;
     if (result) {

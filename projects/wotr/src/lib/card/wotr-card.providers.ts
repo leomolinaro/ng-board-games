@@ -1,6 +1,6 @@
 import { Provider } from "@angular/core";
+import { WotrFreePeoplesCharacterCards } from "./cards/free-peoples-character-cards/wotr-free-peoples-character-cards";
 import { WotrCards } from "./cards/wotr-cards";
-import { WotrFreePeoplesCharacterCards } from "./cards/wotr-free-peoples-character-cards";
 import { WotrFreePeoplesStrategyCards } from "./cards/wotr-free-peoples-strategy-cards";
 import { WotrShadowCharacterCards } from "./cards/wotr-shadow-character-cards";
 import { WotrShadowStrategyCards } from "./cards/wotr-shadow-strategy-cards";

@@ -1,52 +1,52 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
-import { changeActionDie } from "../../action-die/wotr-action-die-actions";
-import { WotrActionDieHandler } from "../../action-die/wotr-action-die-handler";
-import { rollCombatDice, WotrCombatRoll } from "../../battle/wotr-battle-actions";
-import { WotrBattleUi } from "../../battle/wotr-battle-ui";
+import { WotrAbility, WotrUiAbility } from "../../../ability/wotr-ability";
+import { changeActionDie } from "../../../action-die/wotr-action-die-actions";
+import { WotrActionDieHandler } from "../../../action-die/wotr-action-die-handler";
+import { rollCombatDice, WotrCombatRoll } from "../../../battle/wotr-battle-actions";
+import { WotrBattleUi } from "../../../battle/wotr-battle-ui";
 import {
   eliminateCharacter,
   moveCharacters,
   WotrCharacterMovement
-} from "../../character/wotr-character-actions";
-import { WotrCharacterHandler } from "../../character/wotr-character-handler";
-import { WotrCharacterUi } from "../../character/wotr-character-ui";
-import { findAction, WotrAction } from "../../commons/wotr-action-models";
+} from "../../../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../../../character/wotr-character-handler";
+import { WotrCharacterUi } from "../../../character/wotr-character-ui";
+import { findAction, WotrAction } from "../../../commons/wotr-action-models";
 import {
   healFellowship,
   hideFellowship,
   moveFelloswhip
-} from "../../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipHandler } from "../../fellowship/wotr-fellowship-handler";
-import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
-import { WotrFrontStore } from "../../front/wotr-front-store";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
-import { assertAction } from "../../game/wotr-story-models";
-import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
-import { WotrHuntEffectParams, WotrHuntTileId } from "../../hunt/wotr-hunt-models";
+} from "../../../fellowship/wotr-fellowship-actions";
+import { WotrFellowshipHandler } from "../../../fellowship/wotr-fellowship-handler";
+import { WotrFellowshipUi } from "../../../fellowship/wotr-fellowship-ui";
+import { WotrFrontStore } from "../../../front/wotr-front-store";
+import { WotrGameQuery } from "../../../game/wotr-game-query";
+import { WotrGameUi, WotrUiChoice } from "../../../game/wotr-game-ui";
+import { assertAction } from "../../../game/wotr-story-models";
+import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../../hunt/wotr-hunt-actions";
+import { WotrHuntEffectParams, WotrHuntTileId } from "../../../hunt/wotr-hunt-models";
 import {
   WotrAfterTileDrawn,
   WotrHuntEffectChoiceModifier,
   WotrHuntModifiers
-} from "../../hunt/wotr-hunt-modifiers";
-import { WotrHuntStore } from "../../hunt/wotr-hunt-store";
-import { WotrHuntUi } from "../../hunt/wotr-hunt-ui";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
-import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
-import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionQuery } from "../../region/wotr-region-query";
-import { recruitEliteUnit, recruitRegularUnit } from "../../unit/wotr-unit-actions";
-import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
-import { WotrReinforcementUnit } from "../../unit/wotr-unit-models";
-import { WotrUnitUi } from "../../unit/wotr-unit-ui";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { discardCardFromTableById, playCardOnTable } from "../wotr-card-actions";
-import { WotrCardDrawUi } from "../wotr-card-draw-ui";
-import { WotrFreePeopleCharacterCardId } from "../wotr-card-models";
-import { WotrCardPlayUi } from "../wotr-card-play-ui";
-import { activateTableCard, WotrEventCard } from "./wotr-cards";
+} from "../../../hunt/wotr-hunt-modifiers";
+import { WotrHuntStore } from "../../../hunt/wotr-hunt-store";
+import { WotrHuntUi } from "../../../hunt/wotr-hunt-ui";
+import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
+import { WotrRegionId } from "../../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../../region/wotr-region-query";
+import { recruitEliteUnit, recruitRegularUnit } from "../../../unit/wotr-unit-actions";
+import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
+import { WotrReinforcementUnit } from "../../../unit/wotr-unit-models";
+import { WotrUnitUi } from "../../../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
+import { discardCardFromTableById, playCardOnTable } from "../../wotr-card-actions";
+import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
+import { WotrFreePeopleCharacterCardId } from "../../wotr-card-models";
+import { WotrCardPlayUi } from "../../wotr-card-play-ui";
+import { activateTableCard, WotrEventCard } from "../wotr-cards";
 
 @Injectable()
 export class WotrFreePeoplesCharacterCards {
@@ -153,6 +153,7 @@ export class WotrFreePeoplesCharacterCards {
                 return [choice];
               }
             };
+            // const discardAbility: WotrAbility<void> = {
             return [absorbeAbility];
           }
         };

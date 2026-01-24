@@ -4,6 +4,7 @@ import { Observable, of } from "rxjs";
 import { WotrStoryDoc } from "../../game/wotr-story-models";
 import { WotrGameDoc, WotrPlayerDoc } from "../../remote/wotr-remote-models";
 import { WotrSimulations } from "../wotr-simulations";
+import { WotrStoriesBuilder } from "../wotr-story-builder";
 
 @Injectable()
 export class WotrRemoteMock {
@@ -57,7 +58,9 @@ export class WotrRemoteMock {
     gameId: string,
     queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined
   ): Promise<WotrStoryDoc[]> {
-    return (await this.examples.getSimulation(gameId).loadDefinition()).stories;
+    return (await this.examples.getSimulation(gameId).loadDefinition()).stories(
+      new WotrStoriesBuilder()
+    );
   }
   getStory$(storyId: number, gameId: string): any {
     throw new Error("Mock remote");

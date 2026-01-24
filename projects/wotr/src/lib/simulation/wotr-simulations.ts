@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
-import { WotrSimulation, WotrSimulationDefinition, WotrSimulationInfo } from "./wotr-simulation";
+import { cardSimulations } from "../card/wotr-card-simulations";
+import { fullGameSimulations } from "./full-games/wotr-full-game-simulations";
+import { WotrSimulation, WotrSimulationInfo } from "./wotr-simulation";
 
 @Injectable({ providedIn: "root" })
 export class WotrSimulations {
@@ -9,22 +11,15 @@ export class WotrSimulations {
   constructor() {
     this.map = {};
     this.infos = [];
-    this.addSimulation("very-late-minions", "Very Late Minions", () =>
-      import("./list/very-late-minions").then(e => e.simulation)
-    );
-    this.addSimulation("there-is-another-way", "There Is Another Way", () =>
-      import("./list/there-is-another-way").then(e => e.simulation)
-    );
-    this.addSimulation("elven-cloaks-01", "Elven Cloaks 01", () =>
-      import("../card/cards/free-peoples-character-cards/01-elven-cloaks-simulation").then(
-        e => e.simulation01
-      )
-    );
+    this.addSimulations(fullGameSimulations());
+    this.addSimulations(cardSimulations());
   }
 
-  private addSimulation(id: string, name: string, loader: () => Promise<WotrSimulationDefinition>) {
-    this.map[id] = { id, name, loadDefinition: loader };
-    this.infos.push({ id, name });
+  private addSimulations(simulations: WotrSimulation[]) {
+    for (const { id, name, loadDefinition } of simulations) {
+      this.map[id] = { id, name, loadDefinition };
+      this.infos.push({ id, name });
+    }
   }
 
   getSimulationInfos() {

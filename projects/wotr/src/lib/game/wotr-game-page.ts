@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  Injector,
   OnDestroy,
   OnInit,
   inject,
@@ -19,8 +20,8 @@ import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { battleProviders } from "../battle/wotr-battle.providers";
 import { WotrCombatCards } from "../battle/wotr-combat-cards";
+import { WotrFreePeoplesCharacterCards } from "../card/cards/free-peoples-character-cards/wotr-free-peoples-character-cards";
 import { WotrCards } from "../card/cards/wotr-cards";
-import { WotrFreePeoplesCharacterCards } from "../card/cards/wotr-free-peoples-character-cards";
 import { WotrCardHandler } from "../card/wotr-card-handler";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
@@ -140,6 +141,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private router = inject(Router);
 
   private dialog = inject(MatDialog);
+  private injector = inject(Injector);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -238,6 +240,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
       WotrStoriesDialog,
       {
         data,
+        injector: this.injector,
         panelClass: "mat-typography",
         maxHeight: "80vh",
         maxWidth: "80vw"

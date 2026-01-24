@@ -33,6 +33,7 @@ export interface WotrRegionSetup {
 }
 
 export interface WotrFellowshipSetup {
+  progress: number;
   region: WotrRegionId;
   companions: WotrCompanionId[];
   guide: WotrCompanionId;
@@ -45,7 +46,7 @@ export class WotrSetupRules {
   getGameSetup(config: WotrGameConfig): WotrSetup {
     if (config.setup) return config.setup(this);
     return {
-      decks: this.decks(),
+      decks: this.shuffledDecks(),
       regions: [
         this.fpRegionSetup("erebor", "dwarves", 1, 2, 1),
         this.fpRegionSetup("ered-luin", "dwarves", 1, 0, 0),
@@ -84,6 +85,7 @@ export class WotrSetupRules {
         this.sRegionSetup("umbar", "southrons", 3, 0, 0)
       ],
       fellowship: {
+        progress: 0,
         region: "rivendell",
         companions: [
           "gandalf-the-grey",
@@ -101,7 +103,7 @@ export class WotrSetupRules {
     };
   }
 
-  decks(): WotrFrontDecksSetup[] {
+  shuffledDecks(): WotrFrontDecksSetup[] {
     return [
       {
         front: "free-peoples",

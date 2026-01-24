@@ -267,6 +267,7 @@ export class WotrGameFlow {
       this.q.character(companion).setInFellowship();
     }
     this.fellowshipStore.setGuide(setup.fellowship.guide);
+    this.fellowshipStore.setProgress(setup.fellowship.progress);
     this.regionStore.addFellowshipToRegion(setup.fellowship.region);
   }
 }
