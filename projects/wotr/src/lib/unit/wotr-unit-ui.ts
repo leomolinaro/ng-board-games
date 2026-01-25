@@ -701,10 +701,10 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrAction[]> {
+  async faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     actions.push(...(await this.recruitRegularsOrElitesByCard("osgiliath", "gondor", 1)));
-    actions.push(...(await this.recruitLeaderByCard("pelargir", "gondor")));
+    actions.push(...(await this.recruitLeaderByCard("osgiliath", "gondor")));
     return actions;
   }
 }

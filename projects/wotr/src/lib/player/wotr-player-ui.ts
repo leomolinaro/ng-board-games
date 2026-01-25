@@ -264,11 +264,11 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrCardEffectStory> {
+  async faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrCardEffectStory> {
     return {
       type: "card-effect",
       card: cardId,
-      actions: await this.unitUi.faramirsRangesRecruit(cardId)
+      actions: await this.unitUi.faramirsRangersRecruit(cardId)
     };
   }
 }

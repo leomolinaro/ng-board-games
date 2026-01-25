@@ -20,7 +20,7 @@ export class WotrFreePeoplesPlayer extends WotrPlayer {
     return this.storyService.story(this.frontId, p => p.huntEffect(params));
   }
 
-  faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.faramirsRangesRecruit(cardId));
+  faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.faramirsRangersRecruit(cardId));
   }
 }

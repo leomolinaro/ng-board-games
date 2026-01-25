@@ -110,7 +110,7 @@ export type WotrCardLabel =
   | "The Power of Tom Bombadil"
   | "Book of Mazarbul"
   | "The Spirit of Mordor"
-  | "Faramir's Ranges"
+  | "Faramir's Rangers"
   | "Fear! Fire! Foes!"
   | "Wisdom of Elrond"
   | "The Red Arrow"
@@ -425,7 +425,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   },
   fpstr06: {
     id: "fpstr06",
-    label: "Faramir's Ranges",
+    label: "Faramir's Rangers",
     type: "army",
     combatLabel: "Shield-Wall",
     combatTiming: 6

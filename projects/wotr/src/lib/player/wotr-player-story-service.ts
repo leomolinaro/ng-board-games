@@ -68,7 +68,7 @@ export interface WotrPlayerStoryService {
     region: WotrRegionId,
     cardId: WotrCardId
   ): Promise<WotrStory>;
-  faramirsRangesRecruit(cardId: WotrCardId): Promise<WotrStory>;
+  faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;
   // armyMovements$ (nationId: string, playerId: string): Observable<WotrArmyMovements>;
   // battleInitiation$ (nationId: string, playerId: string): Observable<WotrBattleInitiation>;

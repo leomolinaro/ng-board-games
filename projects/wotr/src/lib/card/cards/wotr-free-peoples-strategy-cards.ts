@@ -198,7 +198,7 @@ export class WotrFreePeoplesStrategyCards {
               await this.shadow.chooseCasualties(nHits, chooseRegion.region, params.cardId);
             }
             if (this.q.region("osgiliath").hasArmy("free-peoples")) {
-              this.freePeoples.faramirsRangesRecruit(params.cardId);
+              this.freePeoples.faramirsRangersRecruit(params.cardId);
             }
           }
         };
