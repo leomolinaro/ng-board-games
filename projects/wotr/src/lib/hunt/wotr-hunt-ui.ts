@@ -31,6 +31,7 @@ import {
   rollShelobsLairDie,
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
+import { WotrHuntHandler } from "./wotr-hunt-handler";
 import { WotrHuntEffectParams } from "./wotr-hunt-models";
 import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
@@ -47,6 +48,7 @@ export class WotrHuntUi {
   private huntModifiers = inject(WotrHuntModifiers);
   private cardHandler = inject(WotrCardHandler);
   private fellowshipHandler = inject(WotrFellowshipHandler);
+  private huntHandler = inject(WotrHuntHandler);
 
   private eliminateGuideChoice: WotrUiChoice<WotrHuntEffectParams> = {
     label: () => "Eliminate the guide",
@@ -239,7 +241,8 @@ export class WotrHuntUi {
           damage -= useRing.quantity;
         }
         if (discardTableCard) {
-          damage -= 1; // assume table card absorb 1 damage point
+          damage -= this.huntHandler.cardHuntDamageReduction(discardTableCard.card);
+          params.tableCardsUsed = true;
           this.cardHandler.discardCardFromTable(discardTableCard.card);
         }
         if (gollumRevealing || gollumRevealingInMordor) {

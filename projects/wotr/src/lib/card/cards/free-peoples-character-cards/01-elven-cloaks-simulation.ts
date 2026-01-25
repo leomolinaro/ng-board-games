@@ -10,7 +10,7 @@ export function elvenCloaksSimulations(): WotrSimulation[] {
 const elvenCloaks01: WotrSimulation = {
   id: "elven-cloaks-01",
   name: "Elven Cloaks",
-  description: "Fellowship in region",
+  description: "When Fellowship in a region",
   loadDefinition: () => ({
     setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
@@ -27,7 +27,7 @@ const elvenCloaks01: WotrSimulation = {
 const elvenCloaks02: WotrSimulation = {
   id: "elven-cloaks-02",
   name: "Elven Cloaks",
-  description: "Fellowship on the Mordor track",
+  description: "When Fellowship on the Mordor track",
   loadDefinition: () => ({
     setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(10).build(),
     stories: (b: WotrStoriesBuilder) => [

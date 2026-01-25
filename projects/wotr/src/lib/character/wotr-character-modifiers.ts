@@ -1,9 +1,12 @@
 import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
-import { WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterId, WotrCompanionId } from "./wotr-character-models";
 
 export type WotrBeforeCharacterElimination = (characterId: WotrCharacterId) => Promise<boolean>;
 export type WotrAfterCharacterElimination = (characterId: WotrCharacterId) => Promise<void>;
+export type WotrAfterCompanionLeavingTheFellowship = (
+  companionId: WotrCompanionId
+) => Promise<void>;
 
 @Injectable()
 export class WotrCharacterModifiers {
@@ -17,12 +20,21 @@ export class WotrCharacterModifiers {
   }
 
   public readonly afterCharacterElimination = new WotrModifier<WotrAfterCharacterElimination>();
-  public onAfterCharacterElimination(characterId: WotrCharacterId): void {
-    this.afterCharacterElimination.get().forEach(handler => handler(characterId));
+  public async onAfterCharacterElimination(characterId: WotrCharacterId): Promise<void> {
+    await Promise.all(this.afterCharacterElimination.get().map(handler => handler(characterId)));
+  }
+
+  public readonly afterCompanionLeavingTheFellowship =
+    new WotrModifier<WotrAfterCompanionLeavingTheFellowship>();
+  public async onAfterCompanionLeavingTheFellowship(companionId: WotrCompanionId): Promise<void> {
+    await Promise.all(
+      this.afterCompanionLeavingTheFellowship.get().map(handler => handler(companionId))
+    );
   }
 
   clear() {
     this.beforeCharacterElimination.clear();
     this.afterCharacterElimination.clear();
+    this.afterCompanionLeavingTheFellowship.clear();
   }
 }

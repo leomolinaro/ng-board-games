@@ -23,11 +23,14 @@ import { WotrSimulations } from "./wotr-simulations";
         <mat-icon>bookmark</mat-icon>
       </button>
       <mat-menu #exampleMenu="matMenu">
-        @for (info of simulationInfos; track info.name) {
+        @for (info of simulationInfos; track info.id) {
           <button
             mat-menu-item
             (click)="onGameClick(info)">
-            <span>{{ info.name }}</span>
+            <div>{{ info.name }}</div>
+            @if (info.description) {
+              <div style="font-size: smaller;">{{ info.description }}</div>
+            }
           </button>
         }
       </mat-menu>

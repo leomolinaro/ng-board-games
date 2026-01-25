@@ -16,9 +16,13 @@ export class WotrSimulations {
   }
 
   private addSimulations(simulations: WotrSimulation[]) {
-    for (const { id, name, loadDefinition } of simulations) {
-      this.map[id] = { id, name, loadDefinition };
-      this.infos.push({ id, name });
+    for (const simulation of simulations) {
+      this.map[simulation.id] = simulation;
+      this.infos.push({
+        id: simulation.id,
+        name: simulation.name,
+        description: simulation.description
+      });
     }
   }
 

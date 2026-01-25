@@ -1,6 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -25,6 +26,7 @@ export class WotrFellowshipHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationHandler = inject(WotrNationHandler);
   private fellowshipStore = inject(WotrFellowshipStore);
+  private characterModifiers = inject(WotrCharacterModifiers);
   private regionStore = inject(WotrRegionStore);
   private huntStore = inject(WotrHuntStore);
   private huntFlow = inject(WotrHuntFlow);
@@ -115,11 +117,14 @@ export class WotrFellowshipHandler {
     return `${quantity} corruption point${quantity === 1 ? "" : "s"}`;
   }
 
-  separateCompanions(companions: WotrCompanionId[], toRegionId: WotrRegionId): void {
+  async separateCompanions(companions: WotrCompanionId[], toRegionId: WotrRegionId) {
     for (const companionId of companions) {
       this.fellowshipStore.removeCompanion(companionId);
     }
     this.characterHandler.playCharacters(companions, toRegionId);
+    for (const companionId of companions) {
+      await this.characterModifiers.onAfterCompanionLeavingTheFellowship(companionId);
+    }
   }
 
   corrupt(nCorruption: number) {

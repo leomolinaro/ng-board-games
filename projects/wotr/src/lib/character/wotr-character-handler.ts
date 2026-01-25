@@ -26,7 +26,7 @@ import {
   WotrCharacterElimination,
   WotrGollumEnterFellowship
 } from "./wotr-character-actions";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacter, WotrCharacterId, WotrCompanionId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacterAbilities } from "./wotr-characters";
@@ -120,8 +120,14 @@ export class WotrCharacterHandler {
 
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
     for (const characterId of characters) {
+      const character = this.characterStore.character(characterId);
       this.removeCharacter(characterId);
-      this.characterModifiers.onAfterCharacterElimination(characterId);
+      await this.characterModifiers.onAfterCharacterElimination(characterId);
+      if (character.status === "inFellowship") {
+        await this.characterModifiers.onAfterCompanionLeavingTheFellowship(
+          characterId as WotrCompanionId
+        );
+      }
     }
     await this.checkWornWithSorrowAndToil();
     await this.checkGollumEnterPlay();

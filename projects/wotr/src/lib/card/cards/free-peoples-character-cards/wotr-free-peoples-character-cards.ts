@@ -10,6 +10,10 @@ import {
   WotrCharacterMovement
 } from "../../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../../character/wotr-character-handler";
+import {
+  WotrAfterCompanionLeavingTheFellowship,
+  WotrCharacterModifiers
+} from "../../../character/wotr-character-modifiers";
 import { WotrCharacterUi } from "../../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../../commons/wotr-action-models";
 import {
@@ -42,8 +46,13 @@ import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../../unit/wotr-unit-models";
 import { WotrUnitUi } from "../../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
-import { discardCardFromTableById, playCardOnTable } from "../../wotr-card-actions";
+import {
+  discardCardFromTableById,
+  playCardOnTable,
+  playCardOnTableId
+} from "../../wotr-card-actions";
 import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
+import { WotrCardHandler } from "../../wotr-card-handler";
 import { WotrFreePeopleCharacterCardId } from "../../wotr-card-models";
 import { WotrCardPlayUi } from "../../wotr-card-play-ui";
 import { activateTableCard, WotrEventCard } from "../wotr-cards";
@@ -63,12 +72,14 @@ export class WotrFreePeoplesCharacterCards {
   private fellowshipUi = inject(WotrFellowshipUi);
   private characterUi = inject(WotrCharacterUi);
   private huntModifiers = inject(WotrHuntModifiers);
+  private characterModifiers = inject(WotrCharacterModifiers);
   private huntUi = inject(WotrHuntUi);
   private characterHandler = inject(WotrCharacterHandler);
   private unitUtils = inject(WotrUnitUtils);
   private huntStore = inject(WotrHuntStore);
   private frontStore = inject(WotrFrontStore);
   private actionDieHandler = inject(WotrActionDieHandler);
+  private cardHandler = inject(WotrCardHandler);
 
   createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -100,7 +111,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: async () => [addHuntTile("b-1")]
         };
-      // Mithril Coat and String
+      // Mithril Coat and Sting
       // Play on the table.
       // After the Shadow player draws a Hunt tile, you may discard "Mithril Coat and Sting" to draw a second tile. Apply the effects of the second tile instead of the first one,
       // then return the first tile to the Hunt Pool.
@@ -131,7 +142,7 @@ export class WotrFreePeoplesCharacterCards {
             return [redrawAbility];
           }
         };
-      // TODO Axe and Bow
+      // Axe and Bow
       // Play on the table if Gimli or Legolas are in the Fellowship.
       // After the Shadow player draws a Hunt tile, you may discard "Axe and Bow" to reduce the Hunt damage by one (to a minimum of zero). Any remaining Hunt damage
       // must be confronted normally.
@@ -139,11 +150,12 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha06":
         return {
           canBePlayed: () => this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship(),
-          play: async () => [playCardOnTable("Axe and Bow")],
+          play: async () => [playCardOnTableId("fpcha06")],
           onTableAbilities: () => {
             const absorbeAbility: WotrAbility<WotrHuntEffectChoiceModifier> = {
               modifier: this.huntModifiers.huntEffectChoices,
               handler: params => {
+                if (params.tableCardsUsed) return [];
                 const choice: WotrUiChoice<WotrHuntEffectParams> = {
                   // eslint-disable-next-line quotes, @typescript-eslint/quotes
                   label: () => 'Discard "Axe and Bow"',
@@ -153,11 +165,17 @@ export class WotrFreePeoplesCharacterCards {
                 return [choice];
               }
             };
-            // const discardAbility: WotrAbility<void> = {
-            return [absorbeAbility];
+            const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> = {
+              modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
+              handler: async companionId => {
+                if (this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship()) return;
+                return this.cardHandler.discardCardFromTableEffect("fpcha06");
+              }
+            };
+            return [absorbeAbility, discardAbility];
           }
         };
-      // TODO Horn of Gondor
+      // Horn of Gondor
       // Play on the table if Boromir is in the Fellowship.
       // After the Shadow player draws a Hunt tile, you may discard "Horn of Gondor" to reduce the Hunt damage by one (to a minimum of zero). Any remaining Hunt
       // damage must be confronted normally.
@@ -165,11 +183,29 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha07":
         return {
           canBePlayed: () => this.q.boromir.isInFellowship(),
-          play: async () => [playCardOnTable("Horn of Gondor")],
+          play: async () => [playCardOnTableId("fpcha07")],
           onTableAbilities: () => {
-            const abilities: WotrAbility[] = [];
-            console.error("Horn of Gondor on-table abilities not implemented yet");
-            return abilities;
+            const absorbeAbility: WotrAbility<WotrHuntEffectChoiceModifier> = {
+              modifier: this.huntModifiers.huntEffectChoices,
+              handler: params => {
+                if (params.tableCardsUsed) return [];
+                const choice: WotrUiChoice<WotrHuntEffectParams> = {
+                  // eslint-disable-next-line quotes, @typescript-eslint/quotes
+                  label: () => 'Discard "Horn of Gondor"',
+                  card: () => "fpcha07",
+                  actions: async () => [discardCardFromTableById("fpcha07")]
+                };
+                return [choice];
+              }
+            };
+            const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> = {
+              modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
+              handler: async companionId => {
+                if (this.q.boromir.isInFellowship()) return;
+                return this.cardHandler.discardCardFromTableEffect("fpcha07");
+              }
+            };
+            return [absorbeAbility, discardAbility];
           }
         };
       // TODO Wizard's Staff

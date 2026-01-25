@@ -27,7 +27,8 @@ import {
   WotrHuntShelobsLairRoll,
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
-import { WotrHuntEffectParams, WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
+import { WotrHuntHandler } from "./wotr-hunt-handler";
+import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntModifiers, WotrHuntRollModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
@@ -59,6 +60,7 @@ export class WotrHuntFlow {
   private shadow = inject(WotrShadowPlayer);
   private charactersModifiers = inject(WotrCharacterModifiers);
   private huntModifiers = inject(WotrHuntModifiers);
+  private huntHandler = inject(WotrHuntHandler);
 
   async resolveHunt() {
     this.huntStore.setInProgress(true);
@@ -84,7 +86,8 @@ export class WotrHuntFlow {
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) return;
-    const huntTileId = await this.drawHuntTile(this.shadow);
+    let huntTileId = await this.drawHuntTile(this.shadow);
+    huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
     await this.resolveHuntTile(huntTileId, {
       nSuccesses
     });
@@ -95,9 +98,10 @@ export class WotrHuntFlow {
     const nSuccesses = this.huntStore.nTotalDice();
     let huntTileId = await this.drawHuntTile(this.shadow);
     huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
-    const huntTile = await this.resolveHuntTile(huntTileId, {
+    await this.resolveHuntTile(huntTileId, {
       nSuccesses
     });
+    const huntTile = this.huntStore.huntTile(huntTileId);
     if (!huntTile.stop) {
       this.logger.logMoveInMordor();
       this.fellowshipStore.moveOnMordorTrack();
@@ -107,11 +111,10 @@ export class WotrHuntFlow {
   async resolveHuntTile(
     huntTileId: WotrHuntTileId,
     options: WotrHuntTileResolutionOptions
-  ): Promise<WotrHuntTile> {
+  ): Promise<void> {
     const huntTile = this.huntStore.huntTile(huntTileId);
-    if (options.ignoreEyeTile && huntTile.eye) return huntTile;
-    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special")
-      return huntTile;
+    if (options.ignoreEyeTile && huntTile.eye) return;
+    if (options.ignoreFreePeopleSpecialTile && huntTile.type === "free-people-special") return;
     let damage = 0;
     if (huntTile.eye) {
       damage = options.nSuccesses!;
@@ -170,7 +173,6 @@ export class WotrHuntFlow {
         }
       }
     }
-    return huntTile;
   }
 
   private revealedThroughShadowStronghold(
@@ -259,8 +261,9 @@ export class WotrHuntFlow {
         }
         case "card-discard-from-table": {
           switch (cardToLabel(action.card)) {
-            case "Axe and Bow": {
-              absorbedDamage += 1;
+            case "Axe and Bow":
+            case "Horn of Gondor": {
+              absorbedDamage += this.huntHandler.cardHuntDamageReduction(action.card);
               break;
             }
             default:

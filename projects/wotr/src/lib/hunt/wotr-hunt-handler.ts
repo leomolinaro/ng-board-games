@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { cardToLabel, WotrCardId } from "../card/wotr-card-models";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
@@ -105,5 +106,15 @@ export class WotrHuntHandler {
       this.frontStore.removeActionDie(die, "shadow");
     }
     this.huntStore.addHuntDice(dice.length);
+  }
+
+  cardHuntDamageReduction(cardId: WotrCardId): number {
+    switch (cardToLabel(cardId)) {
+      case "Axe and Bow":
+      case "Horn of Gondor":
+        return 1;
+      default:
+        return 0;
+    }
   }
 }

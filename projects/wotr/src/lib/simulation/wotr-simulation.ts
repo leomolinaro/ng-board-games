@@ -17,4 +17,5 @@ export interface WotrSimulationDefinition {
 export interface WotrSimulationInfo {
   id: string;
   name: string;
+  description?: string;
 }
