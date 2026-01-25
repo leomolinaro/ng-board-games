@@ -964,7 +964,7 @@ export class WotrRegionStore {
       if (distance < maxDistance) {
         const neighbors = this.region(currentRegionId).neighbors;
         for (const neighbor of neighbors) {
-          if (!visited.has(neighbor.id)) {
+          if (!neighbor.impassable && !visited.has(neighbor.id)) {
             visited.add(neighbor.id);
             queue.push({ path: [...path, neighbor.id], distance: distance + 1 });
           }

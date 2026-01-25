@@ -14,6 +14,7 @@ import {
   WotrAfterCompanionLeavingTheFellowship,
   WotrCharacterModifiers
 } from "../../../character/wotr-character-modifiers";
+import { WotrCharacterQuery } from "../../../character/wotr-character-query";
 import { WotrCharacterUi } from "../../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../../commons/wotr-action-models";
 import {
@@ -31,6 +32,7 @@ import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../../hunt/wot
 import { WotrHuntEffectParams, WotrHuntTileId } from "../../../hunt/wotr-hunt-models";
 import {
   WotrAfterTileDrawn,
+  WotrHuntDrawPrevented,
   WotrHuntEffectChoiceModifier,
   WotrHuntModifiers
 } from "../../../hunt/wotr-hunt-modifiers";
@@ -49,11 +51,12 @@ import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
 import {
   discardCardFromTableById,
   playCardOnTable,
-  playCardOnTableId
+  playCardOnTableId,
+  WotrCardDiscardFromTable
 } from "../../wotr-card-actions";
 import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
 import { WotrCardHandler } from "../../wotr-card-handler";
-import { WotrFreePeopleCharacterCardId } from "../../wotr-card-models";
+import { WotrCardId, WotrFreePeopleCharacterCardId } from "../../wotr-card-models";
 import { WotrCardPlayUi } from "../../wotr-card-play-ui";
 import { activateTableCard, WotrEventCard } from "../wotr-cards";
 
@@ -165,13 +168,11 @@ export class WotrFreePeoplesCharacterCards {
                 return [choice];
               }
             };
-            const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> = {
-              modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
-              handler: async companionId => {
-                if (this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship()) return;
-                return this.cardHandler.discardCardFromTableEffect("fpcha06");
-              }
-            };
+            const discardAbility = this.discardCompanionCardAbility(
+              "fpcha06",
+              this.q.gimli,
+              this.q.legolas
+            );
             return [absorbeAbility, discardAbility];
           }
         };
@@ -198,17 +199,11 @@ export class WotrFreePeoplesCharacterCards {
                 return [choice];
               }
             };
-            const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> = {
-              modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
-              handler: async companionId => {
-                if (this.q.boromir.isInFellowship()) return;
-                return this.cardHandler.discardCardFromTableEffect("fpcha07");
-              }
-            };
+            const discardAbility = this.discardCompanionCardAbility("fpcha07", this.q.boromir);
             return [absorbeAbility, discardAbility];
           }
         };
-      // TODO Wizard's Staff
+      // Wizard's Staff
       // Play on the table if Gandalf the Grey is in the Fellowship.
       // You may discard "Wizard's Staff' to prevent the Shadow player from drawing a Hunt tile.
       // You must discard this card from the table immediately if Gandalf the Grey leaves the Fellowship.
@@ -217,9 +212,29 @@ export class WotrFreePeoplesCharacterCards {
           canBePlayed: () => this.q.gandalfTheGrey.isInFellowship(),
           play: async () => [playCardOnTable("Wizard's Staff")],
           onTableAbilities: () => {
-            const abilities: WotrAbility[] = [];
-            console.error("Wizard's Staff on-table abilities not implemented yet");
-            return abilities;
+            const preventAbility: WotrUiAbility<WotrHuntDrawPrevented> = {
+              modifier: this.huntModifiers.huntDrawPrevented,
+              handler: async () => {
+                const actions = await activateTableCard(
+                  preventAbility,
+                  "fpcha08",
+                  this.freePeoples
+                );
+                if (!actions) return false;
+                const discardAction = findAction<WotrCardDiscardFromTable>(
+                  actions,
+                  "card-discard-from-table"
+                );
+                if (!discardAction) throw new Error("Unexpected state: no hunt tile draw action");
+                return true;
+              },
+              play: async () => [discardCardFromTableById("fpcha08")]
+            };
+            const discardAbility = this.discardCompanionCardAbility(
+              "fpcha08",
+              this.q.gandalfTheGrey
+            );
+            return [preventAbility, discardAbility];
           }
         };
       // Athelas
@@ -661,5 +676,16 @@ export class WotrFreePeoplesCharacterCards {
       if (sArmy?.nNazgul) return true;
       return false;
     });
+  }
+
+  private discardCompanionCardAbility(cardId: WotrCardId, ...characters: WotrCharacterQuery[]) {
+    const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> = {
+      modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
+      handler: async companionId => {
+        if (characters.some(c => c.isInFellowship())) return;
+        return this.cardHandler.discardCardFromTableEffect(cardId);
+      }
+    };
+    return discardAbility;
   }
 }

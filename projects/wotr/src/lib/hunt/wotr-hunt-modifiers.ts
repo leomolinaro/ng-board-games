@@ -9,6 +9,8 @@ export class WotrHuntRollModifiers {
 }
 export type WotrBeforeHuntRoll = (modifiers: WotrHuntRollModifiers) => Promise<void>;
 
+export type WotrHuntDrawPrevented = () => Promise<boolean>;
+
 export type WotrAfterTileDrawn = (tile: WotrHuntTileId) => Promise<WotrHuntTileId>;
 
 export type WotrHuntEffectChoiceModifier = (
@@ -17,6 +19,26 @@ export type WotrHuntEffectChoiceModifier = (
 
 @Injectable()
 export class WotrHuntModifiers {
+  public readonly beforeHuntRoll = new WotrModifier<WotrBeforeHuntRoll>();
+  public async onBeforeHuntRoll(modifiers: WotrHuntRollModifiers): Promise<void> {
+    for (const handler of this.beforeHuntRoll.get()) {
+      await handler(modifiers);
+    }
+  }
+
+  public readonly huntDrawPrevented = new WotrModifier<WotrHuntDrawPrevented>();
+  public couldHuntDrawBePrevented(): boolean {
+    return this.huntDrawPrevented.get().length > 0;
+  }
+  public async isHuntDrawPrevented(): Promise<boolean> {
+    for (const handler of this.huntDrawPrevented.get()) {
+      if (await handler()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public readonly afterTileDrawn = new WotrModifier<WotrAfterTileDrawn>();
   async onAfterTileDrawn(tile: WotrHuntTileId): Promise<WotrHuntTileId> {
     if (!this.afterTileDrawn.get().length) return tile;
@@ -33,13 +55,6 @@ export class WotrHuntModifiers {
       .reduce<
         WotrUiChoice<WotrHuntEffectParams>[]
       >((choices, modifier) => choices.concat(modifier(params)), []);
-  }
-
-  public readonly beforeHuntRoll = new WotrModifier<WotrBeforeHuntRoll>();
-  public async onBeforeHuntRoll(modifiers: WotrHuntRollModifiers): Promise<void> {
-    for (const handler of this.beforeHuntRoll.get()) {
-      await handler(modifiers);
-    }
   }
 
   clear() {

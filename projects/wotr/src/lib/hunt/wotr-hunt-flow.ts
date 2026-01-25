@@ -48,6 +48,8 @@ type HuntEffect =
   | WotrFellowshipRevealInMordor
   | WotrCardDiscardFromTable;
 
+// https://boardgamegeek.com/thread/1781537/article/25924689#25924689
+
 @Injectable()
 export class WotrHuntFlow {
   private regionStore = inject(WotrRegionStore);
@@ -86,6 +88,8 @@ export class WotrHuntFlow {
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) return;
+    const prevented = await this.huntModifiers.isHuntDrawPrevented();
+    if (prevented) return;
     let huntTileId = await this.drawHuntTile(this.shadow);
     huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
     await this.resolveHuntTile(huntTileId, {
@@ -95,6 +99,8 @@ export class WotrHuntFlow {
 
   private async resolveHuntOnMordorTrack() {
     this.logger.logHuntResolution();
+    const prevented = await this.huntModifiers.isHuntDrawPrevented();
+    if (prevented) return;
     const nSuccesses = this.huntStore.nTotalDice();
     let huntTileId = await this.drawHuntTile(this.shadow);
     huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
@@ -168,8 +174,11 @@ export class WotrHuntFlow {
         }
         const toRegion = this.regionStore.fellowshipRegion();
         if (this.revealedThroughShadowStronghold(fromRegion, toRegion, progress)) {
-          const newHuntTileId = await this.drawHuntTile(this.shadow);
-          await this.resolveHuntTile(newHuntTileId, options);
+          const prevented = await this.huntModifiers.isHuntDrawPrevented();
+          if (!prevented) {
+            const newHuntTileId = await this.drawHuntTile(this.shadow);
+            await this.resolveHuntTile(newHuntTileId, options);
+          }
         }
       }
     }

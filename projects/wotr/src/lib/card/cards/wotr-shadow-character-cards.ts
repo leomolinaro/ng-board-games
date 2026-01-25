@@ -29,7 +29,7 @@ import {
 import { useElvenRing } from "../../front/wotr-front-actions";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
-import { assertAction } from "../../game/wotr-story-models";
+import { assertAction, WotrStory } from "../../game/wotr-story-models";
 import { addHuntTile, lidlessEye, WotrHuntTileDraw } from "../../hunt/wotr-hunt-actions";
 import { WotrHuntFlow } from "../../hunt/wotr-hunt-flow";
 import { WotrHuntHandler } from "../../hunt/wotr-hunt-handler";
@@ -124,13 +124,23 @@ export class WotrShadowCharacterCards {
       // Orc Patrol
       // Play if the Fellowship is not in a region containing a Free Peoples Settlement.
       // Draw a Hunt tile.
-      // If the tile shows an Eye or is a Fellowship Special tile, discard it without effect. Otherwise, follow the rules for a successful Hunt.
+      // If the tile shows an Eye or is a Fellowship Special tile, discard it without effect.
+      // Otherwise, follow the rules for a successful Hunt.
       case "scha05":
         return {
           canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
-          play: async () => [await this.huntUi.drawHuntTile()],
+          play: async () => {
+            if (this.huntModifiers.couldHuntDrawBePrevented()) return [];
+            return [await this.huntUi.drawHuntTile()];
+          },
           effect: async params => {
-            const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+            let story: WotrStory = params.story;
+            if (this.huntModifiers.couldHuntDrawBePrevented()) {
+              const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+              if (isPrevented) return;
+              story = await this.shadow.drawHuntTile();
+            }
+            const action = assertAction<WotrHuntTileDraw>(story, "hunt-tile-draw");
             await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true
@@ -145,9 +155,18 @@ export class WotrShadowCharacterCards {
       case "scha06":
         return {
           canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
-          play: async () => [await this.huntUi.drawHuntTile()],
+          play: async () => {
+            if (this.huntModifiers.couldHuntDrawBePrevented()) return [];
+            return [await this.huntUi.drawHuntTile()];
+          },
           effect: async params => {
-            const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+            let story: WotrStory = params.story;
+            if (this.huntModifiers.couldHuntDrawBePrevented()) {
+              const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+              if (isPrevented) return;
+              story = await this.shadow.drawHuntTile();
+            }
+            const action = assertAction<WotrHuntTileDraw>(story, "hunt-tile-draw");
             await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true,
@@ -164,12 +183,18 @@ export class WotrShadowCharacterCards {
         return {
           canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
           play: async () => {
+            if (this.huntModifiers.couldHuntDrawBePrevented()) return [];
             const action = await this.huntUi.drawHuntTile();
             return [action];
           },
           effect: async params => {
-            const action = findAction<WotrHuntTileDraw>(params.story.actions, "hunt-tile-draw");
-            if (!action) throw new Error("Unexpected action");
+            let story: WotrStory = params.story;
+            if (this.huntModifiers.couldHuntDrawBePrevented()) {
+              const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+              if (isPrevented) return;
+              story = await this.shadow.drawHuntTile();
+            }
+            const action = assertAction<WotrHuntTileDraw>(story, "hunt-tile-draw");
             await this.huntFlow.resolveHuntTile(action.tiles[0], {
               ignoreEyeTile: true,
               ignoreFreePeopleSpecialTile: true,
@@ -317,7 +342,7 @@ export class WotrShadowCharacterCards {
             }
           }
         };
-      // TODO The Breaking of the Fellowship
+      // The Breaking of the Fellowship
       // Play if the Fellowship is revealed. Draw a Hunt tile.
       // If the tile shows an Eye or is a Fellowship Special tile, discard it without effect.
       // Otherwise, the Free Peoples player must separate a number of Companions equal to the number on the tile (if possible), placing them in the same region as the
@@ -326,10 +351,19 @@ export class WotrShadowCharacterCards {
       // If Gollum is the Guide, add one Corruption point instead
       case "scha14":
         return {
-          canBePlayed: () => false,
-          play: async () => [],
+          canBePlayed: () => this.q.fellowship.isRevealed(),
+          play: async () => {
+            if (this.huntModifiers.couldHuntDrawBePrevented()) return [];
+            return [await this.huntUi.drawHuntTile()];
+          },
           effect: async params => {
-            const action = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
+            let story: WotrStory = params.story;
+            if (this.huntModifiers.couldHuntDrawBePrevented()) {
+              const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+              if (isPrevented) return;
+              story = await this.shadow.drawHuntTile();
+            }
+            const action = assertAction<WotrHuntTileDraw>(story, "hunt-tile-draw");
             const huntTile = this.huntStore.huntTile(action.tiles[0]);
             if (huntTile.eye || huntTile.type === "free-people-special") {
               return;
