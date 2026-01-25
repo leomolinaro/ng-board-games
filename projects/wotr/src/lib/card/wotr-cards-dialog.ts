@@ -115,7 +115,13 @@ export class WotrCardsDialog {
   private assets = inject(WotrAssetsStore);
   private dialogRef = inject(MatDialogRef<WotrCardsDialog, undefined | WotrCardId[]>);
 
-  protected cardIds = this.data.cardIds.slice().reverse();
+  constructor() {
+    this.cardIds = this.data.cardIds.slice();
+    this.cardIds.sort((a, b) => a.localeCompare(b));
+    this.cardIds.reverse();
+  }
+
+  protected cardIds: WotrCardId[];
   protected focusedCardId: WotrCardId | null = this.data.focusedCardId;
   protected cardImage: BgTransformFn<WotrCardId, string> = cardId => this.assets.cardImage(cardId);
 

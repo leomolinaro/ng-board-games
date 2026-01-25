@@ -47,7 +47,7 @@ function initValidUnits(): ValidUnits {
     <mat-tab-group [selectedIndex]="selectedTabIndex()">
       <mat-tab label="Cards">
         <div class="cards">
-          @for (card of handCards(); track card) {
+          @for (card of sortedHandCards(); track card) {
             <img
               class="card-preview-image"
               [src]="card | bgTransform: cardPreviewImage"
@@ -207,7 +207,12 @@ export class WotrFrontArea {
 
   protected tabGroup = viewChild(MatTabGroup);
 
-  protected handCards = computed(() => this.front().handCards);
+  private handCards = computed(() => this.front().handCards);
+  protected sortedHandCards = computed(() => {
+    const cards = this.handCards().slice();
+    cards.sort((a, b) => a.localeCompare(b));
+    return cards;
+  });
 
   protected cardPreviewImage: BgTransformFn<WotrCardId, string> = cardId =>
     this.assets.cardPreviewImage(cardId);
