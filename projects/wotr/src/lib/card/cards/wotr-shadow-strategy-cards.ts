@@ -37,6 +37,7 @@ import {
   upgradeRegularUnit,
   WotrArmyMovement
 } from "../../unit/wotr-unit-actions";
+import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
@@ -59,6 +60,7 @@ export class WotrShadowStrategyCards {
   private cardHandler = inject(WotrCardHandler);
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private battleModifiers = inject(WotrBattleModifiers);
+  private unitHandler = inject(WotrUnitHandler);
 
   private returnToValinorRegions(): WotrRegionId[] {
     return this.q
@@ -563,6 +565,7 @@ export class WotrShadowStrategyCards {
                 regions.map(r => r.id())
               );
               actions.push(upgradeRegularUnit(region, "sauron", 1));
+              this.unitHandler.upgradeRegularUnits(1, "sauron", region);
             }
             return actions;
           }

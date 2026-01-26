@@ -52,10 +52,8 @@ export class WotrUnitHandler {
         this.recruitRegularUnit(action.quantity, action.nation, action.region),
       "regular-unit-elimination": (action, front) =>
         this.eliminateRegularUnit(action.quantity, action.nation, action.region),
-      "regular-unit-upgrade": (action, front) => {
-        this.recruitEliteUnit(action.quantity, action.nation, action.region);
-        this.eliminateRegularUnit(action.quantity, action.nation, action.region);
-      },
+      "regular-unit-upgrade": (action, front) =>
+        this.upgradeRegularUnits(action.quantity, action.nation, action.region),
       "regular-unit-disband": (action, front) =>
         this.disbandRegularUnit(action.quantity, action.nation, action.region),
       "elite-unit-recruitment": (action, front) =>
@@ -148,6 +146,11 @@ export class WotrUnitHandler {
         this.nationStore.addRegularsToReinforcements(quantity, nationId);
         break;
     }
+  }
+
+  upgradeRegularUnits(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    this.recruitEliteUnit(quantity, nationId, regionId);
+    this.eliminateRegularUnit(quantity, nationId, regionId);
   }
 
   disbandRegularUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
