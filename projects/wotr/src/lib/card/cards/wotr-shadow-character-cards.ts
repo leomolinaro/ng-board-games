@@ -381,8 +381,26 @@ export class WotrShadowCharacterCards {
       // You must discard this card from the table immediately if the Fellowship is declared in an unconquered Free Peoples City or Stronghold.
       case "scha15":
         return {
-          canBePlayed: () => false,
-          play: async () => []
+          canBePlayed: () => true,
+          play: async () => [playCardOnTableId("scha15")],
+          onTableAbilities: () => {
+            const casualtyAbility: WotrAbility<WotrAfterCharacterElimination> = {
+              modifier: this.characterModifiers.afterCharacterElimination,
+              handler: async characterId => {
+                console.error("Worn with Sorrow and Toil casualty ability not implemented yet");
+              }
+            };
+            const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> = {
+              modifier: this.fellowshipModifiers.afterDeclaration,
+              handler: async regionId => {
+                const region = this.q.region(regionId);
+                if (!region.isFreePeoplesRegion()) return;
+                if (!region.isCity() && !region.isStronghold()) return;
+                this.cardHandler.discardCardFromTableEffect("scha15");
+              }
+            };
+            return [casualtyAbility, discardAbility];
+          }
         };
       // Flocks of Crebain
       // Play on the table.
