@@ -116,7 +116,7 @@ export class WotrNationHandler {
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
       if (nation.politicalStep !== "atWar") {
-        this.activateNationEffect(region.nationId, "settlement-capture");
+        this.advanceNationEffect(1, region.nationId);
       }
     }
   }

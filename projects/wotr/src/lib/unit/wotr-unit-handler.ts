@@ -88,6 +88,7 @@ export class WotrUnitHandler {
     const toRegion = this.regionStore.region(movement.toRegion);
     if (toRegion.settlement && toRegion.controlledBy !== frontId && !toRegion.underSiegeArmy) {
       this.regionStore.setControlledBy(frontId, movement.toRegion);
+      this.nationHandler.checkNationAdvanceByCapture(movement.toRegion);
       this.frontHandler.refreshVictoryPoints();
     }
   }
