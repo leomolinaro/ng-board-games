@@ -26,8 +26,7 @@ import {
   recruitNazgul,
   recruitRegularUnit,
   WotrArmyMovement,
-  WotrNazgulMovement,
-  WotrRegularUnitRecruitment
+  WotrNazgulMovement
 } from "./wotr-unit-actions";
 import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
 import {
@@ -306,7 +305,7 @@ export class WotrUnitUi {
     type: "regulars" | "elites",
     nMaxRegions: number,
     availableRegionIds: WotrRegionId[]
-  ): Promise<WotrRegularUnitRecruitment[]> {
+  ): Promise<WotrAction[]> {
     const nationQ = this.q.nation(nationId);
     const nReinforcements =
       type === "regulars" ? nationQ.nRegularReinforcements() : nationQ.nEliteReinforcements();
@@ -321,7 +320,7 @@ export class WotrUnitUi {
     let nLeftRegions = Math.min(availableRegionIds.length, nMaxRegions);
     let nLeftUnits = Math.min(nReinforcements, nLeftRegions * nUnitsPerRegion);
     let continuee = true;
-    const actions: WotrRegularUnitRecruitment[] = [];
+    const actions: WotrAction[] = [];
     do {
       const regionId = await this.ui.askRegion(
         `Select a region to recruit ${type} units`,
@@ -344,8 +343,13 @@ export class WotrUnitUi {
         }
       }
 
-      actions.push(recruitRegularUnit(regionId, nationId, nUnits));
-      this.unitHandler.recruitRegularUnit(nUnits, nationId, regionId);
+      if (type === "regulars") {
+        actions.push(recruitRegularUnit(regionId, nationId, nUnits));
+        this.unitHandler.recruitRegularUnit(nUnits, nationId, regionId);
+      } else {
+        actions.push(recruitEliteUnit(regionId, nationId, nUnits));
+        this.unitHandler.recruitEliteUnit(nUnits, nationId, regionId);
+      }
 
       availableRegionIds = availableRegionIds.filter(r => r !== regionId);
       nLeftRegions--;
