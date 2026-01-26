@@ -666,7 +666,7 @@ export class WotrCombatCards {
           {
             cardId: card.id,
             frontId: "shadow",
-            regionId: params.regionId,
+            regionId: params.shadow.regionId,
             onlyNazgul: true,
             points: 1
           },
