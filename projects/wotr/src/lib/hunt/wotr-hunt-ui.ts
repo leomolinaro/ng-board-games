@@ -13,6 +13,7 @@ import {
   revealFellowship,
   revealFellowshipInMordor,
   WotrCompanionRandom,
+  WotrCompanionSeparation,
   WotrFellowshipCorruption,
   WotrFellowshipReveal,
   WotrFellowshipRevealInMordor
@@ -227,6 +228,10 @@ export class WotrHuntUi {
         chosenActions,
         "fellowship-reveal-in-mordor"
       );
+      const hobbitGuideSeparation = findAction<WotrCompanionSeparation>(
+        chosenActions,
+        "companion-separation"
+      );
       if (randomCompanion) {
         continuee = false;
       } else {
@@ -236,6 +241,9 @@ export class WotrHuntUi {
             0
           );
           casualtyTaken = true;
+        }
+        if (hobbitGuideSeparation) {
+          damage -= 1;
         }
         if (useRing) {
           damage -= useRing.quantity;

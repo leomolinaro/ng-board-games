@@ -12,6 +12,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -26,7 +27,7 @@ import {
 import { CaptainOfTheWestAbility } from "./characters/commons";
 import { GandalfGuideAbility } from "./characters/gandalf-the-grey";
 import { WotrGandalfTheWhite } from "./characters/gandalf-the-white";
-import { TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
+import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
   ServantsOfTheWhiteHandAbility,
   TheVoiceOfSarumanAbility,
@@ -63,6 +64,7 @@ export class WotrCharacterAbilities {
   private fellowshipUi = inject(WotrFellowshipUi);
   actionDieUi!: WotrActionDieUi;
   private gameStore = inject(WotrGameStore);
+  private huntModifiers = inject(WotrHuntModifiers);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
@@ -128,7 +130,7 @@ export class WotrCharacterAbilities {
         ];
       case "peregrin":
         return [
-          // new GuideAbility(null as any),
+          new HobbitGuideAbility("peregrin", this.q, this.huntModifiers, this.fellowshipUi),
           new TakeThemAliveAbility(
             "peregrin",
             this.q,
@@ -139,7 +141,7 @@ export class WotrCharacterAbilities {
         ];
       case "meriadoc":
         return [
-          // new GuideAbility(null as any),
+          new HobbitGuideAbility("meriadoc", this.q, this.huntModifiers, this.fellowshipUi),
           new TakeThemAliveAbility(
             "meriadoc",
             this.q,

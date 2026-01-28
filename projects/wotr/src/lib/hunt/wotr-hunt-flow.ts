@@ -44,6 +44,7 @@ type HuntEffect =
   | WotrFellowshipCorruption
   | WotrCharacterElimination
   | WotrCompanionRandom
+  | WotrCompanionSeparation // hobbit guide ability
   | WotrFellowshipReveal
   | WotrFellowshipRevealInMordor
   | WotrCardDiscardFromTable;
@@ -246,6 +247,10 @@ export class WotrHuntFlow {
           params.casualtyTaken = true;
           break;
         }
+        case "companion-separation": {
+          absorbedDamage += 1;
+          break;
+        }
         case "fellowship-reveal":
         case "fellowship-reveal-in-mordor": {
           if (this.fellowshipStore.guide() === "gollum") {
@@ -296,6 +301,7 @@ export class WotrHuntFlow {
       story,
       "fellowship-corruption",
       "character-elimination",
+      "companion-separation",
       "companion-random",
       "fellowship-reveal",
       "fellowship-reveal-in-mordor",

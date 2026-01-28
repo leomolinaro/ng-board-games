@@ -125,6 +125,7 @@ export class WotrFellowshipHandler {
     for (const companionId of companions) {
       await this.characterModifiers.onAfterCompanionLeavingTheFellowship(companionId);
     }
+    this.characterHandler.checkGollumEnterPlay();
   }
 
   corrupt(nCorruption: number) {

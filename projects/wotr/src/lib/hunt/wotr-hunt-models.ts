@@ -34,7 +34,6 @@ export interface WotrHuntEffectParams {
   casualtyTaken?: true;
   onlyRingAbsorbtion?: true;
   mustEliminateRandomCompanion?: true;
-  cardReduction?: number;
 }
 
 export class WotrRingBearerCorrupted extends Error {

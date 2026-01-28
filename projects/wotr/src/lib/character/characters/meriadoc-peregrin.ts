@@ -2,6 +2,9 @@ import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
+import { WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrHuntEffectParams } from "../../hunt/wotr-hunt-models";
+import { WotrHuntEffectChoiceModifier, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrCharacterId, WotrCompanionId } from "../wotr-character-models";
 import {
@@ -20,9 +23,27 @@ import { activateCharacterAbility } from "./wotr-character-card";
 // Take Them Alive! If Peregrin is eliminated while in the Fellowship, immediately place him in play again as if he was just separated from the Fellowship. This special
 // ability cannot be used if the Fellowship is on the Mordor Track.
 
-export class HobbitGuideAbility implements WotrAbility<unknown> {
-  public modifier = null as any;
-  public handler = null;
+export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModifier> {
+  constructor(
+    private characterId: WotrCompanionId,
+    private q: WotrGameQuery,
+    private huntModifiers: WotrHuntModifiers,
+    private fellowshipUi: WotrFellowshipUi
+  ) {}
+
+  modifier = this.huntModifiers.huntEffectChoices;
+
+  public handler: WotrHuntEffectChoiceModifier = params => {
+    if (!this.q.character(this.characterId).isInFellowship()) return [];
+    if (this.q.fellowship.isOnMordorTrack()) return [];
+    if (params.damage < 1) return [];
+    const choice: WotrUiChoice<WotrHuntEffectParams> = {
+      character: this.characterId,
+      actions: async () => this.fellowshipUi.separateThoseCompanions([this.characterId]),
+      label: () => `Separate ${this.characterId === "meriadoc" ? "Meriadoc" : "Peregrin"}`
+    };
+    return [choice];
+  };
 }
 
 export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterElimination> {

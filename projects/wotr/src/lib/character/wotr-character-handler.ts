@@ -133,7 +133,7 @@ export class WotrCharacterHandler {
     await this.checkGollumEnterPlay();
   }
 
-  private async checkGollumEnterPlay() {
+  async checkGollumEnterPlay() {
     if (this.q.fellowship.hasCompanions()) return;
     if (!this.q.gollum.isAvailable()) return;
     this.fellowshipStore.setGuide("gollum");
