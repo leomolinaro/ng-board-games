@@ -30,10 +30,10 @@ import {
   moveArmy
 } from "../../unit/wotr-unit-actions";
 import { elite, nazgul, regular } from "../../unit/wotr-unit-models";
-import { WotrSimulationDefinition } from "../wotr-simulation";
+import { WotrScenarioDefinition } from "../wotr-scenario";
 import { WotrStoriesBuilder } from "../wotr-story-builder";
 
-export const simulation: WotrSimulationDefinition = {
+export const scenario: WotrScenarioDefinition = {
   stories: (b: WotrStoriesBuilder) => [
     // Turn 1
     b.fpT().firstPhaseDraw("Swords in Eriador", "Challenge of the King"),

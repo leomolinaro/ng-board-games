@@ -4,12 +4,12 @@ import {
   revealFellowship
 } from "../../../fellowship/wotr-fellowship-actions";
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
+import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
-import { WotrSimulation } from "../../../simulation/wotr-simulation";
-import { WotrStoriesBuilder } from "../../../simulation/wotr-story-builder";
 import { playCardOnTable } from "../../wotr-card-actions";
 
-export function wizardsStaff(): WotrSimulation[] {
+export function wizardsStaff(): WotrScenario[] {
   return [
     wizardsStaff01,
     wizardsStaff02,
@@ -22,7 +22,7 @@ export function wizardsStaff(): WotrSimulation[] {
   ];
 }
 
-const wizardsStaff01: WotrSimulation = {
+const wizardsStaff01: WotrScenario = {
   id: "wizards-staff-01",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after a standard hunt in a region",
@@ -42,7 +42,7 @@ const wizardsStaff01: WotrSimulation = {
   })
 };
 
-const wizardsStaff02: WotrSimulation = {
+const wizardsStaff02: WotrScenario = {
   id: "wizards-staff-02",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after a hunt in Mordor",
@@ -61,7 +61,7 @@ const wizardsStaff02: WotrSimulation = {
   })
 };
 
-const wizardsStaff03: WotrSimulation = {
+const wizardsStaff03: WotrScenario = {
   id: "wizards-staff-03",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after the Fellowship is revealed in a Stronghold",
@@ -84,7 +84,7 @@ const wizardsStaff03: WotrSimulation = {
   })
 };
 
-const wizardsStaff04: WotrSimulation = {
+const wizardsStaff04: WotrScenario = {
   id: "wizards-staff-04",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Orc Patrol",
@@ -103,7 +103,7 @@ const wizardsStaff04: WotrSimulation = {
   })
 };
 
-const wizardsStaff05: WotrSimulation = {
+const wizardsStaff05: WotrScenario = {
   id: "wizards-staff-05",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Isildur's Bane",
@@ -122,7 +122,7 @@ const wizardsStaff05: WotrSimulation = {
   })
 };
 
-const wizardsStaff06: WotrSimulation = {
+const wizardsStaff06: WotrScenario = {
   id: "wizards-staff-06",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Foul Thing from the Deep",
@@ -141,7 +141,7 @@ const wizardsStaff06: WotrSimulation = {
   })
 };
 
-const wizardsStaff07: WotrSimulation = {
+const wizardsStaff07: WotrScenario = {
   id: "wizards-staff-07",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to The Breaking of the Fellowship",
@@ -166,7 +166,7 @@ const wizardsStaff07: WotrSimulation = {
   })
 };
 
-const wizardsStaff08: WotrSimulation = {
+const wizardsStaff08: WotrScenario = {
   id: "wizards-staff-08",
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Balrog of Moria",

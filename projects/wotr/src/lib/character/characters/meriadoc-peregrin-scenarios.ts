@@ -1,13 +1,13 @@
 import { moveFelloswhip } from "../../fellowship/wotr-fellowship-actions";
+import { WotrScenario } from "../../scenario/wotr-scenario";
+import { WotrStoriesBuilder } from "../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../setup/wotr-setup-builder";
-import { WotrSimulation } from "../../simulation/wotr-simulation";
-import { WotrStoriesBuilder } from "../../simulation/wotr-story-builder";
 
-export function meriadocPeregrinSimulations(): WotrSimulation[] {
+export function meriadocPeregrinScenarios(): WotrScenario[] {
   return [meriadocPeregrin01];
 }
 
-const meriadocPeregrin01: WotrSimulation = {
+const meriadocPeregrin01: WotrScenario = {
   id: "meriadoc-peregrin-01",
   name: "Meriadoc and Peregrin",
   description:

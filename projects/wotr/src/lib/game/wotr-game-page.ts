@@ -53,8 +53,8 @@ import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { regionProviders } from "../region/wotr-region.providers";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import { WotrPlayerDoc } from "../remote/wotr-remote-models";
+import { scenarioProviders } from "../scenario/wotr-scenario-providers";
 import { setupProviders } from "../setup/wotr-setup.providers";
-import { simulationProviders } from "../simulation/wotr-simulation.providers";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
@@ -106,7 +106,7 @@ import { WotrStoryService } from "./wotr-story-service";
     ...playerProviders,
     ...regionProviders,
     ...setupProviders,
-    ...simulationProviders,
+    ...scenarioProviders,
     ...unitProviders
   ]
 })

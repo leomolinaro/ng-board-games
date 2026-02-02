@@ -2,19 +2,19 @@ import { WotrStoryDoc } from "../game/wotr-story-models";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
 
-export interface WotrSimulation {
+export interface WotrScenario {
   id: string;
   name: string;
   description?: string;
-  loadDefinition: () => WotrSimulationDefinition;
+  loadDefinition: () => WotrScenarioDefinition;
 }
 
-export interface WotrSimulationDefinition {
+export interface WotrScenarioDefinition {
   setup?: (rules: WotrSetupRules) => WotrSetup;
   stories: (builder: WotrStoriesBuilder) => WotrStoryDoc[];
 }
 
-export interface WotrSimulationInfo {
+export interface WotrScenarioInfo {
   id: string;
   name: string;
   description?: string;

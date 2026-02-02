@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { WotrLog } from "../log/wotr-log-models";
-import { WotrSimulationPageBuilder } from "../simulation/wotr-simulation-page.builder";
+import { WotrScenarioPageBuilder } from "../scenario/wotr-scenario-page-builder";
 import { WotrGamePage } from "./wotr-game-page";
 
 describe("WotrGameComponent", () => {
@@ -8,7 +8,7 @@ describe("WotrGameComponent", () => {
   let logs$: Observable<WotrLog[]>;
 
   beforeEach(async () => {
-    component = await new WotrSimulationPageBuilder().setGameId("very-late-minions").build();
+    component = await new WotrScenarioPageBuilder().setGameId("very-late-minions").build();
   });
 
   it("should create", () => {

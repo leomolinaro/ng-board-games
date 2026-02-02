@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, isDevMode } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
@@ -12,14 +12,16 @@ import {
   WotrPlayerDoc,
   WotrReadPlayerDoc
 } from "../remote/wotr-remote-models";
-import { WotrSimulationButton } from "../simulation/wotr-simulation-button";
+import { WotrScenarioButton } from "../scenario/wotr-scenario-selector";
 
 @Component({
   selector: "wotr-home-page",
-  imports: [BgHomeModule, WotrSimulationButton],
+  imports: [BgHomeModule, WotrScenarioButton],
   template: `
     <bg-home [config]="config"></bg-home>
-    <wotr-simulation-button></wotr-simulation-button>
+    @if (devMode) {
+      <wotr-scenario-button></wotr-scenario-button>
+    }
   `,
   styles: [
     `
@@ -50,6 +52,8 @@ export class WotrHomePage {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private remote = inject(WotrRemoteService);
+
+  protected devMode = isDevMode();
 
   config: BgHomeConfig<WotrFrontId> = {
     boardGame: "wotr",

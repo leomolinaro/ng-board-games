@@ -6,29 +6,29 @@ import {
   separateCompanions
 } from "../../../fellowship/wotr-fellowship-actions";
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
+import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
-import { WotrSimulation } from "../../../simulation/wotr-simulation";
-import { WotrStoriesBuilder } from "../../../simulation/wotr-story-builder";
 import { discardCardFromTable, playCardOnTable } from "../../wotr-card-actions";
 
-export function hornOfGondorSimulations(): WotrSimulation[] {
-  return [hornOfGondor01, hornOfGondor02, hornOfGondor03, hornOfGondor04, hornOfGondor05];
+export function axeAndBowScenarios(): WotrScenario[] {
+  return [axeAndBow01, axeAndBow02, axeAndBow03, axeAndBow04, axeAndBow05];
 }
 
-const hornOfGondor01: WotrSimulation = {
-  id: "horn-of-gondor-01",
-  name: "Horn of Gondor",
+const axeAndBow01: WotrScenario = {
+  id: "axe-and-bow-01",
+  name: "Axe and Bow",
   description: "When 2 points of hunt damage are dealt",
   loadDefinition: () => ({
     setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("Horn of Gondor"),
+      b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
       b.fpT().rollActionDice("character", "character"),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Horn of Gondor", playCardOnTable("Horn of Gondor")),
+      b.fp().characterDieCard("Axe and Bow", playCardOnTable("Axe and Bow")),
       b.fp().characterDie(moveFelloswhip()),
       b.s().huntStory(rollHuntDice(6)),
       b.s().drawHuntTile("2")
@@ -36,76 +36,76 @@ const hornOfGondor01: WotrSimulation = {
   })
 };
 
-const hornOfGondor02: WotrSimulation = {
-  id: "horn-of-gondor-02",
-  name: "Horn of Gondor",
-  description: hornOfGondor01.description + " and Horn of Gondor is discarded",
+const axeAndBow02: WotrScenario = {
+  id: "axe-and-bow-02",
+  name: "Axe and Bow",
+  description: axeAndBow01.description + " and Axe and Bow is discarded",
   loadDefinition: () => {
-    const hornOfGondor01Def = hornOfGondor01.loadDefinition();
+    const axeAndBow01Def = axeAndBow01.loadDefinition();
     return {
-      setup: hornOfGondor01Def.setup,
+      setup: axeAndBow01Def.setup,
       stories: (b: WotrStoriesBuilder) => [
-        ...hornOfGondor01Def.stories(b),
-        b.fp().huntStory(discardCardFromTable("Horn of Gondor"), corruptFellowship(1))
+        ...axeAndBow01Def.stories(b),
+        b.fp().huntStory(discardCardFromTable("Axe and Bow"), corruptFellowship(1))
       ]
     };
   }
 };
 
-const hornOfGondor03: WotrSimulation = {
-  id: "horn-of-gondor-03",
-  name: "Horn of Gondor",
-  description: "Boromir is eliminated from the fellowship",
+const axeAndBow03: WotrScenario = {
+  id: "axe-and-bow-03",
+  name: "Axe and Bow",
+  description: "Legolas is eliminated from the fellowship",
   loadDefinition: () => ({
     setup: rules =>
       new WotrSetupBuilder(rules)
         .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "boromir")
+        .fellowshipCompanions("gandalf-the-grey", "legolas")
         .build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("Horn of Gondor"),
+      b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
       b.fpT().rollActionDice("character", "character"),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Horn of Gondor", playCardOnTable("Horn of Gondor")),
+      b.fp().characterDieCard("Axe and Bow", playCardOnTable("Axe and Bow")),
       b.fp().characterDie(moveFelloswhip()),
       b.s().rollHuntDice(6),
       b.s().drawHuntTile("1"),
-      b.fp().huntStory(chooseRandomCompanion("boromir")),
-      b.fp().huntStory(eliminateCharacter("boromir"))
+      b.fp().huntStory(chooseRandomCompanion("legolas")),
+      b.fp().huntStory(eliminateCharacter("legolas"))
     ]
   })
 };
 
-const hornOfGondor04: WotrSimulation = {
-  id: "horn-of-gondor-04",
-  name: "Horn of Gondor",
-  description: "Boromir is separated from the fellowship",
+const axeAndBow04: WotrScenario = {
+  id: "axe-and-bow-04",
+  name: "Axe and Bow",
+  description: "Legolas is separated from the fellowship",
   loadDefinition: () => ({
     setup: rules =>
       new WotrSetupBuilder(rules)
         .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "boromir")
+        .fellowshipCompanions("gandalf-the-grey", "legolas")
         .build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("Horn of Gondor"),
+      b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(0),
       b.fpT().rollActionDice("character", "character"),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Horn of Gondor", playCardOnTable("Horn of Gondor")),
-      b.fp().characterDie(separateCompanions("fords-of-bruinen", "boromir"))
+      b.fp().characterDieCard("Axe and Bow", playCardOnTable("Axe and Bow")),
+      b.fp().characterDie(separateCompanions("fords-of-bruinen", "legolas"))
     ]
   })
 };
 
-const hornOfGondor05: WotrSimulation = {
-  id: "horn-of-gondor-05",
-  name: "Horn of Gondor",
-  description: "Legolas is separated from the fellowship",
+const axeAndBow05: WotrScenario = {
+  id: "axe-and-bow-05",
+  name: "Axe and Bow",
+  description: "Boromir is separated from the fellowship",
   loadDefinition: () => ({
     setup: rules =>
       new WotrSetupBuilder(rules)
@@ -113,14 +113,14 @@ const hornOfGondor05: WotrSimulation = {
         .fellowshipCompanions("gandalf-the-grey", "legolas", "boromir")
         .build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("Horn of Gondor"),
+      b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(0),
       b.fpT().rollActionDice("character", "character"),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Horn of Gondor", playCardOnTable("Horn of Gondor")),
-      b.fp().characterDie(separateCompanions("fords-of-bruinen", "legolas"))
+      b.fp().characterDieCard("Axe and Bow", playCardOnTable("Axe and Bow")),
+      b.fp().characterDie(separateCompanions("fords-of-bruinen", "boromir"))
     ]
   })
 };

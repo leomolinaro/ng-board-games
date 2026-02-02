@@ -1,8 +1,8 @@
-import { WotrSimulation } from "../wotr-simulation";
-import { simulation as thereIsAnotherWay } from "./there-is-another-way";
-import { simulation as veryLateMinions } from "./very-late-minions";
+import { WotrScenario } from "../wotr-scenario";
+import { scenario as thereIsAnotherWay } from "./there-is-another-way";
+import { scenario as veryLateMinions } from "./very-late-minions";
 
-export function fullGameSimulations(): WotrSimulation[] {
+export function fullGameScenarios(): WotrScenario[] {
   return [
     {
       id: "very-late-minions",

@@ -3,7 +3,7 @@ import { RouterModule, Routes } from "@angular/router";
 import { WotrMapService } from "./game/board/map/wotr-map.service";
 import { WotrGamePage } from "./game/wotr-game-page";
 import { WotrHomePage } from "./home/wotr-home-page";
-import { WotrSimulationPage } from "./simulation/wotr-simulation-page";
+import { WotrScenarioPage } from "./scenario/wotr-scenario-page";
 
 const gameResolvers = {
   mapPaths: () => inject(WotrMapService).loadMapPaths$(),
@@ -13,7 +13,7 @@ const gameResolvers = {
 const routes: Routes = [
   { path: "", component: WotrHomePage },
   { path: "game/:gameId", component: WotrGamePage, resolve: gameResolvers },
-  { path: "simulation/:gameId", component: WotrSimulationPage, resolve: gameResolvers },
+  { path: "scenario/:gameId", component: WotrScenarioPage, resolve: gameResolvers },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
 

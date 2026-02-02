@@ -8,10 +8,10 @@ import { WotrSetupRules } from "../setup/wotr-setup-rules";
 import { BgAuthServiceMock } from "./mocks/bg-auth.service.mock";
 import { WotrRemoteMock } from "./mocks/wotr-remote-mock";
 import { WotrSetupRulesMock } from "./mocks/wotr-setup-rules.mock";
-import { WotrSimulations } from "./wotr-simulations";
+import { WotrScenarios } from "./wotr-scenarios";
 
 @Component({
-  selector: "wotr-simulation-page",
+  selector: "wotr-scenario-page",
   imports: [WotrGamePage],
   template: `
     @if (gameConfig()) {
@@ -25,16 +25,16 @@ import { WotrSimulations } from "./wotr-simulations";
     { provide: WotrSetupRules, useClass: WotrSetupRulesMock }
   ]
 })
-export class WotrSimulationPage {
+export class WotrScenarioPage {
   private route = inject(ActivatedRoute);
-  private simulations = inject(WotrSimulations);
+  private scenarios = inject(WotrScenarios);
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
   protected gameConfig = resource<WotrGameConfig, void>({
     loader: async () => {
-      const simulation = this.simulations.getSimulation(this.gameId);
+      const scenario = this.scenarios.getScenario(this.gameId);
       const gameConfig: WotrGameConfig = {};
-      const setup = (await simulation.loadDefinition()).setup;
+      const setup = (await scenario.loadDefinition()).setup;
       if (setup) gameConfig.setup = setup;
       return gameConfig;
     }

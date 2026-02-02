@@ -179,12 +179,12 @@ export class WotrMapSlotsGenerator {
     regionPoints: WotrRegionPoints,
     regionId: WotrRegionId
   ): WotrMapPoint[] {
-    const simulation = new randomUtil.BgSimulatedAnnealing<WotrMapRegionPoint[]>(
+    const scenario = new randomUtil.BgSimulatedAnnealing<WotrMapRegionPoint[]>(
       state => this.energy(state),
       state => this.randomNeighbor(state, regionPoints, regionId)
     );
     let slots = randomUtil.getRandomElements(n, n + 1, regionPoints.innerPoints);
-    slots = simulation.run(slots, 0.1, 100);
+    slots = scenario.run(slots, 0.1, 100);
     return slots.map(s => ({ x: s.x, y: s.y }));
   } // generateRegionSlots
 

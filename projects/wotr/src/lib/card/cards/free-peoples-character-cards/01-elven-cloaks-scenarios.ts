@@ -1,13 +1,13 @@
 import { declareFellowship } from "../../../fellowship/wotr-fellowship-actions";
+import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
-import { WotrSimulation } from "../../../simulation/wotr-simulation";
-import { WotrStoriesBuilder } from "../../../simulation/wotr-story-builder";
 
-export function elvenCloaksSimulations(): WotrSimulation[] {
+export function elvenCloaksScenarios(): WotrScenario[] {
   return [elvenCloaks01, elvenCloaks02];
 }
 
-const elvenCloaks01: WotrSimulation = {
+const elvenCloaks01: WotrScenario = {
   id: "elven-cloaks-01",
   name: "Elven Cloaks",
   description: "When Fellowship in a region",
@@ -24,7 +24,7 @@ const elvenCloaks01: WotrSimulation = {
   })
 };
 
-const elvenCloaks02: WotrSimulation = {
+const elvenCloaks02: WotrScenario = {
   id: "elven-cloaks-02",
   name: "Elven Cloaks",
   description: "When Fellowship on the Mordor track",

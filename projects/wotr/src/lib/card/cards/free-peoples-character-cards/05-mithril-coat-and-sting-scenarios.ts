@@ -1,14 +1,14 @@
 import { moveFelloswhip } from "../../../fellowship/wotr-fellowship-actions";
+import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
-import { WotrSimulation } from "../../../simulation/wotr-simulation";
-import { WotrStoriesBuilder } from "../../../simulation/wotr-story-builder";
 import { playCardOnTable } from "../../wotr-card-actions";
 
-export function mithrilCoatAndStingSimulations(): WotrSimulation[] {
+export function mithrilCoatAndStingScenarios(): WotrScenario[] {
   return [mithrilCoatAndSting01];
 }
 
-const mithrilCoatAndSting01: WotrSimulation = {
+const mithrilCoatAndSting01: WotrScenario = {
   id: "mithril-coat-and-sting-01",
   name: "Mithril Coat and Sting",
   description: "When a hunt tile is drawn after a standard hunt",

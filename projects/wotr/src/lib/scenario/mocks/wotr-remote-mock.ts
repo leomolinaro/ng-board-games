@@ -3,12 +3,12 @@ import { BgCloudCollectionQuery } from "@leobg/commons";
 import { Observable, of } from "rxjs";
 import { WotrStoryDoc } from "../../game/wotr-story-models";
 import { WotrGameDoc, WotrPlayerDoc } from "../../remote/wotr-remote-models";
-import { WotrSimulations } from "../wotr-simulations";
+import { WotrScenarios } from "../wotr-scenarios";
 import { WotrStoriesBuilder } from "../wotr-story-builder";
 
 @Injectable()
 export class WotrRemoteMock {
-  private examples = inject(WotrSimulations);
+  private examples = inject(WotrScenarios);
 
   async getGame(gameId: string): Promise<WotrGameDoc> {
     return { id: "123", name: "test", state: "closed", online: false, owner: {} as any };
@@ -58,7 +58,7 @@ export class WotrRemoteMock {
     gameId: string,
     queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined
   ): Promise<WotrStoryDoc[]> {
-    return (await this.examples.getSimulation(gameId).loadDefinition()).stories(
+    return (await this.examples.getScenario(gameId).loadDefinition()).stories(
       new WotrStoriesBuilder()
     );
   }

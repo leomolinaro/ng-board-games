@@ -7,11 +7,11 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService } from "@leobg/commons";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
 import { from } from "rxjs";
-import { WotrSimulationInfo } from "./wotr-simulation";
-import { WotrSimulations } from "./wotr-simulations";
+import { WotrScenarioInfo } from "./wotr-scenario";
+import { WotrScenarios } from "./wotr-scenarios";
 
 @Component({
-  selector: "wotr-simulation-button",
+  selector: "wotr-scenario-button",
   imports: [MatFabButton, MatIcon, MatMenuModule],
   template: `
     @if (isAdmin()) {
@@ -23,7 +23,7 @@ import { WotrSimulations } from "./wotr-simulations";
         <mat-icon>bookmark</mat-icon>
       </button>
       <mat-menu #exampleMenu="matMenu">
-        @for (info of simulationInfos; track info.id) {
+        @for (info of scenarioInfos; track info.id) {
           <button
             mat-menu-item
             (click)="onGameClick(info)">
@@ -48,21 +48,21 @@ import { WotrSimulations } from "./wotr-simulations";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy
-export class WotrSimulationButton implements OnDestroy {
+export class WotrScenarioButton implements OnDestroy {
   private auth = inject(BgAuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
-  private simulations = inject(WotrSimulations);
+  private scenarios = inject(WotrScenarios);
 
   protected user = toSignal(this.auth.getUser$());
   protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
 
-  protected simulationInfos = this.simulations.getSimulationInfos();
+  protected scenarioInfos = this.scenarios.getScenarioInfos();
 
   ngOnDestroy() {}
 
   @ExhaustingEvent()
-  protected onGameClick(info: WotrSimulationInfo) {
-    return from(this.router.navigate(["simulation", info.id], { relativeTo: this.activatedRoute }));
+  protected onGameClick(info: WotrScenarioInfo) {
+    return from(this.router.navigate(["scenario", info.id], { relativeTo: this.activatedRoute }));
   }
 }
