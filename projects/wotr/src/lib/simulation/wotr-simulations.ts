@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { cardSimulations } from "../card/wotr-card-simulations";
 import { fullGameSimulations } from "./full-games/wotr-full-game-simulations";
 import { WotrSimulation, WotrSimulationInfo } from "./wotr-simulation";
+import { characterSimulations } from "../character/wotr-character-simulations";
 
 @Injectable({ providedIn: "root" })
 export class WotrSimulations {
@@ -13,6 +14,7 @@ export class WotrSimulations {
     this.infos = [];
     this.addSimulations(fullGameSimulations());
     this.addSimulations(cardSimulations());
+    this.addSimulations(characterSimulations());
   }
 
   private addSimulations(simulations: WotrSimulation[]) {
