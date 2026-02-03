@@ -14,7 +14,10 @@ const meriadocPeregrin01: WotrScenario = {
     "When Meriadoc and Peregrin are the last companions in the Fellowship and a 2 points hunt tile is drawn",
   loadDefinition: () => ({
     setup: rules =>
-      new WotrSetupBuilder(rules).fellowshipCompanions("meriadoc", "peregrin").build(),
+      new WotrSetupBuilder(rules)
+        .fellowshipCompanions("meriadoc", "peregrin")
+        .fellowshipGuide("meriadoc")
+        .build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw(),
       b.s().firstPhaseDraw(),

@@ -112,7 +112,9 @@ export class WotrFellowshipUi {
       const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
       if (leftCompanionIds.length > 0) {
         const leftCompanions = leftCompanionIds.map(id => this.q.character(id));
-        actions.push(await this.changeGuideBetween(leftCompanions));
+        const changeGuideAction = await this.changeGuideBetween(leftCompanions);
+        actions.push(changeGuideAction);
+        this.fellowshipHandler.changeGuide(changeGuideAction.companion);
       }
     }
 

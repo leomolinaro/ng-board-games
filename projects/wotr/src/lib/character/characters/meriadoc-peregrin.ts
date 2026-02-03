@@ -35,6 +35,7 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
 
   public handler: WotrHuntEffectChoiceModifier = params => {
     if (!this.q.character(this.characterId).isInFellowship()) return [];
+    if (!this.q.fellowship.guideIs(this.characterId)) return [];
     if (this.q.fellowship.isOnMordorTrack()) return [];
     if (params.damage < 1) return [];
     const choice: WotrUiChoice<WotrHuntEffectParams> = {
