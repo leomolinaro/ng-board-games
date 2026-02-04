@@ -38,6 +38,14 @@ export class WotrNationQuery {
     return this.nationStore.nation(this.nationId).reinforcements.elite;
   }
 
+  nRegularCasualties(): number {
+    return this.nationStore.nation(this.nationId).casualties.regular;
+  }
+
+  nEliteCasualties(): number {
+    return this.nationStore.nation(this.nationId).casualties.elite;
+  }
+
   hasRegularReinforcements(): boolean {
     return this.nationStore.hasRegularReinforcements(this.nationId);
   }

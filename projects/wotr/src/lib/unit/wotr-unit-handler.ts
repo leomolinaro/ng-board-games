@@ -5,6 +5,7 @@ import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-actio
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 import { filterActions } from "../game/wotr-story-models";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrGenericUnitType, WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
@@ -37,6 +38,7 @@ export class WotrUnitHandler {
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
   private frontHandler = inject(WotrFrontHandler);
+  private q = inject(WotrGameQuery);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -60,10 +62,8 @@ export class WotrUnitHandler {
         this.recruitEliteUnit(action.quantity, action.nation, action.region),
       "elite-unit-elimination": (action, front) =>
         this.eliminateEliteUnit(action.quantity, action.nation, action.region),
-      "elite-unit-downgrade": (action, front) => {
-        this.eliminateEliteUnit(action.quantity, action.nation, action.region);
-        this.recruitRegularUnit(action.quantity, action.nation, action.region);
-      },
+      "elite-unit-downgrade": (action, front) =>
+        this.downgradeEliteUnits(action.quantity, action.nation, action.region),
       "elite-unit-disband": (action, front) =>
         this.disbandEliteUnit(action.quantity, action.nation, action.region),
       "leader-recruitment": (action, front) =>
@@ -151,6 +151,23 @@ export class WotrUnitHandler {
   upgradeRegularUnits(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
     this.recruitEliteUnit(quantity, nationId, regionId);
     this.eliminateRegularUnit(quantity, nationId, regionId);
+  }
+
+  downgradeEliteUnits(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
+    const casualties = this.q.nation(nationId).nRegularCasualties();
+    const reinforcements = this.q.nation(nationId).nRegularReinforcements();
+    const available = casualties + reinforcements;
+    const toDowngrade = Math.min(quantity, available);
+    const toEliminate = quantity - toDowngrade;
+    const fromCasualties = Math.min(casualties, toDowngrade);
+    const fromReinforcements = toDowngrade - fromCasualties;
+    const region = this.regionStore.region(regionId);
+    if (toDowngrade) this.removeElitesFromRegion(toDowngrade, nationId, region);
+    if (toEliminate) this.eliminateEliteUnit(toEliminate, nationId, regionId);
+    if (fromCasualties) this.nationStore.removeRegularsFromCasualties(fromCasualties, nationId);
+    if (fromReinforcements)
+      this.nationStore.removeRegularsFromReinforcements(fromReinforcements, nationId);
+    this.addRegularsToRegion(toDowngrade, nationId, region);
   }
 
   disbandRegularUnit(quantity: number, nationId: WotrNationId, regionId: WotrRegionId) {
