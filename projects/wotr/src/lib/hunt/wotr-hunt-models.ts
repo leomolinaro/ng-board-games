@@ -28,6 +28,7 @@ export interface WotrHuntTile {
 
 export interface WotrHuntEffectParams {
   damage: number;
+  isRevealing?: boolean;
   tableCardsUsed?: true;
   guideSpecialAbilityUsed?: true;
   randomCompanions?: WotrCompanionId[];

@@ -194,7 +194,11 @@ export class WotrHuntUi {
       // use ring
       const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
       if (!casualtyTaken && !params.onlyRingAbsorbtion) {
-        if (this.fellowshipStore.isHidden() && this.fellowshipStore.guide() === "gollum") {
+        if (
+          this.fellowshipStore.isHidden() &&
+          this.fellowshipStore.guide() === "gollum" &&
+          !params.isRevealing
+        ) {
           choices.push(this.gollumRevealingChoice);
         }
         if (!params.mustEliminateRandomCompanion) choices.push(this.eliminateGuideChoice);

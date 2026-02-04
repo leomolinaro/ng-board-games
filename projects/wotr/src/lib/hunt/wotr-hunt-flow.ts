@@ -150,7 +150,8 @@ export class WotrHuntFlow {
 
     let isRevealing = doReveal;
     const params: WotrHuntEffectParams = {
-      damage: 0
+      damage: 0,
+      isRevealing
     };
     if (options.onlyRingAbsorbtion) params.onlyRingAbsorbtion = true;
     if (options.mustEliminateRandomCompanion) params.mustEliminateRandomCompanion = true;
