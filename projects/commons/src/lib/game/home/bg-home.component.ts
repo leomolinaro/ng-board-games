@@ -1,4 +1,5 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { AsyncPipe, NgIf } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,26 +7,44 @@ import {
   OnDestroy,
   OnInit,
   TemplateRef,
+  Type,
   ViewChild,
   inject
 } from "@angular/core";
+import { MatButton, MatFabButton, MatIconButton } from "@angular/material/button";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { MatIcon } from "@angular/material/icon";
+import { MatProgressBar } from "@angular/material/progress-bar";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatRow,
+  MatRowDef,
+  MatTable
+} from "@angular/material/table";
+import { MatToolbar } from "@angular/material/toolbar";
 import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "@leobg/commons/utils";
 import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
 import { BgAuthService } from "../../authentication";
-import { BgArcheoGame, BgBoardGame, BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
-import { BgHomeRoomDialogComponent, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-home-room-dialog.component";
-import { MatToolbar } from "@angular/material/toolbar";
 import { BgAccountButtonComponent } from "../../authentication/bg-account-button.component";
-import { NgIf, AsyncPipe } from "@angular/common";
-import { MatProgressBar } from "@angular/material/progress-bar";
-import { MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow } from "@angular/material/table";
-import { MatIconButton, MatFabButton, MatButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
 import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
+import {
+  BgArcheoGame,
+  BgBoardGame,
+  BgProtoGame,
+  BgProtoGameService,
+  BgProtoPlayer
+} from "../bg-proto-game.service";
 import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
+import { BgGameOptionsComponent } from "./bg-home-game-options";
+import {
+  BgHomeRoomDialogComponent,
+  BgRoomDialogInput,
+  BgRoomDialogOutput
+} from "./bg-home-room-dialog.component";
 
-export interface BgHomeConfig<Pid extends string> {
+export interface BgHomeConfig<Pid extends string, Opt = any> {
   boardGame: BgBoardGame;
   boardGameName: string;
   startGame$: (gameId: string) => Observable<any>;
@@ -33,6 +52,7 @@ export interface BgHomeConfig<Pid extends string> {
   createGame$: (protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<Pid>[]) => Observable<any>;
   playerIds: () => Pid[];
   playerIdCssClass: (playerId: Pid) => string;
+  optionsComponent?: () => Type<BgGameOptionsComponent<Opt>>;
 }
 
 @Component({
@@ -97,7 +117,8 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
       switchMap(() => {
         this.newGameDialogRef = this.matDialog.open(this.newGameDialog, {
           width: "250px",
-          maxWidth: "80vw"
+          maxWidth: "80vw",
+          panelClass: "bg-new-game-dialog"
           // data: {
           //   protoGame: game,
           //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
@@ -172,7 +193,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
     return this.deleteGame$(game.id);
   }
 
-  @ExhaustingEvent()
+  @ExhaustingEvent({ suppressLoading: true })
   onEnterGame(game: BgProtoGame) {
     if (game.state === "running") {
       return this.config.startGame$(game.id);
@@ -182,18 +203,20 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
   }
 
   private playersRoom$(game: BgProtoGame) {
-    const dialogRef = this.matDialog.open<BgHomeRoomDialogComponent<Pid>, BgRoomDialogInput<Pid>, BgRoomDialogOutput>(
-      BgHomeRoomDialogComponent,
-      {
-        width: "1000px",
-        data: {
-          protoGame: game,
-          createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
-          deleteGame$: gameId => this.deleteGame$(gameId),
-          playerIdToCssClass: role => this.config.playerIdCssClass(role)
-        }
+    const dialogRef = this.matDialog.open<
+      BgHomeRoomDialogComponent<Pid>,
+      BgRoomDialogInput<Pid>,
+      BgRoomDialogOutput
+    >(BgHomeRoomDialogComponent, {
+      width: "1000px",
+      data: {
+        protoGame: game,
+        createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
+        deleteGame$: gameId => this.deleteGame$(gameId),
+        playerIdToCssClass: role => this.config.playerIdCssClass(role),
+        optionsComponent: this.config.optionsComponent?.()
       }
-    );
+    });
     return dialogRef.afterClosed().pipe(
       switchMap(output => {
         if (output?.startGame) {
@@ -208,7 +231,9 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
     const activeProtoPlayers = protoPlayers.filter(p => p.type === "user" || p.type === "ai");
     return this.config
       .createGame$(protoGame, activeProtoPlayers)
-      .pipe(switchMap(() => this.protoGameService.updateProtoGame$({ state: "running" }, protoGame.id)));
+      .pipe(
+        switchMap(() => this.protoGameService.updateProtoGame$({ state: "running" }, protoGame.id))
+      );
   }
 
   private deleteGame$(gameId: string) {

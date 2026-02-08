@@ -9,13 +9,14 @@ export interface BgArcheoGame {
   online: boolean;
 } // BgArcheoGame
 
-export interface BgProtoGame {
+export interface BgProtoGame<Opt = any> {
   id: string;
   name: string;
   boardGame: BgBoardGame;
   owner: BgUser;
   online: boolean;
   state: BgProtoGameState;
+  options?: Opt;
 } // BgProtoGame
 
 export interface BgProtoPlayer<Pid extends string = string> {

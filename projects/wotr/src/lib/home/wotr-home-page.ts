@@ -5,6 +5,8 @@ import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameOptions } from "../game/options/wotr-game-options";
+import { WotrGameOptionsFormComponent } from "../game/options/wotr-game-options-form";
 import { WotrRemoteService } from "../remote/wotr-remote";
 import {
   AWotrPlayerDoc,
@@ -55,7 +57,7 @@ export class WotrHomePage {
 
   protected devMode = isDevMode();
 
-  config: BgHomeConfig<WotrFrontId> = {
+  config: BgHomeConfig<WotrFrontId, WotrGameOptions> = {
     boardGame: "wotr",
     boardGameName: "War of the Ring (2nd Edition)",
     startGame$: (gameId: string) =>
@@ -75,7 +77,8 @@ export class WotrHomePage {
         case "shadow":
           return "wotr-player-shadow";
       }
-    }
+    },
+    optionsComponent: () => WotrGameOptionsFormComponent
   };
 
   private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFrontId>[]) {
@@ -85,7 +88,8 @@ export class WotrHomePage {
         owner: protoGame.owner,
         name: protoGame.name,
         online: protoGame.online,
-        state: "open"
+        state: "open",
+        options: protoGame.options as WotrGameOptions
       })
       .pipe(
         switchMap(game =>

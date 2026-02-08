@@ -11,7 +11,18 @@ export class WotrRemoteMock {
   private examples = inject(WotrScenarios);
 
   async getGame(gameId: string): Promise<WotrGameDoc> {
-    return { id: "123", name: "test", state: "closed", online: false, owner: {} as any };
+    return {
+      id: "123",
+      name: "test",
+      state: "closed",
+      online: false,
+      owner: {} as any,
+      options: {
+        expansions: [],
+        variants: [],
+        tokens: []
+      }
+    };
   }
   selectGames$(queryFn?: BgCloudCollectionQuery<WotrGameDoc> | undefined): any {
     throw new Error("Mock remote");
