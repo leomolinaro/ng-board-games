@@ -25,8 +25,7 @@ import {
   recruitLeader,
   recruitNazgul,
   recruitRegularUnit,
-  WotrArmyMovement,
-  WotrNazgulMovement
+  WotrArmyMovement
 } from "./wotr-unit-actions";
 import { WotrRecruitmentConstraints, WotrUnitHandler } from "./wotr-unit-handler";
 import {
@@ -56,10 +55,6 @@ export class WotrUnitUi {
   private unitHandler = inject(WotrUnitHandler);
   private unitModifiers = inject(WotrUnitModifiers);
   private q = inject(WotrGameQuery);
-
-  async moveNazgulMinions(frontId: WotrFrontId): Promise<WotrNazgulMovement[]> {
-    throw new Error("Method not implemented.");
-  }
 
   async moveArmies(
     frontId: WotrFrontId,

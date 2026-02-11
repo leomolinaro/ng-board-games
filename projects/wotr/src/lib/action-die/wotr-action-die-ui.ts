@@ -421,7 +421,7 @@ export class WotrActionDieUi {
   }
 
   private async resolveMoveNazgulMinionsToken(frontId: WotrFrontId): Promise<WotrTokenStory> {
-    const nazgulMovements = await this.unitUi.moveNazgulMinions(frontId);
+    const nazgulMovements = await this.characterUi.moveNazgulAndMinions();
     return {
       type: "token",
       token: "move-nazgul-minions",

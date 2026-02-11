@@ -1,11 +1,16 @@
 import { Injectable, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
-import { WotrActionToken } from "../action-die/wotr-action-die-models";
+import {
+  WotrActionToken,
+  WotrFreePeopleActionToken,
+  WotrShadowActionToken
+} from "../action-die/wotr-action-die-models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-models";
 import { WotrCardUtils } from "../card/wotr-card-utils";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameConfig } from "../game/wotr-game-config";
+import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 
@@ -42,9 +47,17 @@ export interface WotrFellowshipSetup {
 @Injectable()
 export class WotrSetupRules {
   private cards = inject(WotrCardUtils);
+  private gameStore = inject(WotrGameStore);
 
   getGameSetup(config: WotrGameConfig): WotrSetup {
     if (config.setup) return config.setup(this);
+    const freePeopleTokens: WotrFreePeopleActionToken[] = [];
+    const shadowTokens: WotrShadowActionToken[] = [];
+    const options = this.gameStore.gameOptions();
+    options.tokens.forEach(t => {
+      if (t.front === "free-peoples") freePeopleTokens.push(t.token as WotrFreePeopleActionToken);
+      else shadowTokens.push(t.token as WotrShadowActionToken);
+    });
     return {
       decks: this.shuffledDecks(),
       regions: [
@@ -98,8 +111,8 @@ export class WotrSetupRules {
         ],
         guide: "gandalf-the-grey"
       },
-      freePeopleTokens: ["draw-card", "political-advance"],
-      shadowTokens: []
+      freePeopleTokens,
+      shadowTokens
     };
   }
 

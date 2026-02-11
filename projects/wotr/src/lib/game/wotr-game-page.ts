@@ -181,7 +181,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
       this.store.initGameState(
         players.map(p => this.playerDocToPlayerInfo(p, user)),
         this.gameId,
-        game.owner
+        game.owner,
+        game.options
       );
       if (this.replayMode) {
         this.story.setReplayMode(true);

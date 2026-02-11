@@ -47,10 +47,12 @@ import {
   WotrRegionState,
   WotrRegionStore
 } from "../region/wotr-region-store";
+import { WotrGameOptions } from "./options/wotr-game-options";
 
 export interface WotrGameState {
   gameId: string;
   gameOwner: BgUser;
+  gameOptions: WotrGameOptions;
   players: WotrPlayerInfoState;
   frontState: WotrFrontState;
   regionState: WotrRegionState;
@@ -67,6 +69,11 @@ function initialeState(): WotrGameState {
   return {
     gameId: "",
     gameOwner: null as any,
+    gameOptions: {
+      expansions: [],
+      variants: [],
+      tokens: []
+    },
     players: playerInitialStore(),
     frontState: frontInitialState(),
     regionState: regionInitialeState(),
@@ -132,11 +139,17 @@ export class WotrGameStore extends signalStore(
     patchState(this, () => initialeState());
   }
 
-  initGameState(players: WotrPlayerInfo[], gameId: string, gameOwner: BgUser) {
+  initGameState(
+    players: WotrPlayerInfo[],
+    gameId: string,
+    gameOwner: BgUser,
+    gameOptions: WotrGameOptions
+  ) {
     patchState(this, s => ({
       ...s,
-      gameId: gameId,
-      gameOwner: gameOwner,
+      gameId,
+      gameOwner,
+      gameOptions,
       players: {
         map: arrayUtil.toMap(players, p => p.id) as Record<WotrFrontId, WotrPlayerInfo>,
         ids: players.map(p => p.id)

@@ -25,7 +25,7 @@ interface ActionTokendNode {
 }
 
 @Component({
-  selector: "wotr-action-dice",
+  selector: "wotr-action-dice-box",
   template: `
     @for (frontNode of frontNodes(); track frontNode.id) {
       <div
@@ -62,7 +62,7 @@ interface ActionTokendNode {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WotrActionDice {
+export class WotrActionDiceBox {
   protected assets = inject(WotrAssetsStore);
   private ui = inject(WotrGameUi);
   private frontStore = inject(WotrFrontStore);

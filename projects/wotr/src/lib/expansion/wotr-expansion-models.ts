@@ -24,7 +24,7 @@ export interface WotrVariant {
 
 const lome: WotrExpansion = { id: "lome", name: "Lords of Middle-earth", inactive: true };
 const wome: WotrExpansion = { id: "wome", name: "Warriors of Middle-earth", inactive: true };
-const kome: WotrExpansion = { id: "kome", name: "Kings of Middle-earth", inactive: true };
+const kome: WotrExpansion = { id: "kome", name: "Kings of Middle-earth" };
 const foe: WotrExpansion = { id: "foe", name: "Fate of Erebor", inactive: true };
 const tb: WotrExpansion = { id: "tb", name: "Treebeard", inactive: true };
 const tss: WotrExpansion = {

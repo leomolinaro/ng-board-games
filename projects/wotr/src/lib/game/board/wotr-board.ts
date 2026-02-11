@@ -13,7 +13,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { firstValueFrom } from "rxjs";
-import { WotrActionDice } from "../../action-die/wotr-action-dice";
+import { WotrActionDiceBox } from "../../action-die/wotr-action-dice-box";
 import { isCharacterCard, isStrategyCard, WotrCardId } from "../../card/wotr-card-models";
 import { WotrCardsDialog, WotrCardsDialogData } from "../../card/wotr-cards-dialog";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
@@ -57,7 +57,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
     WotrFrontArea,
     WotrHuntArea,
     WotrReplayButton,
-    WotrActionDice,
+    WotrActionDiceBox,
     WotrOptionsPanel,
     WotrPlayerToolbar
   ],
@@ -107,7 +107,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
         </mat-tab-group>
       </div>
       <div class="wotr-action-dice-box">
-        <wotr-action-dice></wotr-action-dice>
+        <wotr-action-dice-box />
       </div>
       <div class="wotr-logs">
         <wotr-replay-buttons
