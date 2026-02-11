@@ -1,0 +1,34 @@
+[
+  {
+    "id": "dwarves",
+    "color": "462320FF"
+  },
+  {
+    "id": "elves",
+    "color": "149957FF"
+  },
+  {
+    "id": "gondor",
+    "color": "2B2A60FF"
+  },
+  {
+    "id": "rohan",
+    "color": "165F39FF"
+  },
+  {
+    "id": "north",
+    "color": "528FBDFF"
+  },
+  {
+    "id": "mordor",
+    "color": "9B362FFF"
+  },
+  {
+    "id": "isengard",
+    "color": "FFEF57FF"
+  },
+  {
+    "id": "southrons",
+    "color": "DD9449FF"
+  }
+]
