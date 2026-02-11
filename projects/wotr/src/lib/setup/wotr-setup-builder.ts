@@ -58,7 +58,8 @@ export class WotrSetupBuilder {
         guide: this.fwGuide
       },
       freePeopleTokens: [],
-      shadowTokens: []
+      shadowTokens: [],
+      huntPool: []
     };
   }
 }

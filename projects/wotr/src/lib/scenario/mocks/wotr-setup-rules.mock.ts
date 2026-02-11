@@ -14,7 +14,8 @@ export class WotrSetupRulesMock extends WotrSetupRules {
         guide: "gandalf-the-grey"
       },
       freePeopleTokens: [],
-      shadowTokens: []
+      shadowTokens: [],
+      huntPool: []
     };
   }
 }

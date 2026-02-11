@@ -3,7 +3,7 @@ export type WotrVariantId =
   | "theBreakingOfTheFellowship"
   | "theCouncilOfRivendell"
   | "dismayTokens"
-  | "visibleCorruptionTile"
+  | "visibleCorruptionTiles"
   | "sequentialCorruptionDraw"
   | "noRulerTokens"
   | "newCities";
@@ -52,11 +52,10 @@ const dismayTokens: WotrVariant = {
   requires: [kome.id],
   inactive: true
 };
-const visibleCorruptionTile: WotrVariant = {
-  id: "visibleCorruptionTile",
-  name: "Visible Corruption Tile",
-  requires: [kome.id],
-  inactive: true
+const visibleCorruptionTiles: WotrVariant = {
+  id: "visibleCorruptionTiles",
+  name: "Visible Corruption Tiles",
+  requires: [kome.id]
 };
 const sequentialCorruptionDraw: WotrVariant = {
   id: "sequentialCorruptionDraw",
@@ -83,7 +82,7 @@ export const VARIANTS: WotrVariant[] = [
   theBreakingOfTheFellowship,
   theCouncilOfRivendell,
   dismayTokens,
-  visibleCorruptionTile,
+  visibleCorruptionTiles,
   sequentialCorruptionDraw,
   noRulerTokens,
   newCities
@@ -110,7 +109,7 @@ const VARIANT_MAP: Record<WotrVariantId, WotrVariant> = {
   theBreakingOfTheFellowship,
   theCouncilOfRivendell,
   dismayTokens,
-  visibleCorruptionTile,
+  visibleCorruptionTiles,
   sequentialCorruptionDraw,
   noRulerTokens,
   newCities

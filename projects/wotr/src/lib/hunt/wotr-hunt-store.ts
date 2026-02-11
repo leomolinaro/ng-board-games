@@ -32,26 +32,12 @@ export function initialeState(): WotrHuntState {
       "r1rs": { id: "r1rs", type: "shadow-special", quantity: 1, reveal: true, stop: true },
       "r3s": { id: "r3s", type: "shadow-special", quantity: 3, stop: true },
       "rds": { id: "rds", type: "shadow-special", dice: true, stop: true },
-      "rers": { id: "rers", type: "shadow-special", eye: true, reveal: true, stop: true }
+      "rers": { id: "rers", type: "shadow-special", eye: true, reveal: true, stop: true },
+      // Kome tiles
+      "1km": { id: "1km", type: "standard", quantity: 1, crown: true },
+      "2km": { id: "2km", type: "standard", quantity: 2, crown: true }
     },
-    huntPool: [
-      "3",
-      "3",
-      "3",
-      "2",
-      "2",
-      "1",
-      "1",
-      "er",
-      "er",
-      "er",
-      "er",
-      "2r",
-      "1r",
-      "1r",
-      "0r",
-      "0r"
-    ],
+    huntPool: [],
     huntDrawn: [],
     huntReady: [],
     huntAvailable: ["b0", "b0", "b-1", "b-2", "r1rs", "r3s", "rds", "rers"],
@@ -87,6 +73,13 @@ export class WotrHuntStore {
   }
   huntPool(): WotrHuntTileId[] {
     return this.state().huntPool;
+  }
+
+  setHuntPool(huntPool: WotrHuntTileId[]): void {
+    this.update("setHuntPool", state => ({
+      ...state,
+      huntPool
+    }));
   }
 
   setInProgress(inProgress: boolean): void {

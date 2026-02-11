@@ -14,7 +14,10 @@ export type WotrHuntTileId =
   | "r1rs"
   | "r3s"
   | "rds"
-  | "rers";
+  | "rers"
+  // Kome tiles
+  | "1km"
+  | "2km";
 
 export interface WotrHuntTile {
   id: WotrHuntTileId;
@@ -24,6 +27,7 @@ export interface WotrHuntTile {
   quantity?: number;
   stop?: boolean;
   dice?: boolean;
+  crown?: boolean;
 }
 
 export interface WotrHuntEffectParams {
@@ -41,4 +45,12 @@ export class WotrRingBearerCorrupted extends Error {
   constructor() {
     super("The Ring Bearer has been corrupted! Shadow wins!");
   }
+}
+
+export function baseHuntTiles(): WotrHuntTileId[] {
+  return ["3", "3", "3", "2", "2", "1", "1", "er", "er", "er", "er", "2r", "1r", "1r", "0r", "0r"];
+}
+
+export function komeHuntTiles(): WotrHuntTileId[] {
+  return ["1km", "2km"];
 }

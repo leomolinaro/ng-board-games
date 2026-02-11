@@ -146,6 +146,7 @@ export class WotrAssetsStore {
     return `${BASE_PATH}/action-tokens/${front === "free-peoples" ? "fp" : "s"}-${actionToken}.png`;
   }
   huntTileImage(huntTile: WotrHuntTileId) {
+    if (huntTile.endsWith("km")) return `${BASE_PATH}/kome/hunt-tiles/${huntTile}.png`;
     return `${BASE_PATH}/hunt-tiles/${huntTile}.png`;
   }
   politicalMarkerImage(nationId: WotrNationId, active: boolean) {

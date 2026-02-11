@@ -1,5 +1,5 @@
 import { withDevtools } from "@angular-architects/ngrx-toolkit";
-import { inject, Injectable } from "@angular/core";
+import { computed, inject, Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
@@ -177,4 +177,9 @@ export class WotrGameStore extends signalStore(
   getGameOwner(): BgUser {
     return this.gameOwner();
   }
+
+  kome = computed(() => this.gameOptions().expansions.includes("kome"));
+  visibleCorruptionTiles = computed(() =>
+    this.gameOptions().variants.includes("visibleCorruptionTiles")
+  );
 }

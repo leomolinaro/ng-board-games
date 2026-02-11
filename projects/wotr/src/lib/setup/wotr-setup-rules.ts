@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
 import {
   WotrActionToken,
@@ -11,6 +11,7 @@ import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGameStore } from "../game/wotr-game-store";
+import { baseHuntTiles, komeHuntTiles, WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 
@@ -20,6 +21,7 @@ export interface WotrSetup {
   decks: WotrFrontDecksSetup[];
   freePeopleTokens: WotrActionToken[];
   shadowTokens: WotrActionToken[];
+  huntPool: WotrHuntTileId[];
 }
 
 export interface WotrFrontDecksSetup {
@@ -112,8 +114,16 @@ export class WotrSetupRules {
         guide: "gandalf-the-grey"
       },
       freePeopleTokens,
-      shadowTokens
+      shadowTokens,
+      huntPool: this.huntPool()
     };
+  }
+
+  huntPool(): WotrHuntTileId[] {
+    const huntPool: WotrHuntTileId[] = [];
+    huntPool.push(...baseHuntTiles());
+    if (this.gameStore.kome()) huntPool.push(...komeHuntTiles());
+    return huntPool;
   }
 
   shuffledDecks(): WotrFrontDecksSetup[] {
