@@ -243,10 +243,15 @@ export class WotrUnitUtils {
       }
     }
     if (units.nNazgul) leadership += units.nNazgul;
-    if (units.characters) {
-      for (const characterId of units.characters) {
-        leadership += this.q.character(characterId).leadership;
-      }
+    if (units.characters) leadership += this.charactersLeadership(units.characters);
+    return leadership;
+  }
+
+  charactersLeadership(characters: WotrCharacterId[]): number {
+    let leadership = 0;
+    for (const characterId of characters) {
+      const character = this.q.character(characterId);
+      leadership += character.leadership;
     }
     return leadership;
   }
@@ -260,10 +265,14 @@ export class WotrUnitUtils {
       []) as WotrCompanionId[];
   }
 
+  isCompanion(characterId: WotrCharacterId): boolean {
+    const character = this.q.character(characterId);
+    if (character.frontId !== "free-peoples") return false;
+    return !character.rulerStatus || character.rulerStatus === "awakened";
+  }
+
   nCompanions(units: WotrUnits): number {
-    return (
-      units.characters?.filter(c => this.q.character(c).frontId === "free-peoples").length || 0
-    );
+    return this.getCompanions(units).length || 0;
   }
 
   hasMinions(units: WotrUnits): boolean {
@@ -272,12 +281,8 @@ export class WotrUnitUtils {
 
   getNArmyUnits(units: WotrUnits) {
     let n = 0;
-    if (units.regulars?.length) {
-      n += units.regulars.reduce((count, u) => count + u.quantity, 0);
-    }
-    if (units.elites?.length) {
-      n += units.elites.reduce((count, u) => count + u.quantity, 0);
-    }
+    if (units.regulars?.length) n += units.regulars.reduce((count, u) => count + u.quantity, 0);
+    if (units.elites?.length) n += units.elites.reduce((count, u) => count + u.quantity, 0);
     return n;
   }
 

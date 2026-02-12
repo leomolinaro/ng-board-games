@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { arrayUtil } from "../../../../commons/utils/src";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrCharacterStore } from "../character/wotr-character-store";
@@ -50,6 +51,14 @@ export class WotrGameQuery {
   saruman = this.newCharacter("saruman");
   theWitchKing = this.newCharacter("the-witch-king");
   theMouthOfSauron = this.newCharacter("the-mouth-of-sauron");
+  brand = this.newCharacter("brand");
+  dain = this.newCharacter("dain");
+  denethor = this.newCharacter("denethor");
+  theoden = this.newCharacter("theoden");
+  thranduil = this.newCharacter("thranduil");
+  theBlackSerpent = this.newCharacter("the-black-serpent");
+  theShadowOfMirkwood = this.newCharacter("the-shadow-of-mirkwood");
+  ugluk = this.newCharacter("ugluk");
   private newCharacter(characterId: WotrCharacterId): WotrCharacterQuery {
     return new WotrCharacterQuery(
       characterId,
@@ -67,7 +76,14 @@ export class WotrGameQuery {
   resetMessengerOfTheDarkTower() {
     this.characterStore.resetMessengerOfTheDarkTower();
   }
-  minions = [this.saruman, this.theMouthOfSauron, this.theWitchKing];
+  minions = [
+    this.saruman,
+    this.theMouthOfSauron,
+    this.theWitchKing,
+    this.theBlackSerpent,
+    this.theShadowOfMirkwood,
+    this.ugluk
+  ];
   companions = [
     this.gandalfTheGrey,
     this.strider,
@@ -77,37 +93,19 @@ export class WotrGameQuery {
     this.meriadoc,
     this.peregrin,
     this.gandalfTheWhite,
-    this.aragorn
+    this.aragorn,
+    this.brand,
+    this.dain,
+    this.denethor,
+    this.theoden,
+    this.thranduil
   ];
+  private characterById = arrayUtil.toMap(
+    [...this.companions, ...this.minions],
+    character => character.id
+  ) as Record<WotrCharacterId, WotrCharacterQuery>;
   character(characterId: WotrCharacterId): WotrCharacterQuery {
-    switch (characterId) {
-      case "gandalf-the-grey":
-        return this.gandalfTheGrey;
-      case "strider":
-        return this.strider;
-      case "legolas":
-        return this.legolas;
-      case "gimli":
-        return this.gimli;
-      case "boromir":
-        return this.boromir;
-      case "meriadoc":
-        return this.meriadoc;
-      case "peregrin":
-        return this.peregrin;
-      case "aragorn":
-        return this.aragorn;
-      case "gandalf-the-white":
-        return this.gandalfTheWhite;
-      case "gollum":
-        return this.gollum;
-      case "saruman":
-        return this.saruman;
-      case "the-mouth-of-sauron":
-        return this.theMouthOfSauron;
-      case "the-witch-king":
-        return this.theWitchKing;
-    }
+    return this.characterById[characterId];
   }
 
   dwarves = new WotrNationQuery("dwarves", this.nationStore, this.regionStore);
@@ -120,25 +118,12 @@ export class WotrGameQuery {
   isengard = new WotrNationQuery("isengard", this.nationStore, this.regionStore);
   southrons = new WotrNationQuery("southrons", this.nationStore, this.regionStore);
   shadowNations = [this.sauron, this.isengard, this.southrons];
+  private nationById = arrayUtil.toMap(
+    [...this.freePeoplesNations, ...this.shadowNations],
+    nation => nation.id()
+  ) as Record<WotrNationId, WotrNationQuery>;
   nation(nationId: WotrNationId): WotrNationQuery {
-    switch (nationId) {
-      case "dwarves":
-        return this.dwarves;
-      case "elves":
-        return this.elves;
-      case "north":
-        return this.north;
-      case "rohan":
-        return this.rohan;
-      case "gondor":
-        return this.gondor;
-      case "sauron":
-        return this.sauron;
-      case "isengard":
-        return this.isengard;
-      case "southrons":
-        return this.southrons;
-    }
+    return this.nationById[nationId];
   }
 
   private _regions: Partial<Record<WotrRegionId, WotrRegionQuery>> = {};

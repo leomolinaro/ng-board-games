@@ -120,6 +120,19 @@ export class WotrAssetsStore {
     this.CHARACTER_BY_ID.saruman = this.initCharacterImage("saruman", 53, 44);
     this.CHARACTER_BY_ID["the-witch-king"] = this.initCharacterImage("witch-king", 57, 44);
     this.CHARACTER_BY_ID["the-mouth-of-sauron"] = this.initCharacterImage("mouth", 43, 41);
+    // Kome
+    this.CHARACTER_BY_ID.brand = this.initCharacterImage("brand", 10, 10);
+    this.CHARACTER_BY_ID.dain = this.initCharacterImage("dain", 10, 10);
+    this.CHARACTER_BY_ID.denethor = this.initCharacterImage("denethor", 10, 10);
+    this.CHARACTER_BY_ID.theoden = this.initCharacterImage("theoden", 10, 10);
+    this.CHARACTER_BY_ID.thranduil = this.initCharacterImage("thranduil", 10, 10);
+    this.CHARACTER_BY_ID["the-black-serpent"] = this.initCharacterImage("black-serpent", 10, 10);
+    this.CHARACTER_BY_ID["the-shadow-of-mirkwood"] = this.initCharacterImage(
+      "shadow-of-mirkwood",
+      10,
+      10
+    );
+    this.CHARACTER_BY_ID.ugluk = this.initCharacterImage("ugluk", 10, 10);
   }
 
   private FELLOWSHIP: WotrUnitImage = this.unitImage("fellowship", 31, 31);

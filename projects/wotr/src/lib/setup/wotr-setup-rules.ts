@@ -7,7 +7,13 @@ import {
 } from "../action-die/wotr-action-die-models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-models";
 import { WotrCardUtils } from "../card/wotr-card-utils";
-import { WotrCompanionId } from "../character/wotr-character-models";
+import {
+  baseCharacters,
+  komeCharacters,
+  KomeSovereignId,
+  WotrCharacterId,
+  WotrCompanionId
+} from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGameStore } from "../game/wotr-game-store";
@@ -22,6 +28,7 @@ export interface WotrSetup {
   freePeopleTokens: WotrActionToken[];
   shadowTokens: WotrActionToken[];
   huntPool: WotrHuntTileId[];
+  characters: WotrCharacterId[];
 }
 
 export interface WotrFrontDecksSetup {
@@ -37,6 +44,7 @@ export interface WotrRegionSetup {
   nElites: number;
   nLeaders: number;
   nNazgul: number;
+  ruler: KomeSovereignId | null;
 }
 
 export interface WotrFellowshipSetup {
@@ -63,23 +71,23 @@ export class WotrSetupRules {
     return {
       decks: this.shuffledDecks(),
       regions: [
-        this.fpRegionSetup("erebor", "dwarves", 1, 2, 1),
+        this.fpRegionSetup("erebor", "dwarves", 1, 2, 1, "dain"),
         this.fpRegionSetup("ered-luin", "dwarves", 1, 0, 0),
         this.fpRegionSetup("iron-hills", "dwarves", 1, 0, 0),
         this.fpRegionSetup("grey-havens", "elves", 1, 1, 1),
         this.fpRegionSetup("rivendell", "elves", 0, 2, 1),
-        this.fpRegionSetup("woodland-realm", "elves", 1, 1, 1),
+        this.fpRegionSetup("woodland-realm", "elves", 1, 1, 1, "thranduil"),
         this.fpRegionSetup("lorien", "elves", 1, 2, 1),
-        this.fpRegionSetup("minas-tirith", "gondor", 3, 1, 1),
+        this.fpRegionSetup("minas-tirith", "gondor", 3, 1, 1, "denethor"),
         this.fpRegionSetup("dol-amroth", "gondor", 3, 0, 0),
         this.fpRegionSetup("osgiliath", "gondor", 2, 0, 0),
         this.fpRegionSetup("pelargir", "gondor", 1, 0, 0),
         this.fpRegionSetup("bree", "north", 1, 0, 0),
         this.fpRegionSetup("carrock", "north", 1, 0, 0),
-        this.fpRegionSetup("dale", "north", 1, 0, 1),
+        this.fpRegionSetup("dale", "north", 1, 0, 1, "brand"),
         this.fpRegionSetup("north-downs", "north", 0, 1, 0),
         this.fpRegionSetup("the-shire", "north", 1, 0, 1),
-        this.fpRegionSetup("edoras", "rohan", 1, 1, 0),
+        this.fpRegionSetup("edoras", "rohan", 1, 1, 0, "theoden"),
         this.fpRegionSetup("fords-of-isen", "rohan", 2, 0, 1),
         this.fpRegionSetup("helms-deep", "rohan", 1, 0, 0),
         this.sRegionSetup("orthanc", "isengard", 4, 1, 0),
@@ -115,7 +123,8 @@ export class WotrSetupRules {
       },
       freePeopleTokens,
       shadowTokens,
-      huntPool: this.huntPool()
+      huntPool: this.huntPool(),
+      characters: this.characters()
     };
   }
 
@@ -124,6 +133,13 @@ export class WotrSetupRules {
     huntPool.push(...baseHuntTiles());
     if (this.gameStore.kome()) huntPool.push(...komeHuntTiles());
     return huntPool;
+  }
+
+  characters(): WotrCharacterId[] {
+    const characters: WotrCharacterId[] = [];
+    characters.push(...baseCharacters());
+    if (this.gameStore.kome()) characters.push(...komeCharacters());
+    return characters;
   }
 
   shuffledDecks(): WotrFrontDecksSetup[] {
@@ -146,9 +162,10 @@ export class WotrSetupRules {
     nation: WotrNationId,
     nRegulars: number,
     nElites: number,
-    nLeaders: number
+    nLeaders: number,
+    ruler?: KomeSovereignId
   ): WotrRegionSetup {
-    return { region, nation, nRegulars, nElites, nLeaders, nNazgul: 0 };
+    return { region, nation, nRegulars, nElites, nLeaders, nNazgul: 0, ruler: ruler || null };
   }
 
   private sRegionSetup(
@@ -158,6 +175,6 @@ export class WotrSetupRules {
     nElites: number,
     nNazgul: number
   ): WotrRegionSetup {
-    return { region, nation, nRegulars, nElites, nLeaders: 0, nNazgul };
+    return { region, nation, nRegulars, nElites, nLeaders: 0, nNazgul, ruler: null };
   }
 }

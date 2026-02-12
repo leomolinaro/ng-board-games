@@ -42,9 +42,9 @@ export class WotrFrontQuery {
     let actionDiceBonus = 0;
     for (const character of this.characterStore.characters()) {
       if (character.front !== this.frontId) continue;
-      if (!character.actionDiceBonus) continue;
+      if (character.dieBonus !== "actionDie") continue;
       if (character.status !== "inPlay") continue;
-      actionDiceBonus += character.actionDiceBonus;
+      actionDiceBonus += 1;
     }
     return actionDiceBonus;
   }

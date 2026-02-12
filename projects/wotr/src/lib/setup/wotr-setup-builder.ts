@@ -59,7 +59,8 @@ export class WotrSetupBuilder {
       },
       freePeopleTokens: [],
       shadowTokens: [],
-      huntPool: []
+      huntPool: [],
+      characters: []
     };
   }
 }

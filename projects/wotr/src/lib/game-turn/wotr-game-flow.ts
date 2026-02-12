@@ -1,6 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
+import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrCharacterAbilities } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -39,6 +40,7 @@ export class WotrGameFlow {
   private nationStore = inject(WotrNationStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private huntStore = inject(WotrHuntStore);
+  private characterStore = inject(WotrCharacterStore);
   private actionRegistry = inject(WotrActionRegistry);
   private characterAbilities = inject(WotrCharacterAbilities);
   private q = inject(WotrGameQuery);
@@ -259,7 +261,12 @@ export class WotrGameFlow {
         this.nationStore.removeNazgulFromReinforcements(r.nNazgul);
         this.regionStore.addNazgulToArmy(r.nNazgul, r.region);
       }
+      if (r.ruler) {
+        this.characterStore.setInPlay(r.ruler);
+        this.regionStore.addCharacterToArmy(r.ruler, r.region);
+      }
     }
+    this.characterStore.setCharactersIds(setup.characters);
     this.huntStore.setHuntPool(setup.huntPool);
     this.frontStore.setActionTokens(setup.freePeopleTokens, "free-peoples");
     this.frontStore.setActionTokens(setup.shadowTokens, "shadow");

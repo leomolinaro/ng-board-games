@@ -111,6 +111,22 @@ export class WotrCharacterAbilities {
           new MessengerOfTheDarkTowerAbility(this.q, this.actionDieUi, this.actionDieModifiers),
           new MessengerOfTheDarkTowerSetUsedAbility(this.q, this.actionDieModifiers)
         ];
+      case "brand":
+        return []; // TODO
+      case "dain":
+        return []; // TODO
+      case "denethor":
+        return []; // TODO
+      case "theoden":
+        return []; // TODO
+      case "thranduil":
+        return []; // TODO
+      case "the-black-serpent":
+        return []; // TODO
+      case "the-shadow-of-mirkwood":
+        return []; // TODO
+      case "ugluk":
+        return []; // TODO
       case "strider":
         return [
           new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),

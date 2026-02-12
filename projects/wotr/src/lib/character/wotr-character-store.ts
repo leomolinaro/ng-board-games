@@ -10,46 +10,39 @@ export interface WotrCharacterState {
 
 export function initialeState(): WotrCharacterState {
   return {
-    ids: [
-      "gandalf-the-grey",
-      "strider",
-      "boromir",
-      "legolas",
-      "gimli",
-      "meriadoc",
-      "peregrin",
-      "aragorn",
-      "gandalf-the-white",
-      "gollum",
-      "saruman",
-      "the-mouth-of-sauron",
-      "the-witch-king"
-    ],
+    ids: [],
     map: {
-      "gandalf-the-grey": initialCompanion("gandalf-the-grey", "Gandalf the Grey", 3, 1, 0, "all"),
-      "strider": initialCompanion("strider", "Strider", 3, 1, 0, "north"),
-      "boromir": initialCompanion("boromir", "Boromir", 2, 1, 0, "gondor"),
-      "legolas": initialCompanion("legolas", "Legolas", 2, 1, 0, "elves"),
-      "gimli": initialCompanion("gimli", "Gimli", 2, 1, 0, "dwarves"),
-      "meriadoc": initialCompanion("meriadoc", "Meriadoc", 1, 1, 0, "all"),
-      "peregrin": initialCompanion("peregrin", "Peregrin", 1, 1, 0, "all"),
-      "aragorn": initialCompanion("aragorn", "Aragorn", 3, 2, 1, "all"),
+      "gandalf-the-grey": initialCompanion(
+        "gandalf-the-grey",
+        "Gandalf the Grey",
+        3,
+        1,
+        null,
+        "all"
+      ),
+      "strider": initialCompanion("strider", "Strider", 3, 1, null, "north"),
+      "boromir": initialCompanion("boromir", "Boromir", 2, 1, null, "gondor"),
+      "legolas": initialCompanion("legolas", "Legolas", 2, 1, null, "elves"),
+      "gimli": initialCompanion("gimli", "Gimli", 2, 1, null, "dwarves"),
+      "meriadoc": initialCompanion("meriadoc", "Meriadoc", 1, 1, null, "all"),
+      "peregrin": initialCompanion("peregrin", "Peregrin", 1, 1, null, "all"),
+      "aragorn": initialCompanion("aragorn", "Aragorn", 3, 2, "actionDie", "all"),
       "gandalf-the-white": initialCompanion(
         "gandalf-the-white",
         "Gandalf the White",
         3,
         1,
-        1,
+        "actionDie",
         "all"
       ),
-      "gollum": initialCompanion("gollum", "Gollum", 0, 0, 0, null),
-      "saruman": initialMinion("saruman", "Saruman", 0, 1, 1, false),
+      "gollum": initialCompanion("gollum", "Gollum", 0, 0, null, null),
+      "saruman": initialMinion("saruman", "Saruman", 0, 1, "actionDie", false),
       "the-mouth-of-sauron": initialMinion(
         "the-mouth-of-sauron",
         "The Mouth of Sauron",
         3,
         2,
-        1,
+        "actionDie",
         false
       ),
       "the-witch-king": initialMinion(
@@ -57,9 +50,23 @@ export function initialeState(): WotrCharacterState {
         "The Witch King",
         Number.MAX_SAFE_INTEGER,
         2,
-        1,
+        "actionDie",
         true
-      )
+      ),
+      // Kome
+      "brand": initialRuler("brand", "Brand", 1, 2, 2, "north"),
+      "dain": initialRuler("dain", "Dain", 1, 2, 4, "dwarves"),
+      "denethor": initialRuler("denethor", "Denethor", 1, 1, 3, "gondor"),
+      "theoden": initialRuler("theoden", "Theoden", 2, 1, 3, "rohan"),
+      "thranduil": initialRuler("thranduil", "Thranduil", 2, 1, 4, "elves"),
+      "the-black-serpent": initialDarkChieftains("the-black-serpent", "The Black Serpent", 2, 2),
+      "the-shadow-of-mirkwood": initialDarkChieftains(
+        "the-shadow-of-mirkwood",
+        "The Shadow of Mirkwood",
+        3,
+        1
+      ),
+      "ugluk": initialDarkChieftains("ugluk", "Ugluk", 2, 1)
     },
     messengerOfTheDarkTowerUsed: false
   };
@@ -70,7 +77,7 @@ function initialCompanion(
   name: string,
   level: number,
   leadership: number,
-  actionDiceBonus: number,
+  dieBonus: "actionDie" | "rulerDie" | null,
   activationNation: WotrNationId | "all" | null
 ): WotrCharacter {
   const character: WotrCharacter = {
@@ -82,12 +89,33 @@ function initialCompanion(
     front: "free-peoples",
     flying: false
   };
-  if (actionDiceBonus) {
-    character.actionDiceBonus = actionDiceBonus;
-  }
-  if (activationNation) {
-    character.activationNation = activationNation;
-  }
+  if (dieBonus) character.dieBonus = dieBonus;
+  if (activationNation) character.activationNation = activationNation;
+  return character;
+}
+
+function initialRuler(
+  id: WotrCharacterId,
+  name: string,
+  level: number,
+  awakenedLeadership: number,
+  shadowResistance: number,
+  activationNation: WotrNationId
+): WotrCharacter {
+  const character: WotrCharacter = {
+    id,
+    name,
+    level,
+    leadership: 1,
+    status: "available",
+    rulerStatus: "leader",
+    awakenedLeadership,
+    front: "free-peoples",
+    dieBonus: "rulerDie",
+    shadowResistance,
+    activationNation,
+    flying: false
+  };
   return character;
 }
 
@@ -96,7 +124,7 @@ function initialMinion(
   name: string,
   level: number,
   leadership: number,
-  actionDiceBonus: number,
+  dieBonus: "actionDie" | "rulerDie" | null,
   flying: boolean
 ): WotrCharacter {
   const character: WotrCharacter = {
@@ -108,9 +136,26 @@ function initialMinion(
     front: "shadow",
     flying
   };
-  if (actionDiceBonus) {
-    character.actionDiceBonus = actionDiceBonus;
-  }
+  if (dieBonus) character.dieBonus = dieBonus;
+  return character;
+}
+
+function initialDarkChieftains(
+  id: WotrCharacterId,
+  name: string,
+  level: number,
+  leadership: number
+): WotrCharacter {
+  const character: WotrCharacter = {
+    id,
+    name,
+    level,
+    leadership,
+    status: "available",
+    front: "shadow",
+    dieBonus: "rulerDie",
+    flying: false
+  };
   return character;
 }
 
@@ -135,6 +180,13 @@ export class WotrCharacterStore {
   }
   messengerOfTheDarkTowerUsed() {
     return this.state().messengerOfTheDarkTowerUsed;
+  }
+
+  setCharactersIds(ids: WotrCharacterId[]) {
+    this.update("setCharactersIds", s => ({
+      ...s,
+      ids
+    }));
   }
 
   private updateCharacter(

@@ -41,6 +41,10 @@ export class WotrCharacterQuery {
     return this.data().activationNation;
   }
 
+  get rulerStatus() {
+    return this.data().rulerStatus;
+  }
+
   getRegion(): WotrRegion | null {
     return this.regionStore.characterRegion(this.id);
   }

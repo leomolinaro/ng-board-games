@@ -213,10 +213,14 @@ export class WotrUnitRules {
     if (army.leaders) leadership += this.getLeadersLeadership(army.leaders);
     if (army.nNazgul) leadership += this.getNazgulLeadership(army.nNazgul);
     if (army.characters) {
-      const filteredCharacters = army.characters.filter(
-        characterId => !cancelledCharacters.includes(characterId)
-      );
-      leadership += this.getCharactersLeadership(filteredCharacters, moveable);
+      const filteredCharacters = army.characters.filter(characterId => {
+        if (cancelledCharacters.includes(characterId)) return false;
+        if (!moveable) return true;
+        const c = this.q.character(characterId);
+        if (c.level === 0) return false;
+        return true;
+      });
+      leadership += this.unitUtils.charactersLeadership(filteredCharacters);
     }
     leadership += this.unitModifiers.nLeaders(army);
     return leadership;
@@ -235,14 +239,6 @@ export class WotrUnitRules {
 
   private getNazgulLeadership(nNazgul: number) {
     return nNazgul;
-  }
-
-  private getCharactersLeadership(characters: WotrCharacterId[], moveable: boolean): number {
-    return characters.reduce((l, characterId) => {
-      const character = this.q.character(characterId);
-      const leadership = moveable && character.level === 0 ? 0 : character.leadership;
-      return l + leadership;
-    }, 0);
   }
 
   private canMoveArmy(army: WotrArmy, region: WotrRegion): boolean {
