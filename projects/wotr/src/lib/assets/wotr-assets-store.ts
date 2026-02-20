@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
+import { KomeSovereignId, WotrCharacterId } from "../character/wotr-character-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
@@ -137,6 +137,10 @@ export class WotrAssetsStore {
       40
     );
     this.CHARACTER_BY_ID.ugluk = this.initCharacterImage("kome/ugluk", 10, 10);
+  }
+
+  rulerToken(sovereignId: KomeSovereignId, used: boolean) {
+    return `${BASE_PATH}/kome/rule-tokens/${sovereignId}${used ? "-used" : ""}.png`;
   }
 
   private FELLOWSHIP: WotrUnitImage = this.unitImage("fellowship", 31, 31);
