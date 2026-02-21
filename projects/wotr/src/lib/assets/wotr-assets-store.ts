@@ -102,6 +102,9 @@ export class WotrAssetsStore {
   private initCharacterImage(fileName: string, width: number, height: number): WotrUnitImage {
     return { source: `${BASE_PATH}/characters/${fileName}.png`, width, height };
   }
+  private initKomeCharacterImage(fileName: string, width: number, height: number): WotrUnitImage {
+    return { source: `${BASE_PATH}/kome/characters/${fileName}.png`, width, height };
+  }
   private initCharacters() {
     this.CHARACTER_BY_ID["gandalf-the-grey"] = this.initCharacterImage("gandalf-the-grey", 31, 55);
     this.CHARACTER_BY_ID.strider = this.initCharacterImage("strider", 31, 47);
@@ -121,22 +124,22 @@ export class WotrAssetsStore {
     this.CHARACTER_BY_ID["the-witch-king"] = this.initCharacterImage("witch-king", 57, 44);
     this.CHARACTER_BY_ID["the-mouth-of-sauron"] = this.initCharacterImage("mouth", 43, 41);
     // Kome
-    this.CHARACTER_BY_ID.brand = this.initCharacterImage("kome/brand", 40, 40);
-    this.CHARACTER_BY_ID.dain = this.initCharacterImage("kome/dain", 40, 40);
-    this.CHARACTER_BY_ID.denethor = this.initCharacterImage("kome/denethor", 40, 40);
-    this.CHARACTER_BY_ID.theoden = this.initCharacterImage("kome/theoden", 40, 40);
-    this.CHARACTER_BY_ID.thranduil = this.initCharacterImage("kome/thranduil", 40, 40);
-    this.CHARACTER_BY_ID["the-black-serpent"] = this.initCharacterImage(
-      "kome/black-serpent",
-      40,
-      40
+    this.CHARACTER_BY_ID.brand = this.initKomeCharacterImage("brand", 37, 57);
+    this.CHARACTER_BY_ID.dain = this.initKomeCharacterImage("dain", 33, 45);
+    this.CHARACTER_BY_ID.denethor = this.initKomeCharacterImage("denethor", 38, 47);
+    this.CHARACTER_BY_ID.theoden = this.initKomeCharacterImage("theoden", 38, 47);
+    this.CHARACTER_BY_ID.thranduil = this.initKomeCharacterImage("thranduil", 38, 50);
+    this.CHARACTER_BY_ID["the-black-serpent"] = this.initKomeCharacterImage(
+      "the-black-serpent",
+      57,
+      66
     );
-    this.CHARACTER_BY_ID["the-shadow-of-mirkwood"] = this.initCharacterImage(
-      "kome/shadow-of-mirkwood",
-      40,
-      40
+    this.CHARACTER_BY_ID["the-shadow-of-mirkwood"] = this.initKomeCharacterImage(
+      "the-shadow-of-mirkwood",
+      39,
+      62
     );
-    this.CHARACTER_BY_ID.ugluk = this.initCharacterImage("kome/ugluk", 10, 10);
+    this.CHARACTER_BY_ID.ugluk = this.initKomeCharacterImage("ugluk", 49, 57);
   }
 
   rulerToken(sovereignId: KomeSovereignId, used: boolean) {
