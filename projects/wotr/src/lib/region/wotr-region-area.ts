@@ -606,19 +606,11 @@ export class WotrRegionArea {
     a: WotrCharacter | WotrNationId,
     b: WotrCharacter | WotrNationId
   ) {
-    if (typeof a === "string") {
-      return typeof b === "string" ? (a < b ? -1 : a === b ? 0 : 1) : 1;
-    }
-    if (typeof b === "string") {
-      return -1;
-    }
+    if (typeof a === "string") return typeof b === "string" ? (a < b ? -1 : a === b ? 0 : 1) : -1;
+    if (typeof b === "string") return 1;
     for (const c of SORTED_COMPANIONS) {
-      if (a.id === c) {
-        return -1;
-      }
-      if (b.id === c) {
-        return 1;
-      }
+      if (a.id === c) return -1;
+      if (b.id === c) return 1;
     }
     return 0;
   }
