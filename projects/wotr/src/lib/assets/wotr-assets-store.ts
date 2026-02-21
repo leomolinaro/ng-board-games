@@ -142,8 +142,12 @@ export class WotrAssetsStore {
     this.CHARACTER_BY_ID.ugluk = this.initKomeCharacterImage("ugluk", 49, 57);
   }
 
-  rulerToken(sovereignId: KomeSovereignId, used: boolean) {
-    return `${BASE_PATH}/kome/rule-tokens/${sovereignId}${used ? "-used" : ""}.png`;
+  sovereignToken(sovereignId: KomeSovereignId, used: boolean) {
+    return `${BASE_PATH}/kome/sovereign-tokens/${sovereignId}${used ? "-used" : ""}.png`;
+  }
+
+  sovereignAvatar(sovereignId: KomeSovereignId) {
+    return `${BASE_PATH}/kome/sovereign-avatars/${sovereignId}.png`;
   }
 
   private FELLOWSHIP: WotrUnitImage = this.unitImage("fellowship", 31, 31);
@@ -172,6 +176,9 @@ export class WotrAssetsStore {
   huntTileImage(huntTile: WotrHuntTileId) {
     if (huntTile.endsWith("km")) return `${BASE_PATH}/kome/hunt-tiles/${huntTile}.png`;
     return `${BASE_PATH}/hunt-tiles/${huntTile}.png`;
+  }
+  huntTileBack() {
+    return `${BASE_PATH}/hunt-tiles/back.png`;
   }
   politicalMarkerImage(nationId: WotrNationId, active: boolean) {
     return `${BASE_PATH}/political-markers/${nationId}-${active ? "active" : "inactive"}.png`;

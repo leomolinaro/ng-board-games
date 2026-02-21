@@ -1,7 +1,7 @@
 import { inject, Injectable } from "@angular/core";
 import { arrayUtil } from "../../../../commons/utils/src";
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrCharacterQuery } from "../character/wotr-character-query";
+import { KomeSovereignId, WotrCharacterId } from "../character/wotr-character-models";
+import { KomeSovereignQuery, WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFellowshipQuery } from "../fellowship/wotr-fellowship-query";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
@@ -51,17 +51,25 @@ export class WotrGameQuery {
   saruman = this.newCharacter("saruman");
   theWitchKing = this.newCharacter("the-witch-king");
   theMouthOfSauron = this.newCharacter("the-mouth-of-sauron");
-  brand = this.newCharacter("brand");
-  dain = this.newCharacter("dain");
-  denethor = this.newCharacter("denethor");
-  theoden = this.newCharacter("theoden");
-  thranduil = this.newCharacter("thranduil");
+  brand = this.newSovereign("brand");
+  dain = this.newSovereign("dain");
+  denethor = this.newSovereign("denethor");
+  theoden = this.newSovereign("theoden");
+  thranduil = this.newSovereign("thranduil");
   theBlackSerpent = this.newCharacter("the-black-serpent");
   theShadowOfMirkwood = this.newCharacter("the-shadow-of-mirkwood");
   ugluk = this.newCharacter("ugluk");
   private newCharacter(characterId: WotrCharacterId): WotrCharacterQuery {
     return new WotrCharacterQuery(
       characterId,
+      this.characterStore,
+      this.regionStore,
+      this.fellowshipStore
+    );
+  }
+  private newSovereign(sovereignId: KomeSovereignId): KomeSovereignQuery {
+    return new KomeSovereignQuery(
+      sovereignId,
       this.characterStore,
       this.regionStore,
       this.fellowshipStore

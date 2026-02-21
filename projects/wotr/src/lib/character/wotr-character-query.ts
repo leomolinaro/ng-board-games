@@ -2,18 +2,23 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import {
+  KomeSovereign,
+  KomeSovereignId,
+  WotrCharacter,
+  WotrCharacterId
+} from "./wotr-character-models";
 import { WotrCharacterStore } from "./wotr-character-store";
 
-export class WotrCharacterQuery {
+export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   constructor(
-    public readonly id: WotrCharacterId,
-    private characterStore: WotrCharacterStore,
-    private regionStore: WotrRegionStore,
-    private fellowshipStore: WotrFellowshipStore
+    public readonly id: ID,
+    protected characterStore: WotrCharacterStore,
+    protected regionStore: WotrRegionStore,
+    protected fellowshipStore: WotrFellowshipStore
   ) {}
 
-  private data(): WotrCharacter {
+  protected data(): WotrCharacter {
     return this.characterStore.character(this.id);
   }
 
@@ -39,10 +44,6 @@ export class WotrCharacterQuery {
 
   get activationNation(): WotrNationId | "all" | undefined {
     return this.data().activationNation;
-  }
-
-  get rulerStatus() {
-    return this.data().rulerStatus;
   }
 
   getRegion(): WotrRegion | null {
@@ -105,5 +106,24 @@ export class WotrCharacterQuery {
 
   setInFellowship(): void {
     this.characterStore.setInFellowship(this.id);
+  }
+}
+
+export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
+  constructor(
+    id: KomeSovereignId,
+    characterStore: WotrCharacterStore,
+    regionStore: WotrRegionStore,
+    fellowshipStore: WotrFellowshipStore
+  ) {
+    super(id, characterStore, regionStore, fellowshipStore);
+  }
+
+  protected override data(): KomeSovereign {
+    return this.characterStore.sovereign(this.id);
+  }
+
+  get rulerStatus() {
+    return this.data().sovereignStatus;
   }
 }

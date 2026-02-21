@@ -1,12 +1,19 @@
 import { Injectable, Signal, computed } from "@angular/core";
 import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrCharacter, WotrCharacterId } from "./wotr-character-models";
+import {
+  KomeSovereign,
+  KomeSovereignId,
+  WotrCharacter,
+  WotrCharacterId
+} from "./wotr-character-models";
 
 export interface WotrCharacterState {
   ids: WotrCharacterId[];
   map: Record<WotrCharacterId, WotrCharacter>;
   messengerOfTheDarkTowerUsed: boolean;
 }
+
+const sovereigns = ["brand", "dain", "denethor", "theoden", "thranduil"] as KomeSovereignId[];
 
 export function initialeState(): WotrCharacterState {
   return {
@@ -95,26 +102,27 @@ function initialCompanion(
 }
 
 function initialRuler(
-  id: WotrCharacterId,
+  id: KomeSovereignId,
   name: string,
   level: number,
   awakenedLeadership: number,
   shadowResistance: number,
   activationNation: WotrNationId
-): WotrCharacter {
-  const character: WotrCharacter = {
+): KomeSovereign {
+  const character: KomeSovereign = {
     id,
     name,
     level,
     leadership: 1,
     status: "available",
-    rulerStatus: "leader",
+    sovereignStatus: "leader",
     awakenedLeadership,
     front: "free-peoples",
     dieBonus: "rulerDie",
     shadowResistance,
     activationNation,
-    flying: false
+    flying: false,
+    corruptionTiles: []
   };
   return character;
 }
@@ -175,6 +183,12 @@ export class WotrCharacterStore {
   companions = computed(() => {
     return this.characters().filter(c => c.front === "free-peoples");
   });
+  sovereigns = computed(() => {
+    return sovereigns.map(id => this.character(id) as KomeSovereign);
+  });
+  sovereign(sovereignId: KomeSovereignId) {
+    return this.character(sovereignId) as KomeSovereign;
+  }
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];
   }

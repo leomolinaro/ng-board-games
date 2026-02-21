@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import { KomeSovereignQuery } from "../character/wotr-character-query";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { frontOfNation, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy, WotrLeaderUnits, WotrUnits } from "./wotr-unit-models";
@@ -268,7 +269,7 @@ export class WotrUnitUtils {
   isCompanion(characterId: WotrCharacterId): boolean {
     const character = this.q.character(characterId);
     if (character.frontId !== "free-peoples") return false;
-    return !character.rulerStatus || character.rulerStatus === "awakened";
+    return character instanceof KomeSovereignQuery ? character.rulerStatus === "awakened" : true;
   }
 
   nCompanions(units: WotrUnits): number {

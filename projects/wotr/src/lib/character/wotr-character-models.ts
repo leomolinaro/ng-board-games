@@ -1,4 +1,5 @@
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 
 export type WotrCompanionId =
@@ -34,12 +35,20 @@ export interface WotrCharacter {
   leadership: number;
   dieBonus?: "actionDie" | "rulerDie";
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
-  rulerStatus?: "leader" | "awakened" | "corrupted";
   awakenedLeadership?: number;
   front: WotrFrontId;
   activationNation?: WotrNationId | "all";
   shadowResistance?: number;
   flying: boolean;
+}
+
+export interface KomeSovereign extends WotrCharacter {
+  id: KomeSovereignId;
+  sovereignStatus: "leader" | "awakened" | "corrupted";
+  dieBonus: "rulerDie";
+  front: "free-peoples";
+  shadowResistance: number;
+  corruptionTiles: WotrHuntTileId[];
 }
 
 export function baseCharacters(): WotrCharacterId[] {
