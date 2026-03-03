@@ -40,7 +40,9 @@ function initialFront(id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]
     characterDiscardPile: [],
     strategyDiscardPile: [],
     actionDice: [],
+    currentActionDie: null,
     actionTokens: [],
+    currentActionToken: null,
     elvenRings,
     elvenRingUsed: false,
     victoryPoints: 0
@@ -175,6 +177,21 @@ export class WotrFrontStore {
     }));
   }
 
+  setCurrentActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
+    this.updateFront("setCurrentActionDie", frontId, front => ({
+      ...front,
+      currentActionDie: die,
+      actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
+    }));
+  }
+
+  removeCurrentActionDie(frontId: WotrFrontId): void {
+    this.updateFront("removeCurrentActionDie", frontId, front => ({
+      ...front,
+      currentActionDie: null
+    }));
+  }
+
   removeActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
     this.updateFront("removeActionDie", frontId, front => ({
       ...front,
@@ -214,6 +231,21 @@ export class WotrFrontStore {
     this.updateFront("changeActionDie", frontId, front => ({
       ...front,
       actionDice: immutableUtil.listReplaceFirst(d => d === die, toDie, front.actionDice)
+    }));
+  }
+
+  setCurrentActionToken(token: WotrActionToken, frontId: WotrFrontId): void {
+    this.updateFront("setCurrentActionToken", frontId, front => ({
+      ...front,
+      currentActionToken: token,
+      actionTokens: immutableUtil.listRemoveFirst(t => t === token, front.actionTokens)
+    }));
+  }
+
+  removeCurrentActionToken(frontId: WotrFrontId): void {
+    this.updateFront("removeCurrentActionToken", frontId, front => ({
+      ...front,
+      currentActionToken: null
     }));
   }
 

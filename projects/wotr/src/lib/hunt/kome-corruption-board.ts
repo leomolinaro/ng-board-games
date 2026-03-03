@@ -1,10 +1,10 @@
 import { Component, inject } from "@angular/core";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { WotrAssetsStore } from "../../assets/wotr-assets-store";
-import { KomeSovereign } from "../../character/wotr-character-models";
-import { WotrCharacterStore } from "../../character/wotr-character-store";
-import { WotrGameStore } from "../../game/wotr-game-store";
-import { WotrHuntTileId } from "../wotr-hunt-models";
+import { WotrAssetsStore } from "../assets/wotr-assets-store";
+import { KomeSovereign } from "../character/wotr-character-models";
+import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrGameStore } from "../game/wotr-game-store";
+import { WotrHuntTileId } from "./wotr-hunt-models";
 
 @Component({
   selector: "kome-corruption-board",

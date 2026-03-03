@@ -5,7 +5,10 @@ import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-actio
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrGameStore } from "../game/wotr-game-store";
+import { KomeCorruptionFlow } from "./kome-corruption-flow";
 import { WotrHuntAction } from "./wotr-hunt-actions";
+import { WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntStore } from "./wotr-hunt-store";
 
 @Injectable()
@@ -14,6 +17,8 @@ export class WotrHuntHandler {
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private frontStore = inject(WotrFrontStore);
+  private gameStore = inject(WotrGameStore);
+  private corruptionFlow = inject(KomeCorruptionFlow);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -43,7 +48,11 @@ export class WotrHuntHandler {
           this.huntStore.moveAvailableTileToReady(action.tile);
         }
       },
-      "hunt-tile-return": (action, front) => this.huntStore.returnDrawnTileToPool(action.tile)
+      "hunt-tile-return": (action, front) => this.huntStore.returnDrawnTileToPool(action.tile),
+      "corruption-start-attempt": async (action, front) => this.startCorruptionAttempt(action.tile),
+      "corruption-continue-attempt": async (action, front) =>
+        this.continueCorruptionAttempt(action.tile),
+      "corruption-stop-attempt": async (action, front) => this.stopCorruptionAttempt()
     };
   }
 
@@ -89,6 +98,28 @@ export class WotrHuntHandler {
         " returns ",
         f.huntTile(action.tile),
         " hunt tile to the Hunt Pool"
+      ],
+      "corruption-start-attempt": (action, front, f) => {
+        const log = [f.player(front), " starts a corruption attempt,"];
+        if (this.gameStore.visibleCorruptionTiles()) {
+          log.push(" drawing ", f.huntTile(action.tile), " hunt tile");
+        } else {
+          log.push(" drawing an hunt tile");
+        }
+        return log;
+      },
+      "corruption-continue-attempt": (action, front, f) => {
+        const log = [f.player(front), " continues a corruption attempt,"];
+        if (this.gameStore.visibleCorruptionTiles()) {
+          log.push(" drawing ", f.huntTile(action.tile), " hunt tile");
+        } else {
+          log.push(" drawing an hunt tile");
+        }
+        return log;
+      },
+      "corruption-stop-attempt": (action, front, f) => [
+        f.player(front),
+        " stops the corruption attempt"
       ]
     };
   }
@@ -116,5 +147,19 @@ export class WotrHuntHandler {
       default:
         return 0;
     }
+  }
+
+  async startCorruptionAttempt(tile: WotrHuntTileId) {
+    this.huntStore.drawCorruptionTile(tile);
+    await this.corruptionFlow.startAttempt(tile);
+  }
+
+  async continueCorruptionAttempt(tile: WotrHuntTileId) {
+    this.huntStore.drawCorruptionTile(tile);
+    await this.corruptionFlow.continueAttempt(tile);
+  }
+
+  async stopCorruptionAttempt() {
+    await this.corruptionFlow.stopAttempt();
   }
 }

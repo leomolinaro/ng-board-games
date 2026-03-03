@@ -40,6 +40,7 @@ export class WotrActionDieHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
+    this.frontStore.setCurrentActionDie(story.die, front);
     if (story.actions?.length) {
       for (const action of story.actions) {
         this.logger.logAction(action, story, front);
@@ -48,7 +49,7 @@ export class WotrActionDieHandler {
     } else {
       this.logger.logNoActions(story, front);
     }
-    this.frontStore.removeActionDie(story.die, front);
+    this.frontStore.removeCurrentActionDie(front);
     await this.actionDieModifiers.onAfterActionDieResolution(story, front);
   };
 
@@ -63,11 +64,12 @@ export class WotrActionDieHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
+    this.frontStore.setCurrentActionToken(story.token, front);
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
-    this.frontStore.removeActionToken(story.token, front);
+    this.frontStore.removeCurrentActionToken(front);
   };
 
   private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (story, front) => {

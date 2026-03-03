@@ -11,7 +11,10 @@ export type WotrHuntAction =
   | WotrHuntTileAdd
   | WotrHuntTileReturn
   | WotrHuntShelobsLairRoll
-  | WotrHuntLidlessEyeDieChange;
+  | WotrHuntLidlessEyeDieChange
+  | KomeCorruptionStartAttempt
+  | KomeCorruptionContinueAttempt
+  | KomeCorruptionStopAttempt;
 
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
@@ -79,4 +82,28 @@ export function returnHuntTile(tile: WotrHuntTileId): WotrHuntTileReturn {
 export interface WotrHuntEffect {
   type: "hunt-effect";
   actions: WotrAction[];
+}
+
+export interface KomeCorruptionStartAttempt {
+  type: "corruption-start-attempt";
+  tile: WotrHuntTileId;
+}
+export function startCorruptionAttempt(tile: WotrHuntTileId): KomeCorruptionStartAttempt {
+  return { type: "corruption-start-attempt", tile };
+}
+
+export interface KomeCorruptionContinueAttempt {
+  type: "corruption-continue-attempt";
+  tile: WotrHuntTileId;
+}
+export function continueCorruptionAttempt(tile: WotrHuntTileId): KomeCorruptionContinueAttempt {
+  return { type: "corruption-continue-attempt", tile };
+}
+
+// only with sequentialCorruptionDraw variant
+export interface KomeCorruptionStopAttempt {
+  type: "corruption-stop-attempt";
+}
+export function stopCorruptionAttempt(): KomeCorruptionStopAttempt {
+  return { type: "corruption-stop-attempt" };
 }

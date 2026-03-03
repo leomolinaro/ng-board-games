@@ -75,8 +75,8 @@ export class WotrActionDiceBox {
     return this.fronts().map<FrontNode>(front => ({
       id: front.id,
       front,
-      selectable: actionDieSelection?.frontId === front.id,
-      disabled: !!actionDieSelection && actionDieSelection.frontId !== front.id,
+      selectable: actionDieSelection === front.id,
+      disabled: !!actionDieSelection && actionDieSelection !== front.id,
       actionDieNodes: front.actionDice.map<ActionDieNode>(actionDie => ({
         id: actionDie,
         imageSource: this.assets.actionDieImage(actionDie, front.id)
@@ -90,11 +90,11 @@ export class WotrActionDiceBox {
 
   onActionDieClick(actionDie: WotrActionDie, frontNode: FrontNode) {
     if (!frontNode.selectable) return;
-    this.ui.actionChoice.emit({ type: "die", die: actionDie });
+    this.ui.actionDieChoice.emit(actionDie);
   }
 
   onActionTokenClick(actionToken: WotrActionToken, frontNode: FrontNode) {
     if (!frontNode.selectable) return;
-    this.ui.actionChoice.emit({ type: "token", token: actionToken });
+    this.ui.actionTokenChoice.emit(actionToken);
   }
 }

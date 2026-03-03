@@ -50,6 +50,7 @@ export class WotrFellowshipHandler {
     return {
       "fellowship-declare": (story, front) => this.declare(story.region),
       "fellowship-corruption": (action, front) => this.corrupt(action.quantity),
+      "fellowship-heal": (action, front) => this.corrupt(-action.quantity),
       "fellowship-push": (action, front) => this.pushFellowship(action.region),
       "fellowship-guide": (action, front) => this.changeGuide(action.companion),
       "fellowship-hide": (action, front) => this.hide(),
@@ -155,7 +156,13 @@ export class WotrFellowshipHandler {
     return {
       "fellowship-corruption": (action, front, f) => [
         f.player(front),
-        ` ${action.quantity < 0 ? "heals" : "adds"} ${this.nCorruptionPoints(Math.abs(action.quantity))}`
+        " adds ",
+        this.nCorruptionPoints(action.quantity)
+      ],
+      "fellowship-heal": (action, front, f) => [
+        f.player(front),
+        " heals ",
+        this.nCorruptionPoints(action.quantity)
       ],
       "fellowship-guide": (action, front, f) => [
         f.player(front),

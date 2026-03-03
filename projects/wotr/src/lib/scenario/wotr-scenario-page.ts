@@ -34,8 +34,11 @@ export class WotrScenarioPage {
     loader: async () => {
       const scenario = this.scenarios.getScenario(this.gameId);
       const gameConfig: WotrGameConfig = {};
-      const setup = (await scenario.loadDefinition()).setup;
+      const scenarioDef = scenario.loadDefinition();
+      const setup = scenarioDef.setup;
       if (setup) gameConfig.setup = setup;
+      const options = scenarioDef.options;
+      if (options) gameConfig.options = options;
       return gameConfig;
     }
   }).value;

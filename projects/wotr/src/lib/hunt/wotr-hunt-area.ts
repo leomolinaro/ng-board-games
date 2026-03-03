@@ -3,9 +3,9 @@ import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrGameStore } from "../game/wotr-game-store";
+import { KomeCorruptionBoard } from "./kome-corruption-board";
 import { WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntState } from "./wotr-hunt-store";
-import { KomeCorruptionBoard } from "./kome/kome-corruption-board";
 
 @Component({
   selector: "wotr-hunt-area",

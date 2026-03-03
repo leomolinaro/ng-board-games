@@ -21,8 +21,12 @@ export interface WotrFellowshipCorruption {
 export function corruptFellowship(quantity: number): WotrFellowshipCorruption {
   return { type: "fellowship-corruption", quantity };
 }
-export function healFellowship(quantity: number): WotrFellowshipCorruption {
-  return { type: "fellowship-corruption", quantity: -quantity };
+export interface WotrFellowshipHeal {
+  type: "fellowship-heal";
+  quantity: number;
+}
+export function healFellowship(quantity: number): WotrFellowshipHeal {
+  return { type: "fellowship-heal", quantity };
 }
 export interface WotrFellowshipHide {
   type: "fellowship-hide";
@@ -79,6 +83,7 @@ export function chooseRandomCompanion(...companions: WotrCompanionId[]): WotrCom
 export type WotrFellowshipAction =
   | WotrFellowshipProgress
   | WotrFellowshipCorruption
+  | WotrFellowshipHeal
   | WotrFellowshipPush
   | WotrFellowshipDeclare
   | WotrFellowshipHide

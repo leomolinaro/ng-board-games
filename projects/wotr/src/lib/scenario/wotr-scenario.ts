@@ -1,3 +1,4 @@
+import { WotrGameOptions } from "../game/options/wotr-game-options";
 import { WotrStoryDoc } from "../game/wotr-story-models";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
@@ -11,6 +12,7 @@ export interface WotrScenario {
 
 export interface WotrScenarioDefinition {
   setup?: (rules: WotrSetupRules) => WotrSetup;
+  options?: WotrGameOptions;
   stories: (builder: WotrStoriesBuilder) => WotrStoryDoc[];
 }
 

@@ -30,6 +30,7 @@ import {
   reRollHuntDice,
   rollHuntDice,
   rollShelobsLairDie,
+  startCorruptionAttempt,
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
 import { WotrHuntHandler } from "./wotr-hunt-handler";
@@ -277,4 +278,15 @@ export class WotrHuntUi {
       return [eliminateCharacter(character)];
     }
   }
+
+  private async startCorruptionAttempt() {
+    await this.ui.askContinue("Draw hunt tile");
+    const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+    return startCorruptionAttempt(huntTile);
+  }
+
+  corruptionAttemptChoice: WotrUiChoice = {
+    label: () => "Corruption attempt",
+    actions: async () => [await this.startCorruptionAttempt()]
+  };
 }

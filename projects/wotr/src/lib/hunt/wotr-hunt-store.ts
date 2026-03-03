@@ -127,6 +127,13 @@ export class WotrHuntStore {
     }));
   }
 
+  drawCorruptionTile(tile: WotrHuntTileId): void {
+    this.update("drawCorruptionTile", state => ({
+      ...state,
+      huntPool: immutableUtil.listRemoveFirst(h => h === tile, state.huntPool)
+    }));
+  }
+
   moveAvailableTileToReady(tile: WotrHuntTileId): void {
     this.update("moveAvailableTileToReady", state => ({
       ...state,

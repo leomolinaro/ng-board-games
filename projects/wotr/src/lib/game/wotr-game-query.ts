@@ -102,6 +102,7 @@ export class WotrGameQuery {
     this.peregrin,
     this.gandalfTheWhite,
     this.aragorn,
+    this.gollum,
     this.brand,
     this.dain,
     this.denethor,

@@ -165,7 +165,17 @@ export class WotrSetupRules {
     nLeaders: number,
     ruler?: KomeSovereignId
   ): WotrRegionSetup {
-    return { region, nation, nRegulars, nElites, nLeaders, nNazgul: 0, ruler: ruler || null };
+    const setup: WotrRegionSetup = {
+      region,
+      nation,
+      nRegulars,
+      nElites,
+      nLeaders,
+      nNazgul: 0,
+      ruler: null
+    };
+    if (this.gameStore.kome() && ruler) setup.ruler = ruler;
+    return setup;
   }
 
   private sRegionSetup(

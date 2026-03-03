@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { cardScenarios } from "../card/wotr-card-scenarios";
 import { characterScenarios } from "../character/wotr-character-scenarios";
-import { WotrScenario, WotrScenarioInfo } from "./wotr-scenario";
+import { huntScenarios } from "../hunt/wotr-hunt-scenarios";
 import { fullGameScenarios } from "./full-games/wotr-full-game-scenarios";
+import { WotrScenario, WotrScenarioInfo } from "./wotr-scenario";
 
 @Injectable({ providedIn: "root" })
 export class WotrScenarios {
@@ -15,6 +16,7 @@ export class WotrScenarios {
     this.addScenarios(fullGameScenarios());
     this.addScenarios(cardScenarios());
     this.addScenarios(characterScenarios());
+    this.addScenarios(huntScenarios());
   }
 
   private addScenarios(scenarios: WotrScenario[]) {

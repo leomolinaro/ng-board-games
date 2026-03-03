@@ -11,7 +11,7 @@ export class WotrFrontUi {
   private frontHandler = inject(WotrFrontHandler);
 
   async useElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): Promise<WotrElvenRingAction> {
-    const fromDie = await this.ui.askActionDie("Choose a die to change", frontId, [], null);
+    const fromDie = await this.ui.askActionDie("Choose a die to change", { frontId });
     if (fromDie.type !== "die") throw new Error("Die expected");
     const toDieOptions: WotrUiOption<WotrActionDie>[] = [
       { value: "character", label: "Character die" },

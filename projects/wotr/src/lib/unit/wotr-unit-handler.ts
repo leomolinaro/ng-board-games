@@ -162,7 +162,10 @@ export class WotrUnitHandler {
     const fromCasualties = Math.min(casualties, toDowngrade);
     const fromReinforcements = toDowngrade - fromCasualties;
     const region = this.regionStore.region(regionId);
-    if (toDowngrade) this.removeElitesFromRegion(toDowngrade, nationId, region);
+    if (toDowngrade) {
+      this.removeElitesFromRegion(toDowngrade, nationId, region);
+      this.nationStore.addElitesToReinforcements(toDowngrade, nationId);
+    }
     if (toEliminate) this.eliminateEliteUnit(toEliminate, nationId, regionId);
     if (fromCasualties) this.nationStore.removeRegularsFromCasualties(fromCasualties, nationId);
     if (fromReinforcements)
@@ -271,7 +274,7 @@ export class WotrUnitHandler {
       },
       "regular-unit-elimination": (action, front, f) => [
         f.player(front),
-        " removes regular units from ",
+        ` removes ${this.logUnit(action.quantity, "regular")} from `,
         f.region(action.region)
       ],
       "regular-unit-recruitment": (action, front, f) => [

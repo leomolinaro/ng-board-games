@@ -191,6 +191,12 @@ export class WotrUnitUtils {
     return false;
   }
 
+  getNRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (!units.regulars?.length) return 0;
+    const unit = units.regulars.find(u => u.nation === nation);
+    return unit ? unit.quantity : 0;
+  }
+
   hasEliteUnits(units: WotrUnits) {
     if (units.elites?.length) return true;
     return false;
@@ -199,6 +205,12 @@ export class WotrUnitUtils {
   getNEliteUnits(units: WotrUnits) {
     if (!units.elites?.length) return 0;
     return units.elites.reduce((count, u) => count + u.quantity, 0);
+  }
+
+  getNEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+    if (!units.elites?.length) return 0;
+    const unit = units.elites.find(u => u.nation === nation);
+    return unit ? unit.quantity : 0;
   }
 
   hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {

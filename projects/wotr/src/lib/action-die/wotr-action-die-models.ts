@@ -3,7 +3,8 @@ import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 export type WotrActionChoice =
   | { type: "die"; die: WotrActionDie }
   | { type: "token"; token: WotrActionToken }
-  | { type: "elvenRing"; ring: WotrElvenRing };
+  | { type: "elvenRing"; ring: WotrElvenRing }
+  | { type: "eye" };
 
 export type WotrFreePeopleActionDie =
   | "character"

@@ -30,6 +30,7 @@ export class WotrCardStoryHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
+    this.frontStore.setCurrentActionDie(story.die, front);
     this.frontStore.setCurrentCard(story.card);
     this.frontStore.discardCards([story.card], front);
     if (story.actions?.length) {
@@ -44,7 +45,7 @@ export class WotrCardStoryHandler {
     if (card.effect) {
       await card.effect({ front, story, cardId: story.card });
     }
-    this.frontStore.removeActionDie(story.die, front);
+    this.frontStore.removeCurrentActionDie(front);
     this.frontStore.clearCurrentCard();
   };
 

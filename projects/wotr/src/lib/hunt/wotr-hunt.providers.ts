@@ -4,11 +4,13 @@ import { WotrHuntHandler } from "./wotr-hunt-handler";
 import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
 import { WotrHuntUi } from "./wotr-hunt-ui";
+import { KomeCorruptionFlow } from "./kome-corruption-flow";
 
 export const huntProviders: Provider[] = [
   WotrHuntFlow,
   WotrHuntHandler,
   WotrHuntModifiers,
   WotrHuntStore,
-  WotrHuntUi
+  WotrHuntUi,
+  KomeCorruptionFlow
 ];

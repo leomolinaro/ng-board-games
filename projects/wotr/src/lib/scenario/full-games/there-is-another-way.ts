@@ -34,6 +34,14 @@ import { WotrScenarioDefinition } from "../wotr-scenario";
 import { WotrStoriesBuilder } from "../wotr-story-builder";
 
 export const scenario: WotrScenarioDefinition = {
+  options: {
+    tokens: [
+      { token: "draw-card", front: "free-peoples" },
+      { token: "political-advance", front: "free-peoples" }
+    ],
+    expansions: [],
+    variants: []
+  },
   stories: (b: WotrStoriesBuilder) => [
     // Turn 1
     b.fpT().firstPhaseDraw("Swords in Eriador", "Challenge of the King"),

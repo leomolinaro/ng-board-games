@@ -30,6 +30,7 @@ import {
 } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
+import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 
 @Injectable()
 export class WotrActionDieUi {
@@ -41,6 +42,7 @@ export class WotrActionDieUi {
   private cardUi = inject(WotrCardDrawUi);
   private cardPlayUi = inject(WotrCardPlayUi);
   private nationUi = inject(WotrNationUi);
+  private huntUi = inject(WotrHuntUi);
   private fellowshipUi = inject(WotrFellowshipUi);
   private q = inject(WotrGameQuery);
   private frontUi = inject(WotrFrontUi);
@@ -140,12 +142,11 @@ export class WotrActionDieUi {
   ): Promise<WotrStory> {
     const playableTokens = this.actionDieRules.playableTokens(frontId);
     const availableRings = this.q.front(frontId).playableElvenRings();
-    const actionChoice = await this.ui.askActionDie(
-      "Choose an action die to resolve",
+    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", {
       frontId,
-      playableTokens,
-      { frontId, rings: availableRings }
-    );
+      tokens: playableTokens,
+      elvenRings: availableRings
+    });
     switch (actionChoice.type) {
       case "die": {
         const dieStory = await this.resolveActionDie(actionChoice.die, frontId);
@@ -161,6 +162,8 @@ export class WotrActionDieUi {
         const elvenRingAction = await this.frontUi.useElvenRing(actionChoice.ring, frontId);
         return this.askAndResolveActionDie(frontId, elvenRingAction);
       }
+      case "eye":
+        return this.resolveEyeDie(frontId);
     }
   }
 
@@ -427,5 +430,14 @@ export class WotrActionDieUi {
       token: "move-nazgul-minions",
       actions: nazgulMovements
     };
+  }
+
+  private async resolveEyeDie(frontId: WotrFrontId): Promise<WotrStory> {
+    return this.ui.askDieStoryChoice(
+      "eye",
+      "Choose an action for the eye die",
+      [this.huntUi.corruptionAttemptChoice],
+      frontId
+    );
   }
 }
