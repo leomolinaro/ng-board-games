@@ -1,13 +1,7 @@
 import { WotrCardDraw } from "../../card/wotr-card-actions";
-import { WotrAction as WotrBaseAction } from "../../commons/wotr-action-models";
 import { WotrScenarioDefinition } from "../wotr-scenario";
 import { WotrStoriesBuilder } from "../wotr-story-builder";
 
-type WotrStrictActions<T> = T extends { actions: WotrBaseAction[] }
-  ? Omit<T, "actions"> & { actions: any[] }
-  : T;
-
-// export const stories: WotrStrictActions<WotrStoryDoc>[] = [
 export const scenario: WotrScenarioDefinition = {
   options: {
     tokens: [

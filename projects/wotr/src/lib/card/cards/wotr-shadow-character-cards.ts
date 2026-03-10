@@ -672,10 +672,15 @@ export class WotrShadowCharacterCards {
             } else if (choice1 === "move") {
               actions.push(...(await this.characterUi.moveAnyOrAllNazgul()));
             }
-            const region = this.q.region(regionId);
-            if (!region.hasArmy("shadow")) return actions;
-            const canMove = this.unitRules.canMoveArmyFromRegion(region.region(), "shadow");
-            const canAttack = this.unitRules.canArmyAttack(region.army("shadow")!, region.region());
+            const wkRegionId = this.q.theWitchKing.getRegion()!.id;
+            const wkRegion = this.q.region(wkRegionId);
+            if (!wkRegion.hasArmy("shadow")) return actions;
+            const canMove = this.unitRules.canMoveArmyFromRegion(wkRegion.region(), "shadow");
+            const canAttack = this.unitRules.canArmyAttack(
+              wkRegion.army("shadow")!,
+              wkRegion.region()
+            );
+            console.log("canAttack", canAttack);
             if (!canMove && !canAttack) return actions;
             const choice2 = await this.ui.askOption<"move" | "attack">("Choose", [
               { value: "move", label: "Move with the Witch-king", disabled: !canMove },

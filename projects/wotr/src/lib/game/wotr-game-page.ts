@@ -187,6 +187,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
       if (this.replayMode) {
         this.story.setReplayMode(true);
       }
+      // console.log("stories", [...stories]);
       this.story.setStoryDocs(stories);
       await this.flow.game(this.gameConfig() ?? {});
     }
