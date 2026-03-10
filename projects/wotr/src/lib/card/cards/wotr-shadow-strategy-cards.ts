@@ -393,8 +393,7 @@ export class WotrShadowStrategyCards {
               const fromRegion = units.regionId;
               const targetRegions = this.q
                 .region(fromRegion)
-                .reachableRegions(1, region => region.isFreeForArmyMovement("shadow"))
-                .filter(r => r.hasArmyNotUnderSiege("shadow"));
+                .reachableRegions(1, region => region.isFreeForArmyMovement("shadow"));
               if (!targetRegions.length) {
                 await this.ui.askContinue("No valid target regions available for movement");
                 return actions;

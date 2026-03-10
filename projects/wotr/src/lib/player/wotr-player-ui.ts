@@ -137,14 +137,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async wantRetreatIntoSiege(): Promise<WotrBaseStory> {
     return {
       type: "base",
-      actions: [await this.battleUi.wantRetreatIntoSiege()]
+      actions: await this.battleUi.wantRetreatIntoSiege()
     };
   }
 
   async wantRetreat(): Promise<WotrBaseStory> {
     return {
       type: "base",
-      actions: [await this.battleUi.wantRetreat()]
+      actions: await this.battleUi.wantRetreat()
     };
   }
 

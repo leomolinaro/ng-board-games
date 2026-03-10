@@ -18,6 +18,7 @@ import {
 } from "../unit/wotr-unit-actions";
 import { WotrUnits } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
+import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import {
   advanceArmy,
@@ -49,6 +50,7 @@ export class WotrBattleUi {
   private combatCards = inject(WotrCombatCards);
   private battleHandler = inject(WotrBattleHandler);
   private unitRules = inject(WotrUnitRules);
+  private unitUi = inject(WotrUnitUi);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -148,7 +150,7 @@ export class WotrBattleUi {
     }
   }
 
-  async wantRetreatIntoSiege(): Promise<WotrAction> {
+  async wantRetreatIntoSiege(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
@@ -156,7 +158,11 @@ export class WotrBattleUi {
       "Retreat into siege",
       "Continue field battle"
     );
-    return confirm ? retreatIntoSiege(region.id) : notRetreatIntoSiege(region.id);
+    if (!confirm) return [notRetreatIntoSiege(region.id)];
+    const actions: WotrAction[] = [retreatIntoSiege(region.id)];
+    this.battleHandler.retreatIntoSiege(region.id);
+    actions.push(...(await this.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
+    return actions;
   }
 
   async wantContinueBattle(): Promise<WotrAction[]> {
@@ -181,7 +187,7 @@ export class WotrBattleUi {
     return actions;
   }
 
-  async wantRetreat(): Promise<WotrAction> {
+  async wantRetreat(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const options: WotrUiOption<"retreat-into-siege" | "retreat" | "not-retreat">[] = [];
@@ -203,18 +209,23 @@ export class WotrBattleUi {
       "Do you want to retreat?",
       options
     );
+    if (option === "not-retreat") return [notRetreat()];
+    const actions: WotrAction[] = [];
     if (option === "retreat-into-siege") {
-      return retreatIntoSiege(region.id);
+      actions.push(retreatIntoSiege(region.id));
+      this.battleHandler.retreatIntoSiege(region.id);
+      actions.push(...(await this.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
     } else if (option === "retreat") {
       const retreatableRegions = this.unitRules.retreatableRegions(region, battle.defender.frontId);
       const toRegionId = await this.ui.askRegion(
         "Choose a region to retreat to",
         retreatableRegions
       );
-      return retreat(toRegionId);
-    } else {
-      return notRetreat();
+      actions.push(retreat(toRegionId));
+      this.battleHandler.retreat(toRegionId);
+      actions.push(...(await this.unitUi.checkStackingLimit(toRegionId, battle.defender.frontId)));
     }
+    return actions;
   }
 
   async chooseCombatCard(

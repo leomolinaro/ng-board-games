@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrAction } from "../commons/wotr-action-models";
@@ -80,6 +81,15 @@ export class WotrFellowshipUi {
       }
     }
     return actions;
+  }
+
+  async eliminateCompanions(): Promise<WotrAction> {
+    const fellowshipCompanions = this.fellowshipStore.companions();
+    const companions = await this.ui.askFellowshipCompanions("Select companions to eliminate", {
+      companions: fellowshipCompanions,
+      singleSelection: false
+    });
+    return eliminateCharacter(...companions);
   }
 
   async separateCompanions(options?: WotrSeparateCompanionsOptions): Promise<WotrAction[]> {

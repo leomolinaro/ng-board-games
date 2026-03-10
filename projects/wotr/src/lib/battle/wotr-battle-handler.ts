@@ -17,6 +17,7 @@ import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrArmy } from "../unit/wotr-unit-models";
@@ -70,11 +71,10 @@ export class WotrBattleHandler {
     );
     this.actionRegistry.registerAction<WotrArmyRetreatIntoSiege>(
       "army-retreat-into-siege",
-      this.applyArmyRetreatIntoSiege.bind(this)
+      action => this.retreatIntoSiege(action.region)
     );
-    this.actionRegistry.registerAction<WotrArmyRetreat>(
-      "army-retreat",
-      this.applyArmyRetreat.bind(this)
+    this.actionRegistry.registerAction<WotrArmyRetreat>("army-retreat", action =>
+      this.retreat(action.toRegion)
     );
     this.actionRegistry.registerAction<WotrArmyAdvance>(
       "army-advance",
@@ -121,13 +121,13 @@ export class WotrBattleHandler {
     return 1;
   }
 
-  private applyArmyRetreatIntoSiege(action: WotrArmyRetreatIntoSiege) {
-    this.regionStore.moveArmyIntoSiege(action.region);
+  retreatIntoSiege(region: WotrRegionId) {
+    this.regionStore.moveArmyIntoSiege(region);
   }
 
-  private applyArmyRetreat(action: WotrArmyRetreat) {
+  retreat(toRegion: WotrRegionId) {
     const battleRegion = this.battleStore.state()!.action.toRegion;
-    this.regionStore.moveArmy(battleRegion, action.toRegion);
+    this.regionStore.moveArmy(battleRegion, toRegion);
   }
 
   private applyArmyAdvance(action: WotrArmyAdvance) {

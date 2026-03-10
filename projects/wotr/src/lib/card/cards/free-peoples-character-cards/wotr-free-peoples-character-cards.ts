@@ -293,10 +293,14 @@ export class WotrFreePeoplesCharacterCards {
           canBePlayed: () => this.q.fellowship.hasCompanions(),
           play: async () => {
             const actions: WotrAction[] = [];
-            const separateActions = await this.fellowshipUi.separateCompanions({
-              extraMovements: 1
-            });
-            actions.push(...separateActions);
+            if (this.q.fellowship.isOnMordorTrack()) {
+              actions.push(await this.fellowshipUi.eliminateCompanions());
+            } else {
+              const separateActions = await this.fellowshipUi.separateCompanions({
+                extraMovements: 1
+              });
+              actions.push(...separateActions);
+            }
             actions.push(...(await this.fellowshipUi.healFellowship(1)));
             return actions;
           }

@@ -184,17 +184,12 @@ export class WotrUnitUi {
     return this.attackWithArmy(attackingUnits, c.frontId);
   }
 
-  private async checkStackingLimit(
-    regionId: WotrRegionId,
-    frontId: WotrFrontId
-  ): Promise<WotrAction[]> {
+  async checkStackingLimit(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
     const region = this.regionStore.region(regionId);
-    if (region.army?.front === frontId) {
+    if (region.army?.front === frontId)
       return this.checkArmyStackingLimit(region.army, regionId, 10, false);
-    }
-    if (region.underSiegeArmy?.front === frontId) {
+    if (region.underSiegeArmy?.front === frontId)
       return this.checkArmyStackingLimit(region.underSiegeArmy, regionId, 5, true);
-    }
     return [];
   }
 

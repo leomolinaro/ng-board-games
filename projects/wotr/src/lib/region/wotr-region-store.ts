@@ -343,7 +343,7 @@ export function initialeState(): WotrRegionState {
         [], false),
       // prettier-ignore
       "northern-rhovanion": initialRegion("northern-rhovanion", "Northern Rhovanion", null, false, null,
-        ["dale", "vale-of-the-carnen", "vale-of-the-celduin", "southern-rhovanion", "southern-mirkwood", "eastern-mirkwood"],
+        ["dale", "vale-of-the-carnen", "vale-of-the-celduin", "southern-rhovanion", "southern-mirkwood", "eastern-mirkwood", "old-forest-road"],
         [], false),
       // prettier-ignore
       "vale-of-the-celduin": initialRegion("vale-of-the-celduin", "Vale of the Celduin", null, false, null,
