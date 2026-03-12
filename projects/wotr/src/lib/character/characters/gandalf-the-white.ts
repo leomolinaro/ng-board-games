@@ -6,6 +6,10 @@ import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
+import {
+  WotrCharacterModifiers,
+  WotrCharacterMovementLevelModifier
+} from "../wotr-character-modifiers";
 import { WotrCharacterCard } from "./wotr-character-card";
 
 // Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
@@ -66,8 +70,17 @@ export class ShadowfaxAbility implements WotrAbility<unknown> {
   public handler = null;
 }
 
-export class TheWhiteRiderAbility implements WotrAbility<unknown> {
-  public modifier = null as any;
-  public handler = null;
-  // TODO cancelledCharacters
+export class TheWhiteRiderAbility implements WotrAbility<WotrCharacterMovementLevelModifier> {
+  constructor(private characterModifiers: WotrCharacterModifiers) {}
+
+  public modifier = this.characterModifiers.characterMovementLevelModifier;
+
+  public handler: WotrCharacterMovementLevelModifier = (characters, originalLevel) => {
+    if (!characters.includes("gandalf-the-white")) return originalLevel;
+    if (characters.length === 1) return 4;
+    if (characters.length > 2) return originalLevel;
+    const otherCharacter = characters.filter(c => c !== "gandalf-the-white")[0];
+    if (otherCharacter === "peregrin" || otherCharacter === "meriadoc") return 4;
+    return originalLevel;
+  };
 }

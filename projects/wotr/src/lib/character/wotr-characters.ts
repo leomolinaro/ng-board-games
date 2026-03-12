@@ -26,7 +26,7 @@ import {
 } from "./characters/boromir-gimli-legolas";
 import { CaptainOfTheWestAbility } from "./characters/commons";
 import { GandalfGuideAbility } from "./characters/gandalf-the-grey";
-import { WotrGandalfTheWhite } from "./characters/gandalf-the-white";
+import { TheWhiteRiderAbility, WotrGandalfTheWhite } from "./characters/gandalf-the-white";
 import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
   ServantsOfTheWhiteHandAbility,
@@ -86,9 +86,7 @@ export class WotrCharacterAbilities {
   private createAbilities(characterId: WotrCharacterId): WotrAbility[] {
     switch (characterId) {
       case "gandalf-the-white":
-        return [
-          /* new ShadowfaxAbility(), new TheWhiteRiderAbility() */
-        ];
+        return [/* new ShadowfaxAbility(),  */ new TheWhiteRiderAbility(this.characterModifiers)];
       case "aragorn":
         return [new CaptainOfTheWestAbility("aragorn", this.q, this.battleModifiers)];
       case "saruman":

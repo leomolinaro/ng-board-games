@@ -7,6 +7,10 @@ export type WotrAfterCharacterElimination = (characterId: WotrCharacterId) => Pr
 export type WotrAfterCompanionLeavingTheFellowship = (
   companionId: WotrCompanionId
 ) => Promise<void>;
+export type WotrCharacterMovementLevelModifier = (
+  movingCharacters: WotrCharacterId[],
+  originalLevel: number
+) => number;
 
 @Injectable()
 export class WotrCharacterModifiers {
@@ -32,9 +36,21 @@ export class WotrCharacterModifiers {
     );
   }
 
+  public readonly characterMovementLevelModifier =
+    new WotrModifier<WotrCharacterMovementLevelModifier>();
+  public getCharacterMovementLevel(characters: WotrCharacterId[], originalLevel: number): number {
+    return this.characterMovementLevelModifier
+      .get()
+      .reduce(
+        (modifier, handler) => Math.max(modifier, handler(characters, originalLevel)),
+        originalLevel
+      );
+  }
+
   clear() {
     this.beforeCharacterElimination.clear();
     this.afterCharacterElimination.clear();
     this.afterCompanionLeavingTheFellowship.clear();
+    this.characterMovementLevelModifier.clear();
   }
 }

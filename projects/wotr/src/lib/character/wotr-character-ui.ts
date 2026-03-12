@@ -13,6 +13,7 @@ import { WotrCharacterCard } from "./characters/wotr-character-card";
 import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterAbilities } from "./wotr-characters";
 
@@ -51,6 +52,7 @@ export class WotrCharacterUi {
   private characterAbilities = inject(WotrCharacterAbilities);
   private characterHandler = inject(WotrCharacterHandler);
   private unitHandler = inject(WotrUnitHandler);
+  private characterModifiers = inject(WotrCharacterModifiers);
   private q = inject(WotrGameQuery);
   private ui = inject(WotrGameUi);
 
@@ -223,6 +225,10 @@ export class WotrCharacterUi {
     const fromRegion = movingUnits.regionId;
     let totalMovements =
       options?.asLevel ?? this.characterRules.characterGroupLevel(movingCharacters);
+    totalMovements = this.characterModifiers.getCharacterMovementLevel(
+      movingCharacters,
+      totalMovements
+    );
     if (options?.extraMovements) totalMovements += options.extraMovements;
     const targetRegions = this.regionStore.reachableRegions(
       fromRegion,
