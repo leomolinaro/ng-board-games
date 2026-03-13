@@ -43,7 +43,11 @@ import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
 import { WotrRegionId } from "../../../region/wotr-region-models";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
-import { recruitEliteUnit, recruitRegularUnit } from "../../../unit/wotr-unit-actions";
+import {
+  eliminateRegularUnit,
+  recruitEliteUnit,
+  recruitRegularUnit
+} from "../../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../../unit/wotr-unit-models";
 import { WotrUnitUi } from "../../../unit/wotr-unit-ui";
@@ -620,7 +624,7 @@ export class WotrFreePeoplesCharacterCards {
             return actions;
           }
         };
-      // TODO The Grey Company
+      // The Grey Company
       // Play if Strider/Aragorn is with a Free Peoples Army.
       // Eliminate one Regular unit to recruit one Elite unit of the same Nation, in the Army with Strider/Aragorn.
       // Then, draw two Strategy Event cards.
@@ -628,7 +632,29 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () =>
             this.q.strider.isWithFreePeoplesArmy() || this.q.aragorn.isWithFreePeoplesArmy(),
-          play: async () => []
+          play: async () => {
+            const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
+            const region = aragorn.getRegion()!;
+            const army = this.q.region(region.id).army("free-peoples")!;
+            const nations = army.regulars?.map(u => u.nation) ?? [];
+            const actions: WotrAction[] = [];
+            if (nations.length) {
+              const units = await this.ui.askRegionUnits("Choose a Regular unit to eliminate", {
+                type: "theGreyCompany",
+                regionIds: [region.id],
+                nationIds: nations
+              });
+              const nation = units.regulars![0].nation;
+              actions.push(eliminateRegularUnit(region.id, nation));
+              this.unitHandler.eliminateRegularUnit(1, nation, region.id);
+              if (this.q.nation(nation).hasEliteReinforcements()) {
+                actions.push(recruitEliteUnit(region.id, nation));
+                this.unitHandler.recruitEliteUnit(1, nation, region.id);
+              }
+            }
+            actions.push(await this.cardDrawUi.drawCards(2, "strategy", "free-peoples"));
+            return actions;
+          }
         };
     }
   }

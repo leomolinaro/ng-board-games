@@ -1,6 +1,12 @@
 import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrFrontDecksSetup, WotrSetup, WotrSetupRules } from "./wotr-setup-rules";
+import {
+  WotrFrontDecksSetup,
+  WotrRegionSetup,
+  WotrSetup,
+  WotrSetupRules
+} from "./wotr-setup-rules";
 
 export class WotrSetupBuilder {
   constructor(private rules: WotrSetupRules) {}
@@ -47,10 +53,28 @@ export class WotrSetupBuilder {
     return this;
   }
 
+  private regions: WotrRegionSetup[] = [];
+  region(
+    region: WotrRegionId,
+    nation: WotrNationId,
+    units: { nRegulars?: number; nElites?: number; nLeaders?: number; nNazgul?: number }
+  ): WotrSetupBuilder {
+    this.regions.push({
+      region,
+      nation,
+      nRegulars: units.nRegulars ?? 0,
+      nElites: units.nElites ?? 0,
+      nLeaders: units.nLeaders ?? 0,
+      nNazgul: units.nNazgul ?? 0,
+      ruler: null
+    });
+    return this;
+  }
+
   build(): WotrSetup {
     return {
       decks: this.deckSetups,
-      regions: [],
+      regions: this.regions,
       fellowship: {
         progress: this.fwProgress,
         region: this.fwRegion,

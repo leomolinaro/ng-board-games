@@ -4,6 +4,7 @@ import { mithrilCoatAndStingScenarios } from "./05-mithril-coat-and-sting-scenar
 import { axeAndBowScenarios } from "./06-axe-and-bow-scenarios";
 import { hornOfGondorScenarios } from "./07-horn-of-gondor-scenarios";
 import { wizardsStaff } from "./08-wizards-staff-scenarios";
+import { theGreyCompany } from "./24-the-grey-company-scenarios";
 
 export function freePeoplesCharacterCardScenarios(): WotrScenario[] {
   return [
@@ -12,6 +13,7 @@ export function freePeoplesCharacterCardScenarios(): WotrScenario[] {
     ...mithrilCoatAndStingScenarios(),
     ...axeAndBowScenarios(),
     ...hornOfGondorScenarios(),
-    ...wizardsStaff()
+    ...wizardsStaff(),
+    ...theGreyCompany()
   ];
 }

@@ -27,7 +27,8 @@ export type WotrRegionUnitSelection =
   | WotrRageOfTheDunlendingsUnitSelection
   | WotrHeroicDeathUnitSelection
   | WotrBlackBreathUnitSelection
-  | WotrWordsOfPowerUnitSelection;
+  | WotrWordsOfPowerUnitSelection
+  | WotrTheGreyCompanyUnitSelection;
 
 interface AWotrRegionUnitSelection {
   type: string;
@@ -108,6 +109,11 @@ export interface WotrWordsOfPowerUnitSelection extends AWotrRegionUnitSelection 
   type: "wordsOfPower";
 }
 
+export interface WotrTheGreyCompanyUnitSelection extends AWotrRegionUnitSelection {
+  type: "theGreyCompany";
+  nationIds: WotrNationId[];
+}
+
 interface WotrRegionUnitSelectionMode {
   initialize(unitNodes: UnitNode[], region: WotrRegion): void;
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string;
@@ -146,6 +152,8 @@ export function selectionModeFactory(
       return new BlackBreathSelectionMode(unitSelection);
     case "wordsOfPower":
       return new WordsOfPowerSelectionMode(unitSelection);
+    case "theGreyCompany":
+      return new TheGreyCompanySelectionMode(unitSelection);
     default:
       throw new Error(`Unknown selection mode type: ${unitSelection}`);
   }
@@ -647,5 +655,26 @@ export class WordsOfPowerSelectionMode implements WotrRegionUnitSelectionMode {
   canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
     if (selectedNodes.length === 1) return true;
     return "Select one Companion to cancel.";
+  }
+}
+
+export class TheGreyCompanySelectionMode implements WotrRegionUnitSelectionMode {
+  constructor(private unitSelection: WotrTheGreyCompanyUnitSelection) {}
+
+  initialize(unitNodes: UnitNode[]): void {
+    for (const node of unitNodes) {
+      if (
+        node.type === "regular" &&
+        node.frontId === "free-peoples" &&
+        this.unitSelection.nationIds.includes(node.nationId)
+      ) {
+        node.selectable = true;
+      }
+    }
+  }
+
+  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+    if (selectedNodes.length === 1) return true;
+    return "Select one regular unit to eliminate.";
   }
 }
