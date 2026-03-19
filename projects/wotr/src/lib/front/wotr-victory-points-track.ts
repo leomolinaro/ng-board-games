@@ -35,13 +35,20 @@ export class WotrVictoryPointsTrack {
 
   victoryMarkerNodes: Signal<WotrVictoryMarkerNode[]> = computed(() => {
     const fronts = this.fronts();
-    const offset = fronts[0].victoryPoints % 10 === fronts[1].victoryPoints % 10 ? OFFSET : 0;
+    const v0 = fronts[0].victoryPoints;
+    const v1 = fronts[1].victoryPoints;
+    const position0 = v0 > 10 ? v0 - 10 : v0;
+    const position1 = v1 > 10 ? v1 - 10 : v1;
+    const offset = position0 === position1 ? OFFSET : 0;
     return this.fronts().map((front, index) => {
       const frontOffset = offset * (index * 2 - 1);
       return {
         id: front.id,
         image: this.assets.victoryMarker(front.id, front.victoryPoints),
-        svgX: X0 + (front.victoryPoints % 10) * XSTEP + frontOffset,
+        svgX:
+          X0 +
+          (front.victoryPoints > 10 ? front.victoryPoints - 10 : front.victoryPoints) * XSTEP +
+          frontOffset,
         svgY: Y0 + frontOffset
       };
     });

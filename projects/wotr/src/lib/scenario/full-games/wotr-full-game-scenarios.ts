@@ -1,6 +1,7 @@
 import { WotrScenario } from "../wotr-scenario";
 import { scenario as myGame1 } from "./my-game-1";
 import { scenario as myGame2 } from "./my-game-2";
+import { scenario as myGame3 } from "./my-game-3";
 import { scenario as thereIsAnotherWay } from "./there-is-another-way";
 import { scenario as veryLateMinions } from "./very-late-minions";
 
@@ -25,6 +26,11 @@ export function fullGameScenarios(): WotrScenario[] {
       id: "my-game-2",
       name: "My Game 2",
       loadDefinition: () => myGame2
+    },
+    {
+      id: "my-game-3",
+      name: "My Game 3",
+      loadDefinition: () => myGame3
     }
   ];
 }
