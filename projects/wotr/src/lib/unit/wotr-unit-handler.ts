@@ -164,7 +164,7 @@ export class WotrUnitHandler {
     const region = this.regionStore.region(regionId);
     if (toDowngrade) {
       this.removeElitesFromRegion(toDowngrade, nationId, region);
-      this.nationStore.addElitesToReinforcements(toDowngrade, nationId);
+      this.nationStore.addElitesToCasualties(toDowngrade, nationId);
     }
     if (toEliminate) this.eliminateEliteUnit(toEliminate, nationId, regionId);
     if (fromCasualties) this.nationStore.removeRegularsFromCasualties(fromCasualties, nationId);

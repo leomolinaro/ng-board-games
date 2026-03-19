@@ -44,7 +44,6 @@ export class WotrRegionQuery {
 
   isWithinNRegionsOf(regionId: WotrRegionId, maxDistance: number): boolean {
     const reachable = this.regionStore.reachableRegions(this.regionId, maxDistance);
-    console.log(reachable);
     return reachable.includes(regionId);
   }
 
