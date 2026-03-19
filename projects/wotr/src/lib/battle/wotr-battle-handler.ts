@@ -170,12 +170,12 @@ export class WotrBattleHandler {
       ],
       "battle-continue": (action, front, f) => [
         f.player(front),
-        " continue battle in ",
+        " continues battle in ",
         f.region(action.region)
       ],
       "battle-cease": (action, front, f) => [
         f.player(front),
-        " cease tha battle in ",
+        " ceases tha battle in ",
         f.region(action.region)
       ],
       "leader-forfeit": (action, front, f) => {
@@ -294,10 +294,11 @@ export class WotrBattleHandler {
           }
         }
       } else {
-        const canCease = this.canCease(combatRound);
-        const wantContinueBattle =
-          !canCease || (await this.wantContinueBattle(combatRound.attacker.player));
-        if (wantContinueBattle) {
+        const mustContinueBattle = !this.canCease(combatRound);
+        let wantContinueBattle = false;
+        if (!mustContinueBattle)
+          wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+        if (mustContinueBattle || wantContinueBattle) {
           if (this.canRetreat(combatRound.defender)) {
             const wantRetreat = await this.wantRetreat(combatRound.defender.player);
             if (wantRetreat === "army-retreat-into-siege" || wantRetreat === "army-retreat") {
@@ -308,8 +309,6 @@ export class WotrBattleHandler {
           } else {
             continueBattle = true;
           }
-        } else {
-          continueBattle = true;
         }
       }
     }
