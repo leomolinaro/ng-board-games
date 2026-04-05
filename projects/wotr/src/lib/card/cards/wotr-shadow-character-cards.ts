@@ -54,7 +54,8 @@ import {
   discardCardFromTableById,
   playCardOnTable,
   playCardOnTableId,
-  WotrCardDiscardFromTable
+  WotrCardDiscardFromTable,
+  WotrCardPlayOnTable
 } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrCardHandler } from "../wotr-card-handler";
@@ -536,6 +537,7 @@ export class WotrShadowCharacterCards {
       // When "The Palantír of Orthanc" is in play, after you use an Event Action die result to play an Event card, immediately draw another card from either one of your decks.
       // The Free Peoples player can force "The Palantír of Orthanc" to be discarded by either using a Will of the West Action die result, or using any Action die result and one
       // Elven Ring. You must discard this card if Saruman is eliminated.
+      // https://boardgamegeek.com/thread/1139889/article/15203738#15203738
       case "scha21":
         return {
           canBePlayed: () => this.q.saruman.isInPlay(),
@@ -547,6 +549,10 @@ export class WotrShadowCharacterCards {
               handler: async (story, frontId) => {
                 if (frontId !== "shadow") return;
                 if (story.die === "event" || story.die === "will-of-the-west") {
+                  const isBeingPlayed =
+                    findAction<WotrCardPlayOnTable>(story.actions, "card-play-on-table")?.card ===
+                      "scha21" || false;
+                  if (isBeingPlayed) return;
                   playedCard = story.card;
                   await activateTableCard(drawAbility, "scha21", this.shadow);
                 }
