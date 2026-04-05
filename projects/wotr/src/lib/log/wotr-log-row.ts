@@ -127,7 +127,6 @@ export type WotrLogParsedFragment =
               class="hunt-tile"
               [src]="fragment.tileImage" />
           }
-          <!-- @case ("hunt-tile") { <span>{{ fragment.label }}</span> } -->
         }
       }
     </div>
