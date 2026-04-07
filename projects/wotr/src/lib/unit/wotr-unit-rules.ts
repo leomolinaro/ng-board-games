@@ -201,20 +201,23 @@ export class WotrUnitRules {
   }
 
   private doesArmyHaveLeadership(army: WotrArmy, moveable: boolean): boolean {
-    return this.getArmyLeadership(army, moveable, []) > 0;
+    return this.getArmyLeadership(army, moveable, [], false) > 0;
   }
 
   getArmyLeadership(
     army: WotrArmy,
     moveable: boolean,
-    cancelledCharacters: WotrCharacterId[]
+    cancelledCharacters: WotrCharacterId[],
+    negateNazgulLeadership: boolean
   ): number {
     let leadership = 0;
     if (army.leaders) leadership += this.getLeadersLeadership(army.leaders);
-    if (army.nNazgul) leadership += this.getNazgulLeadership(army.nNazgul);
+    if (army.nNazgul && !negateNazgulLeadership)
+      leadership += this.getNazgulLeadership(army.nNazgul);
     if (army.characters) {
       const filteredCharacters = army.characters.filter(characterId => {
         if (cancelledCharacters.includes(characterId)) return false;
+        if (characterId === "the-witch-king" && negateNazgulLeadership) return false;
         if (!moveable) return true;
         const c = this.q.character(characterId);
         if (c.level === 0) return false;

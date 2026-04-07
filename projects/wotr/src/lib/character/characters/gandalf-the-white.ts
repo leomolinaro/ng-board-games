@@ -1,16 +1,21 @@
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { forfeitLeadership } from "../../battle/wotr-battle-actions";
+import { WotrCombatRound } from "../../battle/wotr-battle-models";
+import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
+import { character } from "../../unit/wotr-unit-models";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
 import {
   WotrCharacterModifiers,
   WotrCharacterMovementLevelModifier
 } from "../wotr-character-modifiers";
-import { WotrCharacterCard } from "./wotr-character-card";
+import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-card";
 
 // Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
 // If Gandalf the Grey has been eliminated or has left the Fellowship, and any Minion is (or has been) in play, you may use one Will of the West Action die result to
@@ -65,12 +70,7 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
   }
 }
 
-export class ShadowfaxAbility implements WotrAbility<unknown> {
-  public modifier = null as any;
-  public handler = null;
-}
-
-export class TheWhiteRiderAbility implements WotrAbility<WotrCharacterMovementLevelModifier> {
+export class ShadowfaxAbility implements WotrAbility<WotrCharacterMovementLevelModifier> {
   constructor(private characterModifiers: WotrCharacterModifiers) {}
 
   public modifier = this.characterModifiers.characterMovementLevelModifier;
@@ -83,4 +83,28 @@ export class TheWhiteRiderAbility implements WotrAbility<WotrCharacterMovementLe
     if (otherCharacter === "peregrin" || otherCharacter === "meriadoc") return 4;
     return originalLevel;
   };
+}
+
+export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound> {
+  constructor(
+    private freePeoples: WotrFreePeoplesPlayer,
+    private battleModifiers: WotrBattleModifiers
+  ) {}
+
+  public modifier = this.battleModifiers.beforeCombatRound;
+
+  public handler = async (round: WotrCombatRound): Promise<void> => {
+    const [combatFront, otherCombatFront] =
+      round.attacker.frontId === "free-peoples"
+        ? [round.attacker, round.defender]
+        : [round.defender, round.attacker];
+    if (!combatFront.army().characters?.includes("gandalf-the-white")) return;
+    if (combatFront.cancelledCharacters.includes("gandalf-the-white")) return;
+    if (!(await activateCharacterAbility(this, "gandalf-the-white", this.freePeoples))) return;
+    otherCombatFront.negateNazgulLeadership = true;
+  };
+
+  async play() {
+    return [forfeitLeadership(character("gandalf-the-white"))];
+  }
 }

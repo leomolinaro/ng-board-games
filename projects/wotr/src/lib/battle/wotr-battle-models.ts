@@ -33,6 +33,7 @@ export class WotrCombatFront {
   lessNCombatDice: number = 0;
   lessNLeaderDice: number = 0;
   forfeitedLeadership: number = 0;
+  negateNazgulLeadership: boolean = false;
   /** Modifiers applied to the combat strength */
   combatStrengthModifiers: number[] = [];
   /** Modifiers applied to each die during the combat roll */

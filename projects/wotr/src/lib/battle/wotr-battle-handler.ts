@@ -249,7 +249,6 @@ export class WotrBattleHandler {
   }
 
   private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
-    this.battleModifiers.onBeforeCombatRound(combatRound);
     const attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
     if (hasStronghold && !combatRound.siege) {
@@ -259,6 +258,7 @@ export class WotrBattleHandler {
         return false;
       }
     }
+    await this.battleModifiers.onBeforeCombatRound(combatRound);
     await this.chooseCombatCards(combatRound);
     this.revealCombatCards(combatRound);
     await this.resolveCombatCards(0, combatRound);
@@ -576,19 +576,18 @@ export class WotrBattleHandler {
   }
 
   private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
-    if (combatFront.isAttacker) {
-      const attackingArmy = this.attackingArmy(combatRound.action);
-      return (
-        this.unitRules.getArmyLeadership(attackingArmy, false, combatFront.cancelledCharacters) -
-        combatFront.forfeitedLeadership
-      );
-    } else {
-      const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
-      return attackedArmy
-        ? this.unitRules.getArmyLeadership(attackedArmy, false, combatFront.cancelledCharacters) -
-            combatFront.forfeitedLeadership
-        : 0;
-    }
+    const army = combatFront.isAttacker
+      ? this.attackingArmy(combatRound.action)
+      : this.defendingArmy(combatRound.action, combatRound.siege);
+    if (!army) return 0; // it can be already destroyed
+    return (
+      this.unitRules.getArmyLeadership(
+        army,
+        false,
+        combatFront.cancelledCharacters,
+        combatFront.negateNazgulLeadership
+      ) - combatFront.forfeitedLeadership
+    );
   }
 
   private getNRollSuccesses(
