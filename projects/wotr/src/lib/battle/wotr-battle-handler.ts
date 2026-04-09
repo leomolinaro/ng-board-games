@@ -323,6 +323,10 @@ export class WotrBattleHandler {
         this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
         this.frontHandler.refreshVictoryPoints();
       }
+      const fromRegion = this.regionStore.region(combatRound.action.fromRegion);
+      if (fromRegion.underSiegeArmy && !fromRegion.army) {
+        this.regionStore.moveArmyOutOfSiege(fromRegion.id);
+      }
     }
 
     await this.battleModifiers.onAfterCombatRound(combatRound);
