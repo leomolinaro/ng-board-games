@@ -113,6 +113,16 @@ export class WotrCharacterHandler {
     this.characterAbilities.activateAbilities(characters);
   }
 
+  separateCompanions(companions: WotrCompanionId[], toRegion: WotrRegionId) {
+    const region = this.regionStore.region(toRegion);
+    for (const characterId of companions) {
+      const character = this.characterStore.character(characterId);
+      this.characterStore.setInPlay(characterId);
+      this.addCharacterToRegion(character, region);
+    }
+    this.nationHandler.checkNationActivationByCharacters(toRegion, companions);
+  }
+
   async eliminateCharacterEffect(character: WotrCharacterId): Promise<void> {
     this.eliminateCharacters([character]);
     this.logger.logEffect(eliminateCharacter(character));

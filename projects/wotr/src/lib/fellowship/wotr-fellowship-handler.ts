@@ -122,7 +122,7 @@ export class WotrFellowshipHandler {
     for (const companionId of companions) {
       this.fellowshipStore.removeCompanion(companionId);
     }
-    this.characterHandler.playCharacters(companions, toRegionId);
+    this.characterHandler.separateCompanions(companions, toRegionId);
     for (const companionId of companions) {
       await this.characterModifiers.onAfterCompanionLeavingTheFellowship(companionId);
     }
