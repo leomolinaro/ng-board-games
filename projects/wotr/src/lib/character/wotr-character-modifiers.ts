@@ -2,8 +2,17 @@ import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrCharacterId, WotrCompanionId } from "./wotr-character-models";
 
-export type WotrBeforeCharacterElimination = (characterId: WotrCharacterId) => Promise<boolean>;
-export type WotrAfterCharacterElimination = (characterId: WotrCharacterId) => Promise<void>;
+export interface WotrCharacterEliminationParams {
+  characterId: WotrCharacterId;
+  fromTheFellowship: boolean;
+}
+
+export type WotrBeforeCharacterElimination = (
+  params: WotrCharacterEliminationParams
+) => Promise<boolean>;
+export type WotrAfterCharacterElimination = (
+  params: WotrCharacterEliminationParams
+) => Promise<void>;
 export type WotrAfterCompanionLeavingTheFellowship = (
   companionId: WotrCompanionId
 ) => Promise<void>;
@@ -15,17 +24,17 @@ export type WotrCharacterMovementLevelModifier = (
 @Injectable()
 export class WotrCharacterModifiers {
   public readonly beforeCharacterElimination = new WotrModifier<WotrBeforeCharacterElimination>();
-  async onBeforeCharacterElimination(characterId: WotrCharacterId): Promise<boolean> {
+  async onBeforeCharacterElimination(params: WotrCharacterEliminationParams): Promise<boolean> {
     if (!this.beforeCharacterElimination.get().length) return true;
     const results = await Promise.all(
-      this.beforeCharacterElimination.get().map(handler => handler(characterId))
+      this.beforeCharacterElimination.get().map(handler => handler(params))
     );
     return results.every(result => result === true);
   }
 
   public readonly afterCharacterElimination = new WotrModifier<WotrAfterCharacterElimination>();
-  public async onAfterCharacterElimination(characterId: WotrCharacterId): Promise<void> {
-    await Promise.all(this.afterCharacterElimination.get().map(handler => handler(characterId)));
+  public async onAfterCharacterElimination(params: WotrCharacterEliminationParams): Promise<void> {
+    await Promise.all(this.afterCharacterElimination.get().map(handler => handler(params)));
   }
 
   public readonly afterCompanionLeavingTheFellowship =

@@ -46,7 +46,8 @@ export class WotrFellowshipRules {
     const targetRegions = this.regionStore.reachableRegions(
       fellowshipRegion,
       totalMovement,
-      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance, options),
+      (region, distance) =>
+        this.characterRules.characterCanEnterRegion(region, "free-peoples", distance, options),
       (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
     );
     return targetRegions;

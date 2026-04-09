@@ -6,9 +6,10 @@ import { WotrUiChoice } from "../../game/wotr-game-ui";
 import { WotrHuntEffectParams } from "../../hunt/wotr-hunt-models";
 import { WotrHuntEffectChoiceModifier, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrCharacterId, WotrCompanionId } from "../wotr-character-models";
+import { WotrCompanionId } from "../wotr-character-models";
 import {
   WotrBeforeCharacterElimination,
+  WotrCharacterEliminationParams,
   WotrCharacterModifiers
 } from "../wotr-character-modifiers";
 import { activateCharacterAbility } from "./wotr-character-card";
@@ -58,8 +59,8 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
 
   modifier = this.characterModifiers.beforeCharacterElimination;
 
-  handler: WotrBeforeCharacterElimination = async (characterId: WotrCharacterId) => {
-    if (characterId !== this.characterId) return true;
+  handler: WotrBeforeCharacterElimination = async (params: WotrCharacterEliminationParams) => {
+    if (params.characterId !== this.characterId) return true;
     if (!this.q.character(this.characterId).isInFellowship()) return true;
     if (await activateCharacterAbility(this, this.characterId, this.freePeoples)) return false;
     return true;

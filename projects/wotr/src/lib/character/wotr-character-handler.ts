@@ -131,15 +131,25 @@ export class WotrCharacterHandler {
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
     for (const characterId of characters) {
       const character = this.characterStore.character(characterId);
+      const fromFellowship = character.status === "inFellowship";
       this.removeCharacter(characterId);
-      await this.characterModifiers.onAfterCharacterElimination(characterId);
-      if (character.status === "inFellowship") {
+      await this.characterModifiers.onAfterCharacterElimination({
+        characterId,
+        fromTheFellowship: fromFellowship
+      });
+      if (fromFellowship) {
         await this.characterModifiers.onAfterCompanionLeavingTheFellowship(
           characterId as WotrCompanionId
         );
       }
     }
-    await this.checkWornWithSorrowAndToil();
+    await this.checkGollumEnterPlay();
+  }
+
+  async eliminateCharactersOnly(characters: WotrCharacterId[]): Promise<void> {
+    for (const characterId of characters) {
+      this.removeCharacter(characterId);
+    }
     await this.checkGollumEnterPlay();
   }
 
@@ -195,13 +205,6 @@ export class WotrCharacterHandler {
       this.regionStore.removeCharacterFromUnderSiegeArmy(character.id, region.id);
     } else {
       this.regionStore.removeCharacterFromFreeUnits(character.id, region.id);
-    }
-  }
-
-  private async checkWornWithSorrowAndToil() {
-    if (this.q.shadow.hasTableCard("scha15")) {
-      throw new Error("Worn with Sorrow and Toil not implemented");
-      // await this.activateTableCard("scha15", this.shadow);
     }
   }
 

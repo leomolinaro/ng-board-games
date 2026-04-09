@@ -75,7 +75,7 @@ export class WotrCharacterUi {
     const actions: WotrAction[] = [];
     let continueMoving = movableCompanions.size > 0;
     while (continueMoving) {
-      const action = await this.moveCharacterGroup(movableCompanions, options);
+      const action = await this.moveCharacterGroup(movableCompanions, "free-peoples", options);
       this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
       actions.push(action);
       action.characters.forEach(c => movableCompanions.delete(c));
@@ -110,7 +110,7 @@ export class WotrCharacterUi {
       }
 
       if (moveNonFlyingMinions) {
-        const action = await this.moveCharacterGroup(moveableNonFlyingMinions);
+        const action = await this.moveCharacterGroup(moveableNonFlyingMinions, "shadow");
         this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
         actions.push(action);
         action.characters.forEach(c => moveableNonFlyingMinions.delete(c));
@@ -208,6 +208,7 @@ export class WotrCharacterUi {
 
   private async moveCharacterGroup(
     moveableCharacters: Set<WotrCharacterId>,
+    frontId: WotrFrontId,
     options?: WotrCharacterMovementOptions
   ): Promise<WotrCharacterMovement> {
     const fromRegions = this.regionStore.regions().filter(region => {
@@ -233,7 +234,8 @@ export class WotrCharacterUi {
     const targetRegions = this.regionStore.reachableRegions(
       fromRegion,
       totalMovements,
-      (region, distance) => this.characterRules.companionCanEnterRegion(region, distance, options),
+      (region, distance) =>
+        this.characterRules.characterCanEnterRegion(region, frontId, distance, options),
       (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
     );
     const toRegion = await this.ui.askRegion("Select a region to move companions", targetRegions);

@@ -52,6 +52,7 @@ import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import {
   discardCardFromTableById,
+  discardRandomCardById,
   playCardOnTable,
   playCardOnTableId,
   WotrCardDiscardFromTable,
@@ -375,7 +376,7 @@ export class WotrShadowCharacterCards {
             }
           }
         };
-      // TODO Worn with Sorrow and Toil
+      // Worn with Sorrow and Toil
       // Play on the table.
       // When "Worn with Sorrow and Toil" is in play, if a Companion in the Fellowship is taken as a casualty you may also discard one of the Free Peoples player's Character
       // Event cards from his hand (choosing it randomly) or from the table.
@@ -385,10 +386,58 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => true,
           play: async () => [playCardOnTableId("scha15")],
           onTableAbilities: () => {
-            const casualtyAbility: WotrAbility<WotrAfterCharacterElimination> = {
+            const casualtyAbility: WotrUiAbility<WotrAfterCharacterElimination> = {
               modifier: this.characterModifiers.afterCharacterElimination,
-              handler: async characterId => {
-                console.error("Worn with Sorrow and Toil casualty ability not implemented yet");
+              handler: async params => {
+                if (params.fromTheFellowship) {
+                  await activateTableCard(casualtyAbility, "scha15", this.shadow);
+                }
+              },
+              play: async () => {
+                const fpHasTableCards = this.q.freePeoples.hasCharacterTableCards();
+                const fpHasHandCards = this.q.freePeoples.hasCharacterHandCards();
+                let doDiscardTableCard = false;
+                let doDiscardHandCard = false;
+                if (fpHasTableCards) {
+                  if (fpHasHandCards) {
+                    doDiscardTableCard = await this.ui.askOption<boolean>(
+                      "Choose the card to discard",
+                      [
+                        {
+                          value: true,
+                          label: "A table card"
+                        },
+                        {
+                          value: false,
+                          label: "A random card from hand"
+                        }
+                      ]
+                    );
+                  } else {
+                    doDiscardTableCard = true;
+                  }
+                } else {
+                  if (fpHasHandCards) {
+                    doDiscardHandCard = true;
+                  }
+                }
+                if (doDiscardTableCard) {
+                  const card = await this.ui.askTableCard("Choose a table card to discard", {
+                    frontId: "free-peoples",
+                    nCards: 1,
+                    message: "Discard",
+                    cards: this.q.freePeoples.characterTableCards()
+                  });
+                  return [discardCardFromTableById(card)];
+                } else if (doDiscardHandCard) {
+                  await this.ui.askContinue("Discard a Free Peoples random card from hand");
+                  const cards = this.q.freePeoples.characterHandCards();
+                  const randomCard = randomUtil.getRandomElement(cards);
+                  return [discardRandomCardById(randomCard)];
+                } else {
+                  await this.ui.askContinue("No cards to discard");
+                  return [];
+                }
               }
             };
             const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> = {
@@ -628,8 +677,8 @@ export class WotrShadowCharacterCards {
             };
             const discardForSarumanElimination: WotrAbility<WotrAfterCharacterElimination> = {
               modifier: this.characterModifiers.afterCharacterElimination,
-              handler: async characterId => {
-                if (characterId === "saruman") {
+              handler: async params => {
+                if (params.characterId === "saruman") {
                   this.cardHandler.discardCardFromTableEffect("scha22");
                 }
               }
@@ -686,7 +735,6 @@ export class WotrShadowCharacterCards {
               wkRegion.army("shadow")!,
               wkRegion.region()
             );
-            console.log("canAttack", canAttack);
             if (!canMove && !canAttack) return actions;
             const choice2 = await this.ui.askOption<"move" | "attack">("Choose", [
               { value: "move", label: "Move with the Witch-king", disabled: !canMove },

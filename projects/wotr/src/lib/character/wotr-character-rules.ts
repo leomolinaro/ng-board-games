@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegion } from "../region/wotr-region-models";
@@ -37,17 +38,20 @@ export class WotrCharacterRules {
     return this.q.companions.some(companion => companion.canMove());
   }
 
-  companionCanEnterRegion(
+  characterCanEnterRegion(
     region: WotrRegion,
+    frontId: WotrFrontId,
     distance: number,
     options?: WotrCharacterMovementOptions
   ): boolean {
     if (distance === 0) return true;
     if (options?.canEndInSiege) return true;
     if (region.settlement !== "stronghold") return true;
-    if (region.controlledBy !== "free-peoples") return true;
-    if (region.underSiegeArmy) return false;
-    return true;
+    if (region.underSiegeArmy) {
+      return region.controlledBy !== frontId;
+    } else {
+      return region.controlledBy === frontId;
+    }
   }
 
   companionCanLeaveRegion(region: WotrRegion, distance: number): boolean {

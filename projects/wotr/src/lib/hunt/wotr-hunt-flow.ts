@@ -262,8 +262,10 @@ export class WotrHuntFlow {
         }
         case "companion-random": {
           for (const companionId of action.companions) {
-            const eliminating =
-              await this.charactersModifiers.onBeforeCharacterElimination(companionId);
+            const eliminating = await this.charactersModifiers.onBeforeCharacterElimination({
+              characterId: companionId,
+              fromTheFellowship: true
+            });
             if (eliminating) {
               if (!params.randomCompanions) params.randomCompanions = [];
               params.randomCompanions.push(companionId);

@@ -193,9 +193,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
       this.resetUi(playerId);
       return this.getLocalStoryWrap$(time, playerId, task).pipe(
         expand(storyDoc => {
-          if (storyDoc) {
-            return EMPTY;
-          }
+          if (storyDoc) return EMPTY;
           this.resetUi(playerId);
           return this.getLocalStoryWrap$(time, playerId, task);
         }),

@@ -56,7 +56,10 @@ export interface WotrCardRandomDiscard {
   card: WotrCardId;
 }
 export function discardRandomCard(card: WotrCardLabel): WotrCardRandomDiscard {
-  return { type: "card-random-discard", card: labelToCardId(card) };
+  return discardRandomCardById(labelToCardId(card));
+}
+export function discardRandomCardById(card: WotrCardId): WotrCardRandomDiscard {
+  return { type: "card-random-discard", card };
 }
 export interface WotrCardDiscardFromTable {
   type: "card-discard-from-table";
