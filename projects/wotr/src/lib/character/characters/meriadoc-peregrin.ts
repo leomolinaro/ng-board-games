@@ -6,6 +6,7 @@ import { WotrUiChoice } from "../../game/wotr-game-ui";
 import { WotrHuntEffectParams } from "../../hunt/wotr-hunt-models";
 import { WotrHuntEffectChoiceModifier, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { eliminateCharacter } from "../wotr-character-actions";
 import { WotrCompanionId } from "../wotr-character-models";
 import {
   WotrBeforeCharacterElimination,
@@ -66,6 +67,8 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
     return true;
   };
 
-  play: () => Promise<WotrAction[]> = async () =>
-    this.fellowshipUi.separateThoseCompanions([this.characterId]);
+  play: () => Promise<WotrAction[]> = async () => {
+    if (this.q.fellowship.isOnMordorTrack()) return [eliminateCharacter(this.characterId)];
+    return this.fellowshipUi.separateThoseCompanions([this.characterId]);
+  };
 }
