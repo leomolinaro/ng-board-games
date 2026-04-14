@@ -1,4 +1,5 @@
 import { Injectable, inject } from "@angular/core";
+import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
@@ -17,6 +18,7 @@ export class WotrCardStoryHandler {
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
   private frontHandler = inject(WotrFrontHandler);
+  private actionDieHandler = inject(WotrActionDieHandler);
 
   private cards = inject(WotrCards);
 
@@ -30,7 +32,7 @@ export class WotrCardStoryHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
-    this.frontStore.setCurrentActionDie(story.die, front);
+    this.actionDieHandler.setCurrentActionDie(story.die, front);
     this.frontStore.setCurrentCard(story.card);
     this.frontStore.discardCards([story.card], front);
     if (story.actions?.length) {

@@ -8,6 +8,7 @@ import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontQuery } from "../front/wotr-front-query";
 import { WotrFrontStore } from "../front/wotr-front-store";
+import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationQuery } from "../nation/wotr-nation-query";
 import { WotrNationStore } from "../nation/wotr-nation-store";
@@ -15,6 +16,7 @@ import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionQuery } from "../region/wotr-region-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
+import { WotrGameStore } from "./wotr-game-store";
 
 @Injectable()
 export class WotrGameQuery {
@@ -24,6 +26,11 @@ export class WotrGameQuery {
   private frontStore = inject(WotrFrontStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private unitUtils = inject(WotrUnitUtils);
+  private gameStore = inject(WotrGameStore);
+  private huntStore = inject(WotrHuntStore);
+
+  kome = this.gameStore.kome;
+  visibleCorruptionTiles = this.gameStore.visibleCorruptionTiles;
 
   freePeoples = new WotrFrontQuery("free-peoples", this.frontStore, this.characterStore);
   shadow = new WotrFrontQuery("shadow", this.frontStore, this.characterStore);
@@ -149,5 +156,9 @@ export class WotrGameQuery {
   }
   strongholdRegions(): WotrRegionQuery[] {
     return this.regions().filter(region => region.isStronghold());
+  }
+
+  nEyesInHuntBox() {
+    return this.huntStore.nHuntDice();
   }
 }

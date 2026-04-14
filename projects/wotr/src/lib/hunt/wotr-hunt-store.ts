@@ -103,6 +103,13 @@ export class WotrHuntStore {
     }));
   }
 
+  removeHuntDice(quantity: number): void {
+    this.update("removeHuntDice", state => ({
+      ...state,
+      nHuntDice: Math.max(state.nHuntDice - quantity, 0)
+    }));
+  }
+
   addFellowshipDie(): void {
     this.update("addFellowshipDie", state => ({
       ...state,

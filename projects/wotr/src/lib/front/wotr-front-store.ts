@@ -180,8 +180,7 @@ export class WotrFrontStore {
   setCurrentActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
     this.updateFront("setCurrentActionDie", frontId, front => ({
       ...front,
-      currentActionDie: die,
-      actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
+      currentActionDie: die
     }));
   }
 

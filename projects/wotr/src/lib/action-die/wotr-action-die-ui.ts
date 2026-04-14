@@ -9,7 +9,7 @@ import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontUi } from "../front/wotr-front-ui";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrAskActionDieParams, WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import {
   WotrDieCardStory,
   WotrDieStory,
@@ -18,9 +18,11 @@ import {
   WotrStory,
   WotrTokenStory
 } from "../game/wotr-story-models";
+import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
+import { KomeActionDieRules } from "./kome-action-die-rules";
 import { rollActionDice, skipActionDie } from "./wotr-action-die-actions";
 import {
   WotrActionDie,
@@ -30,7 +32,6 @@ import {
 } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
-import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
 
 @Injectable()
 export class WotrActionDieUi {
@@ -46,6 +47,7 @@ export class WotrActionDieUi {
   private fellowshipUi = inject(WotrFellowshipUi);
   private q = inject(WotrGameQuery);
   private frontUi = inject(WotrFrontUi);
+  private komeRules = inject(KomeActionDieRules);
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
@@ -142,11 +144,13 @@ export class WotrActionDieUi {
   ): Promise<WotrStory> {
     const playableTokens = this.actionDieRules.playableTokens(frontId);
     const availableRings = this.q.front(frontId).playableElvenRings();
-    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", {
+    const params: WotrAskActionDieParams = {
       frontId,
       tokens: playableTokens,
       elvenRings: availableRings
-    });
+    };
+    if (this.q.kome() && this.komeRules.canInitiateCorruptionAttempt(frontId)) params.eyes = true;
+    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", params);
     switch (actionChoice.type) {
       case "die": {
         const dieStory = await this.resolveActionDie(actionChoice.die, frontId);

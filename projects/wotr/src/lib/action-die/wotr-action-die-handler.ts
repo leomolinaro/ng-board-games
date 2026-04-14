@@ -14,6 +14,7 @@ import {
   WotrSkipTokensStory,
   WotrTokenStory
 } from "../game/wotr-story-models";
+import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
 import { WotrActionDie } from "./wotr-action-die-models";
@@ -23,6 +24,7 @@ import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 export class WotrActionDieHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private frontStore = inject(WotrFrontStore);
+  private huntStore = inject(WotrHuntStore);
   private logger = inject(WotrLogWriter);
   private frontHandler = inject(WotrFrontHandler);
   private actionDieModifiers = inject(WotrActionDieModifiers);
@@ -40,7 +42,7 @@ export class WotrActionDieHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
-    this.frontStore.setCurrentActionDie(story.die, front);
+    this.setCurrentActionDie(story.die, front);
     if (story.actions?.length) {
       for (const action of story.actions) {
         this.logger.logAction(action, story, front);
@@ -52,6 +54,15 @@ export class WotrActionDieHandler {
     this.frontStore.removeCurrentActionDie(front);
     await this.actionDieModifiers.onAfterActionDieResolution(story, front);
   };
+
+  setCurrentActionDie(die: WotrActionDie, front: WotrFrontId) {
+    if (die === "eye") {
+      this.huntStore.removeHuntDice(1);
+    } else {
+      this.frontStore.removeActionDie(die, front);
+    }
+    this.frontStore.setCurrentActionDie(die, front);
+  }
 
   private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {
     if (story.elvenRing) {
