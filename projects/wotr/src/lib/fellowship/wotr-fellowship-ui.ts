@@ -1,5 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { eliminateCharacter } from "../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrAction } from "../commons/wotr-action-models";
@@ -29,6 +30,7 @@ export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
   private ui = inject(WotrGameUi);
   private fellowshipHandler = inject(WotrFellowshipHandler);
+  private characterHandler = inject(WotrCharacterHandler);
   private fellowshipRules = inject(WotrFellowshipRules);
   private q = inject(WotrGameQuery);
 
@@ -105,17 +107,22 @@ export class WotrFellowshipUi {
     companions: WotrCompanionId[],
     options?: WotrSeparateCompanionsOptions
   ): Promise<WotrAction[]> {
-    const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(
-      companions,
-      options
-    );
-    const targetRegion = await this.ui.askRegion(
-      "Select a region to move the separated companions",
-      targetRegions
-    );
     const actions: WotrAction[] = [];
-    actions.push(separateCompanions(targetRegion, ...companions));
-    this.fellowshipHandler.separateCompanions(companions, targetRegion);
+    if (this.q.fellowship.isOnMordorTrack()) {
+      actions.push(eliminateCharacter(...companions));
+      this.characterHandler.eliminateCharactersOnly(companions);
+    } else {
+      const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(
+        companions,
+        options
+      );
+      const targetRegion = await this.ui.askRegion(
+        "Select a region to move the separated companions",
+        targetRegions
+      );
+      actions.push(separateCompanions(targetRegion, ...companions));
+      this.fellowshipHandler.separateCompanions(companions, targetRegion);
+    }
 
     if (companions.some(c => this.fellowshipStore.guide() === c)) {
       const fellowshipCompanions = this.fellowshipStore.companions();
@@ -124,7 +131,6 @@ export class WotrFellowshipUi {
         const leftCompanions = leftCompanionIds.map(id => this.q.character(id));
         const changeGuideAction = await this.changeGuideBetween(leftCompanions);
         actions.push(changeGuideAction);
-        this.fellowshipHandler.changeGuide(changeGuideAction.companion);
       }
     }
 
@@ -134,7 +140,9 @@ export class WotrFellowshipUi {
   async changeGuide(): Promise<WotrFellowshipGuide> {
     const companionIds = this.fellowshipStore.companions();
     const companions = companionIds.map(id => this.q.character(id));
-    return this.changeGuideBetween(companions);
+    const action = await this.changeGuideBetween(companions);
+    this.fellowshipHandler.changeGuide(action.companion);
+    return action;
   }
 
   private async changeGuideBetween(companions: WotrCharacterQuery[]): Promise<WotrFellowshipGuide> {

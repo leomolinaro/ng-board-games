@@ -34,7 +34,7 @@ export interface WotrHuntEffectParams {
   damage: number;
   isRevealing?: boolean;
   tableCardsUsed?: true;
-  guideSpecialAbilityUsed?: true;
+  guideSpecialAbilityAbsorption?: number;
   randomCompanions?: WotrCompanionId[];
   casualtyTaken?: true;
   onlyRingAbsorbtion?: true;

@@ -1,4 +1,5 @@
 import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import {
@@ -71,6 +72,12 @@ export class WotrSetupBuilder {
     return this;
   }
 
+  private _huntPool: WotrHuntTileId[] = [];
+  huntPool(...huntTiles: WotrHuntTileId[]): WotrSetupBuilder {
+    this._huntPool = huntTiles;
+    return this;
+  }
+
   build(): WotrSetup {
     return {
       decks: this.deckSetups,
@@ -83,7 +90,7 @@ export class WotrSetupBuilder {
       },
       freePeopleTokens: [],
       shadowTokens: [],
-      huntPool: [],
+      huntPool: this._huntPool,
       characters: []
     };
   }

@@ -36,14 +36,17 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
   modifier = this.huntModifiers.huntEffectChoices;
 
   public handler: WotrHuntEffectChoiceModifier = params => {
-    if (!this.q.character(this.characterId).isInFellowship()) return [];
+    const character = this.q.character(this.characterId);
+    if (!character.isInFellowship()) return [];
     if (!this.q.fellowship.guideIs(this.characterId)) return [];
-    if (this.q.fellowship.isOnMordorTrack()) return [];
     if (params.damage < 1) return [];
     const choice: WotrUiChoice<WotrHuntEffectParams> = {
       character: this.characterId,
-      actions: async () => this.fellowshipUi.separateThoseCompanions([this.characterId]),
-      label: () => `Separate ${this.characterId === "meriadoc" ? "Meriadoc" : "Peregrin"}`
+      actions: async params => {
+        params.guideSpecialAbilityAbsorption = 1;
+        return this.fellowshipUi.separateThoseCompanions([this.characterId]);
+      },
+      label: () => `Separate ${character.name} (Guide ability)`
     };
     return [choice];
   };

@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { cardToLabel } from "../card/wotr-card-models";
@@ -242,14 +242,21 @@ export class WotrHuntFlow {
           absorbedDamage += action.quantity;
           break;
         case "character-elimination": {
-          for (const companionId of action.characters) {
-            absorbedDamage += this.q.character(companionId).level;
+          if (params.guideSpecialAbilityAbsorption) {
+            absorbedDamage += params.guideSpecialAbilityAbsorption;
+          } else {
+            for (const companionId of action.characters) {
+              absorbedDamage += this.q.character(companionId).level;
+            }
+            params.casualtyTaken = true;
           }
-          params.casualtyTaken = true;
           break;
         }
         case "companion-separation": {
-          absorbedDamage += 1;
+          if (params.guideSpecialAbilityAbsorption) {
+            // Meriadoc and Peregrin separate for 1 damage absorption
+            absorbedDamage += params.guideSpecialAbilityAbsorption;
+          }
           break;
         }
         case "fellowship-reveal":

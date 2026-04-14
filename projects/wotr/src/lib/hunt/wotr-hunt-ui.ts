@@ -210,7 +210,7 @@ export class WotrHuntUi {
         choices.push(this.useRingChoice(damage));
       // Can use card with Foul Thing from the Deep
       // https://boardgamegeek.com/thread/969048/confirmation-can-you-use-horn-of-gondor-against-fo
-      if (!casualtyTaken && !params.onlyRingAbsorbtion)
+      if (!params.onlyRingAbsorbtion)
         choices.push(...this.huntModifiers.getHuntEffectChoices(params));
       const chosenActions = await this.ui.askChoice(
         `Absorb ${damage}/${params.damage} hunt damage points`,
@@ -233,35 +233,40 @@ export class WotrHuntUi {
         chosenActions,
         "fellowship-reveal-in-mordor"
       );
-      const hobbitGuideSeparation = findAction<WotrCompanionSeparation>(
+      const companionSeparation = findAction<WotrCompanionSeparation>(
         chosenActions,
         "companion-separation"
       );
       if (randomCompanion) {
         continuee = false;
-      } else {
-        if (characterElimination) {
+        continue;
+      }
+
+      if (characterElimination) {
+        if (params.guideSpecialAbilityAbsorption) {
+          // Meriadoc and Peregrin separate for 1 damage absorption
+          damage -= params.guideSpecialAbilityAbsorption;
+        } else {
           damage -= characterElimination.characters.reduce(
             (sum, c) => sum + this.q.character(c).level,
             0
           );
           casualtyTaken = true;
         }
-        if (hobbitGuideSeparation) {
-          damage -= 1;
-        }
-        if (useRing) {
-          damage -= useRing.quantity;
-        }
-        if (discardTableCard) {
-          damage -= this.huntHandler.cardHuntDamageReduction(discardTableCard.card);
-          params.tableCardsUsed = true;
-          this.cardHandler.discardCardFromTable(discardTableCard.card);
-        }
-        if (gollumRevealing || gollumRevealingInMordor) {
-          damage -= 1;
+      }
+      if (companionSeparation) {
+        if (params.guideSpecialAbilityAbsorption) {
+          // Meriadoc and Peregrin separate for 1 damage absorption
+          damage -= params.guideSpecialAbilityAbsorption;
         }
       }
+      if (useRing) damage -= useRing.quantity;
+      if (discardTableCard) {
+        damage -= this.huntHandler.cardHuntDamageReduction(discardTableCard.card);
+        params.tableCardsUsed = true;
+        this.cardHandler.discardCardFromTable(discardTableCard.card);
+      }
+      if (gollumRevealing || gollumRevealingInMordor) damage -= 1;
     }
     return actions;
   }
