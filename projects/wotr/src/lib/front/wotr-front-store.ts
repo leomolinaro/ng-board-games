@@ -236,8 +236,7 @@ export class WotrFrontStore {
   setCurrentActionToken(token: WotrActionToken, frontId: WotrFrontId): void {
     this.updateFront("setCurrentActionToken", frontId, front => ({
       ...front,
-      currentActionToken: token,
-      actionTokens: immutableUtil.listRemoveFirst(t => t === token, front.actionTokens)
+      currentActionToken: token
     }));
   }
 

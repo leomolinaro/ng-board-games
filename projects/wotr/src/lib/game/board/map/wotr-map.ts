@@ -11,6 +11,7 @@ import {
 } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
+import { WotrCurrentDieBox } from "../../../action-die/wotr-current-die-box";
 import { WotrAssetsStore } from "../../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character-models";
 import { WotrFellowshipBox } from "../../../fellowship/wotr-fellowship-box";
@@ -36,13 +37,14 @@ const GRID_STEP = 10;
   selector: "wotr-map",
   imports: [
     BgSvgModule,
-    WotrRegionAreas,
-    WotrPoliticalTrack,
-    WotrHuntBox,
-    WotrFellowshipTrack,
-    WotrFellowshipBox,
-    WotrElvenRingsBox,
+    WotrCurrentDieBox,
     WotrDeckBoxes,
+    WotrElvenRingsBox,
+    WotrFellowshipBox,
+    WotrFellowshipTrack,
+    WotrHuntBox,
+    WotrPoliticalTrack,
+    WotrRegionAreas,
     WotrTableCardsComponent,
     WotrVictoryPointsTrack
   ],
@@ -72,6 +74,7 @@ const GRID_STEP = 10;
         <svg:g
           wotrHuntBox
           [hunt]="hunt()"></svg:g>
+        <svg:g wotrCurrentDieBox></svg:g>
         <svg:g
           wotrFellowshipTrack
           [fellowship]="fellowship()"></svg:g>

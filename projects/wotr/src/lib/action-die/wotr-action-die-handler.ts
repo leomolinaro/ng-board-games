@@ -17,7 +17,7 @@ import {
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
-import { WotrActionDie } from "./wotr-action-die-models";
+import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 
 @Injectable()
@@ -64,6 +64,11 @@ export class WotrActionDieHandler {
     this.frontStore.setCurrentActionDie(die, front);
   }
 
+  setCurrentActionToken(token: WotrActionToken, front: WotrFrontId) {
+    this.frontStore.setCurrentActionToken(token, front);
+    this.frontStore.removeActionToken(token, front);
+  }
+
   private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
@@ -75,7 +80,7 @@ export class WotrActionDieHandler {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
-    this.frontStore.setCurrentActionToken(story.token, front);
+    this.setCurrentActionToken(story.token, front);
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);

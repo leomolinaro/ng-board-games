@@ -24,6 +24,7 @@ import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { KomeActionDieRules } from "./kome-action-die-rules";
 import { rollActionDice, skipActionDie } from "./wotr-action-die-actions";
+import { WotrActionDieHandler } from "./wotr-action-die-handler";
 import {
   WotrActionDie,
   WotrActionToken,
@@ -48,6 +49,7 @@ export class WotrActionDieUi {
   private q = inject(WotrGameQuery);
   private frontUi = inject(WotrFrontUi);
   private komeRules = inject(KomeActionDieRules);
+  private actionDieHandler = inject(WotrActionDieHandler);
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
@@ -153,11 +155,13 @@ export class WotrActionDieUi {
     const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", params);
     switch (actionChoice.type) {
       case "die": {
+        this.actionDieHandler.setCurrentActionDie(actionChoice.die, frontId);
         const dieStory = await this.resolveActionDie(actionChoice.die, frontId);
         if (elvenRing) dieStory.elvenRing = elvenRing;
         return dieStory;
       }
       case "token": {
+        this.actionDieHandler.setCurrentActionToken(actionChoice.token, frontId);
         const tokenStory = await this.resolveActionToken(actionChoice.token, frontId);
         if (elvenRing) tokenStory.elvenRing = elvenRing;
         return tokenStory;
