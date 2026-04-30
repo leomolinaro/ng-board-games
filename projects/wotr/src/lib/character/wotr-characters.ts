@@ -31,6 +31,9 @@ import {
   TheWhiteRiderAbility,
   WotrGandalfTheWhite
 } from "./characters/gandalf-the-white";
+import { RedWrath, TheBlackSerpent } from "./characters/kome/the-black-serpent";
+import { LordOfTheBats, TheShadowOfMirkwood } from "./characters/kome/the-shadow-of-mirkwood";
+import { ICommandAbility, Ugluk, WeMarchDayAndNightAbility } from "./characters/kome/ugluk";
 import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
   ServantsOfTheWhiteHandAbility,
@@ -127,11 +130,11 @@ export class WotrCharacterAbilities {
       case "thranduil":
         return []; // TODO
       case "the-black-serpent":
-        return []; // TODO
+        return [new RedWrath()];
       case "the-shadow-of-mirkwood":
-        return []; // TODO
+        return [new LordOfTheBats()];
       case "ugluk":
-        return []; // TODO
+        return [new ICommandAbility(), new WeMarchDayAndNightAbility()];
       case "strider":
         return [
           new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),
@@ -223,6 +226,26 @@ export class WotrCharacterAbilities {
             this.q
           );
         return this.characters["the-mouth-of-sauron"];
+      case "ugluk":
+        if (!this.characters["ugluk"])
+          this.characters["ugluk"] = new Ugluk("ugluk", this.q, this.battleModifiers);
+        return this.characters["ugluk"];
+      case "the-shadow-of-mirkwood":
+        if (!this.characters["the-shadow-of-mirkwood"])
+          this.characters["the-shadow-of-mirkwood"] = new TheShadowOfMirkwood(
+            "the-shadow-of-mirkwood",
+            this.q,
+            this.battleModifiers
+          );
+        return this.characters["the-shadow-of-mirkwood"];
+      case "the-black-serpent":
+        if (!this.characters["the-black-serpent"])
+          this.characters["the-black-serpent"] = new TheBlackSerpent(
+            "the-black-serpent",
+            this.q,
+            this.battleModifiers
+          );
+        return this.characters["the-black-serpent"];
       default:
         throw new Error(`Unknown character ID: ${characterId}`);
     }
