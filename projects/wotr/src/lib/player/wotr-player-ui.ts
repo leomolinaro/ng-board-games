@@ -271,4 +271,11 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       actions: await this.unitUi.faramirsRangersRecruit(cardId)
     };
   }
+
+  async chooseCorruptionTile(): Promise<WotrStory> {
+    return {
+      type: "base",
+      actions: [await this.huntUi.chooseCorruptionTile()]
+    };
+  }
 }

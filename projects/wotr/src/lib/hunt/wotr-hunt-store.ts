@@ -1,5 +1,6 @@
 import { inject, Injectable, Signal } from "@angular/core";
 import { immutableUtil } from "@leobg/commons/utils";
+import { KomeSovereignId } from "../character/wotr-character-models";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrHuntTile, WotrHuntTileId } from "./wotr-hunt-models";
 
@@ -14,6 +15,12 @@ export interface WotrHuntState {
   nFreePeopleDice: number;
   previousTurnNFreePeopleDice: number;
   inProgress: boolean;
+  corruptionAttempt: KomeCorruptionAttemptState | null;
+}
+
+export interface KomeCorruptionAttemptState {
+  sovereign: KomeSovereignId;
+  drawnTiles: WotrHuntTileId[];
 }
 
 export function initialeState(): WotrHuntState {
@@ -45,7 +52,8 @@ export function initialeState(): WotrHuntState {
     nHuntDice: 0,
     nFreePeopleDice: 0,
     previousTurnNFreePeopleDice: 0,
-    inProgress: false
+    inProgress: false,
+    corruptionAttempt: null
   };
 }
 
@@ -73,6 +81,9 @@ export class WotrHuntStore {
   }
   huntPool(): WotrHuntTileId[] {
     return this.state().huntPool;
+  }
+  getCorruptionAttempt(): KomeCorruptionAttemptState | null {
+    return this.state().corruptionAttempt;
   }
 
   setHuntPool(huntPool: WotrHuntTileId[]): void {
@@ -195,5 +206,53 @@ export class WotrHuntStore {
 
   minimumNumberOfHuntDice(): number {
     return this.state().previousTurnNFreePeopleDice > 0 ? 1 : 0;
+  }
+
+  startCorruptionAttempt(sovereign: KomeSovereignId, tile: WotrHuntTileId): void {
+    this.update("startCorruptionAttempt", state => ({
+      ...state,
+      corruptionAttempt: { sovereign, drawnTiles: [tile] }
+    }));
+  }
+
+  continueCorruptionAttempt(tile: WotrHuntTileId): void {
+    this.update("continueCorruptionAttempt", state => ({
+      ...state,
+      corruptionAttempt: state.corruptionAttempt
+        ? { ...state.corruptionAttempt, drawnTiles: [...state.corruptionAttempt.drawnTiles, tile] }
+        : null
+    }));
+  }
+
+  resetCorruptionAttempt(choosenTile: WotrHuntTileId): void {
+    this.update("resetCorruptionAttempt", state => ({
+      ...state,
+      corruptionAttempt: null,
+      huntPool: immutableUtil.listPush(
+        state.corruptionAttempt!.drawnTiles.filter(t => t !== choosenTile),
+        state.huntPool
+      )
+    }));
+  }
+
+  resetCorruptionTiles(corruptionTiles: WotrHuntTileId[]) {
+    const huntTile = this.getHighestNumberedTile(corruptionTiles);
+    this.update("resetCorruptionTiles", state => ({
+      ...state,
+      huntPool: immutableUtil.listPush(
+        corruptionTiles.filter(t => t !== huntTile.id),
+        state.huntPool
+      ),
+      huntRemoved: immutableUtil.listPush([huntTile.id], state.huntRemoved)
+    }));
+  }
+
+  private getHighestNumberedTile(tileIds: WotrHuntTileId[]): WotrHuntTile {
+    return tileIds.reduce((highest, tileId) => {
+      const tile = this.huntTile(tileId);
+      const highestNumber = highest.quantity ?? 0;
+      const tileNumber = tile.quantity ?? 0;
+      return tileNumber > highestNumber ? tile : highest;
+    }, this.huntTile(tileIds[0]));
   }
 }

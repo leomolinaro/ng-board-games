@@ -31,6 +31,7 @@ export class WotrGameQuery {
 
   kome = this.gameStore.kome;
   visibleCorruptionTiles = this.gameStore.visibleCorruptionTiles;
+  sequentialCorruptionDraw = this.gameStore.sequentialCorruptionDraw;
 
   freePeoples = new WotrFrontQuery("free-peoples", this.frontStore, this.characterStore);
   shadow = new WotrFrontQuery("shadow", this.frontStore, this.characterStore);
@@ -116,6 +117,8 @@ export class WotrGameQuery {
     this.theoden,
     this.thranduil
   ];
+  sovereigns = [this.brand, this.dain, this.denethor, this.theoden, this.thranduil];
+
   private characterById = arrayUtil.toMap(
     [...this.companions, ...this.minions],
     character => character.id

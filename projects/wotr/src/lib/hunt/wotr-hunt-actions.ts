@@ -1,5 +1,6 @@
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
+import { KomeSovereignId } from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrHuntTileId } from "./wotr-hunt-models";
 
@@ -14,7 +15,8 @@ export type WotrHuntAction =
   | WotrHuntLidlessEyeDieChange
   | KomeCorruptionStartAttempt
   | KomeCorruptionContinueAttempt
-  | KomeCorruptionStopAttempt;
+  | KomeCorruptionStopAttempt
+  | KomeCorruptSovereign;
 
 export interface WotrHuntAllocation {
   type: "hunt-allocation";
@@ -87,9 +89,13 @@ export interface WotrHuntEffect {
 export interface KomeCorruptionStartAttempt {
   type: "corruption-start-attempt";
   tile: WotrHuntTileId;
+  sovereign: KomeSovereignId;
 }
-export function startCorruptionAttempt(tile: WotrHuntTileId): KomeCorruptionStartAttempt {
-  return { type: "corruption-start-attempt", tile };
+export function startCorruptionAttempt(
+  sovereign: KomeSovereignId,
+  tile: WotrHuntTileId
+): KomeCorruptionStartAttempt {
+  return { type: "corruption-start-attempt", tile, sovereign };
 }
 
 export interface KomeCorruptionContinueAttempt {
@@ -100,10 +106,18 @@ export function continueCorruptionAttempt(tile: WotrHuntTileId): KomeCorruptionC
   return { type: "corruption-continue-attempt", tile };
 }
 
-// only with sequentialCorruptionDraw variant
 export interface KomeCorruptionStopAttempt {
   type: "corruption-stop-attempt";
+  tile: WotrHuntTileId;
 }
-export function stopCorruptionAttempt(): KomeCorruptionStopAttempt {
-  return { type: "corruption-stop-attempt" };
+export function stopCorruptionAttempt(chosenTile: WotrHuntTileId): KomeCorruptionStopAttempt {
+  return { type: "corruption-stop-attempt", tile: chosenTile };
+}
+
+export interface KomeCorruptSovereign {
+  type: "corrupt-sovereign";
+  sovereign: KomeSovereignId;
+}
+export function corruptSovereign(sovereign: KomeSovereignId): KomeCorruptSovereign {
+  return { type: "corrupt-sovereign", sovereign };
 }

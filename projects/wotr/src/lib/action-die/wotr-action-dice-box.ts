@@ -47,19 +47,17 @@ interface ActionTokendNode {
       </div>
     }
   `,
-  styles: [
-    `
-      .wotr-action-dice {
-        display: flex;
-        &.selectable > * {
-          cursor: pointer;
-        }
-        &.disabled > * {
-          opacity: 0.5;
-        }
+  styles: `
+    .wotr-action-dice {
+      display: flex;
+      &.selectable > * {
+        cursor: pointer;
       }
-    `
-  ],
+      &.disabled > * {
+        opacity: 0.5;
+      }
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WotrActionDiceBox {

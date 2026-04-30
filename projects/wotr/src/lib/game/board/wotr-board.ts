@@ -43,6 +43,7 @@ import {
 import { WotrRegion } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrRegionUnits } from "../../unit/wotr-unit-models";
+import { WotrGameStore } from "../wotr-game-store";
 import { WotrCardSelection, WotrGameUi } from "../wotr-game-ui";
 import { WotrMap } from "./map/wotr-map";
 import { WotrReplayButton } from "./wotr-replay-buttons";
@@ -81,7 +82,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
       </div>
       <wotr-player-toolbar class="wotr-toolbar"></wotr-player-toolbar>
       <div class="wotr-fronts">
-        <mat-tab-group [selectedIndex]="selectedFrontIndex()">
+        <mat-tab-group [selectedIndex]="selectedFrontTabIndex()">
           @for (front of fronts(); track front.id) {
             <mat-tab
               [label]="
@@ -102,7 +103,10 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
             </mat-tab>
           }
           <mat-tab label="Hunt">
-            <wotr-hunt-area [hunt]="huntStore.state()"> </wotr-hunt-area>
+            <wotr-hunt-area
+              [hunt]="huntStore.state()"
+              [selectedHuntTabIndex]="selectedHuntTabIndex()">
+            </wotr-hunt-area>
           </mat-tab>
         </mat-tab-group>
       </div>
@@ -135,6 +139,7 @@ export class WotrBoard {
   protected nationStore = inject(WotrNationStore);
   protected logStore = inject(WotrLogStore);
   protected ui = inject(WotrGameUi);
+  private gameStore = inject(WotrGameStore);
 
   protected freePeoples = this.frontStore.freePeoplesFront;
   protected shadow = this.frontStore.shadowFront;
@@ -162,7 +167,7 @@ export class WotrBoard {
   logsFixed = false;
   zoomFixed = false;
 
-  protected selectedFrontIndex = signal<number>(0);
+  protected selectedFrontTabIndex = signal<number>(0);
   private focusFront = effect(() => {
     const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
     const cardSelection = this.ui.handCardSelection();
@@ -170,7 +175,15 @@ export class WotrBoard {
     const frontId = reinforcementUnitSelection
       ? reinforcementUnitSelection.frontId
       : cardSelection!.frontId;
-    this.selectedFrontIndex.set(frontId === "free-peoples" ? 0 : 1);
+    this.selectedFrontTabIndex.set(frontId === "free-peoples" ? 0 : 1);
+  });
+
+  protected selectedHuntTabIndex = signal<number>(0);
+  private focusSovereigns = effect(() => {
+    const sovereignSelection = this.ui.sovereignSelection();
+    if (!sovereignSelection) return;
+    this.selectedFrontTabIndex.set(2);
+    this.selectedHuntTabIndex.set(this.gameStore.visibleCorruptionTiles() ? 3 : 2);
   });
 
   private focusRegion = effect(() => {

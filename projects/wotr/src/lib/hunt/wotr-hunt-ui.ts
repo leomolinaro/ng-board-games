@@ -26,11 +26,13 @@ import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   allocateHuntDice,
+  continueCorruptionAttempt,
   drawHuntTile,
   reRollHuntDice,
   rollHuntDice,
   rollShelobsLairDie,
   startCorruptionAttempt,
+  stopCorruptionAttempt,
   WotrHuntTileDraw
 } from "./wotr-hunt-actions";
 import { WotrHuntHandler } from "./wotr-hunt-handler";
@@ -285,13 +287,71 @@ export class WotrHuntUi {
   }
 
   private async startCorruptionAttempt() {
+    const awailableSovereigns = this.q.sovereigns.filter(s => !s.isAwakened() && !s.isCorrupted());
+    const chosenSovereign = await this.ui.askSovereign(
+      "Choose a sovereign to corrupt",
+      awailableSovereigns.map(s => s.id)
+    );
     await this.ui.askContinue("Draw hunt tile");
     const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
-    return startCorruptionAttempt(huntTile);
+    return startCorruptionAttempt(chosenSovereign, huntTile);
   }
 
   corruptionAttemptChoice: WotrUiChoice = {
     label: () => "Corruption attempt",
     actions: async () => [await this.startCorruptionAttempt()]
   };
+
+  async chooseCorruptionTile(): Promise<WotrAction> {
+    const corruptionAttempt = this.huntStore.getCorruptionAttempt();
+    if (!corruptionAttempt) throw new Error("No corruption attempt in progress");
+    const drawnTiles = corruptionAttempt.drawnTiles;
+    const lastDrawnTileId = drawnTiles[drawnTiles.length - 1];
+    const lastDrawnTile = this.huntStore.huntTile(lastDrawnTileId);
+    if (lastDrawnTile.crown) {
+      return stopCorruptionAttempt(lastDrawnTileId);
+    } else if (lastDrawnTile.type !== "standard" || lastDrawnTile.eye) {
+      await this.ui.askContinue("Draw hunt tile");
+      const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+      return continueCorruptionAttempt(huntTile);
+    }
+    const nHuntDice = this.huntStore.nHuntDice();
+    const remainingDraws = nHuntDice - drawnTiles.length;
+    if (this.q.sequentialCorruptionDraw()) {
+      if (remainingDraws > 1) {
+        const option = await this.ui.askOption<"choose" | "draw">(
+          "Do you want to choose the last tile?",
+          [
+            { label: "Yes, choose the last tile", value: "choose" },
+            { label: "No, draw another tile", value: "draw" }
+          ]
+        );
+        if (option === "draw") {
+          await this.ui.askContinue("Draw hunt tile");
+          const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+          return continueCorruptionAttempt(huntTile);
+        } else {
+          return stopCorruptionAttempt(lastDrawnTileId);
+        }
+      } else {
+        await this.ui.askContinue("Choose the last tile");
+        return stopCorruptionAttempt(lastDrawnTileId);
+      }
+    } else {
+      if (remainingDraws > 0) {
+        await this.ui.askContinue("Draw hunt tile");
+        const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+        return continueCorruptionAttempt(huntTile);
+      } else {
+        const chosenTile = await this.ui.askOption(
+          "Choose a corruption tile to apply",
+          drawnTiles.map(id => ({
+            label: id,
+            value: id
+          }))
+        );
+        return stopCorruptionAttempt(chosenTile);
+      }
+    }
+  }
 }

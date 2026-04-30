@@ -28,4 +28,8 @@ export class WotrShadowPlayer extends WotrPlayer {
   reRollHuntDice(nReRolls: number): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.reRollHuntDice(nReRolls));
   }
+
+  chooseCorruptionTile(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.chooseCorruptionTile());
+  }
 }

@@ -182,4 +182,7 @@ export class WotrGameStore extends signalStore(
   visibleCorruptionTiles = computed(() =>
     this.gameOptions().variants.includes("visibleCorruptionTiles")
   );
+  sequentialCorruptionDraw = computed(() =>
+    this.gameOptions().variants.includes("sequentialCorruptionDraw")
+  );
 }

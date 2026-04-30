@@ -60,12 +60,18 @@ export class WotrFrontStoryComposer {
   huntStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
     return this.baseStory(...actions);
   }
+  corruptionStory(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
+    return this.baseStory(...actions);
+  }
 
   characterDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
     return this.actionDie("character", ...actions);
   }
   eventDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
     return this.actionDie("event", ...actions);
+  }
+  eyeDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
+    return this.actionDie("eye", ...actions);
   }
   musterDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
     return this.actionDie("muster", ...actions);

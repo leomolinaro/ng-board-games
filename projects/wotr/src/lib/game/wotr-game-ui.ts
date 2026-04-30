@@ -7,7 +7,11 @@ import {
   WotrActionToken
 } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import {
+  KomeSovereignId,
+  WotrCharacterId,
+  WotrCompanionId
+} from "../character/wotr-character-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
@@ -35,6 +39,7 @@ interface WotrGameUiState {
   tableCardSelection: WotrCardSelection | null;
   inputQuantitySelection: WotrInputQuantitySelection | false;
   fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | null;
+  sovereignSelection: KomeSovereignId[] | null;
 }
 
 export interface WotrElvenRingSelection {
@@ -96,7 +101,8 @@ export const initialState: WotrGameUiState = {
   handCardSelection: null,
   tableCardSelection: null,
   inputQuantitySelection: false,
-  fellowshipCompanionsSelection: null
+  fellowshipCompanionsSelection: null,
+  sovereignSelection: null
 };
 
 export interface WotrUiOption<O = unknown> {
@@ -281,6 +287,14 @@ export class WotrGameUi extends signalStore(
     } else {
       throw new Error("Invalid action die or stop selection");
     }
+  }
+
+  sovereign = uiEvent<KomeSovereignId>();
+  async askSovereign(message: string, sovereigns: KomeSovereignId[]): Promise<KomeSovereignId> {
+    this.updateUi(s => ({ ...s, message, sovereignSelection: sovereigns }));
+    const sovereign = await this.sovereign.get();
+    this.updateUi(s => ({ ...s, message: null, canCancel: true, sovereignSelection: null }));
+    return sovereign;
   }
 
   option = uiEvent<WotrUiOption>();

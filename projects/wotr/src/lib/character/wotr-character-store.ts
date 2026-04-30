@@ -1,4 +1,5 @@
 import { Injectable, Signal, computed } from "@angular/core";
+import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import {
   KomeSovereign,
@@ -214,6 +215,17 @@ export class WotrCharacterStore {
     }));
   }
 
+  private updateSovereign(
+    actionName: string,
+    sovereignId: KomeSovereignId,
+    updater: (a: KomeSovereign) => KomeSovereign
+  ) {
+    this.update(actionName, s => ({
+      ...s,
+      map: { ...s.map, [sovereignId]: updater(s.map[sovereignId] as KomeSovereign) }
+    }));
+  }
+
   setEliminated(characterId: WotrCharacterId) {
     this.updateCharacter("setEliminated", characterId, character => ({
       ...character,
@@ -246,6 +258,21 @@ export class WotrCharacterStore {
     this.update("resetMessengerOfTheDarkTower", s => ({
       ...s,
       messengerOfTheDarkTowerUsed: false
+    }));
+  }
+
+  addSovereignCorruption(sovereign: KomeSovereignId, tile: WotrHuntTileId) {
+    this.updateSovereign("addSovereignCorruption", sovereign, s => ({
+      ...s,
+      corruptionTiles: [...s.corruptionTiles, tile]
+    }));
+  }
+
+  corruptSovereign(sovereign: KomeSovereignId) {
+    this.updateSovereign("corruptSovereign", sovereign, s => ({
+      ...s,
+      sovereignStatus: "corrupted",
+      corruptionTiles: []
     }));
   }
 }

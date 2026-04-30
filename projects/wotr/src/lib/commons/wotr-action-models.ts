@@ -29,7 +29,7 @@ export interface WotrFragmentCreator<F> {
   region(region: WotrRegionId): F;
   nation(nation: WotrNationId): F;
   character(characterId: WotrCharacterId): F;
-  huntTile(huntTile: WotrHuntTileId): F;
+  huntTile(huntTile: WotrHuntTileId, options?: { hideFor?: WotrFrontId }): F;
 }
 
 export type WotrActionLogger<A, F = any> = (

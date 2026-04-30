@@ -1,9 +1,10 @@
 KOME
 
-- corruption attempts
-- minions entering the game
-- companion awakening
-- character abilities
-- ruler dice
-- ruler tokens
-- cards
+[v] corruption attempts
+[] hunt tile choose dialog
+[] minions entering the game
+[] companion awakening
+[] character abilities
+[] ruler dice
+[] ruler tokens
+[] cards

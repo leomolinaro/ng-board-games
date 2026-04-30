@@ -11,7 +11,7 @@ import { WotrHuntState } from "./wotr-hunt-store";
   selector: "wotr-hunt-area",
   imports: [MatTabsModule, BgTransformPipe, KomeCorruptionBoard],
   template: `
-    <mat-tab-group>
+    <mat-tab-group [selectedIndex]="selectedHuntTabIndex()">
       @if (showPool()) {
         <mat-tab label="Pool">
           <div class="tiles">
@@ -95,6 +95,7 @@ export class WotrHuntArea {
   private gameStore = inject(WotrGameStore);
 
   hunt = input.required<WotrHuntState>();
+  selectedHuntTabIndex = input<number | undefined>(undefined);
 
   protected kome = this.gameStore.kome;
   private visibleCorruptionTiles = this.gameStore.visibleCorruptionTiles;
