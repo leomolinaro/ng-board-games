@@ -10,12 +10,14 @@ import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { character } from "../../unit/wotr-unit-models";
 import { playCharacter } from "../wotr-character-actions";
-import { WotrCharacterId } from "../wotr-character-models";
 import {
   WotrCharacterModifiers,
   WotrCharacterMovementLevelModifier
 } from "../wotr-character-modifiers";
-import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-card";
+import {
+  activateCharacterAbility,
+  WotrPlayableCharacterCard
+} from "./wotr-playable-character-card";
 
 // Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
 // If Gandalf the Grey has been eliminated or has left the Fellowship, and any Minion is (or has been) in play, you may use one Will of the West Action die result to
@@ -25,16 +27,14 @@ import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-ca
 // The White Rider. If Gandalf the White is in a battle, at the start of the battle you can forfeit his Leadership to negate all Nazgul Leadership (including that of the
 // Witch-king) for the duration of that battle.
 
-export class WotrGandalfTheWhite extends WotrCharacterCard {
-  constructor(
-    public override characterId: WotrCharacterId,
-    private q: WotrGameQuery
-  ) {
+export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
+  constructor(private q: WotrGameQuery) {
     super();
   }
 
+  public readonly characterId = "gandalf-the-white";
+
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (!this.q.gandalfTheWhite.isAvailable()) return false;
     if (die !== "will-of-the-west") return false;
     const gandalf = this.q.gandalfTheGrey;
     if (!gandalf.isInPlay() && !gandalf.isEliminated()) return false;

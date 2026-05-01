@@ -13,7 +13,10 @@ import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-card";
+import {
+  activateCharacterAbility,
+  WotrPlayableCharacterCard
+} from "./wotr-playable-character-card";
 
 // The Witch-king - The Black Captain (Level ∞, Leadership 2, +1 Action Die)
 // If Sauron and at least one Free Peoples Nation are "At War," you may use one Muster Action die result to place the Witch-king in any region with a Shadow
@@ -22,19 +25,19 @@ import { activateCharacterAbility, WotrCharacterCard } from "./wotr-character-ca
 // Sorcerer. If the Witch-king is in a battle and you use a Combat card during the first round of the battle, after doing so you may immediately draw an Event card
 // from the deck matching the type of that card.
 
-export class WotrWitchKing extends WotrCharacterCard {
+export class TheWitchKing extends WotrPlayableCharacterCard {
   constructor(
-    public override characterId: WotrCharacterId,
     private q: WotrGameQuery,
     private nationHandler: WotrNationHandler
   ) {
     super();
   }
 
+  public readonly characterId = "the-witch-king";
+
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.q.theWitchKing.isAvailable() &&
       this.q.sauron.isAtWar() &&
       this.q.freePeoplesNations.some(n => n.isAtWar()) &&
       this.q.regions().some(r => this.isValidRegion(r.region()))

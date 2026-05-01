@@ -45,16 +45,16 @@ import { StriderGuideAbility } from "./characters/strider";
 import {
   MessengerOfTheDarkTowerAbility,
   MessengerOfTheDarkTowerSetUsedAbility,
-  WotrMouthOfSauron
+  TheMouthOfSauron
 } from "./characters/the-mouth-of-sauron";
-import { SorcererAbility, WotrWitchKing } from "./characters/the-witch-king";
-import { WotrCharacterCard } from "./characters/wotr-character-card";
+import { SorcererAbility, TheWitchKing } from "./characters/the-witch-king";
+import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-card";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 
 @Injectable()
 export class WotrCharacterAbilities {
-  private characters: Partial<Record<WotrCharacterId, WotrCharacterCard>> = {};
+  private characters: Partial<Record<WotrCharacterId, WotrPlayableCharacterCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
 
   private battleModifiers = inject(WotrBattleModifiers);
@@ -86,10 +86,8 @@ export class WotrCharacterAbilities {
   }
 
   resolveBringIntoPlayEffects(characterId: WotrCharacterId): void {
-    try {
-      const characterCard = this.get(characterId);
-      characterCard.resolveBringIntoPlayEffect();
-    } catch (error) {}
+    const characterCard = this.getPlayableCharacterCard(characterId);
+    characterCard.resolveBringIntoPlayEffect();
   }
 
   private createAbilities(characterId: WotrCharacterId): WotrAbility[] {
@@ -199,77 +197,71 @@ export class WotrCharacterAbilities {
     }
   }
 
-  private get(characterId: WotrCharacterId): WotrCharacterCard {
+  private getPlayableCharacterCard(characterId: WotrCharacterId): WotrPlayableCharacterCard {
     switch (characterId) {
       case "gandalf-the-white":
         if (!this.characters["gandalf-the-white"])
-          this.characters["gandalf-the-white"] = new WotrGandalfTheWhite(
-            "gandalf-the-white",
-            this.q
-          );
+          this.characters["gandalf-the-white"] = new WotrGandalfTheWhite(this.q);
         return this.characters["gandalf-the-white"];
       case "aragorn":
         if (!this.characters["aragorn"])
-          this.characters["aragorn"] = new WotrAragorn("aragorn", this.q, this.battleModifiers);
+          this.characters["aragorn"] = new WotrAragorn(this.q, this.battleModifiers);
         return this.characters["aragorn"];
       case "saruman":
-        if (!this.characters["saruman"])
-          this.characters["saruman"] = new WotrSaruman("saruman", this.q);
+        if (!this.characters["saruman"]) this.characters["saruman"] = new WotrSaruman(this.q);
         return this.characters["saruman"];
       case "the-witch-king":
         if (!this.characters["the-witch-king"])
-          this.characters["the-witch-king"] = new WotrWitchKing(
-            "the-witch-king",
-            this.q,
-            this.nationHandler
-          );
+          this.characters["the-witch-king"] = new TheWitchKing(this.q, this.nationHandler);
         return this.characters["the-witch-king"];
       case "the-mouth-of-sauron":
         if (!this.characters["the-mouth-of-sauron"])
-          this.characters["the-mouth-of-sauron"] = new WotrMouthOfSauron(
-            "the-mouth-of-sauron",
-            this.q
-          );
+          this.characters["the-mouth-of-sauron"] = new TheMouthOfSauron(this.q);
         return this.characters["the-mouth-of-sauron"];
       case "ugluk":
         if (!this.characters["ugluk"])
-          this.characters["ugluk"] = new Ugluk("ugluk", this.q, this.battleModifiers);
+          this.characters["ugluk"] = new Ugluk(this.q, this.battleModifiers);
         return this.characters["ugluk"];
       case "the-shadow-of-mirkwood":
         if (!this.characters["the-shadow-of-mirkwood"])
           this.characters["the-shadow-of-mirkwood"] = new TheShadowOfMirkwood(
-            "the-shadow-of-mirkwood",
             this.q,
             this.battleModifiers
           );
         return this.characters["the-shadow-of-mirkwood"];
       case "the-black-serpent":
         if (!this.characters["the-black-serpent"])
-          this.characters["the-black-serpent"] = new TheBlackSerpent(
-            "the-black-serpent",
-            this.q,
-            this.battleModifiers
-          );
+          this.characters["the-black-serpent"] = new TheBlackSerpent(this.q, this.battleModifiers);
         return this.characters["the-black-serpent"];
       default:
         throw new Error(`Unknown character ID: ${characterId}`);
     }
   }
 
-  freePeoplesCharacterCards(): WotrCharacterCard[] {
-    return [this.get("gandalf-the-white"), this.get("aragorn")];
+  private freePeoplesPlayableCharacters(): WotrCharacterId[] {
+    return ["gandalf-the-white", "aragorn"];
   }
 
-  shadowCharacterCards(): WotrCharacterCard[] {
-    return [this.get("saruman"), this.get("the-witch-king"), this.get("the-mouth-of-sauron")];
+  private shadowPlayableCharacterIds(): WotrCharacterId[] {
+    const characterIds: WotrCharacterId[] = ["saruman", "the-witch-king", "the-mouth-of-sauron"];
+    if (this.q.kome()) {
+      characterIds.push("ugluk", "the-shadow-of-mirkwood", "the-black-serpent");
+    }
+    return characterIds;
+  }
+
+  availableCharacterCards(frontId: WotrFrontId): WotrPlayableCharacterCard[] {
+    const characterIds =
+      frontId === "free-peoples"
+        ? this.freePeoplesPlayableCharacters()
+        : this.shadowPlayableCharacterIds();
+    return characterIds
+      .filter(characterId => this.q.character(characterId).isAvailable())
+      .map(characterId => this.getPlayableCharacterCard(characterId));
   }
 
   canBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {
-    if (frontId === "free-peoples") {
-      return this.freePeoplesCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
-    } else {
-      return this.shadowCharacterCards().some(card => card.canBeBroughtIntoPlay(die));
-    }
+    return this.availableCharacterCards(frontId).some(card => card.canBeBroughtIntoPlay(die));
   }
 
   activateAbilities(characters: WotrCharacterId[]) {

@@ -9,7 +9,7 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrCharacterCard } from "./characters/wotr-character-card";
+import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-card";
 import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
@@ -20,7 +20,7 @@ import { WotrCharacterAbilities } from "./wotr-characters";
 class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
   constructor(
     private die: WotrActionDie,
-    private characterCard: WotrCharacterCard,
+    private characterCard: WotrPlayableCharacterCard,
     private q: WotrGameQuery,
     private ui: WotrGameUi
   ) {}
@@ -57,13 +57,10 @@ export class WotrCharacterUi {
   private ui = inject(WotrGameUi);
 
   bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
-    const characterCards =
-      frontId === "free-peoples"
-        ? this.characterAbilities.freePeoplesCharacterCards()
-        : this.characterAbilities.shadowCharacterCards();
+    const availableCharacters = this.characterAbilities.availableCharacterCards(frontId);
     return this.ui.askChoice(
       "Choose character to bring into play",
-      characterCards.map<WotrUiChoice>(
+      availableCharacters.map<WotrUiChoice>(
         characterCard => new WotrBringCharacterIntoPlayChoice(die, characterCard, this.q, this.ui)
       ),
       frontId

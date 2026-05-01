@@ -13,8 +13,10 @@ import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import { playCharacter } from "../../wotr-character-actions";
-import { WotrCharacterId } from "../../wotr-character-models";
-import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-card";
+import {
+  activateCharacterAbility,
+  WotrPlayableCharacterCard
+} from "../wotr-playable-character-card";
 
 // The Black Serpent - Chieftain of the Haradrim (Level 2, Leadership 2, +1 Ruler Special Action Die)
 // If Gondor is "At War", you may spend a Muster Action or any Ruler die result
@@ -26,14 +28,15 @@ import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-c
 // if the Combat card is "Relentless Assault", add 2 to all dice on your Combat roll instead [3].
 // The Black Serpent is not a Minion for the purpose of playing Gandalf the White.
 
-export class TheBlackSerpent extends WotrCharacterCard {
+export class TheBlackSerpent extends WotrPlayableCharacterCard {
   constructor(
-    public override characterId: WotrCharacterId,
     private q: WotrGameQuery,
     protected battleModifiers: WotrBattleModifiers
   ) {
     super();
   }
+
+  public readonly characterId = "the-black-serpent";
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (

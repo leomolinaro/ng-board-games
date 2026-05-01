@@ -13,8 +13,10 @@ import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import { character } from "../../../unit/wotr-unit-models";
 import { playCharacter } from "../../wotr-character-actions";
-import { WotrCharacterId } from "../../wotr-character-models";
-import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-card";
+import {
+  activateCharacterAbility,
+  WotrPlayableCharacterCard
+} from "../wotr-playable-character-card";
 
 // The Shadow of Mirkwood - Chieftain of the Dark Lord (Level 3, Leadership 1, +1 Ruler Special Action Die)
 // If either the Dwarves, the Elves, or the North are "At War", you may spend a Muster Action
@@ -27,14 +29,15 @@ import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-c
 // by the Free Peoples player [0].
 // The Shadow of Mirkwood is not a Minion for the purpose of playing Gandalf the White.
 
-export class TheShadowOfMirkwood extends WotrCharacterCard {
+export class TheShadowOfMirkwood extends WotrPlayableCharacterCard {
   constructor(
-    public override characterId: WotrCharacterId,
     private q: WotrGameQuery,
     protected battleModifiers: WotrBattleModifiers
   ) {
     super();
   }
+
+  public readonly characterId = "the-shadow-of-mirkwood";
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (

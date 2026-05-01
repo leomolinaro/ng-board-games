@@ -13,8 +13,10 @@ import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../../hunt/wotr-hunt-m
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import { playCharacter } from "../../wotr-character-actions";
-import { WotrCharacterId } from "../../wotr-character-models";
-import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-card";
+import {
+  activateCharacterAbility,
+  WotrPlayableCharacterCard
+} from "../wotr-playable-character-card";
 
 // Ugluk - Chieftain of the Uruk-hai (Level 2, Leadership 1, +1 Ruler Special Action Die)
 // If Rohan is "At War", or the Fellowship is revealed, you may spend a Muster Action die result,
@@ -27,14 +29,15 @@ import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-c
 // add 1 to all dice on your Hunt re-roll.
 // Ugluk is not a Minion for the purpose of playing Gandalf the White.
 
-export class Ugluk extends WotrCharacterCard {
+export class Ugluk extends WotrPlayableCharacterCard {
   constructor(
-    public override characterId: WotrCharacterId,
     private q: WotrGameQuery,
     protected battleModifiers: WotrBattleModifiers
   ) {
     super();
   }
+
+  public readonly characterId = "ugluk";
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (

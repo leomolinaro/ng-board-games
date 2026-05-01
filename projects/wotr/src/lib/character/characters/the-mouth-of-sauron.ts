@@ -13,26 +13,23 @@ import { WotrGameUi, WotrUiCharacterChoice } from "../../game/wotr-game-ui";
 import { WotrDieStory } from "../../game/wotr-story-models";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
-import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterCard } from "./wotr-character-card";
+import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
 
 // The Mouth of Sauron - Lieutenant of Barad-dûr (Level 3, Leadership 2, +1 Action Die)
 // If the Fellowship is on the Mordor Track or all the Free Peoples Nations are "At War," you may use one Muster action die result to place the Mouth of Sauron in
 // any region with an unconquered Sauron Stronghold.
 // Messenger of the Dark Tower. Once per turn, you may use a Muster Action die result as an Army Action die result instead.
 
-export class WotrMouthOfSauron extends WotrCharacterCard {
-  constructor(
-    public override characterId: WotrCharacterId,
-    private q: WotrGameQuery
-  ) {
+export class TheMouthOfSauron extends WotrPlayableCharacterCard {
+  constructor(private q: WotrGameQuery) {
     super();
   }
+
+  public readonly characterId = "the-mouth-of-sauron";
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
       die === "muster" &&
-      this.q.theMouthOfSauron.isAvailable() &&
       (this.q.fellowship.isOnMordorTrack() || this.q.freePeoples.victoryPoints() > 0) &&
       this.q.regions().some(r => this.isValidRegion(r.region()))
     );

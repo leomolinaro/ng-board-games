@@ -6,15 +6,11 @@ import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrPlayer } from "../../player/wotr-player";
 import { WotrCharacterId } from "../wotr-character-models";
 
-export abstract class WotrCharacterCard {
+export abstract class WotrPlayableCharacterCard {
   public abstract characterId: WotrCharacterId;
 
-  canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    throw new Error("Character already in play.");
-  }
-  bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("Character already in play.");
-  }
+  abstract canBeBroughtIntoPlay(die: WotrActionDie): boolean;
+  abstract bringIntoPlay(ui: WotrGameUi): Promise<WotrAction>;
 
   resolveBringIntoPlayEffect(): void {}
 }

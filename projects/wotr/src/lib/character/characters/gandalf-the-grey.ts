@@ -8,7 +8,7 @@ import { isFreePeopleCharacterCard, WotrCardId } from "../../card/wotr-card-mode
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { activateCharacterAbility } from "./wotr-character-card";
+import { activateCharacterAbility } from "./wotr-playable-character-card";
 
 // Gandalf the Grey - The Grey Wanderer (Level 3, Leadership 1)
 // Guide. After you use an Event Action Die to play an Event card, you may immediately draw an Event card from the deck matching the type of that card.

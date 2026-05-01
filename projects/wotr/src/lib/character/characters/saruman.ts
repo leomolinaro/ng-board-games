@@ -14,7 +14,7 @@ import { WotrLeaderModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modi
 import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
-import { WotrCharacterCard } from "./wotr-character-card";
+import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
 
 // Saruman - Corrupted Wizard (Level 0, Leadership 1, +1 Action Die)
 // If Isengard is "At War'' and Orthanc is unconquered, you may use one Muster Action die result to place Saruman in Orthanc. Saruman cannot leave Orthanc.
@@ -22,20 +22,16 @@ import { WotrCharacterCard } from "./wotr-character-card";
 // every Isengard Settlement or to replace two Regular Isengard units in Orthanc with two Elite units.
 // Servants of the White Hand. Each Isengard Elite unit is considered to be a Leader as well as an Army unit for all movement and combat purposes
 
-export class WotrSaruman extends WotrCharacterCard {
-  constructor(
-    public override characterId: WotrCharacterId,
-    private q: WotrGameQuery
-  ) {
+export class WotrSaruman extends WotrPlayableCharacterCard {
+  constructor(private q: WotrGameQuery) {
     super();
   }
 
+  public readonly characterId = "saruman";
+
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
-      die === "muster" &&
-      this.q.saruman.isAvailable() &&
-      this.q.isengard.isAtWar() &&
-      this.q.region("orthanc").isUnconquered()
+      die === "muster" && this.q.isengard.isAtWar() && this.q.region("orthanc").isUnconquered()
     );
   }
 

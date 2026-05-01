@@ -13,7 +13,7 @@ import {
   WotrCharacterEliminationParams,
   WotrCharacterModifiers
 } from "../wotr-character-modifiers";
-import { activateCharacterAbility } from "./wotr-character-card";
+import { activateCharacterAbility } from "./wotr-playable-character-card";
 
 // Meriadoc Brandybuck - Hobbit Companion (Level 1, Leadership 1)
 // Guide. During the Hunt, if the Hunt damage is one or more, separate Meriadoc from the Fellowship to reduce the Hunt damage by one.
