@@ -572,12 +572,12 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => {
             const witchKing = this.q.character("the-witch-king");
             if (!witchKing.isInPlay()) return false;
-            const regionId = witchKing.getRegion()!.id;
+            const regionId = witchKing.region()!.id;
             const region = this.q.region(regionId);
             return region.isBesiegedBy("shadow");
           },
           play: async () => {
-            const regionId = this.q.character("the-witch-king").getRegion()!.id;
+            const regionId = this.q.character("the-witch-king").region()!.id;
             return this.unitUi.attackStronghold(regionId, "shadow");
           }
         };
@@ -719,7 +719,7 @@ export class WotrShadowCharacterCards {
               { value: "move", label: "Move any or all Nazgûl" }
             ]);
             const actions: WotrAction[] = [];
-            const regionId = this.q.theWitchKing.getRegion()!.id;
+            const regionId = this.q.theWitchKing.region()!.id;
             if (choice1 === "recruit") {
               actions.push(
                 ...(await this.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 2))
@@ -727,7 +727,7 @@ export class WotrShadowCharacterCards {
             } else if (choice1 === "move") {
               actions.push(...(await this.characterUi.moveAnyOrAllNazgul()));
             }
-            const wkRegionId = this.q.theWitchKing.getRegion()!.id;
+            const wkRegionId = this.q.theWitchKing.region()!.id;
             const wkRegion = this.q.region(wkRegionId);
             if (!wkRegion.hasArmy("shadow")) return actions;
             const canMove = this.unitRules.canMoveArmyFromRegion(wkRegion.region(), "shadow");

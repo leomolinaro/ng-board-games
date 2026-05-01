@@ -35,6 +35,7 @@ export interface WotrCharacter {
   leadership: number;
   dieBonus?: "actionDie" | "rulerDie";
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
+  isMinionForGandalfTheWhite: boolean;
   awakenedLeadership?: number;
   front: WotrFrontId;
   activationNation?: WotrNationId | "all";

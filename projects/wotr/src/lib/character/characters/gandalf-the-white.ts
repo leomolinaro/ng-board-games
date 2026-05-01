@@ -38,14 +38,19 @@ export class WotrGandalfTheWhite extends WotrCharacterCard {
     if (die !== "will-of-the-west") return false;
     const gandalf = this.q.gandalfTheGrey;
     if (!gandalf.isInPlay() && !gandalf.isEliminated()) return false;
-    if (this.q.minions.every(c => !c.isInPlay() && !c.isEliminated())) return false;
+    if (
+      this.q.minions.every(
+        c => !c.isInPlay() && !c.isEliminated() && c.isMinionForGandalfTheWhite()
+      )
+    )
+      return false;
     return true;
   }
 
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
     const gandalf = this.q.gandalfTheGrey;
     if (gandalf.isInPlay()) {
-      const gandalfRegion = gandalf.getRegion()!;
+      const gandalfRegion = gandalf.region()!;
       return playCharacter(gandalfRegion.id, "gandalf-the-white");
     } else if (gandalf.isEliminated()) {
       const elvenStrongholds: WotrRegionId[] = [
@@ -94,14 +99,9 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
   public modifier = this.battleModifiers.beforeCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
-    const [combatFront, otherCombatFront] =
-      round.attacker.frontId === "free-peoples"
-        ? [round.attacker, round.defender]
-        : [round.defender, round.attacker];
-    if (!combatFront.army().characters?.includes("gandalf-the-white")) return;
-    if (combatFront.cancelledCharacters.includes("gandalf-the-white")) return;
+    if (!round.freePeoples.isCharacterActiveInBattle("gandalf-the-white")) return;
     if (!(await activateCharacterAbility(this, "gandalf-the-white", this.freePeoples))) return;
-    otherCombatFront.negateNazgulLeadership = true;
+    round.shadow.negateNazgulLeadership = true;
   };
 
   async play() {

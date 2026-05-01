@@ -18,7 +18,8 @@ export type WotrBattleAction =
   | WotrCombatCardChoose
   | WotrCombatCardChooseNot
   | WotrCombatRoll
-  | WotrCombatReRoll;
+  | WotrCombatReRoll
+  | WotrCombatCardForfeit;
 
 export interface WotrArmyAttack {
   type: "army-attack";
@@ -148,4 +149,15 @@ export function composeLeaders(comp: WotrUnitComposer[]): WotrLeaderUnits {
   const a: WotrLeaderUnits = {};
   comp.forEach(c => c.addTo(a));
   return a;
+}
+
+export interface WotrCombatCardForfeit {
+  type: "combat-card-forfeit";
+  card: WotrCardId;
+}
+export function forfeitCombatCard(card: WotrCardLabel): WotrCombatCardForfeit {
+  return forfeitCombatCardById(labelToCardId(card));
+}
+export function forfeitCombatCardById(cardId: WotrCardId): WotrCombatCardForfeit {
+  return { type: "combat-card-forfeit", card: cardId };
 }

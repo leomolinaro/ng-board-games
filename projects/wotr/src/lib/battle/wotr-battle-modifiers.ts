@@ -2,8 +2,9 @@ import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 
-export type WotrAfterCombatRound = (combatRound: WotrCombatRound) => Promise<void>;
 export type WotrBeforeCombatRound = (combatRound: WotrCombatRound) => Promise<void>;
+export type WotrBeforeCombatCardRevealing = (combatRound: WotrCombatRound) => Promise<void>;
+export type WotrAfterCombatRound = (combatRound: WotrCombatRound) => Promise<void>;
 export type WotrCanUseCombatCardModifier = (
   combatFront: WotrCombatFront,
   combatRound: WotrCombatRound
@@ -14,6 +15,11 @@ export class WotrBattleModifiers {
   public readonly beforeCombatRound = new WotrModifier<WotrBeforeCombatRound>();
   async onBeforeCombatRound(combatRound: WotrCombatRound): Promise<void> {
     await Promise.all(this.beforeCombatRound.get().map(handler => handler(combatRound)));
+  }
+
+  public readonly beforeCombatCardRevealing = new WotrModifier<WotrBeforeCombatCardRevealing>();
+  async onBeforeCombatCardRevealing(combatRound: WotrCombatRound): Promise<void> {
+    await Promise.all(this.beforeCombatCardRevealing.get().map(handler => handler(combatRound)));
   }
 
   public readonly afterCombatRound = new WotrModifier<WotrAfterCombatRound>();
@@ -34,6 +40,7 @@ export class WotrBattleModifiers {
 
   clear() {
     this.beforeCombatRound.clear();
+    this.beforeCombatCardRevealing.clear();
     this.afterCombatRound.clear();
     this.canUseCombatCardModifier.clear();
   }

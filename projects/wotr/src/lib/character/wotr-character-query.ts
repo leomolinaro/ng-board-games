@@ -46,7 +46,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     return this.data().activationNation;
   }
 
-  getRegion(): WotrRegion | null {
+  region(): WotrRegion | null {
     return this.regionStore.characterRegion(this.id);
   }
 
@@ -56,6 +56,10 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
 
   isEliminated(): boolean {
     return this.data().status === "eliminated";
+  }
+
+  isMinionForGandalfTheWhite(): boolean {
+    return this.data().isMinionForGandalfTheWhite;
   }
 
   isAvailable(): boolean {
@@ -76,7 +80,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
 
   isWithFreePeoplesArmy(): boolean {
     if (!this.isInPlay()) return false;
-    const region = this.getRegion();
+    const region = this.region();
     return (
       region?.army?.front === "free-peoples" || region?.underSiegeArmy?.front === "free-peoples"
     );
@@ -84,7 +88,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
 
   isInNation(nationId: WotrNationId): boolean {
     if (!this.isInPlay()) return false;
-    const region = this.getRegion()!;
+    const region = this.region()!;
     return region && region.nationId === nationId;
   }
 

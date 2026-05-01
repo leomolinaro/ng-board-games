@@ -494,7 +494,7 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => this.q.theWitchKing.isInPlay(),
           play: async () => {
             const actions: WotrAction[] = [];
-            const witchKingRegion = this.q.theWitchKing.getRegion()!;
+            const witchKingRegion = this.q.theWitchKing.region()!;
             actions.push(moveCharacters(witchKingRegion.id, "angmar", "the-witch-king"));
             this.characterHandler.moveCharacters(["the-witch-king"], witchKingRegion.id, "angmar");
             actions.push(

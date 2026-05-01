@@ -23,7 +23,6 @@ import {
   WotrLeaderElimination,
   WotrRegularUnitElimination
 } from "../unit/wotr-unit-actions";
-import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import {
   WotrArmy,
   WotrForfeitLeadershipParams,
@@ -49,7 +48,8 @@ export interface WotrCombatCardParams {
   isAttacker: boolean;
   attackedArmy: () => WotrArmy | undefined;
   attackingArmy: () => WotrArmy | undefined;
-  regionId: WotrRegionId;
+  toRegion: WotrRegionId;
+  fromRegion: WotrRegionId;
 }
 
 export interface WotrCombatCardAbility {
@@ -58,7 +58,6 @@ export interface WotrCombatCardAbility {
 
 @Injectable()
 export class WotrCombatCards {
-  private unitHandler = inject(WotrUnitHandler);
   private unitUtils = inject(WotrUnitUtils);
   private ui = inject(WotrGameUi);
   private q = inject(WotrGameQuery);
@@ -143,11 +142,11 @@ export class WotrCombatCards {
           play: async () => {
             const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
               type: "blackBreath",
-              regionIds: [params.regionId],
+              regionIds: [params.freePeoples.regionId],
               hits
             });
             if (units.leaders?.length)
-              return [eliminateLeader(params.regionId, units.leaders[0].nation, 1)];
+              return [eliminateLeader(params.freePeoples.regionId, units.leaders[0].nation, 1)];
             if (units.characters?.length) return [eliminateCharacter(units.characters[0])];
             return [];
           }
@@ -288,7 +287,7 @@ export class WotrCombatCards {
           {
             cardId: card.id,
             frontId: "shadow",
-            regionId: params.regionId,
+            regionId: params.shadow.regionId,
             onlyNazgul: true,
             points: "oneOrMore"
           },
@@ -303,7 +302,7 @@ export class WotrCombatCards {
     // Before the Combat Roll, roll an additional attack using three Combat dice; score hits on 4+ and apply the result immediately
     // https://boardgamegeek.com/thread/532748/durins-bane-within-two-regions-of-moria
     "Durin's Bane": {
-      canBePlayed: params => this.q.region(params.regionId).isWithinNRegionsOf("moria", 2),
+      canBePlayed: params => this.q.region(params.toRegion).isWithinNRegionsOf("moria", 2),
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async () => {
@@ -323,9 +322,9 @@ export class WotrCombatCards {
     // Add 2 to all dice on your Combat roll.
     "Ents' Rage": {
       canBePlayed: params =>
-        this.q.region(params.regionId).isNation("rohan") ||
-        params.regionId === "fangorn" ||
-        params.regionId === "orthanc",
+        this.q.region(params.toRegion).isNation("rohan") ||
+        params.toRegion === "fangorn" ||
+        params.toRegion === "orthanc",
       effect: async (card, params) => {
         params.freePeoples.combatModifiers.push(2);
       }
@@ -349,7 +348,7 @@ export class WotrCombatCards {
           unitMatches.push({ unitType: "nazgul" });
         }
         await this.freePeoples.eliminateUnits(
-          { regionIds: [params.regionId], units: unitMatches },
+          { regionIds: [params.shadow.regionId], units: unitMatches },
           card.id
         );
       }
@@ -379,7 +378,7 @@ export class WotrCombatCards {
         const nShadowUnits = this.unitUtils.getNArmyUnits(shadowArmny);
         const nFreePeoplesUnits = this.unitUtils.getNArmyUnits(freePeoplesArmy);
         if (nShadowUnits >= 2 * nFreePeoplesUnits) {
-          await this.freePeoples.chooseCasualties(1, params.regionId, card.id);
+          await this.freePeoples.chooseCasualties(1, params.freePeoples.regionId, card.id);
         }
       }
     },
@@ -397,11 +396,11 @@ export class WotrCombatCards {
           play: async () => {
             const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
               type: "heroicDeath",
-              regionIds: [params.regionId]
+              regionIds: [params.freePeoples.regionId]
             });
             if (units.leaders?.length) {
               const leader = units.leaders[0];
-              return [eliminateLeader(params.regionId, leader.nation, 1)];
+              return [eliminateLeader(params.freePeoples.regionId, leader.nation, 1)];
             } else if (units.characters?.length) {
               const character = units.characters[0];
               return [eliminateCharacter(character)];
@@ -432,9 +431,9 @@ export class WotrCombatCards {
     // The Shadow player rolls a maximum of two dice in his Combat roll.
     "Huorn-dark": {
       canBePlayed: params =>
-        this.q.region(params.regionId).isNation("rohan") ||
-        params.regionId === "fangorn" ||
-        params.regionId === "orthanc",
+        this.q.region(params.toRegion).isNation("rohan") ||
+        params.toRegion === "fangorn" ||
+        params.toRegion === "orthanc",
       effect: async (card, params) => {
         params.shadow.maxNCombatDice = 2;
       }
@@ -443,7 +442,7 @@ export class WotrCombatCards {
     // Play if the defending Army is in the same region as the Fellowship.
     // Add 1 to all dice on your Combat roll and Leader re-roll.
     "It is a Gift": {
-      canBePlayed: params => this.q.region(params.regionId).hasFellowship(),
+      canBePlayed: params => this.q.region(params.toRegion).hasFellowship(),
       effect: async (card, params) => {
         params.freePeoples.combatModifiers.push(1);
         params.freePeoples.leaderModifiers.push(1);
@@ -479,7 +478,7 @@ export class WotrCombatCards {
     // If your Combat roll or Leader reroll score at least one hit, score two additional hits.
     "Nameless Wood": {
       canBePlayed: params => {
-        const region = this.q.region(params.regionId);
+        const region = this.q.region(params.toRegion);
         return region.isNation("rohan") || region.id() === "fangorn" || region.id() === "orthanc";
       },
       effect: async (card, params) => {
@@ -501,7 +500,7 @@ export class WotrCombatCards {
     // Play if the defending Army is in the same region as the Fellowship.
     // Add 1 to all dice on your Combat roll and Leader re-roll.
     "One for the Dark Lord": {
-      canBePlayed: params => this.q.region(params.regionId).hasFellowship(),
+      canBePlayed: params => this.q.region(params.toRegion).hasFellowship(),
       effect: async (card, params) => {
         params.shadow.combatModifiers.push(1);
         params.shadow.leaderModifiers.push(1);
@@ -522,7 +521,7 @@ export class WotrCombatCards {
               max: Math.min(4, maxHitPoints)
             });
             if (!hitPoints) return [];
-            return this.battleUi.chooseCasualties(hitPoints, params.regionId, "shadow");
+            return this.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
@@ -535,9 +534,9 @@ export class WotrCombatCards {
           const fpArmy = params.freePeoples.army();
           const fpArmyHitPoints = this.unitUtils.nHits(fpArmy);
           if (nHits >= fpArmyHitPoints) {
-            await this.freePeoples.eliminateArmy(params.regionId, card.id);
+            await this.freePeoples.eliminateArmy(params.freePeoples.regionId, card.id);
           } else {
-            await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
+            await this.freePeoples.chooseCasualties(nHits, params.freePeoples.regionId, card.id);
           }
         }
       }
@@ -577,7 +576,7 @@ export class WotrCombatCards {
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async () => {
-            const region = this.q.region(params.regionId);
+            const region = this.q.region(params.freePeoples.regionId);
             const retreatableRegions = this.unitRules.retreatableRegions(
               region.region(),
               "free-peoples"
@@ -706,7 +705,7 @@ export class WotrCombatCards {
         const action = findAction<WotrCombatRoll>(actions, "combat-roll");
         const nHits = action!.dice.filter(r => r >= 5).length;
         if (nHits) {
-          await this.freePeoples.chooseCasualties(nHits, params.regionId, card.id);
+          await this.freePeoples.chooseCasualties(nHits, params.freePeoples.regionId, card.id);
         }
       }
     },
@@ -720,7 +719,7 @@ export class WotrCombatCards {
           play: async () => {
             const units = await this.ui.askRegionUnits("Choose a Companion to cancel", {
               type: "wordsOfPower",
-              regionIds: [params.regionId]
+              regionIds: [params.freePeoples.regionId]
             });
             if (units.characters?.length) return [chooseCharacter(units.characters[0])];
             return [];
@@ -760,10 +759,10 @@ export class WotrCombatCards {
     if (!nHits) return;
     const armyHitPoints = this.unitUtils.nHits(defendingFront.army());
     if (nHits >= armyHitPoints) {
-      await defendingFront.player.eliminateArmy(params.regionId, card.id);
+      await defendingFront.player.eliminateArmy(params.toRegion, card.id);
       params.combatRound.endBattle = true;
     } else {
-      await defendingFront.player.chooseCasualties(nHits, params.regionId, card.id);
+      await defendingFront.player.chooseCasualties(nHits, params.toRegion, card.id);
     }
   }
 }

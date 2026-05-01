@@ -1,10 +1,20 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
+import { WotrUiAbility } from "../../../ability/wotr-ability";
+import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
+import { forfeitCombatCardById, forfeitLeadership } from "../../../battle/wotr-battle-actions";
+import { WotrCombatRound } from "../../../battle/wotr-battle-models";
+import {
+  WotrBattleModifiers,
+  WotrBeforeCombatCardRevealing
+} from "../../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
+import { WotrRegionQuery } from "../../../region/wotr-region-query";
+import { character } from "../../../unit/wotr-unit-models";
+import { playCharacter } from "../../wotr-character-actions";
 import { WotrCharacterId } from "../../wotr-character-models";
-import { WotrCharacterCard } from "../wotr-character-card";
+import { activateCharacterAbility, WotrCharacterCard } from "../wotr-character-card";
 
 // The Shadow of Mirkwood - Chieftain of the Dark Lord (Level 3, Leadership 1, +1 Ruler Special Action Die)
 // If either the Dwarves, the Elves, or the North are "At War", you may spend a Muster Action
@@ -26,16 +36,64 @@ export class TheShadowOfMirkwood extends WotrCharacterCard {
     super();
   }
 
-  override canBeBroughtIntoPlay(): boolean {
+  override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
+    if (
+      (this.q.dwarves.isAtWar() || this.q.elves.isAtWar() || this.q.north.isAtWar()) &&
+      die === "muster" && // TODO also check for Ruler die (except Eye)
+      this.q.regions().some(r => this.isValidRegion(r))
+    ) {
+      return true;
+    }
     return false;
   }
 
+  private isValidRegion(r: WotrRegionQuery): boolean {
+    return r.hasArmyUnitsOfNation("sauron");
+  }
+
   override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("The Shadow of Mirkwood cannot be brought into play.");
+    const validRegions = this.q
+      .regions()
+      .filter(r => this.isValidRegion(r))
+      .map(r => r.id());
+    const region = await ui.askRegion(
+      "Select a region to bring The Shadow of Mirkwood into play",
+      validRegions
+    );
+    return playCharacter(region, "the-shadow-of-mirkwood");
   }
 }
 
-export class LordOfTheBats implements WotrAbility<unknown> {
-  public modifier: any = null;
-  public handler: unknown = null;
+export class LordOfTheBats implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
+  constructor(
+    private q: WotrGameQuery,
+    private shadow: WotrShadowPlayer,
+    private battleModifiers: WotrBattleModifiers
+  ) {}
+  modifier = this.battleModifiers.beforeCombatCardRevealing;
+
+  private round?: WotrCombatRound;
+
+  public handler = async (round: WotrCombatRound): Promise<void> => {
+    if (!round.shadow.isCharacterActiveInBattle("the-shadow-of-mirkwood")) return;
+    if (!round.shadow.combatCard) return;
+    this.round = round;
+    if (!(await activateCharacterAbility(this, "the-shadow-of-mirkwood", this.shadow))) return;
+    // eslint-disable-next-line require-atomic-updates
+    round.shadow.forfeitedCombatCard = true;
+    round.shadow.forfeitedLeadership = this.q.theShadowOfMirkwood.leadership;
+    round.shadow.leaderModifiers.push(1);
+    if (round.shadow.combatCard.combatLabel === "Swarm of Bats") {
+      round.freePeoples.cancelledCombatCard = true;
+    }
+  };
+
+  async play() {
+    const combatCard = this.round?.shadow.combatCard;
+    if (!combatCard) throw new Error("No combat card to forfeit.");
+    return [
+      forfeitCombatCardById(combatCard.id),
+      forfeitLeadership(character("the-shadow-of-mirkwood"))
+    ];
+  }
 }

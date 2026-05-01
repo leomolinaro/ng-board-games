@@ -174,7 +174,7 @@ export class WotrUnitUi {
 
   async attackWithCharacter(characterId: WotrCharacterId): Promise<WotrAction[]> {
     const c = this.q.character(characterId);
-    const fromRegionId = c.getRegion()!.id;
+    const fromRegionId = c.region()!.id;
     const attackingUnits = await this.ui.askRegionUnits("Select units to attack", {
       type: "attack",
       regionIds: [fromRegionId],

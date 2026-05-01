@@ -65,9 +65,8 @@ export class WotrBattleHandler {
   private q = inject(WotrGameQuery);
 
   init() {
-    this.actionRegistry.registerAction<WotrArmyAttack>(
-      "army-attack",
-      this.applyArmyAttack.bind(this)
+    this.actionRegistry.registerAction<WotrArmyAttack>("army-attack", (action, front) =>
+      this.applyArmyAttack(action, front)
     );
     this.actionRegistry.registerAction<WotrArmyRetreatIntoSiege>(
       "army-retreat-into-siege",
@@ -76,9 +75,8 @@ export class WotrBattleHandler {
     this.actionRegistry.registerAction<WotrArmyRetreat>("army-retreat", action =>
       this.retreat(action.toRegion)
     );
-    this.actionRegistry.registerAction<WotrArmyAdvance>(
-      "army-advance",
-      this.applyArmyAdvance.bind(this)
+    this.actionRegistry.registerAction<WotrArmyAdvance>("army-advance", (action, front) =>
+      this.applyArmyAdvance(action)
     );
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
     this.actionRegistry.registerStory("combat-card-effect", this.reactionCombatCard);
@@ -200,11 +198,14 @@ export class WotrBattleHandler {
         " does not play any combat card"
       ],
       "combat-roll": (action, front, f) => [f.player(front), " rolls ", action.dice.join(", ")],
-
       "combat-re-roll": (action, front, f) => [
         f.player(front),
         " re-rolls ",
         action.dice.join(", ")
+      ],
+      "combat-card-forfeit": (action, front, f) => [
+        f.player(front),
+        ` forfeits ${getCard(action.card).combatLabel}`
       ]
     };
   }
@@ -260,6 +261,7 @@ export class WotrBattleHandler {
     }
     await this.battleModifiers.onBeforeCombatRound(combatRound);
     await this.chooseCombatCards(combatRound);
+    await this.battleModifiers.onBeforeCombatCardRevealing(combatRound);
     this.revealCombatCards(combatRound);
     await this.resolveCombatCards(0, combatRound);
     await this.resolveCombatCards(1, combatRound);
@@ -410,10 +412,12 @@ export class WotrBattleHandler {
     combatFront: WotrCombatFront,
     combatRound: WotrCombatRound
   ) {
-    if (combatFront.combatCard?.combatTiming === timing) {
-      const params = this.combatCardParams(combatFront.frontId, combatRound);
-      await this.combatCards.combatCardReaction(combatFront.combatCard, params);
-    }
+    if (!combatFront.combatCard) return;
+    if (combatFront.forfeitedCombatCard) return;
+    if (combatFront.cancelledCombatCard) return;
+    if (combatFront.combatCard.combatTiming !== timing) return;
+    const params = this.combatCardParams(combatFront.frontId, combatRound);
+    await this.combatCards.combatCardReaction(combatFront.combatCard, params);
   }
 
   combatCardParams(frontId: WotrFrontId, combatRound: WotrCombatRound): WotrCombatCardParams {
@@ -425,7 +429,8 @@ export class WotrBattleHandler {
       isAttacker: combatRound.attacker.frontId === frontId,
       attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
       attackingArmy: () => this.attackingArmy(combatRound.action),
-      regionId: combatRound.action.toRegion
+      toRegion: combatRound.action.toRegion,
+      fromRegion: combatRound.action.fromRegion
     };
   }
 

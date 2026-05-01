@@ -50,7 +50,7 @@ export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieC
   public handler: WotrActionDieChoiceModifier = (die, frontId) => {
     if (frontId !== "free-peoples") return [];
     if (!this.q.character(this.characterId).isInPlay()) return [];
-    const characterRegion = this.q.character(this.characterId).getRegion()!;
+    const characterRegion = this.q.character(this.characterId).region()!;
     if (!this.isValidRegion(characterRegion)) return [];
     if (!this.q.region(characterRegion.id).isUnconquered()) return [];
     return [new AdvanceAnyDieChoice(this.characterId, this.abilityName, this.nationId, this.q)];

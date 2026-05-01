@@ -29,6 +29,8 @@ export class WotrCombatFront {
   frontId = this.player.frontId;
 
   combatCard?: WotrCard;
+  forfeitedCombatCard: boolean = false;
+  cancelledCombatCard: boolean = false;
   maxNCombatDice: number = 5;
   lessNCombatDice: number = 0;
   lessNLeaderDice: number = 0;
@@ -50,6 +52,11 @@ export class WotrCombatFront {
   leaderReRoll?: WotrCombatDie[];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
+
+  isCharacterActiveInBattle(characterId: WotrCharacterId): boolean {
+    if (!this.army().characters?.includes(characterId)) return false;
+    return !this.cancelledCharacters.includes(characterId);
+  }
 }
 
 export class WotrCombatRound {

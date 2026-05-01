@@ -93,6 +93,7 @@ function initialCompanion(
     name,
     level,
     leadership,
+    isMinionForGandalfTheWhite: false,
     status: "available",
     front: "free-peoples",
     flying: false
@@ -115,6 +116,7 @@ function initialRuler(
     name,
     level,
     leadership: 1,
+    isMinionForGandalfTheWhite: false,
     status: "available",
     sovereignStatus: "leader",
     awakenedLeadership,
@@ -141,6 +143,7 @@ function initialMinion(
     name,
     level,
     leadership,
+    isMinionForGandalfTheWhite: true,
     status: "available",
     front: "shadow",
     flying
@@ -160,6 +163,7 @@ function initialDarkChieftains(
     name,
     level,
     leadership,
+    isMinionForGandalfTheWhite: false,
     status: "available",
     front: "shadow",
     dieBonus: "rulerDie",

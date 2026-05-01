@@ -5,6 +5,7 @@ import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers"
 import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
+import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
@@ -72,6 +73,7 @@ export class WotrCharacterAbilities {
   actionDieUi!: WotrActionDieUi;
   private gameStore = inject(WotrGameStore);
   private huntModifiers = inject(WotrHuntModifiers);
+  private battleUi = inject(WotrBattleUi);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
@@ -130,11 +132,14 @@ export class WotrCharacterAbilities {
       case "thranduil":
         return []; // TODO
       case "the-black-serpent":
-        return [new RedWrath()];
+        return [new RedWrath(this.shadow, this.battleModifiers, this.battleUi)];
       case "the-shadow-of-mirkwood":
-        return [new LordOfTheBats()];
+        return [new LordOfTheBats(this.q, this.shadow, this.battleModifiers)];
       case "ugluk":
-        return [new ICommandAbility(), new WeMarchDayAndNightAbility()];
+        return [
+          new ICommandAbility(this.shadow, this.battleModifiers),
+          new WeMarchDayAndNightAbility(this.q, this.huntModifiers)
+        ];
       case "strider":
         return [
           new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),
