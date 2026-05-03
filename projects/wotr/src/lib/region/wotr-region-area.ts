@@ -1,11 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
   input,
-  output
+  output,
+  Signal
 } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
@@ -420,6 +420,10 @@ export class WotrRegionArea {
     return [unitNodes, nRegulars, nElites];
   }
 
+  private characterImage(character: WotrCharacter): WotrUnitImage {
+    return this.assets.regionCharacterImage(character);
+  }
+
   private regionToFreePeopleLeaderUnitNodes(region: WotrRegion): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCharacter | WotrNationId)[] = [];
@@ -457,7 +461,7 @@ export class WotrRegionArea {
           unitType: "character",
           character: leader.id,
           nationId: null,
-          image: this.assets.characterImage(leader.id),
+          image: this.characterImage(leader),
           svgX: 0,
           svgY: 0
         };
@@ -496,7 +500,7 @@ export class WotrRegionArea {
           unitType: "character",
           character: leader.id,
           nationId: null,
-          image: this.assets.characterImage(leader.id),
+          image: this.characterImage(leader),
           svgX: 0,
           svgY: 0
         };
@@ -556,7 +560,7 @@ export class WotrRegionArea {
     const unitNodes = fpFreeUnits.slice(0, 2).map<WotrFreePeopleFreeUnitNode>(freeUnit => ({
       unitType: "companion",
       character: freeUnit.id,
-      image: this.assets.characterImage(freeUnit.id),
+      image: this.characterImage(freeUnit),
       svgX: 0,
       svgY: 0
     }));
@@ -593,7 +597,7 @@ export class WotrRegionArea {
         return {
           unitType: "minion",
           character: freeUnit.id,
-          image: this.assets.characterImage(freeUnit.id),
+          image: this.characterImage(freeUnit),
           svgX: 0,
           svgY: 0
         };

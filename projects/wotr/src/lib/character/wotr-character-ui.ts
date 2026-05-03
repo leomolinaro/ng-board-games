@@ -15,7 +15,7 @@ import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterRules } from "./wotr-character-rules";
-import { WotrCharacterAbilities } from "./wotr-characters";
+import { WotrCharacters } from "./wotr-characters";
 
 class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
   constructor(
@@ -49,7 +49,7 @@ export interface WotrCharacterMovementOptions {
 export class WotrCharacterUi {
   private regionStore = inject(WotrRegionStore);
   private characterRules = inject(WotrCharacterRules);
-  private characterAbilities = inject(WotrCharacterAbilities);
+  private characterAbilities = inject(WotrCharacters);
   private characterHandler = inject(WotrCharacterHandler);
   private unitHandler = inject(WotrUnitHandler);
   private characterModifiers = inject(WotrCharacterModifiers);

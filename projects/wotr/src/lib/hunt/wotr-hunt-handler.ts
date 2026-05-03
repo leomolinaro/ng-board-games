@@ -3,6 +3,7 @@ import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { cardToLabel, WotrCardId } from "../card/wotr-card-models";
 import { KomeSovereignId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
@@ -25,6 +26,7 @@ export class WotrHuntHandler {
   private corruptionFlow = inject(KomeCorruptionFlow);
   private characterStore = inject(WotrCharacterStore);
   private logger = inject(WotrLogWriter);
+  characters!: WotrCharacters;
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -206,8 +208,10 @@ export class WotrHuntHandler {
     if (currentCorruption >= sovereign.shadowResistance) {
       this.characterStore.corruptSovereign(sovereign.id);
       this.huntStore.resetCorruptionTiles(corruptionTiles);
-      const action = corruptSovereign(sovereign.id);
-      this.logger.logEffect(action);
+      this.logger.logEffect(corruptSovereign(sovereign.id));
+      const sovereignCard = this.characters.getSovereignCard(sovereign.id);
+      sovereignCard.resolveCorruptionEffect();
+      this.characters.activateCorruptionAbilities(sovereign.id);
     }
   }
 }

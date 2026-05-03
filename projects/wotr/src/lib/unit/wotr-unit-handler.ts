@@ -27,7 +27,11 @@ import { WotrUnitUtils } from "./wotr-unit-utils";
 
 export interface WotrRecruitmentConstraints {
   points: number;
-  exludedRegions: Set<WotrRegionId>;
+  excludedRegions: Set<WotrRegionId>;
+  excludedRegionsForEliteUnits: Set<WotrRegionId>;
+  excludedRegionsForLeaderUnits: Set<WotrRegionId>;
+  excludedNationsForEliteUnits: Set<WotrNationId>;
+  excludedNationsForLeaderUnits: Set<WotrNationId>;
 }
 
 @Injectable()

@@ -14,6 +14,7 @@ import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
+import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
@@ -32,8 +33,14 @@ import {
   TheWhiteRiderAbility,
   WotrGandalfTheWhite
 } from "./characters/gandalf-the-white";
+import { Brand, BrandCorruptedKing } from "./characters/kome/brand";
+import { Dain, DainCorruptedKing } from "./characters/kome/dain";
+import { Denethor, DenethorCorruptedSteward } from "./characters/kome/denethor";
+import { KomeSovereignCard } from "./characters/kome/kome-sovereign-card";
 import { RedWrath, TheBlackSerpent } from "./characters/kome/the-black-serpent";
 import { LordOfTheBats, TheShadowOfMirkwood } from "./characters/kome/the-shadow-of-mirkwood";
+import { Theoden, TheodenCorruptedKing } from "./characters/kome/theoden";
+import { Thranduil, ThranduilElvenking } from "./characters/kome/thranduil";
 import { ICommandAbility, Ugluk, WeMarchDayAndNightAbility } from "./characters/kome/ugluk";
 import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
@@ -49,13 +56,16 @@ import {
 } from "./characters/the-mouth-of-sauron";
 import { SorcererAbility, TheWitchKing } from "./characters/the-witch-king";
 import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-card";
-import { WotrCharacterId } from "./wotr-character-models";
+import { WotrCharacterHandler } from "./wotr-character-handler";
+import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 
 @Injectable()
-export class WotrCharacterAbilities {
+export class WotrCharacters {
   private characters: Partial<Record<WotrCharacterId, WotrPlayableCharacterCard>> = {};
+  private sovereigns: Partial<Record<KomeSovereignId, KomeSovereignCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
+  private corruptionAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> = {};
 
   private battleModifiers = inject(WotrBattleModifiers);
   private actionDieModifiers = inject(WotrActionDieModifiers);
@@ -74,15 +84,25 @@ export class WotrCharacterAbilities {
   private gameStore = inject(WotrGameStore);
   private huntModifiers = inject(WotrHuntModifiers);
   private battleUi = inject(WotrBattleUi);
+  private characterHandler = inject(WotrCharacterHandler);
+  private logger = inject(WotrLogWriter);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
 
-  getAbilities(characterId: WotrCharacterId): WotrAbility[] {
+  getInPlayAbilities(characterId: WotrCharacterId): WotrAbility[] {
     if (!this.abilities[characterId]) {
       const abilities = this.createAbilities(characterId);
       this.abilities[characterId] = abilities;
     }
     return this.abilities[characterId];
+  }
+
+  getCorruptionAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
+    if (!this.corruptionAbilities[sovereignId]) {
+      const abilities = this.createCorruptionAbilities(sovereignId);
+      this.corruptionAbilities[sovereignId] = abilities;
+    }
+    return this.corruptionAbilities[sovereignId];
   }
 
   resolveBringIntoPlayEffects(characterId: WotrCharacterId): void {
@@ -197,6 +217,21 @@ export class WotrCharacterAbilities {
     }
   }
 
+  private createCorruptionAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
+    switch (sovereignId) {
+      case "thranduil":
+        return [new ThranduilElvenking(this.unitModifiers)];
+      case "brand":
+        return [new BrandCorruptedKing(this.unitModifiers)];
+      case "dain":
+        return [new DainCorruptedKing(this.unitModifiers)];
+      case "denethor":
+        return [new DenethorCorruptedSteward(this.unitModifiers)];
+      case "theoden":
+        return [new TheodenCorruptedKing(this.unitModifiers)];
+    }
+  }
+
   private getPlayableCharacterCard(characterId: WotrCharacterId): WotrPlayableCharacterCard {
     switch (characterId) {
       case "gandalf-the-white":
@@ -238,6 +273,31 @@ export class WotrCharacterAbilities {
     }
   }
 
+  getSovereignCard(sovereignId: KomeSovereignId): KomeSovereignCard {
+    switch (sovereignId) {
+      case "thranduil":
+        if (!this.sovereigns["thranduil"])
+          this.sovereigns["thranduil"] = new Thranduil(this.q, this.characterHandler, this.logger);
+        return this.sovereigns["thranduil"];
+      case "brand":
+        if (!this.sovereigns["brand"])
+          this.sovereigns["brand"] = new Brand(this.q, this.characterHandler, this.logger);
+        return this.sovereigns["brand"];
+      case "dain":
+        if (!this.sovereigns["dain"])
+          this.sovereigns["dain"] = new Dain(this.q, this.characterHandler, this.logger);
+        return this.sovereigns["dain"];
+      case "denethor":
+        if (!this.sovereigns["denethor"])
+          this.sovereigns["denethor"] = new Denethor(this.q, this.characterHandler, this.logger);
+        return this.sovereigns["denethor"];
+      case "theoden":
+        if (!this.sovereigns["theoden"])
+          this.sovereigns["theoden"] = new Theoden(this.q, this.characterHandler, this.logger);
+        return this.sovereigns["theoden"];
+    }
+  }
+
   private freePeoplesPlayableCharacters(): WotrCharacterId[] {
     return ["gandalf-the-white", "aragorn"];
   }
@@ -264,10 +324,10 @@ export class WotrCharacterAbilities {
     return this.availableCharacterCards(frontId).some(card => card.canBeBroughtIntoPlay(die));
   }
 
-  activateAbilities(characters: WotrCharacterId[]) {
+  activateInPlayAbilities(characters: WotrCharacterId[]) {
     if (this.gameStore.isTemporaryState()) return;
     for (const character of characters) {
-      const abilities = this.getAbilities(character);
+      const abilities = this.getInPlayAbilities(character);
       for (const ability of abilities) {
         if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
         ability.modifier.register(ability.handler);
@@ -275,11 +335,29 @@ export class WotrCharacterAbilities {
     }
   }
 
+  private isSovereignId(characterId: WotrCharacterId): characterId is KomeSovereignId {
+    return ["thranduil", "brand", "dain", "denethor", "theoden"].includes(characterId);
+  }
+
   deactivateAbilities(characterId: WotrCharacterId) {
     if (this.gameStore.isTemporaryState()) return;
-    const abilities = this.getAbilities(characterId);
+    const abilities = this.getInPlayAbilities(characterId);
     for (const ability of abilities) {
       ability.modifier.unregister(ability.handler);
+    }
+    if (this.isSovereignId(characterId)) {
+      const corruptionAbilities = this.getCorruptionAbilities(characterId);
+      for (const ability of corruptionAbilities) {
+        ability.modifier.unregister(ability.handler);
+      }
+    }
+  }
+
+  activateCorruptionAbilities(sovereignId: KomeSovereignId) {
+    if (this.gameStore.isTemporaryState()) return;
+    const corruptionAbilities = this.getCorruptionAbilities(sovereignId);
+    for (const ability of corruptionAbilities) {
+      ability.modifier.register(ability.handler);
     }
   }
 }

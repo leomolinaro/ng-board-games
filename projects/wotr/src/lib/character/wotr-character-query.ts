@@ -18,7 +18,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     protected fellowshipStore: WotrFellowshipStore
   ) {}
 
-  protected data(): WotrCharacter {
+  data(): WotrCharacter {
     return this.characterStore.character(this.id);
   }
 
@@ -123,7 +123,7 @@ export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
     super(id, characterStore, regionStore, fellowshipStore);
   }
 
-  protected override data(): KomeSovereign {
+  override data(): KomeSovereign {
     return this.characterStore.sovereign(this.id);
   }
 

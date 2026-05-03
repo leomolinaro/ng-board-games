@@ -98,7 +98,7 @@ export class WotrFellowshipBox {
       if (companion === guide) {
         continue;
       }
-      const unitImage = this.assets.characterImage(companion);
+      const unitImage = this.assets.frontCharacterImage(companion);
       nodes.push({
         id: companion,
         image: unitImage.source,
@@ -113,7 +113,7 @@ export class WotrFellowshipBox {
 
   guideNode: Signal<WotrCompanionNode> = computed(() => {
     const guide = this.guide();
-    const unitImage = this.assets.characterImage(guide);
+    const unitImage = this.assets.frontCharacterImage(guide);
     return {
       id: guide,
       image: unitImage.source,

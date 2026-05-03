@@ -1,7 +1,15 @@
+import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import {
+  WotrRecruitmentConstraintsModifier,
+  WotrUnitModifiers
+} from "../../../unit/wotr-unit-modifiers";
+import { WotrCharacterHandler } from "../../wotr-character-handler";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Denethor - Lord Steward of Gondor (Level 1, Leadership 1, Shadow Reistance 3)
@@ -28,11 +36,16 @@ import { KomeSovereignCard } from "./kome-sovereign-card";
 // their effect.
 
 export class Denethor extends KomeSovereignCard {
-  constructor(private q: WotrGameQuery) {
+  constructor(
+    protected q: WotrGameQuery,
+    protected characterHandler: WotrCharacterHandler,
+    protected logger: WotrLogWriter
+  ) {
     super();
   }
 
   readonly sovereignId = "denethor";
+  protected readonly corruptionRegion = "minas-tirith";
 
   override canBeAwakened(die: WotrActionDie): boolean {
     return false;
@@ -40,5 +53,16 @@ export class Denethor extends KomeSovereignCard {
 
   override async awaken(ui: WotrGameUi): Promise<WotrAction> {
     throw new Error("Not implemented");
+  }
+}
+
+export class DenethorCorruptedSteward implements WotrAbility<WotrRecruitmentConstraintsModifier> {
+  constructor(private unitModifiers: WotrUnitModifiers) {}
+
+  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+
+  handler(constraints: WotrRecruitmentConstraints): void {
+    constraints.excludedRegionsForEliteUnits.add("minas-tirith");
+    constraints.excludedRegionsForLeaderUnits.add("minas-tirith");
   }
 }

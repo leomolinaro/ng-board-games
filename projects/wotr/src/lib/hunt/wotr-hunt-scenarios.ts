@@ -40,7 +40,10 @@ function baseCorruptionAttempt(
         tokens: []
       },
       setup: rules =>
-        new WotrSetupBuilder(rules).huntPool(...baseHuntTiles(), ...komeHuntTiles()).build(),
+        new WotrSetupBuilder(rules)
+          .huntPool(...baseHuntTiles(), ...komeHuntTiles())
+          .region("old-forest-road", "north", { nRegulars: 1, ruler: "brand" })
+          .build(),
       stories: (b: WotrStoriesBuilder) => [
         b.fpT().firstPhaseDraw(),
         b.s().firstPhaseDraw(),

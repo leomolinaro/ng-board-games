@@ -142,7 +142,7 @@ export class WotrFellowshipDialog implements OnInit {
   private unitsToUnitNodes(companionIds: WotrCompanionId[]): CompanionNode[] {
     const unitNodes: CompanionNode[] = [];
     companionIds.forEach(companionId => {
-      const image = this.assets.characterImage(companionId);
+      const image = this.assets.frontCharacterImage(companionId);
       unitNodes.push({
         id: companionId,
         label: this.q.character(companionId).name,

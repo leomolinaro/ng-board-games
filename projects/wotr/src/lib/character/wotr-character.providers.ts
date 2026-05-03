@@ -4,7 +4,7 @@ import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacterUi } from "./wotr-character-ui";
-import { WotrCharacterAbilities } from "./wotr-characters";
+import { WotrCharacters } from "./wotr-characters";
 
 export const characterProviders: Provider[] = [
   WotrCharacterHandler,
@@ -12,5 +12,5 @@ export const characterProviders: Provider[] = [
   WotrCharacterRules,
   WotrCharacterStore,
   WotrCharacterUi,
-  WotrCharacterAbilities
+  WotrCharacters
 ];

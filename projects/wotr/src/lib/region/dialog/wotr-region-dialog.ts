@@ -231,7 +231,7 @@ export class WotrRegionDialog implements OnInit {
     }
     units.characters?.forEach(characterId => {
       const character = this.q.character(characterId);
-      const image = this.assets.characterImage(characterId);
+      const image = this.assets.regionCharacterImage(character.data());
       unitNodes.push({
         id: characterId,
         type: "character",

@@ -24,12 +24,13 @@ import {
   gollumEnterFellowship,
   WotrCharacterAction,
   WotrCharacterElimination,
+  WotrCharacterMovement,
   WotrGollumEnterFellowship
 } from "./wotr-character-actions";
 import { WotrCharacter, WotrCharacterId, WotrCompanionId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
-import { WotrCharacterAbilities } from "./wotr-characters";
+import { WotrCharacters } from "./wotr-characters";
 
 @Injectable()
 export class WotrCharacterHandler {
@@ -42,7 +43,7 @@ export class WotrCharacterHandler {
   private q = inject(WotrGameQuery);
   private characterModifiers = inject(WotrCharacterModifiers);
 
-  characterAbilities: WotrCharacterAbilities = null as any;
+  characterAbilities: WotrCharacters = null as any;
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -54,6 +55,16 @@ export class WotrCharacterHandler {
     this.actionRegistry.registerEffectLogger<WotrCharacterElimination>(
       "character-elimination",
       (effect, f) => [f.character(effect.characters[0]), " is eliminated"]
+    );
+    this.actionRegistry.registerEffectLogger<WotrCharacterMovement>(
+      "character-movement",
+      (effect, f) => [
+        f.character(effect.characters[0]),
+        " is moved from ",
+        f.region(effect.fromRegion),
+        " to ",
+        f.region(effect.toRegion)
+      ]
     );
     this.actionRegistry.registerStory("character-effect", this.reactionCharacter);
     this.actionRegistry.registerStory("character-effect-skip", this.reactionCharacterSkip);
@@ -110,7 +121,7 @@ export class WotrCharacterHandler {
     for (const characterId of removingCharacters) {
       this.removeCharacter(characterId);
     }
-    this.characterAbilities.activateAbilities(characters);
+    this.characterAbilities.activateInPlayAbilities(characters);
   }
 
   separateCompanions(companions: WotrCompanionId[], toRegion: WotrRegionId) {

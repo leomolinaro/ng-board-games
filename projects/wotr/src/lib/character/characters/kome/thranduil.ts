@@ -1,7 +1,15 @@
+import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import {
+  WotrRecruitmentConstraintsModifier,
+  WotrUnitModifiers
+} from "../../../unit/wotr-unit-modifiers";
+import { WotrCharacterHandler } from "../../wotr-character-handler";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Thranduil - King of the Woodland Realm (Level 2, Leadership 1, Shadow Resistance 4)
@@ -27,11 +35,16 @@ import { KomeSovereignCard } from "./kome-sovereign-card";
 // cease their effect.
 
 export class Thranduil extends KomeSovereignCard {
-  constructor(private q: WotrGameQuery) {
+  constructor(
+    protected q: WotrGameQuery,
+    protected characterHandler: WotrCharacterHandler,
+    protected logger: WotrLogWriter
+  ) {
     super();
   }
 
   readonly sovereignId = "thranduil";
+  protected readonly corruptionRegion = "woodland-realm";
 
   override canBeAwakened(die: WotrActionDie): boolean {
     return false;
@@ -39,5 +52,15 @@ export class Thranduil extends KomeSovereignCard {
 
   override async awaken(ui: WotrGameUi): Promise<WotrAction> {
     throw new Error("Not implemented");
+  }
+}
+
+export class ThranduilElvenking implements WotrAbility<WotrRecruitmentConstraintsModifier> {
+  constructor(private unitModifiers: WotrUnitModifiers) {}
+
+  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+
+  handler(constraints: WotrRecruitmentConstraints): void {
+    constraints.excludedRegionsForEliteUnits.add("woodland-realm");
   }
 }

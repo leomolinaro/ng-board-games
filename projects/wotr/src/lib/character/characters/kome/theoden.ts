@@ -1,7 +1,15 @@
+import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import {
+  WotrRecruitmentConstraintsModifier,
+  WotrUnitModifiers
+} from "../../../unit/wotr-unit-modifiers";
+import { WotrCharacterHandler } from "../../wotr-character-handler";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Theoden - King of the Riddermark (Level 2, Leadership 1, Shadow Resistance 3)
@@ -24,11 +32,16 @@ import { KomeSovereignCard } from "./kome-sovereign-card";
 // is removed, this card is discarded, and his Weaknesses immediately cease their effect.
 
 export class Theoden extends KomeSovereignCard {
-  constructor(private q: WotrGameQuery) {
+  constructor(
+    protected q: WotrGameQuery,
+    protected characterHandler: WotrCharacterHandler,
+    protected logger: WotrLogWriter
+  ) {
     super();
   }
 
   readonly sovereignId = "theoden";
+  protected readonly corruptionRegion = "edoras";
 
   override canBeAwakened(die: WotrActionDie): boolean {
     return false;
@@ -36,5 +49,16 @@ export class Theoden extends KomeSovereignCard {
 
   override async awaken(ui: WotrGameUi): Promise<WotrAction> {
     throw new Error("Not implemented");
+  }
+}
+
+export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
+  constructor(private unitModifiers: WotrUnitModifiers) {}
+
+  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+
+  handler(constraints: WotrRecruitmentConstraints): void {
+    constraints.excludedNationsForEliteUnits.add("rohan");
+    constraints.excludedNationsForLeaderUnits.add("rohan");
   }
 }

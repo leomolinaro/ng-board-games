@@ -224,7 +224,7 @@ export class WotrFrontArea {
     this.assets.leaderImage(nationId).source;
   protected nazgulImage: BgTransformFn<void, string> = () => this.assets.nazgulImage().source;
   protected characterImage: BgTransformFn<WotrCharacterId, string> = characterId =>
-    this.assets.characterImage(characterId).source;
+    this.assets.frontCharacterImage(characterId).source;
   protected range: BgTransformFn<number, number[]> = n => arrayUtil.range(n);
 
   protected selectedTabIndex = signal<number>(0);

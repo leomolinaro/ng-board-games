@@ -26,69 +26,58 @@ export class WotrUnitRules {
   private q = inject(WotrGameQuery);
 
   canFrontRecruitReinforcements(frontId: WotrFrontId): boolean {
-    const constraints: WotrRecruitmentConstraints = { points: 2, exludedRegions: new Set() };
-    if (frontId === "free-peoples") {
-      return this.nationStore
-        .freePeoplesNations()
-        .some(nation => this.canRecruitReinforcements(nation, constraints));
-    } else {
-      return this.nationStore
-        .shadowNations()
-        .some(nation => this.canRecruitReinforcements(nation, constraints));
-    }
+    const constraints: WotrRecruitmentConstraints = {
+      points: 2,
+      excludedRegions: new Set(),
+      excludedRegionsForEliteUnits: new Set(),
+      excludedRegionsForLeaderUnits: new Set(),
+      excludedNationsForEliteUnits: new Set(),
+      excludedNationsForLeaderUnits: new Set()
+    };
+    this.unitModifiers.modifyRecruitmentConstraints(constraints);
+    const nations =
+      frontId === "free-peoples"
+        ? this.nationStore.freePeoplesNations()
+        : this.nationStore.shadowNations();
+    return nations.some(nation => this.canRecruitReinforcements(nation, constraints));
   }
 
   validFrontReinforcementUnits(
     frontId: WotrFrontId,
     constraints: WotrRecruitmentConstraints
   ): WotrReinforcementUnit[] {
-    if (frontId === "free-peoples") {
-      return this.nationStore
-        .freePeoplesNations()
-        .filter(nation => this.canRecruitReinforcements(nation, constraints))
-        .reduce<WotrReinforcementUnit[]>(
-          (acc, nation) => [...acc, ...this.validReinforcementUnits(nation, constraints)],
-          []
-        );
-    } else {
-      return this.nationStore
-        .shadowNations()
-        .filter(nation => this.canRecruitReinforcements(nation, constraints))
-        .reduce<WotrReinforcementUnit[]>(
-          (acc, nation) => [...acc, ...this.validReinforcementUnits(nation, constraints)],
-          []
-        );
-    }
+    const nations =
+      frontId === "free-peoples"
+        ? this.nationStore.freePeoplesNations()
+        : this.nationStore.shadowNations();
+    return nations
+      .filter(nation => this.canRecruitReinforcements(nation, constraints))
+      .reduce<
+        WotrReinforcementUnit[]
+      >((acc, nation) => [...acc, ...this.validReinforcementUnits(nation, constraints)], []);
   }
 
-  validReinforcementUnits(
+  private validReinforcementUnits(
     nation: WotrNation,
     constraints: WotrRecruitmentConstraints
   ): WotrReinforcementUnit[] {
+    // TODO could be improved considering excluded regions and nations for elite and leader units
     const units: WotrReinforcementUnit[] = [];
-    if (this.nationStore.hasRegularReinforcements(nation.id)) {
+    if (this.nationStore.hasRegularReinforcements(nation.id))
       units.push({ nation: nation.id, type: "regular" });
-    }
-    if (constraints.points >= 2 && this.nationStore.hasEliteReinforcements(nation.id)) {
+    if (constraints.points >= 2 && this.nationStore.hasEliteReinforcements(nation.id))
       units.push({ nation: nation.id, type: "elite" });
-    }
-    if (this.nationStore.hasLeaderReinforcements(nation.id)) {
+    if (this.nationStore.hasLeaderReinforcements(nation.id))
       units.push({ nation: nation.id, type: "leader" });
-    }
-    if (this.nationStore.hasNazgulReinforcements(nation.id)) {
+    if (this.nationStore.hasNazgulReinforcements(nation.id))
       units.push({ nation: nation.id, type: "nazgul" });
-    }
     return units;
   }
 
   canRecruitReinforcements(nation: WotrNation, constraints: WotrRecruitmentConstraints): boolean {
-    if (nation.politicalStep !== "atWar") {
-      return false;
-    }
-    if (!this.nationStore.hasReinforcements(nation, constraints.points)) {
-      return false;
-    }
-    return this.regionStore.hasRecruitmentSettlement(nation, constraints.exludedRegions);
+    if (nation.politicalStep !== "atWar") return false;
+    if (!this.nationStore.hasReinforcements(nation, constraints.points)) return false;
+    return this.regionStore.hasRecruitmentSettlement(nation, constraints);
   }
 
   canFrontMoveArmies(frontId: WotrFrontId): boolean {

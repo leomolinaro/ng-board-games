@@ -1,7 +1,15 @@
+import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import {
+  WotrRecruitmentConstraintsModifier,
+  WotrUnitModifiers
+} from "../../../unit/wotr-unit-modifiers";
+import { WotrCharacterHandler } from "../../wotr-character-handler";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Dain Ironfoot - King Under the Mountain (Level 1, Leadership 1, Shadow Resistance 4)
@@ -27,11 +35,16 @@ import { KomeSovereignCard } from "./kome-sovereign-card";
 // His figure is removed, this card is discarded, and his Weaknesses immediately cease their effect.
 
 export class Dain extends KomeSovereignCard {
-  constructor(private q: WotrGameQuery) {
+  constructor(
+    protected q: WotrGameQuery,
+    protected characterHandler: WotrCharacterHandler,
+    protected logger: WotrLogWriter
+  ) {
     super();
   }
 
   readonly sovereignId = "dain";
+  protected readonly corruptionRegion = "erebor";
 
   override canBeAwakened(die: WotrActionDie): boolean {
     return false;
@@ -39,5 +52,16 @@ export class Dain extends KomeSovereignCard {
 
   override async awaken(ui: WotrGameUi): Promise<WotrAction> {
     throw new Error("Not implemented");
+  }
+}
+
+export class DainCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
+  constructor(private unitModifiers: WotrUnitModifiers) {}
+
+  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+
+  handler(constraints: WotrRecruitmentConstraints): void {
+    constraints.excludedRegionsForEliteUnits.add("erebor");
+    constraints.excludedRegionsForLeaderUnits.add("erebor");
   }
 }

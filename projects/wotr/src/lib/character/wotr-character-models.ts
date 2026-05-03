@@ -36,10 +36,8 @@ export interface WotrCharacter {
   dieBonus?: "actionDie" | "rulerDie";
   status: "inFellowship" | "available" | "inPlay" | "eliminated";
   isMinionForGandalfTheWhite: boolean;
-  awakenedLeadership?: number;
   front: WotrFrontId;
   activationNation?: WotrNationId | "all";
-  shadowResistance?: number;
   flying: boolean;
 }
 
@@ -48,6 +46,7 @@ export interface KomeSovereign extends WotrCharacter {
   sovereignStatus: "leader" | "awakened" | "corrupted";
   dieBonus: "rulerDie";
   front: "free-peoples";
+  awakenedLeadership: number;
   shadowResistance: number;
   corruptionTiles: WotrHuntTileId[];
 }

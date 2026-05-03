@@ -222,13 +222,18 @@ export class WotrUnitUi {
   async recruitUnits(frontId: WotrFrontId): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     let points = 0;
-    const exludedRegions = new Set<WotrRegionId>();
+    const excludedRegions = new Set<WotrRegionId>();
     let canPass = false;
     while (points < 2) {
       const constraints: WotrRecruitmentConstraints = {
         points: 2 - points,
-        exludedRegions: exludedRegions
+        excludedRegions: excludedRegions,
+        excludedRegionsForEliteUnits: new Set(),
+        excludedRegionsForLeaderUnits: new Set(),
+        excludedNationsForEliteUnits: new Set(),
+        excludedNationsForLeaderUnits: new Set()
       };
+      this.unitModifiers.modifyRecruitmentConstraints(constraints);
       const validUnits = this.unitRules.validFrontReinforcementUnits(frontId, constraints);
       if (!validUnits.length) return actions;
       const unit = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
@@ -239,14 +244,22 @@ export class WotrUnitUi {
       if (unit === false) return actions;
       points += unit.type === "elite" ? 2 : 1;
       const nation = this.nationStore.nation(unit.nation);
-      const validRegions = this.regionStore
-        .recruitmentRegions(nation)
-        .filter(r => !exludedRegions.has(r.id));
+      const validRegions = this.regionStore.recruitmentRegions(nation).filter(r => {
+        if (excludedRegions.has(r.id)) return false;
+        if (unit.type === "elite") {
+          if (constraints.excludedNationsForEliteUnits.has(nation.id)) return false;
+          if (constraints.excludedRegionsForEliteUnits.has(r.id)) return false;
+        } else if (unit.type === "leader") {
+          if (constraints.excludedNationsForLeaderUnits.has(nation.id)) return false;
+          if (constraints.excludedRegionsForLeaderUnits.has(r.id)) return false;
+        }
+        return true;
+      });
       const regionId = await this.ui.askRegion(
         "Choose a region to recruit in",
         validRegions.map(r => r.id)
       );
-      exludedRegions.add(regionId);
+      excludedRegions.add(regionId);
       actions.push(...(await this.recruitUnit(unit, regionId, frontId)));
       canPass = true;
     }

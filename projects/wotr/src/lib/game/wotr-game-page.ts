@@ -29,7 +29,7 @@ import { cardProviders } from "../card/wotr-card.providers";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
 import { characterProviders } from "../character/wotr-character.providers";
-import { WotrCharacterAbilities } from "../character/wotr-characters";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { commonsProviders } from "../commons/wotr-commons.providers";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
@@ -127,7 +127,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private huntModifiers = inject(WotrHuntModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
   private characterHandler = inject(WotrCharacterHandler);
-  private characterAbilities = inject(WotrCharacterAbilities);
+  private characterAbilities = inject(WotrCharacters);
   private cardHandler = inject(WotrCardHandler);
   private cards = inject(WotrCards);
   private freePeoplesCharacterCards = inject(WotrFreePeoplesCharacterCards);
@@ -137,6 +137,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private actionDieUi = inject(WotrActionDieUi);
   private nationModifiers = inject(WotrNationModifiers);
   private unitUtils = inject(WotrUnitUtils);
+  private huntHandler = inject(WotrHuntHandler);
   private q = inject(WotrGameQuery);
   private router = inject(Router);
 
@@ -163,6 +164,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.combatCards.battleUi = this.battleUi;
     this.characterAbilities.actionDieUi = this.actionDieUi;
     this.unitUtils.q = this.q;
+    this.huntHandler.characters = this.characterAbilities;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get("gameId")!;

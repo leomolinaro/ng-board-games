@@ -1,4 +1,4 @@
-import { WotrCompanionId } from "../character/wotr-character-models";
+import { KomeSovereignId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
@@ -58,7 +58,13 @@ export class WotrSetupBuilder {
   region(
     region: WotrRegionId,
     nation: WotrNationId,
-    units: { nRegulars?: number; nElites?: number; nLeaders?: number; nNazgul?: number }
+    units: {
+      nRegulars?: number;
+      nElites?: number;
+      nLeaders?: number;
+      nNazgul?: number;
+      ruler?: KomeSovereignId;
+    }
   ): WotrSetupBuilder {
     this.regions.push({
       region,
@@ -67,7 +73,7 @@ export class WotrSetupBuilder {
       nElites: units.nElites ?? 0,
       nLeaders: units.nLeaders ?? 0,
       nNazgul: units.nNazgul ?? 0,
-      ruler: null
+      ruler: units.ruler ?? null
     });
     return this;
   }

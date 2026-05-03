@@ -4,6 +4,7 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrCharacterStore } from "../character/wotr-character-store";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { frontOfNation, WotrNation, WotrNationId } from "../nation/wotr-nation-models";
+import { WotrRecruitmentConstraints } from "../unit/wotr-unit-handler";
 import { WotrArmy, WotrFreeUnits, WotrUnits } from "../unit/wotr-unit-models";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrNeighbor, WotrRegion, WotrRegionId, WotrSettlentType } from "./wotr-region-models";
@@ -556,10 +557,36 @@ export class WotrRegionStore {
     if (!region.army) return true;
     return region.army.front === frontId;
   }
-  hasRecruitmentSettlement(nation: WotrNation, exludedRegions: Set<WotrRegionId>): boolean {
-    return this.regions()
-      .filter(r => !exludedRegions.has(r.id))
-      .some(r => this.isRecruitmentRegion(r, nation));
+  hasRecruitmentSettlement(nation: WotrNation, constraints: WotrRecruitmentConstraints): boolean {
+    if (constraints.excludedNationsForEliteUnits.has(nation.id))
+      if (this.hasOnlyEliteRecruitments(nation)) return true;
+    if (constraints.excludedNationsForLeaderUnits.has(nation.id))
+      if (this.hasOnlyLeaderRecruitments(nation)) return true;
+    return this.regions().some(
+      r =>
+        this.isRecruitmentRegion(r, nation) &&
+        !this.isRecruitmentExcludedRegion(r, nation, constraints)
+    );
+  }
+  private isRecruitmentExcludedRegion(
+    region: WotrRegion,
+    nation: WotrNation,
+    constraints: WotrRecruitmentConstraints
+  ): boolean {
+    if (constraints.excludedRegions.has(region.id)) return true;
+    if (constraints.excludedRegionsForEliteUnits.has(region.id))
+      if (this.hasOnlyEliteRecruitments(nation)) return true;
+    if (constraints.excludedRegionsForLeaderUnits.has(region.id))
+      if (this.hasOnlyLeaderRecruitments(nation)) return true;
+    return false;
+  }
+  private hasOnlyEliteRecruitments(nation: WotrNation): boolean {
+    const r = nation.reinforcements;
+    return !!r.elite && !r.regular && !r.leader && !r.nazgul;
+  }
+  private hasOnlyLeaderRecruitments(nation: WotrNation): boolean {
+    const r = nation.reinforcements;
+    return !!r.leader && !r.regular && !r.elite && !r.nazgul;
   }
   isRecruitmentRegion(region: WotrRegion, nation: WotrNation): boolean {
     return (

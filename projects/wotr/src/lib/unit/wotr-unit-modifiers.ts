@@ -3,6 +3,7 @@ import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrRecruitmentConstraints } from "./wotr-unit-handler";
 import { WotrArmy } from "./wotr-unit-models";
 
 export type WotrLeaderModifier = (unitType: WotrArmyUnitType, nationId: WotrNationId) => boolean;
@@ -11,6 +12,7 @@ export type WotrCanMoveIntoRegionModifier = (
   frontId: WotrFrontId
 ) => boolean;
 export type WotrCanAttackRegionModifier = (regionId: WotrRegionId, frontId: WotrFrontId) => boolean;
+export type WotrRecruitmentConstraintsModifier = (constraints: WotrRecruitmentConstraints) => void;
 
 @Injectable()
 export class WotrUnitModifiers {
@@ -43,9 +45,19 @@ export class WotrUnitModifiers {
     return this.canAttackRegionModifier.get().every(modifier => modifier(regionId, frontId));
   }
 
+  public readonly recruitmentConstraintsModifier =
+    new WotrModifier<WotrRecruitmentConstraintsModifier>();
+
+  modifyRecruitmentConstraints(constraints: WotrRecruitmentConstraints) {
+    for (const modifier of this.recruitmentConstraintsModifier.get()) {
+      modifier(constraints);
+    }
+  }
+
   clear() {
     this.leaderModifier.clear();
     this.canMoveIntoRegionModifier.clear();
     this.canAttackRegionModifier.clear();
+    this.recruitmentConstraintsModifier.clear();
   }
 }

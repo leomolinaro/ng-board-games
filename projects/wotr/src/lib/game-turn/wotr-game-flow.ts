@@ -2,7 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
 import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrCharacterAbilities } from "../character/wotr-characters";
+import { WotrCharacters } from "../character/wotr-characters";
 import { WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
@@ -42,7 +42,7 @@ export class WotrGameFlow {
   private huntStore = inject(WotrHuntStore);
   private characterStore = inject(WotrCharacterStore);
   private actionRegistry = inject(WotrActionRegistry);
-  private characterAbilities = inject(WotrCharacterAbilities);
+  private characterAbilities = inject(WotrCharacters);
   private q = inject(WotrGameQuery);
   private fellowshipHandler = inject(WotrFellowshipHandler);
 
@@ -87,7 +87,7 @@ export class WotrGameFlow {
     const gameSetup = this.setupService.getGameSetup(config);
     this.logger.logSetup();
     this.applySetup(gameSetup);
-    this.characterAbilities.activateAbilities(this.fellowshipStore.companions());
+    this.characterAbilities.activateInPlayAbilities(this.fellowshipStore.companions());
   }
 
   private async round(roundNumber: number) {

@@ -380,7 +380,7 @@ export class WotrStrongholdBox {
           unitType: "character",
           character: leader.id,
           nationId: null,
-          image: this.assets.characterImage(leader.id),
+          image: this.assets.regionCharacterImage(leader),
           svgX: 0,
           svgY: 0
         };
@@ -419,7 +419,7 @@ export class WotrStrongholdBox {
           unitType: "character",
           character: leader.id,
           nationId: null,
-          image: this.assets.characterImage(leader.id),
+          image: this.assets.regionCharacterImage(leader),
           svgX: 0,
           svgY: 0
         };
