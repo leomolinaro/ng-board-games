@@ -1,9 +1,10 @@
 import { KomeSovereignId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
+import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import {
   WotrFrontDecksSetup,
+  WotrNationSetup,
   WotrRegionSetup,
   WotrSetup,
   WotrSetupRules
@@ -78,6 +79,16 @@ export class WotrSetupBuilder {
     return this;
   }
 
+  private nations: WotrNationSetup[] = [];
+  nation(
+    nation: WotrNationId,
+    active: boolean,
+    politicalStep: WotrPoliticalStep
+  ): WotrSetupBuilder {
+    this.nations.push({ nation, active, politicalStep });
+    return this;
+  }
+
   private _huntPool: WotrHuntTileId[] = [];
   huntPool(...huntTiles: WotrHuntTileId[]): WotrSetupBuilder {
     this._huntPool = huntTiles;
@@ -97,7 +108,8 @@ export class WotrSetupBuilder {
       freePeopleTokens: [],
       shadowTokens: [],
       huntPool: this._huntPool,
-      characters: []
+      characters: [],
+      nations: this.nations
     };
   }
 }

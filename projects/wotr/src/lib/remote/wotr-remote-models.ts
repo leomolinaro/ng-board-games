@@ -8,7 +8,7 @@ export interface WotrGameDoc {
   owner: BgUser;
   online: boolean;
   state: "open" | "closed";
-  options: WotrGameOptions;
+  options?: WotrGameOptions;
 }
 
 export interface AWotrPlayerDoc {

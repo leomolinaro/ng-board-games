@@ -11,6 +11,7 @@ import { WotrRemoteService } from "../remote/wotr-remote";
 import {
   AWotrPlayerDoc,
   WotrAiPlayerDoc,
+  WotrGameDoc,
   WotrPlayerDoc,
   WotrReadPlayerDoc
 } from "../remote/wotr-remote-models";
@@ -82,28 +83,27 @@ export class WotrHomePage {
   };
 
   private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFrontId>[]) {
-    return this.remote
-      .insertGame$({
-        id: protoGame.id,
-        owner: protoGame.owner,
-        name: protoGame.name,
-        online: protoGame.online,
-        state: "open",
-        options: protoGame.options as WotrGameOptions
-      })
-      .pipe(
-        switchMap(game =>
-          forkJoin([
-            ...protoPlayers.map((p, index) => {
-              if (p.type === "ai") {
-                return this.insertAiPlayer$(p.name, p.id, index + 1, game.id);
-              } else {
-                return this.insertRealPlayer$(p.name, p.id, index + 1, p.controller!, game.id);
-              }
-            })
-          ])
-        )
-      );
+    const game: WotrGameDoc = {
+      id: protoGame.id,
+      owner: protoGame.owner,
+      name: protoGame.name,
+      online: protoGame.online,
+      state: "open"
+    };
+    if (protoGame.options) game.options = protoGame.options as WotrGameOptions;
+    return this.remote.insertGame$(game).pipe(
+      switchMap(({ id }) =>
+        forkJoin([
+          ...protoPlayers.map((p, index) => {
+            if (p.type === "ai") {
+              return this.insertAiPlayer$(p.name, p.id, index + 1, id);
+            } else {
+              return this.insertRealPlayer$(p.name, p.id, index + 1, p.controller!, id);
+            }
+          })
+        ])
+      )
+    );
   }
 
   private insertAiPlayer$(

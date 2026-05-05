@@ -20,6 +20,7 @@ import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
+import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrAragorn } from "./characters/aragorn";
 import {
   DwarfOfEreborAbility,
@@ -33,7 +34,7 @@ import {
   TheWhiteRiderAbility,
   WotrGandalfTheWhite
 } from "./characters/gandalf-the-white";
-import { Brand, BrandCorruptedKing } from "./characters/kome/brand";
+import { Brand, BrandCorruptedKing, ShadowInTheNorth } from "./characters/kome/brand";
 import { Dain, DainCorruptedKing } from "./characters/kome/dain";
 import { Denethor, DenethorCorruptedSteward } from "./characters/kome/denethor";
 import { KomeSovereignCard } from "./characters/kome/kome-sovereign-card";
@@ -85,6 +86,7 @@ export class WotrCharacters {
   private huntModifiers = inject(WotrHuntModifiers);
   private battleUi = inject(WotrBattleUi);
   private characterHandler = inject(WotrCharacterHandler);
+  private unitUtils = inject(WotrUnitUtils);
   private logger = inject(WotrLogWriter);
 
   private freePeoples = inject(WotrFreePeoplesPlayer);
@@ -222,7 +224,10 @@ export class WotrCharacters {
       case "thranduil":
         return [new ThranduilElvenking(this.unitModifiers)];
       case "brand":
-        return [new BrandCorruptedKing(this.unitModifiers)];
+        return [
+          new BrandCorruptedKing(this.unitModifiers),
+          new ShadowInTheNorth(this.battleModifiers, this.unitUtils, this.shadow)
+        ];
       case "dain":
         return [new DainCorruptedKing(this.unitModifiers)];
       case "denethor":

@@ -17,7 +17,8 @@ export class WotrSetupRulesMock extends WotrSetupRules {
       freePeopleTokens: [],
       shadowTokens: [],
       huntPool: [],
-      characters: [...baseCharacters()]
+      characters: [...baseCharacters()],
+      nations: []
     };
   }
 }

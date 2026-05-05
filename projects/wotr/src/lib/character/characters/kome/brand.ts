@@ -1,15 +1,24 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
+import { WotrAbility, WotrUiAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
+import { forfeitCombatCardById } from "../../../battle/wotr-battle-actions";
+import { WotrCombatRound } from "../../../battle/wotr-battle-models";
+import {
+  WotrAfterCombatCardRevealing,
+  WotrBattleModifiers
+} from "../../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
 import {
   WotrRecruitmentConstraintsModifier,
   WotrUnitModifiers
 } from "../../../unit/wotr-unit-modifiers";
+import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
 import { WotrCharacterHandler } from "../../wotr-character-handler";
+import { activateCharacterAbility } from "../wotr-playable-character-card";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Brand - King of Dale (Level 1, Leadership 1, Shadow Resistance 2)
@@ -64,4 +73,34 @@ export class BrandCorruptedKing implements WotrAbility<WotrRecruitmentConstraint
     constraints.excludedNationsForEliteUnits.add("north");
     constraints.excludedNationsForLeaderUnits.add("north");
   }
+}
+
+export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardRevealing> {
+  constructor(
+    private battleModifiers: WotrBattleModifiers,
+    private unitUtils: WotrUnitUtils,
+    private shadow: WotrShadowPlayer
+  ) {}
+
+  modifier = this.battleModifiers.afterCombatCardRevealing;
+  private round?: WotrCombatRound;
+
+  handler: WotrAfterCombatCardRevealing = async (combatRound: WotrCombatRound): Promise<void> => {
+    if (!this.unitUtils.hasArmyUnitsOfNation("north", combatRound.freePeoples.army())) return;
+    if (!combatRound.attacker.combatCard) return;
+    if (!combatRound.defender.combatCard) return;
+    this.round = combatRound;
+    if (!(await activateCharacterAbility(this, "brand", this.shadow))) return;
+    // eslint-disable-next-line require-atomic-updates
+    combatRound.freePeoples.cancelledCombatCard = true;
+    // eslint-disable-next-line require-atomic-updates
+    combatRound.shadow.forfeitedCombatCard = true;
+  };
+
+  play: () => Promise<WotrAction[]> = async () => {
+    const combatCard = this.round?.shadow.combatCard;
+    if (!combatCard) throw new Error("No combat card to forfeit.");
+    if (!this.round) throw new Error("No combat round.");
+    return [forfeitCombatCardById(combatCard.id)];
+  };
 }

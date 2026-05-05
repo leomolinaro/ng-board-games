@@ -61,13 +61,20 @@ export class WotrUnitRules {
     nation: WotrNation,
     constraints: WotrRecruitmentConstraints
   ): WotrReinforcementUnit[] {
-    // TODO could be improved considering excluded regions and nations for elite and leader units
+    // TODO could be improved considering excluded regions for elite and leader units
     const units: WotrReinforcementUnit[] = [];
     if (this.nationStore.hasRegularReinforcements(nation.id))
       units.push({ nation: nation.id, type: "regular" });
-    if (constraints.points >= 2 && this.nationStore.hasEliteReinforcements(nation.id))
+    if (
+      constraints.points >= 2 &&
+      this.nationStore.hasEliteReinforcements(nation.id) &&
+      !constraints.excludedNationsForEliteUnits.has(nation.id)
+    )
       units.push({ nation: nation.id, type: "elite" });
-    if (this.nationStore.hasLeaderReinforcements(nation.id))
+    if (
+      this.nationStore.hasLeaderReinforcements(nation.id) &&
+      !constraints.excludedNationsForLeaderUnits.has(nation.id)
+    )
       units.push({ nation: nation.id, type: "leader" });
     if (this.nationStore.hasNazgulReinforcements(nation.id))
       units.push({ nation: nation.id, type: "nazgul" });

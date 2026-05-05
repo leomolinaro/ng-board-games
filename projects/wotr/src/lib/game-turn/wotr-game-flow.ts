@@ -266,6 +266,10 @@ export class WotrGameFlow {
         this.regionStore.addCharacterToArmy(r.ruler, r.region);
       }
     }
+    for (const n of setup.nations) {
+      if (n.active) this.nationStore.activate(true, n.nation);
+      if (n.politicalStep !== 3) this.nationStore.setPoliticalStep(n.politicalStep, n.nation);
+    }
     this.characterStore.setCharactersIds(setup.characters);
     this.huntStore.setHuntPool(setup.huntPool);
     this.frontStore.setActionTokens(setup.freePeopleTokens, "free-peoples");

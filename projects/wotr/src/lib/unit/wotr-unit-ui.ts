@@ -247,10 +247,8 @@ export class WotrUnitUi {
       const validRegions = this.regionStore.recruitmentRegions(nation).filter(r => {
         if (excludedRegions.has(r.id)) return false;
         if (unit.type === "elite") {
-          if (constraints.excludedNationsForEliteUnits.has(nation.id)) return false;
           if (constraints.excludedRegionsForEliteUnits.has(r.id)) return false;
         } else if (unit.type === "leader") {
-          if (constraints.excludedNationsForLeaderUnits.has(nation.id)) return false;
           if (constraints.excludedRegionsForLeaderUnits.has(r.id)) return false;
         }
         return true;

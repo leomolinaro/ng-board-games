@@ -18,7 +18,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { baseHuntTiles, komeHuntTiles, WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
+import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 
 export interface WotrSetup {
@@ -29,6 +29,7 @@ export interface WotrSetup {
   shadowTokens: WotrActionToken[];
   huntPool: WotrHuntTileId[];
   characters: WotrCharacterId[];
+  nations: WotrNationSetup[];
 }
 
 export interface WotrFrontDecksSetup {
@@ -45,6 +46,12 @@ export interface WotrRegionSetup {
   nLeaders: number;
   nNazgul: number;
   ruler: KomeSovereignId | null;
+}
+
+export interface WotrNationSetup {
+  nation: WotrNationId;
+  active: boolean;
+  politicalStep: WotrPoliticalStep;
 }
 
 export interface WotrFellowshipSetup {
@@ -124,7 +131,17 @@ export class WotrSetupRules {
       freePeopleTokens,
       shadowTokens,
       huntPool: this.huntPool(),
-      characters: this.characters()
+      characters: this.characters(),
+      nations: [
+        { nation: "dwarves", active: false, politicalStep: 3 },
+        { nation: "elves", active: true, politicalStep: 3 },
+        { nation: "gondor", active: false, politicalStep: 2 },
+        { nation: "north", active: false, politicalStep: 3 },
+        { nation: "rohan", active: false, politicalStep: 3 },
+        { nation: "isengard", active: true, politicalStep: 1 },
+        { nation: "sauron", active: true, politicalStep: 1 },
+        { nation: "southrons", active: true, politicalStep: 2 }
+      ]
     };
   }
 

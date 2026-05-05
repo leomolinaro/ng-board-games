@@ -263,6 +263,7 @@ export class WotrBattleHandler {
     await this.chooseCombatCards(combatRound);
     await this.battleModifiers.onBeforeCombatCardRevealing(combatRound);
     this.revealCombatCards(combatRound);
+    await this.battleModifiers.onAfterCombatCardRevealing(combatRound);
     await this.resolveCombatCards(0, combatRound);
     await this.resolveCombatCards(1, combatRound);
     if (!combatRound.endBattle) {
