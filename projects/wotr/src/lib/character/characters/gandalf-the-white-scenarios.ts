@@ -1,12 +1,16 @@
 import { separateCompanions } from "../../fellowship/wotr-fellowship-actions";
 import { advanceNation } from "../../nation/wotr-nation-actions";
-import { WotrScenario } from "../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../setup/wotr-setup-builder";
 import { playCharacter } from "../wotr-character-actions";
 
-export function gandalfTheWhiteScenarios(): WotrScenario[] {
-  return [gandalfTheWhite01];
+export function gandalfTheWhiteScenarios(): WotrScenarioGroup {
+  return {
+    id: "gandalf-the-white",
+    name: "Gandalf the White",
+    scenarios: [gandalfTheWhite01]
+  };
 }
 
 const gandalfTheWhite01: WotrScenario = {

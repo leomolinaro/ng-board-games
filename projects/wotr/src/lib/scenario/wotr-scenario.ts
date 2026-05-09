@@ -3,6 +3,12 @@ import { WotrStoryDoc } from "../game/wotr-story-models";
 import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
 import { WotrStoriesBuilder } from "./wotr-story-builder";
 
+export interface WotrScenarioGroup {
+  id: string;
+  name: string;
+  scenarios: (WotrScenario | WotrScenarioGroup)[];
+}
+
 export interface WotrScenario {
   id: string;
   name: string;
@@ -16,8 +22,16 @@ export interface WotrScenarioDefinition {
   stories: (builder: WotrStoriesBuilder) => WotrStoryDoc[];
 }
 
+export interface WotrScenarioGroupInfo {
+  id: string;
+  type: "group";
+  name: string;
+  scenarios: (WotrScenarioInfo | WotrScenarioGroupInfo)[];
+}
+
 export interface WotrScenarioInfo {
   id: string;
+  type: "scenario";
   name: string;
   description?: string;
 }

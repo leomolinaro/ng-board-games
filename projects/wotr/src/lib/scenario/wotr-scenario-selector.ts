@@ -1,68 +1,80 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, computed, inject } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { MatFabButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
-import { MatMenuModule } from "@angular/material/menu";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgAuthService } from "@leobg/commons";
-import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
-import { from } from "rxjs";
-import { WotrScenarioInfo } from "./wotr-scenario";
+import { type TuiHandler } from "@taiga-ui/cdk";
+import { TuiDialogContext } from "@taiga-ui/core";
+import { TuiTree, TuiTreeItem } from "@taiga-ui/kit";
+import { injectContext } from "@taiga-ui/polymorpheus";
+import { WotrScenarioGroupInfo, WotrScenarioInfo } from "./wotr-scenario";
 import { WotrScenarios } from "./wotr-scenarios";
 
 @Component({
-  selector: "wotr-scenario-button",
-  imports: [MatFabButton, MatIcon, MatMenuModule],
+  selector: "wotr-scenario-selector-dialog",
+  imports: [TuiTree],
   template: `
-    @if (isAdmin()) {
-      <button
-        mat-fab
-        color="accent"
-        class="load-example"
-        [matMenuTriggerFor]="exampleMenu">
-        <mat-icon>bookmark</mat-icon>
-      </button>
-      <mat-menu #exampleMenu="matMenu">
-        @for (info of scenarioInfos; track info.id) {
-          <button
-            mat-menu-item
-            (click)="onGameClick(info)">
-            <div>{{ info.name }}</div>
-            @if (info.description) {
-              <div style="font-size: smaller;">{{ info.description }}</div>
-            }
-          </button>
-        }
-      </mat-menu>
-    }
+    <div class="scenario-tree-container">
+      @for (scenarioGroup of scenarioInfos; track scenarioGroup.id) {
+        <tui-tree
+          [value]="scenarioGroup"
+          [childrenHandler]="handler"
+          [content]="content"
+          [tuiTreeController]="true" />
+      }
+    </div>
+
+    <ng-template
+      #content
+      let-node="node"
+      let-value>
+      <div
+        class="scenario-node"
+        [class.scenario-group]="value.type === 'group'"
+        [class.scenario]="value.type === 'scenario'"
+        [style.--node-level]="node.level"
+        (click)="onNodeClick(node, value)">
+        <div class="scenario-content">
+          <div class="scenario-name">{{ value.name }}</div>
+          @if (value.description && value.type === "scenario") {
+            <div class="scenario-description">{{ value.description }}</div>
+          }
+        </div>
+      </div>
+    </ng-template>
   `,
   styles: [
     `
-      .load-example {
-        position: absolute;
-        bottom: 50px;
-        left: 50px;
+      .scenario-node.scenario {
+        cursor: pointer;
+      }
+      .scenario-description {
+        font-size: 80%;
       }
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-@UntilDestroy
-export class WotrScenarioButton implements OnDestroy {
-  private auth = inject(BgAuthService);
+export class WotrScenarioSelectorDialog {
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
   private scenarios = inject(WotrScenarios);
-
-  protected user = toSignal(this.auth.getUser$());
-  protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
+  protected readonly handler: TuiHandler<
+    WotrScenarioGroupInfo,
+    readonly (WotrScenarioGroupInfo | WotrScenarioInfo)[]
+  > = item => item.scenarios || [];
 
   protected scenarioInfos = this.scenarios.getScenarioInfos();
+  protected flatScenarioInfos = this.scenarios.getFlatScenarioInfos();
+  private readonly context =
+    injectContext<TuiDialogContext<void, { activatedRoute: ActivatedRoute }>>();
+  private activatedRoute = this.context.data.activatedRoute;
 
-  ngOnDestroy() {}
+  onNodeClick(node: TuiTreeItem, value: WotrScenarioGroupInfo | WotrScenarioInfo) {
+    if ("scenarios" in value) {
+      (node as any).controller?.toggle();
+    } else {
+      this.onGameClick(value);
+    }
+  }
 
-  @ExhaustingEvent()
   protected onGameClick(info: WotrScenarioInfo) {
-    return from(this.router.navigate(["scenario", info.id], { relativeTo: this.activatedRoute }));
+    this.router.navigate(["scenario", info.id], { relativeTo: this.activatedRoute });
   }
 }

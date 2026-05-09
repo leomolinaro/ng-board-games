@@ -1,7 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, isDevMode } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, isDevMode } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
+import {
+  BgAuthService,
+  BgHomeAction,
+  BgHomeConfig,
+  BgHomeModule,
+  BgProtoGame,
+  BgProtoPlayer,
+  BgUser
+} from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
+import { TuiDialogService } from "@taiga-ui/core";
+import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -15,16 +26,16 @@ import {
   WotrPlayerDoc,
   WotrReadPlayerDoc
 } from "../remote/wotr-remote-models";
-import { WotrScenarioButton } from "../scenario/wotr-scenario-selector";
+import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
 
 @Component({
   selector: "wotr-home-page",
-  imports: [BgHomeModule, WotrScenarioButton],
+  imports: [BgHomeModule],
   template: `
-    <bg-home [config]="config"></bg-home>
-    @if (devMode) {
-      <wotr-scenario-button></wotr-scenario-button>
-    }
+    <bg-home
+      [config]="config"
+      [actions]="devMode && isAdmin() ? [scenarioAction] : []">
+    </bg-home>
   `,
   styles: [
     `
@@ -58,7 +69,7 @@ export class WotrHomePage {
 
   protected devMode = isDevMode();
 
-  config: BgHomeConfig<WotrFrontId, WotrGameOptions> = {
+  protected config: BgHomeConfig<WotrFrontId, WotrGameOptions> = {
     boardGame: "wotr",
     boardGameName: "War of the Ring (2nd Edition)",
     startGame$: (gameId: string) =>
@@ -137,4 +148,25 @@ export class WotrHomePage {
   private aPlayerDoc(name: string, front: WotrFrontId, sort: number): AWotrPlayerDoc {
     return { name: name, id: front, sort: sort };
   }
+
+  private auth = inject(BgAuthService);
+  protected user = toSignal(this.auth.getUser$());
+  protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
+  private readonly dialogs = inject(TuiDialogService);
+
+  protected scenarioAction: BgHomeAction = {
+    id: "scenario",
+    label: "Scenario",
+    action: () => {
+      this.dialogs
+        .open<string>(new PolymorpheusComponent(WotrScenarioSelectorDialog), {
+          label: "Select Scenario",
+          data: {
+            activatedRoute: this.activatedRoute
+          }
+        })
+        .subscribe();
+    },
+    icon: "@tui.bookmark"
+  };
 }

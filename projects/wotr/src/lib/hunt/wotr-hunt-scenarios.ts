@@ -1,6 +1,6 @@
 import { WotrVariantId } from "../expansion/wotr-expansion-models";
 import { WotrStoryDoc } from "../game/wotr-story-models";
-import { WotrScenario } from "../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../setup/wotr-setup-builder";
 import {
@@ -10,16 +10,20 @@ import {
 } from "./wotr-hunt-actions";
 import { baseHuntTiles, komeHuntTiles } from "./wotr-hunt-models";
 
-export function huntScenarios(): WotrScenario[] {
-  return [
-    corruptionAttempt01,
-    corruptionAttempt02,
-    corruptionAttempt03,
-    corruptionAttempt04,
-    corruptionAttempt05,
-    corruptionAttempt06,
-    corruptionAttempt07
-  ];
+export function huntScenarios(): WotrScenarioGroup {
+  return {
+    id: "hunt",
+    name: "Hunt",
+    scenarios: [
+      corruptionAttempt01,
+      corruptionAttempt02,
+      corruptionAttempt03,
+      corruptionAttempt04,
+      corruptionAttempt05,
+      corruptionAttempt06,
+      corruptionAttempt07
+    ]
+  };
 }
 
 function baseCorruptionAttempt(

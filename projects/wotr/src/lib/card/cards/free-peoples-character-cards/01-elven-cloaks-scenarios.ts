@@ -1,10 +1,14 @@
 import { declareFellowship } from "../../../fellowship/wotr-fellowship-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 
-export function elvenCloaksScenarios(): WotrScenario[] {
-  return [elvenCloaks01, elvenCloaks02];
+export function elvenCloaksScenarios(): WotrScenarioGroup {
+  return {
+    id: "elven-cloaks",
+    name: "Elven Cloaks",
+    scenarios: [elvenCloaks01, elvenCloaks02]
+  };
 }
 
 const elvenCloaks01: WotrScenario = {

@@ -1,10 +1,14 @@
 import { separateCompanions } from "../../../fellowship/wotr-fellowship-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 
-export function theGreyCompany(): WotrScenario[] {
-  return [theGreyCompany01];
+export function theGreyCompany(): WotrScenarioGroup {
+  return {
+    id: "the-grey-company",
+    name: "The Grey Company",
+    scenarios: [theGreyCompany01]
+  };
 }
 
 const theGreyCompany01: WotrScenario = {

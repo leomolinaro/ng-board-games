@@ -28,6 +28,11 @@
         "assets": [
           "projects/app/src/favicon.ico",
           "projects/app/src/assets",
+          {
+            "glob": "**/*",
+            "input": "node_modules/@taiga-ui/icons/src",
+            "output": "assets/taiga-ui/icons"
+          },
           { "input": "projects/agot/src/assets", "glob": "**/*", "output": "/assets" },
           { "input": "projects/barony/src/assets", "glob": "**/*", "output": "/assets" },
           { "input": "projects/britannia/src/assets", "glob": "**/*", "output": "/assets" },
@@ -35,7 +40,13 @@
           { "input": "projects/talisman/src/assets", "glob": "**/*", "output": "/assets" },
           { "input": "projects/wotr/src/assets", "glob": "**/*", "output": "/assets" }
         ],
-        "styles": ["node_modules/@angular/material/prebuilt-themes/indigo-pink.css", "projects/app/src/styles.scss"],
+        "styles": [
+          "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+          "projects/app/src/styles.scss",
+          "@taiga-ui/styles/taiga-ui-theme.less",
+          "@taiga-ui/styles/taiga-ui-fonts.less",
+          "@taiga-ui/addon-mobile/styles/taiga-ui-mobile.less"
+        ],
         "scripts": []
       },
       "configurations": {

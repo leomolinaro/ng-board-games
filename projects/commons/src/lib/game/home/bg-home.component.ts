@@ -3,15 +3,15 @@ import { AsyncPipe, NgIf } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
   OnDestroy,
   OnInit,
   TemplateRef,
   Type,
   ViewChild,
-  inject
+  inject,
+  input
 } from "@angular/core";
-import { MatButton, MatFabButton, MatIconButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { MatIcon } from "@angular/material/icon";
 import { MatProgressBar } from "@angular/material/progress-bar";
@@ -25,6 +25,7 @@ import {
 } from "@angular/material/table";
 import { MatToolbar } from "@angular/material/toolbar";
 import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "@leobg/commons/utils";
+import { TuiTabBar } from "@taiga-ui/addon-mobile";
 import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
 import { BgAuthService } from "../../authentication";
 import { BgAccountButtonComponent } from "../../authentication/bg-account-button.component";
@@ -55,6 +56,13 @@ export interface BgHomeConfig<Pid extends string, Opt = any> {
   optionsComponent?: () => Type<BgGameOptionsComponent<Opt>>;
 }
 
+export interface BgHomeAction {
+  id: string;
+  label: string;
+  action: () => void;
+  icon: string;
+}
+
 @Component({
   selector: "bg-home",
   templateUrl: "./bg-home.component.html",
@@ -74,7 +82,7 @@ export interface BgHomeConfig<Pid extends string, Opt = any> {
     BgIfUserDirective,
     MatRowDef,
     MatRow,
-    MatFabButton,
+    TuiTabBar,
     BgHomeArcheoGameFormComponent,
     MatButton,
     AsyncPipe
@@ -87,7 +95,8 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
   private authService = inject(BgAuthService);
   private matDialog = inject(MatDialog);
 
-  @Input() config!: BgHomeConfig<Pid>;
+  config = input.required<BgHomeConfig<Pid>>();
+  actions = input<BgHomeAction[]>();
   @ViewChild("newGameDialog") newGameDialog!: TemplateRef<void>;
 
   @Loading() loading$!: Observable<boolean>;
@@ -105,7 +114,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.protoGames$ = this.protoGameService.selectProtoGames$(ref =>
-      ref.where("boardGame", "==", this.config.boardGame)
+      ref.where("boardGame", "==", this.config().boardGame)
     );
   }
 
@@ -123,14 +132,14 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
           //   protoGame: game,
           //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
           //   deleteGame$: gameId => this.deleteGame$ (gameId),
-          //   roleToCssClass: role => this.config.playerRoleCssClass (role)
+          //   roleToCssClass: role => this.config().playerRoleCssClass (role)
           // }
         });
         return this.newGameDialogRef.afterClosed().pipe(
           tap(() => (this.archeoGameValid = false))
           // switchMap (output => {
           //   if (output?.startGame) {
-          //     return this.config.startGame$ (output.gameId);
+          //     return this.config().startGame$ (output.gameId);
           //   }
           //   return of (void 0);
           // })
@@ -151,7 +160,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
       const user = this.authService.getUser();
       const protoGame: Omit<BgProtoGame, "id"> = {
         ...archeoGame,
-        boardGame: this.config.boardGame,
+        boardGame: this.config().boardGame,
         owner: user,
         state: "open"
       };
@@ -159,7 +168,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
       this.archeoGame = this.getDefaultArcheoGame();
       return this.protoGameService.insertProtoGame$(protoGame).pipe(
         switchMap(savedProtoGame => {
-          const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config
+          const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config()
             .playerIds()
             .map(id => this.insertProtoPlayer$(id, savedProtoGame.id));
           return concatJoin(inserts).pipe(mapTo(savedProtoGame));
@@ -196,7 +205,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
   @ExhaustingEvent({ suppressLoading: true })
   onEnterGame(game: BgProtoGame) {
     if (game.state === "running") {
-      return this.config.startGame$(game.id);
+      return this.config().startGame$(game.id);
     } else {
       return this.playersRoom$(game);
     }
@@ -213,14 +222,14 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
         protoGame: game,
         createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
         deleteGame$: gameId => this.deleteGame$(gameId),
-        playerIdToCssClass: role => this.config.playerIdCssClass(role),
-        optionsComponent: this.config.optionsComponent?.()
+        playerIdToCssClass: role => this.config().playerIdCssClass(role),
+        optionsComponent: this.config().optionsComponent?.()
       }
     });
     return dialogRef.afterClosed().pipe(
       switchMap(output => {
         if (output?.startGame) {
-          return this.config.startGame$(output.gameId);
+          return this.config().startGame$(output.gameId);
         }
         return of(void 0);
       })
@@ -229,7 +238,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
 
   private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<Pid>[]) {
     const activeProtoPlayers = protoPlayers.filter(p => p.type === "user" || p.type === "ai");
-    return this.config
+    return this.config()
       .createGame$(protoGame, activeProtoPlayers)
       .pipe(
         switchMap(() => this.protoGameService.updateProtoGame$({ state: "running" }, protoGame.id))
@@ -238,7 +247,7 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
 
   private deleteGame$(gameId: string) {
     return concatJoin([
-      this.config.deleteGame$(gameId),
+      this.config().deleteGame$(gameId),
       this.protoGameService.deleteProtoPlayers$(gameId),
       this.protoGameService.deleteProtoGame$(gameId)
     ]).pipe(mapTo(void 0));

@@ -6,13 +6,17 @@ import {
   separateCompanions
 } from "../../../fellowship/wotr-fellowship-actions";
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { discardCardFromTable, playCardOnTable } from "../../wotr-card-actions";
 
-export function axeAndBowScenarios(): WotrScenario[] {
-  return [axeAndBow01, axeAndBow02, axeAndBow03, axeAndBow04, axeAndBow05];
+export function axeAndBowScenarios(): WotrScenarioGroup {
+  return {
+    id: "axe-and-bow",
+    name: "Axe and Bow",
+    scenarios: [axeAndBow01, axeAndBow02, axeAndBow03, axeAndBow04, axeAndBow05]
+  };
 }
 
 const axeAndBow01: WotrScenario = {

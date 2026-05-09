@@ -1,12 +1,16 @@
 import { attack, combatCard } from "../../../battle/wotr-battle-actions";
 import { startCorruptionAttempt, stopCorruptionAttempt } from "../../../hunt/wotr-hunt-actions";
 import { baseHuntTiles, komeHuntTiles } from "../../../hunt/wotr-hunt-models";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 
-export function brandScenarios(): WotrScenario[] {
-  return [brand01, brand02];
+export function brandScenarios(): WotrScenarioGroup {
+  return {
+    id: "brand",
+    name: "Brand",
+    scenarios: [brand01, brand02]
+  };
 }
 
 const brand01: WotrScenario = {

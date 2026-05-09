@@ -6,13 +6,17 @@ import {
   separateCompanions
 } from "../../../fellowship/wotr-fellowship-actions";
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { discardCardFromTable, playCardOnTable } from "../../wotr-card-actions";
 
-export function hornOfGondorScenarios(): WotrScenario[] {
-  return [hornOfGondor01, hornOfGondor02, hornOfGondor03, hornOfGondor04, hornOfGondor05];
+export function hornOfGondorScenarios(): WotrScenarioGroup {
+  return {
+    id: "horn-of-gondor",
+    name: "Horn of Gondor",
+    scenarios: [hornOfGondor01, hornOfGondor02, hornOfGondor03, hornOfGondor04, hornOfGondor05]
+  };
 }
 
 const hornOfGondor01: WotrScenario = {

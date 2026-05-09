@@ -4,22 +4,26 @@ import {
   revealFellowship
 } from "../../../fellowship/wotr-fellowship-actions";
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { playCardOnTable } from "../../wotr-card-actions";
 
-export function wizardsStaff(): WotrScenario[] {
-  return [
-    wizardsStaff01,
-    wizardsStaff02,
-    wizardsStaff03,
-    wizardsStaff04,
-    wizardsStaff05,
-    wizardsStaff06,
-    wizardsStaff07,
-    wizardsStaff08
-  ];
+export function wizardsStaff(): WotrScenarioGroup {
+  return {
+    id: "wizards-staff",
+    name: "Wizard's Staff",
+    scenarios: [
+      wizardsStaff01,
+      wizardsStaff02,
+      wizardsStaff03,
+      wizardsStaff04,
+      wizardsStaff05,
+      wizardsStaff06,
+      wizardsStaff07,
+      wizardsStaff08
+    ]
+  };
 }
 
 const wizardsStaff01: WotrScenario = {

@@ -1,11 +1,15 @@
 import { moveFelloswhip } from "../../../fellowship/wotr-fellowship-actions";
-import { WotrScenario } from "../../../scenario/wotr-scenario";
+import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
 import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { playCardOnTable } from "../../wotr-card-actions";
 
-export function mithrilCoatAndStingScenarios(): WotrScenario[] {
-  return [mithrilCoatAndSting01];
+export function mithrilCoatAndStingScenarios(): WotrScenarioGroup {
+  return {
+    id: "mithril-coat-and-sting",
+    name: "Mithril Coat and Sting",
+    scenarios: [mithrilCoatAndSting01]
+  };
 }
 
 const mithrilCoatAndSting01: WotrScenario = {

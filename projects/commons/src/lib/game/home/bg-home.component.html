@@ -1,5 +1,5 @@
 <mat-toolbar>
-  <span>{{ config.boardGameName }}</span>
+  <span>{{ config().boardGameName }}</span>
   <bg-account-button></bg-account-button>
 </mat-toolbar>
 <mat-progress-bar
@@ -67,13 +67,29 @@
     class="bg-home-game-row"></tr>
 </table>
 
-<button
-  mat-fab
-  color="primary"
-  class="bg-home-add-button"
-  (click)="openNewGameDialog()">
-  <mat-icon>add</mat-icon>
-</button>
+<nav
+  tuiTabBar
+  class="bottom-tabs">
+  <ng-content select="[tuiTabBarItem]"></ng-content>
+  @for (action of actions(); track action.id) {
+    <button
+      tuiTabBarItem
+      type="button"
+      color="primary"
+      [icon]="action.icon"
+      (click)="action.action()">
+      {{ action.label }}
+    </button>
+  }
+  <button
+    tuiTabBarItem
+    type="button"
+    color="primary"
+    icon="@tui.plus"
+    (click)="openNewGameDialog()">
+    New Game
+  </button>
+</nav>
 
 <ng-template #newGameDialog>
   <div class="bg-archeo-game">
