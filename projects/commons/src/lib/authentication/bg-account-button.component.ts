@@ -1,11 +1,11 @@
 import { AsyncPipe, NgIf } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatDivider } from "@angular/material/divider";
-import { MatIcon } from "@angular/material/icon";
 import { MatMenu, MatMenuItem, MatMenuTrigger } from "@angular/material/menu";
 import { Router } from "@angular/router";
 import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
+import { TuiButton } from "@taiga-ui/core";
 import { switchMap } from "rxjs/operators";
 import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
 
@@ -15,10 +15,12 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
     <ng-container *ngIf="user$ | async as user; else signInTemplate">
       <button
         class="bg-account-button"
-        mat-icon-button
-        [matMenuTriggerFor]="accountMenu">
-        <mat-icon>account_circle</mat-icon>
-      </button>
+        appearance="secondary-grayscale"
+        iconStart="@tui.circle-user"
+        tuiIconButton
+        type="button"
+        [style.border-radius.%]="100"
+        [matMenuTriggerFor]="accountMenu"></button>
       <mat-menu #accountMenu="matMenu">
         <div class="bg-account-menu">
           <div class="bg-account-signed-in mat-typography">
@@ -78,7 +80,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, MatIconButton, MatMenuTrigger, MatIcon, MatMenu, MatDivider, MatMenuItem, MatButton, AsyncPipe]
+  imports: [NgIf, MatMenuTrigger, TuiButton, MatMenu, MatDivider, MatMenuItem, MatButton, AsyncPipe]
 })
 @UntilDestroy
 export class BgAccountButtonComponent implements OnInit, OnDestroy {

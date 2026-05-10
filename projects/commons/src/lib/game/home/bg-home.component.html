@@ -1,75 +1,82 @@
-<mat-toolbar>
-  <span>{{ config().boardGameName }}</span>
+<header tuiNavigationHeader>
+  <span tuiNavigationLogo>
+    <span tuiTitle>{{ config().boardGameName }}</span>
+  </span>
+  <hr />
   <bg-account-button></bg-account-button>
-</mat-toolbar>
-<mat-progress-bar
-  *ngIf="loading$ | async"
-  mode="indeterminate"></mat-progress-bar>
+</header>
 
-<table
-  mat-table
-  [dataSource]="protoGames$ | async"
-  class="bg-home-games-table">
-  <ng-container matColumnDef="run">
-    <td
-      mat-cell
-      *matCellDef="let game">
-      <button
-        (click)="onEnterGame(game)"
-        color="accent"
-        mat-icon-button>
-        <mat-icon>play_arrow</mat-icon>
-      </button>
-    </td>
-  </ng-container>
+@if (loading$ | async) {
+  <progress tuiProgressBar></progress>
+}
 
-  <ng-container matColumnDef="name">
-    <td
-      mat-cell
-      *matCellDef="let game">
-      {{ game.name }}
-    </td>
-  </ng-container>
+<main>
+  <div class="table-wrapper">
+    <table
+      tuiTable
+      size="m"
+      [style.width.rem]="58">
+      <tbody tuiTbody>
+        @for (game of protoGames$ | async; track game.id) {
+          <tr>
+            <td tuiTd>
+              <span tuiStatus>
+                <button
+                  appearance="action"
+                  iconStart="@tui.play"
+                  size="xs"
+                  tuiIconButton
+                  type="button"
+                  (click)="enterGame(game)">
+                  Play
+                </button>
+              </span>
+            </td>
+            <td tuiTd>
+              <div tuiCell="m">
+                <span tuiTitle>
+                  {{ game.name }}
+                </span>
+              </div>
+            </td>
+            <td tuiTd>
+              @let stateDecoded = game.state | bgTransform: stateDecode;
+              <span [tuiStatus]="stateDecoded.color">{{ stateDecoded.label }}</span>
+            </td>
+            <td tuiTd>
+              <div tuiCell="m">
+                <div
+                  [style.background]="game.owner.displayName | tuiAutoColor"
+                  [tuiAvatar]="game.owner.displayName | tuiInitials"></div>
+                <span tuiTitle>
+                  {{ game.owner.displayName }}
+                  <span tuiSubtitle>{{ game.owner.email }}</span>
+                </span>
+              </div>
+            </td>
+            <td
+              tuiTd
+              *bgIfUser="game.owner">
+              <span tuiStatus>
+                <button
+                  appearance="action-destructive"
+                  iconStart="@tui.trash"
+                  size="xs"
+                  tuiIconButton
+                  type="button"
+                  (click)="deleteGame(game)">
+                  Delete
+                </button>
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</main>
 
-  <ng-container matColumnDef="state">
-    <td
-      mat-cell
-      *matCellDef="let game">
-      {{ game.state }}
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="owner">
-    <td
-      mat-cell
-      *matCellDef="let game">
-      {{ game.owner?.displayName }}
-    </td>
-  </ng-container>
-
-  <ng-container matColumnDef="delete">
-    <td
-      mat-cell
-      *matCellDef="let game">
-      <button
-        *bgIfUser="game.owner"
-        (click)="onDeleteGame(game)"
-        color="warn"
-        mat-icon-button>
-        <mat-icon>delete</mat-icon>
-      </button>
-    </td>
-  </ng-container>
-
-  <tr
-    mat-row
-    *matRowDef="let row; columns: gameColumns"
-    class="bg-home-game-row"></tr>
-</table>
-
-<nav
-  tuiTabBar
-  class="bottom-tabs">
+<nav tuiTabBar>
   <ng-content select="[tuiTabBarItem]"></ng-content>
   @for (action of actions(); track action.id) {
     <button

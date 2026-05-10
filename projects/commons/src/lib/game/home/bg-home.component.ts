@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { AsyncPipe, NgIf } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -11,21 +11,28 @@ import {
   inject,
   input
 } from "@angular/core";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { MatIcon } from "@angular/material/icon";
-import { MatProgressBar } from "@angular/material/progress-bar";
 import {
-  MatCell,
-  MatCellDef,
-  MatColumnDef,
-  MatRow,
-  MatRowDef,
-  MatTable
-} from "@angular/material/table";
-import { MatToolbar } from "@angular/material/toolbar";
-import { ExhaustingEvent, Loading, UntilDestroy, concatJoin } from "@leobg/commons/utils";
+  BgTransformFn,
+  BgTransformPipe,
+  ExhaustingEvent,
+  Loading,
+  UntilDestroy,
+  concatJoin
+} from "@leobg/commons/utils";
 import { TuiTabBar } from "@taiga-ui/addon-mobile";
+import { TuiTable, TuiTableControl } from "@taiga-ui/addon-table";
+import { TuiButton, TuiDropdown, TuiTitle } from "@taiga-ui/core";
+import { TuiCell } from "@taiga-ui/core/components/cell";
+import {
+  TuiAutoColorPipe,
+  TuiAvatar,
+  TuiInitialsPipe,
+  TuiItemsWithMore,
+  TuiProgress,
+  TuiStatus
+} from "@taiga-ui/kit";
 import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
 import { BgAuthService } from "../../authentication";
 import { BgAccountButtonComponent } from "../../authentication/bg-account-button.component";
@@ -35,6 +42,7 @@ import {
   BgBoardGame,
   BgProtoGame,
   BgProtoGameService,
+  BgProtoGameState,
   BgProtoPlayer
 } from "../bg-proto-game.service";
 import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
@@ -44,6 +52,8 @@ import {
   BgRoomDialogInput,
   BgRoomDialogOutput
 } from "./bg-home-room-dialog.component";
+
+import { TuiNavigation } from "@taiga-ui/layout";
 
 export interface BgHomeConfig<Pid extends string, Opt = any> {
   boardGame: BgBoardGame;
@@ -63,29 +73,40 @@ export interface BgHomeAction {
   icon: string;
 }
 
+interface GameStateDecode {
+  color: string;
+  label: string;
+}
+
 @Component({
   selector: "bg-home",
   templateUrl: "./bg-home.component.html",
   styleUrls: ["./bg-home.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatToolbar,
+    AsyncPipe,
     BgAccountButtonComponent,
-    NgIf,
-    MatProgressBar,
-    MatTable,
-    MatColumnDef,
-    MatCellDef,
-    MatCell,
-    MatIconButton,
-    MatIcon,
-    BgIfUserDirective,
-    MatRowDef,
-    MatRow,
-    TuiTabBar,
     BgHomeArcheoGameFormComponent,
+    BgIfUserDirective,
+    BgTransformPipe,
     MatButton,
-    AsyncPipe
+    TuiAutoColorPipe,
+    TuiAvatar,
+    TuiAvatar,
+    TuiButton,
+    TuiCell,
+    TuiCell,
+    TuiDropdown,
+    TuiInitialsPipe,
+    TuiItemsWithMore,
+    TuiNavigation,
+    TuiProgress,
+    TuiStatus,
+    TuiStatus,
+    TuiTabBar,
+    TuiTable,
+    TuiTableControl,
+    TuiTitle
   ]
 })
 @UntilDestroy
@@ -98,6 +119,15 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
   config = input.required<BgHomeConfig<Pid>>();
   actions = input<BgHomeAction[]>();
   @ViewChild("newGameDialog") newGameDialog!: TemplateRef<void>;
+
+  private stateDecodes: Record<BgProtoGameState, GameStateDecode> = {
+    open: { color: "#4caf50", label: "Open" },
+    running: { color: "#2196f3", label: "Running" },
+    ended: { color: "#9e9e9e", label: "Ended" }
+  };
+  protected stateDecode: BgTransformFn<BgProtoGameState, GameStateDecode> = (
+    state: BgProtoGameState
+  ) => this.stateDecodes[state];
 
   @Loading() loading$!: Observable<boolean>;
   isHandset$: Observable<boolean> = this.breakpointObserver
@@ -198,12 +228,12 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
   }
 
   @ExhaustingEvent()
-  onDeleteGame(game: BgProtoGame) {
+  deleteGame(game: BgProtoGame) {
     return this.deleteGame$(game.id);
   }
 
   @ExhaustingEvent({ suppressLoading: true })
-  onEnterGame(game: BgProtoGame) {
+  enterGame(game: BgProtoGame) {
     if (game.state === "running") {
       return this.config().startGame$(game.id);
     } else {

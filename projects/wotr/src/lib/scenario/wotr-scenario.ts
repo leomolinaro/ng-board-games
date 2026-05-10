@@ -26,6 +26,7 @@ export interface WotrScenarioGroupInfo {
   id: string;
   type: "group";
   name: string;
+  leafGroup: boolean;
   scenarios: (WotrScenarioInfo | WotrScenarioGroupInfo)[];
 }
 

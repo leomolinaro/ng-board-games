@@ -14,12 +14,10 @@ import {
 export class WotrScenarios {
   private infos: WotrScenarioGroupInfo[];
   private map: Record<string, WotrScenario>;
-  private flatInfos: WotrScenarioInfo[];
 
   constructor() {
     this.map = {};
     this.infos = [];
-    this.flatInfos = [];
     this.addScenarioGroup(fullGameScenarios(), this.infos);
     this.addScenarioGroup(cardScenarios(), this.infos);
     this.addScenarioGroup(characterScenarios(), this.infos);
@@ -34,13 +32,15 @@ export class WotrScenarios {
       id: group.id,
       type: "group",
       name: group.name,
-      scenarios: []
+      scenarios: [],
+      leafGroup: false
     };
     groupInfos.push(scenarioGroupInfo);
     for (const scenario of group.scenarios) {
       if ("scenarios" in scenario) {
         this.addScenarioGroup(scenario, scenarioGroupInfo.scenarios);
       } else {
+        scenarioGroupInfo.leafGroup = true;
         this.addScenarios([scenario], scenarioGroupInfo.scenarios);
       }
     }
@@ -59,16 +59,11 @@ export class WotrScenarios {
         description: scenario.description
       };
       groupInfos.push(scenarioInfo);
-      this.flatInfos.push(scenarioInfo);
     }
   }
 
   getScenarioInfos() {
     return this.infos;
-  }
-
-  getFlatScenarioInfos(): WotrScenarioInfo[] {
-    return this.flatInfos;
   }
 
   getScenario(id: string): WotrScenario {

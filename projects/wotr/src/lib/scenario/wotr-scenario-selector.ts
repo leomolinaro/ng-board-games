@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { type TuiHandler } from "@taiga-ui/cdk";
-import { TuiDialogContext } from "@taiga-ui/core";
 import { TuiTree, TuiTreeItem } from "@taiga-ui/kit";
-import { injectContext } from "@taiga-ui/polymorpheus";
 import { WotrScenarioGroupInfo, WotrScenarioInfo } from "./wotr-scenario";
 import { WotrScenarios } from "./wotr-scenarios";
 
@@ -20,7 +18,6 @@ import { WotrScenarios } from "./wotr-scenarios";
           [tuiTreeController]="true" />
       }
     </div>
-
     <ng-template
       #content
       let-node="node"
@@ -42,8 +39,17 @@ import { WotrScenarios } from "./wotr-scenarios";
   `,
   styles: [
     `
-      .scenario-node.scenario {
+      .scenario-tree-container {
+        height: 70vh;
+        overflow: auto;
+      }
+      .scenario-node {
+        padding: 2px 6px;
+        border-radius: 3px;
         cursor: pointer;
+        &:hover {
+          background: var(--tui-background-base-alt);
+        }
       }
       .scenario-description {
         font-size: 80%;
@@ -60,15 +66,13 @@ export class WotrScenarioSelectorDialog {
     readonly (WotrScenarioGroupInfo | WotrScenarioInfo)[]
   > = item => item.scenarios || [];
 
-  protected scenarioInfos = this.scenarios.getScenarioInfos();
-  protected flatScenarioInfos = this.scenarios.getFlatScenarioInfos();
-  private readonly context =
-    injectContext<TuiDialogContext<void, { activatedRoute: ActivatedRoute }>>();
-  private activatedRoute = this.context.data.activatedRoute;
+  private activatedRoute = inject(ActivatedRoute);
 
-  onNodeClick(node: TuiTreeItem, value: WotrScenarioGroupInfo | WotrScenarioInfo) {
+  protected scenarioInfos = this.scenarios.getScenarioInfos();
+
+  protected onNodeClick(node: TuiTreeItem, value: WotrScenarioGroupInfo | WotrScenarioInfo) {
     if ("scenarios" in value) {
-      (node as any).controller?.toggle();
+      (node as any).controller.toggle(node);
     } else {
       this.onGameClick(value);
     }

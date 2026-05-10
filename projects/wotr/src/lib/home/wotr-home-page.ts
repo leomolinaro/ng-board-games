@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, isDevMode } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Injector,
+  isDevMode
+} from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -13,7 +20,7 @@ import {
 import { concatJoin } from "@leobg/commons/utils";
 import { TuiDialogService } from "@taiga-ui/core";
 import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
-import { Observable, forkJoin, from } from "rxjs";
+import { forkJoin, from, Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameOptions } from "../game/options/wotr-game-options";
@@ -153,17 +160,15 @@ export class WotrHomePage {
   protected user = toSignal(this.auth.getUser$());
   protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
   private readonly dialogs = inject(TuiDialogService);
+  private injector = inject(Injector);
 
   protected scenarioAction: BgHomeAction = {
     id: "scenario",
     label: "Scenario",
     action: () => {
       this.dialogs
-        .open<string>(new PolymorpheusComponent(WotrScenarioSelectorDialog), {
-          label: "Select Scenario",
-          data: {
-            activatedRoute: this.activatedRoute
-          }
+        .open<string>(new PolymorpheusComponent(WotrScenarioSelectorDialog, this.injector), {
+          size: "l"
         })
         .subscribe();
     },
