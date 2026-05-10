@@ -24,6 +24,7 @@ import {
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit-models";
 import { WotrUnitUtils } from "./wotr-unit-utils";
+import { WotrRegionHandler } from "../region/wotr-region-handler";
 
 export interface WotrRecruitmentConstraints {
   points: number;
@@ -39,6 +40,7 @@ export class WotrUnitHandler {
   private actionRegistry = inject(WotrActionRegistry);
   private nationStore = inject(WotrNationStore);
   private nationHandler = inject(WotrNationHandler);
+  private regionHandler = inject(WotrRegionHandler);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
   private frontHandler = inject(WotrFrontHandler);
@@ -89,7 +91,7 @@ export class WotrUnitHandler {
     this.nationHandler.checkNationActivationByArmyMovement(movement.toRegion, frontId);
     const toRegion = this.regionStore.region(movement.toRegion);
     if (toRegion.settlement && toRegion.controlledBy !== frontId && !toRegion.underSiegeArmy) {
-      this.regionStore.setControlledBy(frontId, movement.toRegion);
+      this.regionHandler.setControlledBy(frontId, movement.toRegion);
       this.nationHandler.checkNationAdvanceByCapture(movement.toRegion);
       this.frontHandler.refreshVictoryPoints();
     }

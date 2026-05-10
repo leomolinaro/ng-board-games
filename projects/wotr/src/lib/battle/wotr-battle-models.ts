@@ -16,6 +16,7 @@ export interface WotrBattle {
   defenderCombatCard?: WotrCardId;
   siege: boolean;
   nSiegeCombatRounds?: number;
+  nRegularCasualtiesToContinueSiege?: number;
 }
 
 export class WotrCombatFront {
@@ -52,6 +53,8 @@ export class WotrCombatFront {
   leaderReRoll?: WotrCombatDie[];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
+
+  canRemoveRegularToContinueSiege?: boolean;
 
   isCharacterActiveInBattle(characterId: WotrCharacterId): boolean {
     if (!this.army().characters?.includes(characterId)) return false;

@@ -4,7 +4,6 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrElvenRingAction } from "../game/wotr-story-models";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
-import { frontOfNation } from "../nation/wotr-nation-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFrontAction } from "./wotr-front-actions";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
@@ -43,11 +42,7 @@ export class WotrFrontHandler {
 
     for (const region of this.regionStore.regions()) {
       if (region.settlement === "stronghold" || region.settlement === "city") {
-        if (
-          region.nationId &&
-          region.controlledBy &&
-          frontOfNation(region.nationId) !== region.controlledBy
-        ) {
+        if (region.frontId && region.controlledBy && region.controlledBy !== region.frontId) {
           points[region.controlledBy] += region.settlement === "stronghold" ? 2 : 1;
         }
       }

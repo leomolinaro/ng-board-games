@@ -35,13 +35,17 @@ import {
   WotrGandalfTheWhite
 } from "./characters/gandalf-the-white";
 import { Brand, BrandCorruptedKing, ShadowInTheNorth } from "./characters/kome/brand";
-import { Dain, DainCorruptedKing } from "./characters/kome/dain";
-import { Denethor, DenethorCorruptedSteward } from "./characters/kome/denethor";
+import { Dain, DainCorruptedKing, FateOfTheLonelyMountain } from "./characters/kome/dain";
+import {
+  Denethor,
+  DenethorCorruptedSteward,
+  FateOfTheWhiteTower
+} from "./characters/kome/denethor";
 import { KomeSovereignCard } from "./characters/kome/kome-sovereign-card";
 import { RedWrath, TheBlackSerpent } from "./characters/kome/the-black-serpent";
 import { LordOfTheBats, TheShadowOfMirkwood } from "./characters/kome/the-shadow-of-mirkwood";
-import { Theoden, TheodenCorruptedKing } from "./characters/kome/theoden";
-import { Thranduil, ThranduilElvenking } from "./characters/kome/thranduil";
+import { MarkOfTheWhiteHand, Theoden, TheodenCorruptedKing } from "./characters/kome/theoden";
+import { FateOfMirkwood, Thranduil, ThranduilElvenking } from "./characters/kome/thranduil";
 import { ICommandAbility, Ugluk, WeMarchDayAndNightAbility } from "./characters/kome/ugluk";
 import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
 import {
@@ -60,6 +64,8 @@ import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
+import { WotrRegionModifiers } from "../region/wotr-region-modifiers";
+import { WotrRegionStore } from "../region/wotr-region-store";
 
 @Injectable()
 export class WotrCharacters {
@@ -72,6 +78,8 @@ export class WotrCharacters {
   private actionDieModifiers = inject(WotrActionDieModifiers);
   private fellowshipStore = inject(WotrFellowshipStore);
   private unitModifiers = inject(WotrUnitModifiers);
+  private regionModifiers = inject(WotrRegionModifiers);
+  private regionStore = inject(WotrRegionStore);
   private gameUi = inject(WotrGameUi);
   private unitUi = inject(WotrUnitUi);
   private characterModifiers = inject(WotrCharacterModifiers);
@@ -222,18 +230,30 @@ export class WotrCharacters {
   private createCorruptionAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
     switch (sovereignId) {
       case "thranduil":
-        return [new ThranduilElvenking(this.unitModifiers)];
+        return [
+          new ThranduilElvenking(this.unitModifiers),
+          new FateOfMirkwood(this.battleModifiers, this.battleStore)
+        ];
       case "brand":
         return [
           new BrandCorruptedKing(this.unitModifiers),
           new ShadowInTheNorth(this.battleModifiers, this.unitUtils, this.shadow)
         ];
       case "dain":
-        return [new DainCorruptedKing(this.unitModifiers)];
+        return [
+          new DainCorruptedKing(this.unitModifiers),
+          new FateOfTheLonelyMountain(this.battleModifiers, this.battleStore)
+        ];
       case "denethor":
-        return [new DenethorCorruptedSteward(this.unitModifiers)];
+        return [
+          new DenethorCorruptedSteward(this.unitModifiers),
+          new FateOfTheWhiteTower(this.battleModifiers, this.battleStore)
+        ];
       case "theoden":
-        return [new TheodenCorruptedKing(this.unitModifiers)];
+        return [
+          new TheodenCorruptedKing(this.unitModifiers),
+          new MarkOfTheWhiteHand(this.regionModifiers, this.regionStore)
+        ];
     }
   }
 

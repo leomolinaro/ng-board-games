@@ -32,4 +32,13 @@ export class WotrBattleStore {
   endBattle() {
     this.update("endBattle", s => null);
   }
+  addNRegularCasualtiesToContinueSiege(n: number) {
+    this.update("addNRegularCasualtiesToContinueSiege", s => {
+      if (!s) throw new Error("No battle in progress");
+      return {
+        ...s,
+        nRegularCasualtiesToContinueSiege: (s.nRegularCasualtiesToContinueSiege ?? 0) + n
+      };
+    });
+  }
 }

@@ -75,6 +75,7 @@ export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelect
 export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
   type: "downgradeUnit";
   nEliteUnits: 1;
+  allowRegularElimination: boolean;
 }
 
 export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
@@ -139,7 +140,10 @@ export function selectionModeFactory(
     case "chooseCasualties":
       return new ChooseCasualtiesSelectionMode(unitSelection);
     case "downgradeUnit":
-      return new DowngradeUnitSelectionMode(unitSelection.nEliteUnits);
+      return new DowngradeUnitSelectionMode(
+        unitSelection.nEliteUnits,
+        unitSelection.allowRegularElimination
+      );
     case "eliminateUnit":
       return new EliminateUnitSelectionMode(unitSelection.unitType, unitSelection.nationId);
     case "forfeitLeadership":
@@ -478,12 +482,19 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
 }
 
 export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
-  constructor(private nEliteUnits: 1) {}
+  constructor(
+    private nEliteUnits: 1,
+    private allowRegularElimination: boolean
+  ) {}
 
   initialize(unitNodes: UnitNode[]): void {
     for (const node of unitNodes) {
-      if (node.type === "elite" && node.group === "army") {
-        node.selectable = true;
+      if (node.group === "army") {
+        if (node.type === "elite") {
+          node.selectable = true;
+        } else if (node.type === "regular" && this.allowRegularElimination) {
+          node.selectable = true;
+        }
       }
     }
   }
@@ -491,6 +502,12 @@ export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
   canConfirm(selectedNodes: UnitNode[]): true | string {
     const eliteUnits = selectedNodes.filter(node => node.type === "elite");
     if (eliteUnits.length !== this.nEliteUnits) {
+      if (this.allowRegularElimination) {
+        const regularUnits = selectedNodes.filter(node => node.type === "regular");
+        if (regularUnits.length !== this.nEliteUnits) {
+          return `Select ${this.nEliteUnits} elite unit${this.nEliteUnits > 1 ? "s" : ""} to downgrade or a regular unit${this.nEliteUnits > 1 ? "s" : ""} to eliminate.`;
+        }
+      }
       return `Select ${this.nEliteUnits} elite unit${this.nEliteUnits > 1 ? "s" : ""} to downgrade.`;
     }
     return true;

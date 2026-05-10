@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { getCard, isCharacterCard } from "../card/wotr-card-models";
-import { WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
+import { findAction, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrFrontHandler } from "../front/wotr-front-handler";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -19,6 +19,7 @@ import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
 import { WotrArmy } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
@@ -44,6 +45,7 @@ import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
+import { WotrRegionHandler } from "../region/wotr-region-handler";
 
 @Injectable()
 export class WotrBattleHandler {
@@ -52,6 +54,7 @@ export class WotrBattleHandler {
   private regionStore = inject(WotrRegionStore);
   private battleStore = inject(WotrBattleStore);
   private frontHandler = inject(WotrFrontHandler);
+  private regionHandler = inject(WotrRegionHandler);
   private combatCards = inject(WotrCombatCards);
   private frontStore = inject(WotrFrontStore);
   private logger = inject(WotrLogWriter);
@@ -293,14 +296,13 @@ export class WotrBattleHandler {
           continueBattle = true;
         } else {
           if (this.canContinueSiegeBattle(combatRound)) {
-            continueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+            continueBattle = await this.wantContinueBattle(combatRound);
           }
         }
       } else {
         const mustContinueBattle = !this.canCease(combatRound);
         let wantContinueBattle = false;
-        if (!mustContinueBattle)
-          wantContinueBattle = await this.wantContinueBattle(combatRound.attacker.player);
+        if (!mustContinueBattle) wantContinueBattle = await this.wantContinueBattle(combatRound);
         if (mustContinueBattle || wantContinueBattle) {
           if (this.canRetreat(combatRound.defender)) {
             const wantRetreat = await this.wantRetreat(combatRound.defender.player);
@@ -322,7 +324,10 @@ export class WotrBattleHandler {
       }
       const attackedRegion = this.attackedRegion(combatRound.action);
       if (!attackedRegion.underSiegeArmy && attackedRegion.settlement) {
-        this.regionStore.setControlledBy(combatRound.attacker.frontId, combatRound.action.toRegion); // TODO controllare se avanza
+        this.regionHandler.setControlledBy(
+          combatRound.attacker.frontId,
+          combatRound.action.toRegion
+        ); // TODO controllare se avanza
         this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
         this.frontHandler.refreshVictoryPoints();
       }
@@ -386,6 +391,7 @@ export class WotrBattleHandler {
   private canCease(combatRound: WotrCombatRound): boolean {
     const currentCard = this.frontStore.currentCard();
     if (!currentCard) return true;
+    // TODO modifiers
     if (currentCard === "sstr10") return false;
     return true;
   }
@@ -780,12 +786,20 @@ export class WotrBattleHandler {
   }
 
   private canContinueSiegeBattle(combatRound: WotrCombatRound): boolean {
+    if (combatRound.attacker.canRemoveRegularToContinueSiege) return true;
     const attackingArmy = this.attackingArmy(combatRound.action);
     return this.unitUtils.hasEliteUnits(attackingArmy);
   }
 
-  private async wantContinueBattle(player: WotrPlayer): Promise<boolean> {
-    const story = await player.wantContinueBattle();
+  private async wantContinueBattle(combatRound: WotrCombatRound): Promise<boolean> {
+    const story = await combatRound.attacker.player.wantContinueBattle(combatRound);
+    if (!("actions" in story)) throw new Error("Invalid story");
+    const regularUnitElimination = findAction<WotrRegularUnitElimination>(
+      story.actions,
+      "regular-unit-elimination"
+    );
+    if (regularUnitElimination)
+      this.battleStore.addNRegularCasualtiesToContinueSiege(regularUnitElimination.quantity);
     const action = assertAction<WotrBattleContinue | WotrBattleCease>(
       story,
       "battle-continue",

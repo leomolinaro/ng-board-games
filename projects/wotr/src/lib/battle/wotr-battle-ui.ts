@@ -165,7 +165,7 @@ export class WotrBattleUi {
     return actions;
   }
 
-  async wantContinueBattle(): Promise<WotrAction[]> {
+  async wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
@@ -176,12 +176,35 @@ export class WotrBattleUi {
     if (!confirm) return [ceaseBattle(region.id)];
     const actions: WotrAction[] = [];
     if (battle.siege) {
-      const downgradeSelection = await this.ui.askRegionUnits("Choose an elite unit to downgrade", {
-        type: "downgradeUnit",
-        nEliteUnits: 1,
-        regionIds: [region.id]
-      });
-      actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites![0].nation, 1));
+      if (combatRound.attacker.canRemoveRegularToContinueSiege) {
+        const downgradeSelection = await this.ui.askRegionUnits(
+          "Choose an elite unit to downgrade or a regular unit to eliminate",
+          {
+            type: "downgradeUnit",
+            nEliteUnits: 1,
+            allowRegularElimination: true,
+            regionIds: [region.id]
+          }
+        );
+        if (downgradeSelection.elites?.length) {
+          actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites[0].nation, 1));
+        } else if (downgradeSelection.regulars?.length) {
+          actions.push(eliminateRegularUnit(region.id, downgradeSelection.regulars[0].nation, 1));
+        } else {
+          throw new Error("Must select a unit to continue siege");
+        }
+      } else {
+        const downgradeSelection = await this.ui.askRegionUnits(
+          "Choose an elite unit to downgrade",
+          {
+            type: "downgradeUnit",
+            nEliteUnits: 1,
+            allowRegularElimination: false,
+            regionIds: [region.id]
+          }
+        );
+        actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites![0].nation, 1));
+      }
     }
     actions.push(continueBattle(region.id));
     return actions;

@@ -95,8 +95,8 @@ export abstract class WotrPlayer {
   battleAdvance(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.battleAdvance(this.frontId));
   }
-  wantContinueBattle(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.wantContinueBattle());
+  wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.wantContinueBattle(combatRound));
   }
   discardExcessCards(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.discardExcessCards(this.frontId));

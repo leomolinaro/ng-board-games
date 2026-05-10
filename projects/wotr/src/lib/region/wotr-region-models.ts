@@ -116,8 +116,8 @@ export type WotrSettlentType = "town" | "city" | "stronghold";
 export interface WotrRegion {
   id: WotrRegionId;
   name: string;
-  nationId?: WotrNationId;
-  frontId?: WotrFrontId; // original controller, only if settlement
+  nationId?: WotrNationId; // immutable, except for Helm's Deep in Kome
+  frontId?: WotrFrontId; // original controller, only if settlement, immutable
   seaside: boolean;
   neighbors: WotrNeighbor[];
   fortification?: true;

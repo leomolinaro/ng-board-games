@@ -1,5 +1,7 @@
 import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
+import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
+import { WotrBattleStore } from "../../../battle/wotr-battle-store";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
@@ -10,6 +12,7 @@ import {
   WotrUnitModifiers
 } from "../../../unit/wotr-unit-modifiers";
 import { WotrCharacterHandler } from "../../wotr-character-handler";
+import { SovereingFateOf } from "./commons";
 import { KomeSovereignCard } from "./kome-sovereign-card";
 
 // Dain Ironfoot - King Under the Mountain (Level 1, Leadership 1, Shadow Resistance 4)
@@ -63,5 +66,11 @@ export class DainCorruptedKing implements WotrAbility<WotrRecruitmentConstraints
   handler(constraints: WotrRecruitmentConstraints): void {
     constraints.excludedRegionsForEliteUnits.add("erebor");
     constraints.excludedRegionsForLeaderUnits.add("erebor");
+  }
+}
+
+export class FateOfTheLonelyMountain extends SovereingFateOf {
+  constructor(battleModifiers: WotrBattleModifiers, battleStore: WotrBattleStore) {
+    super("erebor", battleModifiers, battleStore);
   }
 }

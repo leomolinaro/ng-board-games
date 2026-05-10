@@ -1000,4 +1000,11 @@ export class WotrRegionStore {
     }
     return allPaths;
   }
+
+  changeNation(regionId: WotrRegionId, nationId: WotrNationId) {
+    this.updateRegion("changeNation", regionId, region => ({
+      ...region,
+      nationId
+    }));
+  }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { arrayUtil } from "../../../../commons/utils/src";
+import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character-models";
 import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
@@ -8,6 +9,7 @@ import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrMordorTrack } from "./wotr-mordor-track";
 import { WotrRegionArea } from "./wotr-region-area";
 import { WotrRegion, WotrRegionId } from "./wotr-region-models";
+import { WotrRegionStore } from "./wotr-region-store";
 import { WotrStrongholdBox } from "./wotr-stronghold-box";
 
 @Component({
@@ -21,6 +23,13 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         [attr.r]="1"
         [attr.style]="'fill: ' + point.color"></svg:circle>
     }
+    @if (helmsDeepIsengardOverlay(); as overlay) {
+      <svg:image
+        [attr.x]="481"
+        [attr.y]="401"
+        width="40"
+        [attr.xlink:href]="overlay.image"></svg:image>
+    }
     @for (region of regions(); track region.id) {
       <svg:g
         wotrRegion
@@ -29,7 +38,7 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         [characterById]="characterById()"
         [valid]="!validRegions() || validRegionById()[region.id]"
         (regionClick)="onRegionClick(region)"></svg:g>
-      @if (region.settlement === "stronghold" && region.underSiegeArmy) {
+      @if (region.settlement === "stronghold") {
         <svg:g
           wotrStronghold
           [region]="region"
@@ -49,6 +58,8 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
 export class WotrRegionAreas {
   private mapService = inject(WotrMapService);
   private ui = inject(WotrGameUi);
+  private regionStore = inject(WotrRegionStore);
+  private assets = inject(WotrAssetsStore);
 
   regions = input.required<WotrRegion[]>();
   fellowship = input.required<WotrFellowship>();
@@ -78,6 +89,13 @@ export class WotrRegionAreas {
   isValidRegion: Record<string, boolean> | null = null;
   isValidUnit: Record<string, boolean> | null = null;
   nSelectedUnits: Record<string, number> | null = null;
+
+  protected helmsDeepIsengardOverlay = computed(() => {
+    const region = this.regionStore.region("helms-deep");
+    return region.nationId === "isengard"
+      ? { image: this.assets.helmsDeepIsengardOverlay() }
+      : null;
+  });
 
   onRegionClick(region: WotrRegion) {
     this.regionClick.emit(region);

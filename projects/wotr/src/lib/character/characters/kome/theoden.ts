@@ -1,9 +1,16 @@
 import { WotrAbility } from "../../../ability/wotr-ability";
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
+import { WotrFrontId } from "../../../front/wotr-front-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
 import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
+import { WotrRegionId } from "../../../region/wotr-region-models";
+import {
+  WotrAfterRegionControlChange,
+  WotrRegionModifiers
+} from "../../../region/wotr-region-modifiers";
+import { WotrRegionStore } from "../../../region/wotr-region-store";
 import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
 import {
   WotrRecruitmentConstraintsModifier,
@@ -60,5 +67,24 @@ export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstrai
   handler(constraints: WotrRecruitmentConstraints): void {
     constraints.excludedNationsForEliteUnits.add("rohan");
     constraints.excludedNationsForLeaderUnits.add("rohan");
+  }
+}
+
+export class MarkOfTheWhiteHand implements WotrAbility<WotrAfterRegionControlChange> {
+  constructor(
+    private regionModifiers: WotrRegionModifiers,
+    private regionStore: WotrRegionStore
+  ) {}
+
+  modifier = this.regionModifiers.afterRegionControlChange;
+
+  handler(regionId: WotrRegionId, newController: WotrFrontId): void {
+    if (regionId === "helms-deep") {
+      if (newController === "free-peoples") {
+        this.regionStore.changeNation("helms-deep", "isengard");
+      } else {
+        this.regionStore.changeNation("helms-deep", "rohan");
+      }
+    }
   }
 }

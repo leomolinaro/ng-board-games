@@ -207,10 +207,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async wantContinueBattle(): Promise<WotrBaseStory> {
+  async wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrBaseStory> {
     return {
       type: "base",
-      actions: await this.battleUi.wantContinueBattle()
+      actions: await this.battleUi.wantContinueBattle(combatRound)
     };
   }
 

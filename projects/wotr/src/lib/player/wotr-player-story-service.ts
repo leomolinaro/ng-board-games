@@ -50,7 +50,7 @@ export interface WotrPlayerStoryService {
     frontId: WotrFrontId
   ): Promise<WotrStory>;
   battleAdvance(frontId: WotrFrontId): Promise<WotrStory>;
-  wantContinueBattle(): Promise<WotrStory>;
+  wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrStory>;
   discardExcessCards(frontId: WotrFrontId): Promise<WotrStory>;
   playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory>;
   eliminateUnits(

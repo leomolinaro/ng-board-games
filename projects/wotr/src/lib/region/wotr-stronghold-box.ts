@@ -1,12 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Output,
-  Signal,
   computed,
+  EventEmitter,
   inject,
-  input
+  input,
+  Output,
+  Signal
 } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
@@ -17,7 +17,7 @@ import {
   WotrMinionId
 } from "../character/wotr-character-models";
 import { WotrMapService } from "../game/board/map/wotr-map.service";
-import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
+import { frontOfNation, WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
 import { WotrArmy } from "../unit/wotr-unit-models";
 import { WotrRegion, WotrRegionId } from "./wotr-region-models";
 
@@ -26,7 +26,12 @@ interface WotrRegionNode {
   region: WotrRegion;
   path: string;
   tooltip: string;
-  army: WotrArmyNode;
+  army: WotrArmyNode | null;
+  shadowFrame: {
+    image: string;
+    svgX: number;
+    svgY: number;
+  } | null;
 }
 
 interface WotrArmyNode {
@@ -94,12 +99,28 @@ const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
   "umbar": [7, 1]
 };
 
+function svgX(regionId: WotrRegionId) {
+  return STRONGHOLD[regionId]![1] * 54 + 26;
+}
+
+function svgY(regionId: WotrRegionId) {
+  return STRONGHOLD[regionId]![0] * 54 + 155;
+}
+
 @Component({
   selector: "[wotrStronghold]",
   imports: [MatTooltipModule],
   template: `
     <svg:g>
-      @if (regionNode().army!; as army) {
+      @if (regionNode().shadowFrame; as shadowFrame) {
+        <svg:image
+          [attr.x]="shadowFrame.svgX"
+          [attr.y]="shadowFrame.svgY"
+          width="45"
+          height="45"
+          [attr.xlink:href]="shadowFrame.image"></svg:image>
+      }
+      @if (regionNode().army; as army) {
         <svg:svg
           style="overflow: visible;"
           [attr.x]="army.svgX"
@@ -218,7 +239,7 @@ const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
 })
 export class WotrStrongholdBox {
   private mapService = inject(WotrMapService);
-  private assets = inject(WotrAssetsStore);
+  protected assets = inject(WotrAssetsStore);
 
   region = input.required<WotrRegion>();
   army = input.required<WotrArmy>();
@@ -233,12 +254,21 @@ export class WotrStrongholdBox {
   regionNode: Signal<WotrRegionNode> = computed(() => {
     const region = this.region();
     const path = this.mapService.getStrongholdPath(region.id)!;
+    const shadowFrame =
+      region.frontId === "free-peoples" && frontOfNation(region.nationId!) === "shadow";
     const node: WotrRegionNode = {
       id: region.id,
       region,
       path,
-      army: this.regionToArmyNode(this.army(), region),
-      tooltip: region.name
+      army: this.army() ? this.regionToArmyNode(this.army(), region) : null,
+      tooltip: region.name,
+      shadowFrame: shadowFrame
+        ? {
+            image: this.assets.strongholdShadowFrame(),
+            svgX: svgX(region.id) - 22,
+            svgY: svgY(region.id) - 15
+          }
+        : null
     };
     this.setNodeCoordinates(region.id, node);
     return node;
@@ -247,8 +277,8 @@ export class WotrStrongholdBox {
   private setNodeCoordinates(regionId: WotrRegionId, node: WotrRegionNode) {
     const army = node.army;
     if (army) {
-      army.svgX = STRONGHOLD[regionId]![1] * 54 + 26;
-      army.svgY = STRONGHOLD[regionId]![0] * 54 + 155;
+      army.svgX = svgX(regionId);
+      army.svgY = svgY(regionId);
 
       let totalWidth = 0;
       let maxHeight = 0;

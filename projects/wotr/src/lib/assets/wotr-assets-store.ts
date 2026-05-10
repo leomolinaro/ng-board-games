@@ -242,4 +242,12 @@ export class WotrAssetsStore {
   controlMarker(front: WotrFrontId) {
     return `${BASE_PATH}/control-markers/${front}.png`;
   }
+
+  strongholdShadowFrame() {
+    return `${BASE_PATH}/settlements/stronghold-shadow-frame.png`;
+  }
+
+  helmsDeepIsengardOverlay() {
+    return `${BASE_PATH}/settlements/helms-deep-isengard-overlay.png`;
+  }
 }
