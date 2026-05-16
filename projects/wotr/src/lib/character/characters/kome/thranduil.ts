@@ -1,10 +1,7 @@
 import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../../battle/wotr-battle-store";
-import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
 import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
 import {
@@ -47,15 +44,9 @@ export class Thranduil extends KomeSovereignCard {
   }
 
   readonly sovereignId = "thranduil";
+  protected readonly nation = "elves";
+  protected readonly awakeningRegion = "woodland-realm";
   protected readonly corruptionRegion = "woodland-realm";
-
-  override canBeAwakened(die: WotrActionDie): boolean {
-    return false;
-  }
-
-  override async awaken(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("Not implemented");
-  }
 }
 
 export class ThranduilElvenking implements WotrAbility<WotrRecruitmentConstraintsModifier> {

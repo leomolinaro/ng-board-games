@@ -9,34 +9,12 @@ import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-card";
 import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterRules } from "./wotr-character-rules";
 import { WotrCharacters } from "./wotr-characters";
-
-class WotrBringCharacterIntoPlayChoice implements WotrUiChoice {
-  constructor(
-    private die: WotrActionDie,
-    private characterCard: WotrPlayableCharacterCard,
-    private q: WotrGameQuery,
-    private ui: WotrGameUi
-  ) {}
-
-  label(): string {
-    return this.q.character(this.characterCard.characterId).name;
-  }
-
-  isAvailable(): boolean {
-    return this.characterCard.canBeBroughtIntoPlay(this.die);
-  }
-
-  async actions(): Promise<WotrAction[]> {
-    return [await this.characterCard.bringIntoPlay(this.ui)];
-  }
-}
 
 export interface WotrCharacterMovementOptions {
   extraMovements?: number;
@@ -60,10 +38,25 @@ export class WotrCharacterUi {
     const availableCharacters = this.characterAbilities.availableCharacterCards(frontId);
     return this.ui.askChoice(
       "Choose character to bring into play",
-      availableCharacters.map<WotrUiChoice>(
-        characterCard => new WotrBringCharacterIntoPlayChoice(die, characterCard, this.q, this.ui)
-      ),
+      availableCharacters.map<WotrUiChoice>(characterCard => ({
+        label: () => this.q.character(characterCard.characterId).name,
+        isAvailable: () => characterCard.canBeBroughtIntoPlay(die),
+        actions: async () => [await characterCard.bringIntoPlay(this.ui)]
+      })),
       frontId
+    );
+  }
+
+  awakeSovereign(die: WotrActionDie): Promise<WotrAction[]> {
+    const availableSovereigns = this.characterAbilities.availableSovereignCards();
+    return this.ui.askChoice(
+      "Choose sovereign to awake",
+      availableSovereigns.map<WotrUiChoice>(sovereignCard => ({
+        label: () => this.q.sovereign(sovereignCard.sovereignId).name,
+        isAvailable: () => sovereignCard.canBeAwakened(die),
+        actions: async () => [await sovereignCard.awake(this.ui)]
+      })),
+      "free-peoples"
     );
   }
 
@@ -246,6 +239,14 @@ export class WotrCharacterUi {
       isAvailable: (frontId: WotrFrontId) =>
         this.characterAbilities.canBringCharacterIntoPlay(die, frontId),
       actions: (frontId: WotrFrontId) => this.bringCharacterIntoPlay(die, frontId)
+    };
+  }
+
+  awakeSovereignChoice(die: WotrActionDie): WotrUiChoice {
+    return {
+      label: () => "Awake a sovereign",
+      isAvailable: (frontId: WotrFrontId) => this.characterAbilities.canAwakeSovereign(die),
+      actions: (frontId: WotrFrontId) => this.awakeSovereign(die)
     };
   }
 

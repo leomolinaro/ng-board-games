@@ -131,6 +131,10 @@ export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
     return this.data().sovereignStatus;
   }
 
+  isLeader(): boolean {
+    return this.data().sovereignStatus === "leader";
+  }
+
   isAwakened(): boolean {
     return this.rulerStatus === "awakened";
   }

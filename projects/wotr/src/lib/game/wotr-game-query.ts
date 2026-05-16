@@ -127,6 +127,14 @@ export class WotrGameQuery {
     return this.characterById[characterId];
   }
 
+  private sovereignById = arrayUtil.toMap(this.sovereigns, sovereign => sovereign.id) as Record<
+    KomeSovereignId,
+    KomeSovereignQuery
+  >;
+  sovereign(sovereignId: KomeSovereignId): KomeSovereignQuery {
+    return this.sovereignById[sovereignId];
+  }
+
   dwarves = new WotrNationQuery("dwarves", this.nationStore, this.regionStore);
   elves = new WotrNationQuery("elves", this.nationStore, this.regionStore);
   north = new WotrNationQuery("north", this.nationStore, this.regionStore);

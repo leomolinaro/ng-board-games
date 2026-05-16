@@ -1,10 +1,7 @@
 import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../../battle/wotr-battle-store";
-import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
 import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
 import {
@@ -48,15 +45,9 @@ export class Denethor extends KomeSovereignCard {
   }
 
   readonly sovereignId = "denethor";
+  protected readonly nation = "gondor";
+  protected readonly awakeningRegion = "minas-tirith";
   protected readonly corruptionRegion = "minas-tirith";
-
-  override canBeAwakened(die: WotrActionDie): boolean {
-    return false;
-  }
-
-  override async awaken(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("Not implemented");
-  }
 }
 
 export class DenethorCorruptedSteward implements WotrAbility<WotrRecruitmentConstraintsModifier> {

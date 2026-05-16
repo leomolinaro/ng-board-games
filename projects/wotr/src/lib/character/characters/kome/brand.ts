@@ -1,5 +1,4 @@
 import { WotrAbility, WotrUiAbility } from "../../../ability/wotr-ability";
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { forfeitCombatCardById } from "../../../battle/wotr-battle-actions";
 import { WotrCombatRound } from "../../../battle/wotr-battle-models";
 import {
@@ -8,7 +7,6 @@ import {
 } from "../../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
@@ -53,15 +51,9 @@ export class Brand extends KomeSovereignCard {
   }
 
   readonly sovereignId = "brand";
+  protected readonly nation = "north";
+  protected readonly awakeningRegion = "any";
   protected readonly corruptionRegion = "dale";
-
-  override canBeAwakened(die: WotrActionDie): boolean {
-    return false;
-  }
-
-  override async awaken(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("Not implemented");
-  }
 }
 
 export class BrandCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {

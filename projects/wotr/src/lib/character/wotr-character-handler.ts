@@ -27,7 +27,12 @@ import {
   WotrCharacterMovement,
   WotrGollumEnterFellowship
 } from "./wotr-character-actions";
-import { WotrCharacter, WotrCharacterId, WotrCompanionId } from "./wotr-character-models";
+import {
+  KomeSovereignId,
+  WotrCharacter,
+  WotrCharacterId,
+  WotrCompanionId
+} from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
 import { WotrCharacterStore } from "./wotr-character-store";
 import { WotrCharacters } from "./wotr-characters";
@@ -91,7 +96,8 @@ export class WotrCharacterHandler {
         this.moveCharacters(action.characters, action.fromRegion, action.toRegion),
       "character-elimination": (action, front) => this.eliminateCharacters(action.characters),
       "gollum-enter-fellowship": (action, front) => {},
-      "character-choose": (action, front) => {}
+      "character-choose": (action, front) => {},
+      "sovereign-awake": (action, front) => this.awakeSovereign(action.sovereignId, action.regionId)
     };
   }
 
@@ -227,6 +233,14 @@ export class WotrCharacterHandler {
     return player.activateTableCard(ability, cardId);
   }
 
+  async awakeSovereign(sovereignId: KomeSovereignId, regionId: WotrRegionId): Promise<void> {
+    const fromRegion = this.q.sovereign(sovereignId).region();
+    if (!fromRegion) throw new Error("Sovereign is not in a region");
+    this.moveCharacters([sovereignId], fromRegion.id, regionId);
+    this.characterStore.awakeSovereign(sovereignId);
+    this.characterAbilities.activateAwakenAbilities(sovereignId);
+  }
+
   private getActionLoggers(): WotrActionLoggerMap<WotrCharacterAction> {
     return {
       "character-elimination": (action, front, f) => [
@@ -253,6 +267,13 @@ export class WotrCharacterHandler {
         f.player(front),
         " chooses ",
         this.charactersLog(action.characters)
+      ],
+      "sovereign-awake": (action, front, f) => [
+        f.player(front),
+        " awakes ",
+        f.character(action.sovereignId),
+        " in ",
+        f.region(action.regionId)
       ]
     };
   }

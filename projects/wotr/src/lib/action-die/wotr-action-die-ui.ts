@@ -269,6 +269,8 @@ export class WotrActionDieUi {
     ];
     if (frontId === "shadow") {
       choices.push(this.characterUi.bringCharacterIntoPlayChoice("muster"));
+    } else {
+      if (this.q.kome()) choices.push(this.characterUi.awakeSovereignChoice("muster"));
     }
     choices.push(...this.actionDieModifiers.getActionDieChoices("muster", frontId));
     choices.push(this.skipDieChoice("muster"));
@@ -287,6 +289,8 @@ export class WotrActionDieUi {
     ];
     if (frontId === "shadow") {
       choices.push(this.characterUi.bringCharacterIntoPlayChoice("muster"));
+    } else {
+      if (this.q.kome()) choices.push(this.characterUi.awakeSovereignChoice("muster"));
     }
     choices.push(...this.actionDieModifiers.getActionDieChoices("muster-army", frontId));
     choices.push(this.skipDieChoice("muster-army"));

@@ -279,4 +279,11 @@ export class WotrCharacterStore {
       corruptionTiles: []
     }));
   }
+
+  awakeSovereign(sovereign: KomeSovereignId) {
+    this.updateSovereign("awakeSovereign", sovereign, s => ({
+      ...s,
+      sovereignStatus: "awakened"
+    }));
+  }
 }

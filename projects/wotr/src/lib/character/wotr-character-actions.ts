@@ -1,12 +1,13 @@
 import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrCharacterId } from "./wotr-character-models";
+import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
 
 export type WotrCharacterAction =
   | WotrCharacterMovement
   | WotrCharacterPlay
   | WotrCharacterElimination
   | WotrGollumEnterFellowship
-  | WotrCharacterChoose;
+  | WotrCharacterChoose
+  | KomeSovereignAwake;
 
 export interface WotrCharacterMovement {
   type: "character-movement";
@@ -53,4 +54,16 @@ export interface WotrCharacterChoose {
 }
 export function chooseCharacter(...characters: WotrCharacterId[]): WotrCharacterChoose {
   return { type: "character-choose", characters };
+}
+
+export interface KomeSovereignAwake {
+  type: "sovereign-awake";
+  sovereignId: KomeSovereignId;
+  regionId: WotrRegionId;
+}
+export function awakeSovereign(
+  sovereignId: KomeSovereignId,
+  regionId: WotrRegionId
+): KomeSovereignAwake {
+  return { type: "sovereign-awake", sovereignId, regionId };
 }

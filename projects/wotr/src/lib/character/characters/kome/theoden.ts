@@ -1,9 +1,6 @@
 import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
-import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrFrontId } from "../../../front/wotr-front-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
 import { WotrRegionId } from "../../../region/wotr-region-models";
 import {
@@ -48,15 +45,9 @@ export class Theoden extends KomeSovereignCard {
   }
 
   readonly sovereignId = "theoden";
+  protected readonly nation = "rohan";
+  protected readonly awakeningRegion = "edoras";
   protected readonly corruptionRegion = "edoras";
-
-  override canBeAwakened(die: WotrActionDie): boolean {
-    return false;
-  }
-
-  override async awaken(ui: WotrGameUi): Promise<WotrAction> {
-    throw new Error("Not implemented");
-  }
 }
 
 export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
@@ -85,6 +76,12 @@ export class MarkOfTheWhiteHand implements WotrAbility<WotrAfterRegionControlCha
       } else {
         this.regionStore.changeNation("helms-deep", "rohan");
       }
+    }
+  }
+
+  destroy(): void {
+    if (this.regionStore.region("helms-deep").nationId === "isengard") {
+      this.regionStore.changeNation("helms-deep", "rohan");
     }
   }
 }

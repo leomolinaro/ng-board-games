@@ -4,6 +4,7 @@ import { WotrModifier } from "../commons/wotr-modifier";
 export interface WotrAbility<H = unknown> {
   modifier: WotrModifier<H>;
   handler: H;
+  destroy?: () => void;
 }
 
 export interface WotrUiAbility<H = unknown> extends WotrAbility<H> {

@@ -18,6 +18,8 @@ import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
+import { WotrRegionModifiers } from "../region/wotr-region-modifiers";
+import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
@@ -64,14 +66,13 @@ import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-
 import { WotrCharacterHandler } from "./wotr-character-handler";
 import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
 import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrRegionModifiers } from "../region/wotr-region-modifiers";
-import { WotrRegionStore } from "../region/wotr-region-store";
 
 @Injectable()
 export class WotrCharacters {
   private characters: Partial<Record<WotrCharacterId, WotrPlayableCharacterCard>> = {};
   private sovereigns: Partial<Record<KomeSovereignId, KomeSovereignCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
+  private awakenAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> = {};
   private corruptionAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> = {};
 
   private battleModifiers = inject(WotrBattleModifiers);
@@ -105,6 +106,14 @@ export class WotrCharacters {
       this.abilities[characterId] = abilities;
     }
     return this.abilities[characterId];
+  }
+
+  getAwakenAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
+    if (!this.awakenAbilities[sovereignId]) {
+      const abilities = this.createAwakenAbilities(sovereignId);
+      this.awakenAbilities[sovereignId] = abilities;
+    }
+    return this.awakenAbilities[sovereignId];
   }
 
   getCorruptionAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
@@ -224,6 +233,21 @@ export class WotrCharacters {
         ];
       case "gollum":
         return [];
+    }
+  }
+
+  private createAwakenAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
+    switch (sovereignId) {
+      case "thranduil":
+        return []; // TODO
+      case "brand":
+        return []; // TODO
+      case "dain":
+        return []; // TODO
+      case "denethor":
+        return []; // TODO
+      case "theoden":
+        return []; // TODO
     }
   }
 
@@ -349,6 +373,17 @@ export class WotrCharacters {
     return this.availableCharacterCards(frontId).some(card => card.canBeBroughtIntoPlay(die));
   }
 
+  availableSovereignCards(): KomeSovereignCard[] {
+    const sovereignIds: KomeSovereignId[] = ["thranduil", "brand", "dain", "denethor", "theoden"];
+    return sovereignIds
+      .filter(sovereignId => this.q.sovereign(sovereignId).isLeader())
+      .map(sovereignId => this.getSovereignCard(sovereignId));
+  }
+
+  canAwakeSovereign(die: WotrActionDie): boolean {
+    return this.availableSovereignCards().some(card => card.canBeAwakened(die));
+  }
+
   activateInPlayAbilities(characters: WotrCharacterId[]) {
     if (this.gameStore.isTemporaryState()) return;
     for (const character of characters) {
@@ -368,13 +403,23 @@ export class WotrCharacters {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getInPlayAbilities(characterId);
     for (const ability of abilities) {
+      if (ability.destroy) ability.destroy();
       ability.modifier.unregister(ability.handler);
     }
     if (this.isSovereignId(characterId)) {
       const corruptionAbilities = this.getCorruptionAbilities(characterId);
       for (const ability of corruptionAbilities) {
+        if (ability.destroy) ability.destroy();
         ability.modifier.unregister(ability.handler);
       }
+    }
+  }
+
+  activateAwakenAbilities(sovereignId: KomeSovereignId) {
+    if (this.gameStore.isTemporaryState()) return;
+    const abilities = this.getAwakenAbilities(sovereignId);
+    for (const ability of abilities) {
+      ability.modifier.register(ability.handler);
     }
   }
 
