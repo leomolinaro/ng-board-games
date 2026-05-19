@@ -32,6 +32,10 @@ export class WotrFrontQuery {
     return !!this.data().actionDice.length;
   }
 
+  hasRulerDie() {
+    return !!this.data().actionDice.some(die => typeof die !== "string" && die.type === "ruler");
+  }
+
   canSkipTokens() {
     return !this.hasActionDice();
   }

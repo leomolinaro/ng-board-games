@@ -4,7 +4,8 @@ import { patchState, signalStore, withState } from "@ngrx/signals";
 import {
   WotrActionChoice,
   WotrActionDie,
-  WotrActionToken
+  WotrActionToken,
+  WotrSpecialActionDieType
 } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import {
@@ -30,9 +31,8 @@ interface WotrGameUiState {
   regionSelection: WotrRegionId[] | null;
   nationSelection: WotrNationId[] | null;
   elvenRingSelection: WotrElvenRingSelection | null;
-  actionDieSelection: WotrFrontId | null;
+  actionBoxSelection: WotrActionBoxSelection | null;
   eyeSelection: boolean;
-  actionTokenSelection: WotrActionTokenSelection | null;
   reinforcementUnitSelection: WotrReinforcementUnitSelection | null;
   regionUnitSelection: WotrRegionUnitSelection | null;
   handCardSelection: WotrCardSelection | null;
@@ -47,13 +47,20 @@ export interface WotrElvenRingSelection {
   frontId: WotrFrontId;
 }
 
-export interface WotrActionTokenSelection {
+export interface WotrActionBoxSelection {
   frontId: WotrFrontId;
   tokens: WotrActionToken[];
+  specialDice: WotrSpecialActionDieType[];
 }
 
-export interface WotrAskActionDieParams {
+export interface WotrActionDieSelection {
   frontId: WotrFrontId;
+  specialDice?: WotrSpecialActionDieType[];
+}
+
+export interface WotrActionResolutionSelection {
+  frontId: WotrFrontId;
+  specialDice?: WotrSpecialActionDieType[];
   tokens?: WotrActionToken[];
   elvenRings?: WotrElvenRing[];
   eyes?: boolean;
@@ -92,9 +99,8 @@ export const initialState: WotrGameUiState = {
   regionSelection: null,
   nationSelection: null,
   elvenRingSelection: null,
-  actionDieSelection: null,
+  actionBoxSelection: null,
   eyeSelection: false,
-  actionTokenSelection: null,
   options: null,
   reinforcementUnitSelection: null,
   regionUnitSelection: null,
@@ -225,18 +231,45 @@ export class WotrGameUi extends signalStore(
   actionDieChoice = uiEvent<WotrActionDie>();
   actionTokenChoice = uiEvent<WotrActionToken>();
   eyeChoice = uiEvent<void>();
-  async askActionDie(message: string, params: WotrAskActionDieParams): Promise<WotrActionChoice> {
+
+  async askActionDie(message: string, params: WotrActionDieSelection): Promise<WotrActionDie> {
+    const actionBoxSelection: WotrActionBoxSelection = {
+      frontId: params.frontId,
+      tokens: [],
+      specialDice: params.specialDice ?? []
+    };
+    this.updateUi(s => ({
+      ...s,
+      message,
+      actionBoxSelection
+    }));
+    const actionDie = await this.actionDieChoice.get();
+    this.updateUi(s => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      actionBoxSelection: null
+    }));
+    return actionDie;
+  }
+
+  async askActionResolution(
+    message: string,
+    params: WotrActionResolutionSelection
+  ): Promise<WotrActionChoice> {
+    const actionBoxSelection: WotrActionBoxSelection = {
+      frontId: params.frontId,
+      tokens: params.tokens ?? [],
+      specialDice: params.specialDice ?? []
+    };
     this.updateUi(s => {
       s = {
         ...s,
         message,
-        actionDieSelection: params.frontId
+        actionBoxSelection
       };
-
       if (params.elvenRings)
         s.elvenRingSelection = { frontId: params.frontId, rings: params.elvenRings };
-      if (params.tokens)
-        s.actionTokenSelection = { frontId: params.frontId, tokens: params.tokens };
       if (params.eyes) s.eyeSelection = true;
       return s;
     });
@@ -244,14 +277,13 @@ export class WotrGameUi extends signalStore(
       this.actionDieChoice.get().then<WotrActionChoice>(die => ({ type: "die", die })),
       this.actionTokenChoice.get().then<WotrActionChoice>(token => ({ type: "token", token })),
       this.elvenRing.get().then<WotrActionChoice>(ring => ({ type: "elvenRing", ring })),
-      this.eyeChoice.get().then<WotrActionChoice>(_ => ({ type: "eye" }))
+      this.eyeChoice.get().then<WotrActionChoice>(() => ({ type: "eye" }))
     ]);
     this.updateUi(s => ({
       ...s,
       message: null,
       canCancel: true,
-      actionDieSelection: null,
-      actionTokenSelection: null,
+      actionBoxSelection: null,
       elvenRingSelection: null,
       eyeSelection: false
     }));
@@ -261,12 +293,17 @@ export class WotrGameUi extends signalStore(
   async askActionDieOrStop(
     message: string,
     stopMessage: string,
-    frontId: WotrFrontId
+    actionDieSelection: WotrActionDieSelection
   ): Promise<WotrActionDie | "stop"> {
+    const actionBoxSelection: WotrActionBoxSelection = {
+      frontId: actionDieSelection.frontId,
+      tokens: [],
+      specialDice: actionDieSelection.specialDice ?? []
+    };
     this.updateUi(s => ({
       ...s,
       message,
-      actionDieSelection: frontId,
+      actionBoxSelection,
       options: [{ value: "stop", label: stopMessage }]
     }));
     const actionDieOrStop = await Promise.race([
@@ -277,7 +314,7 @@ export class WotrGameUi extends signalStore(
       ...s,
       message: null,
       canCancel: true,
-      actionDieSelection: null,
+      actionBoxSelection: null,
       options: null
     }));
     if ("type" in actionDieOrStop && actionDieOrStop.type === "die") {

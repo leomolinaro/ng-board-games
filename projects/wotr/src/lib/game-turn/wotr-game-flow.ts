@@ -162,15 +162,14 @@ export class WotrGameFlow {
   private async actionRoll() {
     this.logger.logPhase(4);
     await this.rollActionDice();
+    if (this.q.kome()) await this.rulerDiceChoice();
     this.eyeResultsToHuntBox();
     return true;
   }
 
   private eyeResultsToHuntBox() {
     const nEyeResults = this.frontStore.shadowFront().actionDice.reduce((counter, die) => {
-      if (die === "eye") {
-        counter++;
-      }
+      if (die === "eye") counter++;
       return counter;
     }, 0);
     this.frontStore.removeAllEyeResults("shadow");
@@ -237,6 +236,17 @@ export class WotrGameFlow {
 
   async rollActionDice(): Promise<void> {
     await this.allPlayers.rollActionDice();
+  }
+
+  async rulerDiceChoice(): Promise<void> {
+    await this.rulerDieChoice(this.shadow);
+    await this.rulerDieChoice(this.freePeoples);
+  }
+
+  private async rulerDieChoice(player: WotrPlayer): Promise<void> {
+    if (this.q.front(player.frontId).hasRulerDie()) {
+      await player.makeRulerDieChoice();
+    }
   }
 
   private applySetup(setup: WotrSetup) {

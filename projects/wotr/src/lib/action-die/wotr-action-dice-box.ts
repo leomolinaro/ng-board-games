@@ -8,8 +8,6 @@ import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
 interface FrontNode {
   id: WotrFrontId;
   front: WotrFront;
-  selectable: boolean;
-  disabled: boolean;
   actionDieNodes: ActionDieNode[];
   actionTokenNodes: ActionTokendNode[];
 }
@@ -17,32 +15,39 @@ interface FrontNode {
 interface ActionDieNode {
   id: WotrActionDie;
   imageSource: string;
+  selectable: boolean;
+  disabled: boolean;
 }
 
 interface ActionTokendNode {
   id: WotrActionToken;
   imageSource: string;
+  selectable: boolean;
+  disabled: boolean;
 }
 
 @Component({
   selector: "wotr-action-dice-box",
   template: `
     @for (frontNode of frontNodes(); track frontNode.id) {
-      <div
-        class="wotr-action-dice"
-        [class]="{
-          selectable: frontNode.selectable,
-          disabled: frontNode.disabled
-        }">
+      <div class="wotr-action-dice">
         @for (actionDieNode of frontNode.actionDieNodes; track $index) {
           <img
             [src]="actionDieNode.imageSource"
-            (click)="onActionDieClick(actionDieNode.id, frontNode)" />
+            [class]="{
+              selectable: actionDieNode.selectable,
+              disabled: actionDieNode.disabled
+            }"
+            (click)="onActionDieClick(actionDieNode)" />
         }
         @for (actionTokenNode of frontNode.actionTokenNodes; track $index) {
           <img
             [src]="actionTokenNode.imageSource"
-            (click)="onActionTokenClick(actionTokenNode.id, frontNode)" />
+            [class]="{
+              selectable: actionTokenNode.selectable,
+              disabled: actionTokenNode.disabled
+            }"
+            (click)="onActionTokenClick(actionTokenNode)" />
         }
       </div>
     }
@@ -50,10 +55,10 @@ interface ActionTokendNode {
   styles: `
     .wotr-action-dice {
       display: flex;
-      &.selectable > * {
+      img.selectable {
         cursor: pointer;
       }
-      &.disabled > * {
+      img.disabled {
         opacity: 0.5;
       }
     }
@@ -66,33 +71,56 @@ export class WotrActionDiceBox {
   private frontStore = inject(WotrFrontStore);
 
   protected fronts = this.frontStore.fronts;
-  protected actionDieSelection = this.ui.actionDieSelection;
 
   protected frontNodes = computed<FrontNode[]>(() => {
-    const actionDieSelection = this.actionDieSelection();
+    const selection = this.ui.actionBoxSelection();
     return this.fronts().map<FrontNode>(front => ({
       id: front.id,
       front,
-      selectable: actionDieSelection === front.id,
-      disabled: !!actionDieSelection && actionDieSelection !== front.id,
-      actionDieNodes: front.actionDice.map<ActionDieNode>(actionDie => ({
-        id: actionDie,
-        imageSource: this.assets.actionDieImage(actionDie, front.id)
-      })),
-      actionTokenNodes: front.actionTokens.map<ActionTokendNode>(actionToken => ({
-        id: actionToken,
-        imageSource: this.assets.actionTokenImage(actionToken, front.id)
-      }))
+      // selectable: dieSelection === front.id,
+      // disabled: !!dieSelection && dieSelection !== front.id,
+      actionDieNodes: front.actionDice.map<ActionDieNode>(actionDie => {
+        const actionNode: ActionDieNode = {
+          id: actionDie,
+          imageSource: this.assets.actionDieImage(actionDie, front.id),
+          selectable: false,
+          disabled: false
+        };
+        if (selection) {
+          const selectable =
+            typeof actionDie === "string"
+              ? selection.frontId === front.id
+              : selection.frontId === front.id && selection.specialDice.includes(actionDie.type);
+          actionNode.selectable = selectable;
+          actionNode.disabled = !!selection && !selectable;
+        }
+        return actionNode;
+      }),
+      actionTokenNodes: front.actionTokens.map<ActionTokendNode>(actionToken => {
+        const actionTokenNode: ActionTokendNode = {
+          id: actionToken,
+          imageSource: this.assets.actionTokenImage(actionToken, front.id),
+          selectable: false,
+          disabled: false
+        };
+        if (selection) {
+          const selectable =
+            selection.frontId === front.id && selection.tokens.includes(actionToken);
+          actionTokenNode.selectable = selectable;
+          actionTokenNode.disabled = !!selection && !selectable;
+        }
+        return actionTokenNode;
+      })
     }));
   });
 
-  onActionDieClick(actionDie: WotrActionDie, frontNode: FrontNode) {
-    if (!frontNode.selectable) return;
-    this.ui.actionDieChoice.emit(actionDie);
+  onActionDieClick(actionDieNode: ActionDieNode) {
+    if (!actionDieNode.selectable) return;
+    this.ui.actionDieChoice.emit(actionDieNode.id);
   }
 
-  onActionTokenClick(actionToken: WotrActionToken, frontNode: FrontNode) {
-    if (!frontNode.selectable) return;
-    this.ui.actionTokenChoice.emit(actionToken);
+  onActionTokenClick(actionTokenNode: ActionTokendNode) {
+    if (!actionTokenNode.selectable) return;
+    this.ui.actionTokenChoice.emit(actionTokenNode.id);
   }
 }

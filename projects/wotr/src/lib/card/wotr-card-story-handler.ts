@@ -29,9 +29,7 @@ export class WotrCardStoryHandler {
   }
 
   private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
-    if (story.elvenRing) {
-      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
-    }
+    if (story.elvenRing) this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     this.actionDieHandler.setCurrentActionDie(story.die, front);
     this.frontStore.setCurrentCard(story.card);
     this.frontStore.discardCards([story.card], front);

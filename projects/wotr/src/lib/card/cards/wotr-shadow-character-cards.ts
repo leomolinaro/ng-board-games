@@ -510,7 +510,10 @@ export class WotrShadowCharacterCards {
               const die = await this.ui.askActionDieOrStop(
                 "Choose an Action die to change into an Eye",
                 "Continue",
-                "shadow"
+                {
+                  frontId: "shadow",
+                  specialDice: ["ruler"]
+                }
               );
               if (die === "stop") break;
               changedDice.push(die);
@@ -616,17 +619,17 @@ export class WotrShadowCharacterCards {
             };
             const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
               modifier: this.actionDieModifiers.actionDieChoices,
-              handler: (die, frontId) => {
+              handler: ({ dieResult, frontId }) => {
                 if (frontId !== "free-peoples") return [];
                 const choice: WotrUiChoice = {
                   label: () => "Discard The Palantír of Orthanc",
                   isAvailable: () => {
-                    if (die === "will-of-the-west") return true;
+                    if (dieResult === "will-of-the-west") return true;
                     return this.q.freePeoples.hasElvenRings();
                   },
                   actions: async () => {
                     const actions: WotrAction[] = [discardCardFromTableById("scha21")];
-                    if (die !== "will-of-the-west") {
+                    if (dieResult !== "will-of-the-west") {
                       const elvenRing = await this.ui.askElvenRing("Choose an Elven Ring to use", {
                         rings: this.q.freePeoples.elvenRings(),
                         frontId: "free-peoples"

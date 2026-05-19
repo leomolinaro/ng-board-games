@@ -139,4 +139,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   chooseCorruptionTile(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
+  makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
 }

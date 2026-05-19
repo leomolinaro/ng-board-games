@@ -1,20 +1,28 @@
 import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
 
-export type WotrActionChoice =
-  | { type: "die"; die: WotrActionDie }
-  | { type: "token"; token: WotrActionToken }
-  | { type: "elvenRing"; ring: WotrElvenRing }
-  | { type: "eye" };
-
-export type WotrFreePeopleActionDie =
+export type WotrActionDieResult =
   | "character"
   | "army"
   | "muster"
   | "event"
   | "muster-army"
-  | "will-of-the-west";
-export type WotrShadowActionDie = "character" | "army" | "muster" | "event" | "muster-army" | "eye";
-export type WotrActionDie = WotrFreePeopleActionDie | WotrShadowActionDie;
+  | "will-of-the-west"
+  | "eye";
+
+export type WotrSpecialActionDieType = "ruler";
+
+export interface WotrSpecialActionDie {
+  type: WotrSpecialActionDieType;
+  result: WotrActionDieResult;
+}
+
+export type WotrActionDie = WotrActionDieResult | WotrSpecialActionDie;
+
+export type WotrActionChoice =
+  | { type: "die"; die: WotrActionDie }
+  | { type: "token"; token: WotrActionToken }
+  | { type: "elvenRing"; ring: WotrElvenRing }
+  | { type: "eye" };
 
 export type WotrFreePeopleActionToken = "political-advance" | "draw-card";
 export type WotrShadowActionToken = "political-advance" | "move-nazgul-minions";

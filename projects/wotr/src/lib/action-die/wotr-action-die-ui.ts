@@ -9,7 +9,7 @@ import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontUi } from "../front/wotr-front-ui";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrAskActionDieParams, WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrActionResolutionSelection, WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
 import {
   WotrDieCardStory,
   WotrDieStory,
@@ -23,14 +23,9 @@ import { advanceNation } from "../nation/wotr-nation-actions";
 import { WotrNationUi } from "../nation/wotr-nation-ui";
 import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { KomeActionDieRules } from "./kome-action-die-rules";
-import { rollActionDice, skipActionDie } from "./wotr-action-die-actions";
+import { discardDice, rollActionDice, skipActionDie } from "./wotr-action-die-actions";
 import { WotrActionDieHandler } from "./wotr-action-die-handler";
-import {
-  WotrActionDie,
-  WotrActionToken,
-  WotrFreePeopleActionDie,
-  WotrShadowActionDie
-} from "./wotr-action-die-models";
+import { WotrActionDie, WotrActionDieResult, WotrActionToken } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 import { WotrActionDieRules } from "./wotr-action-die-rules";
 
@@ -53,15 +48,19 @@ export class WotrActionDieUi {
 
   async rollActionDice(frontId: WotrFrontId): Promise<WotrAction> {
     const nActionDice = this.actionDieRules.rollableActionDice(frontId);
-    await this.ui.askContinue(`Roll ${nActionDice} action dice`);
+    const canRollRulerDie = this.actionDieRules.canRollRulerDie(frontId);
+    await this.ui.askContinue(
+      `Roll ${nActionDice} action dice${canRollRulerDie ? " and a Ruler die" : ""}`
+    );
     const actionDice: WotrActionDie[] = [];
     for (let i = 0; i < nActionDice; i++) {
       actionDice.push(this.rollActionDie(frontId));
     }
+    if (canRollRulerDie) actionDice.push({ type: "ruler", result: this.rollActionDie(frontId) });
     return rollActionDice(...actionDice);
   }
 
-  private FREE_PEOPLES_ACTION_DICE: WotrFreePeopleActionDie[] = [
+  private FREE_PEOPLES_ACTION_DIE_RESULTS: WotrActionDieResult[] = [
     "character",
     "character",
     "muster",
@@ -70,7 +69,7 @@ export class WotrActionDieUi {
     "will-of-the-west"
   ];
 
-  private SHADOW_ACTION_DICE: WotrShadowActionDie[] = [
+  private SHADOW_ACTION_DIE_RESULTS: WotrActionDieResult[] = [
     "character",
     "army",
     "event",
@@ -79,12 +78,12 @@ export class WotrActionDieUi {
     "eye"
   ];
 
-  private rollActionDie(frontId: WotrFrontId): WotrActionDie {
+  private rollActionDie(frontId: WotrFrontId): WotrActionDieResult {
     switch (frontId) {
       case "free-peoples":
-        return randomUtil.getRandomDraws(1, this.FREE_PEOPLES_ACTION_DICE)[0];
+        return randomUtil.getRandomDraws(1, this.FREE_PEOPLES_ACTION_DIE_RESULTS)[0];
       case "shadow":
-        return randomUtil.getRandomDraws(1, this.SHADOW_ACTION_DICE)[0];
+        return randomUtil.getRandomDraws(1, this.SHADOW_ACTION_DIE_RESULTS)[0];
     }
   }
 
@@ -146,13 +145,17 @@ export class WotrActionDieUi {
   ): Promise<WotrStory> {
     const playableTokens = this.actionDieRules.playableTokens(frontId);
     const availableRings = this.q.front(frontId).playableElvenRings();
-    const params: WotrAskActionDieParams = {
+    const params: WotrActionResolutionSelection = {
       frontId,
       tokens: playableTokens,
-      elvenRings: availableRings
+      elvenRings: availableRings,
+      specialDice: ["ruler"]
     };
     if (this.q.kome() && this.komeRules.canInitiateCorruptionAttempt(frontId)) params.eyes = true;
-    const actionChoice = await this.ui.askActionDie("Choose an action die to resolve", params);
+    const actionChoice = await this.ui.askActionResolution(
+      "Choose an action die to resolve",
+      params
+    );
     switch (actionChoice.type) {
       case "die": {
         this.actionDieHandler.setCurrentActionDie(actionChoice.die, frontId);
@@ -179,26 +182,30 @@ export class WotrActionDieUi {
     die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
-    switch (die) {
+    const result: WotrActionDieResult = typeof die === "string" ? die : die.result;
+    switch (result) {
       case "event":
-        return this.resolveEventDie(frontId);
+        return this.resolveEventDie(die, frontId);
       case "army":
-        return this.resolveArmyDie(frontId);
+        return this.resolveArmyDie(die, frontId);
       case "character":
-        return this.resolveCharacterDie(frontId);
+        return this.resolveCharacterDie(die, frontId);
       case "muster":
-        return this.resolveMusterDie(frontId);
+        return this.resolveMusterDie(die, frontId);
       case "muster-army":
-        return this.resolveMusterArmyDie(frontId);
+        return this.resolveMusterArmyDie(die, frontId);
       case "will-of-the-west":
-        return this.resolveWillOfTheWestDie(frontId);
+        return this.resolveWillOfTheWestDie(die, frontId);
       case "eye":
         throw new Error("Eye die resolution is unexpected.");
     }
   }
 
-  private async resolveArmyDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
-    return this.resolveArmyResult("army", frontId);
+  private async resolveArmyDie(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
+    return this.resolveArmyResult(die, frontId);
   }
 
   async resolveArmyResult(
@@ -212,7 +219,7 @@ export class WotrActionDieUi {
         this.unitUi.moveArmiesChoice,
         this.unitUi.attackArmyChoice,
         this.cardPlayUi.playEventCardChoice(["army"]),
-        ...this.actionDieModifiers.getActionDieChoices("army", frontId),
+        ...this.actionDieModifiers.getActionDieChoices(die, frontId),
         this.skipDieChoice("event")
       ],
       frontId
@@ -220,9 +227,10 @@ export class WotrActionDieUi {
   }
 
   private async resolveCharacterDie(
+    die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
-    return this.resolveCharacterResult("character", frontId);
+    return this.resolveCharacterResult(die, frontId);
   }
 
   private async resolveCharacterResult(
@@ -244,8 +252,8 @@ export class WotrActionDieUi {
     } else {
       choices.push(this.characterUi.moveMinionsChoice);
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices("character", frontId));
-    choices.push(this.skipDieChoice("character"));
+    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
+    choices.push(this.skipDieChoice(die));
     return this.ui.askDieStoryChoice(
       die,
       "Choose an action for the character die",
@@ -254,8 +262,11 @@ export class WotrActionDieUi {
     );
   }
 
-  private async resolveMusterDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
-    return this.resolveMusterResult("muster", frontId);
+  private async resolveMusterDie(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
+    return this.resolveMusterResult(die, frontId);
   }
 
   private async resolveMusterResult(
@@ -272,12 +283,13 @@ export class WotrActionDieUi {
     } else {
       if (this.q.kome()) choices.push(this.characterUi.awakeSovereignChoice("muster"));
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices("muster", frontId));
+    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
     choices.push(this.skipDieChoice("muster"));
     return this.ui.askDieStoryChoice(die, "Choose an action for the muster die", choices, frontId);
   }
 
   private async resolveMusterArmyDie(
+    die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
@@ -292,10 +304,10 @@ export class WotrActionDieUi {
     } else {
       if (this.q.kome()) choices.push(this.characterUi.awakeSovereignChoice("muster"));
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices("muster-army", frontId));
+    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
     choices.push(this.skipDieChoice("muster-army"));
     return this.ui.askDieStoryChoice(
-      "muster-army",
+      die,
       "Choose an action for the muster-army die",
       choices,
       frontId
@@ -303,33 +315,34 @@ export class WotrActionDieUi {
   }
 
   private async resolveWillOfTheWestDie(
+    die: WotrActionDie,
     frontId: WotrFrontId
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choices: WotrUiChoice[] = [
-      this.changeCharacterDieChoice(),
-      this.changeArmyDieChoice(),
-      this.changeMusterDieChoice(),
-      this.changeEventDieChoice()
+      this.changeCharacterDieChoice(die),
+      this.changeArmyDieChoice(die),
+      this.changeMusterDieChoice(die),
+      this.changeEventDieChoice(die)
     ];
     if (frontId === "free-peoples") {
       choices.push(this.characterUi.bringCharacterIntoPlayChoice("will-of-the-west"));
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices("will-of-the-west", frontId));
-    choices.push(this.skipDieChoice("will-of-the-west"));
+    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
+    choices.push(this.skipDieChoice(die));
     return this.ui.askDieStoryChoice(
-      "will-of-the-west",
+      die,
       "Choose an action for the Will of the West die",
       choices,
       frontId
     );
   }
 
-  private changeCharacterDieChoice(): WotrUiChoice {
+  private changeCharacterDieChoice(die: WotrActionDie): WotrUiChoice {
     let chosenCardId: WotrCardId | null = null;
     return {
       label: () => "Character result",
       actions: async (frontId: WotrFrontId) => {
-        const story = await this.resolveCharacterResult("will-of-the-west", frontId);
+        const story = await this.resolveCharacterResult(die, frontId);
         if (story.type === "die-card") chosenCardId = story.card;
         return story.actions;
       },
@@ -337,12 +350,12 @@ export class WotrActionDieUi {
     };
   }
 
-  private changeArmyDieChoice(): WotrUiChoice {
+  private changeArmyDieChoice(die: WotrActionDie): WotrUiChoice {
     let chosenCardId: WotrCardId | null = null;
     return {
       label: () => "Army result",
       actions: async (frontId: WotrFrontId) => {
-        const story = await this.resolveArmyResult("will-of-the-west", frontId);
+        const story = await this.resolveArmyResult(die, frontId);
         if (story.type === "die-card") chosenCardId = story.card;
         return story.actions;
       },
@@ -350,12 +363,12 @@ export class WotrActionDieUi {
     };
   }
 
-  private changeMusterDieChoice(): WotrUiChoice {
+  private changeMusterDieChoice(die: WotrActionDie): WotrUiChoice {
     let chosenCardId: WotrCardId | null = null;
     return {
       label: () => "Muster result",
       actions: async (frontId: WotrFrontId) => {
-        const story = await this.resolveMusterResult("will-of-the-west", frontId);
+        const story = await this.resolveMusterResult(die, frontId);
         if (story.type === "die-card") chosenCardId = story.card;
         return story.actions;
       },
@@ -363,12 +376,12 @@ export class WotrActionDieUi {
     };
   }
 
-  private changeEventDieChoice(): WotrUiChoice {
+  private changeEventDieChoice(die: WotrActionDie): WotrUiChoice {
     let chosenCardId: WotrCardId | null = null;
     return {
       label: () => "Event result",
       actions: async (frontId: WotrFrontId) => {
-        const story = await this.resolveEventResult("will-of-the-west", frontId);
+        const story = await this.resolveEventResult(die, frontId);
         if (story.type === "die-card") chosenCardId = story.card;
         return story.actions;
       },
@@ -383,8 +396,11 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveEventDie(frontId: WotrFrontId): Promise<WotrDieStory | WotrDieCardStory> {
-    return this.resolveEventResult("event", frontId);
+  private async resolveEventDie(
+    die: WotrActionDie,
+    frontId: WotrFrontId
+  ): Promise<WotrDieStory | WotrDieCardStory> {
+    return this.resolveEventResult(die, frontId);
   }
 
   async resolveEventResult(
@@ -397,7 +413,7 @@ export class WotrActionDieUi {
       [
         this.cardUi.drawEventCardChoice,
         this.cardPlayUi.playEventCardChoice("any"),
-        ...this.actionDieModifiers.getActionDieChoices("event", frontId),
+        ...this.actionDieModifiers.getActionDieChoices(die, frontId),
         this.skipDieChoice("event")
       ],
       frontId
@@ -451,5 +467,13 @@ export class WotrActionDieUi {
       [this.huntUi.corruptionAttemptChoice],
       frontId
     );
+  }
+
+  async makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrAction> {
+    const die = await this.ui.askActionDie("Choose a die to discard", {
+      frontId,
+      specialDice: ["ruler"]
+    });
+    return discardDice(frontId, die);
   }
 }

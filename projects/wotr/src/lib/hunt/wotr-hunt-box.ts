@@ -98,7 +98,7 @@ export class WotrHuntBox {
 
   selectEyeDie() {
     if (this.eyeSelection()) {
-      this.ui.eyeChoice.emit(void 0);
+      this.ui.eyeChoice.emit();
     }
   }
 }

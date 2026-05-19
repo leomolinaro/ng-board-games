@@ -64,14 +64,14 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
   ) {}
 
   public modifier = this.actionDieModifiers.actionDieChoices;
-  public handler: WotrActionDieChoiceModifier = (die: WotrActionDie, frontId: WotrFrontId) => {
-    if (die !== "muster") return [];
+  public handler: WotrActionDieChoiceModifier = ({ dieResult, die, frontId }) => {
+    if (dieResult !== "muster") return [];
     if (frontId !== "shadow") return [];
     const messengerChoice: WotrUiCharacterChoice = {
       label: () => "Messenger of the Dark Tower",
       isAvailable: () => !this.q.messengerOfTheDarkTowerUsed(),
       character: "the-mouth-of-sauron",
-      actions: async () => (await this.actionDieUi.resolveArmyResult("muster", "shadow")).actions
+      actions: async () => (await this.actionDieUi.resolveArmyResult(die, "shadow")).actions
     };
     return [messengerChoice];
   };

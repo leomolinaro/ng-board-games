@@ -549,7 +549,7 @@ export class WotrFreePeoplesStrategyCards {
     const card: WotrCard = getCard(cardId);
     return {
       modifier: this.actionDieModifiers.actionDieChoices,
-      handler: (die, frontId) => {
+      handler: ({ frontId }) => {
         if (frontId !== "shadow") return [];
         const choice: WotrUiChoice = {
           label: () => `Discard '${card.label}'`,

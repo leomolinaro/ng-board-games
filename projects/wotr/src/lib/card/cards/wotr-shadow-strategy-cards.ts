@@ -2,7 +2,6 @@ import { inject, Injectable } from "@angular/core";
 import { immutableUtil } from "../../../../../commons/utils/src";
 import { WotrAbility } from "../../ability/wotr-ability";
 import { discardDice } from "../../action-die/wotr-action-die-actions";
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
@@ -16,7 +15,6 @@ import {
 import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
-import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
@@ -189,12 +187,12 @@ export class WotrShadowStrategyCards {
             };
             const discardAbility: WotrAbility<WotrActionDieChoiceModifier> = {
               modifier: this.actionDieModifiers.actionDieChoices,
-              handler: (die: WotrActionDie, frontId: WotrFrontId) => {
+              handler: ({ dieResult, frontId }) => {
                 if (frontId !== "free-peoples") return [];
                 const region = this.q.region("minas-tirith");
                 const choices: WotrUiChoice[] = [];
                 if (
-                  die === "will-of-the-west" ||
+                  dieResult === "will-of-the-west" ||
                   region.hasCharacter("aragorn") ||
                   region.hasCharacter("gandalf-the-white") ||
                   region.hasCharacter("gandalf-the-grey")

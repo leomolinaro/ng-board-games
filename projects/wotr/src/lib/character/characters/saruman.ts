@@ -50,8 +50,8 @@ export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoice
 
   public modifier = this.actionDieModifiers.actionDieChoices;
 
-  public handler: WotrActionDieChoiceModifier = (die, frontId) => {
-    if (die !== "muster" && die !== "muster-army") return [];
+  public handler: WotrActionDieChoiceModifier = ({ dieResult, frontId }) => {
+    if (dieResult !== "muster" && dieResult !== "muster-army") return [];
     if (frontId !== "shadow") return [];
     return [new SarumanVoiceChoice(this.q, this.ui, this.unitUi)];
   };

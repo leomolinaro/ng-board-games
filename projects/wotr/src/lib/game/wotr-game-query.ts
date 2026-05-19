@@ -118,6 +118,7 @@ export class WotrGameQuery {
     this.thranduil
   ];
   sovereigns = [this.brand, this.dain, this.denethor, this.theoden, this.thranduil];
+  darkChieftains = [this.theBlackSerpent, this.theShadowOfMirkwood, this.ugluk];
 
   private characterById = arrayUtil.toMap(
     [...this.companions, ...this.minions],

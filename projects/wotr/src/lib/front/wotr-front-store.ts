@@ -192,10 +192,22 @@ export class WotrFrontStore {
   }
 
   removeActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
-    this.updateFront("removeActionDie", frontId, front => ({
-      ...front,
-      actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
-    }));
+    this.updateFront("removeActionDie", frontId, front => {
+      if (typeof die === "string") {
+        return {
+          ...front,
+          actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
+        };
+      } else {
+        return {
+          ...front,
+          actionDice: immutableUtil.listRemoveFirst(
+            d => typeof d !== "string" && d.type === die.type && d.result === die.result,
+            front.actionDice
+          )
+        };
+      }
+    });
   }
 
   addActionDie(die: WotrActionDie, frontId: WotrFrontId): void {

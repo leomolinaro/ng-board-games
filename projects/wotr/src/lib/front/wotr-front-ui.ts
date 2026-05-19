@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrActionDie } from "../action-die/wotr-action-die-models";
+import { WotrActionDie, WotrActionDieResult } from "../action-die/wotr-action-die-models";
 import { WotrGameUi, WotrUiOption } from "../game/wotr-game-ui";
 import { WotrElvenRingAction } from "../game/wotr-story-models";
 import { WotrFrontHandler } from "./wotr-front-handler";
@@ -11,9 +11,11 @@ export class WotrFrontUi {
   private frontHandler = inject(WotrFrontHandler);
 
   async useElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): Promise<WotrElvenRingAction> {
-    const fromDie = await this.ui.askActionDie("Choose a die to change", { frontId });
-    if (fromDie.type !== "die") throw new Error("Die expected");
-    const toDieOptions: WotrUiOption<WotrActionDie>[] = [
+    const fromDie = await this.ui.askActionDie("Choose a die to change", {
+      frontId,
+      specialDice: ["ruler"]
+    });
+    const toDieOptions: WotrUiOption<WotrActionDieResult>[] = [
       { value: "character", label: "Character die" },
       frontId === "free-peoples"
         ? { value: "muster-army", label: "Muster Army die" }
@@ -21,13 +23,13 @@ export class WotrFrontUi {
       { value: "muster", label: "Muster die" },
       { value: "event", label: "Event die" }
     ];
-    if (frontId === "shadow") {
-      toDieOptions.push({ value: "eye", label: "Eye die" });
-    }
-    const toDie = await this.ui.askOption<WotrActionDie>("Choose a die to change to", toDieOptions);
+    if (frontId === "shadow") toDieOptions.push({ value: "eye", label: "Eye die" });
+    const toDieResult = await this.ui.askOption("Choose a die to change to", toDieOptions);
+    const toDie: WotrActionDie =
+      typeof fromDie === "string" ? toDieResult : { type: fromDie.type, result: toDieResult };
     const action: WotrElvenRingAction = {
       ring,
-      fromDie: fromDie.die,
+      fromDie,
       toDie
     };
     this.frontHandler.convertDieWithElvenRing(action, frontId);

@@ -114,4 +114,7 @@ export abstract class WotrPlayer {
       p.chooseRegion(regions, cardId, this.frontId)
     );
   }
+  makeRulerDieChoice(): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.makeRulerDieChoice(this.frontId));
+  }
 }

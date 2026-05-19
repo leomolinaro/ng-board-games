@@ -17,7 +17,7 @@ import {
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrActionDieAction } from "./wotr-action-die-actions";
-import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
+import { WotrActionDie, WotrActionToken, WotrSpecialActionDieType } from "./wotr-action-die-models";
 import { WotrActionDieModifiers } from "./wotr-action-die-modifiers";
 
 @Injectable()
@@ -39,9 +39,7 @@ export class WotrActionDieHandler {
   }
 
   private die: WotrStoryApplier<WotrDieStory> = async (story, front) => {
-    if (story.elvenRing) {
-      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
-    }
+    if (story.elvenRing) this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     this.setCurrentActionDie(story.die, front);
     if (story.actions?.length) {
       for (const action of story.actions) {
@@ -120,13 +118,15 @@ export class WotrActionDieHandler {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrActionDieAction> {
     return {
-      "action-roll": (action, front, f) => [f.player(front), ` rolls ${this.dice(action.dice)}`],
-      "action-dice-discard": (action, front, f) => [
-        f.player(front),
-        " discards ",
-        f.player(action.front),
-        ` ${this.dice(action.dice)}`
-      ],
+      "action-roll": (action, front, f) => {
+        const logs = [f.player(front), ` rolls ${this.dice(action.dice)}`];
+        return logs;
+      },
+      "action-dice-discard": (action, front, f) => {
+        const logs = [f.player(front), " discards ", f.player(action.front)];
+        if (action.dice.length) logs.push(` ${this.dice(action.dice)}`);
+        return logs;
+      },
       "action-die-skip": (action, front, f) => [
         f.player(front),
         ` skips ${this.dice([action.die])}`
@@ -139,6 +139,18 @@ export class WotrActionDieHandler {
   }
 
   private dice(dice: WotrActionDie[]) {
-    return `${dice.join(", ")} ${dice.length === 1 ? "die" : "dice"}`;
+    return `${dice.map(d => this.dieLabel(d)).join(", ")} ${dice.length === 1 ? "die" : "dice"}`;
+  }
+
+  private dieLabel(die: WotrActionDie): string {
+    if (typeof die === "string") return die;
+    return `${die.result} (${this.dieTypeLabel(die)})`;
+  }
+
+  private dieTypeLabel(die: WotrActionDie & { type: WotrSpecialActionDieType }): string {
+    switch (die.type) {
+      case "ruler":
+        return "Ruler die";
+    }
   }
 }

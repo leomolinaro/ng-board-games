@@ -50,4 +50,14 @@ export class WotrActionDieRules {
         return this.regionStore.canMoveNazgul();
     }
   }
+
+  canRollRulerDie(frontId: WotrFrontId): boolean {
+    if (!this.q.kome()) return false;
+    switch (frontId) {
+      case "free-peoples":
+        return this.q.sovereigns.some(s => s.isInPlay() && s.isAwakened());
+      case "shadow":
+        return this.q.darkChieftains.some(c => c.isInPlay());
+    }
+  }
 }

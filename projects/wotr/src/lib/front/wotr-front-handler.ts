@@ -67,9 +67,7 @@ export class WotrFrontHandler {
       this.frontStore.addActionDie(elvenRing.toDie, front);
     }
     this.frontStore.removeElvenRing(elvenRing.ring, front);
-    if (front === "free-peoples") {
-      this.frontStore.addElvenRing(elvenRing.ring, "shadow");
-    }
+    if (front === "free-peoples") this.frontStore.addElvenRing(elvenRing.ring, "shadow");
     this.frontStore.setElvenRingUsed(front);
   }
 }

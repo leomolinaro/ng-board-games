@@ -278,4 +278,11 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       actions: [await this.huntUi.chooseCorruptionTile()]
     };
   }
+
+  async makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory> {
+    return {
+      type: "base",
+      actions: [await this.actionDieUi.makeRulerDieChoice(frontId)]
+    };
+  }
 }
