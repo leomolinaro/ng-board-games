@@ -11,32 +11,37 @@
     [attr.points]="coordinates | baronyLandTileCoordinates: 'hexagon'"
     [attr.fill]="'url(\'#' + type + '\')'"></svg:polygon>
 
-  <svg:circle
-    *ngIf="active"
-    class="b-land-tile-active-signal"
-    [attr.cx]="coordinates | baronyLandTileCoordinates: 'center-x'"
-    [attr.cy]="coordinates | baronyLandTileCoordinates: 'center-y'"
-    [attr.r]="activeCircleRadius"
-    stroke="black"
-    stroke-width="0.03"
-    fill="transparent" />
+  @if (active) {
+    <svg:circle
+      class="b-land-tile-active-signal"
+      [attr.cx]="coordinates | baronyLandTileCoordinates: 'center-x'"
+      [attr.cy]="coordinates | baronyLandTileCoordinates: 'center-y'"
+      [attr.r]="activeCircleRadius"
+      stroke="black"
+      stroke-width="0.03"
+      fill="transparent" />
+  }
 
-  <svg:image
-    *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
-    [attr.width]="pawnWidth"
-    [attr.height]="pawnHeight"
-    preserveAspectRatio="none"
-    [attr.xlink:href]="pawnNode.href"
-    [attr.x]="pawnNode.x"
-    [attr.y]="pawnNode.y"></svg:image>
+  @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+    <svg:image
+      [attr.width]="pawnWidth"
+      [attr.height]="pawnHeight"
+      preserveAspectRatio="none"
+      [attr.xlink:href]="pawnNode.href"
+      [attr.x]="pawnNode.x"
+      [attr.y]="pawnNode.y"></svg:image>
+  }
 
-  <ng-container *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy">
-    <svg:text
-      class="b-land-tile-pawn-quantity"
-      *ngIf="pawnNode.quantity > 1"
-      [attr.x]="pawnNode.xText"
-      [attr.y]="pawnNode.yText">
-      {{ pawnNode.quantity }}
-    </svg:text>
-  </ng-container>
+  @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+    <ng-container>
+      @if (pawnNode.quantity > 1) {
+        <svg:text
+          class="b-land-tile-pawn-quantity"
+          [attr.x]="pawnNode.xText"
+          [attr.y]="pawnNode.yText">
+          {{ pawnNode.quantity }}
+        </svg:text>
+      }
+    </ng-container>
+  }
 </svg:g>

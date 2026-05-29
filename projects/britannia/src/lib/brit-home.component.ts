@@ -57,7 +57,8 @@ export class BritHomeComponent {
   config: BgHomeConfig<BritColor> = {
     boardGame: "britannia",
     boardGameName: "Britannia",
-    startGame$: (gameId: string) => from(this.router.navigate(["game", gameId], { relativeTo: this.activatedRoute })),
+    startGame$: (gameId: string) =>
+      from(this.router.navigate(["game", gameId], { relativeTo: this.activatedRoute })),
     deleteGame$: (gameId: string) =>
       concatJoin([
         this.gameService.deleteStories$(gameId),
@@ -104,7 +105,12 @@ export class BritHomeComponent {
       );
   } // createGame$
 
-  private insertAiPlayer$(playerId: BritColor, name: string, sort: number, gameId: string): Observable<BritPlayerDoc> {
+  private insertAiPlayer$(
+    playerId: BritColor,
+    name: string,
+    sort: number,
+    gameId: string
+  ): Observable<BritPlayerDoc> {
     const player: BritAiPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: true

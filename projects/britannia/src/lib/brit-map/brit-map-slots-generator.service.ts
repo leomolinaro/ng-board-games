@@ -1,6 +1,11 @@
 import { Injectable, inject } from "@angular/core";
 import { immutableUtil, randomUtil } from "@leobg/commons/utils";
-import { BritAreaId, BritLandAreaId, BritSeaAreaId, isBritLandAreaId } from "../brit-components.models";
+import {
+  BritAreaId,
+  BritLandAreaId,
+  BritSeaAreaId,
+  isBritLandAreaId
+} from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
 
@@ -203,7 +208,11 @@ export class BritMapSlotsGeneratorService {
     return slots;
   } // generateSeaSlots
 
-  private generateLandSlots(n: number, landPoints: BritLandPoints, landId: BritLandAreaId): BritMapPoint[] {
+  private generateLandSlots(
+    n: number,
+    landPoints: BritLandPoints,
+    landId: BritLandAreaId
+  ): BritMapPoint[] {
     const simulation = new randomUtil.BgSimulatedAnnealing<BritMapLandPoint[]>(
       state => this.energy(state),
       state => this.randomNeighbor(state, landPoints, landId)

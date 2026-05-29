@@ -26,7 +26,8 @@ export interface BritUnitsSelectorSheetInput {
   imports: [BritUnitsSelectorComponent]
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
-  private bottomSheetRef = inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>>(MatBottomSheetRef);
+  private bottomSheetRef =
+    inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>>(MatBottomSheetRef);
   data = inject<BritUnitsSelectorSheetInput>(MAT_BOTTOM_SHEET_DATA);
   private assetsService = inject(BritAssetsService);
 
@@ -35,7 +36,10 @@ export class BritUnitsSelectorSheetComponent implements OnInit {
 
   ngOnInit() {
     this.quantity = this.data.quantity;
-    this.imageSource = this.assetsService.getUnitImageSourceByType(this.data.unit.type, this.data.unit.nationId);
+    this.imageSource = this.assetsService.getUnitImageSourceByType(
+      this.data.unit.type,
+      this.data.unit.nationId
+    );
   } // ngOnInit
 
   onCloseClick() {

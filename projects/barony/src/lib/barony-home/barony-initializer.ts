@@ -1,5 +1,9 @@
 import { randomUtil } from "@leobg/commons/utils";
-import { BARONY_LAND_PIECES, BARONY_LAND_TYPES, BARONY_NUMBER_OF_LAND_TILES } from "../barony-constants";
+import {
+  BARONY_LAND_PIECES,
+  BARONY_LAND_TYPES,
+  BARONY_NUMBER_OF_LAND_TILES
+} from "../barony-constants";
 import { BaronyLandCoordinates, BaronyLandPiece, BaronyLandType } from "../barony-models";
 
 export function getRandomLands(nPlayers: number): {

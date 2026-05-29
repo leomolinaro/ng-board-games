@@ -27,7 +27,13 @@ export class AgotDraftService {
     } // switch
   } // getTypeSort
 
-  generateDraft(nCards: number, types: string[], factions: string[], packs: string[], duplicates: boolean) {
+  generateDraft(
+    nCards: number,
+    types: string[],
+    factions: string[],
+    packs: string[],
+    duplicates: boolean
+  ) {
     const poolCards = this.getPool(types, factions, packs);
     const draftCards = this.getRandom(poolCards, nCards, duplicates);
     draftCards?.sort((a, b) => {

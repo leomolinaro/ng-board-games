@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output
+} from "@angular/core";
 import { BaronyResourceType } from "../barony-models";
 
 @Component({
@@ -6,11 +13,11 @@ import { BaronyResourceType } from "../barony-models";
   template: `
     <div class="b-resources-selector-container">
       @for (resource of resources; track resource) {
-      <div
-        class="b-resource-image"
-        (click)="onResourceClick(resource)">
-        <img [src]="'assets/barony/resources/' + resource + '.png'" />
-      </div>
+        <div
+          class="b-resource-image"
+          (click)="onResourceClick(resource)">
+          <img [src]="'assets/barony/resources/' + resource + '.png'" />
+        </div>
       }
     </div>
   `,

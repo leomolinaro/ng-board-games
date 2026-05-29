@@ -137,7 +137,7 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
 
   protected onlineGame = this.input.protoGame.online;
   protected protoGame = rxResource<BgProtoGame<any>, void>({
-    loader: () =>
+    stream: () =>
       this.protoGameService.selectProtoGame$(this.input.protoGame.id) as Observable<
         BgProtoGame<any>
       >,
@@ -153,7 +153,7 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
   roleToCssClass = (role: Pid) => this.input.playerIdToCssClass(role);
 
   protected players = rxResource({
-    loader: () => this.protoGameService.selectProtoPlayers$<Pid>(this.input.protoGame.id)
+    stream: () => this.protoGameService.selectProtoPlayers$<Pid>(this.input.protoGame.id)
   }).value;
 
   protected validPlayers = computed(() => {

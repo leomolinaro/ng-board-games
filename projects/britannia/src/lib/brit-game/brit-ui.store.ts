@@ -141,14 +141,18 @@ export class BritUiStore extends BgStore<BritUiState> {
   }
 
   selectCurrentPlayer$() {
-    return this.game.select$(this.selectCurrentPlayerId$(), this.game.selectPlayerMap$(), (playerId, playersMap) =>
-      playerId ? playersMap[playerId] : null
+    return this.game.select$(
+      this.selectCurrentPlayerId$(),
+      this.game.selectPlayerMap$(),
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   } // selectCurrentPlayer$
 
   selectTurnPlayer$() {
-    return this.game.select$(this.selectTurnPlayerId$(), this.game.selectPlayerMap$(), (playerId, playersMap) =>
-      playerId ? playersMap[playerId] : null
+    return this.game.select$(
+      this.selectTurnPlayerId$(),
+      this.game.selectPlayerMap$(),
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   } // selectCurrentPlayer$
 

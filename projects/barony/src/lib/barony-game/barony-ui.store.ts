@@ -3,7 +3,13 @@ import { toObservable } from "@angular/core/rxjs-interop";
 import { uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
 import { first, skip } from "rxjs";
-import { BaronyAction, BaronyColor, BaronyLand, BaronyLandCoordinates, BaronyResourceType } from "../barony-models";
+import {
+  BaronyAction,
+  BaronyColor,
+  BaronyLand,
+  BaronyLandCoordinates,
+  BaronyResourceType
+} from "../barony-models";
 import { BaronyGameStore } from "./barony-game.store";
 
 interface BaronyUiState {
@@ -56,20 +62,26 @@ export class BaronyUiStore extends signalStore(
   }
 
   selectCurrentPlayer$() {
-    return this.game.select$(this.currentPlayerId$, this.game.selectPlayerMap$(), (playerId, playersMap) =>
-      playerId ? playersMap[playerId] : null
+    return this.game.select$(
+      this.currentPlayerId$,
+      this.game.selectPlayerMap$(),
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   } // selectCurrentPlayer$
 
   selectTurnPlayer$() {
-    return this.game.select$(this.turnPlayerId$, this.game.selectPlayerMap$(), (playerId, playersMap) =>
-      playerId ? playersMap[playerId] : null
+    return this.game.select$(
+      this.turnPlayerId$,
+      this.game.selectPlayerMap$(),
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
   } // selectCurrentPlayer$
 
   selectPlayers$() {
-    return this.game.select$(this.game.selectPlayerIds$(), this.game.selectPlayerMap$(), (playerIds, playerMap) =>
-      playerIds.map(id => playerMap[id])
+    return this.game.select$(
+      this.game.selectPlayerIds$(),
+      this.game.selectPlayerMap$(),
+      (playerIds, playerMap) => playerIds.map(id => playerMap[id])
     );
   } // selectPlayers$
 

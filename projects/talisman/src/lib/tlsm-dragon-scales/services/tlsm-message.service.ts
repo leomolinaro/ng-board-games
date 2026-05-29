@@ -1,5 +1,5 @@
 import { CdkScrollable } from "@angular/cdk/scrolling";
-import { NgIf } from "@angular/common";
+
 import { Component, Injectable, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import {
@@ -36,7 +36,14 @@ export class TlsmMessageService {
 @Component({
   selector: "tlsm-message-dialog",
   templateUrl: "tlsm-message-dialog.html",
-  imports: [MatDialogTitle, CdkScrollable, MatDialogContent, MatDialogActions, NgIf, MatButton, MatDialogClose]
+  imports: [
+    MatDialogTitle,
+    CdkScrollable,
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+    MatDialogClose
+  ]
 })
 export class TlsmMessageDialog {
   dialogRef = inject<MatDialogRef<TlsmMessageDialog>>(MatDialogRef);

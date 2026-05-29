@@ -59,7 +59,12 @@ export interface BritAreaLeader extends ABritAreaUnit {
   leaderId: BritLeaderId;
 } // BritAreaLeader
 
-export type BritAreaUnit = BritAreaInfantry | BritAreaCavalry | BritAreaRomanFort | BritAreaSaxonBuhr | BritAreaLeader;
+export type BritAreaUnit =
+  | BritAreaInfantry
+  | BritAreaCavalry
+  | BritAreaRomanFort
+  | BritAreaSaxonBuhr
+  | BritAreaLeader;
 
 export interface BritAreaState {
   units: BritAreaUnit[];

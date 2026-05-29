@@ -16,7 +16,12 @@ import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
 
 @Injectable()
-export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritStory, BritPlayerService> {
+export class BritGameService extends ABgGameService<
+  BritColor,
+  BritPlayer,
+  BritStory,
+  BritPlayerService
+> {
   private rules = inject(BritRulesService);
   private game = inject(BritGameStore);
   private ui = inject(BritUiStore);
@@ -119,12 +124,18 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
     roundId: BritRoundId
   ): Observable<void> {
     this.game.logPhase("populationIncrease");
-    const data = this.rules.populationIncrease.calculatePopulationIncreaseData(nationId, roundId, this.game.get());
+    const data = this.rules.populationIncrease.calculatePopulationIncreaseData(
+      nationId,
+      roundId,
+      this.game.get()
+    );
     switch (data.type) {
       case "infantry-placement": {
         if (data.nInfantries) {
           return from(
-            this.executeTask(playerId, p => firstValueFrom(p.armyPlacement$(data.nInfantries, nationId, playerId)))
+            this.executeTask(playerId, p =>
+              firstValueFrom(p.armyPlacement$(data.nInfantries, nationId, playerId))
+            )
           ).pipe(
             map(armyPlacement => {
               const infantryPlacement: { areaId: BritLandAreaId; quantity: number }[] = [];
@@ -161,7 +172,9 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
 
   private movementPhase$(nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase("movement");
-    return from(this.executeTask(playerId, p => firstValueFrom(p.armyMovements$(nationId, playerId)))).pipe(
+    return from(
+      this.executeTask(playerId, p => firstValueFrom(p.armyMovements$(nationId, playerId)))
+    ).pipe(
       map(armyMovements => {
         if (armyMovements.movements?.length) {
           this.game.applyArmyMovements(armyMovements, true);
@@ -177,7 +190,9 @@ export class BritGameService extends ABgGameService<BritColor, BritPlayer, BritS
   private battlesRetreatsPhase$(nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase("battlesRetreats");
     if (this.rules.battlesRetreats.hasBattlesToResolve(nationId, this.game.get())) {
-      return from(this.executeTask(playerId, p => firstValueFrom(p.battleInitiation$(nationId, playerId)))).pipe(
+      return from(
+        this.executeTask(playerId, p => firstValueFrom(p.battleInitiation$(nationId, playerId)))
+      ).pipe(
         map(battleInitiation => {
           console.log("battleInitiation", battleInitiation);
           return void 0;

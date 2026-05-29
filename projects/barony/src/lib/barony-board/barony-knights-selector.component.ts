@@ -1,5 +1,12 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output
+} from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 
 @Component({

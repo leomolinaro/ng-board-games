@@ -16,9 +16,21 @@ export interface Games {
 
 const GAMES: Games[] = [
   { name: "Barony", routerLink: GAME_PATH.barony, imageSource: "assets/barony/game-image.jpg" },
-  { name: "Britannia", routerLink: GAME_PATH.britannia, imageSource: "assets/britannia/game-image.jpg" },
-  { name: "A Game of Thrones LCG 2.0", routerLink: GAME_PATH.agotLcg2, imageSource: "assets/agot/game-image.jpg" },
-  { name: "Talisman", routerLink: GAME_PATH.talisman, imageSource: "assets/talisman/game-image.jpg" },
+  {
+    name: "Britannia",
+    routerLink: GAME_PATH.britannia,
+    imageSource: "assets/britannia/game-image.jpg"
+  },
+  {
+    name: "A Game of Thrones LCG 2.0",
+    routerLink: GAME_PATH.agotLcg2,
+    imageSource: "assets/agot/game-image.jpg"
+  },
+  {
+    name: "Talisman",
+    routerLink: GAME_PATH.talisman,
+    imageSource: "assets/talisman/game-image.jpg"
+  },
   { name: "War of the Ring", routerLink: GAME_PATH.wort, imageSource: "assets/wotr/game-image.png" }
 ];
 

@@ -152,7 +152,11 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     return this.select$(s => s.endGame);
   }
 
-  private updatePlayer(actionName: string, playerId: BaronyColor, updater: (p: BaronyPlayer) => BaronyPlayer) {
+  private updatePlayer(
+    actionName: string,
+    playerId: BaronyColor,
+    updater: (p: BaronyPlayer) => BaronyPlayer
+  ) {
     this.update(actionName, s => ({
       ...s,
       players: {
@@ -172,7 +176,11 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     }));
   } // updateGameBox
 
-  private updateLand(actionName: string, land: BaronyLandCoordinates, updater: (lt: BaronyLand) => BaronyLand) {
+  private updateLand(
+    actionName: string,
+    land: BaronyLandCoordinates,
+    updater: (lt: BaronyLand) => BaronyLand
+  ) {
     const key = landCoordinatesToId(land);
     this.update(actionName, s => ({
       ...s,
@@ -206,17 +214,28 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     }));
   } // removePawnFromPlayer
 
-  private addPawnToLandTile(pawnType: BaronyPawnType, pawnColor: BaronyColor, land: BaronyLandCoordinates) {
+  private addPawnToLandTile(
+    pawnType: BaronyPawnType,
+    pawnColor: BaronyColor,
+    land: BaronyLandCoordinates
+  ) {
     this.updateLand("Add pawn to land tile", land, lt => ({
       ...lt,
       pawns: immutableUtil.listPush([{ color: pawnColor, type: pawnType }], lt.pawns)
     }));
   } // addPawnToLandTile
 
-  private removePawnFromLandTile(pawnType: BaronyPawnType, pawnColor: BaronyColor, land: BaronyLandCoordinates) {
+  private removePawnFromLandTile(
+    pawnType: BaronyPawnType,
+    pawnColor: BaronyColor,
+    land: BaronyLandCoordinates
+  ) {
     this.updateLand("Remove pawn from land tile", land, lt => ({
       ...lt,
-      pawns: immutableUtil.listRemoveFirst(p => p.type === pawnType && p.color === pawnColor, lt.pawns)
+      pawns: immutableUtil.listRemoveFirst(
+        p => p.type === pawnType && p.color === pawnColor,
+        lt.pawns
+      )
     }));
   } // removePawnFromLandTile
 
@@ -255,7 +274,10 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
   private addPawnToGameBox(pawnType: BaronyPawnType, pawnColor: BaronyColor) {
     this.updateGameBox("Add pawn to gameBox", gameBox => ({
       ...gameBox,
-      removedPawns: immutableUtil.listPush([{ color: pawnColor, type: pawnType }], gameBox.removedPawns)
+      removedPawns: immutableUtil.listPush(
+        [{ color: pawnColor, type: pawnType }],
+        gameBox.removedPawns
+      )
     }));
   } // addPawnToGameBox
 
@@ -366,7 +388,11 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     this.addLog("Log newCity", { type: "newCity", land: land, player: player });
   }
   logConstruction(construction: BaronyConstruction, player: BaronyColor) {
-    this.addLog("Log construction", { type: "construction", construction: construction, player: player });
+    this.addLog("Log construction", {
+      type: "construction",
+      construction: construction,
+      player: player
+    });
   }
   logRecuitment(land: BaronyLandCoordinates, player: BaronyColor) {
     this.addLog("Log recuitment", { type: "recruitment", land: land, player: player });

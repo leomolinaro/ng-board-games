@@ -189,7 +189,12 @@ export interface BritRound {
   kingElection: boolean;
 } // BritRound
 
-export type BritPhase = "populationIncrease" | "movement" | "battlesRetreats" | "raiderWithdrawal" | "overpopulation";
+export type BritPhase =
+  | "populationIncrease"
+  | "movement"
+  | "battlesRetreats"
+  | "raiderWithdrawal"
+  | "overpopulation";
 
 export interface BritEvent {
   nation: BritNationId;

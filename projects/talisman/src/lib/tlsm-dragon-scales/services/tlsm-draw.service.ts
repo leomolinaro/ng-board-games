@@ -2,7 +2,10 @@ import { TlsmDragonId, TlsmStore } from "../tlsm-store";
 import { TlsmMessageService } from "./tlsm-message.service";
 
 abstract class TokenResolver {
-  constructor(protected store: TlsmStore, protected messager: TlsmMessageService) {}
+  constructor(
+    protected store: TlsmStore,
+    protected messager: TlsmMessageService
+  ) {}
 
   abstract drawSlumber(player: string): void;
   abstract drawRage(player: string): void;
@@ -12,7 +15,12 @@ abstract class TokenResolver {
   drawToken(player: string) {
     const pool = this.store.getPool();
     const poolSize =
-      pool.scales.varthrax + pool.scales.cadorus + pool.scales.grilipus + pool.rages + pool.slumbers + pool.strikes;
+      pool.scales.varthrax +
+      pool.scales.cadorus +
+      pool.scales.grilipus +
+      pool.rages +
+      pool.slumbers +
+      pool.strikes;
     const x = Math.floor(Math.random() * poolSize);
     let limit = pool.scales.varthrax;
     if (x < limit) {
@@ -58,7 +66,10 @@ export class CompleteTokenResolver extends TokenResolver {
     this.store.addLog(player + " draws a rage token.", "../assets/talisman/rage-token.png");
     const king = this.store.getKing();
     if (king) {
-      this.messager.alert(player + " suffers " + king.name + "'s rage.", "../assets/talisman/rage-token.png");
+      this.messager.alert(
+        player + " suffers " + king.name + "'s rage.",
+        "../assets/talisman/rage-token.png"
+      );
     }
   } // drawRage
 
@@ -97,10 +108,17 @@ export class AskTokenResolver extends TokenResolver {
     const king = this.store.getKing();
     if (king) {
       this.messager
-        .confirm(player + " draws a rage token.", "../assets/talisman/rage-token.png", "Has the token to be resolved?")
+        .confirm(
+          player + " draws a rage token.",
+          "../assets/talisman/rage-token.png",
+          "Has the token to be resolved?"
+        )
         .subscribe(confirm => {
           if (confirm) {
-            this.messager.alert(player + " suffers " + king.name + "'s rage.", "../assets/talisman/rage-token.png");
+            this.messager.alert(
+              player + " suffers " + king.name + "'s rage.",
+              "../assets/talisman/rage-token.png"
+            );
           } // if
         }); // subscribe
     } else {
@@ -128,7 +146,11 @@ export class AskTokenResolver extends TokenResolver {
     const dragon = this.store.getDragon(dragonId);
     const settings = this.store.getSettings();
     this.messager
-      .confirm(player + " draws a " + dragon.name + " token.", dragon.tokenSource, "Has the token to be resolved?")
+      .confirm(
+        player + " draws a " + dragon.name + " token.",
+        dragon.tokenSource,
+        "Has the token to be resolved?"
+      )
       .subscribe(confirm => {
         this.store.drawScale(dragonId, confirm);
         if (confirm) {
@@ -139,7 +161,10 @@ export class AskTokenResolver extends TokenResolver {
               this.store.crown(oldKing.id, false);
             }
             this.store.crown(dragonId, true);
-            this.messager.alert(player + " generates a " + dragon.name + "'s scale.", dragon.tokenSource);
+            this.messager.alert(
+              player + " generates a " + dragon.name + "'s scale.",
+              dragon.tokenSource
+            );
           } // if
         } // if
       }); // subscribe

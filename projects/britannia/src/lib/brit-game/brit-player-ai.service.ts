@@ -9,7 +9,11 @@ import { BritPlayerService } from "./brit-player.service";
 export class BritPlayerAiService implements BritPlayerService {
   private game = inject(BritGameStore);
 
-  armyPlacement$(nInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritArmyPlacement> {
+  armyPlacement$(
+    nInfantries: number,
+    nationId: BritNationId,
+    playerId: BritColor
+  ): Observable<BritArmyPlacement> {
     throw new Error("Method not implemented.");
   } // armiesPlacement$
 

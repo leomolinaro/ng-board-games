@@ -1,4 +1,4 @@
-import { AsyncPipe, NgIf } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
 import { MatDivider } from "@angular/material/divider";
@@ -12,7 +12,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
 @Component({
   selector: "bg-account-button",
   template: `
-    <ng-container *ngIf="user$ | async as user; else signInTemplate">
+    @if (user$ | async; as user) {
       <button
         class="bg-account-button"
         appearance="secondary-grayscale"
@@ -42,8 +42,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
           </button>
         </div>
       </mat-menu>
-    </ng-container>
-    <ng-template #signInTemplate>
+    } @else {
       <button
         class="bg-sign-in-button"
         mat-button
@@ -62,7 +61,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
           Sign in with Google
         </button>
       </mat-menu>
-    </ng-template>
+    }
   `,
   styles: [
     `
@@ -80,7 +79,7 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, MatMenuTrigger, TuiButton, MatMenu, MatDivider, MatMenuItem, MatButton, AsyncPipe]
+  imports: [MatMenuTrigger, TuiButton, MatMenu, MatDivider, MatMenuItem, MatButton, AsyncPipe]
 })
 @UntilDestroy
 export class BgAccountButtonComponent implements OnInit, OnDestroy {

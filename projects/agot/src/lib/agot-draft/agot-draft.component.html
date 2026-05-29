@@ -9,9 +9,9 @@
     [mode]="isHandset ? 'over' : 'side'"
     [opened]="!isHandset">
     <mat-toolbar>Draft generator</mat-toolbar>
-    <mat-progress-bar
-      *ngIf="loading$ | async"
-      mode="indeterminate"></mat-progress-bar>
+    @if (loading$ | async) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
     <mat-accordion
       displayMode="flat"
       multi="true">
@@ -59,11 +59,9 @@
           dense
           #typeList
           [(ngModel)]="selectedTypeIds">
-          <mat-list-option
-            *ngFor="let type of types$ | async"
-            [value]="type.code"
-            >{{ type.name }}</mat-list-option
-          >
+          @for (type of types$ | async; track type) {
+            <mat-list-option [value]="type.code">{{ type.name }}</mat-list-option>
+          }
         </mat-selection-list>
       </mat-expansion-panel>
       <mat-expansion-panel expanded="false">
@@ -85,11 +83,9 @@
           dense
           #factionList
           [(ngModel)]="selectedFactionIds">
-          <mat-list-option
-            *ngFor="let faction of factions$ | async"
-            [value]="faction.code"
-            >{{ faction.name }}</mat-list-option
-          >
+          @for (faction of factions$ | async; track faction) {
+            <mat-list-option [value]="faction.code">{{ faction.name }}</mat-list-option>
+          }
         </mat-selection-list>
       </mat-expansion-panel>
       <mat-expansion-panel expanded="false">
@@ -111,25 +107,24 @@
           dense
           #packList
           [(ngModel)]="selectedPackIds">
-          <mat-list-option
-            *ngFor="let pack of packs$ | async"
-            [value]="pack.code"
-            >{{ pack.name }}</mat-list-option
-          >
+          @for (pack of packs$ | async; track pack) {
+            <mat-list-option [value]="pack.code">{{ pack.name }}</mat-list-option>
+          }
         </mat-selection-list>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar>
-      <button
-        type="button"
-        aria-label="Toggle sidenav"
-        mat-icon-button
-        (click)="drawer.toggle()"
-        *ngIf="isHandset">
-        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-      </button>
+      @if (isHandset) {
+        <button
+          type="button"
+          aria-label="Toggle sidenav"
+          mat-icon-button
+          (click)="drawer.toggle()">
+          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+        </button>
+      }
       <span>A Game of Thrones Lcg - Draft</span>
     </mat-toolbar>
     <agot-card-grid [cards]="draftCards"></agot-card-grid>

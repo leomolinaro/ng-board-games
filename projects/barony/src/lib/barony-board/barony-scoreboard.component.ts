@@ -1,4 +1,3 @@
-import { NgFor } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
 import { SimpleChanges, objectUtil } from "@leobg/commons/utils";
 import { BgSvgComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
@@ -28,19 +27,20 @@ interface BaronyCounterNode {
           [attr.width]="1000"
           preserveAspectRatio="xMinYMin"
           xlink:href="assets/barony/scoreboard.jpg"></svg:image>
-        <svg:image
-          *ngFor="let counterNode of counterNodes; trackBy: counterTrackBy"
-          [attr.width]="counterWidth"
-          [attr.height]="counterHeight"
-          preserveAspectRatio="none"
-          [attr.xlink:href]="counterNode.href"
-          [attr.x]="counterNode.x"
-          [attr.y]="counterNode.y"></svg:image>
+        @for (counterNode of counterNodes; track counterNode.color) {
+          <svg:image
+            [attr.width]="counterWidth"
+            [attr.height]="counterHeight"
+            preserveAspectRatio="none"
+            [attr.xlink:href]="counterNode.href"
+            [attr.x]="counterNode.x"
+            [attr.y]="counterNode.y"></svg:image>
+        }
       </svg:g>
     </svg>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BgSvgComponent, NgFor]
+  imports: [BgSvgComponent]
 })
 export class BaronyScoreboardComponent implements OnChanges {
   constructor() {}
@@ -51,8 +51,6 @@ export class BaronyScoreboardComponent implements OnChanges {
   counterHeight = 50;
 
   counterNodes!: BaronyCounterNode[];
-
-  counterTrackBy = (counterNode: BaronyCounterNode) => counterNode.color;
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.players) {

@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -41,12 +41,10 @@ import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BaronyMapComponent,
-    NgIf,
     BaronyKnightsSelectorComponent,
     BaronyBuildingsSelectorComponent,
     BaronyResourcesSelectorComponent,
     BaronyActionsComponent,
-    NgFor,
     BaronyPlayerStatusComponent,
     BgMapZoomButtonsComponent,
     BaronyScoreboardComponent,
@@ -94,8 +92,6 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
   scoreboardFixed = false;
 
   numberOfKnights = 1;
-
-  playerTrackBy = (player: BaronyPlayer) => player.id;
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.maxNumberOfKnights) {

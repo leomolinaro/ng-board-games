@@ -12,11 +12,11 @@
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">
-    <div
-      *ngIf="message"
-      [class]="'brit-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
-      <div class="brit-board-instructions">{{ message }}</div>
-    </div>
+    @if (message) {
+      <div [class]="'brit-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
+        <div class="brit-board-instructions">{{ message }}</div>
+      </div>
+    }
     <!-- *ngIf="validActions || canPass || canCancel" -->
     <!-- [validActions]="validActions" -->
     <!-- (actionClick)="onActionClick ($event)" -->
@@ -30,24 +30,27 @@
       (cancelClick)="onCancelClick()">
     </brit-actions>
     <div class="brit-board-players-widget">
-      <brit-player
-        *ngFor="let player of players; trackBy: playerTrackBy"
-        class="brit-board-player-widget"
-        [player]="player"
-        [currentPlayer]="player === currentPlayer"
-        (selectPlayer)="onPlayerSelect(player)"
-        (nationClick)="onPlayerNationClick($event)">
-      </brit-player>
+      @for (player of players; track playerTrackBy($index, player)) {
+        <brit-player
+          class="brit-board-player-widget"
+          [player]="player"
+          [currentPlayer]="player === currentPlayer"
+          (selectPlayer)="onPlayerSelect(player)"
+          (nationClick)="onPlayerNationClick($event)">
+        </brit-player>
+      }
     </div>
     <div class="brit-board-extras">
-      <bg-map-zoom-buttons
-        *ngIf="zoomFixed"
-        class="brit-board-zoom-buttons-widget"
-        [controls]="britMap.bgMapZoom"></bg-map-zoom-buttons>
-      <brit-logs
-        *ngIf="logsFixed"
-        class="brit-board-logs-widget"
-        [logs]="logs"></brit-logs>
+      @if (zoomFixed) {
+        <bg-map-zoom-buttons
+          class="brit-board-zoom-buttons-widget"
+          [controls]="britMap.bgMapZoom"></bg-map-zoom-buttons>
+      }
+      @if (logsFixed) {
+        <brit-logs
+          class="brit-board-logs-widget"
+          [logs]="logs"></brit-logs>
+      }
       <div class="brit-board-buttons">
         <button
           class="brit-board-button"

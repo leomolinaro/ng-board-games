@@ -1,4 +1,4 @@
-import { AsyncPipe, NgFor, NgIf, NgStyle } from "@angular/common";
+import { AsyncPipe, NgStyle } from "@angular/common";
 import { Component, Input, OnInit, inject } from "@angular/core";
 import { MatCard, MatCardAvatar, MatCardHeader, MatCardTitle } from "@angular/material/card";
 import { Observable } from "rxjs";
@@ -9,7 +9,7 @@ import { IDragon, TlsmDragonId, TlsmStore } from "../tlsm-store";
   selector: "tlsm-dragon-card",
   templateUrl: "./tlsm-dragon-card.component.html",
   styleUrls: ["./tlsm-dragon-card.component.scss"],
-  imports: [NgIf, MatCard, MatCardHeader, MatCardAvatar, NgStyle, MatCardTitle, NgFor, AsyncPipe, BgTimesPipe]
+  imports: [MatCard, MatCardHeader, MatCardAvatar, NgStyle, MatCardTitle, AsyncPipe, BgTimesPipe]
 })
 export class TlsmDragonCardComponent implements OnInit {
   private store = inject(TlsmStore);

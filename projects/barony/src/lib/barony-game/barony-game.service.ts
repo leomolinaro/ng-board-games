@@ -36,7 +36,12 @@ interface BaronyTurnOutput {
 }
 
 @Injectable()
-export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer, BaronyStory, ABaronyPlayerService> {
+export class BaronyGameService extends ABgGameService<
+  BaronyColor,
+  BaronyPlayer,
+  BaronyStory,
+  ABaronyPlayerService
+> {
   private gameStore = inject(BaronyGameStore);
   protected aiPlayer = inject(BaronyPlayerAiService);
   protected localPlayer = inject(BaronyPlayerLocalService);
@@ -124,7 +129,11 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     return { lastRound: lastRound };
   }
 
-  private recruitment(numberOfKnights: number, landTileCoordinates: BaronyLandCoordinates, player: BaronyColor) {
+  private recruitment(
+    numberOfKnights: number,
+    landTileCoordinates: BaronyLandCoordinates,
+    player: BaronyColor
+  ) {
     for (let i = 0; i < numberOfKnights; i++) {
       this.gameStore.applyRecruitment(landTileCoordinates, player);
       this.gameStore.logRecuitment(landTileCoordinates, player);
@@ -241,7 +250,11 @@ export class BaronyGameService extends ABgGameService<BaronyColor, BaronyPlayer,
     return stories;
   }
 
-  private playerDocToPlayerInit(playerDoc: BaronyPlayerDoc, user: BgUser, isOwner: boolean): BaronyPlayer {
+  private playerDocToPlayerInit(
+    playerDoc: BaronyPlayerDoc,
+    user: BgUser,
+    isOwner: boolean
+  ): BaronyPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit(playerDoc),

@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,7 +26,10 @@ import { BritPlayerComponent } from "../brit-player/brit-player.component";
 import { BritActionsComponent } from "./brit-actions.component";
 import { BritLogsComponent } from "./brit-logs.component";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
-import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./brit-units-selector-sheet.component";
+import {
+  BritUnitsSelectorSheetComponent,
+  BritUnitsSelectorSheetInput
+} from "./brit-units-selector-sheet.component";
 
 @Component({
   selector: "brit-board",
@@ -35,9 +38,7 @@ import { BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput } from "./
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BritMapComponent,
-    NgIf,
     BritActionsComponent,
-    NgFor,
     BritPlayerComponent,
     BgMapZoomButtonsComponent,
     BritLogsComponent,
@@ -107,7 +108,10 @@ export class BritBoardComponent {
   private lastBottomSheet: "nation-card" | "unit-number-selection" | null = null;
 
   onPlayerNationClick(nationId: BritNationId) {
-    const openedRef: MatBottomSheetRef<BritNationCardSheetComponent, [BritNationId, BritNationState]> | null =
+    const openedRef: MatBottomSheetRef<
+      BritNationCardSheetComponent,
+      [BritNationId, BritNationState]
+    > | null =
       this.lastBottomSheet === "nation-card" ? this.bottomSheet._openedBottomSheetRef : null;
     const nationState = this.nationStates[nationId];
     if (openedRef) {
@@ -163,16 +167,21 @@ export class BritBoardComponent {
     return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
   } // getUnitNodeId
 
-  private nSelectedUnits$(unit: BritAreaUnit, quantity: number, maxQuantity: number): Observable<number | undefined> {
+  private nSelectedUnits$(
+    unit: BritAreaUnit,
+    quantity: number,
+    maxQuantity: number
+  ): Observable<number | undefined> {
     this.lastBottomSheet = "unit-number-selection";
-    const ref = this.bottomSheet.open<BritUnitsSelectorSheetComponent, BritUnitsSelectorSheetInput, number>(
+    const ref = this.bottomSheet.open<
       BritUnitsSelectorSheetComponent,
-      {
-        data: { unit, quantity, maxQuantity },
-        panelClass: "brit-unit-number-selection-sheet",
-        hasBackdrop: true
-      }
-    );
+      BritUnitsSelectorSheetInput,
+      number
+    >(BritUnitsSelectorSheetComponent, {
+      data: { unit, quantity, maxQuantity },
+      panelClass: "brit-unit-number-selection-sheet",
+      hasBackdrop: true
+    });
     return ref.afterDismissed();
   } // nUnitsSelector$
 } // BritBoardComponent

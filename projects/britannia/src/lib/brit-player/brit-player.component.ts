@@ -1,4 +1,4 @@
-import { NgClass, NgFor } from "@angular/common";
+import { NgClass } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -43,7 +43,7 @@ interface BritNationNode {
   templateUrl: "./brit-player.component.html",
   styleUrls: ["./brit-player.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgFor, MatTooltip]
+  imports: [NgClass, MatTooltip]
 })
 export class BritPlayerComponent implements OnInit {
   private authService = inject(BgAuthService);
@@ -66,7 +66,8 @@ export class BritPlayerComponent implements OnInit {
 
   selectedNationNode: BritNationNode | null = null;
 
-  nationTrackBy: TrackByFunction<BritNationNode> = (index, nationNode: BritNationNode) => nationNode.id;
+  nationTrackBy: TrackByFunction<BritNationNode> = (index, nationNode: BritNationNode) =>
+    nationNode.id;
   // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
   ngOnInit(): void {
@@ -81,7 +82,11 @@ export class BritPlayerComponent implements OnInit {
   } // ngOnChanges
 
   onCardClick() {
-    if (!this.player.isAi && this.authService.isUserId(this.player.controller.id) && !this.currentPlayer) {
+    if (
+      !this.player.isAi &&
+      this.authService.isUserId(this.player.controller.id) &&
+      !this.currentPlayer
+    ) {
       this.selectPlayer.emit();
     } // if
   } // onCardClick

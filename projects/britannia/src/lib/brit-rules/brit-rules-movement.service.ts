@@ -23,7 +23,11 @@ export class BritRulesMovementService {
     return units;
   }
 
-  getValidUnitsByAreaForMovement(nationId: BritNationId, areaId: BritAreaId, state: BritGameState): BritAreaUnit[] {
+  getValidUnitsByAreaForMovement(
+    nationId: BritNationId,
+    areaId: BritAreaId,
+    state: BritGameState
+  ): BritAreaUnit[] {
     return this.getValidUnitsByNationByArea(areaId, nationId, state);
   }
 
@@ -56,7 +60,11 @@ export class BritRulesMovementService {
     return validUnits;
   }
 
-  getValidAreasForMovement(areaId: BritAreaId, nationId: BritNationId, state: BritGameState): BritAreaId[] {
+  getValidAreasForMovement(
+    areaId: BritAreaId,
+    nationId: BritNationId,
+    state: BritGameState
+  ): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
     const area = this.components.getArea(areaId);
     area.neighbors.forEach(n => {

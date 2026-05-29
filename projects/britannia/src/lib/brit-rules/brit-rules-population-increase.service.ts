@@ -39,7 +39,11 @@ export class BritRulesPopulationIncreaseService {
     return state.nations[nationId].active;
   } // isNationActive
 
-  getValidLandsForPlacement(nationId: BritNationId, playerId: string, state: BritGameState): BritLandAreaId[] {
+  getValidLandsForPlacement(
+    nationId: BritNationId,
+    playerId: string,
+    state: BritGameState
+  ): BritLandAreaId[] {
     if (nationId === "romans") {
       return [];
     }
@@ -71,7 +75,10 @@ export class BritRulesPopulationIncreaseService {
       } // if - else
     } // for
     if (overstackedLand) {
-      if (!overstackedLand.difficultTerrain || overstackedArmiesCount! < this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT) {
+      if (
+        !overstackedLand.difficultTerrain ||
+        overstackedArmiesCount! < this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT
+      ) {
         validLands.push(overstackedLand.id);
       } // if - else
     } else {
@@ -127,7 +134,8 @@ export class BritRulesPopulationIncreaseService {
         if (overstackedArmiesCount) {
           availableSlots += this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT - overstackedArmiesCount;
         } else {
-          availableSlots += this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT - this.DIFFICULT_TERRAIN_STACKING_LIMIT;
+          availableSlots +=
+            this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT - this.DIFFICULT_TERRAIN_STACKING_LIMIT;
         } // if - else
         if (nInfantries > availableSlots) {
           nInfantries = availableSlots;

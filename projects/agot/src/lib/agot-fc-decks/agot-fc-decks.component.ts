@@ -1,6 +1,13 @@
 import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { MatCell, MatCellDef, MatColumnDef, MatRow, MatRowDef, MatTable } from "@angular/material/table";
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatRow,
+  MatRowDef,
+  MatTable
+} from "@angular/material/table";
 import { BgTransformFn, Loading, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import { tap } from "rxjs/operators";
@@ -20,7 +27,16 @@ interface AgotFcDeck {
   templateUrl: "./agot-fc-decks.component.html",
   styleUrls: ["./agot-fc-decks.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatTable, MatColumnDef, MatCellDef, MatCell, MatRowDef, MatRow, AsyncPipe, BgTransformPipe]
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatCellDef,
+    MatCell,
+    MatRowDef,
+    MatRow,
+    AsyncPipe,
+    BgTransformPipe
+  ]
 })
 @UntilDestroy
 export class AgotFcDecksComponent implements OnInit, OnDestroy {

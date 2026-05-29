@@ -1,4 +1,12 @@
-import { Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef, inject } from "@angular/core";
+import {
+  Directive,
+  Input,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewContainerRef,
+  inject
+} from "@angular/core";
 import {
   BehaviorSubject,
   EMPTY,
@@ -97,7 +105,8 @@ export function NumberInput(fallbackValue?: number) {
         return this[rawNumberKey];
       },
       set: function (value: any) {
-        this[rawNumberKey] = !isNaN(parseFloat(value)) && !isNaN(Number(value)) ? Number(value) : fallbackValue;
+        this[rawNumberKey] =
+          !isNaN(parseFloat(value)) && !isNaN(Number(value)) ? Number(value) : fallbackValue;
       } // set
     });
   };
@@ -235,7 +244,10 @@ export function DebouncingEvent(config?: DebouncingEventConfig) {
 } // DebouncingEvent
 
 function asyncEventDecorator(
-  generator$: (origin$: Observable<any>, asyncEffect$: (args: any) => Observable<any>) => Observable<any>,
+  generator$: (
+    origin$: Observable<any>,
+    asyncEffect$: (args: any) => Observable<any>
+  ) => Observable<any>,
   config: AsyncEventConfig | undefined,
   copyNgOnChangesArg: boolean
 ) {

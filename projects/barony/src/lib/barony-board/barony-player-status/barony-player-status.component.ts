@@ -12,7 +12,12 @@ import {
 import { BgAuthService } from "@leobg/commons";
 import { BooleanInput, SimpleChanges } from "@leobg/commons/utils";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../../barony-constants";
-import { BaronyBuilding, BaronyPawnType, BaronyPlayer, BaronyResourceType } from "../../barony-models";
+import {
+  BaronyBuilding,
+  BaronyPawnType,
+  BaronyPlayer,
+  BaronyResourceType
+} from "../../barony-models";
 
 interface BaronyPawnNode {
   source: string;
@@ -50,14 +55,20 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   resourceNodes!: BaronyResourceNode[];
 
   pawnTrackBy: TrackByFunction<BaronyPawnNode> = (index, pawnNode: BaronyPawnNode) => pawnNode.type;
-  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (index, resourceNode: BaronyResourceNode) => resourceNode.type;
+  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (
+    index,
+    resourceNode: BaronyResourceNode
+  ) => resourceNode.type;
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     let refreshPawns = false;
     let refreshResources = false;
 
     if (changes.player) {
-      if (!changes.player.previousValue || changes.player.previousValue.pawns !== changes.player.currentValue.pawns) {
+      if (
+        !changes.player.previousValue ||
+        changes.player.previousValue.pawns !== changes.player.currentValue.pawns
+      ) {
         refreshPawns = true;
       } // if
       if (
@@ -80,7 +91,9 @@ export class BaronyPlayerStatusComponent implements OnChanges {
         type: pt,
         quantity: this.player.pawns[pt],
         active:
-          this.validBuildings && (pt === "stronghold" || pt === "village") ? this.validBuildings.includes(pt) : false
+          this.validBuildings && (pt === "stronghold" || pt === "village")
+            ? this.validBuildings.includes(pt)
+            : false
       }));
     } // if
 
@@ -95,7 +108,11 @@ export class BaronyPlayerStatusComponent implements OnChanges {
   } // ngOnChanges
 
   onCardClick() {
-    if (!this.player.isAi && this.authService.isUserId(this.player.controller.id) && !this.currentPlayer) {
+    if (
+      !this.player.isAi &&
+      this.authService.isUserId(this.player.controller.id) &&
+      !this.currentPlayer
+    ) {
       this.selectPlayer.emit();
     } // if
   } // onCardClick

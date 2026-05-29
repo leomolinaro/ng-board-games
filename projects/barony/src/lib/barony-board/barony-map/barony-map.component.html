@@ -70,14 +70,15 @@
       translateY: 200,
       scale: 20
     }">
-    <svg:g
-      *ngFor="let land of lands; trackBy: landTrackBy"
-      baronyLandTile
-      [type]="land.type"
-      [coordinates]="land.coordinates"
-      [pawns]="land.pawns"
-      [active]="isValid ? isValid[land.id] : false"
-      [disabled]="isValid ? !isValid[land.id] : false"
-      (landTileClick)="onLandTileClick(land)"></svg:g>
+    @for (land of lands; track land.id) {
+      <svg:g
+        baronyLandTile
+        [type]="land.type"
+        [coordinates]="land.coordinates"
+        [pawns]="land.pawns"
+        [active]="isValid ? isValid[land.id] : false"
+        [disabled]="isValid ? !isValid[land.id] : false"
+        (landTileClick)="onLandTileClick(land)"></svg:g>
+    }
   </svg:g>
 </svg>

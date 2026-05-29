@@ -1,8 +1,21 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { NgClass } from "@angular/common";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output
+} from "@angular/core";
 import { BooleanInput, Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
-import { BaronyColor, BaronyLandCoordinates, BaronyLandType, BaronyPawn, BaronyPawnType } from "../../barony-models";
+import {
+  BaronyColor,
+  BaronyLandCoordinates,
+  BaronyLandType,
+  BaronyPawn,
+  BaronyPawnType
+} from "../../barony-models";
 import { BaronyLandCoordinatesPipe, hexToCartesian } from "./barony-land-tile-coordinates.pipe";
 
 interface BaronyPawnNode {
@@ -21,7 +34,7 @@ interface BaronyPawnNode {
   templateUrl: "./barony-land-tile.component.html",
   styleUrls: ["./barony-land-tile.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgIf, NgFor, BaronyLandCoordinatesPipe]
+  imports: [NgClass, BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
   constructor() {}
@@ -45,8 +58,6 @@ export class BaronyLandComponent implements OnChanges {
   textYOffset = 0.6;
 
   activeCircleRadius = Math.sqrt(3) / 2;
-
-  pawnTrackBy = (pawnNode: BaronyPawnNode) => pawnNode.color + "_" + pawnNode.type;
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.coordinates) {

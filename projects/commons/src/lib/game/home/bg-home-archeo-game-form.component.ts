@@ -11,7 +11,11 @@ import { MatFormField, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { MatRadioButton, MatRadioGroup } from "@angular/material/radio";
 import { BgFieldConfig } from "../../form";
-import { BgFormDirective, BgInputFieldDirective, BgRadioFieldDirective } from "../../form/bg-form.directive";
+import {
+  BgFormDirective,
+  BgInputFieldDirective,
+  BgRadioFieldDirective
+} from "../../form/bg-form.directive";
 import { BgArcheoGame } from "../bg-proto-game.service";
 
 @Component({

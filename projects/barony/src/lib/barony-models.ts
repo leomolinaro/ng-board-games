@@ -4,7 +4,13 @@ export type BaronyColor = "blue" | "yellow" | "red" | "green";
 export type BaronyLandType = "mountain" | "forest" | "plain" | "fields" | "lake";
 export type BaronyPawnType = "city" | "knight" | "village" | "stronghold";
 export type BaronyBuilding = Extract<BaronyPawnType, "village" | "stronghold">;
-export type BaronyAction = "recruitment" | "movement" | "construction" | "newCity" | "expedition" | "nobleTitle";
+export type BaronyAction =
+  | "recruitment"
+  | "movement"
+  | "construction"
+  | "newCity"
+  | "expedition"
+  | "nobleTitle";
 export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
 
 export interface ABaronyPlayer {

@@ -1,5 +1,10 @@
-import { NgFor } from "@angular/common";
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject
+} from "@angular/core";
 import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { MatIconButton } from "@angular/material/button";
 import { MatIcon } from "@angular/material/icon";
@@ -27,14 +32,16 @@ interface BritUnitNode {
       <mat-icon>close</mat-icon>
     </button>
     <div class="brit-nation-units">
-      <div
-        *ngFor="let unitNode of unitNodes"
-        class="brit-nation-unit">
-        <img
-          class="brit-nation-unit-image"
-          [src]="unitNode.imageSource" />
-        <span class="brit-nation-unit-quantity">{{ unitNode.available }} / {{ unitNode.total }}</span>
-      </div>
+      @for (unitNode of unitNodes; track unitNode) {
+        <div class="brit-nation-unit">
+          <img
+            class="brit-nation-unit-image"
+            [src]="unitNode.imageSource" />
+          <span class="brit-nation-unit-quantity"
+            >{{ unitNode.available }} / {{ unitNode.total }}</span
+          >
+        </div>
+      }
     </div>
   `,
   styles: [
@@ -75,10 +82,11 @@ interface BritUnitNode {
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconButton, MatIcon, NgFor]
+  imports: [MatIconButton, MatIcon]
 })
 export class BritNationCardSheetComponent implements OnInit {
-  private bottomSheetRef = inject<MatBottomSheetRef<BritNationCardSheetComponent, void>>(MatBottomSheetRef);
+  private bottomSheetRef =
+    inject<MatBottomSheetRef<BritNationCardSheetComponent, void>>(MatBottomSheetRef);
   data = inject<[BritNationId, BritNationState]>(MAT_BOTTOM_SHEET_DATA);
   private assetsService = inject(BritAssetsService);
   private components = inject(BritComponentsService);

@@ -5,7 +5,12 @@ import { BritAreaId, BritColor, BritLandAreaId, BritNationId } from "../brit-com
 import { BritComponentsService } from "../brit-components.service";
 import { BritAreaUnit } from "../brit-game-state.models";
 import { BritRulesService } from "../brit-rules/brit-rules.service";
-import { BritArmyMovement, BritArmyMovements, BritArmyPlacement, BritBattleInitiation } from "../brit-story.models";
+import {
+  BritArmyMovement,
+  BritArmyMovements,
+  BritArmyPlacement,
+  BritBattleInitiation
+} from "../brit-story.models";
 import { BritGameStore } from "./brit-game.store";
 import { BritPlayerService } from "./brit-player.service";
 import { BritUiStore } from "./brit-ui.store";
@@ -17,7 +22,11 @@ export class BritPlayerLocalService implements BritPlayerService {
   private rules = inject(BritRulesService);
   private components = inject(BritComponentsService);
 
-  armyPlacement$(nInfantries: number, nationId: BritNationId, playerId: BritColor): Observable<BritArmyPlacement> {
+  armyPlacement$(
+    nInfantries: number,
+    nationId: BritNationId,
+    playerId: BritColor
+  ): Observable<BritArmyPlacement> {
     const placement: BritArmyPlacement = {
       infantryPlacement: []
     };
@@ -47,7 +56,11 @@ export class BritPlayerLocalService implements BritPlayerService {
     nationId: BritNationId,
     playerId: BritColor
   ): Observable<BritLandAreaId> {
-    const validLands = this.rules.populationIncrease.getValidLandsForPlacement(nationId, playerId, this.game.get());
+    const validLands = this.rules.populationIncrease.getValidLandsForPlacement(
+      nationId,
+      playerId,
+      this.game.get()
+    );
     this.ui.updateUi("Choose land for placement", s => ({
       ...s,
       ...this.ui.resetUi(),
@@ -82,31 +95,44 @@ export class BritPlayerLocalService implements BritPlayerService {
     movements: BritArmyMovement[]
   ): Observable<BritArmyMovement | "pass"> {
     return this.chooseUnitsForMovement$(nationId, playerId, movements).pipe(
-      map(unitsOrPass => (unitsOrPass === "pass" ? "pass" : { units: unitsOrPass, toAreaId: null! })),
-      expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">>(armyMovementOrPass => {
-        if (armyMovementOrPass === "pass") {
-          return EMPTY;
-        } else if (armyMovementOrPass.toAreaId) {
-          return EMPTY;
-        } else {
-          this.ui.updateUi("Units selected", s => ({ ...s, selectedUnits: armyMovementOrPass.units }));
-          if (armyMovementOrPass.units.length) {
-            return this.chooseUnitsOrAreaForMovement$(nationId, playerId, armyMovementOrPass.units).pipe(
-              map(unitsOrAreaId => {
-                if (typeof unitsOrAreaId === "string") {
-                  return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
-                } else {
-                  return { ...armyMovementOrPass, units: unitsOrAreaId };
-                } // if - else
-              })
-            );
+      map(unitsOrPass =>
+        unitsOrPass === "pass" ? "pass" : { units: unitsOrPass, toAreaId: null! }
+      ),
+      expand<BritArmyMovement | "pass", Observable<BritArmyMovement | "pass">>(
+        armyMovementOrPass => {
+          if (armyMovementOrPass === "pass") {
+            return EMPTY;
+          } else if (armyMovementOrPass.toAreaId) {
+            return EMPTY;
           } else {
-            return this.chooseUnitsForMovement$(nationId, playerId, movements).pipe(
-              map(unitsOrPass => (unitsOrPass === "pass" ? "pass" : { ...armyMovementOrPass, units: unitsOrPass }))
-            );
+            this.ui.updateUi("Units selected", s => ({
+              ...s,
+              selectedUnits: armyMovementOrPass.units
+            }));
+            if (armyMovementOrPass.units.length) {
+              return this.chooseUnitsOrAreaForMovement$(
+                nationId,
+                playerId,
+                armyMovementOrPass.units
+              ).pipe(
+                map(unitsOrAreaId => {
+                  if (typeof unitsOrAreaId === "string") {
+                    return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
+                  } else {
+                    return { ...armyMovementOrPass, units: unitsOrAreaId };
+                  } // if - else
+                })
+              );
+            } else {
+              return this.chooseUnitsForMovement$(nationId, playerId, movements).pipe(
+                map(unitsOrPass =>
+                  unitsOrPass === "pass" ? "pass" : { ...armyMovementOrPass, units: unitsOrPass }
+                )
+              );
+            } // if - else
           } // if - else
-        } // if - else
-      }),
+        }
+      ),
       last()
     );
   } // armyMovement$
@@ -127,7 +153,10 @@ export class BritPlayerLocalService implements BritPlayerService {
       canCancel: !!movements.length,
       canPass: true
     }));
-    return race<[BritAreaUnit[], "pass"]>(this.ui.selectedUnitsChange$(), this.ui.passChange$().pipe(mapTo("pass")));
+    return race<[BritAreaUnit[], "pass"]>(
+      this.ui.selectedUnitsChange$(),
+      this.ui.passChange$().pipe(mapTo("pass"))
+    );
   } // chooseUnitsForMovement$
 
   private chooseUnitsOrAreaForMovement$(
@@ -136,8 +165,16 @@ export class BritPlayerLocalService implements BritPlayerService {
     selectedUnits: BritAreaUnit[]
   ): Observable<BritAreaUnit[] | BritAreaId> {
     const areaId = selectedUnits[0].areaId;
-    const validUnits = this.rules.movement.getValidUnitsByAreaForMovement(nationId, areaId, this.game.get());
-    const validAreas = this.rules.movement.getValidAreasForMovement(areaId, nationId, this.game.get());
+    const validUnits = this.rules.movement.getValidUnitsByAreaForMovement(
+      nationId,
+      areaId,
+      this.game.get()
+    );
+    const validAreas = this.rules.movement.getValidAreasForMovement(
+      areaId,
+      nationId,
+      this.game.get()
+    );
     this.ui.updateUi("Select area or units for movement", s => ({
       ...s,
       ...this.ui.resetUi(),
@@ -159,7 +196,10 @@ export class BritPlayerLocalService implements BritPlayerService {
     );
   } // battleInitiation$
 
-  private chooseLandForBattle$(nationId: BritNationId, playerId: BritColor): Observable<BritLandAreaId> {
+  private chooseLandForBattle$(
+    nationId: BritNationId,
+    playerId: BritColor
+  ): Observable<BritLandAreaId> {
     const validAreas = this.rules.battlesRetreats.getValidAreasForBattle(nationId, this.game.get());
     this.ui.updateUi("Select area for battle", s => ({
       ...s,

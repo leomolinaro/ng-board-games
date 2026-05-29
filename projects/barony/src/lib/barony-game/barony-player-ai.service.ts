@@ -38,7 +38,11 @@ export class BaronyPlayerAiService {
       case "recruitment": {
         const validLands = baronyRules.getValidLandsForRecruitment(playerId, this.game);
         const land = randomUtil.getRandomElement(validLands);
-        const maxKnights = baronyRules.getMaxKnightForRecruitment(land.coordinates, playerId, this.game);
+        const maxKnights = baronyRules.getMaxKnightForRecruitment(
+          land.coordinates,
+          playerId,
+          this.game
+        );
         return <BaronyTurnRectruitment>{
           action: "recruitment",
           land: land.coordinates,
@@ -46,7 +50,10 @@ export class BaronyPlayerAiService {
         };
       }
       case "movement": {
-        const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement(playerId, this.game);
+        const validSourceLands = baronyRules.getValidSourceLandsForFirstMovement(
+          playerId,
+          this.game
+        );
         const sourceLand = randomUtil.getRandomElement(validSourceLands);
         const firstMovement = this.executeMovement(sourceLand, playerId);
         this.game.applyMovement(firstMovement, playerId);
@@ -137,16 +144,22 @@ export class BaronyPlayerAiService {
   }
 
   private executeMovement(sourceLand: BaronyLand, player: BaronyColor): BaronyMovement {
-    const validTargetLands = baronyRules.getValidTargetLandsForMovement(sourceLand.coordinates, player, this.game);
+    const validTargetLands = baronyRules.getValidTargetLandsForMovement(
+      sourceLand.coordinates,
+      player,
+      this.game
+    );
     const targetLand = randomUtil.getRandomElement(validTargetLands);
     if (baronyRules.isConflict(targetLand.coordinates, player, this.game)) {
       if (baronyRules.isVillageBeingDestroyed(targetLand.coordinates, player, this.game)) {
-        const villagePlayer = baronyRules.getVillageDestroyedPlayer(targetLand.coordinates, player, this.game);
+        const villagePlayer = baronyRules.getVillageDestroyedPlayer(
+          targetLand.coordinates,
+          player,
+          this.game
+        );
         if (baronyRules.hasResourcesToTakeForVillageDestruction(villagePlayer.id, this.game)) {
-          const validResourcesForVillageDestruction = baronyRules.getValidResourcesForVillageDestruction(
-            villagePlayer.id,
-            this.game
-          );
+          const validResourcesForVillageDestruction =
+            baronyRules.getValidResourcesForVillageDestruction(villagePlayer.id, this.game);
           const resource = randomUtil.getRandomElement(validResourcesForVillageDestruction);
           return {
             fromLand: sourceLand.coordinates,

@@ -14,7 +14,8 @@ const routes: Routes = [
   },
   {
     path: AGOT_UTILITY_PATHS.fcDecks,
-    loadChildren: () => import("./agot-fc-decks/agot-fc-decks.module").then(m => m.AgotFcPacksModule)
+    loadChildren: () =>
+      import("./agot-fc-decks/agot-fc-decks.module").then(m => m.AgotFcPacksModule)
   },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];

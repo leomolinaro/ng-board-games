@@ -1,5 +1,11 @@
 import { inject, Injectable } from "@angular/core";
-import { Auth, user as fireUser, GoogleAuthProvider, signInWithPopup, User } from "@angular/fire/auth";
+import {
+  Auth,
+  user as fireUser,
+  GoogleAuthProvider,
+  signInWithPopup,
+  User
+} from "@angular/fire/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, first, map, switchMap } from "rxjs/operators";
 import { BgCloudService } from "../cloud/bg-cloud.service";
@@ -55,7 +61,9 @@ export class BgAuthService {
   }
 
   autoSignIn$() {
-    const loginType = localStorage.getItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY) as BgUserLoginType | null;
+    const loginType = localStorage.getItem(
+      LOCALSTORAGE_BG_LOGIN_TYPE_KEY
+    ) as BgUserLoginType | null;
     if (loginType) {
       return this.provider(loginType)
         .autoSignIn$()

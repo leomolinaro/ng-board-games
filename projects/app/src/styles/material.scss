@@ -3,9 +3,27 @@
 @use "bg-variables" as bg;
 
 $bg-typography-config: mat.m2-define-typography-config(
-  $headline-1: mat.m2-define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em, $font-family: system-ui),
-  $headline-2: mat.m2-define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em, $font-family: system-ui),
-  $headline-3: mat.m2-define-typography-level(45px, 45px, 400, $letter-spacing: -0.005em, $font-family: system-ui),
+  $headline-1: mat.m2-define-typography-level(
+      112px,
+      112px,
+      300,
+      $letter-spacing: -0.05em,
+      $font-family: system-ui
+    ),
+  $headline-2: mat.m2-define-typography-level(
+      56px,
+      56px,
+      400,
+      $letter-spacing: -0.02em,
+      $font-family: system-ui
+    ),
+  $headline-3: mat.m2-define-typography-level(
+      45px,
+      45px,
+      400,
+      $letter-spacing: -0.005em,
+      $font-family: system-ui
+    ),
   $headline-4: mat.m2-define-typography-level(34px, 40px, 400, $font-family: system-ui),
   $headline-5: mat.m2-define-typography-level(24px, 32px, 400, $font-family: system-ui),
   $subtitle-1: mat.m2-define-typography-level(18px, 28px, 400, $font-family: system-ui),

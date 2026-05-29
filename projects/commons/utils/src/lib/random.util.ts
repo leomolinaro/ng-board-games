@@ -30,7 +30,11 @@ export function getRandomElements<T>(min: number, max: number, array: T[]): T[] 
   return toReturn;
 } // getRandomElement
 
-export function getRandomArrayLength<T>(min: number, max: number, pusher: (index: number) => T): T[] {
+export function getRandomArrayLength<T>(
+  min: number,
+  max: number,
+  pusher: (index: number) => T
+): T[] {
   const length = getRandomInteger(min, max);
   const array: T[] = [];
   for (let i = 0; i < length; i++) {
@@ -51,7 +55,10 @@ export function getRandomDraws<T>(n: number, pool: T[]) {
 } // getRandomDraws
 
 export class BgSimulatedAnnealing<S> {
-  constructor(private energy: (s: S) => number, private neighbour: (s: S) => S) {}
+  constructor(
+    private energy: (s: S) => number,
+    private neighbour: (s: S) => S
+  ) {}
 
   run(s0: S, t0: number, kMax: number): S {
     let s = s0;

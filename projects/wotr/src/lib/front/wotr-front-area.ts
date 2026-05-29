@@ -167,7 +167,7 @@ function initValidUnits(): ValidUnits {
         overflow: auto;
         ::ng-deep {
           .mat-mdc-tab-header {
-            --mdc-secondary-navigation-tab-container-height: 25px;
+            --mat-tab-container-height: 25px;
           }
           .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
             color: var(--wotr-front-color);

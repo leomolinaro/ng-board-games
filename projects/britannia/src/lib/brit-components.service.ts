@@ -202,7 +202,12 @@ export class BritComponentsService {
       "essex",
       "downlands"
     ]);
-    this.initLandArea("kent", "Kent", "england", false, ["sussex", "english-channel", "frisian-sea", "essex"]);
+    this.initLandArea("kent", "Kent", "england", false, [
+      "sussex",
+      "english-channel",
+      "frisian-sea",
+      "essex"
+    ]);
     this.initLandArea("essex", "Essex", "england", false, [
       "downlands",
       "sussex",
@@ -226,7 +231,11 @@ export class BritComponentsService {
       "lindsey",
       "north-mercia"
     ]);
-    this.initLandArea("norfolk", "Norfolk", "england", false, ["suffolk", "frisian-sea", "lindsey"]);
+    this.initLandArea("norfolk", "Norfolk", "england", false, [
+      "suffolk",
+      "frisian-sea",
+      "lindsey"
+    ]);
     this.initLandArea("south-mercia", "South Mercia", "england", false, [
       "hwicce",
       "downlands",
@@ -261,7 +270,11 @@ export class BritComponentsService {
       { id: "dyfed", strait: true },
       { id: "gwent", strait: true }
     ]);
-    this.initLandArea("cornwall", "Cornwall", "england", true, ["atlantic-ocean", "english-channel", "devon"]);
+    this.initLandArea("cornwall", "Cornwall", "england", true, [
+      "atlantic-ocean",
+      "english-channel",
+      "devon"
+    ]);
     this.initLandArea("gwent", "Gwent", "wales", true, [
       "dyfed",
       "atlantic-ocean",
@@ -285,7 +298,13 @@ export class BritComponentsService {
       "gwynedd"
     ]);
     this.initLandArea("gwynedd", "Gwynedd", "wales", false, ["atlantic-ocean", "powys", "clwyd"]);
-    this.initLandArea("clwyd", "Clwyd", "wales", true, ["gwynedd", "powys", "march", "cheshire", "atlantic-ocean"]);
+    this.initLandArea("clwyd", "Clwyd", "wales", true, [
+      "gwynedd",
+      "powys",
+      "march",
+      "cheshire",
+      "atlantic-ocean"
+    ]);
     this.initLandArea("march", "March", "england", false, [
       "powys",
       "hwicce",
@@ -313,8 +332,19 @@ export class BritComponentsService {
       "north-sea",
       "bernicia"
     ]);
-    this.initLandArea("bernicia", "Bernicia", "england", false, ["pennines", "york", "north-sea", "lothian"]);
-    this.initLandArea("pennines", "Pennines", "england", true, ["cumbria", "cheshire", "york", "bernicia", "lothian"]);
+    this.initLandArea("bernicia", "Bernicia", "england", false, [
+      "pennines",
+      "york",
+      "north-sea",
+      "lothian"
+    ]);
+    this.initLandArea("pennines", "Pennines", "england", true, [
+      "cumbria",
+      "cheshire",
+      "york",
+      "bernicia",
+      "lothian"
+    ]);
     this.initLandArea("cumbria", "Cumbria", "england", false, [
       "irish-sea",
       "cheshire",
@@ -331,7 +361,12 @@ export class BritComponentsService {
       "dunedin",
       "strathclyde"
     ]);
-    this.initLandArea("galloway", "Galloway", "england", true, ["irish-sea", "cumbria", "lothian", "strathclyde"]);
+    this.initLandArea("galloway", "Galloway", "england", true, [
+      "irish-sea",
+      "cumbria",
+      "lothian",
+      "strathclyde"
+    ]);
     this.initLandArea("dunedin", "Dunedin", "scotland", false, [
       "dalriada",
       "strathclyde",
@@ -354,9 +389,27 @@ export class BritComponentsService {
       "alban",
       "skye"
     ]);
-    this.initLandArea("alban", "Alban", "scotland", true, ["skye", "dalriada", "dunedin", "mar", "moray"]);
-    this.initLandArea("mar", "Mar", "scotland", true, ["alban", "dunedin", "north-sea", "icelandic-sea", "moray"]);
-    this.initLandArea("moray", "Moray", "scotland", true, ["skye", "alban", "mar", "icelandic-sea", "caithness"]);
+    this.initLandArea("alban", "Alban", "scotland", true, [
+      "skye",
+      "dalriada",
+      "dunedin",
+      "mar",
+      "moray"
+    ]);
+    this.initLandArea("mar", "Mar", "scotland", true, [
+      "alban",
+      "dunedin",
+      "north-sea",
+      "icelandic-sea",
+      "moray"
+    ]);
+    this.initLandArea("moray", "Moray", "scotland", true, [
+      "skye",
+      "alban",
+      "mar",
+      "icelandic-sea",
+      "caithness"
+    ]);
     this.initLandArea("skye", "Skye", "scotland", true, [
       { id: "hebrides", strait: true },
       "icelandic-sea",
@@ -372,8 +425,14 @@ export class BritComponentsService {
       "icelandic-sea",
       { id: "orkneys", strait: true }
     ]);
-    this.initLandArea("orkneys", "Orkneys", "scotland", true, ["icelandic-sea", { id: "caithness", strait: true }]);
-    this.initLandArea("hebrides", "Hebrides", "scotland", true, ["icelandic-sea", { id: "skye", strait: true }]);
+    this.initLandArea("orkneys", "Orkneys", "scotland", true, [
+      "icelandic-sea",
+      { id: "caithness", strait: true }
+    ]);
+    this.initLandArea("hebrides", "Hebrides", "scotland", true, [
+      "icelandic-sea",
+      { id: "skye", strait: true }
+    ]);
     // Sea areas
     this.initSeaArea("icelandic-sea", "Icelandic Sea", [
       "orkneys",
@@ -453,7 +512,9 @@ export class BritComponentsService {
       ["cnut", "Cnut"],
       ["svein-estrithson", "Svein Estrithson"]
     ]);
-    this.initNation("norwegians", "Norwegians", "yellow", 12, 0, 0, [["harald-hardrada", "Harald Hardrada"]]);
+    this.initNation("norwegians", "Norwegians", "yellow", 12, 0, 0, [
+      ["harald-hardrada", "Harald Hardrada"]
+    ]);
     this.initNation("jutes", "Jutes", "green", 6, 0, 0, []);
     this.initNation("angles", "Angles", "blue", 17, 0, 0, [
       ["ida", "Ida"],
@@ -466,20 +527,42 @@ export class BritComponentsService {
     this.initNation("caledonians", "Caledonians", "green", 7, 0, 0, []);
     this.initNation("picts", "Picts", "blue", 10, 0, 0, []);
     this.initNation("irish", "Irish", "red", 8, 0, 0, []);
-    this.initNation("scots", "Scots", "yellow", 11, 0, 0, [["fergus-mor-mac-erc", "Fergus Mor Mac Erc"]]);
-    this.initNation("norsemen", "Norsemen", "red", 10, 0, 0, [["ketil-flatnose", "Ketil Flatnose"]]);
-    this.initNation("dubliners", "Dubliners", "yellow", 9, 0, 0, [["olaf-guthfrithsson", "Olaf Guthfrithsson"]]);
+    this.initNation("scots", "Scots", "yellow", 11, 0, 0, [
+      ["fergus-mor-mac-erc", "Fergus Mor Mac Erc"]
+    ]);
+    this.initNation("norsemen", "Norsemen", "red", 10, 0, 0, [
+      ["ketil-flatnose", "Ketil Flatnose"]
+    ]);
+    this.initNation("dubliners", "Dubliners", "yellow", 9, 0, 0, [
+      ["olaf-guthfrithsson", "Olaf Guthfrithsson"]
+    ]);
     // Rounds
     this.initRound(
       1,
       43,
       60,
       [],
-      new BritEventBuilder("romans").special("romans-invasion").invasion("english-channel", 16).majorInvasion().build(),
+      new BritEventBuilder("romans")
+        .special("romans-invasion")
+        .invasion("english-channel", 16)
+        .majorInvasion()
+        .build(),
       new BritEventBuilder("belgae").special("boudicca-revolt").revolt(1).leader("boudicca").build()
     );
-    this.initRound(2, 60, 100, [], new BritEventBuilder("romans").special("romans-withdrawal").build());
-    this.initRound(3, 100, 250, [], new BritEventBuilder("irish").invasion("atlantic-ocean", 1).raiding().build());
+    this.initRound(
+      2,
+      60,
+      100,
+      [],
+      new BritEventBuilder("romans").special("romans-withdrawal").build()
+    );
+    this.initRound(
+      3,
+      100,
+      250,
+      [],
+      new BritEventBuilder("irish").invasion("atlantic-ocean", 1).raiding().build()
+    );
     this.initRound(
       4,
       250,
@@ -516,7 +599,12 @@ export class BritComponentsService {
       new BritEventBuilder("picts").boats().build(),
       new BritEventBuilder("irish").invasion("atlantic-ocean", 1).raiding().boats().build(),
       new BritEventBuilder("scots").invasion("irish-sea", 2).raiding().boats().build(),
-      new BritEventBuilder("saxons").invasion("frisian-sea", 8).leader("aelle").majorInvasion().boats().build(),
+      new BritEventBuilder("saxons")
+        .invasion("frisian-sea", 8)
+        .leader("aelle")
+        .majorInvasion()
+        .boats()
+        .build(),
       new BritEventBuilder("jutes").invasion("english-channel", 1).boats().build(),
       new BritEventBuilder("angles").invasion("north-sea", 4).boats().build()
     );
@@ -537,7 +625,12 @@ export class BritComponentsService {
         .build(),
       new BritEventBuilder("saxons").invasion("frisian-sea", 4).boats().build(),
       new BritEventBuilder("jutes").boats().build(),
-      new BritEventBuilder("angles").invasion("north-sea", 7).leader("ida").majorInvasion().boats().build()
+      new BritEventBuilder("angles")
+        .invasion("north-sea", 7)
+        .leader("ida")
+        .majorInvasion()
+        .boats()
+        .build()
     );
     this.initRound(
       8,
@@ -592,9 +685,19 @@ export class BritComponentsService {
       860,
       935,
       ["king"],
-      new BritEventBuilder("norsemen").invasion("irish-sea", 2).invasion("atlantic-ocean", 2).raiding().boats().build(),
+      new BritEventBuilder("norsemen")
+        .invasion("irish-sea", 2)
+        .invasion("atlantic-ocean", 2)
+        .raiding()
+        .boats()
+        .build(),
       new BritEventBuilder("dubliners").invasion("irish-sea", 2).raiding().build(),
-      new BritEventBuilder("danes").invasion("north-sea", 6).leader("ivar-and-halfdan").majorInvasion().boats().build(),
+      new BritEventBuilder("danes")
+        .invasion("north-sea", 6)
+        .leader("ivar-and-halfdan")
+        .majorInvasion()
+        .boats()
+        .build(),
       new BritEventBuilder("saxons").leader("alfred").build()
     );
     this.initRound(
@@ -619,7 +722,12 @@ export class BritComponentsService {
       ["king"],
       new BritEventBuilder("norsemen").boats().build(),
       new BritEventBuilder("dubliners").invasion("irish-sea", 3).boats().build(),
-      new BritEventBuilder("danes").special("cnut-invasion").invasion("frisian-sea", 6).leader("cnut").boats().build()
+      new BritEventBuilder("danes")
+        .special("cnut-invasion")
+        .invasion("frisian-sea", 6)
+        .leader("cnut")
+        .boats()
+        .build()
     );
     this.initRound(
       15,
@@ -634,14 +742,22 @@ export class BritComponentsService {
         .boats()
         .build(),
       new BritEventBuilder("saxons").leader("harold").build(),
-      new BritEventBuilder("normans").invasion("english-channel", 6, 4).leader("william").majorInvasion().build()
+      new BritEventBuilder("normans")
+        .invasion("english-channel", 6, 4)
+        .leader("william")
+        .majorInvasion()
+        .build()
     );
     this.initRound(
       16,
       1066,
       1085,
       ["king", "scoring"],
-      new BritEventBuilder("danes").invasion("frisian-sea", 3).leader("svein-estrithson").boats().build(),
+      new BritEventBuilder("danes")
+        .invasion("frisian-sea", 3)
+        .leader("svein-estrithson")
+        .boats()
+        .build(),
       new BritEventBuilder("norwegians").special("norwegians-reinforcements").boats().build(),
       new BritEventBuilder("saxons").special("saxons-reinforcements").build(),
       new BritEventBuilder("normans").special("normans-reinforcements").build()

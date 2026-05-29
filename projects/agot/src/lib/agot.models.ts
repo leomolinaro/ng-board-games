@@ -88,7 +88,14 @@ export const agotAgendaCode = {
   ThePrinceThatWasPromised: "14045"
 };
 
-export type AgotTypeCode = "agenda" | "character" | "plot" | "event" | "attachment" | "location" | "title";
+export type AgotTypeCode =
+  | "agenda"
+  | "character"
+  | "plot"
+  | "event"
+  | "attachment"
+  | "location"
+  | "title";
 
 export interface AgotCard {
   pack_code: AgotPackCode;

@@ -61,7 +61,10 @@ export function safeArray<T>(array: T[]): T[] {
   return array || [];
 }
 
-export function mapToDistinct<T, V extends string | number>(array: T[], valueGetter: (e: T) => V): V[] {
+export function mapToDistinct<T, V extends string | number>(
+  array: T[],
+  valueGetter: (e: T) => V
+): V[] {
   const toReturn: V[] = [];
   const set: { [key: string]: boolean } = {};
   array.forEach(e => {

@@ -1,5 +1,11 @@
-import { NgIf, NgSwitch, NgSwitchCase } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  inject
+} from "@angular/core";
 import { MatFabButton } from "@angular/material/button";
 import { MatCheckbox } from "@angular/material/checkbox";
 import { MatFormField, MatLabel } from "@angular/material/form-field";
@@ -8,7 +14,11 @@ import { MatInput } from "@angular/material/input";
 import { BooleanInput } from "@leobg/commons/utils";
 import { BgTransformPipe } from "../../../../utils/src/lib/bg-transform.pipe";
 import { BgAuthService, BgUser } from "../../authentication";
-import { BgCheckboxFieldDirective, BgFormDirective, BgInputFieldDirective } from "../../form/bg-form.directive";
+import {
+  BgCheckboxFieldDirective,
+  BgFormDirective,
+  BgInputFieldDirective
+} from "../../form/bg-form.directive";
 import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game.service";
 
 @Component({
@@ -24,40 +34,42 @@ import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game.service";
             [disabled]="!(player.type === 'open' || isOwner || isPlayer)"
             mat-fab
             (click)="onNextPlayerType()">
-            <ng-container [ngSwitch]="player.type">
-              <mat-icon *ngSwitchCase="'closed'">no_accounts</mat-icon>
-              <mat-icon *ngSwitchCase="'user'">person_pin</mat-icon>
-              <mat-icon *ngSwitchCase="'ai'">monitor</mat-icon>
-              <mat-icon *ngSwitchCase="'open'">cloud</mat-icon>
-            </ng-container>
+            @switch (player.type) {
+              @case ("closed") {
+                <mat-icon>no_accounts</mat-icon>
+              }
+              @case ("user") {
+                <mat-icon>person_pin</mat-icon>
+              }
+              @case ("ai") {
+                <mat-icon>monitor</mat-icon>
+              }
+              @case ("open") {
+                <mat-icon>cloud</mat-icon>
+              }
+            }
           </button>
         </div>
-        <div
-          [ngSwitch]="player.type"
-          class="bg-player-type-caption-container">
-          <span
-            *ngSwitchCase="'closed'"
-            class="mat-caption bg-player-type-caption"
-            >closed</span
-          >
-          <span
-            *ngSwitchCase="'user'"
-            class="mat-caption bg-player-type-caption"
-            >{{ isPlayer ? "me" : "other" }}</span
-          >
-          <span
-            *ngSwitchCase="'ai'"
-            class="mat-caption bg-player-type-caption"
-            >AI</span
-          >
-          <span
-            *ngSwitchCase="'open'"
-            class="mat-caption bg-player-type-caption"
-            >open</span
-          >
+        <div class="bg-player-type-caption-container">
+          @switch (player.type) {
+            @case ("closed") {
+              <span class="mat-caption bg-player-type-caption">closed</span>
+            }
+            @case ("user") {
+              <span class="mat-caption bg-player-type-caption">{{
+                isPlayer ? "me" : "other"
+              }}</span>
+            }
+            @case ("ai") {
+              <span class="mat-caption bg-player-type-caption">AI</span>
+            }
+            @case ("open") {
+              <span class="mat-caption bg-player-type-caption">open</span>
+            }
+          }
         </div>
       </div>
-      <ng-container *ngIf="player.type === 'user' || player.type === 'ai'; else notPlayer">
+      @if (player.type === "user" || player.type === "ai") {
         <mat-form-field class="bg-player-name">
           <mat-label>Player name</mat-label>
           <input
@@ -67,23 +79,23 @@ import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game.service";
             [disabled]="!(player | bgTransform: playerNameActive)"
             autocomplete="off" />
         </mat-form-field>
-        <div
-          *ngIf="onlineGame"
-          class="bg-player-ready">
-          <mat-checkbox
-            *ngIf="player.type === 'user'"
-            [disabled]="!isPlayer"
-            bgField="ready"
-            >Ready</mat-checkbox
-          >
-        </div>
-      </ng-container>
-      <ng-template #notPlayer>
+        @if (onlineGame) {
+          <div class="bg-player-ready">
+            @if (player.type === "user") {
+              <mat-checkbox
+                [disabled]="!isPlayer"
+                bgField="ready"
+                >Ready</mat-checkbox
+              >
+            }
+          </div>
+        }
+      } @else {
         <div class="bg-player-name"></div>
-        <div
-          *ngIf="onlineGame"
-          class="bg-player-ready"></div>
-      </ng-template>
+        @if (onlineGame) {
+          <div class="bg-player-ready"></div>
+        }
+      }
     </ng-container>
   `,
   styles: [
@@ -135,10 +147,7 @@ import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game.service";
   imports: [
     BgFormDirective,
     MatFabButton,
-    NgSwitch,
-    NgSwitchCase,
     MatIcon,
-    NgIf,
     MatFormField,
     MatLabel,
     BgInputFieldDirective,

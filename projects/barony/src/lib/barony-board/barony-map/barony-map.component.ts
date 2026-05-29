@@ -1,5 +1,12 @@
-import { NgFor } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, ViewChild } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  ViewChild
+} from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../../barony-models";
@@ -10,7 +17,7 @@ import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.compon
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [BgSvgComponent, BgMapZoomDirective, NgFor, BaronyLandComponent]
+  imports: [BgSvgComponent, BgMapZoomDirective, BaronyLandComponent]
 })
 export class BaronyMapComponent implements OnChanges {
   constructor() {}
@@ -23,8 +30,6 @@ export class BaronyMapComponent implements OnChanges {
   bgMapZoom!: BgMapZoomDirective;
 
   isValid: { [key: string]: boolean } | null = null;
-
-  landTrackBy = (land: BaronyLand) => land.id;
 
   ngOnChanges(changes: SimpleChanges<BaronyMapComponent>): void {
     if (changes.validLands) {

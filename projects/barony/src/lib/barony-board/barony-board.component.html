@@ -8,65 +8,74 @@
     </barony-map>
   </div>
   <div class="b-board-widgets-layer">
-    <div
-      *ngIf="message"
-      [class]="'b-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
-      <div class="b-board-instructions">{{ message }}</div>
-      <barony-knights-selector
-        *ngIf="maxNumberOfKnights"
-        [(number)]="numberOfKnights"
-        min="1"
-        [max]="maxNumberOfKnights"
-        (confirm)="onKnightsConfirm()">
-      </barony-knights-selector>
-      <barony-buildings-selector
-        *ngIf="validBuildings"
-        [buildings]="validBuildings"
-        [player]="currentPlayer"
-        (buildingClick)="onBuildingSelect($event)">
-      </barony-buildings-selector>
-      <barony-resources-selector
-        *ngIf="validResources"
-        [resources]="validResources.resources"
-        (resourceClick)="onResourceSelect($event)">
-      </barony-resources-selector>
-    </div>
-    <barony-actions
-      class="b-board-actions-widget"
-      *ngIf="validActions || canPass || canCancel"
-      [canPass]="canPass"
-      [canCancel]="canCancel"
-      [validActions]="validActions"
-      (actionClick)="onActionClick($event)"
-      (passClick)="onPassClick()"
-      (cancelClick)="onCancelClick()">
-    </barony-actions>
+    @if (message) {
+      <div [class]="'b-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
+        <div class="b-board-instructions">{{ message }}</div>
+        @if (maxNumberOfKnights) {
+          <barony-knights-selector
+            [(number)]="numberOfKnights"
+            min="1"
+            [max]="maxNumberOfKnights"
+            (confirm)="onKnightsConfirm()">
+          </barony-knights-selector>
+        }
+        @if (validBuildings) {
+          <barony-buildings-selector
+            [buildings]="validBuildings"
+            [player]="currentPlayer"
+            (buildingClick)="onBuildingSelect($event)">
+          </barony-buildings-selector>
+        }
+        @if (validResources) {
+          <barony-resources-selector
+            [resources]="validResources.resources"
+            (resourceClick)="onResourceSelect($event)">
+          </barony-resources-selector>
+        }
+      </div>
+    }
+    @if (validActions || canPass || canCancel) {
+      <barony-actions
+        class="b-board-actions-widget"
+        [canPass]="canPass"
+        [canCancel]="canCancel"
+        [validActions]="validActions"
+        (actionClick)="onActionClick($event)"
+        (passClick)="onPassClick()"
+        (cancelClick)="onCancelClick()">
+      </barony-actions>
+    }
     <div class="b-board-players-widget">
-      <barony-player-status
-        *ngFor="let player of players; trackBy: playerTrackBy"
-        class="b-board-player-widget"
-        (selectPlayer)="onPlayerSelect(player)"
-        [player]="player"
-        [currentPlayer]="player === currentPlayer">
-      </barony-player-status>
+      @for (player of players; track player.id) {
+        <barony-player-status
+          class="b-board-player-widget"
+          (selectPlayer)="onPlayerSelect(player)"
+          [player]="player"
+          [currentPlayer]="player === currentPlayer">
+        </barony-player-status>
+      }
     </div>
     <div class="b-board-extras">
-      <bg-map-zoom-buttons
-        *ngIf="zoomFixed"
-        class="b-board-zoom-buttons-widget"
-        [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
-      <img
-        *ngIf="summaryFixed"
-        class="b-board-summary-image"
-        src="assets/barony/summary.jpg" />
-      <barony-scoreboard
-        *ngIf="scoreboardFixed"
-        class="b-board-scoreboard-widget"
-        [players]="players"></barony-scoreboard>
-      <barony-logs
-        *ngIf="logsFixed"
-        class="b-board-logs-widget"
-        [logs]="logs"></barony-logs>
+      @if (zoomFixed) {
+        <bg-map-zoom-buttons
+          class="b-board-zoom-buttons-widget"
+          [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
+      }
+      @if (summaryFixed) {
+        <img
+          class="b-board-summary-image"
+          src="assets/barony/summary.jpg" />
+      }
+      @if (scoreboardFixed) {
+        <barony-scoreboard
+          class="b-board-scoreboard-widget"
+          [players]="players"></barony-scoreboard>
+      }
+      @if (logsFixed) {
+        <barony-logs
+          class="b-board-logs-widget"
+          [logs]="logs"></barony-logs>
+      }
       <div class="b-board-buttons">
         <button
           class="b-board-button"

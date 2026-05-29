@@ -157,7 +157,9 @@ export class BgSelectFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldD
 
   @ChangeListener()
   private listenToSelectionChange() {
-    return this.matSelect.selectionChange.pipe(tap(change => this.form.onValueChange(change.value, this)));
+    return this.matSelect.selectionChange.pipe(
+      tap(change => this.form.onValueChange(change.value, this))
+    );
   } // onSelectionChange
 
   ngOnInit() {
@@ -185,7 +187,9 @@ export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDi
 
   @ChangeListener()
   private listenToSelectionChange() {
-    return this.matRadioGroup.change.pipe(tap(change => this.form.onValueChange(change.value, this)));
+    return this.matRadioGroup.change.pipe(
+      tap(change => this.form.onValueChange(change.value, this))
+    );
   } // onSelectionChange
 
   ngOnInit() {
@@ -204,7 +208,9 @@ export class BgRadioFieldDirective<V, E> implements OnInit, OnDestroy, BgFieldDi
 
 @Directive({ selector: "mat-checkbox[bgField]" })
 @UntilDestroy
-export class BgCheckboxFieldDirective<E> implements OnInit, OnDestroy, BgFieldDirective<boolean, E> {
+export class BgCheckboxFieldDirective<E>
+  implements OnInit, OnDestroy, BgFieldDirective<boolean, E>
+{
   private form = inject<BgFormDirective<E>>(BgFormDirective);
   private matCheckbox = inject(MatCheckbox, { host: true });
 
@@ -213,7 +219,9 @@ export class BgCheckboxFieldDirective<E> implements OnInit, OnDestroy, BgFieldDi
 
   @ChangeListener()
   private listenToSelectionChange() {
-    return this.matCheckbox.change.pipe(tap(change => this.form.onValueChange(change.checked, this)));
+    return this.matCheckbox.change.pipe(
+      tap(change => this.form.onValueChange(change.checked, this))
+    );
   } // onSelectionChange
 
   ngOnInit() {

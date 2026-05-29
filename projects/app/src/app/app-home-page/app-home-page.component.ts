@@ -1,4 +1,3 @@
-import { NgFor } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { MatToolbar } from "@angular/material/toolbar";
 import { RouterLink } from "@angular/router";
@@ -14,18 +13,18 @@ import { AppGamesService } from "../app-games.service";
       <bg-account-button></bg-account-button>
     </mat-toolbar>
     <div class="games">
-      <div
-        *ngFor="let game of games"
-        class="game-wrapper">
-        <a
-          class="game"
-          [routerLink]="game.routerLink">
-          <img
-            class="game-image"
-            [src]="game.imageSource"
-            [alt]="game.name" />
-        </a>
-      </div>
+      @for (game of games; track game) {
+        <div class="game-wrapper">
+          <a
+            class="game"
+            [routerLink]="game.routerLink">
+            <img
+              class="game-image"
+              [src]="game.imageSource"
+              [alt]="game.name" />
+          </a>
+        </div>
+      }
     </div>
   `,
   styles: [
@@ -60,7 +59,7 @@ import { AppGamesService } from "../app-games.service";
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatToolbar, BgAccountButtonComponent, NgFor, RouterLink]
+  imports: [MatToolbar, BgAccountButtonComponent, RouterLink]
 })
 @UntilDestroy
 export class AppHomePageComponent implements OnInit, OnDestroy {

@@ -60,7 +60,7 @@ $area-background: #151515;
       height: 100%;
       ::ng-deep {
         .mat-mdc-tab-header {
-          --mdc-secondary-navigation-tab-container-height: 25px;
+          --mat-tab-container-height: 25px;
         }
         .free-peoples {
           --wotr-front-color: #{wotr.$blue};

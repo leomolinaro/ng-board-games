@@ -1,7 +1,7 @@
-@import "bg-variables";
+@use "bg-variables" as bg;
 
 .brit-unit-selector-container {
-  @include golden-padding(1vmin);
+  @include bg.golden-padding(1vmin);
   display: flex;
   align-items: center;
   .brit-nation-unit-image {

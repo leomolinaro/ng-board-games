@@ -79,7 +79,11 @@ export class BritMapService {
           const svg = dom.getElementsByTagName("svg").item(0)!;
           this.viewBox = svg.getAttribute("viewBox")!;
           this.width = +this.viewBox.split(" ")[2];
-          this.areaPaths = this.getGroupPaths<BritAreaId>("brit-areas", dom, pId => pId as BritAreaId);
+          this.areaPaths = this.getGroupPaths<BritAreaId>(
+            "brit-areas",
+            dom,
+            pId => pId as BritAreaId
+          );
           this.nationTurnPaths = this.getGroupPaths<BritNationId>(
             "brit-turns",
             dom,
@@ -116,7 +120,11 @@ export class BritMapService {
     } // if - else
   } // loadAreaPaths$
 
-  private getGroupPaths<K extends string | number>(groupId: string, dom: Document, pathIdToId: (pathId: string) => K) {
+  private getGroupPaths<K extends string | number>(
+    groupId: string,
+    dom: Document,
+    pathIdToId: (pathId: string) => K
+  ) {
     const britGroup = dom.getElementById(groupId);
     const paths: Record<K, string> = {} as any;
     britGroup?.childNodes.forEach(childNode => {
@@ -132,12 +140,14 @@ export class BritMapService {
   } // getGroupPaths
 
   loadAreaSlots$(): Observable<boolean> {
-    return this.http.get("assets/britannia/britannia-map-slots.json", { responseType: "text" }).pipe(
-      map(response => {
-        this.areaSlots = JSON.parse(response);
-        return true;
-      })
-    );
+    return this.http
+      .get("assets/britannia/britannia-map-slots.json", { responseType: "text" })
+      .pipe(
+        map(response => {
+          this.areaSlots = JSON.parse(response);
+          return true;
+        })
+      );
   } // loadAreaSlots$
 
   getAreaSlots(n: number, areaId: BritAreaId): BritMapPoint[] {

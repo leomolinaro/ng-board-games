@@ -16,7 +16,10 @@ export type Exactly<S, T> = {
 // S extends BaronyUiState & { [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never }
 
 export class BgStore<S extends object> {
-  constructor(private defaultState: S, private name: string) {
+  constructor(
+    private defaultState: S,
+    private name: string
+  ) {
     this.devtoolsInstance = bgReduxDevtools.connect(name);
     if (this.devtoolsInstance) {
       this.devtoolsInstance.init(defaultState);
@@ -40,7 +43,11 @@ export class BgStore<S extends object> {
   select$(): Observable<S>;
   select$<R>(projector: (s: S) => R): Observable<R>;
   select$<R, S1>(s1: Observable<S1>, projector: (s1: S1) => R): Observable<R>;
-  select$<R, S1, S2>(s1: Observable<S1>, s2: Observable<S2>, projector: (s1: S1, s2: S2) => R): Observable<R>;
+  select$<R, S1, S2>(
+    s1: Observable<S1>,
+    s2: Observable<S2>,
+    projector: (s1: S1, s2: S2) => R
+  ): Observable<R>;
   select$<R, S1, S2, S3>(
     s1: Observable<S1>,
     s2: Observable<S2>,
@@ -54,14 +61,18 @@ export class BgStore<S extends object> {
     s4: Observable<S4>,
     projector: (s1: S1, s2: S2, s3: S3, s4: S4) => R
   ): Observable<R>;
-  select$<A extends (Observable<unknown> | P)[], R, P = (...a: any[]) => R>(...args: A): Observable<R> | Observable<S> {
+  select$<A extends (Observable<unknown> | P)[], R, P = (...a: any[]) => R>(
+    ...args: A
+  ): Observable<R> | Observable<S> {
     if (args && args.length) {
       const { observables, projector } = this.processSelectorArgs<A, R, P>(args);
 
       let observable$: Observable<R>;
 
       if (observables.length) {
-        observable$ = combineLatest(observables).pipe(map(projectorArgs => (projector as any)(...projectorArgs)));
+        observable$ = combineLatest(observables).pipe(
+          map(projectorArgs => (projector as any)(...projectorArgs))
+        );
       } else {
         observable$ = this.$state.pipe(map(s => (projector as any)(s)));
       } // if - else

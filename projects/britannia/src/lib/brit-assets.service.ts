@@ -33,7 +33,11 @@ export class BritAssetsService {
     } // switch
   } // getUnitImageSource
 
-  getUnitImageSourceByType(unitType: BritUnitType, nationId: BritNationId, leaderId?: BritLeaderId) {
+  getUnitImageSourceByType(
+    unitType: BritUnitType,
+    nationId: BritNationId,
+    leaderId?: BritLeaderId
+  ) {
     switch (unitType) {
       case "infantry":
         return `assets/britannia/infantries/${nationId}.png`;

@@ -107,9 +107,14 @@ export class BaronyPlayerLocalService {
     return this.ui.actionSelect.get();
   }
 
-  private async chooseRectruitment(player: BaronyColor): Promise<{ land: BaronyLand; numberOfKnights: number }> {
+  private async chooseRectruitment(
+    player: BaronyColor
+  ): Promise<{ land: BaronyLand; numberOfKnights: number }> {
     const land = await this.chooseLandForRecruitment(player);
-    const numberOfKnights = await this.chooseNumberOfKnightsForRecruitment(land.coordinates, player);
+    const numberOfKnights = await this.chooseNumberOfKnightsForRecruitment(
+      land.coordinates,
+      player
+    );
     return { land, numberOfKnights };
   }
 
@@ -124,7 +129,10 @@ export class BaronyPlayerLocalService {
     return this.ui.landSelect.get();
   }
 
-  private chooseNumberOfKnightsForRecruitment(land: BaronyLandCoordinates, player: BaronyColor): Promise<number> {
+  private chooseNumberOfKnightsForRecruitment(
+    land: BaronyLandCoordinates,
+    player: BaronyColor
+  ): Promise<number> {
     const maxNumberOfKnights = baronyRules.getMaxKnightForRecruitment(land, player, this.game);
     this.ui.updateUi("Choose number of knights for recruitment", s => ({
       ...s,
@@ -159,7 +167,10 @@ export class BaronyPlayerLocalService {
     player: BaronyColor,
     firstMovement: BaronyMovement
   ): Promise<BaronyMovement | null> {
-    const movementSource = await this.chooseLandSourceOrPassForSecondMovement(player, firstMovement);
+    const movementSource = await this.chooseLandSourceOrPassForSecondMovement(
+      player,
+      firstMovement
+    );
     if (movementSource) {
       return this.chooseMovementTargetAndConflict(movementSource.coordinates, player);
     } else {
@@ -174,7 +185,11 @@ export class BaronyPlayerLocalService {
     const movementTarget = await this.chooseLandTargetForMovement(movementSource, player);
     if (baronyRules.isConflict(movementTarget.coordinates, player, this.game)) {
       if (baronyRules.isVillageBeingDestroyed(movementTarget.coordinates, player, this.game)) {
-        const villagePlayer = baronyRules.getVillageDestroyedPlayer(movementTarget.coordinates, player, this.game);
+        const villagePlayer = baronyRules.getVillageDestroyedPlayer(
+          movementTarget.coordinates,
+          player,
+          this.game
+        );
         if (baronyRules.hasResourcesToTakeForVillageDestruction(villagePlayer.id, this.game)) {
           const resource = await this.chooseResourceForVillageDestruction(player, villagePlayer.id);
           return {
@@ -236,7 +251,11 @@ export class BaronyPlayerLocalService {
     player: BaronyColor,
     firstMovement: BaronyMovement
   ): Promise<BaronyLand | void> {
-    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement(player, firstMovement, this.game);
+    const validSourceLands = baronyRules.getValidSourceLandsForSecondMovement(
+      player,
+      firstMovement,
+      this.game
+    );
     this.ui.updateUi("Choose land source or pass for second movement", s => ({
       ...s,
       ...this.ui.resetUi(),
@@ -247,8 +266,15 @@ export class BaronyPlayerLocalService {
     return Promise.race([this.ui.landSelect.get(), this.ui.passSelect.get()]);
   }
 
-  private chooseLandTargetForMovement(movementSource: BaronyLandCoordinates, player: BaronyColor): Promise<BaronyLand> {
-    const validSourceLands = baronyRules.getValidTargetLandsForMovement(movementSource, player, this.game);
+  private chooseLandTargetForMovement(
+    movementSource: BaronyLandCoordinates,
+    player: BaronyColor
+  ): Promise<BaronyLand> {
+    const validSourceLands = baronyRules.getValidTargetLandsForMovement(
+      movementSource,
+      player,
+      this.game
+    );
     this.ui.updateUi("Choose land target for movement", s => ({
       ...s,
       ...this.ui.resetUi(),
@@ -291,7 +317,10 @@ export class BaronyPlayerLocalService {
     return Promise.race([this.chooseConstruction(player, true), this.ui.passSelect.get()]);
   }
 
-  private async chooseConstruction(player: BaronyColor, orPass: boolean): Promise<BaronyConstruction> {
+  private async chooseConstruction(
+    player: BaronyColor,
+    orPass: boolean
+  ): Promise<BaronyConstruction> {
     const land = await this.chooseLandForConstruction(player, orPass);
     const building = await this.chooseBuildingForConstruction(player, orPass);
     return { building, land: land.coordinates };
@@ -309,7 +338,10 @@ export class BaronyPlayerLocalService {
     return this.ui.landSelect.get();
   }
 
-  private chooseBuildingForConstruction(player: BaronyColor, orPass: boolean): Promise<"stronghold" | "village"> {
+  private chooseBuildingForConstruction(
+    player: BaronyColor,
+    orPass: boolean
+  ): Promise<"stronghold" | "village"> {
     const validBuildings = baronyRules.getValidBuildingsForConstruction(player, this.game);
     this.ui.updateUi("Choose building for construction", s => ({
       ...s,
@@ -364,8 +396,14 @@ export class BaronyPlayerLocalService {
     }
   }
 
-  private async chooseResourceForNobleTitle(player: BaronyColor, sum: number): Promise<BaronyResourceType> {
-    const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle(player, this.game);
+  private async chooseResourceForNobleTitle(
+    player: BaronyColor,
+    sum: number
+  ): Promise<BaronyResourceType> {
+    const validResourcesForNobleTitle = baronyRules.getValidResourcesForNobleTitle(
+      player,
+      this.game
+    );
     this.ui.updateUi("Choose resource for noble title", s => ({
       ...s,
       ...this.ui.resetUi(),

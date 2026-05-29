@@ -11,7 +11,11 @@ const scaleForGap = 1.02;
 
 @Pipe({ name: "baronyLandTileCoordinates" })
 export class BaronyLandCoordinatesPipe implements PipeTransform {
-  transform(c: BaronyLandCoordinates, to: "hexagon" | "center-x" | "center-y", translate?: number): string {
+  transform(
+    c: BaronyLandCoordinates,
+    to: "hexagon" | "center-x" | "center-y",
+    translate?: number
+  ): string {
     switch (to) {
       case "hexagon": {
         const center = hexToCartesian(c);

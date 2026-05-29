@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output
+} from "@angular/core";
 import { BaronyBuilding, BaronyPlayer } from "../barony-models";
 
 @Component({
@@ -6,11 +13,11 @@ import { BaronyBuilding, BaronyPlayer } from "../barony-models";
   template: `
     <div class="b-buildings-selector-container">
       @for (building of buildings; track building) {
-      <div
-        class="b-building-image"
-        (click)="onBuildingClick(building)">
-        <img [src]="'assets/barony/pawns/' + player.id + '-' + building + '.png'" />
-      </div>
+        <div
+          class="b-building-image"
+          (click)="onBuildingClick(building)">
+          <img [src]="'assets/barony/pawns/' + player.id + '-' + building + '.png'" />
+        </div>
       }
     </div>
   `,

@@ -216,7 +216,14 @@ export class BgMapZoomDirective implements OnInit {
     pt.x = event.clientX;
     pt.y = event.clientY;
     const zoomOrigin = pt.matrixTransform(this.bgSvg.getScreenCTM()?.inverse());
-    this.refreshTransform({ zoom: zoom, x0: zoomOrigin.x, y0: zoomOrigin.y, xt: 0, yt: 0, reset: false });
+    this.refreshTransform({
+      zoom: zoom,
+      x0: zoomOrigin.x,
+      y0: zoomOrigin.y,
+      xt: 0,
+      yt: 0,
+      reset: false
+    });
     /* } else if (event.shiftKey) {
       event.preventDefault ();
       this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: this.translateStep * (event.deltaY > 0 ? -1 : 1), yt: 0, reset: false });

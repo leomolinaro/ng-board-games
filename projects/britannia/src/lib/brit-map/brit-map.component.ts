@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -106,7 +106,14 @@ const GRID_STEP = 20;
   templateUrl: "./brit-map.component.html",
   styleUrls: ["./brit-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, BgSvgComponent_1, BgMapZoomDirective_1, NgFor, NgClass, MatTooltip, NgLetDirective, BgTransformPipe]
+  imports: [
+    BgSvgComponent_1,
+    BgMapZoomDirective_1,
+    NgClass,
+    MatTooltip,
+    NgLetDirective,
+    BgTransformPipe
+  ]
 })
 export class BritMapComponent implements OnChanges, OnInit {
   private mapService = inject(BritMapService);
@@ -153,14 +160,22 @@ export class BritMapComponent implements OnChanges, OnInit {
 
   protected isDevMode = isDevMode();
 
-  areaTrackBy: TrackByFunction<BritAreaNode> = (index: number, areaNode: BritAreaNode) => areaNode.id;
-  unitTrackBy: TrackByFunction<BritUnitNode> = (index: number, unitNode: BritUnitNode) => unitNode.id;
-  populationTrackBy: TrackByFunction<BritPopulationNode> = (index: number, populationNode: BritPopulationNode) =>
-    populationNode.id;
-  nationTurnTrackBy: TrackByFunction<BritNationTurnNode> = (index: number, nationTurnNode: BritNationTurnNode) =>
-    nationTurnNode.id;
-  roundTrackBy: TrackByFunction<BritRoundNode> = (index: number, roundNode: BritRoundNode) => roundNode.id;
-  eventTrackBy: TrackByFunction<BritEventNode> = (index: number, eventNode: BritEventNode) => eventNode.event.nation;
+  areaTrackBy: TrackByFunction<BritAreaNode> = (index: number, areaNode: BritAreaNode) =>
+    areaNode.id;
+  unitTrackBy: TrackByFunction<BritUnitNode> = (index: number, unitNode: BritUnitNode) =>
+    unitNode.id;
+  populationTrackBy: TrackByFunction<BritPopulationNode> = (
+    index: number,
+    populationNode: BritPopulationNode
+  ) => populationNode.id;
+  nationTurnTrackBy: TrackByFunction<BritNationTurnNode> = (
+    index: number,
+    nationTurnNode: BritNationTurnNode
+  ) => nationTurnNode.id;
+  roundTrackBy: TrackByFunction<BritRoundNode> = (index: number, roundNode: BritRoundNode) =>
+    roundNode.id;
+  eventTrackBy: TrackByFunction<BritEventNode> = (index: number, eventNode: BritEventNode) =>
+    eventNode.event.nation;
   nationPopulationTrackBy: TrackByFunction<BritNationPopulationNode> = (
     index: number,
     nationPopulationNode: BritNationPopulationNode
@@ -288,7 +303,9 @@ export class BritMapComponent implements OnChanges, OnInit {
     if (state.units === oldNode?.state.units) {
       node.unitNodes = oldNode.unitNodes;
     } else {
-      node.unitNodes = state.units.map((u, index) => this.unitToNode(u, index, node, state.units.length));
+      node.unitNodes = state.units.map((u, index) =>
+        this.unitToNode(u, index, node, state.units.length)
+      );
     } // if - else
     return node;
   } // areaToNode
@@ -297,7 +314,12 @@ export class BritMapComponent implements OnChanges, OnInit {
     return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
   } // getUnitNodeId
 
-  private unitToNode(unit: BritAreaUnit, index: number, areaNode: BritAreaNode, nAreaUnits: number): BritUnitNode {
+  private unitToNode(
+    unit: BritAreaUnit,
+    index: number,
+    areaNode: BritAreaNode,
+    nAreaUnits: number
+  ): BritUnitNode {
     const imageSource = this.assetsService.getUnitImageSource(unit);
     const point = this.getUnitNodePoint(index, nAreaUnits, areaNode.id);
     return {
@@ -316,12 +338,19 @@ export class BritMapComponent implements OnChanges, OnInit {
     };
   } // unitToNode
 
-  private getUnitNodePoint(unitIndex: number, nAreaUnits: number, areaId: BritAreaId): BritMapPoint | null {
+  private getUnitNodePoint(
+    unitIndex: number,
+    nAreaUnits: number,
+    areaId: BritAreaId
+  ): BritMapPoint | null {
     const slots = this.mapService.getAreaSlots(nAreaUnits, areaId);
     return slots[unitIndex];
   } // getUnitNodePoint
 
-  private nationToTurnNode(nationId: BritNationId, oldNode: BritNationTurnNode | null): BritNationTurnNode {
+  private nationToTurnNode(
+    nationId: BritNationId,
+    oldNode: BritNationTurnNode | null
+  ): BritNationTurnNode {
     if (oldNode) {
       return oldNode;
     } else {

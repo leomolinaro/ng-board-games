@@ -1,10 +1,12 @@
-<ng-container *ngFor="let card of cards">
-  <img
-    *ngIf="card.type_code != 'plot'"
-    [src]="card.image_url"
-    width="100" />
-  <img
-    *ngIf="card.type_code == 'plot'"
-    [src]="card.image_url"
-    height="100" />
-</ng-container>
+@for (card of cards; track card) {
+  @if (card.type_code != "plot") {
+    <img
+      [src]="card.image_url"
+      width="100" />
+  }
+  @if (card.type_code == "plot") {
+    <img
+      [src]="card.image_url"
+      height="100" />
+  }
+}

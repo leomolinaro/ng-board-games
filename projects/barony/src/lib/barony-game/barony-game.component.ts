@@ -2,7 +2,13 @@ import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BaronyBoardComponent } from "../barony-board/barony-board.component";
-import { BaronyAction, BaronyBuilding, BaronyLand, BaronyPlayer, BaronyResourceType } from "../barony-models";
+import {
+  BaronyAction,
+  BaronyBuilding,
+  BaronyLand,
+  BaronyPlayer,
+  BaronyResourceType
+} from "../barony-models";
 import { BaronyGameService } from "./barony-game.service";
 import { BaronyGameStore } from "./barony-game.store";
 import { BaronyPlayerAiService } from "./barony-player-ai.service";
@@ -39,7 +45,13 @@ import { BaronyUiStore } from "./barony-ui.store";
   `,
   styleUrls: ["./barony-game.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [BaronyGameStore, BaronyUiStore, BaronyPlayerAiService, BaronyPlayerLocalService, BaronyGameService],
+  providers: [
+    BaronyGameStore,
+    BaronyUiStore,
+    BaronyPlayerAiService,
+    BaronyPlayerLocalService,
+    BaronyGameService
+  ],
   imports: [BaronyBoardComponent, AsyncPipe]
 })
 export class BaronyGameComponent implements OnInit {

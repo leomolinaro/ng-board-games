@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgSwitch, NgSwitchCase } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
@@ -43,15 +43,19 @@ type BritLogFragment =
         'brit-log-h1': log.type === 'nation-turn',
         'brit-log-h2': log.type === 'phase'
       }">
-      <ng-container
-        *ngFor="let fragment of fragments"
-        [ngSwitch]="fragment.type">
-        <span *ngSwitchCase="'string'">{{ fragment.label }}</span>
-        <span *ngSwitchCase="'area'">{{ fragment.label }}</span>
-        <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
-        <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
-        <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a> -->
-      </ng-container>
+      @for (fragment of fragments; track fragment) {
+        @switch (fragment.type) {
+          @case ("string") {
+            <span>{{ fragment.label }}</span>
+          }
+          @case ("area") {
+            <span>{{ fragment.label }}</span>
+          }
+          <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
+          <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
+          <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a> -->
+        }
+      }
     </div>
   `,
   styles: [
@@ -90,7 +94,7 @@ type BritLogFragment =
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgFor, NgSwitch, NgSwitchCase]
+  imports: [NgClass]
 })
 export class BritLogComponent implements OnChanges {
   private components = inject(BritComponentsService);
@@ -117,7 +121,9 @@ export class BritLogComponent implements OnChanges {
           break;
         case "population-marker-set":
           this.fragments = [
-            this.string(`Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`)
+            this.string(
+              `Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`
+            )
           ];
           break;
         case "infantry-placement":

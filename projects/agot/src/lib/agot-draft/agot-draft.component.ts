@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { AsyncPipe, NgFor, NgIf } from "@angular/common";
+import { AsyncPipe } from "@angular/common";
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButton, MatIconButton } from "@angular/material/button";
@@ -36,7 +36,6 @@ import { AgotDraftService } from "./agot-draft.service";
     MatSidenavContainer,
     MatSidenav,
     MatToolbar,
-    NgIf,
     MatProgressBar,
     MatAccordion,
     MatExpansionPanel,
@@ -50,7 +49,6 @@ import { AgotDraftService } from "./agot-draft.service";
     MatExpansionPanelTitle,
     MatIcon,
     MatSelectionList,
-    NgFor,
     MatListOption,
     MatSidenavContent,
     MatIconButton,

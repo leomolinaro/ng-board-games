@@ -1,5 +1,12 @@
-import { NgClass, NgFor } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from "@angular/core";
+import { NgClass } from "@angular/common";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output
+} from "@angular/core";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
@@ -26,20 +33,21 @@ import { BaronyAction } from "../barony-models";
         (click)="onPassClick()">
         {{ labels.pass }}
       </button>
-      <button
-        *ngFor="let action of actions"
-        class="b-action"
-        [ngClass]="{
-          'is-active': isValid ? isValid[action] : false,
-          'is-disabled': isValid ? !isValid[action] : true
-        }"
-        (click)="onActionClick(action)">
-        {{ $any(labels)[action] }}
-      </button>
+      @for (action of actions; track action) {
+        <button
+          class="b-action"
+          [ngClass]="{
+            'is-active': isValid ? isValid[action] : false,
+            'is-disabled': isValid ? !isValid[action] : true
+          }"
+          (click)="onActionClick(action)">
+          {{ $any(labels)[action] }}
+        </button>
+      }
     </div>
   `,
   styles: `
-    @use 'barony-variables' as barony;
+    @use "barony-variables" as barony;
 
     .b-actions {
       display: grid;
@@ -71,7 +79,7 @@ import { BaronyAction } from "../barony-models";
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgFor]
+  imports: [NgClass]
 })
 export class BaronyActionsComponent implements OnChanges {
   constructor() {}

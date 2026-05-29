@@ -1,8 +1,21 @@
-import { AsyncPipe, NgFor, NgIf, NgStyle } from "@angular/common";
+import { AsyncPipe, NgStyle } from "@angular/common";
 import { ChangeDetectionStrategy, Component, ViewChild, inject } from "@angular/core";
-import { FormArray, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from "@angular/forms";
 import { MatButton, MatFabButton, MatIconButton, MatMiniFabButton } from "@angular/material/button";
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardTitle } from "@angular/material/card";
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardTitle
+} from "@angular/material/card";
 import { MatLine } from "@angular/material/core";
 import { MatFormField, MatSuffix } from "@angular/material/form-field";
 import { MatGridList, MatGridTile } from "@angular/material/grid-list";
@@ -25,12 +38,10 @@ import { TlsmStore } from "./tlsm-store";
   imports: [
     MatSidenavContainer,
     MatSidenav,
-    NgIf,
     FormsModule,
     ReactiveFormsModule,
     MatMiniFabButton,
     MatIcon,
-    NgFor,
     MatFormField,
     MatInput,
     MatButton,

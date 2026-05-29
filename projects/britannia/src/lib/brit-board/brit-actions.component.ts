@@ -7,7 +7,7 @@ import {
   Output,
   SimpleChanges
 } from "@angular/core";
-import { NgClass, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 
 @Component({
   selector: "brit-actions",
@@ -22,36 +22,38 @@ import { NgClass, NgIf } from "@angular/common";
         (click)="onCancelClick()">
         {{ labels.cancel }}
       </button>
-      <button
-        *ngIf="!canConfirm"
-        class="brit-action brit-pass"
-        [ngClass]="{
-          'is-active': canPass,
-          'is-disabled': !canPass
-        }"
-        (click)="onPassClick()">
-        {{ labels.pass }}
-      </button>
-      <button
-        *ngIf="canConfirm"
-        class="brit-action brit-confirm"
-        [ngClass]="{
-          'is-active': canConfirm,
-          'is-disabled': !canConfirm
-        }"
-        (click)="onConfirmClick()">
-        {{ labels.confirm }}
-      </button>
+      @if (!canConfirm) {
+        <button
+          class="brit-action brit-pass"
+          [ngClass]="{
+            'is-active': canPass,
+            'is-disabled': !canPass
+          }"
+          (click)="onPassClick()">
+          {{ labels.pass }}
+        </button>
+      }
+      @if (canConfirm) {
+        <button
+          class="brit-action brit-confirm"
+          [ngClass]="{
+            'is-active': canConfirm,
+            'is-disabled': !canConfirm
+          }"
+          (click)="onConfirmClick()">
+          {{ labels.confirm }}
+        </button>
+      }
       <!-- <button
-        *ngFor="let action of actions"
-        class="brit-action"
+      *ngFor="let action of actions"
+      class="brit-action"
         [ngClass]="{
           'is-active': isValid ? isValid[action] : false,
           'is-disabled': isValid ? !isValid[action] : true
         }"
-        (click)="onActionClick (action)">
-        {{ labels[action] }}
-      </button> -->
+      (click)="onActionClick (action)">
+      {{ labels[action] }}
+    </button> -->
     </div>
   `,
   styles: [
@@ -89,7 +91,7 @@ import { NgClass, NgIf } from "@angular/common";
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, NgIf]
+  imports: [NgClass]
 })
 export class BritActionsComponent implements OnChanges {
   constructor() {}

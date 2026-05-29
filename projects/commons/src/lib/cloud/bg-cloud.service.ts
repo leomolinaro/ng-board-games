@@ -56,7 +56,10 @@ export class BgCloudService {
     return new BgCloudCollection<T>(path); // collection (this.firestore, path, queryFn) as BgCloudCollection<T>;
   }
 
-  selectAll$<T>(coll: BgCloudCollection<T>, queryFn?: BgCloudCollectionQuery<T> | undefined): Observable<T[]> {
+  selectAll$<T>(
+    coll: BgCloudCollection<T>,
+    queryFn?: BgCloudCollectionQuery<T> | undefined
+  ): Observable<T[]> {
     if (queryFn) {
       const qf = new BgCloudQueryContraintFactory();
       queryFn(qf);
@@ -67,18 +70,27 @@ export class BgCloudService {
     }
   }
 
-  getAll$<T>(coll: BgCloudCollection<T>, queryFn?: BgCloudCollectionQuery<T> | undefined): Observable<T[]> {
+  getAll$<T>(
+    coll: BgCloudCollection<T>,
+    queryFn?: BgCloudCollectionQuery<T> | undefined
+  ): Observable<T[]> {
     return from(this.getAll(coll, queryFn));
   }
 
-  async getAll<T>(coll: BgCloudCollection<T>, queryFn?: BgCloudCollectionQuery<T> | undefined): Promise<T[]> {
+  async getAll<T>(
+    coll: BgCloudCollection<T>,
+    queryFn?: BgCloudCollectionQuery<T> | undefined
+  ): Promise<T[]> {
     const snapshot = await this.getDocs(coll, queryFn);
     const result: T[] = [];
     snapshot.forEach(d => result.push(d.data()));
     return result;
   }
 
-  private async getDocs<T>(coll: BgCloudCollection<T>, queryFn?: BgCloudCollectionQuery<T> | undefined) {
+  private async getDocs<T>(
+    coll: BgCloudCollection<T>,
+    queryFn?: BgCloudCollectionQuery<T> | undefined
+  ) {
     if (queryFn) {
       const qf = new BgCloudQueryContraintFactory();
       queryFn(qf);
@@ -89,7 +101,10 @@ export class BgCloudService {
     }
   }
 
-  private getCollectionRef<T>(coll: BgCloudCollection<T>, ...pathSegments: string[]): CollectionReference<T> {
+  private getCollectionRef<T>(
+    coll: BgCloudCollection<T>,
+    ...pathSegments: string[]
+  ): CollectionReference<T> {
     return collection(this.firestore, coll.path, ...pathSegments) as CollectionReference<T>;
   }
 
@@ -106,15 +121,24 @@ export class BgCloudService {
     return snapshot.data();
   }
 
-  private getDocRef<T>(coll: BgCloudCollection<T>, ...pathSegments: string[]): DocumentReference<T> {
+  private getDocRef<T>(
+    coll: BgCloudCollection<T>,
+    ...pathSegments: string[]
+  ): DocumentReference<T> {
     return doc(this.firestore, coll.path, ...pathSegments) as DocumentReference<T>;
   }
 
-  insert$<T extends object>(constructor: (id: string) => T, coll: BgCloudCollection<T>): Observable<T> {
+  insert$<T extends object>(
+    constructor: (id: string) => T,
+    coll: BgCloudCollection<T>
+  ): Observable<T> {
     return from(this.insert<T>(constructor, coll));
   }
 
-  async insert<T extends object>(constructor: (id: string) => T, coll: BgCloudCollection<T>): Promise<T> {
+  async insert<T extends object>(
+    constructor: (id: string) => T,
+    coll: BgCloudCollection<T>
+  ): Promise<T> {
     const docRef = doc(this.getCollectionRef(coll)); // N.B.: this.getDocRef (coll) dà errore per path non pari
     const id = docRef.id;
     const data = constructor(id);

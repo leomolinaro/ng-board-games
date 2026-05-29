@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  inject
+} from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyLog } from "../barony-models";
 import { BaronyLogComponent } from "./barony-log.component";
@@ -7,7 +14,7 @@ import { BaronyLogComponent } from "./barony-log.component";
   selector: "barony-logs",
   template: `
     @for (log of logs; track log) {
-    <barony-log [log]="log"></barony-log>
+      <barony-log [log]="log"></barony-log>
     }
   `,
   styles: [
@@ -31,7 +38,9 @@ export class BaronyLogsComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges<BaronyLogsComponent>) {
     if (changes.logs) {
-      setTimeout(() => (this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight));
+      setTimeout(
+        () => (this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight)
+      );
     } // if
   } // ngOnChanges
 } // BaronyLogsComponent

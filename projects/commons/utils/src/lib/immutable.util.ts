@@ -6,7 +6,11 @@ function error(msg: string) {
   throw new Error(msg);
 } // error
 
-function toMap<E, V = E>(list: E[], keyGetter: (e: E) => any, valueGetter?: (e: E) => V): { [key: string]: V } {
+function toMap<E, V = E>(
+  list: E[],
+  keyGetter: (e: E) => any,
+  valueGetter?: (e: E) => V
+): { [key: string]: V } {
   if (list) {
     if (valueGetter) {
       const map: { [key: string]: V } = {};
@@ -125,7 +129,12 @@ export function listReplaceFirst<T>(matcher: (e: T) => boolean, element: T, list
   } // if - else
 } // listReplace
 
-export function listReplaceFirstOrInsert<T>(matcher: (e: T) => boolean, element: T, insertIndex: number, list: T[]) {
+export function listReplaceFirstOrInsert<T>(
+  matcher: (e: T) => boolean,
+  element: T,
+  insertIndex: number,
+  list: T[]
+) {
   if (list) {
     const index = list.findIndex(matcher);
     if (index >= 0) {
@@ -138,7 +147,12 @@ export function listReplaceFirstOrInsert<T>(matcher: (e: T) => boolean, element:
   } // if - else
 } // listReplaceFirstOrInsert
 
-export function listUpdateFirstOrPush<T>(matcher: (e: T) => boolean, updater: (e: T) => T, pusher: () => T, list: T[]) {
+export function listUpdateFirstOrPush<T>(
+  matcher: (e: T) => boolean,
+  updater: (e: T) => T,
+  pusher: () => T,
+  list: T[]
+) {
   const index = list.findIndex(matcher);
   if (index >= 0) {
     const newElement = updater(list[index]);
@@ -177,7 +191,11 @@ export function listMergeFirst<T>(matcher: (e: T) => boolean, changes: Partial<T
   } // if - else
 } // listMergeFirst
 
-export function listMergeAll<T>(keyGetter: (e: T) => string, changesMap: { [id: string]: Partial<T> }, list: T[]) {
+export function listMergeAll<T>(
+  keyGetter: (e: T) => string,
+  changesMap: { [id: string]: Partial<T> },
+  list: T[]
+) {
   const toReturn: T[] = [];
   let changed = false;
   for (const e of list) {
