@@ -8,7 +8,7 @@
   @include bg.golden-padding(2vmin);
   cursor: pointer;
   &:hover:not(.disabled) {
-    background: #ddd;
+    background: #999999;
   }
   &.disabled {
     cursor: not-allowed;

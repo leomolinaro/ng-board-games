@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, Injector, runInInjectionContext } from "@angular/core";
 import {
   Auth,
   user as fireUser,
@@ -138,6 +138,7 @@ export class BgAuthService {
 })
 class BgGoogleAuthProvider implements IBgAuthProvider {
   private auth: Auth = inject(Auth);
+  private injector = inject(Injector);
 
   signIn$(): Observable<BgUser | null> {
     return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
@@ -150,9 +151,11 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
   }
 
   autoSignIn$(): Observable<BgUser | null> {
-    return fireUser(this.auth).pipe(
-      first(),
-      map(authUser => this.googleUserToBgUser(authUser))
+    return runInInjectionContext(this.injector, () =>
+      fireUser(this.auth).pipe(
+        first(),
+        map(authUser => this.googleUserToBgUser(authUser))
+      )
     );
   }
 

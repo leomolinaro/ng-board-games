@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable, Injector, inject, runInInjectionContext } from "@angular/core";
 import {
   CollectionReference,
   DocumentReference,
@@ -51,6 +51,7 @@ export class BgCloudCollection<T> {
 })
 export class BgCloudService {
   private firestore = inject(Firestore);
+  private injector = inject(Injector);
 
   collection<T>(path: string): BgCloudCollection<T> {
     return new BgCloudCollection<T>(path); // collection (this.firestore, path, queryFn) as BgCloudCollection<T>;
@@ -91,14 +92,16 @@ export class BgCloudService {
     coll: BgCloudCollection<T>,
     queryFn?: BgCloudCollectionQuery<T> | undefined
   ) {
-    if (queryFn) {
-      const qf = new BgCloudQueryContraintFactory();
-      queryFn(qf);
-      const q = query(this.getCollectionRef(coll), ...qf.get());
-      return getDocs(q);
-    } else {
-      return getDocs(this.getCollectionRef(coll));
-    }
+    return runInInjectionContext(this.injector, () => {
+      if (queryFn) {
+        const qf = new BgCloudQueryContraintFactory();
+        queryFn(qf);
+        const q = query(this.getCollectionRef(coll), ...qf.get());
+        return getDocs(q);
+      } else {
+        return getDocs(this.getCollectionRef(coll));
+      }
+    });
   }
 
   private getCollectionRef<T>(
@@ -117,7 +120,9 @@ export class BgCloudService {
   }
 
   async get<T>(path: string, coll: BgCloudCollection<T>): Promise<T | undefined> {
-    const snapshot = await getDoc(this.getDocRef(coll, path));
+    const snapshot = await runInInjectionContext(this.injector, () =>
+      getDoc(this.getDocRef(coll, path))
+    );
     return snapshot.data();
   }
 
@@ -125,7 +130,9 @@ export class BgCloudService {
     coll: BgCloudCollection<T>,
     ...pathSegments: string[]
   ): DocumentReference<T> {
-    return doc(this.firestore, coll.path, ...pathSegments) as DocumentReference<T>;
+    return runInInjectionContext(this.injector, () =>
+      doc(this.firestore, coll.path, ...pathSegments)
+    ) as DocumentReference<T>;
   }
 
   insert$<T extends object>(
@@ -151,7 +158,7 @@ export class BgCloudService {
   }
 
   async set<T extends object>(id: string, data: T, coll: BgCloudCollection<T>): Promise<T> {
-    await setDoc(this.getDocRef(coll, id), data);
+    await runInInjectionContext(this.injector, () => setDoc(this.getDocRef(coll, id), data));
     return data;
   }
 

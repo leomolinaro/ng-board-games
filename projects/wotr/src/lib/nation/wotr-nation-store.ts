@@ -22,6 +22,7 @@ export function initialeState(): WotrNationState {
       dwarves: initialFreePeopleNation(
         "dwarves",
         "Dwarves",
+        false,
         5,
         5,
         4,
@@ -32,6 +33,7 @@ export function initialeState(): WotrNationState {
       elves: initialFreePeopleNation(
         "elves",
         "Elves",
+        true,
         5,
         10,
         4,
@@ -42,6 +44,7 @@ export function initialeState(): WotrNationState {
       gondor: initialFreePeopleNation(
         "gondor",
         "Gondor",
+        false,
         15,
         5,
         4,
@@ -52,6 +55,7 @@ export function initialeState(): WotrNationState {
       rohan: initialFreePeopleNation(
         "rohan",
         "Rohan",
+        false,
         10,
         5,
         4,
@@ -62,6 +66,7 @@ export function initialeState(): WotrNationState {
       north: initialFreePeopleNation(
         "north",
         "The North",
+        false,
         10,
         5,
         4,
@@ -72,16 +77,27 @@ export function initialeState(): WotrNationState {
       isengard: initialShadowNation(
         "isengard",
         "Isengard",
+        true,
         12,
         6,
         0,
         "Isengard regular",
         "Isengard elite"
       ),
-      sauron: initialShadowNation("sauron", "Sauron", 36, 6, 8, "Sauron regular", "Sauron elite"),
+      sauron: initialShadowNation(
+        "sauron",
+        "Sauron",
+        true,
+        36,
+        6,
+        8,
+        "Sauron regular",
+        "Sauron elite"
+      ),
       southrons: initialShadowNation(
         "southrons",
         "Southrons & Esterlings",
+        true,
         24,
         6,
         0,
@@ -95,6 +111,7 @@ export function initialeState(): WotrNationState {
 function initialFreePeopleNation(
   id: WotrNationId,
   name: string,
+  active: boolean,
   nRegulars: number,
   nElites: number,
   nLeaders: number,
@@ -106,6 +123,7 @@ function initialFreePeopleNation(
     id,
     name,
     "free-peoples",
+    active,
     nRegulars,
     nElites,
     nLeaders,
@@ -119,6 +137,7 @@ function initialFreePeopleNation(
 function initialShadowNation(
   id: WotrNationId,
   name: string,
+  active: boolean,
   nRegulars: number,
   nElites: number,
   nNazgul: number,
@@ -129,6 +148,7 @@ function initialShadowNation(
     id,
     name,
     "shadow",
+    active,
     nRegulars,
     nElites,
     0,
@@ -143,6 +163,7 @@ function initialNation(
   id: WotrNationId,
   name: string,
   front: WotrFrontId,
+  active: boolean,
   nRegulars: number,
   nElites: number,
   nLeaders: number,
@@ -161,7 +182,7 @@ function initialNation(
     units: { regular: nRegulars, elite: nElites, leader: nLeaders, nazgul: nNazgul },
     reinforcements: { regular: nRegulars, elite: nElites, leader: nLeaders, nazgul: nNazgul },
     casualties: { regular: 0, elite: 0, leader: 0 },
-    active: false,
+    active,
     politicalStep: 3
   };
 }
