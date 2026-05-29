@@ -231,6 +231,7 @@ export class WotrNationHandler {
     const story = this.storyService.getCurrentStory() as WotrStory;
     switch (story.type) {
       case "die":
+        if (story.character) return "character-ability";
         switch (story.die) {
           case "muster":
             return "muster-die-result";

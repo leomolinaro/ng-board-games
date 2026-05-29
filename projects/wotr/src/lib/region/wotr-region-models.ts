@@ -117,7 +117,7 @@ export interface WotrRegion {
   id: WotrRegionId;
   name: string;
   nationId?: WotrNationId; // immutable, except for Helm's Deep in Kome
-  frontId?: WotrFrontId; // original controller, only if settlement, immutable
+  frontId?: WotrFrontId; // original front of nation, immutable
   seaside: boolean;
   neighbors: WotrNeighbor[];
   fortification?: true;

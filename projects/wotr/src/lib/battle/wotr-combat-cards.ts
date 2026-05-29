@@ -108,10 +108,7 @@ export class WotrCombatCards {
     // Play if the defending Army is inside the borders of a Free Peoples Nation.
     // Subtract 1 from all dice on the Combat roll of the Shadow player (an unmodified '6' is still considered a hit for him).
     "Advantageous Position": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => this.q.region(params.toRegion).isFreePeoplesRegion(),
       effect: async (card, params) => {
         params.shadow.combatModifiers.push(-1);
       }
@@ -533,10 +530,12 @@ export class WotrCombatCards {
           const nHits = rollAction.dice.filter(r => r >= 4).length;
           const fpArmy = params.freePeoples.army();
           const fpArmyHitPoints = this.unitUtils.nHits(fpArmy);
-          if (nHits >= fpArmyHitPoints) {
-            await this.freePeoples.eliminateArmy(params.freePeoples.regionId, card.id);
-          } else {
-            await this.freePeoples.chooseCasualties(nHits, params.freePeoples.regionId, card.id);
+          if (nHits) {
+            if (nHits >= fpArmyHitPoints) {
+              await this.freePeoples.eliminateArmy(params.freePeoples.regionId, card.id);
+            } else {
+              await this.freePeoples.chooseCasualties(nHits, params.freePeoples.regionId, card.id);
+            }
           }
         }
       }

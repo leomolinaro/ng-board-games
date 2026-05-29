@@ -404,7 +404,7 @@ export function initialeState(): WotrRegionState {
         [], false),
       // prettier-ignore
       "north-rhun": initialRegion("north-rhun", "North Rhun", "southrons", false, "town",
-        ["east-rhun", "northern-rhovanion", "vale-of-the-celduin", "vale-of-the-carnen"],
+        ["east-rhun", "northern-dorwinion", "vale-of-the-celduin", "vale-of-the-carnen"],
         [], false),
       // prettier-ignore
       "east-rhun": initialRegion("east-rhun", "East Rhun", "southrons", false, null,
