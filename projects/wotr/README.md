@@ -1,3 +1,3 @@
 # @leobg/wotr
 
-This library was generated with [Nx](https://nx.dev).
+This library is part of the Angular workspace.

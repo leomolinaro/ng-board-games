@@ -1,7 +1,6 @@
 /* eslint-disable */
 export default {
   displayName: "wotr",
-  preset: "../../jest.preset.js",
   setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   coverageDirectory: "../../coverage/projects/wotr",
   transform: {
