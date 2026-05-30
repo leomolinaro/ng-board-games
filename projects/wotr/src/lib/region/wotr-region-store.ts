@@ -978,12 +978,11 @@ export class WotrRegionStore {
     maxDistance: number
   ): WotrRegionId[][] {
     const allPaths: WotrRegionId[][] = [];
-    const visited = new Set<WotrRegionId>();
-    const queue: { path: WotrRegionId[]; distance: number }[] = [
-      { path: [startRegionId], distance: 0 }
+    const queue: { path: WotrRegionId[]; distance: number; visited: Set<WotrRegionId> }[] = [
+      { path: [startRegionId], distance: 0, visited: new Set([startRegionId]) }
     ];
     while (queue.length > 0) {
-      const { path, distance } = queue.shift()!;
+      const { path, distance, visited } = queue.shift()!;
       const currentRegionId = path[path.length - 1];
       if (currentRegionId === endRegionId && distance <= maxDistance) {
         allPaths.push(path);
@@ -992,8 +991,13 @@ export class WotrRegionStore {
         const neighbors = this.region(currentRegionId).neighbors;
         for (const neighbor of neighbors) {
           if (!neighbor.impassable && !visited.has(neighbor.id)) {
-            visited.add(neighbor.id);
-            queue.push({ path: [...path, neighbor.id], distance: distance + 1 });
+            const newVisited = new Set(visited);
+            newVisited.add(neighbor.id);
+            queue.push({
+              path: [...path, neighbor.id],
+              distance: distance + 1,
+              visited: newVisited
+            });
           }
         }
       }

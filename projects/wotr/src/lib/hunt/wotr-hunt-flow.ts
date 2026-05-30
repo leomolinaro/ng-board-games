@@ -171,9 +171,7 @@ export class WotrHuntFlow {
       } else {
         const fromRegion = this.regionStore.fellowshipRegion();
         const progress = this.fellowshipStore.progress();
-        if (doReveal) {
-          await this.revealFellowship();
-        }
+        if (doReveal) await this.revealFellowship();
         const toRegion = this.regionStore.fellowshipRegion();
         if (this.revealedThroughShadowStronghold(fromRegion, toRegion, progress)) {
           const prevented = await this.huntModifiers.isHuntDrawPrevented();
