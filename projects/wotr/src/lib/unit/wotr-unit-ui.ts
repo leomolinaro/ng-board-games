@@ -168,7 +168,7 @@ export class WotrUnitUi {
     const movement = moveArmy(movingArmy.regionId, toRegionId, leftUnits);
     this.unitHandler.moveArmy(movement, frontId);
     const actions: WotrAction[] = [movement];
-    actions.push(...(await this.checkStackingLimit(movingArmy.regionId, frontId)));
+    actions.push(...(await this.checkStackingLimit(toRegionId, frontId)));
     return actions;
   }
 
