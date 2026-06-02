@@ -182,7 +182,7 @@ export class WotrCombatCards {
         if (nEliteUnits > 0) {
           const rollStory = await this.freePeoples.rollCombatDice(nEliteUnits);
           const rollAction = assertAction<WotrCombatRoll>(rollStory, "combat-roll");
-          const threashold = params.combatRound.siege ? 6 : 5;
+          const threashold = params.combatRound.siege && !params.shadow.isAttacker ? 6 : 5;
           const nHits = rollAction.dice.filter(d => d >= threashold).length;
           await this.applyExtraCombatHits(nHits, params.shadow, card, params);
         }
