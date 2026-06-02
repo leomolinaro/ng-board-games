@@ -78,7 +78,7 @@ export class WotrFellowshipHandler {
       await this.huntFlow.resolveHunt();
       this.huntStore.addFellowshipDie();
     }
-    if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.progress() === 6) {
+    if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.mordorTrack() === 5) {
       throw new WotrRingDestroyed();
     }
   }

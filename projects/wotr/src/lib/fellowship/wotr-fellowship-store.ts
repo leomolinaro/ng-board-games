@@ -34,6 +34,9 @@ export class WotrFellowshipStore {
   isOnMordorTrack() {
     return this.state().mordorTrack != null;
   }
+  mordorTrack() {
+    return this.state().mordorTrack;
+  }
   hasMovedOrHid() {
     return this.state().moveOrHideAttempt;
   }
