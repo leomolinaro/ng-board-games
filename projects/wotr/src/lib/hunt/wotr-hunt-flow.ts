@@ -240,8 +240,8 @@ export class WotrHuntFlow {
           absorbedDamage += action.quantity;
           break;
         case "character-elimination": {
-          if (params.guideSpecialAbilityAbsorption) {
-            absorbedDamage += params.guideSpecialAbilityAbsorption;
+          if (params.guideSpecialAbilityAbsorption?.companionId === action.characters[0]) {
+            absorbedDamage += params.guideSpecialAbilityAbsorption.amount;
           } else {
             for (const companionId of action.characters) {
               absorbedDamage += this.q.character(companionId).level;
@@ -251,9 +251,9 @@ export class WotrHuntFlow {
           break;
         }
         case "companion-separation": {
-          if (params.guideSpecialAbilityAbsorption) {
+          if (params.guideSpecialAbilityAbsorption?.companionId === action.companions[0]) {
             // Meriadoc and Peregrin separate for 1 damage absorption
-            absorbedDamage += params.guideSpecialAbilityAbsorption;
+            absorbedDamage += params.guideSpecialAbilityAbsorption.amount;
           }
           break;
         }

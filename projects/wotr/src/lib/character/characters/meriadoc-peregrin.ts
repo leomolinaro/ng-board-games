@@ -43,7 +43,10 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
     const choice: WotrUiChoice<WotrHuntEffectParams> = {
       character: this.characterId,
       actions: async params => {
-        params.guideSpecialAbilityAbsorption = 1;
+        params.guideSpecialAbilityAbsorption = {
+          companionId: this.characterId,
+          amount: 1
+        };
         return this.fellowshipUi.separateThoseCompanions([this.characterId]);
       },
       label: () => `Separate ${character.name} (Guide ability)`

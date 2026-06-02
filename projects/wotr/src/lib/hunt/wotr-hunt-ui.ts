@@ -245,9 +245,11 @@ export class WotrHuntUi {
       }
 
       if (characterElimination) {
-        if (params.guideSpecialAbilityAbsorption) {
+        if (
+          params.guideSpecialAbilityAbsorption?.companionId === characterElimination.characters[0]
+        ) {
           // Meriadoc and Peregrin separate for 1 damage absorption
-          damage -= params.guideSpecialAbilityAbsorption;
+          damage -= params.guideSpecialAbilityAbsorption.amount;
         } else {
           damage -= characterElimination.characters.reduce(
             (sum, c) => sum + this.q.character(c).level,
@@ -257,9 +259,11 @@ export class WotrHuntUi {
         }
       }
       if (companionSeparation) {
-        if (params.guideSpecialAbilityAbsorption) {
+        if (
+          params.guideSpecialAbilityAbsorption?.companionId === companionSeparation.companions[0]
+        ) {
           // Meriadoc and Peregrin separate for 1 damage absorption
-          damage -= params.guideSpecialAbilityAbsorption;
+          damage -= params.guideSpecialAbilityAbsorption.amount;
         }
       }
       if (useRing) damage -= useRing.quantity;
