@@ -575,7 +575,55 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => this.q.saruman.isInPlay(),
           play: async () => {
             const actions: WotrAction[] = [];
-            const regularRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
+            const nRegulars = this.q.isengard.nRegularReinforcements();
+            const nElites = this.q.isengard.nEliteReinforcements();
+            if (nElites === 0) {
+              if (nRegulars === 0) {
+                await this.ui.askContinue("No Isengard reinforcements available.");
+              } else {
+                const regularRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
+                  2,
+                  "isengard",
+                  "regulars",
+                  3,
+                  this.q
+                    .regions("north-dunland", "south-dunland", "orthanc")
+                    .filter(r => r.isFreeForRecruitment("shadow"))
+                    .map(r => r.id())
+                );
+                actions.push(...regularRecruitments);
+              }
+              return actions;
+            }
+            if (nElites === 1 && nRegulars <= 5) {
+              const eliteRecruitment = await this.unitUi.recruitEliteByCard("orthanc", "isengard");
+              if (eliteRecruitment) {
+                actions.push(eliteRecruitment);
+                const confirm = await this.ui.askConfirm(
+                  "Recruit a regular unit in Orthanc?",
+                  "Yes",
+                  "No"
+                );
+                if (confirm) {
+                  const regularRecruitment = await this.unitUi.recruitRegularByCard(
+                    "orthanc",
+                    "isengard"
+                  );
+                  if (regularRecruitment) {
+                    actions.push(regularRecruitment);
+                  }
+                }
+              }
+            } else {
+              const orthancRecruitments = await this.unitUi.recruitRegularsOrElitesByCard(
+                "orthanc",
+                "isengard",
+                2
+              );
+              actions.push(...orthancRecruitments);
+            }
+
+            const dunlandRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
               2,
               "isengard",
               "regulars",
@@ -585,13 +633,7 @@ export class WotrShadowStrategyCards {
                 .filter(r => r.isFreeForRecruitment("shadow"))
                 .map(r => r.id())
             );
-            actions.push(...regularRecruitments);
-            const eliteRecruitments = await this.unitUi.recruitRegularsOrElitesByCard(
-              "orthanc",
-              "isengard",
-              2
-            );
-            actions.push(...eliteRecruitments);
+            actions.push(...dunlandRecruitments);
             return actions;
           }
         };

@@ -462,7 +462,8 @@ export class WotrUnitUi {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return null;
     const units: WotrReinforcementUnit[] = [];
-    if (this.q.rohan.hasRegularReinforcements()) units.push({ nation: nationId, type: "regular" });
+    if (this.q.nation(nationId).hasRegularReinforcements())
+      units.push({ nation: nationId, type: "regular" });
     if (!units.length) return null;
     await this.ui.askReinforcementUnit("Choose a unit to recruit", {
       frontId,
@@ -471,6 +472,25 @@ export class WotrUnitUi {
     });
     this.unitHandler.recruitRegularUnit(1, nationId, regionId);
     return recruitRegularUnit(regionId, nationId, 1);
+  }
+
+  async recruitEliteByCard(
+    regionId: WotrRegionId,
+    nationId: WotrNationId
+  ): Promise<WotrAction | null> {
+    const frontId = this.nationStore.nation(nationId).front;
+    if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return null;
+    const units: WotrReinforcementUnit[] = [];
+    if (this.q.nation(nationId).hasEliteReinforcements())
+      units.push({ nation: nationId, type: "elite" });
+    if (!units.length) return null;
+    await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+      frontId,
+      units,
+      canPass: false
+    });
+    this.unitHandler.recruitEliteUnit(1, nationId, regionId);
+    return recruitEliteUnit(regionId, nationId, 1);
   }
 
   async recruitLeaderByCard(regionId: WotrRegionId, nationId: WotrNationId): Promise<WotrAction[]> {
