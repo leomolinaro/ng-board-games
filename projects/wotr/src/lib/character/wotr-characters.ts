@@ -134,7 +134,7 @@ export class WotrCharacters {
       case "gandalf-the-white":
         return [
           new ShadowfaxAbility(this.characterModifiers),
-          new TheWhiteRiderAbility(this.freePeoples, this.battleModifiers)
+          new TheWhiteRiderAbility(this.freePeoples, this.battleModifiers, this.unitUtils)
         ];
       case "aragorn":
         return [new CaptainOfTheWestAbility("aragorn", this.q, this.battleModifiers)];

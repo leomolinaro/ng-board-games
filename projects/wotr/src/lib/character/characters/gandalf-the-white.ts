@@ -9,6 +9,7 @@ import { WotrGameUi } from "../../game/wotr-game-ui";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { character } from "../../unit/wotr-unit-models";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { playCharacter } from "../wotr-character-actions";
 import {
   WotrCharacterModifiers,
@@ -93,13 +94,15 @@ export class ShadowfaxAbility implements WotrAbility<WotrCharacterMovementLevelM
 export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound> {
   constructor(
     private freePeoples: WotrFreePeoplesPlayer,
-    private battleModifiers: WotrBattleModifiers
+    private battleModifiers: WotrBattleModifiers,
+    private unitUtils: WotrUnitUtils
   ) {}
 
   public modifier = this.battleModifiers.beforeCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
     if (!round.freePeoples.isCharacterActiveInBattle("gandalf-the-white")) return;
+    if (!this.unitUtils.hasNazgul(round.shadow.army())) return;
     if (!(await activateCharacterAbility(this, "gandalf-the-white", this.freePeoples))) return;
     round.shadow.negateNazgulLeadership = true;
   };

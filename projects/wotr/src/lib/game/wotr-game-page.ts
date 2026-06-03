@@ -190,6 +190,10 @@ export class WotrGamePage implements OnInit, OnDestroy {
         this.story.setReplayMode(true);
       }
       // console.log("stories", [...stories]);
+      // console.log(
+      //   "stories",
+      //   stories.map(s => ({ ...s, time: s.time >= 304 ? s.time - 1 : s.time }))
+      // );
       this.story.setStoryDocs(stories);
       await this.flow.game(this.gameConfig() ?? {});
     }
