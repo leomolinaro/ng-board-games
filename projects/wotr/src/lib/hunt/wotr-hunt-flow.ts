@@ -240,6 +240,9 @@ export class WotrHuntFlow {
           absorbedDamage += action.quantity;
           break;
         case "character-elimination": {
+          // P.S.: very risky, this is set only from ui player;
+          // otherwise, the else would be executed; the casualtyTaken set should not
+          // be a problem from not ui player
           if (params.guideSpecialAbilityAbsorption?.companionId === action.characters[0]) {
             absorbedDamage += params.guideSpecialAbilityAbsorption.amount;
           } else {
@@ -251,10 +254,10 @@ export class WotrHuntFlow {
           break;
         }
         case "companion-separation": {
-          if (params.guideSpecialAbilityAbsorption?.companionId === action.companions[0]) {
-            // Meriadoc and Peregrin separate for 1 damage absorption
-            absorbedDamage += params.guideSpecialAbilityAbsorption.amount;
-          }
+          // P.S.: do not check guideSpecialAbilityAbsorption since
+          // it is set only from ui player
+          // Meriadoc and Peregrin separate for 1 damage absorption
+          absorbedDamage += 1;
           break;
         }
         case "fellowship-reveal":

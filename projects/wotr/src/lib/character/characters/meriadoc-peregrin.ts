@@ -42,8 +42,9 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
     if (params.damage < 1) return [];
     const choice: WotrUiChoice<WotrHuntEffectParams> = {
       character: this.characterId,
-      actions: async params => {
-        params.guideSpecialAbilityAbsorption = {
+      actions: async p => {
+        // P.S.: very risky, this is set only from ui player
+        p.guideSpecialAbilityAbsorption = {
           companionId: this.characterId,
           amount: 1
         };
