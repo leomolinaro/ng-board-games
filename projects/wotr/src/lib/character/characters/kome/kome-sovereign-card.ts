@@ -9,6 +9,7 @@ import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import { awakeSovereign, moveCharacters } from "../../wotr-character-actions";
 import { WotrCharacterHandler } from "../../wotr-character-handler";
 import { KomeSovereignId } from "../../wotr-character-models";
+import { validSovereignAwakeningDie } from "./commons";
 
 export abstract class KomeSovereignCard {
   public abstract sovereignId: KomeSovereignId;
@@ -20,7 +21,7 @@ export abstract class KomeSovereignCard {
   protected abstract logger: WotrLogWriter;
 
   canBeAwakened(die: WotrActionDie): boolean {
-    if (die !== "muster") return false; // TODO Ruler die
+    if (!validSovereignAwakeningDie(die)) return false;
     if (!this.q.nation(this.nation).isActive()) return false;
     const regions = this.getValidAwakeningRegions();
     return regions.length > 0;

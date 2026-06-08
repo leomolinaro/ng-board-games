@@ -17,6 +17,7 @@ import {
   activateCharacterAbility,
   WotrPlayableCharacterCard
 } from "../wotr-playable-character-card";
+import { validChieftainPlayingDie } from "./commons";
 
 // Ugluk - Chieftain of the Uruk-hai (Level 2, Leadership 1, +1 Ruler Special Action Die)
 // If Rohan is "At War", or the Fellowship is revealed, you may spend a Muster Action die result,
@@ -42,7 +43,7 @@ export class Ugluk extends WotrPlayableCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (
       (this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
-      die === "muster" && // TODO also check for Ruler die (except Eye)
+      validChieftainPlayingDie(die) &&
       this.q.regions().some(r => this.isValidRegion(r))
     ) {
       return true;

@@ -17,6 +17,7 @@ import {
   activateCharacterAbility,
   WotrPlayableCharacterCard
 } from "../wotr-playable-character-card";
+import { validChieftainPlayingDie } from "./commons";
 
 // The Black Serpent - Chieftain of the Haradrim (Level 2, Leadership 2, +1 Ruler Special Action Die)
 // If Gondor is "At War", you may spend a Muster Action or any Ruler die result
@@ -41,7 +42,7 @@ export class TheBlackSerpent extends WotrPlayableCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (
       this.q.gondor.isAtWar() &&
-      die === "muster" && // TODO also check for Ruler die (except Eye)
+      validChieftainPlayingDie(die) &&
       this.q.regions().some(r => this.isValidRegion(r))
     ) {
       return true;

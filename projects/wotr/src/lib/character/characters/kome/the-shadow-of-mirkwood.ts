@@ -17,6 +17,7 @@ import {
   activateCharacterAbility,
   WotrPlayableCharacterCard
 } from "../wotr-playable-character-card";
+import { validChieftainPlayingDie } from "./commons";
 
 // The Shadow of Mirkwood - Chieftain of the Dark Lord (Level 3, Leadership 1, +1 Ruler Special Action Die)
 // If either the Dwarves, the Elves, or the North are "At War", you may spend a Muster Action
@@ -42,7 +43,7 @@ export class TheShadowOfMirkwood extends WotrPlayableCharacterCard {
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (
       (this.q.dwarves.isAtWar() || this.q.elves.isAtWar() || this.q.north.isAtWar()) &&
-      die === "muster" && // TODO also check for Ruler die (except Eye)
+      validChieftainPlayingDie(die) &&
       this.q.regions().some(r => this.isValidRegion(r))
     ) {
       return true;
