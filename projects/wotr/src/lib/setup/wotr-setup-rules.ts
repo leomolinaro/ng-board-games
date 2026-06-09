@@ -161,16 +161,17 @@ export class WotrSetupRules {
   }
 
   shuffledDecks(options: WotrGameOptions): WotrFrontDecksSetup[] {
+    const decks = this.cards.getCardDecks(options);
     return [
       {
         front: "free-peoples",
-        characterDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesCharacterCardIds(options)),
-        strategyDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesStrategyCardIds(options))
+        characterDeck: arrayUtil.shuffle(decks.freePeoplesCharacterCardIds),
+        strategyDeck: arrayUtil.shuffle(decks.freePeoplesStrategyCardIds)
       },
       {
         front: "shadow",
-        characterDeck: arrayUtil.shuffle(this.cards.getAllShadowCharacterCardIds(options)),
-        strategyDeck: arrayUtil.shuffle(this.cards.getAllShadowStrategyCardIds(options))
+        characterDeck: arrayUtil.shuffle(decks.shadowCharacterCardIds),
+        strategyDeck: arrayUtil.shuffle(decks.shadowStrategyCardIds)
       }
     ];
   }

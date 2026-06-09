@@ -9,9 +9,58 @@ import {
   WotrShadowStrategyCardId
 } from "./wotr-card-models";
 
+interface ExpansionCards {
+  fpchaReplacements: Partial<Record<WotrFreePeopleCharacterCardId, WotrFreePeopleCharacterCardId>>;
+  fpchaAdditions: WotrFreePeopleCharacterCardId[];
+  fpstrReplacements: Partial<Record<WotrFreePeopleStrategyCardId, WotrFreePeopleStrategyCardId>>;
+  fpstrAdditions: WotrFreePeopleStrategyCardId[];
+  schaReplacements: Partial<Record<WotrShadowCharacterCardId, WotrShadowCharacterCardId>>;
+  schaAdditions: WotrShadowCharacterCardId[];
+  sstrReplacements: Partial<Record<WotrShadowStrategyCardId, WotrShadowStrategyCardId>>;
+  sstrAdditions: WotrShadowStrategyCardId[];
+}
+
+export interface WotrCardDecks {
+  freePeoplesCharacterCardIds: WotrFreePeopleCharacterCardId[];
+  freePeoplesStrategyCardIds: WotrFreePeopleStrategyCardId[];
+  shadowCharacterCardIds: WotrShadowCharacterCardId[];
+  shadowStrategyCardIds: WotrShadowStrategyCardId[];
+}
+
 @Injectable()
 export class WotrCardUtils {
-  private readonly CARD_NUMBERS: WotrCardNumber[] = [
+  private _komeExpansionCards: ExpansionCards | null = null;
+  private get komeExpansionCards(): ExpansionCards {
+    if (!this._komeExpansionCards) {
+      this._komeExpansionCards = {
+        fpchaReplacements: {
+          fpcha23: "fpcha23km"
+        },
+        fpchaAdditions: ["fpcha25km", "fpcha26km"],
+        fpstrReplacements: {
+          fpstr08: "fpstr08km",
+          fpstr16: "fpstr16km",
+          fpstr19: "fpstr19km",
+          fpstr22: "fpstr22km",
+          fpstr24: "fpstr24km"
+        },
+        fpstrAdditions: ["fpstr25km", "fpstr26km"],
+        schaReplacements: {},
+        schaAdditions: ["scha25km", "scha26km"],
+        sstrReplacements: {
+          sstr01: "sstr01km",
+          sstr03: "sstr03km",
+          sstr05: "sstr05km",
+          sstr06: "sstr06km",
+          sstr18: "sstr18km"
+        },
+        sstrAdditions: ["sstr25km", "sstr26km"]
+      };
+    }
+    return this._komeExpansionCards;
+  }
+
+  private readonly BASE_CARD_NUMBERS: WotrCardNumber[] = [
     "01",
     "02",
     "03",
@@ -37,28 +86,63 @@ export class WotrCardUtils {
     "23",
     "24"
   ];
-  private readonly FP_CHARACTER_CARD_IDS: WotrFreePeopleCharacterCardId[] = this.CARD_NUMBERS.map(
-    n => `fpcha${n}` as WotrFreePeopleCharacterCardId
-  );
-  getAllFreePeoplesCharacterCardIds(options: WotrGameOptions) {
-    return this.FP_CHARACTER_CARD_IDS;
+
+  private getGameExpansionCards(options: WotrGameOptions): ExpansionCards {
+    const expansions = options.expansions;
+    const expansionCards: ExpansionCards[] = [];
+    if (expansions.includes("kome")) expansionCards.push(this.komeExpansionCards);
+    const gameExpansionCards: ExpansionCards = {
+      fpchaReplacements: {},
+      fpchaAdditions: [],
+      fpstrReplacements: {},
+      fpstrAdditions: [],
+      schaReplacements: {},
+      schaAdditions: [],
+      sstrReplacements: {},
+      sstrAdditions: []
+    };
+    for (const expansionCard of expansionCards) {
+      Object.assign(gameExpansionCards.fpchaReplacements, expansionCard.fpchaReplacements);
+      gameExpansionCards.fpchaAdditions.push(...expansionCard.fpchaAdditions);
+      Object.assign(gameExpansionCards.fpstrReplacements, expansionCard.fpstrReplacements);
+      gameExpansionCards.fpstrAdditions.push(...expansionCard.fpstrAdditions);
+      Object.assign(gameExpansionCards.schaReplacements, expansionCard.schaReplacements);
+      gameExpansionCards.schaAdditions.push(...expansionCard.schaAdditions);
+      Object.assign(gameExpansionCards.sstrReplacements, expansionCard.sstrReplacements);
+      gameExpansionCards.sstrAdditions.push(...expansionCard.sstrAdditions);
+    }
+    return gameExpansionCards;
   }
-  private readonly FP_STRATEGY_CARD_IDS: WotrFreePeopleStrategyCardId[] = this.CARD_NUMBERS.map(
-    n => `fpstr${n}` as WotrFreePeopleStrategyCardId
-  );
-  getAllFreePeoplesStrategyCardIds(options: WotrGameOptions) {
-    return this.FP_STRATEGY_CARD_IDS;
-  }
-  private readonly S_CHARACTER_CARD_IDS: WotrShadowCharacterCardId[] = this.CARD_NUMBERS.map(
-    n => `scha${n}` as WotrShadowCharacterCardId
-  );
-  getAllShadowCharacterCardIds(options: WotrGameOptions) {
-    return this.S_CHARACTER_CARD_IDS;
-  }
-  private readonly S_STRATEGY_CARD_IDS: WotrShadowStrategyCardId[] = this.CARD_NUMBERS.map(
-    n => `sstr${n}` as WotrShadowStrategyCardId
-  );
-  getAllShadowStrategyCardIds(options: WotrGameOptions) {
-    return this.S_STRATEGY_CARD_IDS;
+
+  getCardDecks(options: WotrGameOptions): WotrCardDecks {
+    const expansionCards = this.getGameExpansionCards(options);
+    const fpchaCardIds: WotrFreePeopleCharacterCardId[] = [];
+    const fpstrCardIds: WotrFreePeopleStrategyCardId[] = [];
+    const schaCardIds: WotrShadowCharacterCardId[] = [];
+    const sstrCardIds: WotrShadowStrategyCardId[] = [];
+    for (const cardNumber of this.BASE_CARD_NUMBERS) {
+      let fpChaCardId = `fpcha${cardNumber}` as WotrFreePeopleCharacterCardId;
+      fpChaCardId = expansionCards.fpchaReplacements[fpChaCardId] || fpChaCardId;
+      fpchaCardIds.push(fpChaCardId);
+      let fpStrCardId = `fpstr${cardNumber}` as WotrFreePeopleStrategyCardId;
+      fpStrCardId = expansionCards.fpstrReplacements[fpStrCardId] || fpStrCardId;
+      fpstrCardIds.push(fpStrCardId);
+      let sChaCardId = `scha${cardNumber}` as WotrShadowCharacterCardId;
+      sChaCardId = expansionCards.schaReplacements[sChaCardId] || sChaCardId;
+      schaCardIds.push(sChaCardId);
+      let sStrCardId = `sstr${cardNumber}` as WotrShadowStrategyCardId;
+      sStrCardId = expansionCards.sstrReplacements[sStrCardId] || sStrCardId;
+      sstrCardIds.push(sStrCardId);
+    }
+    for (const addition of expansionCards.fpchaAdditions) fpchaCardIds.push(addition);
+    for (const addition of expansionCards.fpstrAdditions) fpstrCardIds.push(addition);
+    for (const addition of expansionCards.schaAdditions) schaCardIds.push(addition);
+    for (const addition of expansionCards.sstrAdditions) sstrCardIds.push(addition);
+    return {
+      freePeoplesCharacterCardIds: fpchaCardIds,
+      freePeoplesStrategyCardIds: fpstrCardIds,
+      shadowCharacterCardIds: schaCardIds,
+      shadowStrategyCardIds: sstrCardIds
+    };
   }
 }
