@@ -6,7 +6,6 @@ import {
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { playCardOnTable } from "../../wotr-card-actions";
 
 export function wizardsStaff(): WotrScenarioGroup {
@@ -31,7 +30,7 @@ const wizardsStaff01: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after a standard hunt in a region",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
@@ -51,7 +50,7 @@ const wizardsStaff02: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after a hunt in Mordor",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(10).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(10).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
@@ -70,7 +69,7 @@ const wizardsStaff03: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn after the Fellowship is revealed in a Stronghold",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(4).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(4).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
@@ -93,7 +92,7 @@ const wizardsStaff04: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Orc Patrol",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(1).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("Orc Patrol"),
@@ -112,7 +111,7 @@ const wizardsStaff05: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Isildur's Bane",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(1).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("Isildur's Bane"),
@@ -131,7 +130,7 @@ const wizardsStaff06: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Foul Thing from the Deep",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(1).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("Foul Thing from the Deep"),
@@ -150,7 +149,7 @@ const wizardsStaff07: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to The Breaking of the Fellowship",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(0).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(0).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("The Breaking of the Fellowship"),
@@ -175,7 +174,7 @@ const wizardsStaff08: WotrScenario = {
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Balrog of Moria",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(2).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(2).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("Balrog of Moria"),

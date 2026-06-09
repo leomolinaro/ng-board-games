@@ -2,7 +2,6 @@ import { separateCompanions } from "../../fellowship/wotr-fellowship-actions";
 import { advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../setup/wotr-setup-builder";
 import { playCharacter } from "../wotr-character-actions";
 
 export function gandalfTheWhiteScenarios(): WotrScenarioGroup {
@@ -19,8 +18,8 @@ const gandalfTheWhite01: WotrScenario = {
   description:
     "When Gandalf the White is in play with other companions and a Character die is rolled",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .fellowshipCompanions("gandalf-the-grey", "legolas", "meriadoc")
         .fellowshipGuide("gandalf-the-grey")
         .build(),

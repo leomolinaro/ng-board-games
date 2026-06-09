@@ -15,6 +15,7 @@ import {
   WotrCompanionId
 } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameOptions } from "../game/options/wotr-game-options";
 import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { baseHuntTiles, komeHuntTiles, WotrHuntTileId } from "../hunt/wotr-hunt-models";
@@ -76,7 +77,7 @@ export class WotrSetupRules {
       else shadowTokens.push(t.token as WotrShadowActionToken);
     });
     return {
-      decks: this.shuffledDecks(),
+      decks: this.shuffledDecks(options),
       regions: [
         this.fpRegionSetup("erebor", "dwarves", 1, 2, 1, "dain"),
         this.fpRegionSetup("ered-luin", "dwarves", 1, 0, 0),
@@ -159,17 +160,17 @@ export class WotrSetupRules {
     return characters;
   }
 
-  shuffledDecks(): WotrFrontDecksSetup[] {
+  shuffledDecks(options: WotrGameOptions): WotrFrontDecksSetup[] {
     return [
       {
         front: "free-peoples",
-        characterDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesCharacterCardIds()),
-        strategyDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesStrategyCardIds())
+        characterDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesCharacterCardIds(options)),
+        strategyDeck: arrayUtil.shuffle(this.cards.getAllFreePeoplesStrategyCardIds(options))
       },
       {
         front: "shadow",
-        characterDeck: arrayUtil.shuffle(this.cards.getAllShadowCharacterCardIds()),
-        strategyDeck: arrayUtil.shuffle(this.cards.getAllShadowStrategyCardIds())
+        characterDeck: arrayUtil.shuffle(this.cards.getAllShadowCharacterCardIds(options)),
+        strategyDeck: arrayUtil.shuffle(this.cards.getAllShadowStrategyCardIds(options))
       }
     ];
   }

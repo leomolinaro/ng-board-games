@@ -1,8 +1,8 @@
 import { WotrVariantId } from "../expansion/wotr-expansion-models";
+import { WotrGameOptions } from "../game/options/wotr-game-options";
 import { WotrStoryDoc } from "../game/wotr-story-models";
 import { WotrScenario, WotrScenarioGroup } from "../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../setup/wotr-setup-builder";
 import {
   continueCorruptionAttempt,
   startCorruptionAttempt,
@@ -33,18 +33,19 @@ function baseCorruptionAttempt(
   stories: (b: WotrStoriesBuilder) => WotrStoryDoc[],
   options?: { variants?: WotrVariantId[] }
 ): WotrScenario {
+  const gameOptions: WotrGameOptions = {
+    expansions: ["kome"],
+    variants: [...(options?.variants ?? []), "visibleCorruptionTiles"],
+    tokens: []
+  };
   return {
     id,
     name: "Corruption Attempt",
     description,
     loadDefinition: () => ({
-      options: {
-        expansions: ["kome"],
-        variants: [...(options?.variants ?? []), "visibleCorruptionTiles"],
-        tokens: []
-      },
-      setup: rules =>
-        new WotrSetupBuilder(rules)
+      options: gameOptions,
+      setup: setupBuilder =>
+        setupBuilder
           .huntPool(...baseHuntTiles(), ...komeHuntTiles())
           .region("old-forest-road", "north", { nRegulars: 1, ruler: "brand" })
           .build(),

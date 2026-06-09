@@ -8,7 +8,6 @@ import {
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { discardCardFromTable, playCardOnTable } from "../../wotr-card-actions";
 
 export function axeAndBowScenarios(): WotrScenarioGroup {
@@ -24,7 +23,7 @@ const axeAndBow01: WotrScenario = {
   name: "Axe and Bow",
   description: "When 2 points of hunt damage are dealt",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
@@ -61,11 +60,8 @@ const axeAndBow03: WotrScenario = {
   name: "Axe and Bow",
   description: "Legolas is eliminated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
-        .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "legolas")
-        .build(),
+    setup: setupBuilder =>
+      setupBuilder.shuffledDecks().fellowshipCompanions("gandalf-the-grey", "legolas").build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
@@ -88,11 +84,8 @@ const axeAndBow04: WotrScenario = {
   name: "Axe and Bow",
   description: "Legolas is separated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
-        .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "legolas")
-        .build(),
+    setup: setupBuilder =>
+      setupBuilder.shuffledDecks().fellowshipCompanions("gandalf-the-grey", "legolas").build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Axe and Bow"),
       b.s().firstPhaseDraw(),
@@ -111,8 +104,8 @@ const axeAndBow05: WotrScenario = {
   name: "Axe and Bow",
   description: "Boromir is separated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .shuffledDecks()
         .fellowshipCompanions("gandalf-the-grey", "legolas", "boromir")
         .build(),

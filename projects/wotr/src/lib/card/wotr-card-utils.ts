@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import { Injectable } from "@angular/core";
+import { WotrGameOptions } from "../game/options/wotr-game-options";
 import {
   WotrCardNumber,
   WotrFreePeopleCharacterCardId,
@@ -39,25 +40,25 @@ export class WotrCardUtils {
   private readonly FP_CHARACTER_CARD_IDS: WotrFreePeopleCharacterCardId[] = this.CARD_NUMBERS.map(
     n => `fpcha${n}` as WotrFreePeopleCharacterCardId
   );
-  getAllFreePeoplesCharacterCardIds() {
+  getAllFreePeoplesCharacterCardIds(options: WotrGameOptions) {
     return this.FP_CHARACTER_CARD_IDS;
   }
   private readonly FP_STRATEGY_CARD_IDS: WotrFreePeopleStrategyCardId[] = this.CARD_NUMBERS.map(
     n => `fpstr${n}` as WotrFreePeopleStrategyCardId
   );
-  getAllFreePeoplesStrategyCardIds() {
+  getAllFreePeoplesStrategyCardIds(options: WotrGameOptions) {
     return this.FP_STRATEGY_CARD_IDS;
   }
   private readonly S_CHARACTER_CARD_IDS: WotrShadowCharacterCardId[] = this.CARD_NUMBERS.map(
     n => `scha${n}` as WotrShadowCharacterCardId
   );
-  getAllShadowCharacterCardIds() {
+  getAllShadowCharacterCardIds(options: WotrGameOptions) {
     return this.S_CHARACTER_CARD_IDS;
   }
   private readonly S_STRATEGY_CARD_IDS: WotrShadowStrategyCardId[] = this.CARD_NUMBERS.map(
     n => `sstr${n}` as WotrShadowStrategyCardId
   );
-  getAllShadowStrategyCardIds() {
+  getAllShadowStrategyCardIds(options: WotrGameOptions) {
     return this.S_STRATEGY_CARD_IDS;
   }
 }

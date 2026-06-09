@@ -8,7 +8,6 @@ import {
 import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 import { discardCardFromTable, playCardOnTable } from "../../wotr-card-actions";
 
 export function hornOfGondorScenarios(): WotrScenarioGroup {
@@ -24,7 +23,7 @@ const hornOfGondor01: WotrScenario = {
   name: "Horn of Gondor",
   description: "When 2 points of hunt damage are dealt",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Horn of Gondor"),
       b.s().firstPhaseDraw(),
@@ -61,11 +60,8 @@ const hornOfGondor03: WotrScenario = {
   name: "Horn of Gondor",
   description: "Boromir is eliminated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
-        .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "boromir")
-        .build(),
+    setup: setupBuilder =>
+      setupBuilder.shuffledDecks().fellowshipCompanions("gandalf-the-grey", "boromir").build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Horn of Gondor"),
       b.s().firstPhaseDraw(),
@@ -88,11 +84,8 @@ const hornOfGondor04: WotrScenario = {
   name: "Horn of Gondor",
   description: "Boromir is separated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
-        .shuffledDecks()
-        .fellowshipCompanions("gandalf-the-grey", "boromir")
-        .build(),
+    setup: setupBuilder =>
+      setupBuilder.shuffledDecks().fellowshipCompanions("gandalf-the-grey", "boromir").build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Horn of Gondor"),
       b.s().firstPhaseDraw(),
@@ -111,8 +104,8 @@ const hornOfGondor05: WotrScenario = {
   name: "Horn of Gondor",
   description: "Legolas is separated from the fellowship",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .shuffledDecks()
         .fellowshipCompanions("gandalf-the-grey", "legolas", "boromir")
         .build(),

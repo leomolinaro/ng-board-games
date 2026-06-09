@@ -1,7 +1,6 @@
 import { moveFelloswhip } from "../../fellowship/wotr-fellowship-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../setup/wotr-setup-builder";
 
 export function meriadocPeregrinScenarios(): WotrScenarioGroup {
   return {
@@ -17,8 +16,8 @@ const meriadocPeregrin01: WotrScenario = {
   description:
     "When Meriadoc and Peregrin are the last companions in the Fellowship and a 2 points hunt tile is drawn",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .fellowshipCompanions("meriadoc", "peregrin")
         .fellowshipGuide("meriadoc")
         .huntPool("2")
@@ -43,8 +42,8 @@ const meriadocPeregrin02: WotrScenario = {
   description:
     "When Meriadoc and Peregrin are the last companions in the Fellowship in Mordor and a 2 points hunt tile is drawn",
   loadDefinition: () => ({
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .fellowshipCompanions("meriadoc", "peregrin")
         .fellowshipGuide("meriadoc")
         .fellowshipRegion("minas-morgul")

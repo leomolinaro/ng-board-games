@@ -1,7 +1,6 @@
 import { declareFellowship } from "../../../fellowship/wotr-fellowship-actions";
 import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 
 export function elvenCloaksScenarios(): WotrScenarioGroup {
   return {
@@ -16,7 +15,7 @@ const elvenCloaks01: WotrScenario = {
   name: "Elven Cloaks",
   description: "When Fellowship in a region",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Elven Cloaks"),
       b.s().firstPhaseDraw(),
@@ -33,7 +32,7 @@ const elvenCloaks02: WotrScenario = {
   name: "Elven Cloaks",
   description: "When Fellowship on the Mordor track",
   loadDefinition: () => ({
-    setup: rules => new WotrSetupBuilder(rules).shuffledDecks().fellowshipProgress(10).build(),
+    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(10).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Elven Cloaks"),
       b.s().firstPhaseDraw(),

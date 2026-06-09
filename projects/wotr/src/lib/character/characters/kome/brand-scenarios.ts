@@ -3,7 +3,6 @@ import { startCorruptionAttempt, stopCorruptionAttempt } from "../../../hunt/wot
 import { baseHuntTiles, komeHuntTiles } from "../../../hunt/wotr-hunt-models";
 import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
 import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { WotrSetupBuilder } from "../../../setup/wotr-setup-builder";
 
 export function brandScenarios(): WotrScenarioGroup {
   return {
@@ -24,8 +23,8 @@ const brand01: WotrScenario = {
       variants: [],
       tokens: []
     },
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .huntPool(...baseHuntTiles(), ...komeHuntTiles())
         .region("old-forest-road", "north", { nRegulars: 1, ruler: "brand" })
         .nation("north", true, "atWar")
@@ -55,8 +54,8 @@ const brand02: WotrScenario = {
       variants: [],
       tokens: []
     },
-    setup: rules =>
-      new WotrSetupBuilder(rules)
+    setup: setupBuilder =>
+      setupBuilder
         .shuffledDecks()
         .huntPool(...baseHuntTiles(), ...komeHuntTiles())
         .region("dale", "north", { nRegulars: 1, ruler: "brand" })

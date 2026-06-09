@@ -1,4 +1,5 @@
 import { KomeSovereignId, WotrCompanionId } from "../character/wotr-character-models";
+import { WotrGameOptions } from "../game/options/wotr-game-options";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
@@ -11,15 +12,18 @@ import {
 } from "./wotr-setup-rules";
 
 export class WotrSetupBuilder {
-  constructor(private rules: WotrSetupRules) {}
+  constructor(
+    private options: WotrGameOptions,
+    private rules: WotrSetupRules
+  ) {}
 
-  static of(rules: WotrSetupRules): WotrSetupBuilder {
-    return new WotrSetupBuilder(rules);
+  static of(options: WotrGameOptions, rules: WotrSetupRules): WotrSetupBuilder {
+    return new WotrSetupBuilder(options, rules);
   }
 
   private deckSetups: WotrFrontDecksSetup[] = [];
   shuffledDecks(): WotrSetupBuilder {
-    this.deckSetups = this.rules.shuffledDecks();
+    this.deckSetups = this.rules.shuffledDecks(this.options);
     return this;
   }
 
