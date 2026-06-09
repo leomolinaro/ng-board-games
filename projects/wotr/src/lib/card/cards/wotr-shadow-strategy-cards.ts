@@ -795,6 +795,84 @@ export class WotrShadowStrategyCards {
                 .map(r => r.id)
             )
         };
+      // KOME
+      // Return to Valinor
+      // Play if you control at least one Elven Stronghold or
+      // if at least one Corrupted Sovereign is in play.
+      // For each region with an unconquered Elven Stronghold which is not under siege,
+      // roll a number of dice equal to the number of Elven Army units in that region (up to a maximum
+      // of 5) and score one hit against that army for each result of '6'.
+      // If two or more Corrupted Free Peoples Sovereigns are in play,
+      // score hits on each result of 5+ instead.
+      case "sstr01km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Denethor's Folly
+      // Play on the table if Denethor is in play and not Awakened.
+      // While this card is in play, Denethor cannot be awakened,
+      // and the Free Peoples player cannot use Combat cards for battles fought in Minas Tirith
+      // or in the region with Denethor.
+      // The Free Peoples player can force "Denethor's Folly" to be discarded
+      // using a Will of the West Action die result,
+      // or any Action die result if Gandalf or Aragorn is in Minas Tirith or in the region with Denethor.
+      case "sstr03km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Threats and Promises
+      // Play on the table.
+      // When "Threats and Promises" is in play, the Free Peoples player can neither advance a passive Nation on the Political Track,
+      // nor awaken a Sovereign, using a Muster action die result.
+      // You must discard this card from the table if a Sovereign becomes Corrupted,
+      // or if a Free Peoples Nation advances on the Political Track due to an attack or due to a Companion's special ability.
+      case "sstr05km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Stormcrow
+      // Play if either the Fellowship or a Companion is inside the borders of a Free Peoples Nation not "At War."
+      // Move that Nation's Political Counter back one step on the Political Track.
+      // Then, if the Sovereign of that Nation is not Awakened, draw and add one Corruption tile to him,
+      // and the Free Peoples player must eliminate one Army unit of that Nation (Regular or Elite).
+      case "sstr06km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // The King Is Revealed
+      // Play if either Aragorn or Denethor, Lord Steward of Gondor, is in play.
+      // Recruit five Sauron Regular units and one Nazgûl,
+      // plus one Sauron Regular unit or Nazgûl for each Awakened Sovereign in play,
+      // in Minas Morgul.
+      case "sstr18km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // The Palantir of Barad-dûr
+      // Play on the table.
+      // Once per turn, while this card is in play, the Shadow player can use
+      // a Muster action die result as an Event Action die result instead.
+      // The Free Peoples player can force "The Palantir of Barad-dûr" to be discarded
+      // using a Will of the West Action die result, or using any Action die result and one Elven Ring.
+      case "sstr25km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Work of the Enemy
+      // Choose a region with a Sovereign.
+      // Roll 3 dice, and inflict a hit on a Free Peoples Army in that region for each roll of 5+,
+      // or 4+ if hat Sovereign is Corrupted.
+      case "sstr26km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
     }
   }
 

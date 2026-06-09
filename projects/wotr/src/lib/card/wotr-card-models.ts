@@ -26,6 +26,25 @@ export type WotrCardNumber =
   | "23"
   | "24";
 
+export type KomeFreePeopleCharacterCardNumber = "23km" | "25km" | "26km";
+export type KomeFreePeopleStrategyCardNumber =
+  | "08km"
+  | "16km"
+  | "19km"
+  | "22km"
+  | "24km"
+  | "25km"
+  | "26km";
+export type KomeShadowCharacterCardNumber = "25km" | "26km";
+export type KomeShadowStrategyCardNumber =
+  | "01km"
+  | "03km"
+  | "05km"
+  | "06km"
+  | "18km"
+  | "25km"
+  | "26km";
+
 export type WotrFreePeopleCardId = WotrFreePeopleCharacterCardId | WotrFreePeopleStrategyCardId;
 export function isFreePeoplesCard(cardId: WotrCardId): cardId is WotrFreePeopleCardId {
   return cardId.startsWith("fp");
@@ -44,26 +63,28 @@ export type WotrCharacterCardId = WotrFreePeopleCharacterCardId | WotrShadowChar
 export function isCharacterCard(cardId: WotrCardId): cardId is WotrCharacterCardId {
   return cardId.startsWith("fpcha") || cardId.startsWith("scha");
 }
-export type WotrFreePeopleCharacterCardId = `fpcha${WotrCardNumber}`;
+export type WotrFreePeopleCharacterCardId =
+  `fpcha${WotrCardNumber | KomeFreePeopleCharacterCardNumber}`;
 export function isFreePeopleCharacterCard(
   cardId: WotrCardId
 ): cardId is WotrFreePeopleCharacterCardId {
   return cardId.startsWith("fpcha");
 }
 
-export type WotrFreePeopleStrategyCardId = `fpstr${WotrCardNumber}`;
+export type WotrFreePeopleStrategyCardId =
+  `fpstr${WotrCardNumber | KomeFreePeopleStrategyCardNumber}`;
 export function isFreePeopleStrategyCard(
   cardId: WotrCardId
 ): cardId is WotrFreePeopleStrategyCardId {
   return cardId.startsWith("fpstr");
 }
 
-export type WotrShadowCharacterCardId = `scha${WotrCardNumber}`;
+export type WotrShadowCharacterCardId = `scha${WotrCardNumber | KomeShadowCharacterCardNumber}`;
 export function isShadowCharacterCard(cardId: WotrCardId): cardId is WotrShadowCharacterCardId {
   return cardId.startsWith("scha");
 }
 
-export type WotrShadowStrategyCardId = `sstr${WotrCardNumber}`;
+export type WotrShadowStrategyCardId = `sstr${WotrCardNumber | KomeShadowStrategyCardNumber}`;
 export function isShadowStrategyCard(cardId: WotrCardId): cardId is WotrShadowStrategyCardId {
   return cardId.startsWith("sstr");
 }
@@ -176,7 +197,16 @@ export type WotrCardLabel =
   | "Horde From the East"
   | "Monsters Rousted"
   | "Musterings of Long-planned War"
-  | "Pits of Mordor";
+  | "Pits of Mordor"
+  // KOME
+  | "Aid in Time of Need"
+  | "It Is not so Dark Here"
+  | "Ever at Your Service"
+  | "Men of Little Villages"
+  | "Your Welcome is Doubtful"
+  | "The West has Failed"
+  | "The Palantír of Barad-dûr"
+  | "Work of the Enemy";
 
 export type WotrCardCombatLabel =
   | "It is a Gift"
@@ -216,7 +246,14 @@ export type WotrCardCombatLabel =
   | "Mumakil"
   | "Swarm of Bats"
   | "We Come to Kill"
-  | "Desperate Battle";
+  | "Desperate Battle"
+  // KOME
+  | "The King's Banner"
+  | "Like a God of Old"
+  | "There is Hope for Victory"
+  | "Servant of the Shadow"
+  | "Battle is Vain"
+  | "His Power Waxes";
 
 const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   fpcha01: {
@@ -890,6 +927,140 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
     label: "Pits of Mordor",
     type: "muster",
     combatLabel: "Desperate Battle",
+    combatTiming: 3
+  },
+  // KOME
+  fpcha23km: {
+    id: "fpcha23km",
+    label: "House of the Stewards",
+    type: "character",
+    combatLabel: "Brave Stand",
+    combatTiming: 3
+  },
+  fpcha25km: {
+    id: "fpcha25km",
+    label: "Aid in Time of Need",
+    type: "character",
+    combatLabel: "The King's Banner",
+    combatTiming: 4
+  },
+  fpcha26km: {
+    id: "fpcha26km",
+    label: "It Is not so Dark Here",
+    type: "character",
+    combatLabel: "Like a God of Old",
+    combatTiming: 2
+  },
+  fpstr08km: {
+    id: "fpstr08km",
+    label: "Wisdom of Elrond",
+    type: "muster",
+    combatLabel: "Confusion",
+    combatTiming: 4
+  },
+  fpstr16km: {
+    id: "fpstr16km",
+    label: "Riders of Theoden",
+    type: "muster",
+    combatLabel: "Daylight",
+    combatTiming: 3
+  },
+  fpstr19km: {
+    id: "fpstr19km",
+    label: "King Brand's Men",
+    type: "muster",
+    combatLabel: "Shield-Wall",
+    combatTiming: 6
+  },
+  fpstr22km: {
+    id: "fpstr22km",
+    label: "Dain Ironfoot's Guard",
+    type: "muster",
+    combatLabel: "Valour",
+    combatTiming: 3
+  },
+  fpstr24km: {
+    id: "fpstr24km",
+    label: "Thranduil's Archers",
+    type: "muster",
+    combatLabel: "Valour",
+    combatTiming: 3
+  },
+  fpstr25km: {
+    id: "fpstr25km",
+    label: "Ever at Your Service",
+    type: "muster",
+    combatLabel: "There is Hope for Victory",
+    combatTiming: 4
+  },
+  fpstr26km: {
+    id: "fpstr26km",
+    label: "Men of Little Villages",
+    type: "muster",
+    combatLabel: "There is Hope for Victory",
+    combatTiming: 4
+  },
+  scha25km: {
+    id: "scha25km",
+    label: "Your Welcome is Doubtful",
+    type: "character",
+    combatLabel: "Servant of the Shadow",
+    combatTiming: 3
+  },
+  scha26km: {
+    id: "scha26km",
+    label: "The West has Failed",
+    type: "character",
+    combatLabel: "Battle is Vain",
+    combatTiming: 1
+  },
+  sstr01km: {
+    id: "sstr01km",
+    label: "Return to Valinor",
+    type: "army",
+    combatLabel: "Deadly Strife",
+    combatTiming: 2
+  },
+  sstr03km: {
+    id: "sstr03km",
+    label: "Denethor's Folly",
+    type: "army",
+    combatLabel: "Delivery of Orthanc",
+    combatTiming: 3
+  },
+  sstr05km: {
+    id: "sstr05km",
+    label: "Threats and Promises",
+    type: "muster",
+    combatLabel: "Delivery of Orthanc",
+    combatTiming: 3
+  },
+  sstr06km: {
+    id: "sstr06km",
+    label: "Stormcrow",
+    type: "muster",
+    combatLabel: "Great Host",
+    combatTiming: 7
+  },
+  sstr18km: {
+    id: "sstr18km",
+    label: "The King is Revealed",
+    type: "muster",
+    combatLabel: "Relentless Assault",
+    combatTiming: 3
+  },
+  sstr25km: {
+    id: "sstr25km",
+    label: "The Palantír of Barad-dûr",
+    type: "muster",
+    combatLabel: "His Power Waxes",
+    combatTiming: 3
+  },
+  sstr26km: {
+    id: "sstr26km",
+    label: "Work of the Enemy",
+    type: "muster",
+    combatLabel: "His Power Waxes",
     combatTiming: 3
   }
 };

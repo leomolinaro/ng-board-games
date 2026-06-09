@@ -656,6 +656,35 @@ export class WotrFreePeoplesCharacterCards {
             return actions;
           }
         };
+      // House of the Stewards
+      // Play if Boromir is in a Gondor region.
+      // Either recruit one Gondor unit (Regular or Elite) in the region with Boromir,
+      // or randomly discard one hidden Corruption tile from Denethor, returning it
+      // to the Hunt Pool.
+      // Then, draw two Strategy Event cards.
+      case "fpcha23km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Aid in Time of Need
+      // Move any or all Companions who are not in the Fellowship.
+      // Then, choose one non-Awakened, non-Corrupted Sovereign in the same region
+      // as a COmpanion, and awaken him in that region.
+      case "fpcha25km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // It Is not so Dark Here
+      // Advance one Free Peoples Nation on the Political track, then look at
+      // the Corruption tiles on a non-Corrupted Sovereign, choose one of them,
+      // and return it to the Hunt Pool.
+      case "fpcha26km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
     }
   }
 

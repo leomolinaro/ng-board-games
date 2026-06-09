@@ -751,6 +751,30 @@ export class WotrShadowCharacterCards {
             return actions;
           }
         };
+      // KOME
+      // Your Welcome Is Doubtful
+      // Play on the table.
+      // While this card is in play, the Free Peoples player cannot
+      // remove Corruption from a Sovereign, and can only awaken a
+      // Sovereign if his Nation is "At War".
+      // The Free Peoples player can force "Your Welcome Is Doubtful" to be discarded
+      // by using a Will of the West Action die result, or a Character Action die result
+      // if a non-Corrupted Sovereign and a Companion are together in the same region.
+      case "scha25km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // The West has Failed
+      // Initiate a corruption attempt on a Sovereign in a region adjacent to,
+      // or in the same region as, a Nazgul, without removing an Eye die from the Hunt Box.
+      // This corruption attempt is possible event if the Free Peoples player
+      // has no unused Action dice left.
+      case "scha26km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
     }
   }
 

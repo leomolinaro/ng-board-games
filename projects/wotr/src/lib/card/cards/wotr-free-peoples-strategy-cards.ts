@@ -518,6 +518,79 @@ export class WotrFreePeoplesStrategyCards {
             return actions;
           }
         };
+      // KOME
+      // Wisdom of Elrond
+      // Either activate one Free Peoples Nation of your choice and advance that Nation one step on the Political Track,
+      // or look at the Corruption tiles on a non-Corrupted Sovereign, then you may choose one
+      // of them and return it to the Hunt Pool.
+      case "fpstr08km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Riders of Théoden
+      // If Théoden, Corrupted Rules, is in play, remove him from play.
+      // Otherwise, either recruit one Rohan unit (Regular or Elite) and one Rohan Leader in Edoras
+      // or in a Rohan region containing a Companion,
+      // or randomly discard one hidden Corruption tile from Théoden,
+      // returning it to the Hunt Pool;
+      // then, draw one Strategy Event card.
+      case "fpstr16km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // King Brand's Men
+      // If Brand, Corrupted Ruler, is in play, remove him from play.
+      // Otherwise, either recruit two North Regular units in Dale,
+      // or randomly discard one hidden Corruption tile from Brand,
+      // returning it to the Hunt Pool;
+      // then, draw one Strategy Event card.
+      case "fpstr19km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Dain Ironfoot's Guard
+      // If Dáin, Corrupted Ruler, is in play, remove him from play.
+      // Otherwise, either recruit one Dwarven unit (Regular or Elite) and one Dwarven Leader in Erebor,
+      // or randomly discard one hidden Corruption tile from Dáin,
+      // returning it to the Hunt Pool;
+      // then, draw one Strategy Event card.
+      case "fpstr22km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Thranduil's Archers
+      // If Thranduil, Corrupted Ruler, is in play, remove him from play.
+      // Otherwise, either recruit one Elven unit (Regular or Elite) in Woodland Realm,
+      // or randomly discard one hidden Corruption tile from Thranduil,
+      // returning it to the Hunt Pool;
+      // then, draw one Strategy Event card.
+      case "fpstr24km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Evet at Your Service
+      // Choose a non-Corrupted Sovereign.
+      // Recruit one unit (Regular or Elite) of that Sovereign's Nation in the region with the Sovereign.
+      // Then, if that Sovereign has one or more hidden Corruption tiles on him,
+      // randomly discard one of them, returning it to the Hunt Pool.
+      case "fpstr25km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
+      // Men of Little Villages
+      // Recruit one Regular unit or Leader in each of four different Free Peoples Nations,
+      // in a free region containing a Settlment.
+      case "fpstr26km": // TODO
+        return {
+          canBePlayed: () => false,
+          play: async () => []
+        };
     }
   }
 

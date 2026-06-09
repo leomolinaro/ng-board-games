@@ -729,6 +729,65 @@ export class WotrCombatCards {
         const action = findAction<WotrCharacterChoose>(actions, "character-choose");
         params.freePeoples.cancelledCharacters.push(action!.characters[0]);
       }
+    },
+    // KOME
+    // The King's Banner (Initiative 4)
+    // Play if Aragorn or an Awakened Sovereign is in the battle.
+    // Before rolling the dice for your Leader re-roll,
+    // forfeit Aragorn's or the Sovereign's Leadership
+    // to cancel the Leader re-roll of the Shadow player.
+    "The King's Banner": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
+    },
+    // Like a King of Old (Initiative 2)
+    // Play if an Awakened Sovereign is in the battle.
+    // Before the Combat roll, roll an additional attack
+    // using a number of dice equal to the Sovereign's Leadership,
+    // and score one hit for each result of 3+.
+    "Like a God of Old": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
+    },
+    // There Is Hope for Victory (Initiative 4)
+    // Play if a non-Corrupted Sovereign is in the battle.
+    // If that Sovereign is not Awakened, awaken him in his current region.
+    // Add 1 to all dice on your Leader re-roll.
+    "There is Hope for Victory": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
+    },
+    // Servant of the Shadow (Initiative 3)
+    // Play if a Shadow Minion is in the battle.
+    // Before the Combat roll, forfeit the Leadership of one Minion.
+    // During their Combat roll, the Free Peoples player rolls one die less
+    // (to a minimum of one) for every point of Leadership you forfeited.
+    "Servant of the Shadow": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
+    },
+    // Battle is Vain (Initiative 1)
+    // Play if the total Nazgûl Leadership is 1 or more.
+    // Forfeit up to 5 points of Nazgûl Leadership
+    // to reduce the Free Peoples Leadership by the same amount.
+    "Battle is Vain": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
+    },
+    // His Power Waxes (Initiative 3)
+    // Play if the defending Army is in a region with a Sovereign.
+    // If the Sovereign is Corrupted, add 1 to all dice on your Combat roll
+    // and Leader re-roll; otherwise, add 1 to all dice on your Combat roll
+    // and Leader re-roll of both Armies.
+    "His Power Waxes": {
+      // TODO
+      canBePlayed: params => false,
+      effect: async (card, params) => {}
     }
   };
 
