@@ -29,7 +29,7 @@ import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { discardCardFromTableById, discardCardIds, playCardOnTableId } from "../wotr-card-actions";
 import { WotrCardDrawUi } from "../wotr-card-draw-ui";
 import { WotrCardHandler } from "../wotr-card-handler";
-import { getCard, WotrCard, WotrCardId, WotrFreePeopleStrategyCardId } from "../wotr-card-models";
+import { getCard, WotrCard, WotrCardId, WotrFreePeoplesStrategyCardId } from "../wotr-card-models";
 import { WotrEventCard } from "./wotr-cards";
 
 @Injectable()
@@ -49,7 +49,7 @@ export class WotrFreePeoplesStrategyCards {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
-  createCard(cardId: WotrFreePeopleStrategyCardId): WotrEventCard {
+  createCard(cardId: WotrFreePeoplesStrategyCardId): WotrEventCard {
     switch (cardId) {
       // TODO The Last Battle
       // Play on the table if Aragorn is with a Free Peoples Army in a region outside of a Free Peoples Nation.

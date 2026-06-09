@@ -45,8 +45,8 @@ export type KomeShadowStrategyCardNumber =
   | "25km"
   | "26km";
 
-export type WotrFreePeopleCardId = WotrFreePeopleCharacterCardId | WotrFreePeopleStrategyCardId;
-export function isFreePeoplesCard(cardId: WotrCardId): cardId is WotrFreePeopleCardId {
+export type WotrFreePeoplesCardId = WotrFreePeoplesCharacterCardId | WotrFreePeoplesStrategyCardId;
+export function isFreePeoplesCard(cardId: WotrCardId): cardId is WotrFreePeoplesCardId {
   return cardId.startsWith("fp");
 }
 
@@ -55,27 +55,27 @@ export function isShadowCard(cardId: WotrCardId): cardId is WotrShadowCardId {
   return cardId.startsWith("s");
 }
 
-export type WotrStrategyCardId = WotrFreePeopleStrategyCardId | WotrShadowStrategyCardId;
+export type WotrStrategyCardId = WotrFreePeoplesStrategyCardId | WotrShadowStrategyCardId;
 export type WotrCardId = WotrCharacterCardId | WotrStrategyCardId;
 export type WotrCardType = "character" | "muster" | "army";
 
-export type WotrCharacterCardId = WotrFreePeopleCharacterCardId | WotrShadowCharacterCardId;
+export type WotrCharacterCardId = WotrFreePeoplesCharacterCardId | WotrShadowCharacterCardId;
 export function isCharacterCard(cardId: WotrCardId): cardId is WotrCharacterCardId {
   return cardId.startsWith("fpcha") || cardId.startsWith("scha");
 }
-export type WotrFreePeopleCharacterCardId =
+export type WotrFreePeoplesCharacterCardId =
   `fpcha${WotrCardNumber | KomeFreePeopleCharacterCardNumber}`;
 export function isFreePeopleCharacterCard(
   cardId: WotrCardId
-): cardId is WotrFreePeopleCharacterCardId {
+): cardId is WotrFreePeoplesCharacterCardId {
   return cardId.startsWith("fpcha");
 }
 
-export type WotrFreePeopleStrategyCardId =
+export type WotrFreePeoplesStrategyCardId =
   `fpstr${WotrCardNumber | KomeFreePeopleStrategyCardNumber}`;
 export function isFreePeopleStrategyCard(
   cardId: WotrCardId
-): cardId is WotrFreePeopleStrategyCardId {
+): cardId is WotrFreePeoplesStrategyCardId {
   return cardId.startsWith("fpstr");
 }
 

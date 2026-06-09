@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
 import {
   WotrActionToken,
-  WotrFreePeopleActionToken,
+  WotrFreePeoplesActionToken,
   WotrShadowActionToken
 } from "../action-die/wotr-action-die-models";
 import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-models";
@@ -69,11 +69,11 @@ export class WotrSetupRules {
 
   getGameSetup(config: WotrGameConfig): WotrSetup {
     if (config.setup) return config.setup(this);
-    const freePeopleTokens: WotrFreePeopleActionToken[] = [];
+    const freePeopleTokens: WotrFreePeoplesActionToken[] = [];
     const shadowTokens: WotrShadowActionToken[] = [];
     const options = this.gameStore.gameOptions();
     options.tokens.forEach(t => {
-      if (t.front === "free-peoples") freePeopleTokens.push(t.token as WotrFreePeopleActionToken);
+      if (t.front === "free-peoples") freePeopleTokens.push(t.token as WotrFreePeoplesActionToken);
       else shadowTokens.push(t.token as WotrShadowActionToken);
     });
     return {

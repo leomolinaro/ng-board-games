@@ -3,17 +3,19 @@ import { Injectable } from "@angular/core";
 import { WotrGameOptions } from "../game/options/wotr-game-options";
 import {
   WotrCardNumber,
-  WotrFreePeopleCharacterCardId,
-  WotrFreePeopleStrategyCardId,
+  WotrFreePeoplesCharacterCardId,
+  WotrFreePeoplesStrategyCardId,
   WotrShadowCharacterCardId,
   WotrShadowStrategyCardId
 } from "./wotr-card-models";
 
 interface ExpansionCards {
-  fpchaReplacements: Partial<Record<WotrFreePeopleCharacterCardId, WotrFreePeopleCharacterCardId>>;
-  fpchaAdditions: WotrFreePeopleCharacterCardId[];
-  fpstrReplacements: Partial<Record<WotrFreePeopleStrategyCardId, WotrFreePeopleStrategyCardId>>;
-  fpstrAdditions: WotrFreePeopleStrategyCardId[];
+  fpchaReplacements: Partial<
+    Record<WotrFreePeoplesCharacterCardId, WotrFreePeoplesCharacterCardId>
+  >;
+  fpchaAdditions: WotrFreePeoplesCharacterCardId[];
+  fpstrReplacements: Partial<Record<WotrFreePeoplesStrategyCardId, WotrFreePeoplesStrategyCardId>>;
+  fpstrAdditions: WotrFreePeoplesStrategyCardId[];
   schaReplacements: Partial<Record<WotrShadowCharacterCardId, WotrShadowCharacterCardId>>;
   schaAdditions: WotrShadowCharacterCardId[];
   sstrReplacements: Partial<Record<WotrShadowStrategyCardId, WotrShadowStrategyCardId>>;
@@ -21,8 +23,8 @@ interface ExpansionCards {
 }
 
 export interface WotrCardDecks {
-  freePeoplesCharacterCardIds: WotrFreePeopleCharacterCardId[];
-  freePeoplesStrategyCardIds: WotrFreePeopleStrategyCardId[];
+  freePeoplesCharacterCardIds: WotrFreePeoplesCharacterCardId[];
+  freePeoplesStrategyCardIds: WotrFreePeoplesStrategyCardId[];
   shadowCharacterCardIds: WotrShadowCharacterCardId[];
   shadowStrategyCardIds: WotrShadowStrategyCardId[];
 }
@@ -116,15 +118,15 @@ export class WotrCardUtils {
 
   getCardDecks(options: WotrGameOptions): WotrCardDecks {
     const expansionCards = this.getGameExpansionCards(options);
-    const fpchaCardIds: WotrFreePeopleCharacterCardId[] = [];
-    const fpstrCardIds: WotrFreePeopleStrategyCardId[] = [];
+    const fpchaCardIds: WotrFreePeoplesCharacterCardId[] = [];
+    const fpstrCardIds: WotrFreePeoplesStrategyCardId[] = [];
     const schaCardIds: WotrShadowCharacterCardId[] = [];
     const sstrCardIds: WotrShadowStrategyCardId[] = [];
     for (const cardNumber of this.BASE_CARD_NUMBERS) {
-      let fpChaCardId = `fpcha${cardNumber}` as WotrFreePeopleCharacterCardId;
+      let fpChaCardId = `fpcha${cardNumber}` as WotrFreePeoplesCharacterCardId;
       fpChaCardId = expansionCards.fpchaReplacements[fpChaCardId] || fpChaCardId;
       fpchaCardIds.push(fpChaCardId);
-      let fpStrCardId = `fpstr${cardNumber}` as WotrFreePeopleStrategyCardId;
+      let fpStrCardId = `fpstr${cardNumber}` as WotrFreePeoplesStrategyCardId;
       fpStrCardId = expansionCards.fpstrReplacements[fpStrCardId] || fpStrCardId;
       fpstrCardIds.push(fpStrCardId);
       let sChaCardId = `scha${cardNumber}` as WotrShadowCharacterCardId;

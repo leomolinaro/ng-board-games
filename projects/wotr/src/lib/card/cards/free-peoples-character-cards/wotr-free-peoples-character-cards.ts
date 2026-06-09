@@ -60,7 +60,7 @@ import {
 } from "../../wotr-card-actions";
 import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
 import { WotrCardHandler } from "../../wotr-card-handler";
-import { WotrCardId, WotrFreePeopleCharacterCardId } from "../../wotr-card-models";
+import { WotrCardId, WotrFreePeoplesCharacterCardId } from "../../wotr-card-models";
 import { WotrCardPlayUi } from "../../wotr-card-play-ui";
 import { activateTableCard, WotrEventCard } from "../wotr-cards";
 
@@ -88,7 +88,7 @@ export class WotrFreePeoplesCharacterCards {
   private actionDieHandler = inject(WotrActionDieHandler);
   private cardHandler = inject(WotrCardHandler);
 
-  createCard(cardId: WotrFreePeopleCharacterCardId): WotrEventCard {
+  createCard(cardId: WotrFreePeoplesCharacterCardId): WotrEventCard {
     switch (cardId) {
       // Elven Cloaks
       // The "Elven Cloaks" special Hunt tile [0] is now in play.

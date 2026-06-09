@@ -69,7 +69,7 @@ interface WotrLeaderUnitNode {
 }
 
 interface WotrFreeGroupNode {
-  units: WotrFellowshipNode[] | WotrFreePeopleFreeUnitNode[] | WotrShadowFreeUnitNode[];
+  units: WotrFellowshipNode[] | WotrFreePeoplesFreeUnitNode[] | WotrShadowFreeUnitNode[];
   nUnits: number;
   svgX: number;
   svgY: number;
@@ -82,7 +82,7 @@ interface WotrFellowshipNode {
   svgY: number;
 }
 
-interface WotrFreePeopleFreeUnitNode {
+interface WotrFreePeoplesFreeUnitNode {
   unitType: Extract<WotrFreeUnitType, "companion">;
   character: WotrCharacterId;
   image: WotrUnitImage;
@@ -547,7 +547,7 @@ export class WotrRegionArea {
 
   private regionToFreePeopleFreeUnitNodes(
     freeUnits: WotrFreeUnits
-  ): [WotrFreePeopleFreeUnitNode[], number] {
+  ): [WotrFreePeoplesFreeUnitNode[], number] {
     const fpFreeUnits: WotrCharacter[] = [];
     freeUnits.characters?.forEach(characterId => {
       const character = this.characterById()[characterId];
@@ -557,7 +557,7 @@ export class WotrRegionArea {
     });
     const nUnits = fpFreeUnits.length;
     fpFreeUnits.sort((a, b) => this.compareFreePeopleFreeUnits(a, b));
-    const unitNodes = fpFreeUnits.slice(0, 2).map<WotrFreePeopleFreeUnitNode>(freeUnit => ({
+    const unitNodes = fpFreeUnits.slice(0, 2).map<WotrFreePeoplesFreeUnitNode>(freeUnit => ({
       unitType: "companion",
       character: freeUnit.id,
       image: this.characterImage(freeUnit),
