@@ -1,0 +1,8 @@
+{
+  "id": "fpstr23",
+  "eventTitle": "Éomer, Son of Éomund",
+  "eventText": "Recruit one Rohan unit (Regular or Elite) and one Rohan Leader in a free Rohan region containing a Settlement.",
+  "combatTitle": "Valour",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

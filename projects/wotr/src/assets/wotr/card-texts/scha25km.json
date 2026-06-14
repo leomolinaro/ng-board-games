@@ -1,0 +1,10 @@
+{
+  "id": "scha25km",
+  "eventTitle": "Your Welcome Is Doubtful",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "While this card is in play, the Free Peoples player cannot\nremove Corruption from a Sovereign, and can only awaken a\nSovereign if his Nation is \"At War\".",
+  "eventDiscardCondition": "The Free Peoples player can force \"Your Welcome Is Doubtful\" to be discarded\nby using a Will of the West Action die result, or a Character Action die result\nif a non-Corrupted Sovereign and a Companion are together in the same region.",
+  "combatTitle": "Servant of the Shadow",
+  "combatPreCondition": "Play if a Shadow Minion is in the battle.",
+  "combatText": "Before the Combat roll, forfeit the Leadership of one Minion.\nDuring their Combat roll, the Free Peoples player rolls one die less\n(to a minimum of one) for every point of Leadership you forfeited."
+}

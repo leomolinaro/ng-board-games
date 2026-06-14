@@ -1,0 +1,9 @@
+{
+  "id": "scha17",
+  "eventTitle": "Balrog of Moria",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "You may discard \"Balrog of Moria\" to draw an additional Hunt tile if the Fellowship moves into, out of, or through Moria while being declared or revealed. If the tile\nshows an Eye, discard it without effect, otherwise follow the rules for a successful Hunt.\nIgnore any \"Reveal\" icon on the drawn tile if the Fellowship has been declared in a Free Peoples City or Stronghold.\nOr, you may discard \"Balrog of Moria\" to use its Combat card effect as if you were playing the card from your hand.",
+  "combatTitle": "Durin's Bane",
+  "combatPreCondition": "Play if the defending Army is within two regions of Moria.",
+  "combatText": "Before the Combat Roll, roll an additional attack using three Combat dice; score hits on 4+ and apply the result immediately\nhttps://boardgamegeek.com/thread/532748/durins-bane-within-two-regions-of-moria"
+}

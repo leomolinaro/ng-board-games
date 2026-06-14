@@ -1,0 +1,8 @@
+{
+  "id": "fpcha01",
+  "eventTitle": "The Elven Cloaks",
+  "eventText": "The \"Elven Cloaks\" special Hunt tile [0] is now in play.\nAdd the tile to the Hunt Pool when the Fellowship is on the Mordor Track.",
+  "combatTitle": "It is a gift",
+  "combatPreCondition": "Play if the defending Army is in the same region as the Fellowship.",
+  "combatText": "Add 1 to all dice on your Combat roll and Leader re-roll."
+}

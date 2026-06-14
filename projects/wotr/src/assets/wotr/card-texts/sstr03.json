@@ -1,0 +1,10 @@
+{
+  "id": "sstr03",
+  "eventTitle": "Denethor's Folly",
+  "eventPreCondition": "Play on the table if Minas Tirith is under siege by a Shadow Army.",
+  "eventText": "When you play this card, immediately eliminate one Free Peoples Leader in Minas Tirith.\nWhen \"Denethor's Folly\" is in play, the Free Peoples player cannot use Combat cards for battles fought in Minas Tirith.",
+  "eventDiscardCondition": "The free Peoples player can force \"Denethor's Folly\" to be discarded using a Will of the West Action die result, or any Action die result if Gandalf or Aragorn is in Minas Tirith.",
+  "combatTitle": "Devilry of Orthanc",
+  "combatPreCondition": "Play if an Isengard Army unit is in the battle and the defending Army is in a Stronghold.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

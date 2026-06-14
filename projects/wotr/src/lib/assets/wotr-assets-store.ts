@@ -1,4 +1,6 @@
-import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { firstValueFrom } from "rxjs";
 import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
 import { WotrCardId } from "../card/wotr-card-models";
 import {
@@ -19,8 +21,23 @@ export interface WotrUnitImage {
   height: number;
 }
 
+export interface WotrCardText {
+  id: WotrCardId;
+  eventTitle: string;
+  eventPreCondition?: string;
+  eventText: string;
+  eventDiscardCondition?: string;
+  combatTitle: string;
+  combatPreCondition?: string;
+  combatText: string;
+}
+
 @Injectable({ providedIn: "root" })
 export class WotrAssetsStore {
+  private readonly http = inject(HttpClient);
+  private readonly cardTextCache = new Map<WotrCardId, WotrCardText | null>();
+  private readonly cardTextLoaders = new Map<WotrCardId, Promise<WotrCardText | null>>();
+
   constructor() {
     this.init();
   }
@@ -201,6 +218,32 @@ export class WotrAssetsStore {
   }
   cardImage(cardId: WotrCardId) {
     return `${BASE_PATH}/cards/${cardId}.png`;
+  }
+
+  async cardText(cardId: WotrCardId): Promise<WotrCardText | null> {
+    if (this.cardTextCache.has(cardId)) {
+      return this.cardTextCache.get(cardId)!;
+    }
+    const pending = this.cardTextLoaders.get(cardId);
+    if (pending) return pending;
+
+    const loadPromise = firstValueFrom(
+      this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`)
+    )
+      .then(cardText => {
+        this.cardTextCache.set(cardId, cardText);
+        return cardText;
+      })
+      .catch(() => {
+        this.cardTextCache.set(cardId, null);
+        return null;
+      })
+      .finally(() => {
+        this.cardTextLoaders.delete(cardId);
+      });
+
+    this.cardTextLoaders.set(cardId, loadPromise);
+    return loadPromise;
   }
 
   private unitImage(fileName: string, width: number, height: number): WotrUnitImage {

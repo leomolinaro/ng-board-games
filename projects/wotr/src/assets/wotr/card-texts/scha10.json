@@ -1,0 +1,9 @@
+{
+  "id": "scha10",
+  "eventTitle": "Cruel Weather",
+  "eventPreCondition": "Play if the Fellowship is on step 1 or higher on the Fellowship Track.",
+  "eventText": "Move the Fellowship to an adjacent region.",
+  "combatTitle": "Cruel as Death",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 2 or more.",
+  "combatText": "Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "sstr26km",
+  "eventTitle": "Work of the Enemy",
+  "eventText": "Choose a region with a Sovereign.\nRoll 3 dice, and inflict a hit on a Free Peoples Army in that region for each roll of 5+,\nor 4+ if hat Sovereign is Corrupted.",
+  "combatTitle": "His Power Waxes",
+  "combatPreCondition": "Play if the defending Army is in a region with a Sovereign.",
+  "combatText": "If the Sovereign is Corrupted, add 1 to all dice on your Combat roll\nand Leader re-roll; otherwise, add 1 to all dice on your Combat roll\nand Leader re-roll of both Armies."
+}

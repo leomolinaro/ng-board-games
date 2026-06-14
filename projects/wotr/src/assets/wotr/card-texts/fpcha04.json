@@ -1,0 +1,8 @@
+{
+  "id": "fpcha04",
+  "eventTitle": "Smeagol Helps Nice Master",
+  "eventText": "The \"Smeagol Helps Nice Master\" special Hunt tile [-1] is now in play.\nAdd the tile to the Hunt Pool when the Fellowship is on the Mordor Track.",
+  "combatTitle": "It is a gift",
+  "combatPreCondition": "Play if the defending Army is in the same region as the Fellowship.",
+  "combatText": "Add 1 to all dice on your Combat roll and Leader re-roll."
+}

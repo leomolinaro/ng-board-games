@@ -1,0 +1,8 @@
+{
+  "id": "scha18",
+  "eventTitle": "The Lidless Eye",
+  "eventText": "Change up to three unused Shadow Action dice results into \"Eye\" results.\nPlace these dice in the Hunt Box immediately.",
+  "combatTitle": "Words of Power",
+  "combatPreCondition": "Play if a Nazgûl is in the battle.",
+  "combatText": "Choose a Companion. That Companion's Leadership and special abilities are cancelled for this Combat round."
+}

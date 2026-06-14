@@ -1,0 +1,8 @@
+{
+  "id": "fpstr26km",
+  "eventTitle": "Men of Little Villages",
+  "eventText": "Recruit one Regular unit or Leader in each of four different Free Peoples Nations,\nin a free region containing a Settlment.",
+  "combatTitle": "There Is Hope for Victory",
+  "combatPreCondition": "Play if a non-Corrupted Sovereign is in the battle.",
+  "combatText": "If that Sovereign is not Awakened, awaken him in his current region.\nAdd 1 to all dice on your Leader re-roll."
+}

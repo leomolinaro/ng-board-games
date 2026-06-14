@@ -1,0 +1,9 @@
+{
+  "id": "fpstr09",
+  "eventTitle": "The Red Arrow",
+  "eventPreCondition": "Play if the Gondor Nation is active.",
+  "eventText": "Advance the Rohan Nation one step on the Political Track.\nThen, recruit one Rohan unit (Regular or Elite) and one Rohan Leader in Edoras.",
+  "combatTitle": "Scouts",
+  "combatPreCondition": "Play if the Free Peoples Army is defending in a field battle.",
+  "combatText": "Before the Combat roll, retreat your Army to an adjacent free region or withdraw into a siege."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "fpstr20",
+  "eventTitle": "Swords of Eriador",
+  "eventText": "Recruit one North unit (Regular or Elite) in The Shire and one Dwarven unit (Regular or Elite) in Ered Luin.\nThen, draw one Strategy Event card.",
+  "combatTitle": "Advantageous Position",
+  "combatPreCondition": "Play if the defending Army is inside the borders of a Free Peoples Nation.",
+  "combatText": "Subtract 1 from all dice on the Combat roll of the Shadow player (an unmodified '6' is still considered a hit for him)."
+}

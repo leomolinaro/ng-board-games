@@ -250,7 +250,7 @@ export class WotrCombatCards {
     // Devilry of Orthanc (Initiative 3)
     // Play if an Isengard Army unit is in the battle and the defending Army is in a Stronghold.
     // Add 1 to all dice on your Combat roll.
-    "Delivery of Orthanc": {
+    "Devilry of Orthanc": {
       canBePlayed: params => {
         const shadowArmy = params.isAttacker ? params.attackingArmy() : params.attackedArmy();
         if (!shadowArmy) return false;

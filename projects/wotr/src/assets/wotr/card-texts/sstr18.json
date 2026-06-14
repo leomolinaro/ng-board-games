@@ -1,0 +1,8 @@
+{
+  "id": "sstr18",
+  "eventTitle": "The King is Revealed",
+  "eventPreCondition": "Play if Aragorn is in play.",
+  "eventText": "Recruit five Sauron Regular units and a Nazgûl in Minas Morgul.",
+  "combatTitle": "Relentless Assault",
+  "combatText": "Before the Combat roll, you may inflict and apply up to two hits against your units. Add 1 to all dice on your Combat roll for each hit you inflicted."
+}

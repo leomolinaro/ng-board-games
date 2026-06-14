@@ -1,0 +1,8 @@
+{
+  "id": "sstr10",
+  "eventTitle": "Corsairs of Umbar",
+  "eventPreCondition": "Play if the Southrons & Easterlings are \"At War.",
+  "eventText": "\"\nMove one Shadow Army from Umbar to a Gondar coastal region (check the stacking limit immediately if it is merging with another Army).\nIf there is a Free Peoples Army in the region, a battle starts. The attacking Shadow Army cannot cease the attack, unless the Free Peoples Army was already under\nsiege.",
+  "combatTitle": "Deadly Strife",
+  "combatText": "Both Armies add 2 to all dice on their Combat roll and Leader re-roll."
+}

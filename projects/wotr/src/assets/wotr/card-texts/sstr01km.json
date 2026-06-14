@@ -1,0 +1,8 @@
+{
+  "id": "sstr01km",
+  "eventTitle": "Return to Valinor",
+  "eventPreCondition": "Play if you control at least one Elven Stronghold or\nif at least one Corrupted Sovereign is in play.",
+  "eventText": "For each region with an unconquered Elven Stronghold which is not under siege,\nroll a number of dice equal to the number of Elven Army units in that region (up to a maximum\nof 5) and score one hit against that army for each result of '6'.\nIf two or more Corrupted Free Peoples Sovereigns are in play,\nscore hits on each result of 5+ instead.",
+  "combatTitle": "Deadly Strife",
+  "combatText": "Both Armies add 2 to all dice on their Combat roll and Leader re-roll."
+}

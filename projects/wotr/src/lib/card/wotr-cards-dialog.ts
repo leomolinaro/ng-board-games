@@ -8,9 +8,11 @@ import {
 } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCardSelection } from "../game/wotr-game-ui";
 import { WotrCardId } from "./wotr-card-models";
+import { WotrCardTooltipService } from "./wotr-card-tooltip.service";
 
 export interface WotrCardsDialogData {
   focusedCardId: WotrCardId | null;
@@ -20,18 +22,21 @@ export interface WotrCardsDialogData {
 
 @Component({
   selector: "wotr-cards-dialog",
-  imports: [BgTransformPipe],
+  imports: [BgTransformPipe, TuiHint],
   template: `
     <div class="cards-container">
       @for (cardId of cardIds; track cardId) {
         <img
           class="card"
           [src]="cardId | bgTransform: cardImage"
+          [tuiHint]="cardTooltip.hint(cardId)"
+          [tuiHintAppearance]="cardTooltip.appearance"
           [class]="{
             focused: cardId === focusedCardId,
             selected: data.selectableCards && selectedCards().includes(cardId),
             disabled: cardId | bgTransform: isDisabled
           }"
+          (mouseenter)="cardTooltip.preload(cardId)"
           (click)="onCardClick(cardId)" />
       }
     </div>
@@ -113,6 +118,7 @@ export interface WotrCardsDialogData {
 export class WotrCardsDialog {
   protected data = inject<WotrCardsDialogData>(MAT_DIALOG_DATA);
   private assets = inject(WotrAssetsStore);
+  protected cardTooltip = inject(WotrCardTooltipService);
   private dialogRef = inject(MatDialogRef<WotrCardsDialog, undefined | WotrCardId[]>);
 
   constructor() {

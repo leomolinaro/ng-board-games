@@ -1,0 +1,9 @@
+{
+  "id": "fpstr01",
+  "eventTitle": "The Last Battle",
+  "eventPreCondition": "Play on the table if Aragorn is with a Free Peoples Army in a region outside of a Free Peoples Nation.",
+  "eventText": "While this card is in play, Action dice used to move the Fellowship are not added to the Hunt Box.",
+  "eventDiscardCondition": "You must discard this card from the table as soon as the Fellowship is declared or revealed.",
+  "combatTitle": "Daylight",
+  "combatText": "The Shadow player rolls a maximum of three dice in his Combat roll."
+}

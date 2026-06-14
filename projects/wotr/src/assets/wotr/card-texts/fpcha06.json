@@ -1,0 +1,10 @@
+{
+  "id": "fpcha06",
+  "eventTitle": "Axe and Bow",
+  "eventPreCondition": "Play on the table if Gimli or Legolas are in the Fellowship.",
+  "eventText": "After the Shadow player draws a Hunt tile, you may discard \"Axe and Bow\" to reduce the Hunt damage by one (to a minimum of zero). Any remaining Hunt damage must be confronted normally.",
+  "eventDiscardCondition": "You must immediately discard this card from the table if both Gimli and Legolas leave the Fellowship.",
+  "combatTitle": "Mighty Attack",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "Before rolling the dice for your Leader re-roll, forfeit the Leadership of one Companion participating in the battle to automatically change one missed die roll to a hit."
+}

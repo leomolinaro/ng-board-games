@@ -1,0 +1,9 @@
+{
+  "id": "scha13",
+  "eventTitle": "Lure of the Ring",
+  "eventPreCondition": "Play if the Fellowship is revealed.",
+  "eventText": "Randomly select one Companion in the Fellowship by drawing a Companion counter.\nThe Free Peoples player must choose either to add Corruption equal to the Companion's Level, or to eliminate him.\nIf Gollum is the Guide, add one Corruption point instead.",
+  "combatTitle": "They are Terrible",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Forfeit one point of Nazgûl Leadership to add 1 to all dice on your Leader re-roll."
+}

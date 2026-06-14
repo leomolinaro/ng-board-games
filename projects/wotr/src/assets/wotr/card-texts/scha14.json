@@ -1,0 +1,9 @@
+{
+  "id": "scha14",
+  "eventTitle": "The Breaking of the Fellowship",
+  "eventPreCondition": "Play if the Fellowship is revealed.",
+  "eventText": "Draw a Hunt tile.\nIf the tile shows an Eye or is a Fellowship Special tile, discard it without effect.\nOtherwise, the Free Peoples player must separate a number of Companions equal to the number on the tile (if possible), placing them in the same region as the\nFellowship.\nIgnore any \"Reveal\" or \"Stop\" icons on the tile.\nIf Gollum is the Guide, add one Corruption point instead",
+  "combatTitle": "Dread and Despair",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Before the Combat roll, forfeit one or more points of Nazgûl Leadership.\nDuring his Combat roll, the Free Peoples player rolls one Combat die less (to a minimum of one) for every point you have chosen to forfeit."
+}

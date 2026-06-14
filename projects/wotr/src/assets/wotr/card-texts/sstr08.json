@@ -1,0 +1,8 @@
+{
+  "id": "sstr08",
+  "eventTitle": "The Shadow Lengthens",
+  "eventText": "Move two Shadow Armies up to two regions: each movement must end in a region already occupied by another Shadow Army (that must not be under siege). The\ntraversed regions must be free for the purposes of Army movement, and no Shadow units may be picked up or dropped off along the way (other than, possibly,\nsplitting the Army initially).",
+  "combatTitle": "Mûmakil",
+  "combatPreCondition": "Play if a Southrons & Easterlings Elite unit is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll. If, after the Leader re-roll, you scored more total hits than your opponent (including hits from any Free Peoples pre-Combat\nattack from a Combat card), score one additional hit."
+}

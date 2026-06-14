@@ -1,0 +1,9 @@
+{
+  "id": "scha20",
+  "eventTitle": "Grond, Hammer of the Underworld",
+  "eventPreCondition": "Play if the Witch-king is in play and is with a Shadow Army besieging a Stronghold.",
+  "eventText": "Attack that Stronghold. The siege lasts for three Combat rounds instead of one. During the first round, the Free Peoples player cannot use a Combat card unless a\nCompanion is in the battle.",
+  "combatTitle": "Dread and Despair",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Before the Combat roll, forfeit one or more points of Nazgûl Leadership.\nDuring his Combat roll, the Free Peoples player rolls one Combat die less (to a minimum of one) for every point you have chosen to forfeit."
+}

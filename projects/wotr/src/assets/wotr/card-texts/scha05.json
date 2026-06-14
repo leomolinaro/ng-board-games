@@ -1,0 +1,9 @@
+{
+  "id": "scha05",
+  "eventTitle": "Orc Patrol",
+  "eventPreCondition": "Play if the Fellowship is not in a region containing a Free Peoples Settlement.",
+  "eventText": "Draw a Hunt tile.\nIf the tile shows an Eye or is a Fellowship Special tile, discard it without effect.\nOtherwise, follow the rules for a successful Hunt.",
+  "combatTitle": "Cruel as Death",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 2 or more.",
+  "combatText": "Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll."
+}

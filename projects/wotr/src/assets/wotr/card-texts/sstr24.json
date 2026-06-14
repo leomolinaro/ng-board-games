@@ -1,0 +1,8 @@
+{
+  "id": "sstr24",
+  "eventTitle": "Pits of Mordor",
+  "eventPreCondition": "Play if Sauron is \"At War.",
+  "eventText": "\"\nRecruit two Sauron Regular units in each of three different Sauron Strongholds.",
+  "combatTitle": "Desperate Battle",
+  "combatText": "Both Armies add 1 to all dice on their Combat roll and Leader re-roll."
+}

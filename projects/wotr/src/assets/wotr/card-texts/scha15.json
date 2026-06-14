@@ -1,0 +1,10 @@
+{
+  "id": "scha15",
+  "eventTitle": "Worn with Sorrow and Toil",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "When \"Worn with Sorrow and Toil\" is in play, if a Companion in the Fellowship is taken as a casualty you may also discard one of the Free Peoples player's Character\nEvent cards from his hand (choosing it randomly) or from the table.",
+  "eventDiscardCondition": "You must discard this card from the table immediately if the Fellowship is declared in an unconquered Free Peoples City or Stronghold.",
+  "combatTitle": "Words of Power",
+  "combatPreCondition": "Play if a Nazgûl is in the battle.",
+  "combatText": "Choose a Companion. That Companion's Leadership and special abilities are cancelled for this Combat round."
+}

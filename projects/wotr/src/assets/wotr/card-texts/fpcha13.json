@@ -1,0 +1,8 @@
+{
+  "id": "fpcha13",
+  "eventTitle": "Mirror of Galadriel",
+  "eventText": "Change any one unused Free Peoples Character Action die result into a Will of the West die result.\nIf the Fellowship is in Lorien, and Lorien is unconquered, also heal one Corruption point.",
+  "combatTitle": "Heroic Death",
+  "combatPreCondition": "Play if a Free Peoples Leader or a Companion is in the battle.",
+  "combatText": "Before you remove casualties inflicted by your opponent's Combat roll and Leader re-roll, you may eliminate one of your Leaders to cancel one hit, or eliminate one\nCompanion to cancel a number of hits equal to or less than the Companion's Level."
+}

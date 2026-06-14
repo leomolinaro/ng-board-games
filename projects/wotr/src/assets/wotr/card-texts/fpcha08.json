@@ -1,0 +1,10 @@
+{
+  "id": "fpcha08",
+  "eventTitle": "Wizard's Staff",
+  "eventPreCondition": "Play on the table if Gandalf the Grey is in the Fellowship.",
+  "eventText": "You may discard \"Wizard's Staff\" to prevent the Shadow player from drawing a Hunt tile.",
+  "eventDiscardCondition": "You must discard this card from the table immediately if Gandalf the Grey leaves the Fellowship.",
+  "combatTitle": "Servant of the Secret Fire",
+  "combatPreCondition": "Play if Gandalf is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

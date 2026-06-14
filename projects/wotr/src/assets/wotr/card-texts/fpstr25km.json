@@ -1,0 +1,8 @@
+{
+  "id": "fpstr25km",
+  "eventTitle": "Evet at Your Service",
+  "eventText": "Choose a non-Corrupted Sovereign.\nRecruit one unit (Regular or Elite) of that Sovereign's Nation in the region with the Sovereign.\nThen, if that Sovereign has one or more hidden Corruption tiles on him,\nrandomly discard one of them, returning it to the Hunt Pool.",
+  "combatTitle": "There Is Hope for Victory",
+  "combatPreCondition": "Play if a non-Corrupted Sovereign is in the battle.",
+  "combatText": "If that Sovereign is not Awakened, awaken him in his current region.\nAdd 1 to all dice on your Leader re-roll."
+}

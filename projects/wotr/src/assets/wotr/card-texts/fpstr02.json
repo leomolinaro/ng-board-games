@@ -1,0 +1,9 @@
+{
+  "id": "fpstr02",
+  "eventTitle": "A Power too Great",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "Advance the Elven Nation one step on the Political Track.\nWhile this card is in play, the Shadow player cannot move an Army into or attack (either in a field battle or in a siege) Lórien, Rivendell or The Grey Havens.",
+  "eventDiscardCondition": "The Shadow player can force \"A Power too Great\" to be discarded by using any one Action die result and discarding one Army Event card and one Character Event card\nfrom his hand.",
+  "combatTitle": "No Quarter",
+  "combatText": "If your Combat roll or Leader re-roll scores at least one hit, score one additional hit."
+}

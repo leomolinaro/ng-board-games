@@ -1,0 +1,9 @@
+{
+  "id": "fpcha11",
+  "eventTitle": "I Will Go Alone",
+  "eventPreCondition": "Play if at least one Companion is in the Fellowship.",
+  "eventText": "Separate one Companion or one group of Companions from the Fellowship. You may move the Companions one extra region. Then, heal one Corruption point.",
+  "combatTitle": "Daring Defiance",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "Forfeit the Leadership of all the Companions participating in the battle to cancel the Combat card played by the Shadow player."
+}

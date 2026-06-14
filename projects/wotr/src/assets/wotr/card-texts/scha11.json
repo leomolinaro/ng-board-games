@@ -1,0 +1,9 @@
+{
+  "id": "scha11",
+  "eventTitle": "The Nazgûl Strike!",
+  "eventPreCondition": "Play if the Fellowship is on step 1 or higher on the Fellowship Track.",
+  "eventText": "Move any or all of the Nazgûl.\nThen, if at least one Nazgûl is in the region with the Fellowship, you may either discard one Free Peoples Character Event card from the table or roll for the Hunt (as\nif the Free Peoples player had moved the Fellowship).",
+  "combatTitle": "Black Breath",
+  "combatPreCondition": "Play if a Nazgûl is in the battle.",
+  "combatText": "If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle.\nAlternatively, you can choose to eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level."
+}

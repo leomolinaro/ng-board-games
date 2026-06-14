@@ -1,0 +1,10 @@
+{
+  "id": "scha22",
+  "eventTitle": "Wormtongue",
+  "eventPreCondition": "Play on the table if Saruman is in play.",
+  "eventText": "When \"Wormtongue\" is in play, Rohan cannot be activated except by an appropriate Companion, or by the Fellowship being declared in Edoras or Helm's Deep, or\nby an attack on Edoras or Helm's Deep.",
+  "eventDiscardCondition": "You must discard this card from the table as soon as Rohan is activated, or if Saruman is eliminated.\nhttps://boardgamegeek.com/thread/1776050/wormtongue-event-card-faq",
+  "combatTitle": "Foul Stench",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "If the Nazgûl Leadership equals or exceeds the total Free Peoples Leadership, the Free Peoples Leader re-roll is cancelled."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "fpcha24",
+  "eventTitle": "The Grey Company",
+  "eventPreCondition": "Play if Strider/Aragorn is with a Free Peoples Army.",
+  "eventText": "Eliminate one Regular unit to recruit one Elite unit of the same Nation, in the Army with Strider/Aragorn.\nThen, draw two Strategy Event cards.",
+  "combatTitle": "Brave Stand",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "The Shadow player rolls one die less in his Combat roll for each Companion in the battle (to a minimum of one)."
+}

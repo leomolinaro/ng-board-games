@@ -1,0 +1,10 @@
+{
+  "id": "fpstr03",
+  "eventTitle": "The Power of Tom Bombadil",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "Advance the North Nation one step on the Political Track.\nWhile this card is in play, the Shadow player cannot move an Army into or attack The Old Forest, The Shire or Buckland.",
+  "eventDiscardCondition": "The Shadow player can force 'The Power of Tom Bombadil\" to be discarded by using any one Action die result and discarding one Army Event card and one Character\nEvent card from his hand.",
+  "combatTitle": "Advantageous Position",
+  "combatPreCondition": "Play if the defending Army is inside the borders of a Free Peoples Nation.",
+  "combatText": "Subtract 1 from all dice on the Combat roll of the Shadow player (an unmodified '6' is still considered a hit for him)."
+}

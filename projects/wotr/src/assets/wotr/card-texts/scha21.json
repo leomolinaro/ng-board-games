@@ -1,0 +1,10 @@
+{
+  "id": "scha21",
+  "eventTitle": "The Palantír of Orthanc",
+  "eventPreCondition": "Play on the table if Saruman is in play.",
+  "eventText": "When \"The Palantír of Orthanc\" is in play, after you use an Event Action die result to play an Event card, immediately draw another card from either one of your decks.",
+  "eventDiscardCondition": "The Free Peoples player can force \"The Palantír of Orthanc\" to be discarded by either using a Will of the West Action die result, or using any Action die result and one\nElven Ring.",
+  "combatTitle": "Cruel as Death",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 2 or more.",
+  "combatText": "Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "fpstr11",
+  "eventTitle": "Paths of the Woses",
+  "eventPreCondition": "Play if the Rohan Nation is \"At War.",
+  "eventText": "\"\nMove a Free Peoples Army from any one Rohan region (including a Stronghold under siege) directly to Minas Tirith.\nIf the Shadow player controls or is besieging Minas Tirith, move the Army to a region adjacent to Minas Tirith instead. The destination region must be free for the\npurposes of army movement.",
+  "combatTitle": "Sudden Strike",
+  "combatPreCondition": "Play if a Free Peoples Leader or a Companion is in the battle.",
+  "combatText": "Before the Combat roll, roll an additional attack using a number of dice equal to your Leadership (up to a maximum of 5) and apply the result immediately."
+}

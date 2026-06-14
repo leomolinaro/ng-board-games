@@ -1,0 +1,8 @@
+{
+  "id": "sstr11",
+  "eventTitle": "Rage Of The Dunlendings",
+  "eventPreCondition": "Play if Isengard is \"At War.",
+  "eventText": "\"\nRecruit two Isengard Regular units in a free region adjacent to North or South Dunland.\nYou may also move to this region up to four Isengard units (Regular or Elite) from North Dunland and/or South Dunland.",
+  "combatTitle": "Relentless Assault",
+  "combatText": "Before the Combat roll, you may inflict and apply up to two hits against your units. Add 1 to all dice on your Combat roll for each hit you inflicted."
+}

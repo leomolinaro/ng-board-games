@@ -1,0 +1,8 @@
+{
+  "id": "scha04",
+  "eventTitle": "Give it to Uss!",
+  "eventText": "The \"Give it to Uss!\" special Hunt tile [1, reveal, stop] is now in play.\nAdd the tile to the Hunt Pool when the Fellowship is on the Mordor Track.",
+  "combatTitle": "One for the Dark Lord",
+  "combatPreCondition": "Play if the defending Army is in the same region as the Fellowship.",
+  "combatText": "Add 1 to all dice on your Combat roll and Leader re-roll."
+}

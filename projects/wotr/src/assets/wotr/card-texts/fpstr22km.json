@@ -1,0 +1,8 @@
+{
+  "id": "fpstr22km",
+  "eventTitle": "Dain Ironfoot's Guard",
+  "eventText": "If Dáin, Corrupted Ruler, is in play, remove him from play.\nOtherwise, either recruit one Dwarven unit (Regular or Elite) and one Dwarven Leader in Erebor,\nor randomly discard one hidden Corruption tile from Dáin,\nreturning it to the Hunt Pool;\nthen, draw one Strategy Event card.",
+  "combatTitle": "Valour",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "fpcha05",
+  "eventTitle": "Mithril Coat and Sting",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "After the Shadow player draws a Hunt tile, you may discard \"Mithril Coat and Sting\" to draw a second tile. Apply the effects of the second tile instead of the first one, then return the first tile to the Hunt Pool.",
+  "combatTitle": "Blade of Westernesse",
+  "combatPreCondition": "Play if a Hobbit is in the battle.",
+  "combatText": "Use one hit during the Leader re-roll to eliminate one Minion of your choice that is participating in the battle"
+}

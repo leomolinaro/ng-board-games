@@ -1,0 +1,9 @@
+{
+  "id": "scha19",
+  "eventTitle": "Dreadful Spells",
+  "eventPreCondition": "Play if a Shadow Army contianing Nazgûl is adjacent to, or is in the same region as, a Free Peoples Army.",
+  "eventText": "Roll a number of dice equal to the number of Nazgûl (up to a maximum of 5) and score one hit for every result of 5+.",
+  "combatTitle": "Devilry of Orthanc",
+  "combatPreCondition": "Play if an Isengard Army unit is in the battle and the defending Army is in a Stronghold.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

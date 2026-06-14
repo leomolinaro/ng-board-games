@@ -1,0 +1,9 @@
+{
+  "id": "fpcha23km",
+  "eventTitle": "House of the Stewards",
+  "eventPreCondition": "Play if Boromir is in a Gondor region.",
+  "eventText": "Either recruit one Gondor unit (Regular or Elite) in the region with Boromir, or randomly discard one hidden Corruption tile from Denethor, returning it to the Hunt Pool.\nThen, draw two Strategy Event cards.",
+  "combatTitle": "Brave Stand",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "The Shadow player rolls one die less in his Combat roll for each Companion in the battle (to a minimum of one)."
+}

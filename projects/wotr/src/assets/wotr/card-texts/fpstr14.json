@@ -1,0 +1,8 @@
+{
+  "id": "fpstr14",
+  "eventTitle": "Guards of the Citadel",
+  "eventText": "Recruit one Gondor unit (Regular or Elite) and one Gondor Leader in Minas Tirith.",
+  "combatTitle": "Charge",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Before the Combat roll, roll an additional attack using only the Free Peoples Elite units (up to a maximum of 5) and apply the result immediately."
+}

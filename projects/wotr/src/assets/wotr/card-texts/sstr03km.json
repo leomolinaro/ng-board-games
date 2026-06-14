@@ -1,0 +1,10 @@
+{
+  "id": "sstr03km",
+  "eventTitle": "Denethor's Folly",
+  "eventPreCondition": "Play on the table if Denethor is in play and not Awakened.",
+  "eventText": "While this card is in play, Denethor cannot be awakened,\nand the Free Peoples player cannot use Combat cards for battles fought in Minas Tirith\nor in the region with Denethor.",
+  "eventDiscardCondition": "The Free Peoples player can force \"Denethor's Folly\" to be discarded\nusing a Will of the West Action die result,\nor any Action die result if Gandalf or Aragorn is in Minas Tirith or in the region with Denethor.",
+  "combatTitle": "Devilry of Orthanc",
+  "combatPreCondition": "Play if an Isengard Army unit is in the battle and the defending Army is in a Stronghold.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

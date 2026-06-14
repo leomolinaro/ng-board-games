@@ -1,0 +1,8 @@
+{
+  "id": "scha26km",
+  "eventTitle": "The West has Failed",
+  "eventText": "Initiate a corruption attempt on a Sovereign in a region adjacent to,\nor in the same region as, a Nazgul, without removing an Eye die from the Hunt Box.\nThis corruption attempt is possible event if the Free Peoples player\nhas no unused Action dice left.",
+  "combatTitle": "Battle is Vain",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Forfeit up to 5 points of Nazgûl Leadership\nto reduce the Free Peoples Leadership by the same amount."
+}

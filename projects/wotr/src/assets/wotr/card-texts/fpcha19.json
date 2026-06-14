@@ -1,0 +1,9 @@
+{
+  "id": "fpcha19",
+  "eventTitle": "The Ents Awake: Treebeard",
+  "eventPreCondition": "Play if Gandalf the White is in play and a Companion is in Fangorn.",
+  "eventText": "Roll three dice; for each result of 4+, score one hit against a Shadow Army in Orthanc. If the Army is destroyed, so are any Nazgul and Minions along with it.\nIf Saruman is in Orthanc without a Shadow Army, eliminate him.\nIf Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.",
+  "combatTitle": "Ents' Rage",
+  "combatPreCondition": "Play if the defending Army is in a Rohan region, Fangorn or Orthanc.",
+  "combatText": "Add 2 to all dice on your Combat roll."
+}

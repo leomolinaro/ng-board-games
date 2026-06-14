@@ -1,0 +1,8 @@
+{
+  "id": "sstr21",
+  "eventTitle": "Horde From the East",
+  "eventPreCondition": "Play if the Southron & Easterling are \"At War.",
+  "eventText": "\"\nRecruit five Southron & Easterling Regular units in a free region inside the Southron and Easterling Nation. This region must be adjacent to the eastern edge of the map.",
+  "combatTitle": "Deadly Strife",
+  "combatText": "Both Armies add 2 to all dice on their Combat roll and Leader re-roll."
+}

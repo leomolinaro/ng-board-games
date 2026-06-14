@@ -238,7 +238,7 @@ export type WotrCardCombatLabel =
   | "Black Breath"
   | "Words of Power"
   | "Durin's Bane"
-  | "Delivery of Orthanc"
+  | "Devilry of Orthanc"
   | "Deadly Strife"
   | "Onslaught"
   | "Relentless Assault"
@@ -723,7 +723,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
     id: "scha19",
     label: "Dreadful Spells",
     type: "character",
-    combatLabel: "Delivery of Orthanc",
+    combatLabel: "Devilry of Orthanc",
     combatTiming: 3
   },
   scha20: {
@@ -779,7 +779,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
     id: "sstr03",
     label: "Denethor's Folly",
     type: "army",
-    combatLabel: "Delivery of Orthanc",
+    combatLabel: "Devilry of Orthanc",
     combatTiming: 3
   },
   sstr04: {
@@ -793,7 +793,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
     id: "sstr05",
     label: "Threats and Promises",
     type: "muster",
-    combatLabel: "Delivery of Orthanc",
+    combatLabel: "Devilry of Orthanc",
     combatTiming: 3
   },
   sstr06: {
@@ -1025,14 +1025,14 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
     id: "sstr03km",
     label: "Denethor's Folly",
     type: "army",
-    combatLabel: "Delivery of Orthanc",
+    combatLabel: "Devilry of Orthanc",
     combatTiming: 3
   },
   sstr05km: {
     id: "sstr05km",
     label: "Threats and Promises",
     type: "muster",
-    combatLabel: "Delivery of Orthanc",
+    combatLabel: "Devilry of Orthanc",
     combatTiming: 3
   },
   sstr06km: {

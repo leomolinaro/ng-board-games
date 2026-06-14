@@ -1,0 +1,7 @@
+{
+  "id": "fpstr06",
+  "eventTitle": "Faramir's Rangers",
+  "eventText": "Choose a Shadow Army in Osgiliath or South Ithilien or North Ithilien.\nRoll three dice and score one hit against this Army for each result of 5+.\nThen, if there is a Free Peoples Army in Osgiliath, recruit one Gondor unit (Regular or Elite) and one Gondor Leader there.",
+  "combatTitle": "Shield-wall",
+  "combatText": "Before you remove casualties inflicted by your opponent's Combat roll and Leader re-roll, if your opponent scored two or more hits, cancel one hit."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "scha06",
+  "eventTitle": "Isildur's Bane",
+  "eventPreCondition": "Play if the Fellowship is not in a region containing a Free Peoples Settlement.",
+  "eventText": "Draw a Hunt tile.\nIf the tile shows an Eye or is a Fellowship special tile, discard it without effect.\nOtherwise, follow the rules for a successful Hunt, except that Hunt Damage may not be reduced in any way before using the Ring.",
+  "combatTitle": "Cruel as Death",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 2 or more.",
+  "combatText": "Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll."
+}

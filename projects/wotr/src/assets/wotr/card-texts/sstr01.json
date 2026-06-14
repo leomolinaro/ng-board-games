@@ -1,0 +1,8 @@
+{
+  "id": "sstr01",
+  "eventTitle": "Return to Valinor",
+  "eventPreCondition": "Play if you control at least one Elven Stronghold.",
+  "eventText": "For each region with an Elven Stronghold which is not under siege, roll a number of dice equal to the number of Elven Army units in that region (up to a maximum\nof 5) and score one hit against that army for each result of '6.'",
+  "combatTitle": "Deadly Strife",
+  "combatText": "Both Armies add 2 to all dice on their Combat roll and Leader re-roll."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "sstr15",
+  "eventTitle": "Hill-trolls",
+  "eventPreCondition": "Play if Sauron is \"At War.",
+  "eventText": "\"\nReplace two Sauron Regular units anywhere on the game board with two Sauron Elite units.",
+  "combatTitle": "We Come to Kill",
+  "combatPreCondition": "Play if a Shadow Elite unit is in the battle.",
+  "combatText": "After removing casualties from the Combat roll and Leader re-roll,\nroll an additional attack using only the Shadow Elite units (up to a maximum of five) and score one hit for each result of 5+."
+}

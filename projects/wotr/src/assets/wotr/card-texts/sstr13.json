@@ -1,0 +1,9 @@
+{
+  "id": "sstr13",
+  "eventTitle": "Half-orcs and Goblin-men",
+  "eventPreCondition": "Play if Isengard is \"At War.",
+  "eventText": "\"\nRecruit one Isengard unit (Regular or Elite) in a region where a Shadow Army is present.",
+  "combatTitle": "We Come to Kill",
+  "combatPreCondition": "Play if a Shadow Elite unit is in the battle.",
+  "combatText": "After removing casualties from the Combat roll and Leader re-roll,\nroll an additional attack using only the Shadow Elite units (up to a maximum of five) and score one hit for each result of 5+."
+}

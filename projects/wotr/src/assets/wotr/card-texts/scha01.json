@@ -1,0 +1,8 @@
+{
+  "id": "scha01",
+  "eventTitle": "Shelob's Lair",
+  "eventText": "The \"Shelob's Lair\" special Hunt tile [die icon, stop] is now in play.\nAdd the tile to the Hunt Pool when the Fellowship is on the Mordor Track.",
+  "combatTitle": "One for the Dark Lord",
+  "combatPreCondition": "Play if the defending Army is in the same region as the Fellowship.",
+  "combatText": "Add 1 to all dice on your Combat roll and Leader re-roll."
+}

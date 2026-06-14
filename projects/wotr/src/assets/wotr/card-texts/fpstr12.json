@@ -1,0 +1,8 @@
+{
+  "id": "fpstr12",
+  "eventTitle": "Through a Day and a Night",
+  "eventPreCondition": "Play on a Free Peoples Army containing a Companion.",
+  "eventText": "Move the Army containing the Companion(s) up to two regions. The regions must be free for the purposes of Army movement, and no Free Peoples units may be\npicked up or dropped off along the way (other than, possibly, splitting the Army initially).",
+  "combatTitle": "Confusion",
+  "combatText": "Every unmodified die result of '1' in the Shadow player's Combat roll scores one hit against the Shadow Army.\nAny such result cannot be rolled again during the Shadow player's Leader re-roll."
+}

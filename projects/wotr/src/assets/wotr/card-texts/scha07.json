@@ -1,0 +1,9 @@
+{
+  "id": "scha07",
+  "eventTitle": "Foul Thing from the Deep",
+  "eventPreCondition": "Play if the Fellowship is not in a region containing a Free Peoples Settlement.",
+  "eventText": "Draw a Hunt tile.\nIf the tile shows an Eye or is a Fellowship special tile, discard it without effect.\nOtherwise, follow the rules for a successful Hunt, except that the Free Peoples player must reduce Hunt Damage (if any) by eliminating a random Companion\n(unless there are no Companions in the Fellowship) before using the Ring.",
+  "combatTitle": "They are Terrible",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Forfeit one point of Nazgûl Leadership to add 1 to all dice on your Leader re-roll."
+}

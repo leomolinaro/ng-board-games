@@ -1,0 +1,9 @@
+{
+  "id": "scha08",
+  "eventTitle": "Candles of Corpses",
+  "eventPreCondition": "Play if the Fellowship is not in a region containing a Free Peoples Settlement.",
+  "eventText": "Roll three dice and add one Corruption point on each result of 4+.\nIf Gollum is the Guide, add one Corruption point on each result of '6' instead",
+  "combatTitle": "Dread and Despair",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Before the Combat roll, forfeit one or more points of Nazgûl Leadership.\nDuring his Combat roll, the Free Peoples player rolls one Combat die less (to a minimum of one) for every point you have chosen to forfeit."
+}

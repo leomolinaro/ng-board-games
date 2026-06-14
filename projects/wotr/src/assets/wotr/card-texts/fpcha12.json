@@ -1,0 +1,8 @@
+{
+  "id": "fpcha12",
+  "eventTitle": "Bilbo's Song",
+  "eventText": "Heal one Corruption point.\nIf Gollum is the Guide, heal two Corruption points instead.",
+  "combatTitle": "Fateful Strike",
+  "combatPreCondition": "Play if a Free Peoples Leader or a Companion is in the battle.",
+  "combatText": "If your Leader re-roll scores one hit, additionally eliminate a Nazgûl (if in the battle).\nIf the re-roll scores two or more hits, you can eliminate a Minion (if in the battle) instead of a Nazgûl."
+}

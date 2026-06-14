@@ -1,0 +1,8 @@
+{
+  "id": "fpcha25km",
+  "eventTitle": "Aid in Time of Need",
+  "eventText": "Move any or all Companions who are not in the Fellowship.\nThen, choose one non-Awakened, non-Corrupted Sovereign in the same region as a Companion, and awaken him in that region.",
+  "combatTitle": "The King's Banner",
+  "combatPreCondition": "Play if Aragorn or an Awakened Sovereign is in the battle.",
+  "combatText": "Before rolling the dice for your Leader re-roll,\nforfeit Aragorn's or the Sovereign's Leadership\nto cancel the Leader re-roll of the Shadow player."
+}

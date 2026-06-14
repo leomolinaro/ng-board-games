@@ -1,0 +1,9 @@
+{
+  "id": "fpstr13",
+  "eventTitle": "Cirdan's Ships",
+  "eventPreCondition": "Play if the Elves are \"At War.",
+  "eventText": "\"\nRecruit two Elven units (Regular or Elite) in a coastal region containing a Free Peoples Army.",
+  "combatTitle": "Charge",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Before the Combat roll, roll an additional attack using only the Free Peoples Elite units (up to a maximum of 5) and apply the result immediately."
+}

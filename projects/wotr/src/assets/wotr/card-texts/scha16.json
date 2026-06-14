@@ -1,0 +1,10 @@
+{
+  "id": "scha16",
+  "eventTitle": "Flocks of Crebain",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "Before you make a Hunt roll, you may discard \"Flocks of Crebain\" to add 1 to all dice on that Hunt roll (including re-rolls).",
+  "eventDiscardCondition": "You must discard this card from the table immediately if the Fellowship is declared in an unconquered Free Peoples City or Stronghold.",
+  "combatTitle": "They are Terrible",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "Forfeit one point of Nazgûl Leadership to add 1 to all dice on your Leader re-roll."
+}

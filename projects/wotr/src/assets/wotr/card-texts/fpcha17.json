@@ -1,0 +1,8 @@
+{
+  "id": "fpcha17",
+  "eventTitle": "There and Back Again",
+  "eventText": "Separate from the Fellowship one Companion or group of Companions. You may move them one extra region.\nThen, if Gimli or Legolas are in Dale, Erebor or the Woodland Realm, activate the Dwarven and the North Nations and advance the Dwarven, the Elven and the North Nations one step each on the Political Track.",
+  "combatTitle": "Brave Stand",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "The Shadow player rolls one die less in his Combat roll for each Companion in the battle (to a minimum of one)."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "fpcha15",
+  "eventTitle": "Gwaihir the Windlord",
+  "eventText": "Separate from the Fellowship, or move, one Companion or one group of Companions as if their Level were 4.\nThis movement of these Companions is allowed to end in a Stronghold under siege.",
+  "combatTitle": "Daring Defiance",
+  "combatPreCondition": "Play if a Companion is in the battle.",
+  "combatText": "Forfeit the Leadership of all the Companions participating in the battle to cancel the Combat card played by the Shadow player."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "scha24",
+  "eventTitle": "The Black Captain Commands",
+  "eventPreCondition": "Play if the Witch-king is in play.",
+  "eventText": "You may either recruit two Nazgûl in the region containing the Witch-king, or move any or all of the Nazgûl.\nThen, you may move or attack with an Army containing the Witch-king.",
+  "combatTitle": "Foul Stench",
+  "combatPreCondition": "Play if the total Nazgûl Leadership is 1 or more.",
+  "combatText": "If the Nazgûl Leadership equals or exceeds the total Free Peoples Leadership, the Free Peoples Leader re-roll is cancelled."
+}

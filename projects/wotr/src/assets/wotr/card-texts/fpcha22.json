@@ -1,0 +1,9 @@
+{
+  "id": "fpcha22",
+  "eventTitle": "Dead Men of Dunharrow",
+  "eventPreCondition": "Play if Strider/Aragorn is in a Rohan region (including a Stronghold under siege).",
+  "eventText": "Move Strider/Aragorn (and any number of Companions in the same region) to Erech, Lamedon or Pelargir.\nIf there is a Shadow Army in that region, roll a die. That Army takes a number of hits equal to the die result and must then retreat. If the Army cannot retreat, it is destroyed. If the Army is destroyed, so are any Nazgul and Minions along with it.\nYou may then recruit up to three Gondor Regular units in that region, taking control if necessary.",
+  "combatTitle": "Sudden Strike",
+  "combatPreCondition": "Play if a Free Peoples Leader or a Companion is in the battle.",
+  "combatText": "Before the Combat roll, roll an additional attack using a number of dice equal to your Leadership (up to a maximum of 5) and apply the result immediately."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "sstr04",
+  "eventTitle": "The Day Without Dawn",
+  "eventPreCondition": "Play if all Shadow Nations are \"At War.",
+  "eventText": "\"\nDiscard all unused Free Peoples Action dice that show a Will of the West result.",
+  "combatTitle": "Relentless Assault",
+  "combatText": "Before the Combat roll, you may inflict and apply up to two hits against your units. Add 1 to all dice on your Combat roll for each hit you inflicted."
+}

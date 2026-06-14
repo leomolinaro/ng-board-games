@@ -1,0 +1,8 @@
+{
+  "id": "fpstr04",
+  "eventTitle": "Book of Mazarbul",
+  "eventText": "Move any or all Companions who are not in the Fellowship.\nThen, if a Companion is in Erebor or Ered Luin, activate the Dwarven Nation and move it directly to the \"At War\" step.",
+  "combatTitle": "Advantageous Position",
+  "combatPreCondition": "Play if the defending Army is inside the borders of a Free Peoples Nation.",
+  "combatText": "Subtract 1 from all dice on the Combat roll of the Shadow player (an unmodified '6' is still considered a hit for him)."
+}

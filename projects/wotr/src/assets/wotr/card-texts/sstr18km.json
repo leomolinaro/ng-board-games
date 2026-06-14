@@ -1,0 +1,8 @@
+{
+  "id": "sstr18km",
+  "eventTitle": "The King Is Revealed",
+  "eventPreCondition": "Play if either Aragorn or Denethor, Lord Steward of Gondor, is in play.",
+  "eventText": "Recruit five Sauron Regular units and one Nazgûl,\nplus one Sauron Regular unit or Nazgûl for each Awakened Sovereign in play,\nin Minas Morgul.",
+  "combatTitle": "Relentless Assault",
+  "combatText": "Before the Combat roll, you may inflict and apply up to two hits against your units. Add 1 to all dice on your Combat roll for each hit you inflicted."
+}

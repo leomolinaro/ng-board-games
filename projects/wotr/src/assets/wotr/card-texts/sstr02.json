@@ -1,0 +1,8 @@
+{
+  "id": "sstr02",
+  "eventTitle": "The Fighting Uruk-hai",
+  "eventPreCondition": "Play if Saruman is in play, and if an Army containing an Isengard unit is besieging a Stronghold.",
+  "eventText": "Attack that Stronghold. The siege lasts for three Combat rounds instead of one.\nDuring the first round, the Free Peoples player cannot use a Combat card unless a\nCompanion is in the battle.",
+  "combatTitle": "Onslaught",
+  "combatText": "After removing casualties from the Combat roll and Leader re-roll, you may inflict and apply up to four additional hits against your units. Roll one die for each hit\nyou inflicted to your units and score one hit against the enemy on each result of 4+."
+}

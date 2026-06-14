@@ -1,0 +1,8 @@
+{
+  "id": "sstr09",
+  "eventTitle": "The Shadow is Moving",
+  "eventPreCondition": "Play if all Shadow Nations are \"At War.",
+  "eventText": "\"\nMove up to four different Shadow Armies one region each",
+  "combatTitle": "Swarm of Bats",
+  "combatText": "Cancel the effects of the Combat card played by the Free Peoples player.\nIf the Free Peoples player did not play a card, add 1 to all dice on your Leader re-roll."
+}

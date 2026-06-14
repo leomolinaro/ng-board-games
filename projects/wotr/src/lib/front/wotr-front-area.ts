@@ -12,8 +12,10 @@ import {
 import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
 import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCardId } from "../card/wotr-card-models";
+import { WotrCardTooltipService } from "../card/wotr-card-tooltip.service";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character-models";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import {
@@ -42,7 +44,7 @@ function initValidUnits(): ValidUnits {
 
 @Component({
   selector: "wotr-front-area",
-  imports: [MatTabsModule, BgTransformPipe, MatTooltip],
+  imports: [MatTabsModule, BgTransformPipe, MatTooltip, TuiHint],
   template: `
     <mat-tab-group [selectedIndex]="selectedTabIndex()">
       <mat-tab label="Cards">
@@ -51,6 +53,9 @@ function initValidUnits(): ValidUnits {
             <img
               class="card-preview-image"
               [src]="card | bgTransform: cardPreviewImage"
+              [tuiHint]="cardTooltip.hint(card)"
+              [tuiHintAppearance]="cardTooltip.appearance"
+              (mouseenter)="cardTooltip.preload(card)"
               (click)="cardClick.emit(card)" />
           }
         </div>
@@ -193,6 +198,7 @@ function initValidUnits(): ValidUnits {
 })
 export class WotrFrontArea {
   protected assets = inject(WotrAssetsStore);
+  protected cardTooltip = inject(WotrCardTooltipService);
   protected ui = inject(WotrGameUi);
 
   front = input.required<WotrFront>();

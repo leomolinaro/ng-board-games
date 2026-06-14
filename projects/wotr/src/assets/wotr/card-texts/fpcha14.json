@@ -1,0 +1,9 @@
+{
+  "id": "fpcha14",
+  "eventTitle": "Challenge of the King",
+  "eventPreCondition": "Play if Strider/Aragorn is with a Free Peoples Army in a Gondor or Rohan region.",
+  "eventText": "Draw three Hunt tiles. If all three drawn tiles show Eyes, put them back in the Hunt Pool and eliminate Strider/Aragorn.\nOtherwise, discard permanently the drawn tiles bearing an Eye for the remainder of the game.\nAll drawn tiles not bearing an Eye are put back in the Hunt Pool without effect.",
+  "combatTitle": "Sudden Strike",
+  "combatPreCondition": "Play if a Free Peoples Leader or a Companion is in the battle.",
+  "combatText": "Before the Combat roll, roll an additional attack using a number of dice equal to your Leadership (up to a maximum of 5) and apply the result immediately."
+}

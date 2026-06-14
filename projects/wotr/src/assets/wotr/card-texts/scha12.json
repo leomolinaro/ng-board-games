@@ -1,0 +1,9 @@
+{
+  "id": "scha12",
+  "eventTitle": "Morgul Wound",
+  "eventPreCondition": "Play if the Fellowship is revealed.",
+  "eventText": "If the Fellowship's current Corruption is three or less, add two Corruption points, otherwise add one Corruption point.",
+  "combatTitle": "Black Breath",
+  "combatPreCondition": "Play if a Nazgûl is in the battle.",
+  "combatText": "If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle.\nAlternatively, you can choose to eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level."
+}

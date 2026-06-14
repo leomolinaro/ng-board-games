@@ -1,0 +1,8 @@
+{
+  "id": "fpstr24",
+  "eventTitle": "Thranduil's Archers",
+  "eventText": "Recruit one Elven unit (Regular or Elite) in Woodland Realm.\nThen, draw one Strategy Event card.",
+  "combatTitle": "Valour",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

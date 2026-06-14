@@ -1,0 +1,8 @@
+{
+  "id": "fpstr05",
+  "eventTitle": "The Spirit of Mordor",
+  "eventText": "Choose a Shadow Army anywhere on the board that is composed of Army units from at least two different Shadow Nations.\nRoll five dice and score one hit against this Army for each result of 5+.",
+  "combatTitle": "Scouts",
+  "combatPreCondition": "Play if the Free Peoples Army is defending in a field battle.",
+  "combatText": "Before the Combat roll, retreat your Army to an adjacent free region or withdraw into a siege."
+}

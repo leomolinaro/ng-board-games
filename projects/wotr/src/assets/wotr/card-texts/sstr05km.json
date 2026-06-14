@@ -1,0 +1,10 @@
+{
+  "id": "sstr05km",
+  "eventTitle": "Threats and Promises",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "When \"Threats and Promises\" is in play, the Free Peoples player can neither advance a passive Nation on the Political Track,\nnor awaken a Sovereign, using a Muster action die result.",
+  "eventDiscardCondition": "You must discard this card from the table if a Sovereign becomes Corrupted,\nor if a Free Peoples Nation advances on the Political Track due to an attack or due to a Companion's special ability.",
+  "combatTitle": "Devilry of Orthanc",
+  "combatPreCondition": "Play if an Isengard Army unit is in the battle and the defending Army is in a Stronghold.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

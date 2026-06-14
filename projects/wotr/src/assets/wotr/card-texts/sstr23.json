@@ -1,0 +1,8 @@
+{
+  "id": "sstr23",
+  "eventTitle": "Musterings of Long-planned War",
+  "eventPreCondition": "Play if all Shadow Nations are \"At War.",
+  "eventText": "\"\nRecruit five Southron & Easterling Regular units in Gorgoroth and five Sauron Regular units in Nurn.",
+  "combatTitle": "Desperate Battle",
+  "combatText": "Both Armies add 1 to all dice on their Combat roll and Leader re-roll."
+}

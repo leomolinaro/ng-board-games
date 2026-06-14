@@ -1,0 +1,8 @@
+{
+  "id": "scha23",
+  "eventTitle": "The Ringwraiths Are Abroad",
+  "eventText": "Move any or all of the Nazgûl.\nThen, you may either move two Armies each containing a Nazgûl, or attack with one Army containing a Nazgûl.",
+  "combatTitle": "Words of Power",
+  "combatPreCondition": "Play if a Nazgûl is in the battle.",
+  "combatText": "Choose a Companion. That Companion's Leadership and special abilities are cancelled for this Combat round."
+}

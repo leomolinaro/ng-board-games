@@ -1,0 +1,8 @@
+{
+  "id": "fpstr22",
+  "eventTitle": "Dain Ironfoot's Guard",
+  "eventText": "Recruit one Dwarven unit (Regular or Elite) and one Dwarven Leader in Erebor",
+  "combatTitle": "Valour",
+  "combatPreCondition": "Play if a Free Peoples Elite unit is in the battle.",
+  "combatText": "Add 1 to all dice on your Combat roll."
+}

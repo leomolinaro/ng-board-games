@@ -1,0 +1,8 @@
+{
+  "id": "fpstr17",
+  "eventTitle": "Grimbeorn the Old, Son of Beorn",
+  "eventText": "Recruit one North unit (Regular or Elite) and one North Leader in Carrock.",
+  "combatTitle": "Scouts",
+  "combatPreCondition": "Play if the Free Peoples Army is defending in a field battle.",
+  "combatText": "Before the Combat roll, retreat your Army to an adjacent free region or withdraw into a siege."
+}

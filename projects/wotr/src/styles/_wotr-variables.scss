@@ -17,6 +17,41 @@
 @mixin golden-padding($horizontal-padding) {
   @include bg.golden-padding($horizontal-padding);
 }
+
+@mixin card-tooltip-styles {
+  ::ng-deep {
+    tui-hint[data-appearance="wotr-card-tooltip"] {
+      max-width: 460px;
+      background: #0f0f0f;
+      color: #f3f3f3;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .wotr-card-tooltip-precondition {
+      font-weight: 700;
+      color: #d9d1a3;
+    }
+
+    .wotr-card-tooltip-discard {
+      font-style: italic;
+      color: #d9d1a3;
+    }
+
+    .wotr-card-tooltip-title {
+      display: inline-block;
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .wotr-card-tooltip-divider {
+      display: block;
+      height: 1px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
 $background: bg.$background;
 // @function widget-shadow-hover($color) {
 //   @return inset 0 0 6px 2px $color;

@@ -1,0 +1,8 @@
+{
+  "id": "fpcha09",
+  "eventTitle": "Athelas",
+  "eventText": "Roll three dice and heal one Corruption point for each die result of 5+.\nIf Strider is the Guide, heal one Corruption point for each die result of 3+ instead.",
+  "combatTitle": "Andúril",
+  "combatPreCondition": "Play if Strider/Aragorn is in the battle.",
+  "combatText": "Before rolling the dice for your Leader re-roll, forfeit Strider's Leadership to automatically change one missed die roll to a hit, or forfeit Aragorn's Leadership to\nautomatically change up to two missed die rolls to hits."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "sstr25km",
+  "eventTitle": "The Palantir of Barad-dûr",
+  "eventPreCondition": "Play on the table.",
+  "eventText": "Once per turn, while this card is in play, the Shadow player can use\na Muster action die result as an Event Action die result instead.",
+  "eventDiscardCondition": "The Free Peoples player can force \"The Palantir of Barad-dûr\" to be discarded\nusing a Will of the West Action die result, or using any Action die result and one Elven Ring.",
+  "combatTitle": "His Power Waxes",
+  "combatPreCondition": "Play if the defending Army is in a region with a Sovereign.",
+  "combatText": "If the Sovereign is Corrupted, add 1 to all dice on your Combat roll\nand Leader re-roll; otherwise, add 1 to all dice on your Combat roll\nand Leader re-roll of both Armies."
+}
