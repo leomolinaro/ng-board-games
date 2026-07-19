@@ -51,7 +51,7 @@ export class WotrFreePeoplesStrategyCards {
 
   createCard(cardId: WotrFreePeoplesStrategyCardId): WotrEventCard {
     switch (cardId) {
-      // TODO The Last Battle
+      // TODO WOTR The Last Battle
       // Play on the table if Aragorn is with a Free Peoples Army in a region outside of a Free Peoples Nation.
       // While this card is in play, Action dice used to move the Fellowship are not added to the Hunt Box.
       // You must discard this card from the table as soon as the Fellowship is declared or revealed.
@@ -252,7 +252,7 @@ export class WotrFreePeoplesStrategyCards {
             return actions;
           }
         };
-      // TODO Help Unlooked For
+      // TODO WOTR Help Unlooked For
       // Attack a Shadow Army besieging a Stronghold with a Free Peoples Army in an adjacent region.
       // For this entire battle, the Shadow player rolls one die less during the Combat roll for each Free Peoples unit in the besieged Stronghold (to a minimum of one).
       case "fpstr10":
@@ -523,7 +523,7 @@ export class WotrFreePeoplesStrategyCards {
       // Either activate one Free Peoples Nation of your choice and advance that Nation one step on the Political Track,
       // or look at the Corruption tiles on a non-Corrupted Sovereign, then you may choose one
       // of them and return it to the Hunt Pool.
-      case "fpstr08km": // TODO
+      case "fpstr08km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -535,7 +535,7 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Théoden,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr16km": // TODO
+      case "fpstr16km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -546,7 +546,7 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Brand,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr19km": // TODO
+      case "fpstr19km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -557,7 +557,7 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Dáin,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr22km": // TODO
+      case "fpstr22km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -568,7 +568,7 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Thranduil,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr24km": // TODO
+      case "fpstr24km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -578,7 +578,7 @@ export class WotrFreePeoplesStrategyCards {
       // Recruit one unit (Regular or Elite) of that Sovereign's Nation in the region with the Sovereign.
       // Then, if that Sovereign has one or more hidden Corruption tiles on him,
       // randomly discard one of them, returning it to the Hunt Pool.
-      case "fpstr25km": // TODO
+      case "fpstr25km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -586,7 +586,7 @@ export class WotrFreePeoplesStrategyCards {
       // Men of Little Villages
       // Recruit one Regular unit or Leader in each of four different Free Peoples Nations,
       // in a free region containing a Settlment.
-      case "fpstr26km": // TODO
+      case "fpstr26km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []

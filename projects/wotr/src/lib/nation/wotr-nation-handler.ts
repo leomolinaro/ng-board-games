@@ -166,7 +166,7 @@ export class WotrNationHandler {
       this.nationStore.activate(true, nation);
       this.nationModifiers.onAfterNationActivation(nation, source);
     } else {
-      // TODO log
+      // TODO WOTR log
     }
   }
 
@@ -176,7 +176,7 @@ export class WotrNationHandler {
       this.logger.logEffect(action);
       this.activateNation(nation, source);
     } else {
-      // TODO log
+      // TODO WOTR log
     }
   }
 
@@ -186,7 +186,7 @@ export class WotrNationHandler {
       this.logger.logEffect(action);
       this.advanceNation(quantity, nation, "auto-advance");
     } else {
-      // TODO log
+      // TODO WOTR log
     }
   }
 
@@ -195,7 +195,7 @@ export class WotrNationHandler {
       this.nationStore.advance(quantity, nation);
       this.nationModifiers.onAfterNationAdvance(nation, source);
     } else {
-      // TODO log
+      // TODO WOTR log
     }
   }
 
@@ -206,7 +206,7 @@ export class WotrNationHandler {
       this.nationStore.advanceAtWar(nation);
       this.nationModifiers.onAfterNationAdvance(nation, source);
     } else {
-      // TODO log
+      // TODO WOTR log
     }
   }
 

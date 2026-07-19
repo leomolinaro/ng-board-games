@@ -490,7 +490,7 @@ export class WotrShadowCharacterCards {
             return [huntAbility, discardAbility];
           }
         };
-      // TODO Balrog of Moria
+      // TODO WOTR Balrog of Moria
       // Play on the table.
       // You may discard "Balrog of Moria" to draw an additional Hunt tile if the Fellowship moves into, out of, or through Moria while being declared or revealed. If the tile
       // shows an Eye, discard it without effect, otherwise follow the rules for a successful Hunt.
@@ -767,7 +767,7 @@ export class WotrShadowCharacterCards {
       // The Free Peoples player can force "Your Welcome Is Doubtful" to be discarded
       // by using a Will of the West Action die result, or a Character Action die result
       // if a non-Corrupted Sovereign and a Companion are together in the same region.
-      case "scha25km": // TODO
+      case "scha25km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -777,7 +777,7 @@ export class WotrShadowCharacterCards {
       // or in the same region as, a Nazgul, without removing an Eye die from the Hunt Box.
       // This corruption attempt is possible event if the Free Peoples player
       // has no unused Action dice left.
-      case "scha26km": // TODO
+      case "scha26km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []

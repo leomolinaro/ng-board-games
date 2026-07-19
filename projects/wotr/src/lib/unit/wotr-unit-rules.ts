@@ -61,7 +61,7 @@ export class WotrUnitRules {
     nation: WotrNation,
     constraints: WotrRecruitmentConstraints
   ): WotrReinforcementUnit[] {
-    // TODO could be improved considering excluded regions for elite and leader units
+    // TODO WOTR could be improved considering excluded regions for elite and leader units
     const units: WotrReinforcementUnit[] = [];
     if (this.nationStore.hasRegularReinforcements(nation.id))
       units.push({ nation: nation.id, type: "regular" });

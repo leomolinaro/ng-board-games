@@ -17,6 +17,7 @@ import { WotrAllPlayers } from "../player/wotr-all-players";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
 import { WotrShadowPlayer } from "../player/wotr-shadow-player";
+import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
@@ -45,7 +46,6 @@ import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
 import { WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
-import { WotrRegionHandler } from "../region/wotr-region-handler";
 
 @Injectable()
 export class WotrBattleHandler {
@@ -116,7 +116,7 @@ export class WotrBattleHandler {
   private getNSiegeCombatRounds() {
     const currentCard = this.frontStore.currentCard();
     if (currentCard) {
-      // TODO modifiers
+      // TODO WOTR modifiers
       if (currentCard === "sstr02" || currentCard === "scha20") return 3;
     }
     return 1;
@@ -258,7 +258,7 @@ export class WotrBattleHandler {
     if (hasStronghold && !combatRound.siege) {
       const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
       if (retreatIntoSiege) {
-        await this.battleAdvance(combatRound.attacker.player); // TODO controllare se avanza
+        await this.battleAdvance(combatRound.attacker.player); // TODO WOTR controllare se avanza
         return false;
       }
     }
@@ -327,7 +327,7 @@ export class WotrBattleHandler {
         this.regionHandler.setControlledBy(
           combatRound.attacker.frontId,
           combatRound.action.toRegion
-        ); // TODO controllare se avanza
+        ); // TODO WOTR controllare se avanza
         this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
         this.frontHandler.refreshVictoryPoints();
       }
@@ -377,7 +377,7 @@ export class WotrBattleHandler {
     const currentCard = this.frontStore.currentCard();
     if (!currentCard) return true;
     if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound)) return false;
-    // TODO modifiers
+    // TODO WOTR modifiers
     if (combatFront.frontId === "shadow") return true;
     if (currentCard === "sstr02" || currentCard === "scha20") {
       if (combatRound.round !== 1) return true;
@@ -391,7 +391,7 @@ export class WotrBattleHandler {
   private canCease(combatRound: WotrCombatRound): boolean {
     const currentCard = this.frontStore.currentCard();
     if (!currentCard) return true;
-    // TODO modifiers
+    // TODO WOTR modifiers
     if (currentCard === "sstr10") return false;
     return true;
   }

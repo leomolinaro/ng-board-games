@@ -159,15 +159,15 @@ export class WotrCharacters {
           new MessengerOfTheDarkTowerSetUsedAbility(this.q, this.actionDieModifiers)
         ];
       case "brand":
-        return []; // TODO
+        return []; // TODO KOME
       case "dain":
-        return []; // TODO
+        return []; // TODO KOME
       case "denethor":
-        return []; // TODO
+        return []; // TODO KOME
       case "theoden":
-        return []; // TODO
+        return []; // TODO KOME
       case "thranduil":
-        return []; // TODO
+        return []; // TODO KOME
       case "the-black-serpent":
         return [new RedWrath(this.shadow, this.battleModifiers, this.battleUi)];
       case "the-shadow-of-mirkwood":
@@ -239,15 +239,15 @@ export class WotrCharacters {
   private createAwakenAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
     switch (sovereignId) {
       case "thranduil":
-        return []; // TODO
+        return []; // TODO KOME
       case "brand":
-        return []; // TODO
+        return []; // TODO KOME
       case "dain":
-        return []; // TODO
+        return []; // TODO KOME
       case "denethor":
-        return []; // TODO
+        return []; // TODO KOME
       case "theoden":
-        return []; // TODO
+        return []; // TODO KOME
     }
   }
 

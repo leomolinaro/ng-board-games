@@ -123,7 +123,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        throw new Error("TODO WOTR");
       }
     },
     // Black Breath (Initiative 6)
@@ -160,7 +160,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        throw new Error("TODO WOTR");
       }
     },
     // Brave Stand (Initiative 3)
@@ -226,7 +226,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        throw new Error("TODO WOTR");
       }
     },
     // Daylight (Initiative 3)
@@ -357,7 +357,7 @@ export class WotrCombatCards {
       canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
         const nazgulLeadership = this.unitUtils.nazgulLeadership(params.shadow.army());
-        // TODO gandalf special ability
+        // TODO WOTR gandalf special ability
         const freePeoplesLeadership = this.unitUtils.leadership(params.freePeoples.army());
         if (nazgulLeadership >= freePeoplesLeadership) {
           params.freePeoples.leaderRollCancelled = true;
@@ -454,7 +454,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        throw new Error("TODO WOTR");
       }
     },
     // Mûmakil (Initiative 3-5)
@@ -467,7 +467,7 @@ export class WotrCombatCards {
         return false;
       },
       effect: async (card, params) => {
-        throw new Error("TODO");
+        throw new Error("TODO WOTR");
       }
     },
     // Nameless Wood (Initiative 5)
@@ -737,7 +737,7 @@ export class WotrCombatCards {
     // forfeit Aragorn's or the Sovereign's Leadership
     // to cancel the Leader re-roll of the Shadow player.
     "The King's Banner": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     },
@@ -747,7 +747,7 @@ export class WotrCombatCards {
     // using a number of dice equal to the Sovereign's Leadership,
     // and score one hit for each result of 3+.
     "Like a God of Old": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     },
@@ -756,7 +756,7 @@ export class WotrCombatCards {
     // If that Sovereign is not Awakened, awaken him in his current region.
     // Add 1 to all dice on your Leader re-roll.
     "There is Hope for Victory": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     },
@@ -766,7 +766,7 @@ export class WotrCombatCards {
     // During their Combat roll, the Free Peoples player rolls one die less
     // (to a minimum of one) for every point of Leadership you forfeited.
     "Servant of the Shadow": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     },
@@ -775,7 +775,7 @@ export class WotrCombatCards {
     // Forfeit up to 5 points of Nazgûl Leadership
     // to reduce the Free Peoples Leadership by the same amount.
     "Battle is Vain": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     },
@@ -785,7 +785,7 @@ export class WotrCombatCards {
     // and Leader re-roll; otherwise, add 1 to all dice on your Combat roll
     // and Leader re-roll of both Armies.
     "His Power Waxes": {
-      // TODO
+      // TODO KOME
       canBePlayed: params => false,
       effect: async (card, params) => {}
     }

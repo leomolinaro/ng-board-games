@@ -804,7 +804,7 @@ export class WotrShadowStrategyCards {
       // of 5) and score one hit against that army for each result of '6'.
       // If two or more Corrupted Free Peoples Sovereigns are in play,
       // score hits on each result of 5+ instead.
-      case "sstr01km": // TODO
+      case "sstr01km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -817,7 +817,7 @@ export class WotrShadowStrategyCards {
       // The Free Peoples player can force "Denethor's Folly" to be discarded
       // using a Will of the West Action die result,
       // or any Action die result if Gandalf or Aragorn is in Minas Tirith or in the region with Denethor.
-      case "sstr03km": // TODO
+      case "sstr03km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -828,7 +828,7 @@ export class WotrShadowStrategyCards {
       // nor awaken a Sovereign, using a Muster action die result.
       // You must discard this card from the table if a Sovereign becomes Corrupted,
       // or if a Free Peoples Nation advances on the Political Track due to an attack or due to a Companion's special ability.
-      case "sstr05km": // TODO
+      case "sstr05km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -838,7 +838,7 @@ export class WotrShadowStrategyCards {
       // Move that Nation's Political Counter back one step on the Political Track.
       // Then, if the Sovereign of that Nation is not Awakened, draw and add one Corruption tile to him,
       // and the Free Peoples player must eliminate one Army unit of that Nation (Regular or Elite).
-      case "sstr06km": // TODO
+      case "sstr06km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -848,7 +848,7 @@ export class WotrShadowStrategyCards {
       // Recruit five Sauron Regular units and one Nazgûl,
       // plus one Sauron Regular unit or Nazgûl for each Awakened Sovereign in play,
       // in Minas Morgul.
-      case "sstr18km": // TODO
+      case "sstr18km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -859,7 +859,7 @@ export class WotrShadowStrategyCards {
       // a Muster action die result as an Event Action die result instead.
       // The Free Peoples player can force "The Palantir of Barad-dûr" to be discarded
       // using a Will of the West Action die result, or using any Action die result and one Elven Ring.
-      case "sstr25km": // TODO
+      case "sstr25km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -868,7 +868,7 @@ export class WotrShadowStrategyCards {
       // Choose a region with a Sovereign.
       // Roll 3 dice, and inflict a hit on a Free Peoples Army in that region for each roll of 5+,
       // or 4+ if hat Sovereign is Corrupted.
-      case "sstr26km": // TODO
+      case "sstr26km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []

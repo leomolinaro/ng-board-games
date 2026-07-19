@@ -456,7 +456,7 @@ export class WotrFreePeoplesCharacterCards {
             }
           }
         };
-      // TODO There and Back Again
+      // TODO WOTR There and Back Again
       // Separate from the Fellowship one Companion or group of Companions. You may move them one extra region.
       // Then, if Gimli or Legolas are in Dale, Erebor or the Woodland Realm, activate the Dwarven and the North Nations and advance the Dwarven, the Elven and the
       // North Nations one step each on the Political Track.
@@ -523,7 +523,7 @@ export class WotrFreePeoplesCharacterCards {
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha21":
         return this.theEntsAwake();
-      // TODO Dead Men of Dunharrow
+      // TODO WOTR Dead Men of Dunharrow
       // Play if Strider/Aragorn is in a Rohan region (including a Stronghold under siege).
       // Move Strider/Aragorn (and any number of Companions in the same region) to Erech, Lamedon or Pelargir.
       // If there is a Shadow Army in that region, roll a die. That Army takes a number of hits equal to the die result and must then retreat. If the Army cannot retreat, it is
@@ -581,7 +581,7 @@ export class WotrFreePeoplesCharacterCards {
               if (roll.dice[0] >= armyHitPoints) {
                 await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
               } else {
-                throw new Error("TODO not implemented");
+                throw new Error("TODO WOTR not implemented");
                 // chooseCasualties and move
               }
             }
@@ -662,7 +662,7 @@ export class WotrFreePeoplesCharacterCards {
       // or randomly discard one hidden Corruption tile from Denethor, returning it
       // to the Hunt Pool.
       // Then, draw two Strategy Event cards.
-      case "fpcha23km": // TODO
+      case "fpcha23km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -671,7 +671,7 @@ export class WotrFreePeoplesCharacterCards {
       // Move any or all Companions who are not in the Fellowship.
       // Then, choose one non-Awakened, non-Corrupted Sovereign in the same region
       // as a COmpanion, and awaken him in that region.
-      case "fpcha25km": // TODO
+      case "fpcha25km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
@@ -680,7 +680,7 @@ export class WotrFreePeoplesCharacterCards {
       // Advance one Free Peoples Nation on the Political track, then look at
       // the Corruption tiles on a non-Corrupted Sovereign, choose one of them,
       // and return it to the Hunt Pool.
-      case "fpcha26km": // TODO
+      case "fpcha26km": // TODO KOME
         return {
           canBePlayed: () => false,
           play: async () => []
