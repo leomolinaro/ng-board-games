@@ -3,6 +3,7 @@ import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
@@ -35,8 +36,8 @@ export abstract class WotrPlayer {
   revealFellowship(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.revealFellowship());
   }
-  separateCompanions(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, p => p.separateCompanions());
+  separateCompanions(params: WotrSeparateCompanionsOptions): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p => p.separateCompanions(params));
   }
   actionResolution(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.actionResolution(this.frontId));

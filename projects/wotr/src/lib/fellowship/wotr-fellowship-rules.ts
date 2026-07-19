@@ -1,13 +1,17 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterRules } from "../character/wotr-character-rules";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
 
-export interface WotrCompanionSeparationOptions {
+export interface WotrSeparateCompanionsOptions {
   extraMovements?: number;
   asLevel?: number;
+  canEndInSiege?: boolean;
+  nCompanions?: number;
+  cardId?: WotrCardId;
 }
 
 @Injectable()
@@ -39,7 +43,7 @@ export class WotrFellowshipRules {
 
   companionSeparationTargetRegions(
     companions: WotrCompanionId[],
-    options?: WotrCompanionSeparationOptions
+    options?: WotrSeparateCompanionsOptions
   ) {
     const totalMovement = this.companionSeparationTotalMovement(companions, options);
     const fellowshipRegion = this.regionStore.fellowshipRegion();
@@ -55,7 +59,7 @@ export class WotrFellowshipRules {
 
   private companionSeparationTotalMovement(
     companions: WotrCompanionId[],
-    options?: WotrCompanionSeparationOptions
+    options?: WotrSeparateCompanionsOptions
   ): number {
     if (options?.asLevel) return options.asLevel;
     const groupLevel = this.characterRules.characterGroupLevel(companions);

@@ -370,9 +370,16 @@ export class WotrShadowCharacterCards {
             if (huntTile.eye || huntTile.type === "free-people-special") {
               return;
             }
-            const damage = huntTile.quantity!; // TODO shelob die
+            let damage = huntTile.quantity;
+            if (damage == null) {
+              if (!huntTile.dice) throw new Error(`Unexpected hunt tile: ${huntTile.id}`);
+              damage = (await this.huntFlow.rollShelobsLairDie()).die;
+            }
             if (damage) {
-              await this.huntFlow.separateCompanions(this.freePeoples);
+              await this.huntFlow.separateCompanions(this.freePeoples, {
+                nCompanions: damage,
+                cardId: "scha14"
+              });
             }
           }
         };

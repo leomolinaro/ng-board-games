@@ -16,14 +16,8 @@ import {
   WotrFellowshipGuide
 } from "./wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
-import { WotrFellowshipRules } from "./wotr-fellowship-rules";
+import { WotrFellowshipRules, WotrSeparateCompanionsOptions } from "./wotr-fellowship-rules";
 import { WotrFellowshipStore } from "./wotr-fellowship-store";
-
-interface WotrSeparateCompanionsOptions {
-  extraMovements?: number;
-  asLevel?: number;
-  canEndInSiege?: boolean;
-}
 
 @Injectable()
 export class WotrFellowshipUi {
@@ -98,7 +92,8 @@ export class WotrFellowshipUi {
     const fellowshipCompanions = this.fellowshipStore.companions();
     const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
       companions: fellowshipCompanions,
-      singleSelection: false
+      singleSelection: false,
+      nCompanions: options?.nCompanions
     });
     return this.separateThoseCompanions(companions, options);
   }

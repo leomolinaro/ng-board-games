@@ -10,6 +10,7 @@ import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterUi } from "../character/wotr-character-ui";
+import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import {
@@ -76,8 +77,19 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return this.actionDieUi.actionResolution(frontId, null);
   }
 
-  async separateCompanions(): Promise<WotrStory> {
-    throw new Error("Method not implemented.");
+  async separateCompanions(params: WotrSeparateCompanionsOptions): Promise<WotrStory> {
+    if (params.cardId) {
+      return {
+        type: "card-effect",
+        card: params.cardId,
+        actions: await this.fellowshipUi.separateCompanions(params)
+      };
+    } else {
+      return {
+        type: "base",
+        actions: await this.fellowshipUi.separateCompanions(params)
+      };
+    }
   }
 
   async rollHuntDice(): Promise<WotrStory> {

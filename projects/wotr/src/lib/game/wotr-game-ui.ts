@@ -82,6 +82,7 @@ export interface WotrReinforcementUnitSelection<CanPass extends boolean = boolea
 export interface WotrFellowshipCompanionSelection {
   companions: WotrCompanionId[];
   singleSelection: boolean;
+  nCompanions?: number;
 }
 
 export interface WotrInputQuantitySelection {

@@ -31,6 +31,7 @@ import { WotrHuntHandler } from "./wotr-hunt-handler";
 import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntModifiers, WotrHuntRollModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
+import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 
 interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
@@ -126,10 +127,7 @@ export class WotrHuntFlow {
     if (huntTile.eye) {
       damage = options.nSuccesses!;
     } else if (huntTile.dice) {
-      const story = await this.shadow.rollShelobsLairDie();
-      if (!("actions" in story)) throw new Error("Expected story with actions");
-      const roll = findAction<WotrHuntShelobsLairRoll>(story.actions, "hunt-shelobs-lair-roll");
-      if (!roll) throw new Error("Expected hunt shelob's lair roll action");
+      const roll = await this.rollShelobsLairDie();
       damage = roll.die;
     } else {
       damage = huntTile.quantity!;
@@ -182,6 +180,14 @@ export class WotrHuntFlow {
         }
       }
     }
+  }
+
+  async rollShelobsLairDie(): Promise<WotrHuntShelobsLairRoll> {
+    const story = await this.shadow.rollShelobsLairDie();
+    if (!("actions" in story)) throw new Error("Expected story with actions");
+    const roll = findAction<WotrHuntShelobsLairRoll>(story.actions, "hunt-shelobs-lair-roll");
+    if (!roll) throw new Error("Expected hunt shelob's lair roll action");
+    return roll;
   }
 
   private revealedThroughShadowStronghold(
@@ -344,8 +350,11 @@ export class WotrHuntFlow {
     assertAction<WotrFellowshipReveal>(story, "fellowship-reveal");
   }
 
-  async separateCompanions(player: WotrPlayer): Promise<void> {
-    const story = await player.separateCompanions();
+  async separateCompanions(
+    player: WotrPlayer,
+    options: WotrSeparateCompanionsOptions
+  ): Promise<void> {
+    const story = await player.separateCompanions(options);
     assertAction<WotrCompanionSeparation>(story, "companion-separation");
   }
 }

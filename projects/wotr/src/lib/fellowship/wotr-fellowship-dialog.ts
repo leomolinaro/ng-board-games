@@ -60,11 +60,11 @@ export interface CompanionNode {
       }
     </div>
     @if (data.selection) {
-      <!-- @if (canConfirm() !== true) {
+      @if (canConfirm() !== true) {
         <p>
           {{ canConfirm() }}
         </p>
-      } -->
+      }
       <button
         class="confirm-button"
         [disabled]="canConfirm() !== true"
@@ -116,10 +116,14 @@ export class WotrFellowshipDialog implements OnInit {
   protected unitNodes!: CompanionNode[];
   private selectedNodes = signal<CompanionNode[]>([]);
 
-  protected canConfirm = computed(() => {
-    if (!this.data.selection) return false;
-    if (!this.selectedNodes().length) return false;
-    if (this.data.selection.singleSelection && this.selectedNodes().length > 1) return false;
+  protected canConfirm = computed<true | string>(() => {
+    const selection = this.data.selection;
+    if (!selection) throw new Error("No selection data provided");
+    const selectedCount = this.selectedNodes().length;
+    if (selection.singleSelection && selectedCount > 1) return "Select only one companion";
+    if (selection.nCompanions && selectedCount !== selection.nCompanions)
+      return `Select exactly ${selection.nCompanions} companion${selectedCount === 1 ? "" : "s"}`;
+    if (!selectedCount) return "Select at least one companion";
     return true;
   });
 

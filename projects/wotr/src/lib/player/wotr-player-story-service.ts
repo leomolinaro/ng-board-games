@@ -3,6 +3,7 @@ import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
+import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
@@ -21,7 +22,7 @@ export interface WotrPlayerStoryService {
   huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory>;
   lureOfTheRingEffect(character: WotrCharacterId): Promise<WotrStory>;
   revealFellowship(): Promise<WotrStory>;
-  separateCompanions(): Promise<WotrStory>;
+  separateCompanions(params: WotrSeparateCompanionsOptions): Promise<WotrStory>;
 
   // changeGuide (): Promise<WotrGameStory>;
   actionResolution(frontId: WotrFrontId): Promise<WotrStory>;
