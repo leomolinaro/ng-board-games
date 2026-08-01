@@ -105,7 +105,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async drawHuntTile(): Promise<WotrStory> {
-    return { type: "base", actions: [await this.huntUi.drawHuntTile()] };
+    return { type: "base", actions: [await this.huntUi.drawHuntTile(1, null)] };
   }
 
   async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory> {

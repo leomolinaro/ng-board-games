@@ -178,11 +178,11 @@ export class WotrGameFlow {
 
   private async actionResolution() {
     this.logger.logPhase(5);
-    let player: WotrPlayer | null = this.freePeoples;
-    do {
+    let player: WotrPlayer | null = this.getFirstResolutionFrontId();
+    while (player) {
       const story = await this.chooseAction(player);
       player = this.getNextResolutionFrontId(player, story);
-    } while (player);
+    }
     this.fellowshipHandler.checkFellowshipMovingInMordor();
     return true;
   }
@@ -220,6 +220,16 @@ export class WotrGameFlow {
       return false;
     }
     return true;
+  }
+
+  private getFirstResolutionFrontId(): WotrPlayer | null {
+    const freePeoplesFrontQ = this.q.front("free-peoples");
+    const shadowFrontQ = this.q.front("shadow");
+    if (freePeoplesFrontQ.hasActionDice()) return this.freePeoples;
+    if (freePeoplesFrontQ.hasActionTokens()) return this.freePeoples;
+    if (shadowFrontQ.hasActionDice()) return this.shadow;
+    if (shadowFrontQ.hasActionTokens()) return this.shadow;
+    return null;
   }
 
   private getNextResolutionFrontId(player: WotrPlayer, story: WotrStory): WotrPlayer | null {

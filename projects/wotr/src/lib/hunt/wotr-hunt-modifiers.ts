@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { WotrModifier } from "../commons/wotr-modifier";
+import { WotrFellowshipMove } from "../fellowship/wotr-fellowship-models";
 import { WotrUiChoice } from "../game/wotr-game-ui";
 import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
 
@@ -16,6 +17,8 @@ export type WotrAfterTileDrawn = (tile: WotrHuntTileId) => Promise<WotrHuntTileI
 export type WotrHuntEffectChoiceModifier = (
   params: WotrHuntEffectParams
 ) => WotrUiChoice<WotrHuntEffectParams>[];
+
+export type WotrAfterFellowshipReveal = (params: WotrFellowshipMove) => Promise<void>;
 
 @Injectable()
 export class WotrHuntModifiers {
@@ -41,7 +44,6 @@ export class WotrHuntModifiers {
 
   public readonly afterTileDrawn = new WotrModifier<WotrAfterTileDrawn>();
   async onAfterTileDrawn(tile: WotrHuntTileId): Promise<WotrHuntTileId> {
-    if (!this.afterTileDrawn.get().length) return tile;
     for (const handler of this.afterTileDrawn.get()) {
       tile = await handler(tile);
     }
@@ -57,9 +59,17 @@ export class WotrHuntModifiers {
       >((choices, modifier) => choices.concat(modifier(params)), []);
   }
 
+  public readonly afterFellowshipReveal = new WotrModifier<WotrAfterFellowshipReveal>();
+  public async onAfterFellowshipReveal(params: WotrFellowshipMove): Promise<void> {
+    for (const handler of this.afterFellowshipReveal.get()) {
+      await handler(params);
+    }
+  }
+
   clear() {
     this.afterTileDrawn.clear();
     this.huntEffectChoices.clear();
     this.beforeHuntRoll.clear();
+    this.huntDrawPrevented.clear();
   }
 }

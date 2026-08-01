@@ -138,7 +138,7 @@ export class WotrFreePeoplesCharacterCards {
                 return drawAction.tiles[0];
               },
               play: async () => {
-                const drawAction = await this.huntUi.drawHuntTile();
+                const drawAction = await this.huntUi.drawHuntTile(1, "fpcha05");
                 return [
                   drawAction,
                   returnHuntTile(originalTile!),
@@ -372,7 +372,7 @@ export class WotrFreePeoplesCharacterCards {
               aragorn.isWithFreePeoplesArmy()
             );
           },
-          play: async () => [await this.huntUi.drawHuntTile(3)],
+          play: async () => [await this.huntUi.drawHuntTile(3, "fpcha14")],
           effect: async params => {
             const tileDraw = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
             const tiles = tileDraw.tiles.map(id => this.huntStore.huntTile(id));

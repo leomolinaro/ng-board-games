@@ -13,6 +13,7 @@ import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
+  changeGuide,
   corruptFellowship,
   WotrFellowshipAction,
   WotrFellowshipCorruption
@@ -93,13 +94,18 @@ export class WotrFellowshipHandler {
   }
 
   async declare(regionId: WotrRegionId): Promise<void> {
+    const progress = this.q.fellowship.progress();
+    const fromRegionId = this.q.fellowship.regionId();
     this.regionStore.moveFellowshipToRegion(regionId);
     this.fellowshipStore.setProgress(0);
     this.nationHandler.checkNationActivationByFellowshipDeclaration(regionId);
-    if (this.q.fellowship.corruption() > 0 && this.q.fellowship.isInFreePeoplesSettlement()) {
+    if (this.q.fellowship.corruption() > 0 && this.q.fellowship.isInFreePeoplesSettlement())
       this.healEffect(1);
-    }
-    await this.fellowshipModifiers.onAfterFellowshipDeclaration(regionId);
+    await this.fellowshipModifiers.onAfterFellowshipDeclaration({
+      fromRegionId,
+      toRegionId: regionId,
+      distance: progress
+    });
   }
 
   changeGuide(companionId: WotrCompanionId): void {

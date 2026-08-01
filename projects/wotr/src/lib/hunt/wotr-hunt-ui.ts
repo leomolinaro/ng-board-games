@@ -3,6 +3,7 @@ import { randomUtil } from "../../../../commons/utils/src";
 import { WotrCombatDie } from "../battle/wotr-combat-die-models";
 import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
 import { WotrCardHandler } from "../card/wotr-card-handler";
+import { getCard, WotrCardId } from "../card/wotr-card-models";
 import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
 import { WotrCompanionId } from "../character/wotr-character-models";
@@ -155,14 +156,15 @@ export class WotrHuntUi {
     return [revealFellowship(chosenRegion)];
   }
 
-  async drawHuntTile(n = 1): Promise<WotrHuntTileDraw> {
+  async drawHuntTile(n: number, triggeredCardId: WotrCardId | null): Promise<WotrHuntTileDraw> {
+    const card = triggeredCardId ? getCard(triggeredCardId) : null;
     if (n === 1) {
-      await this.ui.askContinue("Draw hunt tile");
+      await this.ui.askContinue(`Draw hunt tile${card ? ` for ${card.label}` : ""}`);
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return drawHuntTile(huntTile);
     } else {
       n = Math.min(n, this.huntStore.huntPool().length);
-      await this.ui.askContinue(`Draw ${n} hunt tiles`);
+      await this.ui.askContinue(`Draw ${n} hunt tiles${card ? ` for ${card.label}` : ""}`);
       const huntTiles = randomUtil.getRandomElements(n, n, this.huntStore.huntPool());
       return drawHuntTile(...huntTiles);
     }

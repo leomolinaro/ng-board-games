@@ -12,6 +12,7 @@ import {
   WotrFellowshipReveal,
   WotrFellowshipRevealInMordor
 } from "../fellowship/wotr-fellowship-actions";
+import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { assertAction, filterActions } from "../game/wotr-story-models";
@@ -31,11 +32,11 @@ import { WotrHuntHandler } from "./wotr-hunt-handler";
 import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
 import { WotrHuntModifiers, WotrHuntRollModifiers } from "./wotr-hunt-modifiers";
 import { WotrHuntStore } from "./wotr-hunt-store";
-import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 
-interface WotrHuntTileResolutionOptions {
+export interface WotrHuntTileResolutionOptions {
   nSuccesses?: number;
   ignoreEyeTile?: true;
+  ignoreRevealIcon?: true;
   ignoreFreePeopleSpecialTile?: true;
   onlyRingAbsorbtion?: true;
   mustEliminateRandomCompanion?: true;
@@ -136,7 +137,7 @@ export class WotrHuntFlow {
     const wasRevealed = this.fellowshipStore.isRevealed();
 
     let doReveal = false;
-    if (huntTile.reveal && !wasRevealed) {
+    if (huntTile.reveal && !wasRevealed && !options.ignoreRevealIcon) {
       if (
         this.fellowshipStore.guide() !== "gollum" ||
         huntTile.type !== "standard" ||
@@ -171,7 +172,7 @@ export class WotrHuntFlow {
         const progress = this.fellowshipStore.progress();
         if (doReveal) await this.revealFellowship();
         const toRegion = this.regionStore.fellowshipRegion();
-        if (this.revealedThroughShadowStronghold(fromRegion, toRegion, progress)) {
+        if (this.movingThroughShadowStronghold(fromRegion, toRegion, progress)) {
           const prevented = await this.huntModifiers.isHuntDrawPrevented();
           if (!prevented) {
             const newHuntTileId = await this.drawHuntTile(this.shadow);
@@ -190,19 +191,15 @@ export class WotrHuntFlow {
     return roll;
   }
 
-  private revealedThroughShadowStronghold(
+  private movingThroughShadowStronghold(
     fromRegionId: WotrRegionId,
     toRegionId: WotrRegionId,
     maxDistance: number
   ): boolean {
-    const paths = this.regionStore.pathsBetweenRegions(fromRegionId, toRegionId, maxDistance);
-    const passThoughShadowStronghold = paths.every(path =>
-      path.some(regionId => {
-        const region = this.regionStore.region(regionId);
-        return region.controlledBy === "shadow" && region.settlement === "stronghold";
-      })
-    );
-    return passThoughShadowStronghold;
+    return this.regionStore.movingThroughRegion(fromRegionId, toRegionId, maxDistance, regionId => {
+      const region = this.regionStore.region(regionId);
+      return region.controlledBy === "shadow" && region.settlement === "stronghold";
+    });
   }
 
   private getNSuccesses(huntRoll: WotrCombatDie[], modifiers: number[]) {

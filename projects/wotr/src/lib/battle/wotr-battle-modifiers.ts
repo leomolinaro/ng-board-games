@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { WotrCardId } from "../card/wotr-card-models";
 import { WotrModifier } from "../commons/wotr-modifier";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 
@@ -10,6 +11,10 @@ export type WotrCanUseCombatCardModifier = (
   combatFront: WotrCombatFront,
   combatRound: WotrCombatRound
 ) => boolean;
+export type WotrTableCombatCardGetter = (
+  combatFront: WotrCombatFront,
+  combatRound: WotrCombatRound
+) => WotrCardId[];
 
 @Injectable()
 export class WotrBattleModifiers {
@@ -44,11 +49,19 @@ export class WotrBattleModifiers {
     return results.every(result => result);
   }
 
+  public readonly tableCombatCardGetter = new WotrModifier<WotrTableCombatCardGetter>();
+  getTableCombatCards(combatFront: WotrCombatFront, combatRound: WotrCombatRound): WotrCardId[] {
+    return this.tableCombatCardGetter
+      .get()
+      .reduce<WotrCardId[]>((cards, getter) => cards.concat(getter(combatFront, combatRound)), []);
+  }
+
   clear() {
     this.beforeCombatRound.clear();
     this.beforeCombatCardRevealing.clear();
     this.afterCombatCardRevealing.clear();
     this.afterCombatRound.clear();
     this.canUseCombatCardModifier.clear();
+    this.tableCombatCardGetter.clear();
   }
 }

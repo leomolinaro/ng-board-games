@@ -1,4 +1,5 @@
 import { WotrCompanionId } from "../character/wotr-character-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 
 export interface WotrFellowship {
   status: "hidden" | "revealed";
@@ -16,4 +17,10 @@ export class WotrRingDestroyed extends Error {
   constructor() {
     super("The Ring has been destroyed! Free Peoples win!");
   }
+}
+
+export interface WotrFellowshipMove {
+  fromRegionId: WotrRegionId;
+  toRegionId: WotrRegionId;
+  distance: number;
 }

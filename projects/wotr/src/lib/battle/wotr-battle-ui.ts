@@ -36,8 +36,9 @@ import {
 } from "./wotr-battle-actions";
 import { WotrBattleHandler } from "./wotr-battle-handler";
 import { WotrCombatRound } from "./wotr-battle-models";
+import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatCardAbility, WotrCombatCards } from "./wotr-combat-cards";
+import { WotrCombatCardAbility, WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable()
@@ -51,6 +52,7 @@ export class WotrBattleUi {
   private battleHandler = inject(WotrBattleHandler);
   private unitRules = inject(WotrUnitRules);
   private unitUi = inject(WotrUnitUi);
+  private battleModifiers = inject(WotrBattleModifiers);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
@@ -262,6 +264,8 @@ export class WotrBattleUi {
     );
     if (!doPlayCard) return [noCombatCard()];
     const params = this.battleHandler.combatCardParams(frontId, combatRound);
+    const tableCombatCardId = await this.chooseTableCombatCard(frontId, combatRound, params);
+    if (tableCombatCardId) return [combatCardById(tableCombatCardId)];
     const playableCards = this.q
       .front(frontId)
       .handCards()
@@ -276,6 +280,34 @@ export class WotrBattleUi {
       cards: playableCards
     });
     return [combatCardById(cardId)];
+  }
+
+  private async chooseTableCombatCard(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound,
+    params: WotrCombatCardParams
+  ): Promise<WotrCardId | null> {
+    const combatFront =
+      combatRound.attacker.frontId === frontId ? combatRound.attacker : combatRound.defender;
+    const tableCards = this.battleModifiers.getTableCombatCards(combatFront, combatRound);
+    const playableCards = tableCards.filter(c => {
+      const card = getCard(c);
+      return this.combatCards.canBePlayed(card.combatLabel, params);
+    });
+    if (!playableCards.length) return null;
+    const confirm = await this.ui.askConfirm(
+      "Do you want to play a combat card from the table?",
+      "Choose table combat card",
+      "Skip"
+    );
+    if (!confirm) return null;
+    const cardId = await this.ui.askTableCard("Choose a table combat card to play", {
+      nCards: 1,
+      frontId,
+      message: "Choose a table combat card to play",
+      cards: playableCards
+    });
+    return cardId;
   }
 
   async activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory> {

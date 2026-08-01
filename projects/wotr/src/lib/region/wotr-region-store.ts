@@ -1005,6 +1005,16 @@ export class WotrRegionStore {
     return allPaths;
   }
 
+  movingThroughRegion(
+    fromRegionId: WotrRegionId,
+    toRegionId: WotrRegionId,
+    maxDistance: number,
+    filter: (regionId: WotrRegionId) => boolean
+  ): boolean {
+    const paths = this.pathsBetweenRegions(fromRegionId, toRegionId, maxDistance);
+    return paths.every(path => path.some(regionId => filter(regionId)));
+  }
+
   changeNation(regionId: WotrRegionId, nationId: WotrNationId) {
     this.updateRegion("changeNation", regionId, region => ({
       ...region,

@@ -14,7 +14,7 @@ import {
 } from "../wotr-card-models";
 import { WotrFreePeoplesCharacterCards } from "./free-peoples-character-cards/wotr-free-peoples-character-cards";
 import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
-import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards";
+import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards/wotr-shadow-character-cards";
 import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
 
 export interface WotrEventCard {
