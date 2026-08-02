@@ -38,6 +38,7 @@ import {
 } from "../../../hunt/wotr-hunt-modifiers";
 import { WotrHuntStore } from "../../../hunt/wotr-hunt-store";
 import { WotrHuntUi } from "../../../hunt/wotr-hunt-ui";
+import { WotrNationHandler } from "../../../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
@@ -87,6 +88,7 @@ export class WotrFreePeoplesCharacterCards {
   private frontStore = inject(WotrFrontStore);
   private actionDieHandler = inject(WotrActionDieHandler);
   private cardHandler = inject(WotrCardHandler);
+  private nationHandler = inject(WotrNationHandler);
 
   createCard(cardId: WotrFreePeoplesCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -456,13 +458,32 @@ export class WotrFreePeoplesCharacterCards {
             }
           }
         };
-      // TODO WOTR There and Back Again
+      // There and Back Again
       // Separate from the Fellowship one Companion or group of Companions. You may move them one extra region.
       // Then, if Gimli or Legolas are in Dale, Erebor or the Woodland Realm, activate the Dwarven and the North Nations and advance the Dwarven, the Elven and the
       // North Nations one step each on the Political Track.
       case "fpcha17":
         return {
-          play: async () => []
+          play: async () => {
+            return this.fellowshipUi.separateCompanions({
+              extraMovements: 1
+            });
+          },
+          effect: async params => {
+            const regions: WotrRegionId[] = ["dale", "erebor", "woodland-realm"];
+            const gimliRegion = this.q.gimli.region();
+            const legolasRegion = this.q.legolas.region();
+            if (
+              (gimliRegion && regions.includes(gimliRegion.id)) ||
+              (legolasRegion && regions.includes(legolasRegion.id))
+            ) {
+              this.nationHandler.activateNationEffect("dwarves", "card-ability");
+              this.nationHandler.activateNationEffect("north", "card-ability");
+              this.nationHandler.advanceNationEffect(1, "dwarves");
+              this.nationHandler.advanceNationEffect(1, "elves");
+              this.nationHandler.advanceNationEffect(1, "north");
+            }
+          }
         };
       // The Eagles are Coming!
       // Play if a Free Peoples Army containing a Companion is adjacent to, or is in the same region as, a Shadow Army containing Nazgûl.
