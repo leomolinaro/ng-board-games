@@ -79,6 +79,10 @@ export class WotrFrontQuery {
     return this.data().handCards;
   }
 
+  tableCards() {
+    return this.data().tableCards;
+  }
+
   hasCharacterHandCards() {
     return this.handCards().some(cardId => isCharacterCard(cardId));
   }

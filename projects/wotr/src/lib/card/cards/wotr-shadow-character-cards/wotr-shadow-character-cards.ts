@@ -300,7 +300,7 @@ export class WotrShadowCharacterCards {
                   frontId: "free-peoples",
                   nCards: 1,
                   message: "Discard",
-                  cards: this.q.freePeoples.handCards().filter(c => isFreePeopleCharacterCard(c))
+                  cards: this.q.freePeoples.tableCards().filter(c => isFreePeopleCharacterCard(c))
                 });
                 actions.push(discardCardFromTableById(card));
               }
