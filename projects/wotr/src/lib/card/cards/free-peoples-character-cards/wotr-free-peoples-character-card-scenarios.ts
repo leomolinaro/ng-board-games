@@ -11,7 +11,6 @@ export function freePeoplesCharacterCardScenarios(): WotrScenarioGroup {
     id: "free-peoples-character-cards",
     name: "Free Peoples Character Cards",
     scenarios: [
-      // TODO WOTR separate scenarios for ui checks or story effects
       elvenCloaksScenarios(),
       mithrilCoatAndStingScenarios(),
       axeAndBowScenarios(),

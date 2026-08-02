@@ -5,9 +5,6 @@ export function shadowCharacterCardScenarios(): WotrScenarioGroup {
   return {
     id: "shadow-character-cards",
     name: "Shadow Character Cards",
-    scenarios: [
-      // TODO WOTR separate scenarios for ui checks or story effects
-      balrogOfMoria()
-    ]
+    scenarios: [balrogOfMoria()]
   };
 }

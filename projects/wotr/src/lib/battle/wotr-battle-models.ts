@@ -53,6 +53,7 @@ export class WotrCombatFront {
   leaderReRoll?: WotrCombatDie[];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
+  nPreCombatHits: number = 0;
 
   canRemoveRegularToContinueSiege?: boolean;
 

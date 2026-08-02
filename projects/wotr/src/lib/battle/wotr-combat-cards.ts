@@ -36,7 +36,7 @@ import { WotrBattleUi } from "./wotr-battle-ui";
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
-  effect: (card: WotrCard, params: WotrCombatCardParams) => Promise<void>;
+  effect: (card: WotrCard, params: WotrCombatCardEffectParams) => Promise<void>;
 }
 
 export interface WotrCombatCardParams {
@@ -44,12 +44,15 @@ export interface WotrCombatCardParams {
   shadow: WotrCombatFront;
   freePeoples: WotrCombatFront;
   combatRound: WotrCombatRound;
-  // card: WotrCard;
   isAttacker: boolean;
   attackedArmy: () => WotrArmy | undefined;
   attackingArmy: () => WotrArmy | undefined;
   toRegion: WotrRegionId;
   fromRegion: WotrRegionId;
+}
+
+export interface WotrCombatCardEffectParams extends WotrCombatCardParams {
+  timing: number;
 }
 
 export interface WotrCombatCardAbility {
@@ -72,7 +75,7 @@ export class WotrCombatCards {
     return combatCard.canBePlayed?.(params) ?? true;
   }
 
-  async combatCardReaction(card: WotrCard, params: WotrCombatCardParams): Promise<void> {
+  async combatCardReaction(card: WotrCard, params: WotrCombatCardEffectParams): Promise<void> {
     return this.combatCards[card.combatLabel].effect(card, params);
   }
 
@@ -184,6 +187,7 @@ export class WotrCombatCards {
           const rollAction = assertAction<WotrCombatRoll>(rollStory, "combat-roll");
           const threashold = params.combatRound.siege && !params.shadow.isAttacker ? 6 : 5;
           const nHits = rollAction.dice.filter(d => d >= threashold).length;
+          params.freePeoples.nPreCombatHits = nHits;
           await this.applyExtraCombatHits(nHits, params.shadow, card, params);
         }
       }
@@ -311,6 +315,7 @@ export class WotrCombatCards {
         if (!actions) return;
         const rollAction = findAction<WotrCombatRoll>(actions, "combat-roll")!;
         const nHits = rollAction?.dice.filter(d => d >= 4).length;
+        params.freePeoples.nPreCombatHits = nHits;
         await this.applyExtraCombatHits(nHits, params.freePeoples, card, params);
       }
     },
@@ -459,15 +464,23 @@ export class WotrCombatCards {
     },
     // Mûmakil (Initiative 3-5)
     // Play if a Southrons & Easterlings Elite unit is in the battle.
-    // Add 1 to all dice on your Combat roll. If, after the Leader re-roll, you scored more total hits than your opponent (including hits from any Free Peoples pre-Combat
+    // Add 1 to all dice on your Combat roll. If, after the Leader re-roll, you scored more total hits
+    // than your opponent (including hits from any Free Peoples pre-Combat
     // attack from a Combat card), score one additional hit.
     "Mumakil": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        !!params.shadow.army().elites?.some(e => e.nation === "southrons" && e.quantity),
       effect: async (card, params) => {
-        throw new Error("TODO WOTR");
+        if (params.timing === 3) {
+          params.shadow.combatModifiers.push(1);
+        } else {
+          if (
+            params.shadow.nTotalHits! >
+            params.freePeoples.nTotalHits! + params.freePeoples.nPreCombatHits
+          ) {
+            params.shadow.hitsModifiers.push(1);
+          }
+        }
       }
     },
     // Nameless Wood (Initiative 5)
@@ -639,6 +652,7 @@ export class WotrCombatCards {
         if (!actions) return;
         const action = findAction<WotrCombatRoll>(actions, "combat-roll");
         const nHits = action!.dice.filter(r => r >= 5).length;
+        params.freePeoples.nPreCombatHits = nHits;
         await this.applyExtraCombatHits(nHits, params.shadow, card, params);
       }
     },
@@ -749,7 +763,9 @@ export class WotrCombatCards {
     "Like a God of Old": {
       // TODO KOME
       canBePlayed: params => false,
-      effect: async (card, params) => {}
+      effect: async (card, params) => {
+        // params.freePeoples.nPreCombatHits = nHits;
+      }
     },
     // There Is Hope for Victory (Initiative 4)
     // Play if a non-Corrupted Sovereign is in the battle.

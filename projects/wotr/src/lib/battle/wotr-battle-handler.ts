@@ -44,7 +44,11 @@ import {
 import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatCardParams, WotrCombatCards } from "./wotr-combat-cards";
+import {
+  WotrCombatCardEffectParams,
+  WotrCombatCardParams,
+  WotrCombatCards
+} from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable()
@@ -422,8 +426,13 @@ export class WotrBattleHandler {
     if (!combatFront.combatCard) return;
     if (combatFront.forfeitedCombatCard) return;
     if (combatFront.cancelledCombatCard) return;
-    if (combatFront.combatCard.combatTiming !== timing) return;
-    const params = this.combatCardParams(combatFront.frontId, combatRound);
+    const combatTiming = combatFront.combatCard.combatTiming;
+    if (typeof combatTiming === "number") {
+      if (combatTiming !== timing) return;
+    } else if (!combatTiming.includes(timing)) {
+      return;
+    }
+    const params = this.combatCardEffectParams(combatFront.frontId, combatRound, timing);
     await this.combatCards.combatCardReaction(combatFront.combatCard, params);
   }
 
@@ -438,6 +447,17 @@ export class WotrBattleHandler {
       attackingArmy: () => this.attackingArmy(combatRound.action),
       toRegion: combatRound.action.toRegion,
       fromRegion: combatRound.action.fromRegion
+    };
+  }
+
+  combatCardEffectParams(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound,
+    timing: number
+  ): WotrCombatCardEffectParams {
+    return {
+      ...this.combatCardParams(frontId, combatRound),
+      timing
     };
   }
 
