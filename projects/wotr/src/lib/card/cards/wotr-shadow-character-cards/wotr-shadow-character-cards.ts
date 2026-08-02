@@ -71,7 +71,6 @@ import {
 import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
 import { WotrCardHandler } from "../../wotr-card-handler";
 import {
-  isFreePeopleCharacterCard,
   isShadowCharacterCard,
   WotrCardId,
   WotrShadowCharacterCardId
@@ -300,7 +299,7 @@ export class WotrShadowCharacterCards {
                   frontId: "free-peoples",
                   nCards: 1,
                   message: "Discard",
-                  cards: this.q.freePeoples.tableCards().filter(c => isFreePeopleCharacterCard(c))
+                  cards: this.q.freePeoples.characterTableCards()
                 });
                 actions.push(discardCardFromTableById(card));
               }
