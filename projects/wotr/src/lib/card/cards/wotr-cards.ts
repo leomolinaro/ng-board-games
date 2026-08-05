@@ -3,14 +3,18 @@ import { unexpectedStory } from "../../../../../commons/src";
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrFrontStore } from "../../front/wotr-front-store";
 import { WotrGameStore } from "../../game/wotr-game-store";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrStory } from "../../game/wotr-story-models";
 import { WotrPlayer } from "../../player/wotr-player";
 import {
+  getCard,
   isFreePeopleCharacterCard,
   isFreePeopleStrategyCard,
   isShadowCharacterCard,
-  WotrCardId
+  WotrCardId,
+  WotrCardType
 } from "../wotr-card-models";
 import { WotrFreePeoplesCharacterCards } from "./free-peoples-character-cards/wotr-free-peoples-character-cards";
 import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
@@ -19,7 +23,7 @@ import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
-  play: () => Promise<WotrAction[]>;
+  play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
   effect?: (params: WotrCardParams) => Promise<void>;
   onTableAbilities?: () => WotrAbility[];
 }
@@ -46,6 +50,7 @@ export class WotrCards {
   private shadowCharacterCards = inject(WotrShadowCharacterCards);
   private shadowStrategyCards = inject(WotrShadowStrategyCards);
   private gameStore = inject(WotrGameStore);
+  private frontStore = inject(WotrFrontStore);
 
   getCard(cardId: WotrCardId): WotrEventCard {
     if (!this.cards[cardId]) {
@@ -96,6 +101,20 @@ export class WotrCards {
     } else {
       return this.shadowStrategyCards.createCard(cardId);
     }
+  }
+
+  isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
+    const card = this.getCard(cardId);
+    return card.canBePlayed ? card.canBePlayed() : true;
+  }
+
+  playableCards(cardTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
+    return this.frontStore
+      .front(frontId)
+      .handCards.filter(cardId =>
+        cardTypes === "any" ? true : cardTypes.includes(getCard(cardId).type)
+      )
+      .filter(cardId => this.isPlayableCard(cardId, frontId));
   }
 }
 

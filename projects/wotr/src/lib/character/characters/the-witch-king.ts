@@ -3,11 +3,10 @@ import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../../battle/wotr-battle-store";
-import { WotrCardDrawUi } from "../../card/wotr-card-draw-ui";
 import { WotrCard } from "../../card/wotr-card-models";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
 import { WotrRegion } from "../../region/wotr-region-models";
@@ -44,7 +43,7 @@ export class TheWitchKing extends WotrPlayableCharacterCard {
     );
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
       .filter(r => this.isValidRegion(r.region()))
@@ -77,7 +76,7 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
     private q: WotrGameQuery,
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
-    private cardUi: WotrCardDrawUi
+    private ui: WotrGameUiContext
   ) {}
 
   public modifier = this.battleModifiers.afterCombatRound;
@@ -99,7 +98,11 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
     const characterCard = this.lastCombatCard!.type === "character";
     const actions: WotrAction[] = [];
     actions.push(
-      await this.cardUi.drawCards(1, characterCard ? "character" : "strategy", this.shadow.frontId)
+      await this.ui.cardDrawUi.drawCards(
+        1,
+        characterCard ? "character" : "strategy",
+        this.shadow.frontId
+      )
     );
     return actions;
   };

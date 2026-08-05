@@ -8,7 +8,7 @@ import {
 } from "../../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
 import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../../hunt/wotr-hunt-modifiers";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
@@ -60,7 +60,7 @@ export class Ugluk extends WotrPlayableCharacterCard {
     return false;
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
       .filter(r => this.isValidRegion(r))

@@ -5,7 +5,7 @@ import { WotrCombatRound } from "../../battle/wotr-battle-models";
 import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { character } from "../../unit/wotr-unit-models";
@@ -48,7 +48,7 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
     return true;
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const gandalf = this.q.gandalfTheGrey;
     if (gandalf.isInPlay()) {
       const gandalfRegion = gandalf.region()!;

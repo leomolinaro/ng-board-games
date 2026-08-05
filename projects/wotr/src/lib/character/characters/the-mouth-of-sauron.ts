@@ -5,11 +5,11 @@ import {
   WotrActionDieModifiers,
   WotrAfterActionDieResolution
 } from "../../action-die/wotr-action-die-modifiers";
-import { WotrActionDieUi } from "../../action-die/wotr-action-die-ui";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi, WotrUiCharacterChoice } from "../../game/wotr-game-ui";
+import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrDieStory } from "../../game/wotr-story-models";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
@@ -35,7 +35,7 @@ export class TheMouthOfSauron extends WotrPlayableCharacterCard {
     );
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
       .filter(r => this.isValidRegion(r.region()))
@@ -59,7 +59,7 @@ export class TheMouthOfSauron extends WotrPlayableCharacterCard {
 export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
     private q: WotrGameQuery,
-    private actionDieUi: WotrActionDieUi,
+    private ui: WotrGameUiContext,
     private actionDieModifiers: WotrActionDieModifiers
   ) {}
 
@@ -71,7 +71,7 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
       label: () => "Messenger of the Dark Tower",
       isAvailable: () => !this.q.messengerOfTheDarkTowerUsed(),
       character: "the-mouth-of-sauron",
-      actions: async () => (await this.actionDieUi.resolveArmyResult(die, "shadow")).actions
+      actions: async () => (await this.ui.actionDieUi.resolveArmyResult(die, "shadow")).actions
     };
     return [messengerChoice];
   };

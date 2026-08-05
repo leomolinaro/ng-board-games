@@ -10,7 +10,7 @@ import {
 import { findAction, findActions, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { assertAction } from "../game/wotr-story-models";
 import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
 import { WotrPlayer } from "../player/wotr-player";
@@ -32,7 +32,6 @@ import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { retreat, WotrCombatRoll, WotrLeaderForfeit } from "./wotr-battle-actions";
 import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
-import { WotrBattleUi } from "./wotr-battle-ui";
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
@@ -56,17 +55,14 @@ export interface WotrCombatCardEffectParams extends WotrCombatCardParams {
 }
 
 export interface WotrCombatCardAbility {
-  play: () => Promise<WotrAction[]>;
+  play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
 }
 
 @Injectable()
 export class WotrCombatCards {
   private unitUtils = inject(WotrUnitUtils);
-  private ui = inject(WotrGameUi);
   private q = inject(WotrGameQuery);
   private unitRules = inject(WotrUnitRules);
-  battleUi!: WotrBattleUi;
-
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
@@ -139,8 +135,8 @@ export class WotrCombatCards {
         const hits = params.shadow.nLeaderSuccesses;
         if (!hits) return;
         const ability: WotrCombatCardAbility = {
-          play: async () => {
-            const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
+          play: async ui => {
+            const units = await ui.askRegionUnits("Choose a unit to eliminate", {
               type: "blackBreath",
               regionIds: [params.freePeoples.regionId],
               hits
@@ -306,8 +302,8 @@ export class WotrCombatCards {
       canBePlayed: params => this.q.region(params.toRegion).isWithinNRegionsOf("moria", 2),
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
-            const action = await this.battleUi.rollCombatDice(3, "shadow");
+          play: async ui => {
+            const action = await ui.battleUi.rollCombatDice(3, "shadow");
             return [action];
           }
         };
@@ -395,8 +391,8 @@ export class WotrCombatCards {
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
-            const units = await this.ui.askRegionUnits("Choose a unit to eliminate", {
+          play: async ui => {
+            const units = await ui.askRegionUnits("Choose a unit to eliminate", {
               type: "heroicDeath",
               regionIds: [params.freePeoples.regionId]
             });
@@ -522,16 +518,16 @@ export class WotrCombatCards {
     "Onslaught": {
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
+          play: async ui => {
             const shadowArmy = params.shadow.army();
             const maxHitPoints = this.unitUtils.nHits(shadowArmy);
-            const hitPoints = await this.ui.askQuantity("Choose number of hit points to inflict", {
+            const hitPoints = await ui.askQuantity("Choose number of hit points to inflict", {
               default: 1,
               min: 1,
               max: Math.min(4, maxHitPoints)
             });
             if (!hitPoints) return [];
-            return this.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
+            return ui.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
@@ -558,14 +554,14 @@ export class WotrCombatCards {
     "Relentless Assault": {
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
-            const hitPoints = await this.ui.askQuantity("Choose number of hit points to inflict", {
+          play: async ui => {
+            const hitPoints = await ui.askQuantity("Choose number of hit points to inflict", {
               default: 0,
               min: 0,
               max: 2
             });
             if (!hitPoints) return [];
-            return this.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
+            return ui.battleUi.chooseCasualties(hitPoints, params.shadow.regionId, "shadow");
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
@@ -587,14 +583,14 @@ export class WotrCombatCards {
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
+          play: async ui => {
             const region = this.q.region(params.freePeoples.regionId);
             const retreatableRegions = this.unitRules.retreatableRegions(
               region.region(),
               "free-peoples"
             );
             if (!retreatableRegions.length) return [];
-            const retreatRegionId = await this.ui.askRegion(
+            const retreatRegionId = await ui.askRegion(
               "Choose a region to retreat your Army to",
               retreatableRegions
             );
@@ -641,11 +637,11 @@ export class WotrCombatCards {
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
+          play: async ui => {
             const leadership = this.unitUtils.leadership(params.freePeoples.army());
             const nDice = Math.min(leadership, 5);
             if (nDice === 0) return [];
-            return [await this.battleUi.rollCombatDice(nDice, "free-peoples")];
+            return [await ui.battleUi.rollCombatDice(nDice, "free-peoples")];
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.freePeoples);
@@ -706,11 +702,11 @@ export class WotrCombatCards {
       canBePlayed: params => this.unitUtils.hasEliteUnits(params.shadow.army()),
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
+          play: async ui => {
             const nElites = this.unitUtils.getNEliteUnits(params.shadow.army());
             const nDice = Math.min(nElites, 5);
             if (nDice === 0) return [];
-            return [await this.battleUi.rollCombatDice(nDice, "shadow")];
+            return [await ui.battleUi.rollCombatDice(nDice, "shadow")];
           }
         };
         const actions = await this.activateCombatCard(ability, card.id, this.shadow);
@@ -729,8 +725,8 @@ export class WotrCombatCards {
       canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
-          play: async () => {
-            const units = await this.ui.askRegionUnits("Choose a Companion to cancel", {
+          play: async ui => {
+            const units = await ui.askRegionUnits("Choose a Companion to cancel", {
               type: "wordsOfPower",
               regionIds: [params.freePeoples.regionId]
             });

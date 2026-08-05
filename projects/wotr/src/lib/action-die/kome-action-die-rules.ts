@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameQuery } from "../game/wotr-game-query";
 
 @Injectable()
 export class KomeActionDieRules {

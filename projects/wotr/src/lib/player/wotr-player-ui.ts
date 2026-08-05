@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrUiAbility } from "../ability/wotr-ability";
-import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
@@ -13,6 +12,7 @@ import { WotrCharacterUi } from "../character/wotr-character-ui";
 import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import {
   WotrBaseStory,
   WotrCardEffectStory,
@@ -30,7 +30,7 @@ import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
 @Injectable()
 export class WotrPlayerUi implements WotrPlayerStoryService {
-  private actionDieUi = inject(WotrActionDieUi);
+  private uiContext = inject(WotrGameUiContext);
   private battleUi = inject(WotrBattleUi);
   private cardDrawUi = inject(WotrCardDrawUi);
   private fellowshipUi = inject(WotrFellowshipUi);
@@ -69,12 +69,12 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async rollActionDice(frontId: WotrFrontId): Promise<WotrStory> {
     return {
       type: "base",
-      actions: [await this.actionDieUi.rollActionDice(frontId)]
+      actions: [await this.uiContext.actionDieUi.rollActionDice(frontId)]
     };
   }
 
   async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
-    return this.actionDieUi.actionResolution(frontId, null);
+    return this.uiContext.actionDieUi.actionResolution(frontId, null);
   }
 
   async separateCompanions(params: WotrSeparateCompanionsOptions): Promise<WotrStory> {
@@ -294,7 +294,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory> {
     return {
       type: "base",
-      actions: [await this.actionDieUi.makeRulerDieChoice(frontId)]
+      actions: [await this.uiContext.actionDieUi.makeRulerDieChoice(frontId)]
     };
   }
 }

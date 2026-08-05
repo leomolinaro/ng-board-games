@@ -3,10 +3,10 @@ import {
   WotrActionDieModifiers,
   WotrAfterActionDieCardResolution
 } from "../../action-die/wotr-action-die-modifiers";
-import { WotrCardDrawUi } from "../../card/wotr-card-draw-ui";
 import { isFreePeopleCharacterCard, WotrCardId } from "../../card/wotr-card-models";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
 import { activateCharacterAbility } from "./wotr-playable-character-card";
 
@@ -21,7 +21,7 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
     private actionDieModifiers: WotrActionDieModifiers,
     private freePeoples: WotrFreePeoplesPlayer,
     private q: WotrGameQuery,
-    private cardUi: WotrCardDrawUi
+    private ui: WotrGameUiContext
   ) {}
 
   modifier = this.actionDieModifiers.afterActionDieCardResolution;
@@ -40,8 +40,8 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
   play: () => Promise<WotrAction[]> = async () => {
     if (!this.playedCard) throw new Error("Unexpected state");
     const action = isFreePeopleCharacterCard(this.playedCard)
-      ? await this.cardUi.drawCards(1, "character", "free-peoples")
-      : await this.cardUi.drawCards(1, "strategy", "free-peoples");
+      ? await this.ui.cardDrawUi.drawCards(1, "character", "free-peoples")
+      : await this.ui.cardDrawUi.drawCards(1, "strategy", "free-peoples");
     return [action];
   };
 }

@@ -1,8 +1,8 @@
 import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
 import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrFellowshipUi } from "../../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrHuntEffectParams } from "../../hunt/wotr-hunt-models";
 import { WotrHuntEffectChoiceModifier, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
@@ -30,7 +30,7 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
     private characterId: WotrCompanionId,
     private q: WotrGameQuery,
     private huntModifiers: WotrHuntModifiers,
-    private fellowshipUi: WotrFellowshipUi
+    private ui: WotrGameUiContext
   ) {}
 
   modifier = this.huntModifiers.huntEffectChoices;
@@ -48,7 +48,7 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
           companionId: this.characterId,
           amount: 1
         };
-        return this.fellowshipUi.separateThoseCompanions([this.characterId]);
+        return this.ui.fellowshipUi.separateThoseCompanions([this.characterId]);
       },
       label: () => `Separate ${character.name} (Guide ability)`
     };
@@ -62,7 +62,7 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
     private q: WotrGameQuery,
     private characterModifiers: WotrCharacterModifiers,
     private freePeoples: WotrFreePeoplesPlayer,
-    private fellowshipUi: WotrFellowshipUi
+    private ui: WotrGameUiContext
   ) {}
 
   modifier = this.characterModifiers.beforeCharacterElimination;
@@ -76,6 +76,6 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
 
   play: () => Promise<WotrAction[]> = async () => {
     if (this.q.fellowship.isOnMordorTrack()) return [eliminateCharacter(this.characterId)];
-    return this.fellowshipUi.separateThoseCompanions([this.characterId]);
+    return this.ui.fellowshipUi.separateThoseCompanions([this.characterId]);
   };
 }

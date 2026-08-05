@@ -2,17 +2,14 @@ import { inject, Injectable } from "@angular/core";
 import { WotrAbility } from "../ability/wotr-ability";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
-import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrGameStore } from "../game/wotr-game-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -21,7 +18,6 @@ import { WotrShadowPlayer } from "../player/wotr-shadow-player";
 import { WotrRegionModifiers } from "../region/wotr-region-modifiers";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
-import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import { WotrAragorn } from "./characters/aragorn";
 import {
@@ -81,16 +77,12 @@ export class WotrCharacters {
   private unitModifiers = inject(WotrUnitModifiers);
   private regionModifiers = inject(WotrRegionModifiers);
   private regionStore = inject(WotrRegionStore);
-  private gameUi = inject(WotrGameUi);
-  private unitUi = inject(WotrUnitUi);
+  private ui = inject(WotrGameUiContext);
   private characterModifiers = inject(WotrCharacterModifiers);
   private battleStore = inject(WotrBattleStore);
   private nationHandler = inject(WotrNationHandler);
   private shadow = inject(WotrShadowPlayer);
   private q = inject(WotrGameQuery);
-  private cardDrawUi = inject(WotrCardDrawUi);
-  private fellowshipUi = inject(WotrFellowshipUi);
-  actionDieUi!: WotrActionDieUi;
   private gameStore = inject(WotrGameStore);
   private huntModifiers = inject(WotrHuntModifiers);
   private battleUi = inject(WotrBattleUi);
@@ -140,22 +132,16 @@ export class WotrCharacters {
         return [new CaptainOfTheWestAbility("aragorn", this.q, this.battleModifiers)];
       case "saruman":
         return [
-          new TheVoiceOfSarumanAbility(this.q, this.actionDieModifiers, this.gameUi, this.unitUi),
+          new TheVoiceOfSarumanAbility(this.q, this.actionDieModifiers, this.ui),
           new ServantsOfTheWhiteHandAbility(this.unitModifiers)
         ];
       case "the-witch-king":
         return [
-          new SorcererAbility(
-            this.battleStore,
-            this.q,
-            this.shadow,
-            this.battleModifiers,
-            this.cardDrawUi
-          )
+          new SorcererAbility(this.battleStore, this.q, this.shadow, this.battleModifiers, this.ui)
         ];
       case "the-mouth-of-sauron":
         return [
-          new MessengerOfTheDarkTowerAbility(this.q, this.actionDieUi, this.actionDieModifiers),
+          new MessengerOfTheDarkTowerAbility(this.q, this.ui, this.actionDieModifiers),
           new MessengerOfTheDarkTowerSetUsedAbility(this.q, this.actionDieModifiers)
         ];
       case "brand":
@@ -185,35 +171,30 @@ export class WotrCharacters {
         ];
       case "gandalf-the-grey":
         return [
-          new GandalfGuideAbility(
-            this.actionDieModifiers,
-            this.freePeoples,
-            this.q,
-            this.cardDrawUi
-          ),
+          new GandalfGuideAbility(this.actionDieModifiers, this.freePeoples, this.q, this.ui),
           new CaptainOfTheWestAbility("gandalf-the-grey", this.q, this.battleModifiers)
           // new EmissaryFromTheWestAbility(null as any)
         ];
       case "peregrin":
         return [
-          new HobbitGuideAbility("peregrin", this.q, this.huntModifiers, this.fellowshipUi),
+          new HobbitGuideAbility("peregrin", this.q, this.huntModifiers, this.ui),
           new TakeThemAliveAbility(
             "peregrin",
             this.q,
             this.characterModifiers,
             this.freePeoples,
-            this.fellowshipUi
+            this.ui
           )
         ];
       case "meriadoc":
         return [
-          new HobbitGuideAbility("meriadoc", this.q, this.huntModifiers, this.fellowshipUi),
+          new HobbitGuideAbility("meriadoc", this.q, this.huntModifiers, this.ui),
           new TakeThemAliveAbility(
             "meriadoc",
             this.q,
             this.characterModifiers,
             this.freePeoples,
-            this.fellowshipUi
+            this.ui
           )
         ];
       case "boromir":

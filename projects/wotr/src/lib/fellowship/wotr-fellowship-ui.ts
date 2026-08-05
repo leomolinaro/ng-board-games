@@ -5,7 +5,8 @@ import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrCharacterQuery } from "../character/wotr-character-query";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
+import { WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import {
   changeGuide,
   declareFellowship,
@@ -22,7 +23,7 @@ import { WotrFellowshipStore } from "./wotr-fellowship-store";
 @Injectable()
 export class WotrFellowshipUi {
   private fellowshipStore = inject(WotrFellowshipStore);
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private characterHandler = inject(WotrCharacterHandler);
   private fellowshipRules = inject(WotrFellowshipRules);

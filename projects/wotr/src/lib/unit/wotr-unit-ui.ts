@@ -5,7 +5,8 @@ import { WotrCharacterId } from "../character/wotr-character-models";
 import { findAction, WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { WotrEffectStory } from "../game/wotr-story-models";
 import { WotrNationId } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
@@ -47,7 +48,7 @@ import { WotrUnitUtils } from "./wotr-unit-utils";
 
 @Injectable()
 export class WotrUnitUi {
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
   private unitRules = inject(WotrUnitRules);
   private unitUtils = inject(WotrUnitUtils);
   private regionStore = inject(WotrRegionStore);

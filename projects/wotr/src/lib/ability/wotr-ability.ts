@@ -1,5 +1,6 @@
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrModifier } from "../commons/wotr-modifier";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 
 export interface WotrAbility<H = unknown> {
   modifier: WotrModifier<H>;
@@ -8,5 +9,5 @@ export interface WotrAbility<H = unknown> {
 }
 
 export interface WotrUiAbility<H = unknown> extends WotrAbility<H> {
-  play: () => Promise<WotrAction[]>;
+  play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
 }

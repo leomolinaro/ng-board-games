@@ -11,6 +11,7 @@ import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrGenericUnitType, WotrNationId, frontOfNation } from "../nation/wotr-nation-models";
 import { WotrNationStore } from "../nation/wotr-nation-store";
 import { WotrPlayer } from "../player/wotr-player";
+import { WotrRegionHandler } from "../region/wotr-region-handler";
 import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
@@ -24,7 +25,6 @@ import {
 } from "./wotr-unit-actions";
 import { WotrArmy } from "./wotr-unit-models";
 import { WotrUnitUtils } from "./wotr-unit-utils";
-import { WotrRegionHandler } from "../region/wotr-region-handler";
 
 export interface WotrRecruitmentConstraints {
   points: number;

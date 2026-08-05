@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
+import { lazyInject } from "@leobg/commons/utils";
 import { WotrAbility, WotrUiAbility } from "../../../ability/wotr-ability";
 import { changeActionDie } from "../../../action-die/wotr-action-die-actions";
 import { WotrActionDieHandler } from "../../../action-die/wotr-action-die-handler";
 import { rollCombatDice, WotrCombatRoll } from "../../../battle/wotr-battle-actions";
-import { WotrBattleUi } from "../../../battle/wotr-battle-ui";
 import {
   eliminateCharacter,
   moveCharacters,
@@ -15,7 +15,6 @@ import {
   WotrCharacterModifiers
 } from "../../../character/wotr-character-modifiers";
 import { WotrCharacterQuery } from "../../../character/wotr-character-query";
-import { WotrCharacterUi } from "../../../character/wotr-character-ui";
 import { findAction, WotrAction } from "../../../commons/wotr-action-models";
 import {
   healFellowship,
@@ -23,10 +22,9 @@ import {
   moveFelloswhip
 } from "../../../fellowship/wotr-fellowship-actions";
 import { WotrFellowshipHandler } from "../../../fellowship/wotr-fellowship-handler";
-import { WotrFellowshipUi } from "../../../fellowship/wotr-fellowship-ui";
 import { WotrFrontStore } from "../../../front/wotr-front-store";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../../../game/wotr-game-ui";
+import { WotrUiChoice } from "../../../game/wotr-game-ui";
 import { assertAction } from "../../../game/wotr-story-models";
 import { addHuntTile, returnHuntTile, WotrHuntTileDraw } from "../../../hunt/wotr-hunt-actions";
 import { WotrHuntEffectParams, WotrHuntTileId } from "../../../hunt/wotr-hunt-models";
@@ -37,7 +35,6 @@ import {
   WotrHuntModifiers
 } from "../../../hunt/wotr-hunt-modifiers";
 import { WotrHuntStore } from "../../../hunt/wotr-hunt-store";
-import { WotrHuntUi } from "../../../hunt/wotr-hunt-ui";
 import { WotrNationHandler } from "../../../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
@@ -51,7 +48,6 @@ import {
 } from "../../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../../unit/wotr-unit-models";
-import { WotrUnitUi } from "../../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
 import {
   discardCardFromTableById,
@@ -59,29 +55,19 @@ import {
   playCardOnTableId,
   WotrCardDiscardFromTable
 } from "../../wotr-card-actions";
-import { WotrCardDrawUi } from "../../wotr-card-draw-ui";
 import { WotrCardHandler } from "../../wotr-card-handler";
 import { WotrCardId, WotrFreePeoplesCharacterCardId } from "../../wotr-card-models";
-import { WotrCardPlayUi } from "../../wotr-card-play-ui";
-import { activateTableCard, WotrEventCard } from "../wotr-cards";
+import { activateTableCard, WotrCards, WotrEventCard } from "../wotr-cards";
 
 @Injectable()
 export class WotrFreePeoplesCharacterCards {
-  private ui = inject(WotrGameUi);
-  private cardDrawUi = inject(WotrCardDrawUi);
-  cardPlayUi!: WotrCardPlayUi;
-  private battleUi = inject(WotrBattleUi);
-  private unitUi = inject(WotrUnitUi);
   private q = inject(WotrGameQuery);
   private fellowshipHandler = inject(WotrFellowshipHandler);
   private unitHandler = inject(WotrUnitHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
-  private fellowshipUi = inject(WotrFellowshipUi);
-  private characterUi = inject(WotrCharacterUi);
   private huntModifiers = inject(WotrHuntModifiers);
   private characterModifiers = inject(WotrCharacterModifiers);
-  private huntUi = inject(WotrHuntUi);
   private characterHandler = inject(WotrCharacterHandler);
   private unitUtils = inject(WotrUnitUtils);
   private huntStore = inject(WotrHuntStore);
@@ -89,6 +75,7 @@ export class WotrFreePeoplesCharacterCards {
   private actionDieHandler = inject(WotrActionDieHandler);
   private cardHandler = inject(WotrCardHandler);
   private nationHandler = inject(WotrNationHandler);
+  private cards = lazyInject(WotrCards);
 
   createCard(cardId: WotrFreePeoplesCharacterCardId): WotrEventCard {
     switch (cardId) {
@@ -139,8 +126,8 @@ export class WotrFreePeoplesCharacterCards {
                 if (!drawAction) throw new Error("Unexpected state: no hunt tile draw action");
                 return drawAction.tiles[0];
               },
-              play: async () => {
-                const drawAction = await this.huntUi.drawHuntTile(1, "fpcha05");
+              play: async ui => {
+                const drawAction = await ui.huntUi.drawHuntTile(1, "fpcha05");
                 return [
                   drawAction,
                   returnHuntTile(originalTile!),
@@ -234,7 +221,7 @@ export class WotrFreePeoplesCharacterCards {
                 if (!discardAction) throw new Error("Unexpected state: no hunt tile draw action");
                 return true;
               },
-              play: async () => [discardCardFromTableById("fpcha08")]
+              play: async ui => [discardCardFromTableById("fpcha08")]
             };
             const discardAbility = this.discardCompanionCardAbility(
               "fpcha08",
@@ -248,9 +235,9 @@ export class WotrFreePeoplesCharacterCards {
       // If Strider is the Guide, heal one Corruption point for each die result of 3+ instead.
       case "fpcha09":
         return {
-          play: async () => {
-            await this.ui.askContinue("Roll three dice");
-            const dice = this.battleUi.rollDice(3);
+          play: async ui => {
+            await ui.askContinue("Roll three dice");
+            const dice = ui.battleUi.rollDice(3);
             return [rollCombatDice(...dice)];
           },
           effect: async params => {
@@ -268,19 +255,19 @@ export class WotrFreePeoplesCharacterCards {
       // Then, if Gollum is the Guide, you may also hide or move the Fellowship (following the normal movement rules).
       case "fpcha10":
         return {
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
-            actions.push(...(await this.fellowshipUi.healFellowship(1)));
+            actions.push(...(await ui.fellowshipUi.healFellowship(1)));
             if (this.q.gollum.isGuide()) {
               if (this.q.fellowship.isHidden()) {
-                const move = await this.ui.askConfirm(
+                const move = await ui.askConfirm(
                   "Do you want to move the Fellowship?",
                   "Move",
                   "Stay"
                 );
                 if (move) actions.push(moveFelloswhip());
               } else {
-                const hide = await this.ui.askConfirm(
+                const hide = await ui.askConfirm(
                   "Do you want to hide the Fellowship?",
                   "Hide",
                   "Keep revealed"
@@ -297,17 +284,17 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha11":
         return {
           canBePlayed: () => this.q.fellowship.hasCompanions(),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             if (this.q.fellowship.isOnMordorTrack()) {
-              actions.push(await this.fellowshipUi.eliminateCompanions());
+              actions.push(await ui.fellowshipUi.eliminateCompanions());
             } else {
-              const separateActions = await this.fellowshipUi.separateCompanions({
+              const separateActions = await ui.fellowshipUi.separateCompanions({
                 extraMovements: 1
               });
               actions.push(...separateActions);
             }
-            actions.push(...(await this.fellowshipUi.healFellowship(1)));
+            actions.push(...(await ui.fellowshipUi.healFellowship(1)));
             return actions;
           }
         };
@@ -316,7 +303,7 @@ export class WotrFreePeoplesCharacterCards {
       // If Gollum is the Guide, heal two Corruption points instead.
       case "fpcha12":
         return {
-          play: async () => {
+          play: async ui => {
             let quantity = 1;
             if (this.q.gollum.isGuide()) {
               quantity = 2;
@@ -330,13 +317,13 @@ export class WotrFreePeoplesCharacterCards {
       // If the Fellowship is in Lórien, and Lórien is unconquered, also heal one Corruption point.
       case "fpcha13":
         return {
-          play: async () => {
+          play: async ui => {
             const hasCharacterDie = this.frontStore
               .front("free-peoples")
               .actionDice.some(die => die === "character");
             const actions: WotrAction[] = [];
             if (hasCharacterDie) {
-              const change = await this.ui.askConfirm(
+              const change = await ui.askConfirm(
                 "Do you want to change a die result?",
                 "Change",
                 "Not change"
@@ -374,7 +361,7 @@ export class WotrFreePeoplesCharacterCards {
               aragorn.isWithFreePeoplesArmy()
             );
           },
-          play: async () => [await this.huntUi.drawHuntTile(3, "fpcha14")],
+          play: async ui => [await ui.huntUi.drawHuntTile(3, "fpcha14")],
           effect: async params => {
             const tileDraw = assertAction<WotrHuntTileDraw>(params.story, "hunt-tile-draw");
             const tiles = tileDraw.tiles.map(id => this.huntStore.huntTile(id));
@@ -399,19 +386,19 @@ export class WotrFreePeoplesCharacterCards {
       // This movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha15":
         return {
-          play: async () => {
-            const actions = await this.ui.askChoice(
+          play: async ui => {
+            const actions = await ui.askChoice(
               "Choose to separate or move Companions",
               [
                 {
                   label: () => "Separate",
                   actions: () =>
-                    this.fellowshipUi.separateCompanions({ asLevel: 4, canEndInSiege: true })
+                    ui.fellowshipUi.separateCompanions({ asLevel: 4, canEndInSiege: true })
                 },
                 {
                   label: () => "Move",
                   actions: () =>
-                    this.characterUi.moveCompanions({
+                    ui.characterUi.moveCompanions({
                       asLevel: 4,
                       onlyOneGroup: true,
                       canEndInSiege: true
@@ -428,8 +415,8 @@ export class WotrFreePeoplesCharacterCards {
       // The movement of these Companions is allowed to end in a Stronghold under siege.
       case "fpcha16":
         return {
-          play: async () => {
-            const option = await this.ui.askOption<"separate" | "move">(
+          play: async ui => {
+            const option = await ui.askOption<"separate" | "move">(
               "Choose to separate or move Companions",
               [
                 {
@@ -445,12 +432,12 @@ export class WotrFreePeoplesCharacterCards {
               ]
             );
             if (option === "separate") {
-              return this.fellowshipUi.separateCompanions({
+              return ui.fellowshipUi.separateCompanions({
                 extraMovements: 2,
                 canEndInSiege: true
               });
             } else {
-              return this.characterUi.moveCompanions({
+              return ui.characterUi.moveCompanions({
                 extraMovements: 2,
                 onlyOneGroup: true,
                 canEndInSiege: true
@@ -464,8 +451,8 @@ export class WotrFreePeoplesCharacterCards {
       // North Nations one step each on the Political Track.
       case "fpcha17":
         return {
-          play: async () => {
-            return this.fellowshipUi.separateCompanions({
+          play: async ui => {
+            return ui.fellowshipUi.separateCompanions({
               extraMovements: 1
             });
           },
@@ -493,9 +480,9 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha18":
         return {
           canBePlayed: () => this.q.regions().some(r => this.isTheEaglesAreComingRegion(r)),
-          play: async () => {
+          play: async ui => {
             const sourceRegions = this.q.regions().filter(r => this.isTheEaglesAreComingRegion(r));
-            const sourceRegionId = await this.ui.askRegion(
+            const sourceRegionId = await ui.askRegion(
               "Choose a region",
               sourceRegions.map(r => r.id())
             );
@@ -509,13 +496,13 @@ export class WotrFreePeoplesCharacterCards {
               const sArmy = adjRegion.army("shadow");
               if (sArmy?.nNazgul) targetRegionIds.push(adjRegion.id());
             });
-            const targetRegionId = await this.ui.askRegion(
+            const targetRegionId = await ui.askRegion(
               "Choose a Shadow army to attack",
               targetRegionIds
             );
             const shadowArmy = this.q.region(targetRegionId).army("shadow")!;
             const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
-            const roll = await this.battleUi.rollCombatDice(Math.min(nNazgul, 5), "free-peoples");
+            const roll = await ui.battleUi.rollCombatDice(Math.min(nNazgul, 5), "free-peoples");
             return [targetRegion(targetRegionId), roll];
           },
           effect: async params => {
@@ -554,19 +541,19 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () =>
             this.q.strider.isInNation("rohan") || this.q.aragorn.isInNation("rohan"),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
             const fromRegion = this.q.region(aragorn.region()!.id);
             const companions = fromRegion.companions();
-            const movingUnits = await this.ui.askRegionUnits("Choose companions to move", {
+            const movingUnits = await ui.askRegionUnits("Choose companions to move", {
               type: "moveCharacters",
               regionIds: [fromRegion.id()],
               characters: companions,
               requiredCharacters: [aragorn.id]
             });
             const movingCompanions = movingUnits.characters!;
-            const toRegionId = await this.ui.askRegion("Choose a region to move to", [
+            const toRegionId = await ui.askRegion("Choose a region to move to", [
               "erech",
               "lamedon",
               "pelargir"
@@ -575,10 +562,10 @@ export class WotrFreePeoplesCharacterCards {
             actions.push(moveCharacters(fromRegion.id(), toRegion.id(), ...movingCompanions));
             this.characterHandler.moveCharacters(movingCompanions, fromRegion.id(), toRegion.id());
             if (toRegion.hasArmy("shadow")) {
-              const rollAction = await this.battleUi.rollCombatDice(1, "free-peoples");
+              const rollAction = await ui.battleUi.rollCombatDice(1, "free-peoples");
               actions.push(rollAction);
             } else {
-              const recruitActions = await this.unitUi.recruitUnitsInSameRegionByCard(
+              const recruitActions = await ui.unitUi.recruitUnitsInSameRegionByCard(
                 toRegion.id(),
                 "gondor",
                 3,
@@ -615,7 +602,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha23":
         return {
           canBePlayed: () => this.q.boromir.isInNation("gondor"),
-          play: async () => {
+          play: async ui => {
             const boromirRegion = this.q.boromir.region()!;
             const reinforcementUnits: WotrReinforcementUnit[] = [];
             const actions: WotrAction[] = [];
@@ -625,7 +612,7 @@ export class WotrFreePeoplesCharacterCards {
             if (this.q.gondor.hasEliteReinforcements()) {
               reinforcementUnits.push({ nation: "gondor", type: "elite" });
             }
-            const units = await this.ui.askReinforcementUnit("Choose a unit to recruit", {
+            const units = await ui.askReinforcementUnit("Choose a unit to recruit", {
               canPass: false,
               frontId: "free-peoples",
               units: reinforcementUnits
@@ -639,7 +626,7 @@ export class WotrFreePeoplesCharacterCards {
             const leftCards = this.q.freePeoples.nCardsInStrategyDeck();
             const cardToDraw = Math.min(2, leftCards);
             if (cardToDraw) {
-              actions.push(await this.cardDrawUi.drawCards(cardToDraw, "strategy", "free-peoples"));
+              actions.push(await ui.cardDrawUi.drawCards(cardToDraw, "strategy", "free-peoples"));
             }
 
             return actions;
@@ -653,14 +640,14 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () =>
             this.q.strider.isWithFreePeoplesArmy() || this.q.aragorn.isWithFreePeoplesArmy(),
-          play: async () => {
+          play: async ui => {
             const aragorn = this.q.aragorn.isInPlay() ? this.q.aragorn : this.q.strider;
             const region = aragorn.region()!;
             const army = this.q.region(region.id).army("free-peoples")!;
             const nations = army.regulars?.map(u => u.nation) ?? [];
             const actions: WotrAction[] = [];
             if (nations.length) {
-              const units = await this.ui.askRegionUnits("Choose a Regular unit to eliminate", {
+              const units = await ui.askRegionUnits("Choose a Regular unit to eliminate", {
                 type: "theGreyCompany",
                 regionIds: [region.id],
                 nationIds: nations
@@ -673,7 +660,7 @@ export class WotrFreePeoplesCharacterCards {
                 this.unitHandler.recruitEliteUnit(1, nation, region.id);
               }
             }
-            actions.push(await this.cardDrawUi.drawCards(2, "strategy", "free-peoples"));
+            actions.push(await ui.cardDrawUi.drawCards(2, "strategy", "free-peoples"));
             return actions;
           }
         };
@@ -686,7 +673,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha23km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // Aid in Time of Need
       // Move any or all Companions who are not in the Fellowship.
@@ -695,7 +682,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha25km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // It Is not so Dark Here
       // Advance one Free Peoples Nation on the Political track, then look at
@@ -704,7 +691,7 @@ export class WotrFreePeoplesCharacterCards {
       case "fpcha26km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
     }
   }
@@ -713,11 +700,11 @@ export class WotrFreePeoplesCharacterCards {
     return {
       canBePlayed: () =>
         this.q.gandalfTheWhite.isInPlay() && this.q.companions.some(c => c.isIn("fangorn")),
-      play: async () => {
+      play: async ui => {
         const shadowArmy = this.q.region("orthanc").army("shadow");
         if (shadowArmy) {
-          await this.ui.askContinue("Roll three dice");
-          const dice = this.battleUi.rollDice(3);
+          await ui.askContinue("Roll three dice");
+          const dice = ui.battleUi.rollDice(3);
           return [rollCombatDice(...dice)];
         } else {
           if (this.q.saruman.isIn("orthanc")) {
@@ -735,7 +722,7 @@ export class WotrFreePeoplesCharacterCards {
           }
         }
         if (this.q.gandalfTheWhite.isIn("fangorn") || this.q.gandalfTheWhite.isInNation("rohan")) {
-          const playableCards = this.cardPlayUi.playableCards(["character"], "free-peoples");
+          const playableCards = this.cards.playableCards(["character"], "free-peoples");
           if (playableCards.length) {
             await this.freePeoples.playCharacterCardFromHand();
           }

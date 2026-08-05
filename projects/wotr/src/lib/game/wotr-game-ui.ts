@@ -1,5 +1,5 @@
 import { Injectable, computed, inject } from "@angular/core";
-import { uiEvent } from "@leobg/commons/utils";
+import { lazyInject, uiEvent } from "@leobg/commons/utils";
 import { patchState, signalStore, withState } from "@ngrx/signals";
 import {
   WotrActionChoice,
@@ -21,6 +21,7 @@ import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
 import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit-models";
+import { WotrGameUiContext } from "./wotr-game-ui-context";
 import { WotrDieCardStory, WotrDieStory } from "./wotr-story-models";
 
 interface WotrGameUiState {
@@ -121,7 +122,7 @@ export interface WotrUiOption<O = unknown> {
 export interface WotrUiChoice<P = WotrFrontId> {
   label(): string;
   isAvailable?(params: P): boolean;
-  actions(params: P): Promise<WotrAction[]>;
+  actions(params: P, ui: WotrGameUiContext): Promise<WotrAction[]>;
   character?: WotrCharacterId;
   card?: () => WotrCardId | null;
 }
@@ -136,6 +137,7 @@ export class WotrGameUi extends signalStore(
   withState<WotrGameUiState>(initialState)
 ) {
   private playerInfoStore = inject(WotrPlayerInfoStore);
+  private ui = lazyInject(WotrGameUiContext);
 
   currentPlayer = computed<WotrPlayerInfo | null>(() => {
     const currentPlayerId = this.currentPlayerId();
@@ -458,7 +460,7 @@ export class WotrGameUi extends signalStore(
         disabled: c.isAvailable ? !c.isAvailable(params) : false
       }))
     );
-    return choice.actions(params);
+    return choice.actions(params, this.ui);
   }
 
   async askDieStoryChoice<P = WotrFrontId>(
@@ -475,7 +477,7 @@ export class WotrGameUi extends signalStore(
         disabled: c.isAvailable ? !c.isAvailable(params) : false
       }))
     );
-    const actions = await choice.actions(params);
+    const actions = await choice.actions(params, this.ui);
     const card = choice.card ? choice.card() : null;
     if (card) {
       const story: WotrDieCardStory = {

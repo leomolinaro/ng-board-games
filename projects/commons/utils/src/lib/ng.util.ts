@@ -1,11 +1,14 @@
 import {
   Directive,
+  Injector,
   Input,
   OnDestroy,
   OnInit,
+  ProviderToken,
   TemplateRef,
   ViewContainerRef,
-  inject
+  inject,
+  runInInjectionContext
 } from "@angular/core";
 import {
   BehaviorSubject,
@@ -314,3 +317,32 @@ function asyncEventDecorator(
     } as any; // questo cast è sensato in quanto viene cambiato l'output del metodo
   };
 } // asyncEventDecorator
+
+export function lazyInject<T extends object>(token: ProviderToken<T>): T {
+  const injector = inject(Injector);
+
+  let instance: T | undefined;
+
+  const getInstance = () => {
+    instance ??= runInInjectionContext(injector, () => inject(token));
+    return instance;
+  };
+
+  return new Proxy({} as T, {
+    get(_, prop) {
+      return Reflect.get(getInstance(), prop);
+    },
+    set(_, prop, value) {
+      return Reflect.set(getInstance(), prop, value);
+    },
+    has(_, prop) {
+      return prop in getInstance();
+    },
+    ownKeys() {
+      return Reflect.ownKeys(getInstance());
+    },
+    getOwnPropertyDescriptor(_, prop) {
+      return Object.getOwnPropertyDescriptor(getInstance(), prop);
+    }
+  });
+}

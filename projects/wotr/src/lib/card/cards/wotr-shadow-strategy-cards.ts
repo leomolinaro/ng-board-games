@@ -16,7 +16,8 @@ import { moveCharacters } from "../../character/wotr-character-actions";
 import { WotrCharacterHandler } from "../../character/wotr-character-handler";
 import { findAction, WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
 import { WotrNationId } from "../../nation/wotr-nation-models";
 import {
@@ -37,7 +38,6 @@ import {
 } from "../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
 import { WotrUnitRules } from "../../unit/wotr-unit-rules";
-import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { discardCardFromTableById, playCardOnTableId } from "../wotr-card-actions";
 import { WotrCardHandler } from "../wotr-card-handler";
@@ -47,8 +47,7 @@ import { WotrEventCard } from "./wotr-cards";
 @Injectable()
 export class WotrShadowStrategyCards {
   private q = inject(WotrGameQuery);
-  private ui = inject(WotrGameUi);
-  private unitUi = inject(WotrUnitUi);
+  private ui = inject(WotrGameUiContext);
   private characterHandler = inject(WotrCharacterHandler);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
@@ -86,13 +85,13 @@ export class WotrShadowStrategyCards {
               .strongholdRegions()
               .filter(r => r.isNation("elves"))
               .some(r => r.isControlledBy("shadow")),
-          play: async () => {
+          play: async ui => {
             const regions = this.returnToValinorRegions();
             if (!regions.length) {
-              await this.ui.askContinue("No valid Elven strongholds available");
+              await ui.askContinue("No valid Elven strongholds available");
               return [];
             }
-            const region = await this.ui.askRegion("Select an Elven stronghold", regions);
+            const region = await ui.askRegion("Select an Elven stronghold", regions);
             return [targetRegion(region)];
           },
           effect: async params => {
@@ -140,18 +139,18 @@ export class WotrShadowStrategyCards {
                 region =>
                   region.isUnderSiege("free-peoples") && region.hasArmyUnitsOfNation("isengard")
               ),
-          play: async () => {
+          play: async ui => {
             const strongholdRegions = this.q
               .strongholdRegions()
               .filter(
                 region =>
                   region.isUnderSiege("free-peoples") && region.hasArmyUnitsOfNation("isengard")
               );
-            const regionId = await this.ui.askRegion(
+            const regionId = await ui.askRegion(
               "Select a stronghold to attack",
               strongholdRegions.map(region => region.id())
             );
-            return this.unitUi.attackStronghold(regionId, "shadow");
+            return ui.unitUi.attackStronghold(regionId, "shadow");
           }
         };
       // Denethor's Folly
@@ -162,11 +161,11 @@ export class WotrShadowStrategyCards {
       case "sstr03":
         return {
           canBePlayed: () => this.q.region("minas-tirith").isUnderSiege("free-peoples"),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [playCardOnTableId("sstr03")];
             const fpArmy = this.q.region("minas-tirith").army("free-peoples")!;
             if (this.unitUtils.hasLeaders(fpArmy)) {
-              const units = await this.ui.askRegionUnits("Choose a leader to eliminate", {
+              const units = await ui.askRegionUnits("Choose a leader to eliminate", {
                 type: "eliminateUnit",
                 regionIds: ["minas-tirith"],
                 unitType: "leader",
@@ -214,7 +213,7 @@ export class WotrShadowStrategyCards {
       case "sstr04":
         return {
           canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
-          play: async () => {
+          play: async ui => {
             const willDice = this.q.freePeoples
               .actionDice()
               .filter(die => die === "will-of-the-west");
@@ -227,7 +226,7 @@ export class WotrShadowStrategyCards {
       // You must discard this card from the table as soon as a Free Peoples Nation advances on the Political Track either due to an attack or due to a Companion's special ability
       case "sstr05":
         return {
-          play: async () => [playCardOnTableId("sstr05")],
+          play: async ui => [playCardOnTableId("sstr05")],
           onTableAbilities: () => {
             const cannotAdvanceAbility: WotrAbility<WotrCanAdvanceNationModifier> = {
               modifier: this.nationModifiers.canAdvanceNationModifier,
@@ -259,11 +258,11 @@ export class WotrShadowStrategyCards {
       case "sstr06":
         return {
           canBePlayed: () => this.q.regions().some(region => this.isStormcrowRegion(region)),
-          play: async () => {
+          play: async ui => {
             const regions = this.q.regions().filter(region => this.isStormcrowRegion(region));
             const nations = new Set<WotrNationId>();
             regions.forEach(region => nations.add(region.region().nationId!));
-            const nationId = await this.ui.askNation(
+            const nationId = await ui.askNation(
               "Select a Free Peoples Nation to move back on the Political Track",
               [...nations]
             );
@@ -293,9 +292,9 @@ export class WotrShadowStrategyCards {
       // splitting the Army initially)
       case "sstr07":
         return {
-          play: async () => {
+          play: async ui => {
             const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
-            const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+            const units = await ui.askRegionUnits("Select a Shadow army to move", {
               type: "moveArmy",
               regionIds: regionIds,
               required: true,
@@ -309,14 +308,14 @@ export class WotrShadowStrategyCards {
               .reachableRegions(3, region => region.isFreeForArmyMovement("shadow"))
               .filter(r => r.hasArmyNotUnderSiege("shadow"));
             if (!targetRegions.length) {
-              await this.ui.askContinue("No valid target regions available for movement");
+              await ui.askContinue("No valid target regions available for movement");
               return [];
             }
-            const toRegionId = await this.ui.askRegion(
+            const toRegionId = await ui.askRegion(
               "Select a region to move the army to",
               targetRegions.map(region => region.id())
             );
-            return this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
+            return ui.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
           }
         };
       // The Shadow Lengthens
@@ -325,13 +324,13 @@ export class WotrShadowStrategyCards {
       // splitting the Army initially).
       case "sstr08":
         return {
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
-              const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+              const units = await ui.askRegionUnits("Select a Shadow army to move", {
                 type: "moveArmy",
                 regionIds: regionIds,
                 required: true,
@@ -345,20 +344,20 @@ export class WotrShadowStrategyCards {
                 .reachableRegions(2, region => region.isFreeForArmyMovement("shadow"))
                 .filter(r => r.hasArmyNotUnderSiege("shadow"));
               if (!targetRegions.length) {
-                await this.ui.askContinue("No valid target regions available for movement");
+                await ui.askContinue("No valid target regions available for movement");
                 return actions;
               }
-              const toRegionId = await this.ui.askRegion(
+              const toRegionId = await ui.askRegion(
                 "Select a region to move the army to",
                 targetRegions.map(region => region.id())
               );
-              const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
+              const movActions = await ui.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
               actions.push(...movActions);
               continueMoving = false;
               const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
               doneMovements.push(movement);
               if (doneMovements.length < 2) {
-                continueMoving = await this.ui.askConfirm(
+                continueMoving = await ui.askConfirm(
                   "Continue moving armies?",
                   "Move another",
                   "Stop moving"
@@ -374,13 +373,13 @@ export class WotrShadowStrategyCards {
       case "sstr09":
         return {
           canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             const doneMovements: WotrArmyMovement[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
-              const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+              const units = await ui.askRegionUnits("Select a Shadow army to move", {
                 type: "moveArmy",
                 regionIds: regionIds,
                 required: true,
@@ -393,20 +392,20 @@ export class WotrShadowStrategyCards {
                 .region(fromRegion)
                 .reachableRegions(1, region => region.isFreeForArmyMovement("shadow"));
               if (!targetRegions.length) {
-                await this.ui.askContinue("No valid target regions available for movement");
+                await ui.askContinue("No valid target regions available for movement");
                 return actions;
               }
-              const toRegionId = await this.ui.askRegion(
+              const toRegionId = await ui.askRegion(
                 "Select a region to move the army to",
                 targetRegions.map(region => region.id())
               );
-              const movActions = await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
+              const movActions = await ui.unitUi.moveThisArmyTo(units, "shadow", toRegionId);
               actions.push(...movActions);
               continueMoving = false;
               const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
               doneMovements.push(movement);
               if (doneMovements.length < 4) {
-                continueMoving = await this.ui.askConfirm(
+                continueMoving = await ui.askConfirm(
                   "Continue moving armies?",
                   "Move another",
                   "Stop moving"
@@ -424,8 +423,8 @@ export class WotrShadowStrategyCards {
       case "sstr10":
         return {
           canBePlayed: () => this.q.southrons.isAtWar(),
-          play: async () => {
-            const units = await this.ui.askRegionUnits("Select a Shadow army to move", {
+          play: async ui => {
+            const units = await ui.askRegionUnits("Select a Shadow army to move", {
               type: "moveArmy",
               regionIds: ["umbar"],
               required: true,
@@ -437,7 +436,7 @@ export class WotrShadowStrategyCards {
             const targetRegions = this.q
               .regions()
               .filter(r => r.isCoastal() && r.isNation("gondor"));
-            const toRegionId = await this.ui.askRegion(
+            const toRegionId = await ui.askRegion(
               "Select a region to move the army to",
               targetRegions.map(region => region.id())
             );
@@ -448,7 +447,7 @@ export class WotrShadowStrategyCards {
               const retroguard = this.unitUtils.splitUnits(fromRegion.army("shadow")!, units);
               return [attack("umbar", toRegionId, retroguard)];
             } else {
-              actions.push(...(await this.unitUi.moveThisArmyTo(units, "shadow", toRegionId)));
+              actions.push(...(await ui.unitUi.moveThisArmyTo(units, "shadow", toRegionId)));
             }
             return actions;
           }
@@ -460,7 +459,7 @@ export class WotrShadowStrategyCards {
       case "sstr11":
         return {
           canBePlayed: () => this.q.isengard.isAtWar(),
-          play: async () => {
+          play: async ui => {
             const dunlandRegions: WotrRegionId[] = ["north-dunland", "south-dunland"];
             const regions = this.q
               .regions()
@@ -470,17 +469,12 @@ export class WotrShadowStrategyCards {
                   r.isFreeForRecruitmentByCard("shadow")
               )
               .map(r => r.id());
-            const region = await this.ui.askRegion(
-              "Select a region to recruit Isengard units",
-              regions
-            );
+            const region = await ui.askRegion("Select a region to recruit Isengard units", regions);
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await this.unitUi.recruitUnitsInSameRegionByCard(region, "isengard", 2, 0, 0))
+              ...(await ui.unitUi.recruitUnitsInSameRegionByCard(region, "isengard", 2, 0, 0))
             );
-            actions.push(
-              ...(await this.unitUi.rageOfTheDunledingsMoveUnits(region, dunlandRegions))
-            );
+            actions.push(...(await ui.unitUi.rageOfTheDunledingsMoveUnits(region, dunlandRegions)));
             return actions;
           }
         };
@@ -490,13 +484,13 @@ export class WotrShadowStrategyCards {
       case "sstr12":
         return {
           canBePlayed: () => this.q.theWitchKing.isInPlay(),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             const witchKingRegion = this.q.theWitchKing.region()!;
             actions.push(moveCharacters(witchKingRegion.id, "angmar", "the-witch-king"));
             this.characterHandler.moveCharacters(["the-witch-king"], witchKingRegion.id, "angmar");
             actions.push(
-              ...(await this.unitUi.recruitUnitsInSameRegionByCard("angmar", "sauron", 2, 1, 0))
+              ...(await ui.unitUi.recruitUnitsInSameRegionByCard("angmar", "sauron", 2, 1, 0))
             );
             return actions;
           }
@@ -507,16 +501,16 @@ export class WotrShadowStrategyCards {
       case "sstr13":
         return {
           canBePlayed: () => this.q.isengard.isAtWar(),
-          play: async () => {
+          play: async ui => {
             const regions = this.q
               .regions()
               .filter(r => r.hasArmy("shadow"))
               .map(r => r.id());
-            const region = await this.ui.askRegion(
+            const region = await ui.askRegion(
               "Select a region to recruit an Isengard unit",
               regions
             );
-            return this.unitUi.recruitRegularsOrElitesByCard(region, "isengard", 1);
+            return ui.unitUi.recruitRegularsOrElitesByCard(region, "isengard", 1);
           }
         };
       // Olog-hai
@@ -525,16 +519,13 @@ export class WotrShadowStrategyCards {
       case "sstr14":
         return {
           canBePlayed: () => this.q.sauron.isAtWar(),
-          play: async () => {
+          play: async ui => {
             const regions = this.q
               .regions()
               .filter(r => r.hasArmy("shadow"))
               .map(r => r.id());
-            const region = await this.ui.askRegion(
-              "Select a region to recruit a Sauron unit",
-              regions
-            );
-            const unit = await this.ui.askReinforcementUnit("Select a Sauron unit to recruit", {
+            const region = await ui.askRegion("Select a region to recruit a Sauron unit", regions);
+            const unit = await ui.askReinforcementUnit("Select a Sauron unit to recruit", {
               canPass: false,
               frontId: "shadow",
               units: [
@@ -542,7 +533,7 @@ export class WotrShadowStrategyCards {
                 { nation: "sauron", type: "elite" }
               ]
             });
-            return this.unitUi.recruitUnit(unit, region, "shadow");
+            return ui.unitUi.recruitUnit(unit, region, "shadow");
           }
         };
       // Hill-trolls
@@ -551,13 +542,13 @@ export class WotrShadowStrategyCards {
       case "sstr15":
         return {
           canBePlayed: () => this.q.sauron.isAtWar(),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             for (let i = 0; i < 2; i++) {
               if (!this.q.nation("sauron").nEliteReinforcements()) return actions;
               const regions = this.q.regions().filter(r => r.hasRegularUnitsOfNation("sauron"));
               if (!regions.length) return actions;
-              const region = await this.ui.askRegion(
+              const region = await ui.askRegion(
                 "Select a region to upgrade a Sauron regular unit",
                 regions.map(r => r.id())
               );
@@ -573,15 +564,15 @@ export class WotrShadowStrategyCards {
       case "sstr16":
         return {
           canBePlayed: () => this.q.saruman.isInPlay(),
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             const nRegulars = this.q.isengard.nRegularReinforcements();
             const nElites = this.q.isengard.nEliteReinforcements();
             if (nElites === 0) {
               if (nRegulars === 0) {
-                await this.ui.askContinue("No Isengard reinforcements available.");
+                await ui.askContinue("No Isengard reinforcements available.");
               } else {
-                const regularRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
+                const regularRecruitments = await ui.unitUi.recruitUnitsInDifferentRegions(
                   2,
                   "isengard",
                   "regulars",
@@ -596,16 +587,16 @@ export class WotrShadowStrategyCards {
               return actions;
             }
             if (nElites === 1 && nRegulars <= 5) {
-              const eliteRecruitment = await this.unitUi.recruitEliteByCard("orthanc", "isengard");
+              const eliteRecruitment = await ui.unitUi.recruitEliteByCard("orthanc", "isengard");
               if (eliteRecruitment) {
                 actions.push(eliteRecruitment);
-                const confirm = await this.ui.askConfirm(
+                const confirm = await ui.askConfirm(
                   "Recruit a regular unit in Orthanc?",
                   "Yes",
                   "No"
                 );
                 if (confirm) {
-                  const regularRecruitment = await this.unitUi.recruitRegularByCard(
+                  const regularRecruitment = await ui.unitUi.recruitRegularByCard(
                     "orthanc",
                     "isengard"
                   );
@@ -615,7 +606,7 @@ export class WotrShadowStrategyCards {
                 }
               }
             } else {
-              const orthancRecruitments = await this.unitUi.recruitRegularsOrElitesByCard(
+              const orthancRecruitments = await ui.unitUi.recruitRegularsOrElitesByCard(
                 "orthanc",
                 "isengard",
                 2
@@ -623,7 +614,7 @@ export class WotrShadowStrategyCards {
               actions.push(...orthancRecruitments);
             }
 
-            const dunlandRecruitments = await this.unitUi.recruitUnitsInDifferentRegions(
+            const dunlandRecruitments = await ui.unitUi.recruitUnitsInDifferentRegions(
               2,
               "isengard",
               "regulars",
@@ -641,8 +632,8 @@ export class WotrShadowStrategyCards {
       // Recruit two Southron & Easterling Regular units in each of three different Southron & Easterlings Settlements.
       case "sstr17":
         return {
-          play: async () =>
-            this.unitUi.recruitUnitsInDifferentRegions(
+          play: async ui =>
+            ui.unitUi.recruitUnitsInDifferentRegions(
               2,
               "southrons",
               "regulars",
@@ -659,35 +650,30 @@ export class WotrShadowStrategyCards {
       case "sstr18":
         return {
           canBePlayed: () => this.q.aragorn.isInPlay(),
-          play: async () =>
-            this.unitUi.recruitUnitsInSameRegionByCard("minas-morgul", "sauron", 5, 0, 1)
+          play: async ui =>
+            ui.unitUi.recruitUnitsInSameRegionByCard("minas-morgul", "sauron", 5, 0, 1)
         };
       // Shadows on the Misty Mountains
       // Recruit two Sauron units (Regular or Elite) and one Nazgûl either in Mount Gram or Moria.
       case "sstr19":
         return {
-          play: async () => {
+          play: async ui => {
             let regionIds: WotrRegionId[] = ["mount-gram", "moria"];
             regionIds = regionIds.filter(r =>
               this.q.region(r).isFreeForRecruitmentByCard("shadow")
             );
             if (!regionIds.length) {
-              await this.ui.askContinue("No valid regions available for recruitment.");
+              await ui.askContinue("No valid regions available for recruitment.");
               return [];
             }
             let regionId = regionIds[0];
             if (regionIds.length > 1) {
-              regionId = await this.ui.askRegion(
-                "Select a region to recruit Sauron units",
-                regionIds
-              );
+              regionId = await ui.askRegion("Select a region to recruit Sauron units", regionIds);
             }
             const actions: WotrAction[] = [];
+            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard(regionId, "sauron", 2)));
             actions.push(
-              ...(await this.unitUi.recruitRegularsOrElitesByCard(regionId, "sauron", 2))
-            );
-            actions.push(
-              ...(await this.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 1))
+              ...(await ui.unitUi.recruitUnitsInSameRegionByCard(regionId, "sauron", 0, 0, 1))
             );
             return actions;
           }
@@ -696,8 +682,8 @@ export class WotrShadowStrategyCards {
       // Recruit three Sauron Regular units in Dol Guldur and three Sauron Regular units in Mount Gundabad.
       case "sstr20":
         return {
-          play: async () =>
-            this.unitUi.recruitUnitsInDifferentRegions(
+          play: async ui =>
+            ui.unitUi.recruitUnitsInDifferentRegions(
               3,
               "sauron",
               "regulars",
@@ -714,8 +700,8 @@ export class WotrShadowStrategyCards {
       case "sstr21":
         return {
           canBePlayed: () => this.q.southrons.isAtWar(),
-          play: async () =>
-            this.unitUi.recruitUnitsInDifferentRegions(
+          play: async ui =>
+            ui.unitUi.recruitUnitsInDifferentRegions(
               5,
               "southrons",
               "regulars",
@@ -730,10 +716,10 @@ export class WotrShadowStrategyCards {
       // Recruit one Sauron Regular unit in each of Angmar, Ettenmoors and Weather Hills, and one Sauron Elite unit in Trollshaws.
       case "sstr22":
         return {
-          play: async () => {
+          play: async ui => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await this.unitUi.recruitUnitsInDifferentRegions(
+              ...(await ui.unitUi.recruitUnitsInDifferentRegions(
                 1,
                 "sauron",
                 "regulars",
@@ -745,7 +731,7 @@ export class WotrShadowStrategyCards {
               ))
             );
             actions.push(
-              ...(await this.unitUi.recruitUnitsInDifferentRegions(
+              ...(await ui.unitUi.recruitUnitsInDifferentRegions(
                 1,
                 "sauron",
                 "elites",
@@ -765,8 +751,8 @@ export class WotrShadowStrategyCards {
       case "sstr23":
         return {
           canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
-          play: async () =>
-            this.unitUi.recruitUnitsInDifferentRegions(
+          play: async ui =>
+            ui.unitUi.recruitUnitsInDifferentRegions(
               5,
               "southrons",
               "regulars",
@@ -783,8 +769,8 @@ export class WotrShadowStrategyCards {
       case "sstr24":
         return {
           canBePlayed: () => this.q.sauron.isAtWar(),
-          play: async () =>
-            this.unitUi.recruitUnitsInDifferentRegions(
+          play: async ui =>
+            ui.unitUi.recruitUnitsInDifferentRegions(
               2,
               "sauron",
               "regulars",
@@ -807,7 +793,7 @@ export class WotrShadowStrategyCards {
       case "sstr01km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // Denethor's Folly
       // Play on the table if Denethor is in play and not Awakened.
@@ -820,7 +806,7 @@ export class WotrShadowStrategyCards {
       case "sstr03km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // Threats and Promises
       // Play on the table.
@@ -831,7 +817,7 @@ export class WotrShadowStrategyCards {
       case "sstr05km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // Stormcrow
       // Play if either the Fellowship or a Companion is inside the borders of a Free Peoples Nation not "At War."
@@ -841,7 +827,7 @@ export class WotrShadowStrategyCards {
       case "sstr06km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // The King Is Revealed
       // Play if either Aragorn or Denethor, Lord Steward of Gondor, is in play.
@@ -851,7 +837,7 @@ export class WotrShadowStrategyCards {
       case "sstr18km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // The Palantir of Barad-dûr
       // Play on the table.
@@ -862,7 +848,7 @@ export class WotrShadowStrategyCards {
       case "sstr25km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
       // Work of the Enemy
       // Choose a region with a Sovereign.
@@ -871,7 +857,7 @@ export class WotrShadowStrategyCards {
       case "sstr26km": // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async () => []
+          play: async ui => []
         };
     }
   }

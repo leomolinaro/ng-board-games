@@ -13,7 +13,6 @@ import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
-  changeGuide,
   corruptFellowship,
   WotrFellowshipAction,
   WotrFellowshipCorruption

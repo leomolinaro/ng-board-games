@@ -1,7 +1,7 @@
 import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
 import { WotrLogWriter } from "../../../log/wotr-log-writer";
 import { WotrNationId } from "../../../nation/wotr-nation-models";
 import { WotrRegionId } from "../../../region/wotr-region-models";
@@ -41,7 +41,7 @@ export abstract class KomeSovereignCard {
     );
   }
 
-  async awake(ui: WotrGameUi): Promise<WotrAction> {
+  async awake(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.getValidAwakeningRegions();
     if (validRegions.length === 0)
       throw new Error(

@@ -4,7 +4,8 @@ import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
@@ -32,7 +33,7 @@ export class WotrCharacterUi {
   private unitHandler = inject(WotrUnitHandler);
   private characterModifiers = inject(WotrCharacterModifiers);
   private q = inject(WotrGameQuery);
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
 
   bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
     const availableCharacters = this.characterAbilities.availableCharacterCards(frontId);
@@ -264,7 +265,7 @@ export class WotrCharacterUi {
       return {
         type: "character-effect",
         character: characterId,
-        actions: await ability.play()
+        actions: await ability.play(this.ui)
       };
     } else {
       return { type: "character-effect-skip", character: characterId };

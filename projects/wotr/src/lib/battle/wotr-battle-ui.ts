@@ -5,7 +5,8 @@ import { eliminateCharacter } from "../character/wotr-character-actions";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiOption } from "../game/wotr-game-ui";
+import { WotrUiOption } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
@@ -18,7 +19,6 @@ import {
 } from "../unit/wotr-unit-actions";
 import { WotrUnits } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
-import { WotrUnitUi } from "../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import {
   advanceArmy,
@@ -43,7 +43,7 @@ import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable()
 export class WotrBattleUi {
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
   private battleStore = inject(WotrBattleStore);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
@@ -51,7 +51,6 @@ export class WotrBattleUi {
   private combatCards = inject(WotrCombatCards);
   private battleHandler = inject(WotrBattleHandler);
   private unitRules = inject(WotrUnitRules);
-  private unitUi = inject(WotrUnitUi);
   private battleModifiers = inject(WotrBattleModifiers);
 
   async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
@@ -163,7 +162,7 @@ export class WotrBattleUi {
     if (!confirm) return [notRetreatIntoSiege(region.id)];
     const actions: WotrAction[] = [retreatIntoSiege(region.id)];
     this.battleHandler.retreatIntoSiege(region.id);
-    actions.push(...(await this.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
+    actions.push(...(await this.ui.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
     return actions;
   }
 
@@ -239,7 +238,9 @@ export class WotrBattleUi {
     if (option === "retreat-into-siege") {
       actions.push(retreatIntoSiege(region.id));
       this.battleHandler.retreatIntoSiege(region.id);
-      actions.push(...(await this.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
+      actions.push(
+        ...(await this.ui.unitUi.checkStackingLimit(region.id, battle.defender.frontId))
+      );
     } else if (option === "retreat") {
       const retreatableRegions = this.unitRules.retreatableRegions(region, battle.defender.frontId);
       const toRegionId = await this.ui.askRegion(
@@ -248,7 +249,9 @@ export class WotrBattleUi {
       );
       actions.push(retreat(toRegionId));
       this.battleHandler.retreat(toRegionId);
-      actions.push(...(await this.unitUi.checkStackingLimit(toRegionId, battle.defender.frontId)));
+      actions.push(
+        ...(await this.ui.unitUi.checkStackingLimit(toRegionId, battle.defender.frontId))
+      );
     }
     return actions;
   }
@@ -321,7 +324,7 @@ export class WotrBattleUi {
       return {
         type: "combat-card-effect",
         card: cardId,
-        actions: await ability.play()
+        actions: await ability.play(this.ui)
       };
     } else {
       return { type: "combat-card-effect-skip", card: cardId };

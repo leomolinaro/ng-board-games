@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
+import { WotrFrontStore } from "../front/wotr-front-store";
 import { WotrGameOptions } from "../game/options/wotr-game-options";
 import {
   WotrCardNumber,
@@ -31,6 +32,8 @@ export interface WotrCardDecks {
 
 @Injectable()
 export class WotrCardUtils {
+  private frontStore = inject(WotrFrontStore);
+
   private _komeExpansionCards: ExpansionCards | null = null;
   private get komeExpansionCards(): ExpansionCards {
     if (!this._komeExpansionCards) {

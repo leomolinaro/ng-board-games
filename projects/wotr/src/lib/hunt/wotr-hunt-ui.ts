@@ -23,7 +23,8 @@ import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
 import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
 import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
 import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
   allocateHuntDice,
@@ -46,7 +47,7 @@ export class WotrHuntUi {
   private huntStore = inject(WotrHuntStore);
   private fellowshipStore = inject(WotrFellowshipStore);
   private regionStore = inject(WotrRegionStore);
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
   private q = inject(WotrGameQuery);
   private characterHandler = inject(WotrCharacterHandler);
   private fellowshipUi = inject(WotrFellowshipUi);

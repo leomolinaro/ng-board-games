@@ -7,11 +7,11 @@ import {
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi, WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrUiCharacterChoice, WotrUiChoice } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { upgradeRegularUnit } from "../../unit/wotr-unit-actions";
 import { WotrLeaderModifier, WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
-import { WotrUnitUi } from "../../unit/wotr-unit-ui";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrCharacterId } from "../wotr-character-models";
 import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
@@ -44,8 +44,7 @@ export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoice
   constructor(
     private q: WotrGameQuery,
     private actionDieModifiers: WotrActionDieModifiers,
-    private ui: WotrGameUi,
-    private unitUi: WotrUnitUi
+    private ui: WotrGameUiContext
   ) {}
 
   public modifier = this.actionDieModifiers.actionDieChoices;
@@ -53,18 +52,17 @@ export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoice
   public handler: WotrActionDieChoiceModifier = ({ dieResult, frontId }) => {
     if (dieResult !== "muster" && dieResult !== "muster-army") return [];
     if (frontId !== "shadow") return [];
-    return [new SarumanVoiceChoice(this.q, this.ui, this.unitUi)];
+    return [new SarumanVoiceChoice(this.q, this.ui)];
   };
 }
 
 class SarumanVoiceChoice implements WotrUiCharacterChoice {
   constructor(
     private q: WotrGameQuery,
-    private ui: WotrGameUi,
-    private unitUi: WotrUnitUi
+    private ui: WotrGameUiContext
   ) {
     this.subChoices = [
-      new SarumanRecruitmentChoice(this.ui, this.q, this.unitUi),
+      new SarumanRecruitmentChoice(this.ui, this.q),
       new SarumanUpgradeRegularsChoice(this.q, this.ui)
     ];
   }
@@ -97,9 +95,8 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
 
 class SarumanRecruitmentChoice implements WotrUiChoice {
   constructor(
-    private ui: WotrGameUi,
-    private q: WotrGameQuery,
-    private unitUi: WotrUnitUi
+    private ui: WotrGameUiContext,
+    private q: WotrGameQuery
   ) {}
 
   label(): string {
@@ -131,7 +128,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
         validRegions.map(r => r.id)
       );
       exludedRegions.add(regionId);
-      actions.push(...(await this.unitUi.recruitUnit(unit, regionId, "shadow")));
+      actions.push(...(await this.ui.unitUi.recruitUnit(unit, regionId, "shadow")));
       canPass = true;
       counter++;
     }
@@ -142,7 +139,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
 class SarumanUpgradeRegularsChoice implements WotrUiChoice {
   constructor(
     private q: WotrGameQuery,
-    private ui: WotrGameUi
+    private ui: WotrGameUiContext
   ) {}
 
   label(): string {

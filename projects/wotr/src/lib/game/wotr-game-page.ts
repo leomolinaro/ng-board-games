@@ -13,17 +13,12 @@ import { BgAuthService, BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
 import { actionDieProviders } from "../action-die/wotr-action-die.providers";
 import { WotrBattleHandler } from "../battle/wotr-battle-handler";
 import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
-import { WotrBattleUi } from "../battle/wotr-battle-ui";
 import { battleProviders } from "../battle/wotr-battle.providers";
-import { WotrCombatCards } from "../battle/wotr-combat-cards";
-import { WotrFreePeoplesCharacterCards } from "../card/cards/free-peoples-character-cards/wotr-free-peoples-character-cards";
 import { WotrCards } from "../card/cards/wotr-cards";
 import { WotrCardHandler } from "../card/wotr-card-handler";
-import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
 import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
 import { cardProviders } from "../card/wotr-card.providers";
 import { WotrCharacterHandler } from "../character/wotr-character-handler";
@@ -65,6 +60,7 @@ import { WotrGameConfig } from "./wotr-game-config";
 import { WotrGameQuery } from "./wotr-game-query";
 import { WotrGameStore } from "./wotr-game-store";
 import { WotrGameUi } from "./wotr-game-ui";
+import { WotrGameUiContext } from "./wotr-game-ui-context";
 import {
   WotrStoriesDialog,
   WotrStoriesDialogData,
@@ -92,6 +88,7 @@ import { WotrStoryService } from "./wotr-story-service";
     WotrGameUi,
     WotrMapSlotsGenerator,
     WotrStoryService,
+    WotrGameUiContext,
     ...actionDieProviders,
     ...battleProviders,
     ...cardProviders,
@@ -130,11 +127,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private characterAbilities = inject(WotrCharacters);
   private cardHandler = inject(WotrCardHandler);
   private cards = inject(WotrCards);
-  private freePeoplesCharacterCards = inject(WotrFreePeoplesCharacterCards);
-  private cardPlayUi = inject(WotrCardPlayUi);
-  private battleUi = inject(WotrBattleUi);
-  private combatCards = inject(WotrCombatCards);
-  private actionDieUi = inject(WotrActionDieUi);
   private nationModifiers = inject(WotrNationModifiers);
   private unitUtils = inject(WotrUnitUtils);
   private huntHandler = inject(WotrHuntHandler);
@@ -160,9 +152,6 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.story.init(this.localPlayerService);
     this.characterHandler.characterAbilities = this.characterAbilities;
     this.cardHandler.cards = this.cards;
-    this.freePeoplesCharacterCards.cardPlayUi = this.cardPlayUi;
-    this.combatCards.battleUi = this.battleUi;
-    this.characterAbilities.actionDieUi = this.actionDieUi;
     this.unitUtils.q = this.q;
     this.huntHandler.characters = this.characterAbilities;
   }

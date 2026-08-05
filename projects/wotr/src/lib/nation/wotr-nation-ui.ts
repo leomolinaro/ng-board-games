@@ -2,7 +2,8 @@ import { inject, Injectable } from "@angular/core";
 import { WotrActionDie } from "../action-die/wotr-action-die-models";
 import { WotrAction } from "../commons/wotr-action-models";
 import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameUi, WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrUiChoice } from "../game/wotr-game-ui";
+import { WotrGameUiContext } from "../game/wotr-game-ui-context";
 import { advanceNation } from "./wotr-nation-actions";
 import { WotrNationHandler } from "./wotr-nation-handler";
 import { WotrNationId } from "./wotr-nation-models";
@@ -11,7 +12,7 @@ import { WotrNationStore } from "./wotr-nation-store";
 
 @Injectable()
 export class WotrNationUi {
-  private ui = inject(WotrGameUi);
+  private ui = inject(WotrGameUiContext);
   private nation = inject(WotrNationStore);
   private nationRules = inject(WotrNationRules);
   private nationHandler = inject(WotrNationHandler);

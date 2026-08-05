@@ -2,7 +2,7 @@ import { WotrActionDie } from "../../action-die/wotr-action-die-models";
 import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUi } from "../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { WotrRegionId } from "../../region/wotr-region-models";
 import { playCharacter } from "../wotr-character-actions";
 import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
@@ -46,7 +46,7 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
     }
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const regionId = this.striderValidRegion();
     if (!regionId) throw new Error("Strider is not in a valid region to bring Aragorn into play.");
     return playCharacter(regionId, "aragorn");

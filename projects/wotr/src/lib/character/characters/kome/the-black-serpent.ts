@@ -9,7 +9,7 @@ import {
 import { WotrBattleUi } from "../../../battle/wotr-battle-ui";
 import { WotrAction } from "../../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUi } from "../../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
 import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
 import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import { playCharacter } from "../../wotr-character-actions";
@@ -54,7 +54,7 @@ export class TheBlackSerpent extends WotrPlayableCharacterCard {
     return r.hasArmyUnitsOfNation("southrons");
   }
 
-  override async bringIntoPlay(ui: WotrGameUi): Promise<WotrAction> {
+  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
       .filter(r => this.isValidRegion(r))
