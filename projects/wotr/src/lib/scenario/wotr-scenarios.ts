@@ -9,6 +9,7 @@ import {
   WotrScenarioGroupInfo,
   WotrScenarioInfo
 } from "./wotr-scenario";
+import { combatCardScenarios } from "../battle/combat-cards/wotr-combat-card-scenarios";
 
 @Injectable({ providedIn: "root" })
 export class WotrScenarios {
@@ -22,6 +23,7 @@ export class WotrScenarios {
     this.addScenarioGroup(cardScenarios(), this.infos);
     this.addScenarioGroup(characterScenarios(), this.infos);
     this.addScenarioGroup(huntScenarios(), this.infos);
+    this.addScenarioGroup(combatCardScenarios(), this.infos);
   }
 
   private addScenarioGroup(

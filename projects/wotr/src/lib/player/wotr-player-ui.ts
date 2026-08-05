@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { WotrUiAbility } from "../ability/wotr-ability";
+import { WotrCombatCardAbility } from "../battle/combat-cards/wotr-combat-cards";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
 import { WotrBattleStore } from "../battle/wotr-battle-store";
 import { WotrBattleUi } from "../battle/wotr-battle-ui";
-import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardPlayUi } from "../card/wotr-card-play-ui";

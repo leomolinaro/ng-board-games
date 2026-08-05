@@ -31,6 +31,7 @@ export interface WotrSetup {
   huntPool: WotrHuntTileId[];
   characters: WotrCharacterId[];
   nations: WotrNationSetup[];
+  inPlayCharacters: WotrInPlayCharacterSetup[];
 }
 
 export interface WotrFrontDecksSetup {
@@ -47,6 +48,12 @@ export interface WotrRegionSetup {
   nLeaders: number;
   nNazgul: number;
   ruler: KomeSovereignId | null;
+}
+
+export interface WotrInPlayCharacterSetup {
+  character: WotrCharacterId;
+  region: WotrRegionId;
+  mode: "army" | "free";
 }
 
 export interface WotrNationSetup {
@@ -142,7 +149,8 @@ export class WotrSetupRules {
         { nation: "isengard", active: true, politicalStep: 1 },
         { nation: "sauron", active: true, politicalStep: 1 },
         { nation: "southrons", active: true, politicalStep: 2 }
-      ]
+      ],
+      inPlayCharacters: []
     };
   }
 

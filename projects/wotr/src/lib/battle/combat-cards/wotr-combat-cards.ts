@@ -1,37 +1,37 @@
 import { inject, Injectable } from "@angular/core";
 import { unexpectedStory } from "@leobg/commons";
-import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../card/wotr-card-models";
+import { WotrCard, WotrCardCombatLabel, WotrCardId } from "../../card/wotr-card-models";
 import {
   chooseCharacter,
   eliminateCharacter,
   WotrCharacterChoose,
   WotrCharacterElimination
-} from "../character/wotr-character-actions";
-import { findAction, findActions, WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { assertAction } from "../game/wotr-story-models";
-import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
-import { WotrPlayer } from "../player/wotr-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionId } from "../region/wotr-region-models";
+} from "../../character/wotr-character-actions";
+import { findAction, findActions, WotrAction } from "../../commons/wotr-action-models";
+import { WotrFrontId } from "../../front/wotr-front-models";
+import { WotrGameQuery } from "../../game/wotr-game-query";
+import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
+import { assertAction } from "../../game/wotr-story-models";
+import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
+import { WotrPlayer } from "../../player/wotr-player";
+import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
+import { WotrRegionId } from "../../region/wotr-region-models";
 import {
   eliminateLeader,
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
   WotrLeaderElimination,
   WotrRegularUnitElimination
-} from "../unit/wotr-unit-actions";
+} from "../../unit/wotr-unit-actions";
 import {
   WotrArmy,
   WotrForfeitLeadershipParams,
   WotrRegionUnitMatch
-} from "../unit/wotr-unit-models";
-import { WotrUnitRules } from "../unit/wotr-unit-rules";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { retreat, WotrCombatRoll, WotrLeaderForfeit } from "./wotr-battle-actions";
-import { WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
+} from "../../unit/wotr-unit-models";
+import { WotrUnitRules } from "../../unit/wotr-unit-rules";
+import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
+import { retreat, WotrCombatRoll, WotrLeaderForfeit } from "../wotr-battle-actions";
+import { WotrCombatFront, WotrCombatRound } from "../wotr-battle-models";
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
@@ -152,14 +152,35 @@ export class WotrCombatCards {
     },
     // Blade of Westernesse (Initiative 6)
     // Play if a Hobbit is in the battle.
-    // Use one hit during the Leader re-roll to eliminate one Minion of your choice that is participating in the battle
+    // Use one hit during the Leader re-roll to eliminate one Minion of your choice
+    // that is participating in the battle.
     "Blade of Westernesse": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        params.freePeoples.army().characters?.some(c => c === "peregrin" || c === "meriadoc") ??
+        false,
       effect: async (card, params) => {
-        throw new Error("TODO WOTR");
+        const leaderHits = params.freePeoples.nLeaderSuccesses;
+        if (!leaderHits) return;
+        const ability: WotrCombatCardAbility = {
+          play: async ui => {
+            const units = await ui.askRegionUnits("Choose a minion to eliminate", {
+              type: "eliminateUnit",
+              regionIds: [params.shadow.regionId],
+              nationId: null,
+              unitType: "minion"
+            });
+            if (units.characters?.length) return [eliminateCharacter(units.characters[0])];
+            return [];
+          }
+        };
+        const actions = await this.activateCombatCard(ability, card.id, this.freePeoples);
+        if (!actions) return;
+        const characterElim = findAction<WotrCharacterElimination>(
+          actions,
+          "character-elimination"
+        );
+        if (!characterElim) throw new Error("No character eliminated");
+        params.freePeoples.hitsModifiers.push(-1);
       }
     },
     // Brave Stand (Initiative 3)

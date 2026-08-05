@@ -1,10 +1,15 @@
-import { KomeSovereignId, WotrCompanionId } from "../character/wotr-character-models";
+import {
+  KomeSovereignId,
+  WotrCharacterId,
+  WotrCompanionId
+} from "../character/wotr-character-models";
 import { WotrGameOptions } from "../game/options/wotr-game-options";
 import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
 import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
 import { WotrRegionId } from "../region/wotr-region-models";
 import {
   WotrFrontDecksSetup,
+  WotrInPlayCharacterSetup,
   WotrNationSetup,
   WotrRegionSetup,
   WotrSetup,
@@ -83,6 +88,17 @@ export class WotrSetupBuilder {
     return this;
   }
 
+  private inPlayCharacters: WotrInPlayCharacterSetup[] = [];
+  characterInArmy(character: WotrCharacterId, region: WotrRegionId): WotrSetupBuilder {
+    this.inPlayCharacters.push({ region, character, mode: "army" });
+    return this;
+  }
+
+  characterInFreeUnits(character: WotrCharacterId, region: WotrRegionId): WotrSetupBuilder {
+    this.inPlayCharacters.push({ region, character, mode: "free" });
+    return this;
+  }
+
   private nations: WotrNationSetup[] = [];
   nation(
     nation: WotrNationId,
@@ -113,7 +129,8 @@ export class WotrSetupBuilder {
       shadowTokens: [],
       huntPool: this._huntPool,
       characters: [],
-      nations: this.nations
+      nations: this.nations,
+      inPlayCharacters: this.inPlayCharacters
     };
   }
 }

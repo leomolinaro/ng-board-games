@@ -1,6 +1,6 @@
 import { WotrUiAbility } from "../ability/wotr-ability";
+import { WotrCombatCardAbility } from "../battle/combat-cards/wotr-combat-cards";
 import { WotrCombatRound } from "../battle/wotr-battle-models";
-import { WotrCombatCardAbility } from "../battle/wotr-combat-cards";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCharacterId } from "../character/wotr-character-models";
 import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";

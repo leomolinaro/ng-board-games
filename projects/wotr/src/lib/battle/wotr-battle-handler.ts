@@ -26,6 +26,11 @@ import { WotrArmy } from "../unit/wotr-unit-models";
 import { WotrUnitRules } from "../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../unit/wotr-unit-utils";
 import {
+  WotrCombatCardEffectParams,
+  WotrCombatCardParams,
+  WotrCombatCards
+} from "./combat-cards/wotr-combat-cards";
+import {
   WotrArmyAdvance,
   WotrArmyAttack,
   WotrArmyNotAdvance,
@@ -44,11 +49,6 @@ import {
 import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
 import { WotrBattleModifiers } from "./wotr-battle-modifiers";
 import { WotrBattleStore } from "./wotr-battle-store";
-import {
-  WotrCombatCardEffectParams,
-  WotrCombatCardParams,
-  WotrCombatCards
-} from "./wotr-combat-cards";
 import { WotrCombatDie } from "./wotr-combat-die-models";
 
 @Injectable()

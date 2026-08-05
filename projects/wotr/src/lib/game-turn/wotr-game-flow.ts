@@ -301,5 +301,13 @@ export class WotrGameFlow {
     this.fellowshipStore.setGuide(setup.fellowship.guide);
     this.fellowshipStore.setProgress(setup.fellowship.progress);
     this.regionStore.addFellowshipToRegion(setup.fellowship.region);
+    for (const inPlayCharacter of setup.inPlayCharacters) {
+      this.characterStore.setInPlay(inPlayCharacter.character);
+      if (inPlayCharacter.mode === "army") {
+        this.regionStore.addCharacterToArmy(inPlayCharacter.character, inPlayCharacter.region);
+      } else {
+        this.regionStore.addCharacterToFreeUnits(inPlayCharacter.character, inPlayCharacter.region);
+      }
+    }
   }
 }
