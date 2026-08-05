@@ -39,13 +39,9 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
     if (die !== "will-of-the-west") return false;
     const gandalf = this.q.gandalfTheGrey;
     if (!gandalf.isInPlay() && !gandalf.isEliminated()) return false;
-    if (
-      this.q.minions.every(
-        c => !c.isInPlay() && !c.isEliminated() && c.isMinionForGandalfTheWhite()
-      )
-    )
-      return false;
-    return true;
+    return this.q.minions.some(
+      c => c.isMinionForGandalfTheWhite() && (c.isInPlay() || c.isEliminated())
+    );
   }
 
   override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
