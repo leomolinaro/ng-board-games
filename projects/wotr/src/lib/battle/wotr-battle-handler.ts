@@ -557,9 +557,26 @@ export class WotrBattleHandler {
   private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     const combatStrength = this.getCombatStrength(combatFront, combatRound);
     let nRolls = Math.min(combatStrength, 5);
+    const lessCombatDiceByCard = this.lessCombatDiceByCard(combatFront, combatRound);
+    if (lessCombatDiceByCard) nRolls = Math.max(1, nRolls - lessCombatDiceByCard);
     if (combatFront.lessNCombatDice) nRolls = Math.max(1, nRolls - combatFront.lessNCombatDice);
     if (combatFront.maxNCombatDice) nRolls = Math.min(nRolls, combatFront.maxNCombatDice);
     return nRolls;
+  }
+
+  private lessCombatDiceByCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+    const card = this.frontStore.currentCard();
+    if (!card) return 0;
+    // TODO WOTR modifier
+    // Help Unlooked For
+    if (card === "fpstr10" && combatFront.frontId === "shadow") {
+      const besiegedStronghold = combatRound.action.toRegion;
+      const besiegedArmy = this.q.region(besiegedStronghold).army("free-peoples");
+      if (!besiegedArmy) throw new Error("Besieged army not found in besieged stronghold");
+      const nBesiegedUnits = this.unitRules.getArmyUnitCount(besiegedArmy);
+      return nBesiegedUnits;
+    }
+    return 0;
   }
 
   private getNReRolls(

@@ -232,6 +232,13 @@ export class WotrUnitRules {
     return combatStrength;
   }
 
+  getArmyUnitCount(army: WotrArmy): number {
+    let unitCount = 0;
+    unitCount += army.regulars?.reduce((count, unit) => count + unit.quantity, 0) ?? 0;
+    unitCount += army.elites?.reduce((count, unit) => count + unit.quantity, 0) ?? 0;
+    return unitCount;
+  }
+
   private getLeadersLeadership(leaders: WotrNationUnit[]) {
     return leaders.reduce((l, unit) => l + unit.quantity, 0);
   }

@@ -240,7 +240,8 @@ export class WotrCombatCards {
     },
     // Daring Defiance (Initiative 0)
     // Play if a Companion is in the battle.
-    // Forfeit the Leadership of all the Companions participating in the battle to cancel the Combat card played by the Shadow player.
+    // Forfeit the Leadership of all the Companions participating in the battle to cancel
+    // the Combat card played by the Shadow player.
     "Daring Defiance": {
       canBePlayed: params => {
         console.warn("Not implemented");
@@ -469,7 +470,8 @@ export class WotrCombatCards {
     },
     // Mighty Attack (Initiative 4)
     // Play if a Companion is in the battle.
-    // Before rolling the dice for your Leader re-roll, forfeit the Leadership of one Companion participating in the battle to automatically change one missed die roll to a hit.
+    // Before rolling the dice for your Leader re-roll, forfeit the Leadership of one Companion
+    // participating in the battle to automatically change one missed die roll to a hit.
     "Mighty Attack": {
       canBePlayed: params => {
         console.warn("Not implemented");

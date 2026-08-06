@@ -4,7 +4,7 @@ import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
 } from "../../action-die/wotr-action-die-modifiers";
-import { WotrCombatRoll } from "../../battle/wotr-battle-actions";
+import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrAction } from "../../commons/wotr-action-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrUiChoice } from "../../game/wotr-game-ui";
@@ -240,13 +240,45 @@ export class WotrFreePeoplesStrategyCards {
             return actions;
           }
         };
-      // TODO WOTR Help Unlooked For
+      // Help Unlooked For
       // Attack a Shadow Army besieging a Stronghold with a Free Peoples Army in an adjacent region.
-      // For this entire battle, the Shadow player rolls one die less during the Combat roll for each Free Peoples unit in the besieged Stronghold (to a minimum of one).
+      // For this entire battle, the Shadow player rolls one die less during the Combat roll
+      // for each Free Peoples unit in the besieged Stronghold (to a minimum of one).
       case "fpstr10":
         return {
-          canBePlayed: () => false,
-          play: async ui => []
+          canBePlayed: () => true,
+          play: async ui => {
+            const candidateRegions: WotrRegionId[] = [];
+            for (const stronghold of this.q.strongholdRegions()) {
+              if (!stronghold.isBesiegedBy("shadow")) continue;
+              for (const region of stronghold.adjacentRegions()) {
+                if (region.hasArmy("free-peoples")) {
+                  candidateRegions.push(stronghold.id());
+                }
+              }
+            }
+            const attackingRegion = await ui.askRegion(
+              "Choose a region with an army adjacent to a besieged stronghold",
+              candidateRegions
+            );
+            const candidateStrongholds = this.q
+              .region(attackingRegion)
+              .adjacentRegions()
+              .filter(r => r.isBesiegedBy("shadow"));
+            const strongholdRegion = await ui.askRegion(
+              "Choose a besieged stronghold to attack",
+              candidateStrongholds.map(r => r.id())
+            );
+            const attackingUnits = await ui.askRegionUnits("Select units to attack", {
+              type: "attack",
+              regionIds: [attackingRegion],
+              requiredUnits: [],
+              frontId: "free-peoples"
+            });
+            const attackingArmy = this.q.region(attackingRegion).army("free-peoples")!;
+            const retroguard = this.unitUtils.splitUnits(attackingArmy, attackingUnits);
+            return [attack(attackingRegion, strongholdRegion, retroguard)];
+          }
         };
       // Paths of the Woses
       // Play if the Rohan Nation is "At War."
