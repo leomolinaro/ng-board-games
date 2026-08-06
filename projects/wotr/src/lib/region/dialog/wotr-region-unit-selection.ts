@@ -332,6 +332,9 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
       } else {
         if (unitNode.group !== "army") continue;
       }
+      if (unitNode.type === "regular" || unitNode.type === "elite" || unitNode.type === "leader") {
+        if (!this.q.nation(unitNode.nationId).isAtWar()) continue;
+      }
       unitNode.selectable = true;
       unitNode.selected = true;
     }
