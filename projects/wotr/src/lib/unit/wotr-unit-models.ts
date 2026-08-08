@@ -56,8 +56,8 @@ export interface WotrForfeitLeadershipParams {
   cardId: WotrCardId;
   frontId: WotrFrontId;
   regionId: WotrRegionId;
-  onlyNazgul?: boolean;
-  points: 1 | 2 | "oneOrMore";
+  only?: "nazgul" | "companions";
+  points: 1 | 2 | "oneOrMore" | "all";
 }
 
 export type WotrRegionUnitTypeMatch =

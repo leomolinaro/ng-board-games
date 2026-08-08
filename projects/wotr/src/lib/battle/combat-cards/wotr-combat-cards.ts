@@ -230,7 +230,7 @@ export class WotrCombatCards {
             cardId: card.id,
             frontId: "shadow",
             regionId: params.shadow.regionId,
-            onlyNazgul: true,
+            only: "nazgul",
             points: 2
           },
           this.shadow
@@ -243,12 +243,20 @@ export class WotrCombatCards {
     // Forfeit the Leadership of all the Companions participating in the battle to cancel
     // the Combat card played by the Shadow player.
     "Daring Defiance": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params => !!params.freePeoples.army().characters?.length,
       effect: async (card, params) => {
-        throw new Error("TODO WOTR");
+        const points = await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "free-peoples",
+            regionId: params.freePeoples.regionId,
+            only: "companions",
+            points: "all"
+          },
+          this.shadow
+        );
+        params.shadow.cancelledCombatCard = true;
+        params.freePeoples.forfeitedLeadership = points;
       }
     },
     // Daylight (Initiative 3)
@@ -307,7 +315,7 @@ export class WotrCombatCards {
             cardId: card.id,
             frontId: "shadow",
             regionId: params.shadow.regionId,
-            onlyNazgul: true,
+            only: "nazgul",
             points: "oneOrMore"
           },
           this.shadow
@@ -698,7 +706,7 @@ export class WotrCombatCards {
             cardId: card.id,
             frontId: "shadow",
             regionId: params.shadow.regionId,
-            onlyNazgul: true,
+            only: "nazgul",
             points: 1
           },
           this.shadow

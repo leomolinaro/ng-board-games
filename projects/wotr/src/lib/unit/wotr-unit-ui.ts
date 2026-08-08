@@ -616,15 +616,15 @@ export class WotrUnitUi {
         type: "card-effect-skip",
         card: params.cardId
       };
-    const message = this.forfeitLeadershipMessage(params.points);
-    const minPoints = this.forfeitLeadershipMinPoints(params.points);
+    const message = this.forfeitLeadershipMessage(params);
+    const points = this.forfeitLeadershipPoints(params);
     const units = await this.ui.askRegionUnits(message, {
       regionIds: [params.regionId],
       type: "forfeitLeadership",
       frontId: params.frontId,
       message,
-      minPoints,
-      onlyNazgul: params.onlyNazgul ?? false
+      points,
+      leaderRestriction: params.only ?? null
     });
     const unitComposers: WotrUnitComposer[] = [];
     units.elites?.forEach(unit => unitComposers.push(elite(unit.nation, unit.quantity)));
@@ -638,22 +638,39 @@ export class WotrUnitUi {
     };
   }
 
-  private forfeitLeadershipMessage(points: number | "oneOrMore"): string {
+  private forfeitLeadershipMessage(params: WotrForfeitLeadershipParams): string {
+    const points = params.points;
+    let type = "";
+    if (params.only) {
+      switch (params.only) {
+        case "nazgul":
+          type = "Nazgul ";
+          break;
+        case "companions":
+          type = "Companion ";
+          break;
+      }
+    }
     if (points === "oneOrMore") {
-      return "Select one or more leadership points to forfeit";
+      return `Select one or more ${type}leadership points to forfeit`;
     } else if (points === 1) {
-      return "Select 1 leadership point to forfeit";
+      return `Select 1 ${type}leadership point to forfeit`;
+    } else if (points === "all") {
+      return `Select all ${type}leadership points to forfeit`;
     } else {
-      return `Select ${points} leadership points to forfeit`;
+      return `Select ${points} ${type}leadership points to forfeit`;
     }
   }
 
-  private forfeitLeadershipMinPoints(points: number | "oneOrMore"): number {
-    if (points === "oneOrMore") {
-      return 1;
-    } else {
-      return points;
+  private forfeitLeadershipPoints(params: WotrForfeitLeadershipParams): { min: number } | "all" {
+    if (params.points === "oneOrMore") {
+      return { min: 1 };
+    } else if (typeof params.points === "number") {
+      return { min: params.points };
+    } else if (params.points === "all") {
+      return "all";
     }
+    throw new Error(`Invalid points value: ${params.points}`);
   }
 
   async rageOfTheDunledingsMoveUnits(

@@ -87,8 +87,8 @@ export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection {
   type: "forfeitLeadership";
   frontId: WotrFrontId;
-  minPoints: number;
-  onlyNazgul?: boolean;
+  points: { min: number } | "all";
+  leaderRestriction: "nazgul" | "companions" | null;
   message: string;
 }
 
@@ -565,36 +565,52 @@ export class ForfeitLeadershipSelectionMode implements WotrRegionUnitSelectionMo
   initialize(unitNodes: UnitNode[]): void {
     for (const node of unitNodes) {
       if (this.isSelectable(node)) {
-        node.selectable = true;
+        if (this.params.points === "all") {
+          node.selected = true;
+        } else {
+          node.selectable = true;
+        }
       }
     }
   }
 
   private isSelectable(node: UnitNode): boolean {
     if (node.frontId !== this.params.frontId) return false;
-    if (node.type === "leader" && !this.params.onlyNazgul) return true;
-    if (node.type === "nazgul") return true;
-    if (node.type === "character") return !this.params.onlyNazgul || node.id === "the-witch-king";
-    return false;
+    if (this.params.leaderRestriction === "nazgul") {
+      if (node.type === "nazgul") return true;
+      if (node.type === "character" && node.id === "the-witch-king") return true;
+      return false;
+    } else if (this.params.leaderRestriction === "companions") {
+      if (node.type === "character" && node.frontId === "free-peoples") return true;
+      return false;
+    } else {
+      if (node.type === "leader" || node.type === "nazgul" || node.type === "character")
+        return true;
+      return false;
+    }
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
-    let totalPoints = 0;
-    for (const node of selectedNodes) {
-      switch (node.type) {
-        case "leader":
-          totalPoints += 1;
-          break;
-        case "nazgul":
-          totalPoints += 1;
-          break;
-        case "character":
-          totalPoints += node.character.leadership;
-          break;
+    if (this.params.points === "all") {
+      return true;
+    } else {
+      let totalPoints = 0;
+      for (const node of selectedNodes) {
+        switch (node.type) {
+          case "leader":
+            totalPoints += 1;
+            break;
+          case "nazgul":
+            totalPoints += 1;
+            break;
+          case "character":
+            totalPoints += node.character.leadership;
+            break;
+        }
       }
+      if (totalPoints >= this.params.points.min) return true;
+      return this.params.message;
     }
-    if (totalPoints >= this.params.minPoints) return true;
-    return this.params.message;
   }
 }
 
