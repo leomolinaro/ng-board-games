@@ -837,9 +837,9 @@ export class WotrCombatCards {
     );
     const eliteDowngrades = findActions<WotrEliteUnitDowngrade>(actions, "elite-unit-downgrade");
     let hits = 0;
-    hits += regularEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
-    hits += eliteEliminations.reduce((sum, elim) => sum + elim.quantity, 0);
-    hits += eliteDowngrades.reduce((sum, downgrade) => sum + downgrade.quantity, 0);
+    for (const elim of regularEliminations) hits += elim.quantity;
+    for (const elim of eliteEliminations) hits += elim.quantity * 2;
+    for (const downgrade of eliteDowngrades) hits += downgrade.quantity;
     return hits;
   }
 
