@@ -481,12 +481,23 @@ export class WotrCombatCards {
     // Before rolling the dice for your Leader re-roll, forfeit the Leadership of one Companion
     // participating in the battle to automatically change one missed die roll to a hit.
     "Mighty Attack": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        params.freePeoples.army().characters?.some(c => this.unitUtils.isCompanion(c)) ?? false,
       effect: async (card, params) => {
-        throw new Error("TODO WOTR");
+        await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "free-peoples",
+            regionId: params.freePeoples.regionId,
+            only: "companions",
+            points: 1
+          },
+          this.freePeoples
+        );
+        const fp = params.freePeoples;
+        if (!fp.combatRoll || !fp.nCombatSuccesses)
+          throw new Error("Combat roll or nCombatSuccesses not defined");
+        if (fp.combatRoll.length > fp.nCombatSuccesses) fp.nCombatSuccesses += 1;
       }
     },
     // Mûmakil (Initiative 3-5)

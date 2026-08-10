@@ -690,10 +690,7 @@ export class WotrBattleHandler {
   private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
     const attackingArmy = this.attackingArmy(combatRound.action);
     let defenderHits = combatRound.defender.nTotalHits || 0;
-    defenderHits += combatRound.defender.hitsModifiers.reduce(
-      (hits, modifier) => hits + modifier,
-      0
-    );
+    for (const modifier of combatRound.defender.hitsModifiers) defenderHits += modifier;
     await this.unitHandler.chooseArmyCasualties(
       defenderHits,
       attackingArmy,
@@ -703,10 +700,7 @@ export class WotrBattleHandler {
     );
     const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
     let attackerHits = combatRound.attacker.nTotalHits || 0;
-    attackerHits += combatRound.attacker.hitsModifiers.reduce(
-      (hits, modifier) => hits + modifier,
-      0
-    );
+    for (const modifier of combatRound.attacker.hitsModifiers) attackerHits += modifier;
     await this.unitHandler.chooseArmyCasualties(
       attackerHits,
       attackedArmy,
