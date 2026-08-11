@@ -48,6 +48,7 @@ import {
 } from "../../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
 import { WotrReinforcementUnit } from "../../../unit/wotr-unit-models";
+import { WotrUnitRules } from "../../../unit/wotr-unit-rules";
 import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
 import {
   discardCardFromTableById,
@@ -70,6 +71,7 @@ export class WotrFreePeoplesCharacterCards {
   private characterModifiers = inject(WotrCharacterModifiers);
   private characterHandler = inject(WotrCharacterHandler);
   private unitUtils = inject(WotrUnitUtils);
+  private unitRules = inject(WotrUnitRules);
   private huntStore = inject(WotrHuntStore);
   private frontStore = inject(WotrFrontStore);
   private actionDieHandler = inject(WotrActionDieHandler);
@@ -531,7 +533,7 @@ export class WotrFreePeoplesCharacterCards {
       // If Gandalf the White is in Fangorn or a Rohan region, you may immediately play another Character Event card from your hand without using an Action die.
       case "fpcha21":
         return this.theEntsAwake();
-      // TODO WOTR Dead Men of Dunharrow
+      // Dead Men of Dunharrow
       // Play if Strider/Aragorn is in a Rohan region (including a Stronghold under siege).
       // Move Strider/Aragorn (and any number of Companions in the same region) to Erech, Lamedon or Pelargir.
       // If there is a Shadow Army in that region, roll a die. That Army takes a number of hits equal to the die result and must then retreat. If the Army cannot retreat, it is
@@ -582,17 +584,23 @@ export class WotrFreePeoplesCharacterCards {
               "character-movement"
             )!;
             const toRegion = this.q.region(move.toRegion);
-            if (toRegion.hasArmy("shadow")) {
-              const roll = findAction<WotrCombatRoll>(params.story.actions, "combat-roll")!;
-              const shadowArmy = toRegion.army("shadow")!;
-              const armyHitPoints = this.unitUtils.nHits(shadowArmy);
-              if (roll.dice[0] >= armyHitPoints) {
-                await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
+            if (!toRegion.hasArmy("shadow"))
+              throw new Error("Unexpected state: no shadow army in the region");
+            const roll = findAction<WotrCombatRoll>(params.story.actions, "combat-roll")!;
+            const shadowArmy = toRegion.army("shadow")!;
+            const armyHitPoints = this.unitUtils.nHits(shadowArmy);
+            const nHits = roll.dice[0];
+            if (nHits >= armyHitPoints) {
+              await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
+            } else {
+              if (this.unitRules.canRetreat(toRegion.id(), "shadow")) {
+                await this.shadow.deadMenOfDunharrowCasualties(nHits, toRegion.id(), params.cardId);
               } else {
-                throw new Error("TODO WOTR not implemented");
-                // chooseCasualties and move
+                // TODO WOTR log
+                await this.shadow.eliminateArmy(toRegion.id(), params.cardId);
               }
             }
+            await this.freePeoples.deadMenOfDunharrowRecruit(toRegion.id(), params.cardId);
           }
         };
       // House of the Stewards

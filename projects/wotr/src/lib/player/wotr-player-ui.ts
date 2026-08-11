@@ -284,6 +284,26 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
+  async deadMenOfDunharrowRecruit(
+    regionId: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrCardEffectStory> {
+    return {
+      type: "card-effect",
+      card: cardId,
+      actions: await this.unitUi.deadMenOfDunharrowRecruit(regionId, cardId)
+    };
+  }
+
+  async deadMenOfDunharrowCasualties(
+    nHits: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrCardEffectStory> {
+    const actions = await this.battleUi.deadMenOfDunharrowCasualties(nHits, regionId, cardId);
+    return { type: "card-effect", card: cardId, actions };
+  }
+
   async chooseCorruptionTile(): Promise<WotrStory> {
     return {
       type: "base",

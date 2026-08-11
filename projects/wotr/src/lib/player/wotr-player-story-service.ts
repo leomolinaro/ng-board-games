@@ -70,6 +70,12 @@ export interface WotrPlayerStoryService {
     cardId: WotrCardId
   ): Promise<WotrStory>;
   faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory>;
+  deadMenOfDunharrowRecruit(regionId: string, cardId: string | null): Promise<WotrStory>;
+  deadMenOfDunharrowCasualties(
+    nHits: number,
+    regionId: string,
+    cardId: string | null
+  ): Promise<WotrStory>;
   chooseCorruptionTile(): Promise<WotrStory>;
   makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory>;
   // armyPlacement$ (nInfantries: number, nationId: WotrNationId, playerId: WotrPlayerId): Observable<WotrArmyPlacement>;

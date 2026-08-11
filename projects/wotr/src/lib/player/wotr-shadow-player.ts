@@ -32,4 +32,14 @@ export class WotrShadowPlayer extends WotrPlayer {
   chooseCorruptionTile(): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.chooseCorruptionTile());
   }
+
+  deadMenOfDunharrowCasualties(
+    nHits: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.deadMenOfDunharrowCasualties(nHits, regionId, cardId)
+    );
+  }
 }

@@ -334,4 +334,20 @@ export class WotrBattleUi {
       return { type: "combat-card-effect-skip", card: cardId };
     }
   }
+
+  async deadMenOfDunharrowCasualties(
+    hitPoints: number,
+    regionId: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrAction[]> {
+    const actions: WotrAction[] = [];
+    actions.push(...(await this.chooseCasualties(hitPoints, regionId, "shadow")));
+    const region = this.regionStore.region(regionId);
+    const retreatableRegions = this.unitRules.retreatableRegions(region, "shadow");
+    const toRegionId = await this.ui.askRegion("Choose a region to retreat to", retreatableRegions);
+    actions.push(retreat(toRegionId));
+    this.battleHandler.retreat(toRegionId);
+    actions.push(...(await this.ui.unitUi.checkStackingLimit(toRegionId, "shadow")));
+    return actions;
+  }
 }

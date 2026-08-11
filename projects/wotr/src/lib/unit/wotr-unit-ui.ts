@@ -753,4 +753,11 @@ export class WotrUnitUi {
     actions.push(...(await this.recruitLeaderByCard("osgiliath", "gondor")));
     return actions;
   }
+
+  async deadMenOfDunharrowRecruit(
+    regionId: WotrRegionId,
+    cardId: WotrCardId
+  ): Promise<WotrAction[]> {
+    return this.recruitUnitsInSameRegionByCard(regionId, "gondor", 3, 0, 0);
+  }
 }

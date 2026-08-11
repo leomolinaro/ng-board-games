@@ -1,11 +1,9 @@
 import { Injectable, inject } from "@angular/core";
-import { WotrAbility, WotrUiAbility } from "../ability/wotr-ability";
 import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
+import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrGameStore } from "../game/wotr-game-store";
 import { WotrStory } from "../game/wotr-story-models";
-import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayerStoryService } from "./wotr-player-story-service";
 
 @Injectable()
@@ -63,13 +61,13 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   actionResolution(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+  activateTableCard(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCombatCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+  activateCombatCard(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  activateCharacterAbility(ability: WotrAbility, characterId: WotrCharacterId): Promise<WotrStory> {
+  activateCharacterAbility(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   forfeitLeadership(): Promise<WotrStory> {
@@ -93,12 +91,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   chooseCasualties(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  chooseCasualtiesCardReaction(
-    hitPoints: number,
-    regionId: WotrRegionId,
-    cardId: WotrCardId,
-    frontId: WotrFrontId
-  ): Promise<WotrStory> {
+  chooseCasualtiesCardReaction(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   eliminateArmy(): Promise<WotrStory> {
@@ -113,27 +106,25 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   discardExcessCards(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrStory> {
+  playCharacterCardFromHand(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   eliminateUnits(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  chooseRegion(
-    regions: WotrRegionId[],
-    cardId: WotrCardId,
-    frontId: WotrFrontId
-  ): Promise<WotrStory> {
+  chooseRegion(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
-  theEaglesAreComingEffect(
-    nHits: number,
-    region: WotrRegionId,
-    cardId: WotrCardId
-  ): Promise<WotrStory> {
+  theEaglesAreComingEffect(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
+  deadMenOfDunharrowRecruit(regionId: string, cardId: string | null): Promise<WotrStory> {
+    throw new Error("Method not implemented.");
+  }
+  deadMenOfDunharrowCasualties(): Promise<WotrStory> {
     throw new Error("Method not implemented.");
   }
   chooseCorruptionTile(): Promise<WotrStory> {

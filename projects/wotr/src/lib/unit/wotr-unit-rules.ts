@@ -332,6 +332,13 @@ export class WotrUnitRules {
     });
   }
 
+  canRetreat(fromRegionId: WotrRegionId, frontId: WotrFrontId): boolean {
+    const fromRegion = this.regionStore.region(fromRegionId);
+    return fromRegion.neighbors.some(neighbor => {
+      return this.regionStore.isFreeForArmyRetreat(neighbor, frontId);
+    });
+  }
+
   retreatableRegions(fromRegion: WotrRegion, frontId: WotrFrontId): WotrRegionId[] {
     return fromRegion.neighbors
       .filter(neighbor => {

@@ -5,6 +5,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
 import { WotrStory } from "../game/wotr-story-models";
 import { WotrStoryService } from "../game/wotr-story-service";
 import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
+import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrPlayer } from "./wotr-player";
 
 @Injectable()
@@ -22,5 +23,11 @@ export class WotrFreePeoplesPlayer extends WotrPlayer {
 
   faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory> {
     return this.storyService.story(this.frontId, p => p.faramirsRangersRecruit(cardId));
+  }
+
+  deadMenOfDunharrowRecruit(regionId: WotrRegionId, cardId: WotrCardId): Promise<WotrStory> {
+    return this.storyService.story(this.frontId, p =>
+      p.deadMenOfDunharrowRecruit(regionId, cardId)
+    );
   }
 }
