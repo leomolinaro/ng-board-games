@@ -387,12 +387,11 @@ export class WotrCombatCards {
     "Foul Stench": {
       canBePlayed: params => this.unitUtils.hasNazgul(params.shadow.army()),
       effect: async (card, params) => {
+        if (params.shadow.negateNazgulLeadership) return;
         const nazgulLeadership = this.unitUtils.nazgulLeadership(params.shadow.army());
-        // TODO WOTR gandalf special ability
         const freePeoplesLeadership = this.unitUtils.leadership(params.freePeoples.army());
-        if (nazgulLeadership >= freePeoplesLeadership) {
+        if (nazgulLeadership >= freePeoplesLeadership)
           params.freePeoples.leaderRollCancelled = true;
-        }
       }
     },
     // Great Host (Initiative 7)
