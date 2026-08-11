@@ -33,6 +33,10 @@ export class WotrRegionQuery {
     return this.region().nationId === nationId;
   }
 
+  isFront(frontId: WotrFrontId): boolean {
+    return this.region().frontId === frontId;
+  }
+
   isControlledBy(frontId: WotrFrontId): boolean {
     return this.region().controlledBy === frontId;
   }

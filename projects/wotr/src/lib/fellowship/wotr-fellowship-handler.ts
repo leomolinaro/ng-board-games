@@ -7,6 +7,7 @@ import { WotrActionRegistry } from "../commons/wotr-action-registry";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrHuntFlow } from "../hunt/wotr-hunt-flow";
 import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
+import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
 import { WotrHuntStore } from "../hunt/wotr-hunt-store";
 import { WotrLogWriter } from "../log/wotr-log-writer";
 import { WotrNationHandler } from "../nation/wotr-nation-handler";
@@ -34,6 +35,7 @@ export class WotrFellowshipHandler {
   private logger = inject(WotrLogWriter);
   private q = inject(WotrGameQuery);
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
+  private huntModifiers = inject(WotrHuntModifiers);
 
   init() {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
@@ -70,14 +72,10 @@ export class WotrFellowshipHandler {
 
   async progress(): Promise<void> {
     this.fellowshipStore.setMoveAttempt();
-    if (this.fellowshipStore.isOnMordorTrack()) {
-      await this.huntFlow.resolveHunt();
+    if (!this.fellowshipStore.isOnMordorTrack()) this.fellowshipStore.increaseProgress();
+    await this.huntFlow.resolveHunt();
+    if (await this.huntModifiers.isFellowshipProgressDieAddedToHuntBoxPrevented())
       this.huntStore.addFellowshipDie();
-    } else {
-      this.fellowshipStore.increaseProgress();
-      await this.huntFlow.resolveHunt();
-      this.huntStore.addFellowshipDie();
-    }
     if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.mordorTrack() === 5) {
       throw new WotrRingDestroyed();
     }

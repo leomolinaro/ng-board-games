@@ -20,6 +20,8 @@ export type WotrHuntEffectChoiceModifier = (
 
 export type WotrAfterFellowshipReveal = (params: WotrFellowshipMove) => Promise<void>;
 
+export type WotrFellowshipProgressDieAddedToHuntBoxPrevented = () => Promise<boolean>;
+
 @Injectable()
 export class WotrHuntModifiers {
   public readonly beforeHuntRoll = new WotrModifier<WotrBeforeHuntRoll>();
@@ -66,10 +68,23 @@ export class WotrHuntModifiers {
     }
   }
 
+  public readonly fellowshipProgressDieAddedToHuntBoxPrevented =
+    new WotrModifier<WotrFellowshipProgressDieAddedToHuntBoxPrevented>();
+  public async isFellowshipProgressDieAddedToHuntBoxPrevented(): Promise<boolean> {
+    for (const handler of this.fellowshipProgressDieAddedToHuntBoxPrevented.get()) {
+      if (await handler()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   clear() {
     this.afterTileDrawn.clear();
     this.huntEffectChoices.clear();
     this.beforeHuntRoll.clear();
     this.huntDrawPrevented.clear();
+    this.afterFellowshipReveal.clear();
+    this.fellowshipProgressDieAddedToHuntBoxPrevented.clear();
   }
 }

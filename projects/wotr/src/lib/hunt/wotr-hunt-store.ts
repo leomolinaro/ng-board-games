@@ -100,13 +100,6 @@ export class WotrHuntStore {
     }));
   }
 
-  incrementFreePeopleDice(): void {
-    this.update("incrementFreePeopleDice", state => ({
-      ...state,
-      nFreePeopleDice: state.nFreePeopleDice + 1
-    }));
-  }
-
   addHuntDice(quantity: number): void {
     this.update("addHuntDice", state => ({
       ...state,

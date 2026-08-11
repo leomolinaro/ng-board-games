@@ -6,10 +6,19 @@ import {
 } from "../../action-die/wotr-action-die-modifiers";
 import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
 import { WotrAction } from "../../commons/wotr-action-models";
+import {
+  WotrAfterFellowshipDeclaration,
+  WotrFellowshipModifiers
+} from "../../fellowship/wotr-fellowship-modifiers";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrUiChoice } from "../../game/wotr-game-ui";
 import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
 import { assertAction } from "../../game/wotr-story-models";
+import {
+  WotrAfterFellowshipReveal,
+  WotrFellowshipProgressDieAddedToHuntBoxPrevented,
+  WotrHuntModifiers
+} from "../../hunt/wotr-hunt-modifiers";
 import { activateNation, advanceNation } from "../../nation/wotr-nation-actions";
 import { WotrNationHandler } from "../../nation/wotr-nation-handler";
 import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
@@ -39,17 +48,44 @@ export class WotrFreePeoplesStrategyCards {
   private unitUtils = inject(WotrUnitUtils);
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
+  private fellowshipModifiers = inject(WotrFellowshipModifiers);
+  private huntModifiers = inject(WotrHuntModifiers);
 
   createCard(cardId: WotrFreePeoplesStrategyCardId): WotrEventCard {
     switch (cardId) {
-      // TODO WOTR The Last Battle
+      // The Last Battle
       // Play on the table if Aragorn is with a Free Peoples Army in a region outside of a Free Peoples Nation.
       // While this card is in play, Action dice used to move the Fellowship are not added to the Hunt Box.
       // You must discard this card from the table as soon as the Fellowship is declared or revealed.
       case "fpstr01":
         return {
-          canBePlayed: () => false,
-          play: async ui => []
+          canBePlayed: () => {
+            const aragorn = this.q.character("aragorn");
+            if (!aragorn.isInPlay()) return false;
+            const aragornRegion = aragorn.region();
+            if (!aragornRegion) return false;
+            const region = this.q.region(aragornRegion.id);
+            if (!region.hasArmy("free-peoples")) return false;
+            if (region.isFront("free-peoples")) return false;
+            return true;
+          },
+          play: async ui => [playCardOnTableId("fpstr01")],
+          onTableAbilities: () => {
+            const huntBoxPreventedAbility: WotrAbility<WotrFellowshipProgressDieAddedToHuntBoxPrevented> =
+              {
+                modifier: this.huntModifiers.fellowshipProgressDieAddedToHuntBoxPrevented,
+                handler: async () => true
+              };
+            const discardByDeclarationAbility: WotrAbility<WotrAfterFellowshipDeclaration> = {
+              modifier: this.fellowshipModifiers.afterDeclaration,
+              handler: async params => this.cardHandler.discardCardFromTableEffect("fpstr01")
+            };
+            const discardByRevealAbility: WotrAbility<WotrAfterFellowshipReveal> = {
+              modifier: this.huntModifiers.afterFellowshipReveal,
+              handler: async params => this.cardHandler.discardCardFromTableEffect("fpstr01")
+            };
+            return [huntBoxPreventedAbility, discardByDeclarationAbility, discardByRevealAbility];
+          }
         };
       // A Power too Great
       // Play on the table.
