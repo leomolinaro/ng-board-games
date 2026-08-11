@@ -886,12 +886,13 @@ export class WotrRegionStore {
   moveArmyOutOfSiege(regionId: WotrRegionId) {
     this.updateRegion("moveArmyOutOfSiege", regionId, region => {
       const { underSiegeArmy, ...newRegion } = region;
-      if (!underSiegeArmy) {
-        throw new Error("moveArmyOutOfSiege");
-      }
+      if (!underSiegeArmy) throw new Error("moveArmyOutOfSiege");
+      const army = region.army
+        ? this.unitUtils.mergeArmies(region.army, underSiegeArmy)
+        : underSiegeArmy;
       return {
         ...newRegion,
-        army: underSiegeArmy
+        army
       };
     });
   }

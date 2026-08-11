@@ -253,7 +253,7 @@ export class WotrFreePeoplesStrategyCards {
               if (!stronghold.isBesiegedBy("shadow")) continue;
               for (const region of stronghold.adjacentRegions()) {
                 if (region.hasArmy("free-peoples")) {
-                  candidateRegions.push(stronghold.id());
+                  candidateRegions.push(region.id());
                 }
               }
             }

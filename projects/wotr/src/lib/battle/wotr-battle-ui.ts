@@ -219,7 +219,7 @@ export class WotrBattleUi {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const options: WotrUiOption<"retreat-into-siege" | "retreat" | "not-retreat">[] = [];
-    if (region.settlement === "stronghold") {
+    if (region.settlement === "stronghold" && !region.underSiegeArmy) {
       options.push({
         label: "Retreat into siege",
         value: "retreat-into-siege"

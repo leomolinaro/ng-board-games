@@ -220,7 +220,8 @@ export class WotrBattleHandler {
   async resolveBattleFlow(action: WotrArmyAttack, attacker: WotrPlayer, defender: WotrPlayer) {
     this.logger.logBattleResolution();
     const retroguard = action.retroguard;
-    const siege = !!this.attackedRegion(action).underSiegeArmy;
+    const underSiege = this.attackedRegion(action).underSiegeArmy;
+    const siege = !!underSiege && underSiege.front === defender.frontId;
     const nSiegeCombatRounds = siege ? this.getNSiegeCombatRounds() : undefined;
 
     const battle: WotrBattle = {
@@ -229,7 +230,7 @@ export class WotrBattleHandler {
       defender,
       retroguard,
       region: action.toRegion,
-      siege: !!this.attackedRegion(action).underSiegeArmy,
+      siege,
       nSiegeCombatRounds
     };
     this.battleStore.startBattle(battle);
@@ -257,9 +258,9 @@ export class WotrBattleHandler {
   }
 
   private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
-    const attackedRegion = this.attackedRegion(combatRound.action);
+    let attackedRegion = this.attackedRegion(combatRound.action);
     const hasStronghold = attackedRegion.settlement === "stronghold";
-    if (hasStronghold && !combatRound.siege) {
+    if (hasStronghold && !combatRound.siege && !attackedRegion.underSiegeArmy) {
       const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
       if (retreatIntoSiege) {
         await this.battleAdvance(combatRound.attacker.player); // TODO WOTR controllare se avanza
@@ -326,7 +327,7 @@ export class WotrBattleHandler {
       if (combatRound.action.toRegion !== combatRound.action.fromRegion) {
         await this.battleAdvance(combatRound.attacker.player);
       }
-      const attackedRegion = this.attackedRegion(combatRound.action);
+      attackedRegion = this.attackedRegion(combatRound.action);
       if (!attackedRegion.underSiegeArmy && attackedRegion.settlement) {
         this.regionHandler.setControlledBy(
           combatRound.attacker.frontId,
@@ -336,9 +337,14 @@ export class WotrBattleHandler {
         this.frontHandler.refreshVictoryPoints();
       }
       const fromRegion = this.regionStore.region(combatRound.action.fromRegion);
-      if (fromRegion.underSiegeArmy && !fromRegion.army) {
+      if (fromRegion.underSiegeArmy && !fromRegion.army)
         this.regionStore.moveArmyOutOfSiege(fromRegion.id);
-      }
+      const toRegion = this.regionStore.region(combatRound.action.toRegion);
+      if (
+        toRegion.underSiegeArmy &&
+        (!toRegion.army || toRegion.army.front === toRegion.underSiegeArmy.front)
+      )
+        this.regionStore.moveArmyOutOfSiege(toRegion.id);
     }
 
     await this.battleModifiers.onAfterCombatRound(combatRound);
