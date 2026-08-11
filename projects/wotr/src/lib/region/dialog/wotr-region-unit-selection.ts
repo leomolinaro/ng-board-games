@@ -88,7 +88,7 @@ export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection
   type: "forfeitLeadership";
   frontId: WotrFrontId;
   points: { min: number } | "all";
-  leaderRestriction: "nazgul" | "companions" | null;
+  leaderRestriction: "nazgul" | "companions" | WotrCharacterId | null;
   message: string;
 }
 
@@ -576,13 +576,19 @@ export class ForfeitLeadershipSelectionMode implements WotrRegionUnitSelectionMo
 
   private isSelectable(node: UnitNode): boolean {
     if (node.frontId !== this.params.frontId) return false;
-    if (this.params.leaderRestriction === "nazgul") {
-      if (node.type === "nazgul") return true;
-      if (node.type === "character" && node.id === "the-witch-king") return true;
-      return false;
-    } else if (this.params.leaderRestriction === "companions") {
-      if (node.type === "character" && node.frontId === "free-peoples") return true;
-      return false;
+    if (this.params.leaderRestriction) {
+      if (this.params.leaderRestriction === "nazgul") {
+        if (node.type === "nazgul") return true;
+        if (node.type === "character" && node.id === "the-witch-king") return true;
+        return false;
+      } else if (this.params.leaderRestriction === "companions") {
+        if (node.type === "character" && node.frontId === "free-peoples") return true;
+        return false;
+      } else {
+        if (node.type === "character" && node.character.id === this.params.leaderRestriction)
+          return true;
+        return false;
+      }
     } else {
       if (node.type === "leader" || node.type === "nazgul" || node.type === "character")
         return true;

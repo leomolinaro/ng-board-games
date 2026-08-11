@@ -649,6 +649,9 @@ export class WotrUnitUi {
         case "companions":
           type = "Companion ";
           break;
+        default:
+          type = `${this.q.character(params.only).name} `;
+          break;
       }
     }
     if (points === "oneOrMore") {

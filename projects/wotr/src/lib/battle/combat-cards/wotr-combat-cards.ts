@@ -114,15 +114,33 @@ export class WotrCombatCards {
     },
     // Andúril (Initiative 4)
     // Play if Strider/Aragorn is in the battle.
-    // Before rolling the dice for your Leader re-roll, forfeit Strider's Leadership to automatically change one missed die roll to a hit, or forfeit Aragorn's Leadership to
+    // Before rolling the dice for your Leader re-roll, forfeit Strider's Leadership
+    // to automatically change one missed die roll to a hit,
+    // or forfeit Aragorn's Leadership to
     // automatically change up to two missed die rolls to hits.
     "Anduril": {
-      canBePlayed: params => {
-        console.warn("Not implemented");
-        return false;
-      },
+      canBePlayed: params =>
+        params.freePeoples.army().characters?.some(c => c === "strider" || c === "aragorn") ??
+        false,
       effect: async (card, params) => {
-        throw new Error("TODO WOTR");
+        const isAragorn = params.freePeoples.army().characters?.some(c => c === "aragorn") ?? false;
+        await this.forfeitLeadership(
+          {
+            cardId: card.id,
+            frontId: "free-peoples",
+            regionId: params.freePeoples.regionId,
+            only: isAragorn ? "aragorn" : "strider",
+            points: "all"
+          },
+          this.freePeoples
+        );
+        const fp = params.freePeoples;
+        if (!fp.combatRoll || !fp.nCombatSuccesses)
+          throw new Error("Combat roll or nCombatSuccesses not defined");
+        if (fp.combatRoll.length > fp.nCombatSuccesses) {
+          fp.nCombatSuccesses += 1;
+          if (isAragorn && fp.combatRoll.length > fp.nCombatSuccesses) fp.nCombatSuccesses += 1;
+        }
       }
     },
     // Black Breath (Initiative 6)
