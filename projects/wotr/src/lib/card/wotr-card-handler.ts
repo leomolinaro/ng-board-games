@@ -98,7 +98,7 @@ export class WotrCardHandler {
       cardId,
       isFreePeoplesCard(cardId) ? "free-peoples" : "shadow"
     );
-    this.cards.deactivateAbilities(cardId);
+    this.cards.deactivateTableAbilities(cardId);
   }
 
   discardCardFromTableEffect(cardId: WotrCardId) {
@@ -113,6 +113,6 @@ export class WotrCardHandler {
 
   playCardOnTable(card: WotrCardId, front: WotrFrontId): void {
     this.frontStore.playCardOnTable(card, front);
-    this.cards.activateAbilities(card);
+    this.cards.activateTableAbilities(card);
   }
 }

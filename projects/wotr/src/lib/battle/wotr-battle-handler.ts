@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+import { WotrCards } from "../card/cards/wotr-cards";
 import { getCard, isCharacterCard } from "../card/wotr-card-models";
 import { findAction, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
 import { WotrActionRegistry } from "../commons/wotr-action-registry";
@@ -70,6 +71,7 @@ export class WotrBattleHandler {
   private unitHandler = inject(WotrUnitHandler);
   private battleModifiers = inject(WotrBattleModifiers);
   private q = inject(WotrGameQuery);
+  private cards = inject(WotrCards);
 
   init() {
     this.actionRegistry.registerAction<WotrArmyAttack>("army-attack", (action, front) =>
@@ -219,11 +221,12 @@ export class WotrBattleHandler {
 
   async resolveBattleFlow(action: WotrArmyAttack, attacker: WotrPlayer, defender: WotrPlayer) {
     this.logger.logBattleResolution();
+    const currentCardId = this.frontStore.currentCard();
+    if (currentCardId) this.cards.activateBattleAbilities(currentCardId);
     const retroguard = action.retroguard;
     const underSiege = this.attackedRegion(action).underSiegeArmy;
     const siege = !!underSiege && underSiege.front === defender.frontId;
     const nSiegeCombatRounds = siege ? this.getNSiegeCombatRounds() : undefined;
-
     const battle: WotrBattle = {
       action,
       attacker,
@@ -235,6 +238,7 @@ export class WotrBattleHandler {
     };
     this.battleStore.startBattle(battle);
     await this.resolveBattle(battle);
+    if (currentCardId) this.cards.deactivateBattleAbilities(currentCardId);
     this.battleStore.endBattle();
   }
 

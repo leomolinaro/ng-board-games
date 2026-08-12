@@ -17,9 +17,8 @@ export class WotrCardPlayUi {
   private ui = inject(WotrGameUiContext);
 
   async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
-    const card = this.cards.getCard(cardId);
     this.frontStore.discardCards([cardId], frontId);
-    return card.play(this.ui);
+    return this.cards.playCard(cardId, this.ui);
   }
 
   playEventCardChoice(cartTypes: WotrCardType[] | "any"): WotrUiChoice {

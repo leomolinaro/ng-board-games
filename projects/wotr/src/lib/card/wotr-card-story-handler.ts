@@ -41,10 +41,7 @@ export class WotrCardStoryHandler {
     } else {
       this.logger.logNoActions(story, front);
     }
-    const card = this.cards.getCard(story.card);
-    if (card.effect) {
-      await card.effect({ front, story, cardId: story.card });
-    }
+    await this.cards.triggerCardEffect(story, front);
     this.frontStore.removeCurrentActionDie(front);
     this.frontStore.clearCurrentCard();
   };

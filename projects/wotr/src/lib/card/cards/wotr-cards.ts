@@ -6,7 +6,7 @@ import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrFrontStore } from "../../front/wotr-front-store";
 import { WotrGameStore } from "../../game/wotr-game-store";
 import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrStory } from "../../game/wotr-story-models";
+import { WotrDieCardStory, WotrStory } from "../../game/wotr-story-models";
 import { WotrPlayer } from "../../player/wotr-player";
 import {
   getCard,
@@ -26,6 +26,7 @@ export interface WotrEventCard {
   play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
   effect?: (params: WotrCardParams) => Promise<void>;
   onTableAbilities?: () => WotrAbility[];
+  onBattleAbilities?: () => WotrAbility[];
 }
 
 export interface WotrCardParams {
@@ -43,7 +44,7 @@ export interface WotrCardParams {
 @Injectable()
 export class WotrCards {
   private cards: Partial<Record<WotrCardId, WotrEventCard>> = {};
-  private abilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};
+  private tableAbilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};
 
   private freePeopleCharacterCards = inject(WotrFreePeoplesCharacterCards);
   private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
@@ -52,42 +53,64 @@ export class WotrCards {
   private gameStore = inject(WotrGameStore);
   private frontStore = inject(WotrFrontStore);
 
-  getCard(cardId: WotrCardId): WotrEventCard {
-    if (!this.cards[cardId]) {
-      this.cards[cardId] = this.createCard(cardId);
-    }
+  private getCard(cardId: WotrCardId): WotrEventCard {
+    if (!this.cards[cardId]) this.cards[cardId] = this.createCard(cardId);
     return this.cards[cardId];
   }
 
-  activateAbilities(card: WotrCardId) {
+  activateTableAbilities(card: WotrCardId) {
     if (this.gameStore.isTemporaryState()) return;
-    const abilities = this.getAbilities(card);
+    const abilities = this.getTableAbilities(card);
     for (const ability of abilities) {
       if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
       ability.modifier.register(ability.handler);
     }
   }
 
-  deactivateAbilities(cardId: WotrCardId) {
+  deactivateTableAbilities(cardId: WotrCardId) {
     if (this.gameStore.isTemporaryState()) return;
-    const abilities = this.getAbilities(cardId);
+    const abilities = this.getTableAbilities(cardId);
     for (const ability of abilities) {
       ability.modifier.unregister(ability.handler);
     }
   }
 
-  private getAbilities(cardId: WotrCardId): WotrAbility[] {
-    if (!this.abilities[cardId]) {
-      const abilities = this.createAbilities(cardId);
-      this.abilities[cardId] = abilities;
+  private getTableAbilities(cardId: WotrCardId): WotrAbility[] {
+    if (!this.tableAbilities[cardId]) {
+      const abilities = this.createTableAbilities(cardId);
+      this.tableAbilities[cardId] = abilities;
     }
-    return this.abilities[cardId];
+    return this.tableAbilities[cardId];
   }
 
-  private createAbilities(cardId: WotrCardId): WotrAbility[] {
+  private createTableAbilities(cardId: WotrCardId): WotrAbility[] {
     const card = this.getCard(cardId);
     if (!card.onTableAbilities) throw new Error(`Card ${cardId} has no on-table abilities`);
     const abilities = card.onTableAbilities();
+    return abilities;
+  }
+
+  activateBattleAbilities(cardId: WotrCardId) {
+    if (this.gameStore.isTemporaryState()) return;
+    const abilities = this.getBattleAbilities(cardId);
+    for (const ability of abilities) {
+      if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
+      ability.modifier.register(ability.handler);
+    }
+  }
+
+  deactivateBattleAbilities(cardId: WotrCardId) {
+    if (this.gameStore.isTemporaryState()) return;
+    const abilities = this.getBattleAbilities(cardId);
+    for (const ability of abilities) {
+      ability.modifier.unregister(ability.handler);
+    }
+  }
+
+  private getBattleAbilities(cardId: WotrCardId): WotrAbility[] {
+    const card = this.getCard(cardId);
+    if (!card.onBattleAbilities) return [];
+    const abilities = card.onBattleAbilities();
     return abilities;
   }
 
@@ -108,6 +131,11 @@ export class WotrCards {
     return card.canBePlayed ? card.canBePlayed() : true;
   }
 
+  playCard(cardId: WotrCardId, ui: WotrGameUiContext): Promise<WotrAction[]> {
+    const card = this.getCard(cardId);
+    return card.play(ui);
+  }
+
   playableCards(cardTypes: WotrCardType[] | "any", frontId: WotrFrontId): WotrCardId[] {
     return this.frontStore
       .front(frontId)
@@ -115,6 +143,11 @@ export class WotrCards {
         cardTypes === "any" ? true : cardTypes.includes(getCard(cardId).type)
       )
       .filter(cardId => this.isPlayableCard(cardId, frontId));
+  }
+
+  async triggerCardEffect(story: WotrDieCardStory, front: WotrFrontId) {
+    const card = this.getCard(story.card);
+    if (card.effect) await card.effect({ front, story, cardId: story.card });
   }
 }
 
