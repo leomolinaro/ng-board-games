@@ -324,15 +324,19 @@ export class WotrBattleHandler {
     }
 
     if (attackerWon) {
-      if (combatRound.action.toRegion !== combatRound.action.fromRegion) {
+      if (combatRound.action.toRegion !== combatRound.action.fromRegion)
         await this.battleAdvance(combatRound.attacker.player);
-      }
       attackedRegion = this.attackedRegion(combatRound.action);
-      if (!attackedRegion.underSiegeArmy && attackedRegion.settlement) {
+      if (
+        !attackedRegion.underSiegeArmy &&
+        attackedRegion.settlement &&
+        // Check if the attacker army is advanced
+        attackedRegion.army?.front === combatRound.attacker.frontId
+      ) {
         this.regionHandler.setControlledBy(
           combatRound.attacker.frontId,
           combatRound.action.toRegion
-        ); // TODO WOTR controllare se avanza
+        );
         this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
         this.frontHandler.refreshVictoryPoints();
       }
