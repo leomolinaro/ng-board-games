@@ -263,7 +263,10 @@ export class WotrBattleHandler {
     if (hasStronghold && !combatRound.siege && !attackedRegion.underSiegeArmy) {
       const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
       if (retreatIntoSiege) {
-        await this.battleAdvance(combatRound.attacker.player); // TODO WOTR controllare se avanza
+        await this.battleAdvance(combatRound.attacker.player);
+        attackedRegion = this.attackedRegion(combatRound.action);
+        // If the attacked does not advance, the defender moves out of siege
+        if (!attackedRegion.army) this.regionStore.moveArmyOutOfSiege(attackedRegion.id);
         return false;
       }
     }
