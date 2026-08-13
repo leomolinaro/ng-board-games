@@ -8,6 +8,7 @@ import {
   WotrAfterActionDieCardResolution
 } from "../../../action-die/wotr-action-die-modifiers";
 import { WotrCombatRoll } from "../../../battle/wotr-battle-actions";
+import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
 import {
   WotrBattleModifiers,
   WotrTableCombatCardGetter
@@ -72,7 +73,6 @@ import {
   WotrShadowCharacterCardId
 } from "../../wotr-card-models";
 import { activateTableCard, WotrEventCard } from "../wotr-cards";
-import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
 
 @Injectable()
 export class WotrShadowCharacterCards {
@@ -803,7 +803,7 @@ export class WotrShadowCharacterCards {
               { value: "attack", label: "Attack with the Witch-king", disabled: !canAttack }
             ]);
             if (choice2 === "move") {
-              actions.push(...(await ui.unitUi.moveArmy("shadow", ["the-witch-king"], [])));
+              actions.push(...(await ui.unitUi.moveArmy("shadow", ["the-witch-king"], []))[0]);
             } else if (choice2 === "attack") {
               actions.push(...(await ui.unitUi.attackWithCharacter("the-witch-king")));
             }

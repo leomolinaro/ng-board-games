@@ -38,6 +38,7 @@ import {
 } from "../../../unit/wotr-unit-actions";
 import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
 import { WotrUnitRules } from "../../../unit/wotr-unit-rules";
+import { WotrMovingUnits } from "../../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
 import { discardCardFromTableById, playCardOnTableId } from "../../wotr-card-actions";
 import { WotrCardHandler } from "../../wotr-card-handler";
@@ -344,7 +345,7 @@ export class WotrShadowStrategyCards {
         return {
           play: async ui => {
             const actions: WotrAction[] = [];
-            const doneMovements: WotrArmyMovement[] = [];
+            const doneMovements: WotrMovingUnits[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
@@ -373,7 +374,11 @@ export class WotrShadowStrategyCards {
               actions.push(...movActions);
               continueMoving = false;
               const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
-              doneMovements.push(movement);
+              doneMovements.push({
+                units,
+                fromRegion: movement.fromRegion,
+                toRegion: movement.toRegion
+              });
               if (doneMovements.length < 2) {
                 continueMoving = await ui.askConfirm(
                   "Continue moving armies?",
@@ -393,7 +398,7 @@ export class WotrShadowStrategyCards {
           canBePlayed: () => this.q.shadowNations.every(nation => nation.isAtWar()),
           play: async ui => {
             const actions: WotrAction[] = [];
-            const doneMovements: WotrArmyMovement[] = [];
+            const doneMovements: WotrMovingUnits[] = [];
             let continueMoving = true;
             while (continueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions("shadow", []);
@@ -421,7 +426,11 @@ export class WotrShadowStrategyCards {
               actions.push(...movActions);
               continueMoving = false;
               const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
-              doneMovements.push(movement);
+              doneMovements.push({
+                units,
+                fromRegion: movement.fromRegion,
+                toRegion: movement.toRegion
+              });
               if (doneMovements.length < 4) {
                 continueMoving = await ui.askConfirm(
                   "Continue moving armies?",

@@ -11,6 +11,7 @@ import {
   WotrScenarioGroupInfo,
   WotrScenarioInfo
 } from "./wotr-scenario";
+import { unitScenarios } from "../unit/wotr-unit-scenarios";
 
 @Injectable({ providedIn: "root" })
 export class WotrScenarios {
@@ -22,6 +23,7 @@ export class WotrScenarios {
     this.infos = [];
     this.addScenarioGroup(fullGameScenarios(), this.infos);
     this.addScenarioGroup(cardScenarios(), this.infos);
+    this.addScenarioGroup(unitScenarios(), this.infos);
     this.addScenarioGroup(characterScenarios(), this.infos);
     this.addScenarioGroup(huntScenarios(), this.infos);
     this.addScenarioGroup(battleScenarios(), this.infos);

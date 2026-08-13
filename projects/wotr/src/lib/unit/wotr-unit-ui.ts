@@ -40,11 +40,18 @@ import {
   WotrRegionUnitMatch,
   WotrRegionUnits,
   WotrReinforcementUnit,
-  WotrUnitComposer
+  WotrUnitComposer,
+  WotrUnits
 } from "./wotr-unit-models";
 import { WotrUnitModifiers } from "./wotr-unit-modifiers";
 import { WotrUnitRules } from "./wotr-unit-rules";
 import { WotrUnitUtils } from "./wotr-unit-utils";
+
+export interface WotrMovingUnits {
+  units: WotrUnits;
+  fromRegion: WotrRegionId;
+  toRegion: WotrRegionId;
+}
 
 @Injectable()
 export class WotrUnitUi {
@@ -63,13 +70,17 @@ export class WotrUnitUi {
     requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[]
   ): Promise<WotrAction[]> {
     let continueMoving = true;
-    const doneMovements: WotrArmyMovement[] = [];
+    const doneMovements: WotrMovingUnits[] = [];
     const actions: WotrAction[] = [];
     while (continueMoving) {
-      const movActions = await this.moveArmy(frontId, requiredUnits, doneMovements);
-      actions.push(...movActions);
-      const movement = findAction<WotrArmyMovement>(movActions, "army-movement")!;
-      doneMovements.push(movement);
+      const [moveActions, movingUnits] = await this.moveArmy(frontId, requiredUnits, doneMovements);
+      actions.push(...moveActions);
+      const movement = findAction<WotrArmyMovement>(moveActions, "army-movement")!;
+      doneMovements.push({
+        units: movingUnits,
+        fromRegion: movement.fromRegion,
+        toRegion: movement.toRegion
+      });
       continueMoving = false;
       if (doneMovements.length < numberOfMoves) {
         continueMoving = await this.ui.askConfirm(
@@ -85,8 +96,8 @@ export class WotrUnitUi {
   async moveArmy(
     frontId: WotrFrontId,
     requiredUnits: ("anyLeader" | "anyNazgul" | WotrCharacterId)[],
-    doneMovements: WotrArmyMovement[]
-  ): Promise<WotrAction[]> {
+    doneMovements: WotrMovingUnits[]
+  ): Promise<[WotrAction[], WotrRegionUnits]> {
     const candidateRegions = this.unitRules.armyMovementStartingRegions(frontId, requiredUnits);
     const movingArmy = await this.ui.askRegionUnits("Select units to move", {
       regionIds: candidateRegions,
@@ -96,7 +107,8 @@ export class WotrUnitUi {
       required: true,
       doneMovements
     });
-    return this.moveThisArmy(movingArmy, frontId);
+    const actions = await this.moveThisArmy(movingArmy, frontId);
+    return [actions, movingArmy];
   }
 
   async attack(
@@ -528,7 +540,7 @@ export class WotrUnitUi {
   leaderArmyMoveChoice: WotrUiChoice = {
     label: () => "Move army with leader",
     isAvailable: (frontId: WotrFrontId) => this.unitRules.canFrontMoveArmiesWithLeader(frontId),
-    actions: async (frontId: WotrFrontId) => this.moveArmy(frontId, ["anyLeader"], [])
+    actions: async (frontId: WotrFrontId) => (await this.moveArmy(frontId, ["anyLeader"], []))[0]
   };
 
   leaderArmyAttackChoice: WotrUiChoice = {

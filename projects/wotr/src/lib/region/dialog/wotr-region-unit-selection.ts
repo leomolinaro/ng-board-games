@@ -3,13 +3,13 @@ import { WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrFrontId } from "../../front/wotr-front-models";
 import { WotrGameQuery } from "../../game/wotr-game-query";
 import { WotrNationId } from "../../nation/wotr-nation-models";
-import { WotrArmyMovement } from "../../unit/wotr-unit-actions";
 import {
   unitTypeMatchLabel,
   WotrRegionUnitTypeMatch,
   WotrUnits
 } from "../../unit/wotr-unit-models";
 import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
+import { WotrMovingUnits } from "../../unit/wotr-unit-ui";
 import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrRegion, WotrRegionId } from "../wotr-region-models";
 import { UnitNode } from "./wotr-region-unit-node";
@@ -50,7 +50,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   requiredUnits: ("anyLeader" | "anyNazgul" | "anyCharacter" | WotrCharacterId)[];
   retroguard: WotrUnits | null;
   required: boolean;
-  doneMovements: WotrArmyMovement[];
+  doneMovements: WotrMovingUnits[];
 }
 
 export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
@@ -198,9 +198,12 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   ) {}
 
   initialize(unitNodes: UnitNode[], region: WotrRegion) {
-    const excludedUnits = this.excludedUnits(this.unitSelection.doneMovements, region.id);
-    if (this.unitSelection.retroguard) {
-      unitNodes = removeRetroguardUnits(unitNodes, this.unitSelection.retroguard);
+    if (this.unitSelection.retroguard)
+      unitNodes = removeUnitNodes(unitNodes, this.unitSelection.retroguard);
+    for (const doneMovement of this.unitSelection.doneMovements) {
+      if (doneMovement.toRegion === region.id) {
+        unitNodes = removeUnitNodes(unitNodes, doneMovement.units);
+      }
     }
     for (const unitNode of unitNodes) {
       if (unitNode.group !== "army") continue;
@@ -215,7 +218,7 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  private excludedUnits(doneMovements: WotrArmyMovement[], regionId: WotrRegionId): WotrUnits {
+  private excludedUnits(doneMovements: WotrMovingUnits[], regionId: WotrRegionId): WotrUnits {
     for (const movement of this.unitSelection.doneMovements) {
       if (movement.toRegion === regionId) {
         console.error("Excluded units not implemented");
@@ -258,8 +261,8 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
   }
 }
 
-function removeRetroguardUnits(nodes: UnitNode[], retroguard: WotrUnits): UnitNode[] {
-  retroguard.regulars?.forEach(unit => {
+function removeUnitNodes(nodes: UnitNode[], removing: WotrUnits): UnitNode[] {
+  removing.regulars?.forEach(unit => {
     for (let i = 0; i < unit.quantity; i++) {
       nodes = immutableUtil.listRemoveFirst(
         node => node.type === "regular" && node.nationId === unit.nation,
@@ -267,7 +270,7 @@ function removeRetroguardUnits(nodes: UnitNode[], retroguard: WotrUnits): UnitNo
       );
     }
   });
-  retroguard.elites?.forEach(unit => {
+  removing.elites?.forEach(unit => {
     for (let i = 0; i < unit.quantity; i++) {
       nodes = immutableUtil.listRemoveFirst(
         node => node.type === "elite" && node.nationId === unit.nation,
@@ -275,7 +278,7 @@ function removeRetroguardUnits(nodes: UnitNode[], retroguard: WotrUnits): UnitNo
       );
     }
   });
-  retroguard.leaders?.forEach(unit => {
+  removing.leaders?.forEach(unit => {
     for (let i = 0; i < unit.quantity; i++) {
       nodes = immutableUtil.listRemoveFirst(
         node => node.type === "leader" && node.nationId === unit.nation,
@@ -283,12 +286,12 @@ function removeRetroguardUnits(nodes: UnitNode[], retroguard: WotrUnits): UnitNo
       );
     }
   });
-  if (retroguard.nNazgul) {
-    for (let i = 0; i < retroguard.nNazgul; i++) {
+  if (removing.nNazgul) {
+    for (let i = 0; i < removing.nNazgul; i++) {
       nodes = immutableUtil.listRemoveFirst(node => node.type === "nazgul", nodes);
     }
   }
-  retroguard.characters?.forEach(unit => {
+  removing.characters?.forEach(unit => {
     nodes = immutableUtil.listRemoveFirst(
       node => node.type === "character" && node.id === unit,
       nodes
@@ -431,7 +434,7 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
 
   initialize(unitNodes: UnitNode[]) {
     if (this.unitSelection.retroguard) {
-      unitNodes = removeRetroguardUnits(unitNodes, this.unitSelection.retroguard);
+      unitNodes = removeUnitNodes(unitNodes, this.unitSelection.retroguard);
     }
     const group = this.unitSelection.underSiege ? "underSiege" : "army";
     if (this.unitSelection.hitPoints === "full") {
