@@ -1,41 +1,53 @@
 import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility } from "../../../ability/wotr-ability";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
-} from "../../action-die/wotr-action-die-modifiers";
-import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
-import { WotrAction } from "../../commons/wotr-action-models";
+} from "../../../action-die/wotr-action-die-modifiers";
+import { attack, WotrCombatRoll } from "../../../battle/wotr-battle-actions";
+import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
+import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
+import { WotrAction } from "../../../commons/wotr-action-models";
 import {
   WotrAfterFellowshipDeclaration,
   WotrFellowshipModifiers
-} from "../../fellowship/wotr-fellowship-modifiers";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrUiChoice } from "../../game/wotr-game-ui";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { assertAction } from "../../game/wotr-story-models";
+} from "../../../fellowship/wotr-fellowship-modifiers";
+import { WotrGameQuery } from "../../../game/wotr-game-query";
+import { WotrUiChoice } from "../../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
+import { assertAction } from "../../../game/wotr-story-models";
 import {
   WotrAfterFellowshipReveal,
   WotrFellowshipProgressDieAddedToHuntBoxPrevented,
   WotrHuntModifiers
-} from "../../hunt/wotr-hunt-modifiers";
-import { activateNation, advanceNation } from "../../nation/wotr-nation-actions";
-import { WotrNationHandler } from "../../nation/wotr-nation-handler";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
-import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
-import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionQuery } from "../../region/wotr-region-query";
+} from "../../../hunt/wotr-hunt-modifiers";
+import { activateNation, advanceNation } from "../../../nation/wotr-nation-actions";
+import { WotrNationHandler } from "../../../nation/wotr-nation-handler";
+import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
+import { WotrRegionId } from "../../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import {
   WotrCanAttackRegionModifier,
   WotrCanMoveIntoRegionModifier,
   WotrUnitModifiers
-} from "../../unit/wotr-unit-modifiers";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { discardCardFromTableById, discardCardIds, playCardOnTableId } from "../wotr-card-actions";
-import { WotrCardHandler } from "../wotr-card-handler";
-import { getCard, WotrCard, WotrCardId, WotrFreePeoplesStrategyCardId } from "../wotr-card-models";
-import { WotrEventCard } from "./wotr-cards";
+} from "../../../unit/wotr-unit-modifiers";
+import { WotrUnitRules } from "../../../unit/wotr-unit-rules";
+import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
+import {
+  discardCardFromTableById,
+  discardCardIds,
+  playCardOnTableId
+} from "../../wotr-card-actions";
+import { WotrCardHandler } from "../../wotr-card-handler";
+import {
+  getCard,
+  WotrCard,
+  WotrCardId,
+  WotrFreePeoplesStrategyCardId
+} from "../../wotr-card-models";
+import { WotrEventCard } from "../wotr-cards";
 
 @Injectable()
 export class WotrFreePeoplesStrategyCards {
@@ -50,6 +62,8 @@ export class WotrFreePeoplesStrategyCards {
   private shadow = inject(WotrShadowPlayer);
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
   private huntModifiers = inject(WotrHuntModifiers);
+  private battleModifiers = inject(WotrBattleModifiers);
+  private unitRules = inject(WotrUnitRules);
 
   createCard(cardId: WotrFreePeoplesStrategyCardId): WotrEventCard {
     switch (cardId) {
@@ -314,6 +328,22 @@ export class WotrFreePeoplesStrategyCards {
             const attackingArmy = this.q.region(attackingRegion).army("free-peoples")!;
             const retroguard = this.unitUtils.splitUnits(attackingArmy, attackingUnits);
             return [attack(attackingRegion, strongholdRegion, retroguard)];
+          },
+          onBattleAbilities: () => {
+            return [
+              {
+                modifier: this.battleModifiers.cardLessCombatDiceModifier,
+                handler: (combatFront: WotrCombatFront, combatRound: WotrCombatRound) => {
+                  if (combatFront.frontId !== "shadow") return 0;
+                  const besiegedStronghold = combatRound.action.toRegion;
+                  const besiegedArmy = this.q.region(besiegedStronghold).army("free-peoples");
+                  if (!besiegedArmy)
+                    throw new Error("Besieged army not found in besieged stronghold");
+                  const nBesiegedUnits = this.unitRules.getArmyUnitCount(besiegedArmy);
+                  return nBesiegedUnits;
+                }
+              }
+            ];
           }
         };
       // Paths of the Woses

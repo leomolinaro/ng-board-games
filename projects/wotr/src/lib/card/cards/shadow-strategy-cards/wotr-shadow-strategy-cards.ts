@@ -1,48 +1,48 @@
 import { inject, Injectable } from "@angular/core";
-import { immutableUtil } from "../../../../../commons/utils/src";
-import { WotrAbility } from "../../ability/wotr-ability";
-import { discardDice } from "../../action-die/wotr-action-die-actions";
+import { immutableUtil } from "../../../../../../commons/utils/src";
+import { WotrAbility } from "../../../ability/wotr-ability";
+import { discardDice } from "../../../action-die/wotr-action-die-actions";
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers
-} from "../../action-die/wotr-action-die-modifiers";
-import { attack, WotrCombatRoll } from "../../battle/wotr-battle-actions";
-import { WotrCombatFront, WotrCombatRound } from "../../battle/wotr-battle-models";
+} from "../../../action-die/wotr-action-die-modifiers";
+import { attack, WotrCombatRoll } from "../../../battle/wotr-battle-actions";
+import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
 import {
   WotrBattleModifiers,
   WotrCanUseCombatCardModifier
-} from "../../battle/wotr-battle-modifiers";
-import { moveCharacters } from "../../character/wotr-character-actions";
-import { WotrCharacterHandler } from "../../character/wotr-character-handler";
-import { findAction, WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrUiChoice } from "../../game/wotr-game-ui";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { recedeNation, WotrPoliticalRecede } from "../../nation/wotr-nation-actions";
-import { WotrNationId } from "../../nation/wotr-nation-models";
+} from "../../../battle/wotr-battle-modifiers";
+import { moveCharacters } from "../../../character/wotr-character-actions";
+import { WotrCharacterHandler } from "../../../character/wotr-character-handler";
+import { findAction, WotrAction } from "../../../commons/wotr-action-models";
+import { WotrGameQuery } from "../../../game/wotr-game-query";
+import { WotrUiChoice } from "../../../game/wotr-game-ui";
+import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
+import { recedeNation, WotrPoliticalRecede } from "../../../nation/wotr-nation-actions";
+import { WotrNationId } from "../../../nation/wotr-nation-models";
 import {
   WotrAfterNationAdvance,
   WotrCanAdvanceNationModifier,
   WotrNationModifiers
-} from "../../nation/wotr-nation-modifiers";
-import { WotrNationAdvanceSource } from "../../nation/wotr-nation-rules";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
-import { targetRegion, WotrRegionChoose } from "../../region/wotr-region-actions";
-import { WotrRegionId } from "../../region/wotr-region-models";
-import { WotrRegionQuery } from "../../region/wotr-region-query";
+} from "../../../nation/wotr-nation-modifiers";
+import { WotrNationAdvanceSource } from "../../../nation/wotr-nation-rules";
+import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
+import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
+import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
+import { WotrRegionId } from "../../../region/wotr-region-models";
+import { WotrRegionQuery } from "../../../region/wotr-region-query";
 import {
   eliminateLeader,
   upgradeRegularUnit,
   WotrArmyMovement
-} from "../../unit/wotr-unit-actions";
-import { WotrUnitHandler } from "../../unit/wotr-unit-handler";
-import { WotrUnitRules } from "../../unit/wotr-unit-rules";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { discardCardFromTableById, playCardOnTableId } from "../wotr-card-actions";
-import { WotrCardHandler } from "../wotr-card-handler";
-import { WotrShadowStrategyCardId } from "../wotr-card-models";
-import { WotrEventCard } from "./wotr-cards";
+} from "../../../unit/wotr-unit-actions";
+import { WotrUnitHandler } from "../../../unit/wotr-unit-handler";
+import { WotrUnitRules } from "../../../unit/wotr-unit-rules";
+import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
+import { discardCardFromTableById, playCardOnTableId } from "../../wotr-card-actions";
+import { WotrCardHandler } from "../../wotr-card-handler";
+import { WotrShadowStrategyCardId } from "../../wotr-card-models";
+import { WotrEventCard } from "../wotr-cards";
 
 @Injectable()
 export class WotrShadowStrategyCards {
@@ -151,6 +151,24 @@ export class WotrShadowStrategyCards {
               strongholdRegions.map(region => region.id())
             );
             return ui.unitUi.attackStronghold(regionId, "shadow");
+          },
+          onBattleAbilities: () => {
+            return [
+              {
+                modifier: this.battleModifiers.nSiegeRoundsModifier,
+                handler: () => 3
+              },
+              {
+                modifier: this.battleModifiers.canUseCombatCardModifier,
+                handler: (combatFront: WotrCombatFront, combatRound: WotrCombatRound) => {
+                  if (combatFront.frontId !== "free-peoples") return true;
+                  if (combatRound.round !== 1) return true;
+                  const freeArmy = combatRound.defender.army();
+                  if (this.unitUtils.hasCompanions(freeArmy)) return true;
+                  return false;
+                }
+              }
+            ];
           }
         };
       // Denethor's Folly
@@ -418,8 +436,9 @@ export class WotrShadowStrategyCards {
       // Corsairs of Umbar
       // Play if the Southrons & Easterlings are "At War."
       // Move one Shadow Army from Umbar to a Gondar coastal region (check the stacking limit immediately if it is merging with another Army).
-      // If there is a Free Peoples Army in the region, a battle starts. The attacking Shadow Army cannot cease the attack, unless the Free Peoples Army was already under
-      // siege.
+      // If there is a Free Peoples Army in the region, a battle starts.
+      // The attacking Shadow Army cannot cease the attack, unless the Free Peoples Army
+      // was already under siege.
       case "sstr10":
         return {
           canBePlayed: () => this.q.southrons.isAtWar(),
@@ -450,6 +469,17 @@ export class WotrShadowStrategyCards {
               actions.push(...(await ui.unitUi.moveThisArmyTo(units, "shadow", toRegionId)));
             }
             return actions;
+          },
+          onBattleAbilities: () => {
+            return [
+              {
+                modifier: this.battleModifiers.canCeaseModifier,
+                handler: (combatRound: WotrCombatRound) => {
+                  if (combatRound.siege) return true;
+                  return false;
+                }
+              }
+            ];
           }
         };
       // Rage Of The Dunlendings

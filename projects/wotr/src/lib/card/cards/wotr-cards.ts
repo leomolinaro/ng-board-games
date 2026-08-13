@@ -17,9 +17,9 @@ import {
   WotrCardType
 } from "../wotr-card-models";
 import { WotrFreePeoplesCharacterCards } from "./free-peoples-character-cards/wotr-free-peoples-character-cards";
-import { WotrFreePeoplesStrategyCards } from "./wotr-free-peoples-strategy-cards";
-import { WotrShadowCharacterCards } from "./wotr-shadow-character-cards/wotr-shadow-character-cards";
-import { WotrShadowStrategyCards } from "./wotr-shadow-strategy-cards";
+import { WotrFreePeoplesStrategyCards } from "./free-peoples-strategy-cards/wotr-free-peoples-strategy-cards";
+import { WotrShadowCharacterCards } from "./shadow-character-cards/wotr-shadow-character-cards";
+import { WotrShadowStrategyCards } from "./shadow-strategy-cards/wotr-shadow-strategy-cards";
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;

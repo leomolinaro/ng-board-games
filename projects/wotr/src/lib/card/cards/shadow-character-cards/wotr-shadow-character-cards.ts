@@ -72,6 +72,7 @@ import {
   WotrShadowCharacterCardId
 } from "../../wotr-card-models";
 import { activateTableCard, WotrEventCard } from "../wotr-cards";
+import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
 
 @Injectable()
 export class WotrShadowCharacterCards {
@@ -622,6 +623,24 @@ export class WotrShadowCharacterCards {
           play: async ui => {
             const regionId = this.q.character("the-witch-king").region()!.id;
             return ui.unitUi.attackStronghold(regionId, "shadow");
+          },
+          onBattleAbilities: () => {
+            return [
+              {
+                modifier: this.battleModifiers.nSiegeRoundsModifier,
+                handler: () => 3
+              },
+              {
+                modifier: this.battleModifiers.canUseCombatCardModifier,
+                handler: (combatFront: WotrCombatFront, combatRound: WotrCombatRound) => {
+                  if (combatFront.frontId !== "free-peoples") return true;
+                  if (combatRound.round !== 1) return true;
+                  const freeArmy = combatRound.defender.army();
+                  if (this.unitUtils.hasCompanions(freeArmy)) return true;
+                  return false;
+                }
+              }
+            ];
           }
         };
       // The Palantír of Orthanc

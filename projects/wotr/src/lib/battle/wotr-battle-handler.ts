@@ -120,11 +120,8 @@ export class WotrBattleHandler {
   }
 
   private getNSiegeCombatRounds() {
-    const currentCard = this.frontStore.currentCard();
-    if (currentCard) {
-      // TODO WOTR modifiers
-      if (currentCard === "sstr02" || currentCard === "scha20") return 3;
-    }
+    const nRounds = this.battleModifiers.getNSiegeRounds();
+    if (nRounds !== undefined) return nRounds;
     return 1;
   }
 
@@ -312,7 +309,7 @@ export class WotrBattleHandler {
           }
         }
       } else {
-        const mustContinueBattle = !this.canCease(combatRound);
+        const mustContinueBattle = !this.battleModifiers.canCease(combatRound);
         let wantContinueBattle = false;
         if (!mustContinueBattle) wantContinueBattle = await this.wantContinueBattle(combatRound);
         if (mustContinueBattle || wantContinueBattle) {
@@ -337,7 +334,7 @@ export class WotrBattleHandler {
       if (
         !attackedRegion.underSiegeArmy &&
         attackedRegion.settlement &&
-        // Check if the attacker army is advanced
+        // Check if the attacker army has advanced
         attackedRegion.army?.front === combatRound.attacker.frontId
       ) {
         this.regionHandler.setControlledBy(
@@ -377,7 +374,7 @@ export class WotrBattleHandler {
   }
 
   private async chooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound) {
-    if (!this.canChooseCombatCard(combatFront, combatRound)) return;
+    if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound)) return;
     const story = await combatFront.player.chooseCombatCard(combatRound);
     const action = assertAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
       story,
@@ -392,29 +389,6 @@ export class WotrBattleHandler {
       case "combat-card-choose-not":
         break;
     }
-  }
-
-  private canChooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound): boolean {
-    const currentCard = this.frontStore.currentCard();
-    if (!currentCard) return true;
-    if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound)) return false;
-    // TODO WOTR modifiers
-    if (combatFront.frontId === "shadow") return true;
-    if (currentCard === "sstr02" || currentCard === "scha20") {
-      if (combatRound.round !== 1) return true;
-      const freeArmy = combatRound.defender.army();
-      if (this.unitUtils.hasCompanions(freeArmy)) return true;
-      return false;
-    }
-    return true;
-  }
-
-  private canCease(combatRound: WotrCombatRound): boolean {
-    const currentCard = this.frontStore.currentCard();
-    if (!currentCard) return true;
-    // TODO WOTR modifiers
-    if (currentCard === "sstr10") return false;
-    return true;
   }
 
   private revealCombatCards(combatRound: WotrCombatRound) {
@@ -574,26 +548,14 @@ export class WotrBattleHandler {
   private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
     const combatStrength = this.getCombatStrength(combatFront, combatRound);
     let nRolls = Math.min(combatStrength, 5);
-    const lessCombatDiceByCard = this.lessCombatDiceByCard(combatFront, combatRound);
+    const lessCombatDiceByCard = this.battleModifiers.getCardLessCombatDice(
+      combatFront,
+      combatRound
+    );
     if (lessCombatDiceByCard) nRolls = Math.max(1, nRolls - lessCombatDiceByCard);
     if (combatFront.lessNCombatDice) nRolls = Math.max(1, nRolls - combatFront.lessNCombatDice);
     if (combatFront.maxNCombatDice) nRolls = Math.min(nRolls, combatFront.maxNCombatDice);
     return nRolls;
-  }
-
-  private lessCombatDiceByCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
-    const card = this.frontStore.currentCard();
-    if (!card) return 0;
-    // TODO WOTR modifier
-    // Help Unlooked For
-    if (card === "fpstr10" && combatFront.frontId === "shadow") {
-      const besiegedStronghold = combatRound.action.toRegion;
-      const besiegedArmy = this.q.region(besiegedStronghold).army("free-peoples");
-      if (!besiegedArmy) throw new Error("Besieged army not found in besieged stronghold");
-      const nBesiegedUnits = this.unitRules.getArmyUnitCount(besiegedArmy);
-      return nBesiegedUnits;
-    }
-    return 0;
   }
 
   private getNReRolls(
