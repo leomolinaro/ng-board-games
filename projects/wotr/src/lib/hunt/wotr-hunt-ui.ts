@@ -143,7 +143,12 @@ export class WotrHuntUi {
   async revealFellowship(): Promise<[WotrFellowshipReveal]> {
     const progress = this.fellowshipStore.progress();
     const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
-    const reachableRegions = this.regionStore.reachableRegions(fellowshipRegion.id, progress);
+    const reachableRegions = this.regionStore.reachableRegions(
+      fellowshipRegion.id,
+      progress,
+      undefined,
+      region => region.id !== "minas-morgul" && region.id !== "morannon"
+    );
     const validRegions = reachableRegions.filter(r => {
       const region = this.regionStore.region(r);
       if (region.settlement !== "city" && region.settlement !== "stronghold") return true;
