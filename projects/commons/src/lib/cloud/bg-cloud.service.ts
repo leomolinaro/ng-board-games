@@ -1,25 +1,26 @@
-import { Injectable, Injector, inject, runInInjectionContext } from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   CollectionReference,
   DocumentReference,
   FieldPath,
   Firestore,
   OrderByDirection,
+  Query,
   QueryConstraint,
   WhereFilterOp,
   collection,
-  collectionData,
   deleteDoc,
   doc,
-  docData,
   getDoc,
   getDocs,
+  getFirestore,
+  onSnapshot,
   orderBy,
   query,
   setDoc,
   updateDoc,
   where
-} from "@angular/fire/firestore";
+} from "firebase/firestore";
 import { Observable, from } from "rxjs";
 
 export type BgCloudCollectionQuery<T> = (factory: BgCloudQueryContraintFactory) => unknown;
@@ -50,8 +51,7 @@ export class BgCloudCollection<T> {
   providedIn: "root"
 })
 export class BgCloudService {
-  private firestore = inject(Firestore);
-  private injector = inject(Injector);
+  private firestore: Firestore = getFirestore();
 
   collection<T>(path: string): BgCloudCollection<T> {
     return new BgCloudCollection<T>(path); // collection (this.firestore, path, queryFn) as BgCloudCollection<T>;
@@ -65,9 +65,9 @@ export class BgCloudService {
       const qf = new BgCloudQueryContraintFactory();
       queryFn(qf);
       const q = query(this.getCollectionRef(coll), ...qf.get());
-      return collectionData(q);
+      return this.collectionData$<T>(q);
     } else {
-      return collectionData(this.getCollectionRef(coll)); // collection.valueChanges ();
+      return this.collectionData$<T>(this.getCollectionRef(coll));
     }
   }
 
@@ -92,16 +92,14 @@ export class BgCloudService {
     coll: BgCloudCollection<T>,
     queryFn?: BgCloudCollectionQuery<T> | undefined
   ) {
-    return runInInjectionContext(this.injector, () => {
-      if (queryFn) {
-        const qf = new BgCloudQueryContraintFactory();
-        queryFn(qf);
-        const q = query(this.getCollectionRef(coll), ...qf.get());
-        return getDocs(q);
-      } else {
-        return getDocs(this.getCollectionRef(coll));
-      }
-    });
+    if (queryFn) {
+      const qf = new BgCloudQueryContraintFactory();
+      queryFn(qf);
+      const q = query(this.getCollectionRef(coll), ...qf.get());
+      return getDocs(q);
+    }
+
+    return getDocs(this.getCollectionRef(coll));
   }
 
   private getCollectionRef<T>(
@@ -112,7 +110,7 @@ export class BgCloudService {
   }
 
   select$<T>(path: string, coll: BgCloudCollection<T>): Observable<T | undefined> {
-    return docData(this.getDocRef(coll, path));
+    return this.docData$<T>(this.getDocRef(coll, path));
   }
 
   get$<T>(path: string, coll: BgCloudCollection<T>): Observable<T | undefined> {
@@ -120,9 +118,7 @@ export class BgCloudService {
   }
 
   async get<T>(path: string, coll: BgCloudCollection<T>): Promise<T | undefined> {
-    const snapshot = await runInInjectionContext(this.injector, () =>
-      getDoc(this.getDocRef(coll, path))
-    );
+    const snapshot = await getDoc(this.getDocRef(coll, path));
     return snapshot.data();
   }
 
@@ -130,9 +126,7 @@ export class BgCloudService {
     coll: BgCloudCollection<T>,
     ...pathSegments: string[]
   ): DocumentReference<T> {
-    return runInInjectionContext(this.injector, () =>
-      doc(this.firestore, coll.path, ...pathSegments)
-    ) as DocumentReference<T>;
+    return doc(this.firestore, coll.path, ...pathSegments) as DocumentReference<T>;
   }
 
   insert$<T extends object>(
@@ -158,7 +152,7 @@ export class BgCloudService {
   }
 
   async set<T extends object>(id: string, data: T, coll: BgCloudCollection<T>): Promise<T> {
-    await runInInjectionContext(this.injector, () => setDoc(this.getDocRef(coll, id), data));
+    await setDoc(this.getDocRef(coll, id), data);
     return data;
   }
 
@@ -189,5 +183,33 @@ export class BgCloudService {
   async delete<T>(path: string, coll: BgCloudCollection<T>) {
     const docRef = this.getDocRef(coll, path);
     await deleteDoc(docRef);
+  }
+
+  private collectionData$<T>(ref: Query<T> | CollectionReference<T>) {
+    return new Observable<T[]>(subscriber => {
+      const unsubscribe = onSnapshot(
+        ref,
+        snapshot => {
+          subscriber.next(snapshot.docs.map(docSnap => docSnap.data() as T));
+        },
+        error => subscriber.error(error)
+      );
+
+      return unsubscribe;
+    });
+  }
+
+  private docData$<T>(ref: DocumentReference<T>) {
+    return new Observable<T | undefined>(subscriber => {
+      const unsubscribe = onSnapshot(
+        ref,
+        snapshot => {
+          subscriber.next(snapshot.data());
+        },
+        error => subscriber.error(error)
+      );
+
+      return unsubscribe;
+    });
   }
 }

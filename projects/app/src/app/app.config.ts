@@ -1,21 +1,21 @@
 import { HttpClientModule } from "@angular/common/http";
-import { ApplicationConfig, importProvidersFrom } from "@angular/core";
-import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { getAuth, provideAuth } from "@angular/fire/auth";
-import { getFirestore, provideFirestore } from "@angular/fire/firestore";
+import { ApplicationConfig, importProvidersFrom, provideAppInitializer } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { provideRouter } from "@angular/router";
+import { provideTaiga } from "@taiga-ui/core";
+import { getApps, initializeApp } from "firebase/app";
 import { environment } from "../environments/environment";
 import { appRoutes } from "./app.routes";
-import { provideTaiga } from "@taiga-ui/core";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(appRoutes),
     importProvidersFrom(HttpClientModule, BrowserAnimationsModule),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
+    provideAppInitializer(() => {
+      if (!getApps().length) {
+        initializeApp(environment.firebase);
+      }
+    }),
     provideTaiga()
   ]
 };

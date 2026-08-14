@@ -1,13 +1,15 @@
-import { inject, Injectable, Injector, runInInjectionContext } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   Auth,
-  user as fireUser,
+  getAuth,
   GoogleAuthProvider,
+  onAuthStateChanged,
   signInWithPopup,
+  signOut,
   User
-} from "@angular/fire/auth";
+} from "firebase/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
-import { catchError, first, map, switchMap } from "rxjs/operators";
+import { catchError, map, switchMap } from "rxjs/operators";
 import { BgCloudService } from "../cloud/bg-cloud.service";
 
 export type BgUserLoginType = "guest" | "google";
@@ -137,8 +139,7 @@ export class BgAuthService {
   providedIn: "root"
 })
 class BgGoogleAuthProvider implements IBgAuthProvider {
-  private auth: Auth = inject(Auth);
-  private injector = inject(Injector);
+  private auth: Auth = getAuth();
 
   signIn$(): Observable<BgUser | null> {
     return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
@@ -147,16 +148,22 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
   }
 
   signOut$() {
-    return from(this.auth.signOut());
+    return from(signOut(this.auth));
   }
 
   autoSignIn$(): Observable<BgUser | null> {
-    return runInInjectionContext(this.injector, () =>
-      fireUser(this.auth).pipe(
-        first(),
-        map(authUser => this.googleUserToBgUser(authUser))
-      )
-    );
+    return new Observable(subscriber => {
+      const unsubscribe = onAuthStateChanged(
+        this.auth,
+        authUser => {
+          subscriber.next(this.googleUserToBgUser(authUser));
+          subscriber.complete();
+        },
+        error => subscriber.error(error)
+      );
+
+      return unsubscribe;
+    });
   }
 
   private googleUserToBgUser(authUser: User | null): BgUser | null {

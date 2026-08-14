@@ -10,11 +10,3 @@
 import { setupZoneTestEnv } from "jest-preset-angular/setup-env/zone";
 
 setupZoneTestEnv();
-
-jest.mock("@angular/fire/auth", () => ({
-  Auth: jest.fn(),
-  user: jest.fn(),
-  GoogleAuthProvider: jest.fn(),
-  signInWithPopup: jest.fn(),
-  User: jest.fn()
-}));

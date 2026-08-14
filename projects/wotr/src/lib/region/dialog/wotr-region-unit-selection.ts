@@ -218,16 +218,6 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  private excludedUnits(doneMovements: WotrMovingUnits[], regionId: WotrRegionId): WotrUnits {
-    for (const movement of this.unitSelection.doneMovements) {
-      if (movement.toRegion === regionId) {
-        console.error("Excluded units not implemented");
-        // TODO WOTR
-      }
-    }
-    return {};
-  }
-
   canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 0 && !this.unitSelection.required) return true;
     const someArmyUnits = selectedNodes.some(node => {

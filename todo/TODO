@@ -1,5 +1,19 @@
-KOME
+ARCHITECTURE
+[] setup vite test
+[] divide repo, and choose names
+[] ai instructions
+[] copyright
+[] remove angular material and use taiga ui
+[] angular upgrade
+[] upgrade other deps
+[] reduce/remove rxjs
 
+WOTR
+[] refactor logs
+[] improve recruiting ui
+[] character descriptions
+
+KOME
 [v] corruption attempts
   [] hunt tile choose dialog
 [v] minions entering the game
