@@ -45,6 +45,7 @@ export interface WotrCardParams {
 export class WotrCards {
   private cards: Partial<Record<WotrCardId, WotrEventCard>> = {};
   private tableAbilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};
+  private battleAbilities: Partial<Record<WotrCardId, WotrAbility[]>> = {};
 
   private freePeopleCharacterCards = inject(WotrFreePeoplesCharacterCards);
   private freePeopleStrategyCards = inject(WotrFreePeoplesStrategyCards);
@@ -108,6 +109,14 @@ export class WotrCards {
   }
 
   private getBattleAbilities(cardId: WotrCardId): WotrAbility[] {
+    if (!this.battleAbilities[cardId]) {
+      const abilities = this.createBattleAbilities(cardId);
+      this.battleAbilities[cardId] = abilities;
+    }
+    return this.battleAbilities[cardId];
+  }
+
+  private createBattleAbilities(cardId: WotrCardId): WotrAbility[] {
     const card = this.getCard(cardId);
     if (!card.onBattleAbilities) return [];
     const abilities = card.onBattleAbilities();

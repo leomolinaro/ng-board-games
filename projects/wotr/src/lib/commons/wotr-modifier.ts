@@ -1,4 +1,6 @@
 export class WotrModifier<V> {
+  constructor(private name?: string) {}
+
   private modifiers: V[] = [];
   register(modifier: V): void {
     this.modifiers.push(modifier);

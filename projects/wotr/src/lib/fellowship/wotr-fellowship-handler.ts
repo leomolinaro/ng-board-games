@@ -14,6 +14,7 @@ import { WotrNationHandler } from "../nation/wotr-nation-handler";
 import { WotrRegionId } from "../region/wotr-region-models";
 import { WotrRegionStore } from "../region/wotr-region-store";
 import {
+  changeGuide,
   corruptFellowship,
   WotrFellowshipAction,
   WotrFellowshipCorruption
@@ -74,11 +75,10 @@ export class WotrFellowshipHandler {
     this.fellowshipStore.setMoveAttempt();
     if (!this.fellowshipStore.isOnMordorTrack()) this.fellowshipStore.increaseProgress();
     await this.huntFlow.resolveHunt();
-    if (await this.huntModifiers.isFellowshipProgressDieAddedToHuntBoxPrevented())
+    if (!(await this.huntModifiers.isFellowshipProgressDieAddedToHuntBoxPrevented()))
       this.huntStore.addFellowshipDie();
-    if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.mordorTrack() === 5) {
+    if (this.fellowshipStore.isOnMordorTrack() && this.fellowshipStore.mordorTrack() === 5)
       throw new WotrRingDestroyed();
-    }
   }
 
   reveal(regionId: WotrRegionId): void {
