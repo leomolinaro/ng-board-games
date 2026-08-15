@@ -15,7 +15,6 @@
             "outputPath": "dist/projects/app",
             "index": "projects/app/src/index.html",
             "browser": "projects/app/src/main.ts",
-            "polyfills": ["zone.js"],
             "tsConfig": "projects/app/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
@@ -261,7 +260,6 @@
   "cli": {
     "analytics": false
   },
-  "defaultProject": "app",
   "schematics": {
     "@schematics/angular:component": {
       "type": "component"

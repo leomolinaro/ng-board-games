@@ -22,7 +22,7 @@ import { getRandomLands } from "./barony-initializer";
   template: ` <bg-home [config]="config"></bg-home> `,
   styles: [
     `
-      @import "barony-variables";
+      @use "barony-variables" as *;
 
       ::ng-deep {
         .barony-player-blue {

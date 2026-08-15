@@ -1,4 +1,4 @@
-@import "brit-variables";
+@use "brit-variables" as *;
 
 .brit-board {
   position: absolute;

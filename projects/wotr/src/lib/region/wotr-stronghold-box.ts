@@ -242,7 +242,7 @@ export class WotrStrongholdBox {
   protected assets = inject(WotrAssetsStore);
 
   region = input.required<WotrRegion>();
-  army = input.required<WotrArmy>();
+  army = input.required<WotrArmy | undefined>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
 
   @Output() regionClick = new EventEmitter<void>();
@@ -256,11 +256,12 @@ export class WotrStrongholdBox {
     const path = this.mapService.getStrongholdPath(region.id)!;
     const shadowFrame =
       region.frontId === "free-peoples" && frontOfNation(region.nationId!) === "shadow";
+    const army = this.army();
     const node: WotrRegionNode = {
       id: region.id,
       region,
       path,
-      army: this.army() ? this.regionToArmyNode(this.army(), region) : null,
+      army: army ? this.regionToArmyNode(army, region) : null,
       tooltip: region.name,
       shadowFrame: shadowFrame
         ? {

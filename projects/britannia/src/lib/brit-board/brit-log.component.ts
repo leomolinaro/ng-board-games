@@ -60,7 +60,7 @@ type BritLogFragment =
   `,
   styles: [
     `
-      @import "brit-variables";
+      @use "brit-variables" as *;
 
       .brit-log {
         margin-left: 1.5vw;

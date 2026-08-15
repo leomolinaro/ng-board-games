@@ -20,7 +20,7 @@ import {
   template: ` <bg-home [config]="config"></bg-home> `,
   styles: [
     `
-      @import "brit-variables";
+      @use "brit-variables" as *;
 
       ::ng-deep {
         .brit-player-blue {

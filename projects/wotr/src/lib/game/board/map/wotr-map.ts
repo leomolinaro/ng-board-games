@@ -112,10 +112,10 @@ export class WotrMap {
   private ui = inject(WotrGameUi);
 
   regions = input.required<WotrRegion[]>();
-  hunt = input.required<WotrHuntState[]>();
+  hunt = input.required<WotrHuntState>();
   freePeoples = input.required<WotrFront>();
   shadow = input.required<WotrFront>();
-  fellowship = input.required<WotrFellowship[]>();
+  fellowship = input.required<WotrFellowship>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
   fronts = computed(() => [this.freePeoples(), this.shadow()]);
 

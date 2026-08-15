@@ -1,27 +1,18 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": false,
+    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noImplicitThis": false,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "declaration": false,
+    "isolatedModules": true,
     "experimentalDecorators": true,
-    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
-    "useDefineForClassFields": false,
-    "lib": ["ES2022", "dom"],
-    "baseUrl": ".",
-    "rootDir": ".",
+    "module": "preserve",
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@leobg/agot": ["projects/agot/src/index.ts"],
       "@leobg/barony": ["projects/barony/src/index.ts"],
@@ -36,9 +27,7 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true,
-    "strictInputTypes": false,
-    "fullTemplateTypeCheck": true
+    "strictInputTypes": false
   },
   "exclude": ["node_modules", "tmp"]
 }

@@ -4,9 +4,8 @@ ARCHITECTURE
 [] ai instructions
 [] copyright
 [] remove angular material and use taiga ui
-[] angular upgrade
-[] upgrade other deps
 [] reduce/remove rxjs
+[] remove ignoreDeprecations strictInputTypes
 
 WOTR
 [] refactor logs

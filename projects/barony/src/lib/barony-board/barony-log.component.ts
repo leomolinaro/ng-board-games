@@ -68,7 +68,7 @@ type BaronyLogFragment =
   `,
   styles: [
     `
-      @import "barony-variables";
+      @use "barony-variables" as *;
 
       .b-log {
         &.b-log-title {

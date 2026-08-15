@@ -1,4 +1,4 @@
-import { withDevtools } from "@angular-architects/ngrx-toolkit";
+// import { withDevtools } from "@angular-architects/ngrx-toolkit";
 import { computed, inject, Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
@@ -90,8 +90,7 @@ function initialeState(): WotrGameState {
 @Injectable()
 export class WotrGameStore extends signalStore(
   { protectedState: false },
-  withDevtools("WotrGameStore"),
-  // withDevtoo
+  // withDevtools("WotrGameStore"),
   withState<WotrGameState>(initialeState())
 ) {
   constructor() {

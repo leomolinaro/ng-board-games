@@ -46,7 +46,7 @@ interface BritUnitNode {
   `,
   styles: [
     `
-      @import "bg-variables";
+      @use "bg-variables" as *;
       :host {
         display: flex;
         flex-direction: column;

@@ -176,7 +176,7 @@ export function ChangeListener() {
   ) => {
     const originalMethod = methodDescriptor.value;
     if (originalMethod) {
-      methodDescriptor.value = function (...args: any) {
+      methodDescriptor.value = function (this: any, ...args: any) {
         const obs$ = originalMethod.apply(this, args);
         // tslint:disable-next-line: deprecation
         obs$.pipe(untilDestroy(this)).subscribe();
@@ -262,7 +262,7 @@ function asyncEventDecorator(
     const copyArgs = copyNgOnChangesArg && methodName === "ngOnChanges";
     const originalMethod: (...args: any) => Observable<any> | void = methodDescriptor.value!;
     const asyncEventSubscribed = asyncEventSubscribedSymbol(methodName);
-    methodDescriptor.value = function (...args: any): void {
+    methodDescriptor.value = function (this: any, ...args: any): void {
       // Controllo l'esistenza e eventualmente istanzio il subject origine di tutti gli eventi asincroni.
       let $origin: Subject<{ args: any[]; eventName: string }> = this[asyncEventSubjectSymbol];
       if (!$origin) {

@@ -36,7 +36,7 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         [region]="region"
         [fellowship]="region.fellowship ? fellowship() : null"
         [characterById]="characterById()"
-        [valid]="!validRegions() || validRegionById()[region.id]"
+        [valid]="(!validRegions() || validRegionById()[region.id]) ?? false"
         (regionClick)="onRegionClick(region)"></svg:g>
       @if (region.settlement === "stronghold") {
         <svg:g

@@ -1,3 +1,4 @@
+import { NgClass } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,7 +8,6 @@ import {
   Output,
   SimpleChanges
 } from "@angular/core";
-import { NgClass } from "@angular/common";
 
 @Component({
   selector: "brit-actions",
@@ -58,7 +58,7 @@ import { NgClass } from "@angular/common";
   `,
   styles: [
     `
-      @import "barony-variables";
+      @use "barony-variables" as *;
 
       .brit-actions {
         display: grid;
