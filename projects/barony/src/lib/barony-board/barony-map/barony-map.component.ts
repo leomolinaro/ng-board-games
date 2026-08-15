@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  ViewChild
-} from "@angular/core";
+import { Component, OnChanges, ViewChild, input, output } from "@angular/core";
 import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../../barony-models";
@@ -16,15 +8,14 @@ import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.compon
   selector: "barony-map",
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BgSvgComponent, BgMapZoomDirective, BaronyLandComponent]
 })
 export class BaronyMapComponent implements OnChanges {
   constructor() {}
 
-  @Input() lands!: BaronyLand[];
-  @Input() validLands: BaronyLandCoordinates[] | null = null;
-  @Output() landTileClick = new EventEmitter<BaronyLand>();
+  readonly lands = input.required<BaronyLand[]>();
+  readonly validLands = input<BaronyLandCoordinates[] | null>(null);
+  readonly landTileClick = output<BaronyLand>();
 
   @ViewChild(BgMapZoomDirective, { static: true })
   bgMapZoom!: BgMapZoomDirective;
@@ -33,9 +24,10 @@ export class BaronyMapComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges<BaronyMapComponent>): void {
     if (changes.validLands) {
-      if (this.validLands) {
+      const validLands = this.validLands();
+      if (validLands) {
         this.isValid = arrayUtil.toMap(
-          this.validLands,
+          validLands,
           lt => landCoordinatesToId(lt),
           () => true
         );
@@ -47,7 +39,7 @@ export class BaronyMapComponent implements OnChanges {
 
   onLandTileClick(landTile: BaronyLand) {
     if (this.isValid && this.isValid[landTile.id]) {
-      this.landTileClick.next(landTile);
+      this.landTileClick.emit(landTile);
     }
   }
 }

@@ -70,7 +70,7 @@
       translateY: 200,
       scale: 20
     }">
-    @for (land of lands; track land.id) {
+    @for (land of lands(); track land.id) {
       <svg:g
         baronyLandTile
         [type]="land.type"

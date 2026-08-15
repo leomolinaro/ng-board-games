@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
+import { Component, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyGameStore } from "../barony-game/barony-game.store";
 import {
@@ -35,10 +35,7 @@ interface BaronyLogPawnFragment {
 }
 
 type BaronyLogFragment =
-  | BaronyLogStringFragment
-  | BaronyLogPlayerFragment
-  | BaronyLogLandFragment
-  | BaronyLogPawnFragment;
+  BaronyLogStringFragment | BaronyLogPlayerFragment | BaronyLogLandFragment | BaronyLogPawnFragment;
 
 @Component({
   selector: "barony-log",
@@ -46,7 +43,7 @@ type BaronyLogFragment =
     <div
       class="b-log"
       [ngClass]="{
-        'b-log-title': log.type === 'setup' || log.type === 'turn'
+        'b-log-title': log().type === 'setup' || log().type === 'turn'
       }">
       @for (fragment of fragments; track fragment) {
         @switch (fragment.type) {
@@ -109,19 +106,18 @@ type BaronyLogFragment =
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass]
 })
 export class BaronyLogComponent implements OnChanges {
   private game = inject(BaronyGameStore);
 
-  @Input() log!: BaronyLog;
+  readonly log = input.required<BaronyLog>();
 
   fragments!: BaronyLogFragment[];
 
   ngOnChanges(changes: SimpleChanges<BaronyLogComponent>) {
     if (changes.log) {
-      const l = this.log;
+      const l = this.log();
       switch (l.type) {
         case "setup":
           this.fragments = [this.string("Setup")];

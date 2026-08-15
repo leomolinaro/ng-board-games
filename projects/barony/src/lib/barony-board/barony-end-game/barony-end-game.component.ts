@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import {
   MatCell,
   MatCellDef,
@@ -20,7 +20,6 @@ import { BaronyPlayer, BaronyResourceType } from "../../barony-models";
   selector: "barony-end-game",
   templateUrl: "./barony-end-game.component.html",
   styleUrls: ["./barony-end-game.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTable,
     MatColumnDef,
@@ -37,9 +36,7 @@ import { BaronyPlayer, BaronyResourceType } from "../../barony-models";
   ]
 })
 export class BaronyEndGameComponent {
-  constructor() {}
-
-  @Input() players!: BaronyPlayer[];
+  readonly players = input.required<BaronyPlayer[]>();
 
   playerColumns = ["player", "score", "resources", "victoryPoints", "winner"];
 

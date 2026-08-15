@@ -83,6 +83,6 @@ export class BritUnitsSelectorComponent implements OnChanges {
   }
 
   onConfirm() {
-    this.confirm.next();
+    this.confirm.emit();
   }
 }

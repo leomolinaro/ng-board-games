@@ -1,27 +1,27 @@
 <div
-  [class]="'b-player-card ' + 'is-' + player.id"
+  [class]="'b-player-card ' + 'is-' + player().id"
   [ngClass]="{
-    'is-current': currentPlayer,
-    'is-ai': player.isAi,
-    'is-remote': player.isRemote,
-    'is-local': player.isLocal
+    'is-current': currentPlayer(),
+    'is-ai': player().isAi,
+    'is-remote': player().isRemote,
+    'is-local': player().isLocal
   }"
   (click)="onCardClick()">
   <div class="b-player-header">
     <i
       class="b-player-type-icon fa"
       [ngClass]="
-        player.isAi
+        player().isAi
           ? 'fa-desktop'
-          : player.isRemote
+          : player().isRemote
             ? 'fa-globe'
-            : currentPlayer
+            : currentPlayer()
               ? 'fa-user'
               : 'fa-user-o'
       "></i>
-    <div class="b-player-name">{{ player.name }}</div>
+    <div class="b-player-name">{{ player().name }}</div>
     <i class="b-player-score-icon fa fa-star"></i>
-    <div class="b-player-score">{{ player.score }}</div>
+    <div class="b-player-score">{{ player().score }}</div>
   </div>
   <div class="b-player-content">
     @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
@@ -42,7 +42,7 @@
     }
     @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
       <div class="b-player-pawn-quantity">
-        {{ $any(player.pawns)[pawnNode.type] }}
+        {{ $any(player().pawns)[pawnNode.type] }}
       </div>
     }
     @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {

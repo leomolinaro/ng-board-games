@@ -1,12 +1,5 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output
-} from "@angular/core";
+import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 
 @Component({
@@ -14,9 +7,9 @@ import { SimpleChanges } from "@leobg/commons/utils";
   template: `
     <div class="b-knights-selector-container">
       <div class="b-knights">
-        <span class="b-knights-number">{{ this.number }}</span>
+        <span class="b-knights-number">{{ this.number() }}</span>
         <span class="b-knights-fraction-sign">/</span>
-        <span class="b-knights-max">{{ this.max }}</span>
+        <span class="b-knights-max">{{ this.max() }}</span>
       </div>
       <div class="b-knights-buttons">
         <button
@@ -97,41 +90,40 @@ import { SimpleChanges } from "@leobg/commons/utils";
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass]
 })
 export class BaronyKnightsSelectorComponent implements OnChanges {
   constructor() {}
 
-  @Input() number!: number;
-  @Input() min!: number;
-  @Input() max!: number;
-  @Output() numberChange = new EventEmitter<number>();
-  @Output() confirm = new EventEmitter<void>();
+  readonly number = input.required<number>();
+  readonly min = input.required<number>();
+  readonly max = input.required<number>();
+  readonly numberChange = output<number>();
+  readonly confirm = output<void>();
 
   enableIncrease = false;
   enableDecrease = false;
 
   ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.number || changes.min || changes.max) {
-      this.enableIncrease = this.number < this.max;
-      this.enableDecrease = this.number > this.min;
+      this.enableIncrease = this.number() < this.max();
+      this.enableDecrease = this.number() > this.min();
     }
   }
 
   onIncrease() {
     if (this.enableIncrease) {
-      this.numberChange.emit(this.number + 1);
+      this.numberChange.emit(this.number() + 1);
     }
   }
 
   onDecrease() {
     if (this.enableDecrease) {
-      this.numberChange.emit(this.number - 1);
+      this.numberChange.emit(this.number() - 1);
     }
   }
 
   onConfirm() {
-    this.confirm.next();
+    this.confirm.emit();
   }
 }

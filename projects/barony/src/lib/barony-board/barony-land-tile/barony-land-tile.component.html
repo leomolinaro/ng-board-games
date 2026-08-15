@@ -1,21 +1,21 @@
 <svg:g
   class="b-land-tile"
   [ngClass]="{
-    'is-active': active,
-    'is-disabled': disabled
+    'is-active': active(),
+    'is-disabled': disabled()
   }"
   (click)="onLandTileClick()">
   <svg:polygon
     class="b-land-tile-polygon"
-    [attr.id]="coordinates.x + ' ' + coordinates.y + ' ' + coordinates.z"
-    [attr.points]="coordinates | baronyLandTileCoordinates: 'hexagon'"
-    [attr.fill]="'url(\'#' + type + '\')'"></svg:polygon>
+    [attr.id]="coordinates().x + ' ' + coordinates().y + ' ' + coordinates().z"
+    [attr.points]="coordinates() | baronyLandTileCoordinates: 'hexagon'"
+    [attr.fill]="'url(\'#' + type() + '\')'"></svg:polygon>
 
-  @if (active) {
+  @if (active()) {
     <svg:circle
       class="b-land-tile-active-signal"
-      [attr.cx]="coordinates | baronyLandTileCoordinates: 'center-x'"
-      [attr.cy]="coordinates | baronyLandTileCoordinates: 'center-y'"
+      [attr.cx]="coordinates() | baronyLandTileCoordinates: 'center-x'"
+      [attr.cy]="coordinates() | baronyLandTileCoordinates: 'center-y'"
       [attr.r]="activeCircleRadius"
       stroke="black"
       stroke-width="0.03"

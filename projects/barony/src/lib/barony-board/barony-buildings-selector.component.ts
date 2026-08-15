@@ -1,22 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output
-} from "@angular/core";
+import { Component, OnChanges, input, output } from "@angular/core";
 import { BaronyBuilding, BaronyPlayer } from "../barony-models";
 
 @Component({
   selector: "barony-buildings-selector",
   template: `
     <div class="b-buildings-selector-container">
-      @for (building of buildings; track building) {
+      @for (building of buildings(); track building) {
         <div
           class="b-building-image"
           (click)="onBuildingClick(building)">
-          <img [src]="'assets/barony/pawns/' + player.id + '-' + building + '.png'" />
+          <img [src]="'assets/barony/pawns/' + player().id + '-' + building + '.png'" />
         </div>
       }
     </div>
@@ -40,19 +33,18 @@ import { BaronyBuilding, BaronyPlayer } from "../barony-models";
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: []
 })
 export class BaronyBuildingsSelectorComponent implements OnChanges {
   constructor() {}
 
-  @Input() buildings!: BaronyBuilding[];
-  @Input() player!: BaronyPlayer;
-  @Output() buildingClick = new EventEmitter<BaronyBuilding>();
+  readonly buildings = input.required<BaronyBuilding[]>();
+  readonly player = input.required<BaronyPlayer>();
+  readonly buildingClick = output<BaronyBuilding>();
 
   ngOnChanges(): void {}
 
   onBuildingClick(building: BaronyBuilding) {
-    this.buildingClick.next(building);
+    this.buildingClick.emit(building);
   }
 }

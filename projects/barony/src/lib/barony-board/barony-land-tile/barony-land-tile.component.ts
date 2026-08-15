@@ -1,13 +1,6 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output
-} from "@angular/core";
-import { BooleanInput, Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
+import { Component, OnChanges, input, output } from "@angular/core";
+import { Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import {
   BaronyColor,
@@ -33,18 +26,17 @@ interface BaronyPawnNode {
   selector: "[baronyLandTile]",
   templateUrl: "./barony-land-tile.component.html",
   styleUrls: ["./barony-land-tile.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
   constructor() {}
 
-  @Input() type!: BaronyLandType;
-  @Input() coordinates!: BaronyLandCoordinates;
-  @Input() pawns!: BaronyPawn[];
-  @Input() @BooleanInput() active: boolean = false;
-  @Input() @BooleanInput() disabled: boolean = false;
-  @Output() landTileClick = new EventEmitter<void>();
+  readonly type = input.required<BaronyLandType>();
+  readonly coordinates = input.required<BaronyLandCoordinates>();
+  readonly pawns = input.required<BaronyPawn[]>();
+  readonly active = input<boolean>(false);
+  readonly disabled = input<boolean>(false);
+  readonly landTileClick = output<void>();
 
   @Loading() loading$!: Observable<boolean>;
 
@@ -61,12 +53,12 @@ export class BaronyLandComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.coordinates) {
-      this.hexCenter = hexToCartesian(this.coordinates);
+      this.hexCenter = hexToCartesian(this.coordinates());
     }
 
     if (changes.pawns) {
       this.pawnNodes = [];
-      this.pawns.forEach(pawn => {
+      this.pawns().forEach(pawn => {
         this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
           p => p.color === pawn.color && p.type === pawn.type,
           p => ({ ...p, quantity: p.quantity + 1 }),
@@ -120,6 +112,6 @@ export class BaronyLandComponent implements OnChanges {
   }
 
   onLandTileClick() {
-    this.landTileClick.next();
+    this.landTileClick.emit();
   }
 }

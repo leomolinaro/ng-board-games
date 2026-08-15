@@ -1,12 +1,5 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output
-} from "@angular/core";
+import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
@@ -18,8 +11,8 @@ import { BaronyAction } from "../barony-models";
       <button
         class="b-action b-cancel"
         [ngClass]="{
-          'is-active': canCancel,
-          'is-disabled': !canCancel
+          'is-active': canCancel(),
+          'is-disabled': !canCancel()
         }"
         (click)="onCancelClick()">
         {{ labels.cancel }}
@@ -27,8 +20,8 @@ import { BaronyAction } from "../barony-models";
       <button
         class="b-action b-pass"
         [ngClass]="{
-          'is-active': canPass,
-          'is-disabled': !canPass
+          'is-active': canPass(),
+          'is-disabled': !canPass()
         }"
         (click)="onPassClick()">
         {{ labels.pass }}
@@ -78,18 +71,17 @@ import { BaronyAction } from "../barony-models";
       }
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass]
 })
 export class BaronyActionsComponent implements OnChanges {
   constructor() {}
 
-  @Input() validActions: BaronyAction[] | null = null;
-  @Input() canPass!: boolean;
-  @Input() canCancel!: boolean;
-  @Output() actionClick = new EventEmitter<BaronyAction>();
-  @Output() passClick = new EventEmitter<void>();
-  @Output() cancelClick = new EventEmitter<void>();
+  readonly validActions = input<BaronyAction[] | null>(null);
+  readonly canPass = input.required<boolean>();
+  readonly canCancel = input.required<boolean>();
+  readonly actionClick = output<BaronyAction>();
+  readonly passClick = output<void>();
+  readonly cancelClick = output<void>();
 
   actions = BARONY_ACTIONS;
 
@@ -108,9 +100,10 @@ export class BaronyActionsComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.validActions || changes.canPass) {
-      if (this.validActions) {
+      const validActions = this.validActions();
+      if (validActions) {
         this.isValid = arrayUtil.toMap(
-          this.validActions,
+          validActions,
           a => a,
           () => true
         ) as any;
@@ -122,19 +115,19 @@ export class BaronyActionsComponent implements OnChanges {
 
   onActionClick(action: BaronyAction) {
     if (this.isValid && this.isValid[action]) {
-      this.actionClick.next(action);
+      this.actionClick.emit(action);
     }
   }
 
   onPassClick() {
-    if (this.canPass) {
-      this.passClick.next();
+    if (this.canPass()) {
+      this.passClick.emit();
     }
   }
 
   onCancelClick() {
-    if (this.canCancel) {
-      this.cancelClick.next();
+    if (this.canCancel()) {
+      this.cancelClick.emit();
     }
   }
 }

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges } from "@angular/core";
-import { SimpleChanges, objectUtil } from "@leobg/commons/utils";
+import { Component, input, OnChanges, SimpleChanges } from "@angular/core";
+import { objectUtil } from "@leobg/commons/utils";
 import { BgSvgComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
 import { BaronyColor, BaronyPlayer } from "../barony-models";
 
@@ -39,29 +39,28 @@ interface BaronyCounterNode {
       </svg:g>
     </svg>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BgSvgComponent]
 })
 export class BaronyScoreboardComponent implements OnChanges {
   constructor() {}
 
-  @Input() players!: BaronyPlayer[];
+  players = input.required<BaronyPlayer[]>();
 
   counterWidth = 50;
   counterHeight = 50;
 
   counterNodes!: BaronyCounterNode[];
 
-  ngOnChanges(changes: SimpleChanges<this>): void {
-    if (changes.players) {
-      let changed = !!changes.players.previousValue;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["players"]) {
+      let changed = !!changes["players"].previousValue;
       if (!changed) {
-        changed = this.players.length !== changes.players.previousValue?.length;
+        changed = this.players.length !== changes["players"].previousValue?.length;
       }
       const i = 0;
       while (!changed && i < this.players.length) {
-        const player = this.players[i];
-        const oldPlayer = changes.players.previousValue[i];
+        const player = this.players()[i];
+        const oldPlayer = changes["players"].previousValue[i];
         if (player !== oldPlayer && player.score !== oldPlayer.score) {
           changed = true;
         }
@@ -76,7 +75,7 @@ export class BaronyScoreboardComponent implements OnChanges {
   private refreshCounterNodes() {
     this.counterNodes = [];
     const playersByScore: Record<number, BaronyPlayer[]> = {};
-    this.players.forEach(p => {
+    this.players().forEach(p => {
       let sameScorePlayers = playersByScore[p.score];
       if (!sameScorePlayers) {
         sameScorePlayers = [];

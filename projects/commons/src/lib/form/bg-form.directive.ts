@@ -76,12 +76,12 @@ export class BgFormDirective<E> implements OnChanges {
     if (this.bgForm) {
       if (field.config?.valueSetter) {
         const patch = field.config.valueSetter(value, this.bgForm);
-        this.bgFormChange.next({
+        this.bgFormChange.emit({
           ...this.bgForm,
           ...patch
         });
       } else if (field.field) {
-        this.bgFormChange.next({
+        this.bgFormChange.emit({
           ...this.bgForm,
           [field.field]: value
         });

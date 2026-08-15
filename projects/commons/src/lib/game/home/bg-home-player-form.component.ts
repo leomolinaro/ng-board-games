@@ -172,7 +172,7 @@ export class BgHomePlayerFormComponent {
   };
 
   onPlayerChange(player: BgProtoPlayer) {
-    this.playerChange.next(player);
+    this.playerChange.emit(player);
   }
 
   onNextPlayerType() {
@@ -208,7 +208,7 @@ export class BgHomePlayerFormComponent {
         break;
       }
     }
-    this.playerChange.next({
+    this.playerChange.emit({
       ...this.player,
       type: nextPlayerType,
       ...controllerPatch,

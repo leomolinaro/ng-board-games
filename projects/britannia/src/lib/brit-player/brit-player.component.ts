@@ -92,7 +92,7 @@ export class BritPlayerComponent implements OnInit {
   }
 
   onNationClick(nationNode: BritNationNode, event: MouseEvent) {
-    this.nationClick.next(nationNode.id);
+    this.nationClick.emit(nationNode.id);
     event.stopPropagation();
   }
 

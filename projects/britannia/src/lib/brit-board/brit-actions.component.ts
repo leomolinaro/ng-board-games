@@ -133,19 +133,19 @@ export class BritActionsComponent implements OnChanges {
 
   onPassClick() {
     if (this.canPass) {
-      this.passClick.next();
+      this.passClick.emit();
     }
   }
 
   onConfirmClick() {
     if (this.canConfirm) {
-      this.confirmClick.next();
+      this.confirmClick.emit();
     }
   }
 
   onCancelClick() {
     if (this.canCancel) {
-      this.cancelClick.next();
+      this.cancelClick.emit();
     }
   }
 }

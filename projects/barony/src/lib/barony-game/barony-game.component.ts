@@ -1,5 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BaronyBoardComponent } from "../barony-board/barony-board.component";
 import {
@@ -44,7 +44,6 @@ import { BaronyUiStore } from "./barony-ui.store";
     </barony-board>
   `,
   styleUrls: ["./barony-game.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     BaronyGameStore,
     BaronyUiStore,

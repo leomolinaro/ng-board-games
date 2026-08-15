@@ -1,15 +1,13 @@
 import { NgClass } from "@angular/common";
 import {
-  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
   OnDestroy,
-  Output,
   TemplateRef,
   ViewChild,
-  inject
+  inject,
+  input,
+  output
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
@@ -38,7 +36,6 @@ import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
   selector: "barony-board",
   templateUrl: "./barony-board.component.html",
   styleUrls: ["./barony-board.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BaronyMapComponent,
     BaronyKnightsSelectorComponent,
@@ -57,32 +54,32 @@ import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
 export class BaronyBoardComponent implements OnChanges, OnDestroy {
   private matDialog = inject(MatDialog);
 
-  @Input() lands!: BaronyLand[];
-  @Input() logs!: BaronyLog[];
-  @Input() turnPlayer: BaronyPlayer | null = null;
-  @Input() currentPlayer: BaronyPlayer | null = null;
-  @Input() players!: BaronyPlayer[];
-  @Input() message: string | null = null;
-  @Input() validLands: BaronyLandCoordinates[] | null = null;
-  @Input() validActions: BaronyAction[] | null = null;
-  @Input() validBuildings: ("stronghold" | "village")[] | null = null;
-  @Input() validResources: {
+  readonly lands = input.required<BaronyLand[]>();
+  readonly logs = input.required<BaronyLog[]>();
+  readonly turnPlayer = input<BaronyPlayer | null>(null);
+  readonly currentPlayer = input<BaronyPlayer | null>(null);
+  readonly players = input.required<BaronyPlayer[]>();
+  readonly message = input<string | null>(null);
+  readonly validLands = input<BaronyLandCoordinates[] | null>(null);
+  readonly validActions = input<BaronyAction[] | null>(null);
+  readonly validBuildings = input<("stronghold" | "village")[] | null>(null);
+  readonly validResources = input<{
     player: string;
     resources: BaronyResourceType[];
-  } | null = null;
-  @Input() canPass: boolean = false;
-  @Input() canCancel: boolean = false;
-  @Input() maxNumberOfKnights: number | null = null;
-  @Input() endGame: boolean = false;
+  } | null>(null);
+  readonly canPass = input<boolean>(false);
+  readonly canCancel = input<boolean>(false);
+  readonly maxNumberOfKnights = input<number | null>(null);
+  readonly endGame = input<boolean>(false);
 
-  @Output() playerSelect = new EventEmitter<BaronyPlayer>();
-  @Output() buildingSelect = new EventEmitter<BaronyBuilding>();
-  @Output() landTileClick = new EventEmitter<BaronyLand>();
-  @Output() actionClick = new EventEmitter<BaronyAction>();
-  @Output() passClick = new EventEmitter<void>();
-  @Output() cancelClick = new EventEmitter<void>();
-  @Output() knightsConfirm = new EventEmitter<number>();
-  @Output() resourceSelect = new EventEmitter<BaronyResourceType>();
+  readonly playerSelect = output<BaronyPlayer>();
+  readonly buildingSelect = output<BaronyBuilding>();
+  readonly landTileClick = output<BaronyLand>();
+  readonly actionClick = output<BaronyAction>();
+  readonly passClick = output<void>();
+  readonly cancelClick = output<void>();
+  readonly knightsConfirm = output<number>();
+  readonly resourceSelect = output<BaronyResourceType>();
 
   @ViewChild("endGameDialog") endGameDialog!: TemplateRef<void>;
 
@@ -95,9 +92,9 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.maxNumberOfKnights) {
-      this.numberOfKnights = this.maxNumberOfKnights || 0;
+      this.numberOfKnights = this.maxNumberOfKnights() || 0;
     }
-    if (changes.endGame && this.endGame) {
+    if (changes.endGame && this.endGame()) {
       this.openEndGameDialog();
     }
   }
