@@ -1,12 +1,12 @@
 import { Injectable, inject } from "@angular/core";
-import { AgotDataService } from "../agot-services/agot-data.service";
+import { AgotData } from "../agot-services/agot-data";
 import { AgotCard } from "../agot.models";
 
 @Injectable({
   providedIn: "root"
 })
 export class AgotDraftService {
-  private dataService = inject(AgotDataService);
+  private dataService = inject(AgotData);
 
   private getTypeSort(type: string) {
     switch (type) {

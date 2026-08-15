@@ -1,10 +1,10 @@
-import { Component, Input } from "@angular/core";
+import { Component, input } from "@angular/core";
 import { AgotCard } from "../agot.models";
 
 @Component({
   selector: "agot-card-grid",
   template: `
-    @for (card of cards; track card) {
+    @for (card of cards(); track card) {
       @if (card.type_code != "plot") {
         <img
           [src]="card.image_url"
@@ -16,8 +16,13 @@ import { AgotCard } from "../agot.models";
           height="100" />
       }
     }
+  `,
+  styles: `
+    img {
+      border-radius: 5px;
+    }
   `
 })
 export class AgotCardGrid {
-  @Input() cards!: AgotCard[];
+  readonly cards = input.required<AgotCard[]>();
 }
