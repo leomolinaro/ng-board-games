@@ -99,4 +99,4 @@ export class BaronyGameComponent implements OnInit {
   onResourceSelect(resource: BaronyResourceType) {
     this.ui.resourceSelect.emit(resource);
   }
-} // BaronyGameComponent
+}

@@ -15,5 +15,5 @@ export class BgTimesPipe implements PipeTransform {
       }
     };
     return iterable;
-  } // transform
-} // TimesPipe
+  }
+}

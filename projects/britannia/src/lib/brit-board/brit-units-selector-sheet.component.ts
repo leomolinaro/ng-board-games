@@ -8,7 +8,7 @@ export interface BritUnitsSelectorSheetInput {
   unit: BritAreaUnit;
   quantity: number;
   maxQuantity: number;
-} // BritUnitsSelectorSheetInput
+}
 
 @Component({
   selector: "brit-unit-number-selection-sheet",
@@ -40,13 +40,13 @@ export class BritUnitsSelectorSheetComponent implements OnInit {
       this.data.unit.type,
       this.data.unit.nationId
     );
-  } // ngOnInit
+  }
 
   onCloseClick() {
     this.bottomSheetRef.dismiss();
-  } // onCloseClick
+  }
 
   onConfirm() {
     this.bottomSheetRef.dismiss(this.quantity);
-  } // onConfirm
-} // BritUnitsSelectorSheetComponent
+  }
+}

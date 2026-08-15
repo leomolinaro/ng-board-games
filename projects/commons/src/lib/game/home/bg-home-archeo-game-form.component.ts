@@ -85,7 +85,7 @@ export class BgHomeArcheoGameFormComponent {
   onGameChange(newGame: BgArcheoGame) {
     this.game = newGame;
     this.gameChange.emit(newGame);
-  } // onGameChange
+  }
 
   clearForm() {
     this.game = {
@@ -93,5 +93,5 @@ export class BgHomeArcheoGameFormComponent {
       online: false
     };
     setTimeout(() => this.cd.markForCheck());
-  } // clearForm
-} // BgHomeArcheoGameFormComponent
+  }
+}

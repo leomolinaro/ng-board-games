@@ -29,7 +29,7 @@ import {
 export class BritComponentsService {
   constructor() {
     this.init();
-  } // constructor
+  }
 
   readonly COLORS: BritColor[] = ["red", "blue", "yellow", "green"];
 
@@ -116,7 +116,7 @@ export class BritComponentsService {
     const map: Record<BritAreaId, V> = {} as any;
     this.AREA_IDS.forEach(areaId => (map[areaId] = getValue(areaId)));
     return map;
-  } // areasToMap
+  }
 
   getArea(areaId: BritAreaId): BritArea {
     return this.AREA[areaId];
@@ -129,7 +129,7 @@ export class BritComponentsService {
   }
   forEachArea(forEachArea: (area: BritArea) => void): void {
     this.AREA_IDS.forEach(areaId => forEachArea(this.AREA[areaId]));
-  } // forEachArea
+  }
 
   getNationIdsOfColor(color: BritColor): BritNationId[] {
     switch (color) {
@@ -141,14 +141,14 @@ export class BritComponentsService {
         return ["normans", "angles", "belgae", "picts"];
       case "green":
         return ["danes", "jutes", "welsh", "caledonians"];
-    } // switch
-  } // getNationIdsOfColor
+    }
+  }
 
   nationsToMap<V>(getValue: (nationId: BritNationId) => V): Record<BritNationId, V> {
     const map: Record<BritNationId, V> = {} as any;
     this.NATION_IDS.forEach(nationId => (map[nationId] = getValue(nationId)));
     return map;
-  } // nationsToMap
+  }
 
   getNation(nationId: BritNationId): BritNation {
     return this.NATION[nationId];
@@ -168,8 +168,8 @@ export class BritComponentsService {
         return singular ? "Fort" : "Forts";
       case "saxon-buhr":
         return singular ? "Buhr" : "Buhrs";
-    } // switch
-  } // getUnitTypeLabel
+    }
+  }
 
   init() {
     // Land areas
@@ -762,7 +762,7 @@ export class BritComponentsService {
       new BritEventBuilder("saxons").special("saxons-reinforcements").build(),
       new BritEventBuilder("normans").special("normans-reinforcements").build()
     );
-  } // init
+  }
 
   private initLandArea(
     id: BritLandAreaId,
@@ -779,7 +779,7 @@ export class BritComponentsService {
       difficultTerrain: difficultTerrain,
       neighbors: neighbors
     };
-  } // initLandArea
+  }
 
   private initSeaArea(id: BritSeaAreaId, name: string, neighbors: BritAreaId[]) {
     this.AREA[id] = {
@@ -788,7 +788,7 @@ export class BritComponentsService {
       type: "sea",
       neighbors: neighbors
     };
-  } // initSeaArea
+  }
 
   private initNation(
     nationId: BritNationId,
@@ -809,14 +809,14 @@ export class BritComponentsService {
       nBuildings,
       leaderIds: leaderIdAndNames.map(u => u[0])
     };
-  } // initNation
+  }
 
   private initLeader(leaderId: BritLeaderId, leaderName: string) {
     this.LEADER[leaderId] = {
       id: leaderId,
       name: leaderName
     };
-  } // initLeader
+  }
 
   private initRound(
     roundId: BritRoundId,
@@ -834,8 +834,8 @@ export class BritComponentsService {
       kingElection: types.includes("king"),
       events
     };
-  } // initRound
-} // BritRulesComponentsService
+  }
+}
 
 class BritEventBuilder {
   constructor(private nation: BritNationId) {}
@@ -874,7 +874,7 @@ class BritEventBuilder {
       cavalries: cavalries || 0
     };
     return this;
-  } // revolt
+  }
   invasion(area: BritSeaAreaId, infantries: number, cavalries?: number) {
     if (!this._invasions) {
       this._invasions = [];
@@ -885,7 +885,7 @@ class BritEventBuilder {
       cavalries: cavalries || 0
     });
     return this;
-  } // invasion
+  }
 
   build(): BritEvent {
     return {
@@ -898,5 +898,5 @@ class BritEventBuilder {
       invasions: this._invasions,
       revolt: this._revolt
     };
-  } // build
-} // BritEventBuilder
+  }
+}

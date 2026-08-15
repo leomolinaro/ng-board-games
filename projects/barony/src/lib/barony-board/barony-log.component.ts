@@ -14,25 +14,25 @@ import {
 interface BaronyLogStringFragment {
   type: "string";
   label: string;
-} // BaronyLogStringFragment
+}
 
 interface BaronyLogPlayerFragment {
   type: "player";
   label: string;
   player: BaronyPlayer;
-} // BaronyLogStringFragment
+}
 
 interface BaronyLogLandFragment {
   type: "land";
   label: string;
   land: BaronyLand;
-} // BaronyLogLandFragment
+}
 
 interface BaronyLogPawnFragment {
   type: "pawn";
   label: string;
   pawn: BaronyPawnType;
-} // BaronyLogPawnFragment
+}
 
 type BaronyLogFragment =
   | BaronyLogStringFragment
@@ -184,18 +184,18 @@ export class BaronyLogComponent implements OnChanges {
             this.string(".")
           ];
           break;
-      } // switch
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   private string(label: string): BaronyLogStringFragment {
     return { type: "string", label: label };
-  } // string
+  }
 
   private player(playerId: BaronyColor): BaronyLogPlayerFragment {
     const player = this.game.getPlayer(playerId);
     return { type: "player", label: player.name, player: player };
-  } // player
+  }
 
   private land(landId: BaronyLandCoordinates): BaronyLogLandFragment {
     const land = this.game.getLand(landId);
@@ -216,13 +216,13 @@ export class BaronyLogComponent implements OnChanges {
       case "lake":
         label = "lake";
         break;
-    } // switch
+    }
     return {
       type: "land",
       label: label,
       land: land
     };
-  } // land
+  }
 
   private pawn(pawnType: BaronyPawnType): BaronyLogPawnFragment {
     let label: string;
@@ -239,11 +239,11 @@ export class BaronyLogComponent implements OnChanges {
       case "village":
         label = "village";
         break;
-    } // switch
+    }
     return {
       type: "pawn",
       label: label,
       pawn: pawnType
     };
-  } // pawn
-} // BaronyLogComponent
+  }
+}

@@ -71,7 +71,7 @@ export class AppHomePageComponent implements OnInit, OnDestroy {
   @SingleEvent()
   ngOnInit() {
     return this.authService.autoSignIn$();
-  } // ngOnInit
+  }
 
   ngOnDestroy() {}
-} // BgMainPageComponent
+}

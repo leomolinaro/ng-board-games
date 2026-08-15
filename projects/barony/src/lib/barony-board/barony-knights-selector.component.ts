@@ -116,22 +116,22 @@ export class BaronyKnightsSelectorComponent implements OnChanges {
     if (changes.number || changes.min || changes.max) {
       this.enableIncrease = this.number < this.max;
       this.enableDecrease = this.number > this.min;
-    } // if
-  } // ngOnChanges
+    }
+  }
 
   onIncrease() {
     if (this.enableIncrease) {
       this.numberChange.emit(this.number + 1);
-    } // if
-  } // onIncrease
+    }
+  }
 
   onDecrease() {
     if (this.enableDecrease) {
       this.numberChange.emit(this.number - 1);
-    } // if
-  } // onIncrease
+    }
+  }
 
   onConfirm() {
     this.confirm.next();
-  } // onConfirm
-} // BaronyKnightsSelectorComponent
+  }
+}

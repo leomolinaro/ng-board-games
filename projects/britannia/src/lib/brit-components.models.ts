@@ -7,7 +7,7 @@ export type BritColor = "blue" | "yellow" | "red" | "green";
 //   type: string;
 //   typeLabel: string;
 //   nationColor: BritColor;
-// } // ABritUnit
+// }
 
 export type BritUnitType = "infantry" | "cavalry" | "roman-fort" | "saxon-buhr" | "leader";
 
@@ -35,7 +35,7 @@ export type BritLeaderId =
 export interface BritLeader {
   id: BritLeaderId;
   name: string;
-} // BritLeader
+}
 
 // export interface BritArmy extends ABritUnit { }
 // export interface BritInfantry extends ABritUnit { type: "infantry"; }
@@ -44,7 +44,7 @@ export interface BritLeader {
 //   id: BritLeaderId;
 //   type: "leader";
 //   name: string;
-// } // BritLeader
+// }
 // export interface BritBuilding extends ABritUnit { }
 // export interface BritRomanFort extends BritBuilding { type: "roman-fort"; }
 // export interface BritSaxonBuhr extends BritBuilding { type: "saxon-buhr"; }
@@ -58,7 +58,7 @@ export type BritPopulation = 0 | 1 | 2 | 3 | 4 | 5;
 export interface BritRegion {
   id: BritRegionId;
   name: string;
-} // BritRegion
+}
 
 export type BritLandAreaId =
   | "avalon"
@@ -111,7 +111,7 @@ export type BritAreaId = BritLandAreaId | BritSeaAreaId;
 
 export function isBritLandAreaId(areaId: BritAreaId): areaId is BritLandAreaId {
   return !isBritSeaAreaId(areaId);
-} // isBritLandAreaId
+}
 
 export function isBritSeaAreaId(areaId: BritAreaId): areaId is BritSeaAreaId {
   switch (areaId) {
@@ -124,27 +124,27 @@ export function isBritSeaAreaId(areaId: BritAreaId): areaId is BritSeaAreaId {
       return true;
     default:
       return false;
-  } // switch
-} // isBritSeaAreaId
+  }
+}
 
 export type BritNeighbor = BritAreaId | { id: BritAreaId; strait: true };
 
 interface ABritArea {
   name: string;
   neighbors: BritNeighbor[];
-} // ABritArea
+}
 
 export interface BritLandArea extends ABritArea {
   id: BritLandAreaId;
   region: BritRegionId;
   type: "land";
   difficultTerrain: boolean;
-} // BritLandArea
+}
 
 export interface BritSeaArea extends ABritArea {
   id: BritSeaAreaId;
   type: "sea";
-} // BritSeaArea
+}
 
 export type BritArea = BritLandArea | BritSeaArea;
 
@@ -175,7 +175,7 @@ export interface BritNation {
   nCavalries: number;
   nBuildings: number;
   leaderIds: BritLeaderId[];
-} // BritNation
+}
 
 export type BritRoundId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
@@ -187,7 +187,7 @@ export interface BritRound {
   scoring: boolean;
   bretwaldaElection: boolean;
   kingElection: boolean;
-} // BritRound
+}
 
 export type BritPhase =
   | "populationIncrease"
@@ -205,7 +205,7 @@ export interface BritEvent {
   boats: boolean;
   special: BritSpecialEvent | null;
   leader: BritLeaderId | null;
-} // BritEvent
+}
 
 export type BritSpecialEvent =
   | "romans-invasion"
@@ -224,9 +224,9 @@ export interface BritInvasion {
   infantries: number;
   cavalries: number;
   area: BritSeaAreaId;
-} // BritInvasion
+}
 
 export interface BritRevolt {
   infantries: number;
   cavalries: number;
-} // BritRevolt
+}

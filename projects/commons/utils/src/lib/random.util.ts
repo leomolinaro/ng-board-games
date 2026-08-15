@@ -1,20 +1,20 @@
 export function getRandomInteger(minIncluded: number, maxExcluded: number) {
   return Math.floor(Math.random() * (maxExcluded - minIncluded)) + minIncluded;
-} // getRandomInteger
+}
 
 export function getRandomFloat(min: number, max: number) {
   const integer = getRandomInteger(min, max);
   const decimal = getRandomInteger(0, 100);
   return integer + decimal / 100.0;
-} // getRandomFloat
+}
 
 export function getRandomBoolean() {
   return Math.random() < 0.5;
-} // getRandomBoolean
+}
 
 export function getRandomElement<T>(array: T[]): T {
   return array[getRandomInteger(0, array.length)];
-} // getRandomElement
+}
 
 export function getRandomElements<T>(min: number, max: number, array: T[]): T[] {
   const length = getRandomInteger(min, max);
@@ -26,9 +26,9 @@ export function getRandomElements<T>(min: number, max: number, array: T[]): T[] 
     const choosen = remainings.splice(index, 1)[0];
     toReturn.push(choosen);
     i++;
-  } // while
+  }
   return toReturn;
-} // getRandomElement
+}
 
 export function getRandomArrayLength<T>(
   min: number,
@@ -39,9 +39,9 @@ export function getRandomArrayLength<T>(
   const array: T[] = [];
   for (let i = 0; i < length; i++) {
     array.push(pusher(i));
-  } // for
+  }
   return array;
-} // getRandomArrayLength
+}
 
 export function getRandomDraws<T>(n: number, pool: T[]) {
   const toReturn: T[] = [];
@@ -50,9 +50,9 @@ export function getRandomDraws<T>(n: number, pool: T[]) {
     const index = getRandomInteger(0, pool.length);
     const draw = pool.splice(index, 1)[0];
     toReturn.push(draw);
-  } // for
+  }
   return toReturn;
-} // getRandomDraws
+}
 
 export class BgSimulatedAnnealing<S> {
   constructor(
@@ -71,10 +71,10 @@ export class BgSimulatedAnnealing<S> {
       if (probability > getRandomFloat(0, 1)) {
         s = sNew;
         e = eNew;
-      } // if
-    } // for
+      }
+    }
     return s;
-  } // run
+  }
 
   private probability(e: number, eNew: number, t: number) {
     if (eNew === e) {
@@ -84,6 +84,6 @@ export class BgSimulatedAnnealing<S> {
       return Math.exp((e - eNew) / t);
     } else {
       return 1;
-    } // if - else
-  } // probability
-} // BgSimulatedAnnealing
+    }
+  }
+}

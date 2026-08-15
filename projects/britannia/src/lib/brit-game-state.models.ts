@@ -19,7 +19,7 @@ export interface BritGameState {
   areas: Record<BritAreaId, BritAreaState>;
   nations: Record<BritNationId, BritNationState>;
   logs: BritLog[];
-} // BritGameState
+}
 
 export type BritAreaUnitId = string;
 
@@ -27,37 +27,37 @@ interface ABritAreaUnit {
   nationId: BritNationId;
   areaId: BritAreaId;
   nMovements: number;
-} // ABritAreaUnit
+}
 
 export interface BritAreaInfantry extends ABritAreaUnit {
   nationId: BritNationId;
   type: "infantry";
   quantity: number;
-} // BritAreaInfantry
+}
 
 export interface BritAreaCavalry extends ABritAreaUnit {
   nationId: BritNationId;
   type: "cavalry";
   quantity: number;
-} // BritAreaCavalry
+}
 
 export interface BritAreaRomanFort extends ABritAreaUnit {
   nationId: BritNationId;
   type: "roman-fort";
   quantity: number;
-} // BritAreaRomanFort
+}
 
 export interface BritAreaSaxonBuhr extends ABritAreaUnit {
   nationId: BritNationId;
   type: "saxon-buhr";
   quantity: number;
-} // BritAreaSaxonBuhr
+}
 
 export interface BritAreaLeader extends ABritAreaUnit {
   nationId: BritNationId;
   type: "leader";
   leaderId: BritLeaderId;
-} // BritAreaLeader
+}
 
 export type BritAreaUnit =
   | BritAreaInfantry
@@ -68,7 +68,7 @@ export type BritAreaUnit =
 
 export interface BritAreaState {
   units: BritAreaUnit[];
-} // BritAreaState
+}
 
 export interface BritNationState {
   nInfantries: number;
@@ -77,27 +77,27 @@ export interface BritNationState {
   leaderIds: BritLeaderId[];
   population: BritPopulation | null;
   active: boolean;
-} // BritNationState
+}
 
 export interface ABritPlayer {
   id: BritColor;
   name: string;
   nationIds: BritNationId[];
   score: number;
-} // ABritPlayer
+}
 
 export interface BritAiPlayer extends ABritPlayer {
   isAi: true;
   isRemote: false;
   isLocal: false;
-} // BritAiPlayer
+}
 
 export interface BritRealPlayer extends ABritPlayer {
   isAi: false;
   isRemote: boolean;
   isLocal: boolean;
   controller: BgUser;
-} // BritRealPlayer
+}
 
 export type BritPlayer = BritAiPlayer | BritRealPlayer;
 
@@ -150,4 +150,4 @@ export interface BritSetup {
   areas: Record<BritAreaId, [BritNationId, number] | BritNationId | null>;
   populationMarkers: BritNationId[];
   activeNations: BritNationId[];
-} // BritSetup
+}

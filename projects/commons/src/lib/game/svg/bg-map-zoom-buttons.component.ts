@@ -147,4 +147,4 @@ export class BgMapZoomButtonsComponent implements OnInit {
   onAutoSize() {
     this.controls.autoSize();
   }
-} // BgMapZoomButtonsComponent
+}

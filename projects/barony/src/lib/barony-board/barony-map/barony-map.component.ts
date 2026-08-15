@@ -41,13 +41,13 @@ export class BaronyMapComponent implements OnChanges {
         );
       } else {
         this.isValid = null;
-      } // if - else
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   onLandTileClick(landTile: BaronyLand) {
     if (this.isValid && this.isValid[landTile.id]) {
       this.landTileClick.next(landTile);
-    } // if
-  } // onLandTileClick
-} // BaronyMapComponent
+    }
+  }
+}

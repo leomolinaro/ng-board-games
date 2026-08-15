@@ -96,11 +96,11 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.maxNumberOfKnights) {
       this.numberOfKnights = this.maxNumberOfKnights || 0;
-    } // if
+    }
     if (changes.endGame && this.endGame) {
       this.openEndGameDialog();
-    } // if
-  } // ngOnChanges
+    }
+  }
 
   ngOnDestroy() {}
 
@@ -125,7 +125,7 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
   onKnightsConfirm() {
     this.knightsConfirm.emit(this.numberOfKnights);
     this.numberOfKnights = 1;
-  } // onKnightsConfirm
+  }
   onResourceSelect(resource: BaronyResourceType) {
     this.resourceSelect.emit(resource);
   }
@@ -150,11 +150,11 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
           // switchMap (output => {
           //   if (output?.startGame) {
           //     return this.config.startGame$ (output.gameId);
-          //   } // if
+          //   }
           //   return of (void 0);
           // })
           ();
       })
     );
-  } // openEndGameDialog
-} // BaronyBoardComponent
+  }
+}

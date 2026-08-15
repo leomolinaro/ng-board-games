@@ -77,8 +77,8 @@ export class BritHomeComponent {
           return "brit-player-red";
         case "yellow":
           return "brit-player-yellow";
-      } // switch
-    } // playerRoleCssClass
+      }
+    }
   };
 
   private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<BritColor>[]) {
@@ -98,12 +98,12 @@ export class BritHomeComponent {
                 return this.insertAiPlayer$(p.id, p.name, index + 1, game.id);
               } else {
                 return this.insertRealPlayer$(p.id, p.name, index + 1, p.controller!, game.id);
-              } // if - else
+              }
             })
           ])
         )
       );
-  } // createGame$
+  }
 
   private insertAiPlayer$(
     playerId: BritColor,
@@ -116,7 +116,7 @@ export class BritHomeComponent {
       isAi: true
     };
     return this.gameService.insertPlayer$(player, gameId);
-  } // insertAiPlayer$
+  }
 
   private insertRealPlayer$(
     playerId: BritColor,
@@ -131,9 +131,9 @@ export class BritHomeComponent {
       controller: controller
     };
     return this.gameService.insertPlayer$(player, gameId);
-  } // insertRealPlayer$
+  }
 
   private aPlayerDoc(playerId: BritColor, name: string, sort: number): ABritPlayerDoc {
     return { id: playerId, name: name, sort: sort };
-  } // aPlayerDoc
-} // BritHomeComponent
+  }
+}

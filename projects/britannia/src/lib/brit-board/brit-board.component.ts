@@ -102,7 +102,7 @@ export class BritBoardComponent {
   // onKnightsConfirm () {
   //   this.knightsConfirm.emit (this.numberOfKnights);
   //   this.numberOfKnights = 1;
-  // } // onKnightsConfirm
+  // }
   // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
 
   private lastBottomSheet: "nation-card" | "unit-number-selection" | null = null;
@@ -126,8 +126,8 @@ export class BritBoardComponent {
           hasBackdrop: false
         }
       );
-    } // if - else
-  } // onPlayerNationClick
+    }
+  }
 
   onUnitClick(unit: BritAreaUnit) {
     if (this.selectedUnits) {
@@ -155,17 +155,17 @@ export class BritBoardComponent {
               newSelectedUnits.push({ ...unit, quantity });
             }
             this.selectedUnitsChange.emit(newSelectedUnits);
-          } // if
+          }
         });
-      } // if - else
+      }
     } else {
       this.unitClick.emit(unit);
-    } // if - else
-  } // onUnitClick
+    }
+  }
 
   private getUnitNodeId(unit: BritAreaUnit) {
     return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
-  } // getUnitNodeId
+  }
 
   private nSelectedUnits$(
     unit: BritAreaUnit,
@@ -183,5 +183,5 @@ export class BritBoardComponent {
       hasBackdrop: true
     });
     return ref.afterDismissed();
-  } // nUnitsSelector$
-} // BritBoardComponent
+  }
+}

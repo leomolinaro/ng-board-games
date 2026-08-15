@@ -22,21 +22,21 @@ import { BritPlayer } from "../brit-game-state.models";
 //   type: BritPawnType;
 //   quantity: number;
 //   active: boolean;
-// } // BritPawnNode
+// }
 
 // interface BritResourceNode {
 //   source: string;
 //   type: BritResourceType;
 //   quantity: number;
 //   active: boolean;
-// } // BritResourceNode
+// }
 
 interface BritNationNode {
   id: BritNationId;
   nation: BritNation;
   iconSource: string;
   cardSource: string;
-} // BritNationNode
+}
 
 @Component({
   selector: "brit-player",
@@ -78,8 +78,8 @@ export class BritPlayerComponent implements OnInit {
         iconSource: this.assetsService.getNationIconImageSource(nationId),
         cardSource: this.assetsService.getNationCardImageSource(nationId)
       });
-    } // for
-  } // ngOnChanges
+    }
+  }
 
   onCardClick() {
     if (
@@ -88,23 +88,23 @@ export class BritPlayerComponent implements OnInit {
       !this.currentPlayer
     ) {
       this.selectPlayer.emit();
-    } // if
-  } // onCardClick
+    }
+  }
 
   onNationClick(nationNode: BritNationNode, event: MouseEvent) {
     this.nationClick.next(nationNode.id);
     event.stopPropagation();
-  } // onNationClick
+  }
 
   // onPawnClick (pawnNode: BritPawnNode) {
   //   if (pawnNode.active) {
   //     this.clickPawn.emit (pawnNode.type);
-  //   } // if
-  // } // onPawnClick
+  //   }
+  // }
 
   // onResourceClick (resourceNode: BritResourceNode) {
   //   if (resourceNode.active) {
   //     this.clickResource.emit (resourceNode.type);
-  //   } // if
-  // } // onResourceClick
-} // BritPlayerComponent
+  //   }
+  // }
+}

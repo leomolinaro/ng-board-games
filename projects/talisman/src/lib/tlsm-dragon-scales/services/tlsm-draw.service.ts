@@ -45,21 +45,21 @@ abstract class TokenResolver {
               limit += pool.strikes;
               if (x < limit) {
                 this.drawStrike(player);
-              } // if
-            } // if - else
-          } // if - else
-        } // if - else
-      } // if - else
-    } // if - else
-  } // drawsToken
-} // TokenResolver
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 export class CompleteTokenResolver extends TokenResolver {
   drawSlumber(player: string): void {
     this.store.drawSlumber();
     this.store.addLog(player + " draws a slumber token.", "../assets/talisman/slumber-token.png");
     this.messager.alert(player + " draws a slumber token.", "../assets/talisman/slumber-token.png");
-  } // drawSlumber
+  }
 
   drawRage(player: string): void {
     this.store.drawRage();
@@ -71,14 +71,14 @@ export class CompleteTokenResolver extends TokenResolver {
         "../assets/talisman/rage-token.png"
       );
     }
-  } // drawRage
+  }
 
   drawStrike(player: string): void {
     this.store.drawStrike();
     this.store.addLog(player + " draws a strike token.", "../assets/talisman/strike-token.png");
     this.drawToken(player);
     this.drawToken(player);
-  } // drawStrike
+  }
 
   drawScale(dragonId: TlsmDragonId, player: string): void {
     const dragon = this.store.getDragon(dragonId);
@@ -93,15 +93,15 @@ export class CompleteTokenResolver extends TokenResolver {
       }
       this.store.crown(dragonId, true);
       this.messager.alert(player + " generates a " + dragon.name + "'s scale.", dragon.tokenSource);
-    } // if
-  } // drawScale
-} // CompleteTokenResolver
+    }
+  }
+}
 
 export class AskTokenResolver extends TokenResolver {
   drawSlumber(player: string): void {
     this.store.drawSlumber();
     this.messager.alert(player + " draws a slumber token.", "../assets/talisman/slumber-token.png");
-  } // drawSlumber
+  }
 
   drawRage(player: string): void {
     this.store.drawRage();
@@ -119,12 +119,12 @@ export class AskTokenResolver extends TokenResolver {
               player + " suffers " + king.name + "'s rage.",
               "../assets/talisman/rage-token.png"
             );
-          } // if
+          }
         }); // subscribe
     } else {
       this.messager.alert(player + " draws a rage token.", "../assets/talisman/rage-token.png");
-    } // if - else
-  } // drawRage
+    }
+  }
 
   drawStrike(player: string): void {
     this.store.drawStrike();
@@ -138,9 +138,9 @@ export class AskTokenResolver extends TokenResolver {
         if (confirm) {
           this.drawToken(player);
           this.drawToken(player);
-        } // if
+        }
       }); // subscribe
-  } // drawStrike
+  }
 
   drawScale(dragonId: TlsmDragonId, player: string): void {
     const dragon = this.store.getDragon(dragonId);
@@ -165,8 +165,8 @@ export class AskTokenResolver extends TokenResolver {
               player + " generates a " + dragon.name + "'s scale.",
               dragon.tokenSource
             );
-          } // if
-        } // if
+          }
+        }
       }); // subscribe
-  } // drawScale
-} // AskTokenResolver
+  }
+}

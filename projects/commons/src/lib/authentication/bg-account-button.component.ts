@@ -94,15 +94,15 @@ export class BgAccountButtonComponent implements OnInit, OnDestroy {
   @ExhaustingEvent()
   onSignInClick(type: BgUserLoginType) {
     return this.authService.signIn$(type);
-  } // onSignInClick
+  }
 
   @ExhaustingEvent()
   onSignOutClick() {
     return this.authService.signOut$().pipe(switchMap(() => this.router.navigate([""])));
-  } // onSignOutClick
+  }
 
   @ExhaustingEvent()
   onDeleteAccountClick() {
     return this.authService.deleteUser$().pipe(switchMap(() => this.router.navigate([""])));
-  } // onDeleteAccountClick
-} // BgAccountButtonComponent
+  }
+}

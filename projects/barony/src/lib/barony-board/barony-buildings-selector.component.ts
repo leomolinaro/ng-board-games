@@ -50,9 +50,9 @@ export class BaronyBuildingsSelectorComponent implements OnChanges {
   @Input() player!: BaronyPlayer;
   @Output() buildingClick = new EventEmitter<BaronyBuilding>();
 
-  ngOnChanges(): void {} // ngOnChanges
+  ngOnChanges(): void {}
 
   onBuildingClick(building: BaronyBuilding) {
     this.buildingClick.next(building);
-  } // onBuildingClick
-} // BaronyBuildingsSelectorComponent
+  }
+}

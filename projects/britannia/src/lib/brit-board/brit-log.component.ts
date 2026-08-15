@@ -8,25 +8,25 @@ import { BritAreaLeader, BritAreaUnit, BritLog, BritPlayer } from "../brit-game-
 interface BritLogStringFragment {
   type: "string";
   label: string;
-} // BritLogStringFragment
+}
 
 interface BritLogPlayerFragment {
   type: "player";
   label: string;
   player: BritPlayer;
-} // BritLogStringFragment
+}
 
 interface BritLogAreaFragment {
   type: "area";
   label: string;
   area: BritArea;
-} // BritLogAreaFragment
+}
 
 // interface BritLogPawnFragment {
 //   type: "pawn";
 //   label: string;
 //   pawn: BritPawnType;
-// } // BritLogPawnFragment
+// }
 
 type BritLogFragment =
   | BritLogStringFragment
@@ -147,21 +147,21 @@ export class BritLogComponent implements OnChanges {
               isFirst = false;
             } else {
               this.fragments.push(this.string(", "));
-            } // if - else
+            }
             if (unit.type === "leader") {
               quantity++;
               this.fragments.push(this.leader(unit.leaderId));
             } else {
               quantity += unit.quantity;
               this.fragments.push(this.unit(unit));
-            } // if - else
-          } // for
+            }
+          }
           this.fragments.push(this.string(` ${quantity === 1 ? "moves" : "move"} from `));
           this.fragments.push(this.area(l.units[0].areaId));
           this.fragments.push(this.string(" to "));
           this.fragments.push(this.area(l.toAreaId));
           break;
-        } // case
+        }
         // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
         // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
         // case "movement": this.fragments = [this.player (l.player), this.string (" moves a knight from "), this.land (l.movement.fromLand), this.string (" to "), this.land (l.movement.toLand), this.string (".")]; break;
@@ -171,16 +171,16 @@ export class BritLogComponent implements OnChanges {
         // case "nobleTitle": this.fragments = [this.player (l.player), this.string (" earns a new noble title.")]; break;
         // case "setupPlacement": this.fragments = [this.player (l.player), this.string (" places a knight in "), this.land (l.land), this.string (".")]; break;
         // default: console.error (`Log type ${l.type} not managed`);
-      } // switch
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   private string(label: string): BritLogStringFragment {
     return {
       type: "string",
       label: label
     };
-  } // string
+  }
 
   private area(areaId: BritAreaId): BritLogAreaFragment {
     const area = this.components.AREA[areaId];
@@ -189,14 +189,14 @@ export class BritLogComponent implements OnChanges {
       label: area.name,
       area
     };
-  } // area
+  }
 
   private leader(leaderId: BritLeaderId): BritLogStringFragment {
     return {
       type: "string",
       label: this.components.getLeader(leaderId).name
     };
-  } // leader
+  }
 
   private unit(unit: Exclude<BritAreaUnit, BritAreaLeader>): BritLogStringFragment {
     return {
@@ -205,7 +205,7 @@ export class BritLogComponent implements OnChanges {
         .getNation(unit.nationId)
         .label.toLowerCase()} ${this.components.getUnitTypeLabel(unit.type, unit.quantity === 1)}`
     };
-  } // leader
+  }
 
   // private player (playerId: string): BritLogPlayerFragment {
   //   const player = this.game.getPlayer (playerId);
@@ -214,7 +214,7 @@ export class BritLogComponent implements OnChanges {
   //     label: player.name,
   //     player: player
   //   };
-  // } // player
+  // }
 
   // private land (landId: BritLandCoordinates): BritLogLandFragment {
   //   const land = this.game.getLand (landId);
@@ -225,13 +225,13 @@ export class BritLogComponent implements OnChanges {
   //     case "mountain": label = "mountain"; break;
   //     case "forest": label = "forest"; break;
   //     case "lake": label = "lake"; break;
-  //   } // switch
+  //   }
   //   return {
   //     type: "land",
   //     label: label,
   //     land: land
   //   };
-  // } // land
+  // }
 
   // private pawn (pawnType: BritPawnType): BritLogPawnFragment {
   //   let label: string;
@@ -240,13 +240,13 @@ export class BritLogComponent implements OnChanges {
   //     case "knight": label = "knight"; break;
   //     case "stronghold": label = "stronghold"; break;
   //     case "village": label = "village"; break;
-  //   } // switch
+  //   }
   //   return {
   //     type: "pawn",
   //     label: label,
   //     pawn: pawnType
   //   };
-  // } // pawn
+  // }
 
   private getPhaseLabel(phase: BritPhase): string {
     switch (phase) {
@@ -260,6 +260,6 @@ export class BritLogComponent implements OnChanges {
         return "Raider Withdrawal";
       case "overpopulation":
         return "Overpopulation";
-    } // switch
-  } // getPhaseLabel
-} // BritLogComponent
+    }
+  }
+}

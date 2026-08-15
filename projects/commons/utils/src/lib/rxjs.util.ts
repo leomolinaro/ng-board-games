@@ -36,7 +36,7 @@ export function concatJoin<A extends ObservableInput<any>[]>(
   sources: A
 ): Observable<ObservedValuesFromArray<A>[]> {
   return concat(...sources).pipe(toArray());
-} // concatJoin
+}
 
 export function forN(n: number, forFn: (index: number) => Observable<void>): Observable<void> {
   if (n <= 0) {
@@ -50,11 +50,11 @@ export function forN(n: number, forFn: (index: number) => Observable<void>): Obs
         return forFn(index);
       } else {
         return EMPTY;
-      } // if - else
+      }
     }),
     last()
   );
-} // forN
+}
 
 export function forEach<T>(
   array: T[],
@@ -71,8 +71,8 @@ export function forEach<T>(
         return forEachFn(array[index]);
       } else {
         return EMPTY;
-      } // if - else
+      }
     }),
     last()
   );
-} // forEach
+}

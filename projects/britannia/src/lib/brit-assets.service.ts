@@ -30,8 +30,8 @@ export class BritAssetsService {
         return "assets/britannia/buildings/saxon-buhr.png";
       case "leader":
         return `assets/britannia/leaders/${unit.leaderId}.png`;
-    } // switch
-  } // getUnitImageSource
+    }
+  }
 
   getUnitImageSourceByType(
     unitType: BritUnitType,
@@ -49,6 +49,6 @@ export class BritAssetsService {
         return "assets/britannia/buildings/saxon-buhr.png";
       case "leader":
         return `assets/britannia/leaders/${leaderId}.png`;
-    } // switch
-  } // getUnitImageSourceByType
-} // BritAssetsService
+    }
+  }
+}

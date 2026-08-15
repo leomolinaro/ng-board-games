@@ -41,6 +41,6 @@ export class BaronyLogsComponent implements OnChanges {
       setTimeout(
         () => (this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight)
       );
-    } // if
-  } // ngOnChanges
-} // BaronyLogsComponent
+    }
+  }
+}

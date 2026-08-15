@@ -59,7 +59,7 @@ export class AgotDataService {
     BtRK: true,
     TB: true,
     LMHR: true
-  }; // officialPackCodes
+  };
 
   private $factions = new BehaviorSubject<AgotFaction[]>([]);
   private $packs = new BehaviorSubject<AgotPack[]>([]);
@@ -94,19 +94,19 @@ export class AgotDataService {
     if (options) {
       if (options.onlyOfficial) {
         return cards.filter(c => this.officialPackCodes[c.pack_code]);
-      } // if
-    } // if
+      }
+    }
     return cards;
-  } // filterPacks
+  }
 
   private filterPacks(packs: AgotPack[], options?: { onlyOfficial: boolean }) {
     if (options) {
       if (options.onlyOfficial) {
         return packs.filter(p => this.officialPackCodes[p.code]);
-      } // if
-    } // if
+      }
+    }
     return packs;
-  } // filterPacks
+  }
 
   load$(): Observable<void> {
     return forkJoin([
@@ -122,12 +122,12 @@ export class AgotDataService {
             if (!factionIds[factionCode]) {
               factionIds[factionCode] = true;
               factions.push({ code: factionCode, name: card.faction_name });
-            } // if
+            }
             const typeCode = card.type_code;
             if (!typeIds[typeCode]) {
               typeIds[typeCode] = true;
               types.push({ code: typeCode, name: card.type_name });
-            } // if
+            }
             this.cardMap[card.code] = card;
           });
           this.$factions.next(factions);
@@ -136,5 +136,5 @@ export class AgotDataService {
         })
       )
     ]).pipe(mapTo(void 0));
-  } // load
-} // AgotDataService
+  }
+}

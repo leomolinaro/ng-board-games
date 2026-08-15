@@ -27,7 +27,7 @@ interface BaronyPawnNode {
   y: number;
   xText: number;
   yText: number;
-} // BaronyPawnNode
+}
 
 @Component({
   selector: "[baronyLandTile]",
@@ -62,7 +62,7 @@ export class BaronyLandComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.coordinates) {
       this.hexCenter = hexToCartesian(this.coordinates);
-    } // if
+    }
 
     if (changes.pawns) {
       this.pawnNodes = [];
@@ -92,8 +92,8 @@ export class BaronyLandComponent implements OnChanges {
             return 1;
           } else {
             return -1;
-          } // if - else
-        } // if - else
+          }
+        }
       });
 
       this.pawnNodes.forEach((pawnNode, index) => {
@@ -108,18 +108,18 @@ export class BaronyLandComponent implements OnChanges {
         pawnNode.xText = pawnNode.x + this.textXOffset;
         pawnNode.yText = pawnNode.y + this.textYOffset;
       });
-    } // if
-  } // ngOnChanges
+    }
+  }
 
   private getPawnNodeDeltaX(index: number, total: number) {
     return total === 1 ? 0 : Math.sin((2 * Math.PI * index) / total);
-  } // getPawnNodeX
+  }
 
   private getPawnNodeDeltaY(index: number, total: number) {
     return total === 1 ? 0 : -1 * Math.cos((2 * Math.PI * index) / total);
-  } // getPawnNodeX
+  }
 
   onLandTileClick() {
     this.landTileClick.next();
   }
-} // BaronyLandComponent
+}

@@ -57,5 +57,5 @@ export class BritRulesSetupService {
       populationMarkers: ["welsh", "belgae", "brigantes", "picts", "caledonians"],
       activeNations: ["romans", "welsh", "belgae", "brigantes", "picts", "caledonians"]
     };
-  } // getGameSetup
-} // BritRulesSetupService
+  }
+}

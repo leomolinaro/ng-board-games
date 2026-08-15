@@ -24,14 +24,14 @@ interface BaronyPawnNode {
   type: BaronyPawnType;
   quantity: number;
   active: boolean;
-} // BaronyPawnNode
+}
 
 interface BaronyResourceNode {
   source: string;
   type: BaronyResourceType;
   quantity: number;
   active: boolean;
-} // BaronyResourceNode
+}
 
 @Component({
   selector: "barony-player-status",
@@ -70,20 +70,20 @@ export class BaronyPlayerStatusComponent implements OnChanges {
         changes.player.previousValue.pawns !== changes.player.currentValue.pawns
       ) {
         refreshPawns = true;
-      } // if
+      }
       if (
         !changes.player.previousValue ||
         changes.player.previousValue.resources !== changes.player.currentValue.resources
       ) {
         refreshResources = true;
-      } // if
-    } // if
+      }
+    }
     if (changes.validBuildings) {
       refreshPawns = true;
-    } // if
+    }
     if (changes.validResources) {
       refreshResources = true;
-    } // if
+    }
 
     if (refreshPawns) {
       this.pawnNodes = BARONY_PAWN_TYPES.map(pt => ({
@@ -95,7 +95,7 @@ export class BaronyPlayerStatusComponent implements OnChanges {
             ? this.validBuildings.includes(pt)
             : false
       }));
-    } // if
+    }
 
     if (refreshResources) {
       this.resourceNodes = BARONY_RESOURCE_TYPES.map(rt => ({
@@ -104,8 +104,8 @@ export class BaronyPlayerStatusComponent implements OnChanges {
         quantity: this.player.resources[rt],
         active: this.validResources ? this.validResources.includes(rt) : false
       }));
-    } // refreshResources
-  } // ngOnChanges
+    }
+  }
 
   onCardClick() {
     if (
@@ -114,18 +114,18 @@ export class BaronyPlayerStatusComponent implements OnChanges {
       !this.currentPlayer
     ) {
       this.selectPlayer.emit();
-    } // if
-  } // onCardClick
+    }
+  }
 
   onPawnClick(pawnNode: BaronyPawnNode) {
     if (pawnNode.active) {
       this.clickPawn.emit(pawnNode.type);
-    } // if
-  } // onPawnClick
+    }
+  }
 
   onResourceClick(resourceNode: BaronyResourceNode) {
     if (resourceNode.active) {
       this.clickResource.emit(resourceNode.type);
-    } // if
-  } // onResourceClick
-} // BaronyPlayerStatusComponent
+    }
+  }
+}

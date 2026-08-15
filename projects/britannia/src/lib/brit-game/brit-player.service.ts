@@ -10,4 +10,4 @@ export interface BritPlayerService {
   ): Observable<BritArmyPlacement>;
   armyMovements$(nationId: string, playerId: string): Observable<BritArmyMovements>;
   battleInitiation$(nationId: string, playerId: string): Observable<BritBattleInitiation>;
-} // BritPlayerService
+}

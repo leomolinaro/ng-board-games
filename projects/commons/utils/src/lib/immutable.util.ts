@@ -4,7 +4,7 @@ import { Key } from "./types.util";
 
 function error(msg: string) {
   throw new Error(msg);
-} // error
+}
 
 function toMap<E, V = E>(
   list: E[],
@@ -20,10 +20,10 @@ function toMap<E, V = E>(
       const map: { [key: string]: V } = {};
       list.forEach(e => (map[keyGetter(e)] = e as unknown as V));
       return map;
-    } // if - else
-  } // if
+    }
+  }
   return {};
-} // toMap
+}
 
 /************************************************************************************************/
 /**** UTILITA' SULLE LISTE **********************************************************************/
@@ -36,7 +36,7 @@ export function listGetByIndicies<T>(indicies: number[], list: T[]) {
     i => true
   );
   return list.filter((element, index) => indexMap[index]);
-} // listGetByIndicies
+}
 
 /**
  * Crea una lista di entità che corrispondono alla lista patch sulla base del confronto delle chiavi.
@@ -68,14 +68,14 @@ export function listMergeLists<P, E>(
     } else {
       e = createEntity(p, key);
       entityListChanged = true;
-    } // if
+    }
     entityNewList.push(e);
   });
   if (Object.keys(entityOldList).length) {
     entityListChanged = true;
   }
   return entityListChanged ? entityNewList : entityOldList;
-} // listMergeLists
+}
 
 export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
   if (list) {
@@ -85,12 +85,12 @@ export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
     } else {
       error("match not found");
       return list;
-    } // if - else
+    }
   } else {
     error("empty list");
     return list;
-  } // if - else
-} // listRemoveFirst
+  }
+}
 
 export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
   if (list) {
@@ -98,12 +98,12 @@ export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
   } else {
     error("empty list");
     return list;
-  } // if - else
-} // listRemoveAll
+  }
+}
 
 export function listRemoveByIndex<T>(index: number, list: T[]) {
   return list.filter((el, i) => i !== index);
-} // listRemoveByIndex
+}
 
 export function listRemoveByIndicies<T>(indicies: number[], list: T[]) {
   const indexMap = toMap(
@@ -112,7 +112,7 @@ export function listRemoveByIndicies<T>(indicies: number[], list: T[]) {
     i => true
   );
   return list.filter((element, index) => !indexMap[index]);
-} // listRemoveByIndicies
+}
 
 export function listReplaceFirst<T>(matcher: (e: T) => boolean, element: T, list: T[]) {
   if (list) {
@@ -122,12 +122,12 @@ export function listReplaceFirst<T>(matcher: (e: T) => boolean, element: T, list
     } else {
       error("match not found");
       return list;
-    } // if - else
+    }
   } else {
     error("empty list");
     return list;
-  } // if - else
-} // listReplace
+  }
+}
 
 export function listReplaceFirstOrInsert<T>(
   matcher: (e: T) => boolean,
@@ -141,11 +141,11 @@ export function listReplaceFirstOrInsert<T>(
       return listReplaceByIndex(index, element, list);
     } else {
       return listInsert(element, insertIndex, list);
-    } // if - else
+    }
   } else {
     return listInsert(element, insertIndex, list);
-  } // if - else
-} // listReplaceFirstOrInsert
+  }
+}
 
 export function listUpdateFirstOrPush<T>(
   matcher: (e: T) => boolean,
@@ -160,8 +160,8 @@ export function listUpdateFirstOrPush<T>(
   } else {
     const newElement = pusher();
     return listPush([newElement], list);
-  } // if - else
-} // listReplaceFirstOrInsert
+  }
+}
 
 /**
  * Rimpiazza l'elemento della lista posizionato all'indice dato con un nuovo elemento.
@@ -174,7 +174,7 @@ export function listReplaceByIndex<T>(index: number, element: T, list: T[]) {
   const newList = [...list];
   newList[index] = element;
   return newList;
-} // listElementReplacedByIndex
+}
 
 export function listMergeFirst<T>(matcher: (e: T) => boolean, changes: Partial<T>, list: T[]) {
   if (list) {
@@ -184,12 +184,12 @@ export function listMergeFirst<T>(matcher: (e: T) => boolean, changes: Partial<T
     } else {
       error("match not found");
       return list;
-    } // if - else
+    }
   } else {
     error("empty list");
     return list;
-  } // if - else
-} // listMergeFirst
+  }
+}
 
 export function listMergeAll<T>(
   keyGetter: (e: T) => string,
@@ -206,16 +206,16 @@ export function listMergeAll<T>(
       changed = true;
     } else {
       toReturn.push(e);
-    } // if - else
-  } // for
+    }
+  }
   return toReturn;
-} // listMergeAll
+}
 
 export function listMergeByIndex<T>(index: number, change: Partial<T>, list: T[]) {
   const newList = [...list];
   newList[index] = { ...newList[index], ...change };
   return newList;
-} // listMergeByIndex
+}
 
 export function listInsert<T>(element: T, index: number, list: T[]) {
   if (list) {
@@ -227,14 +227,14 @@ export function listInsert<T>(element: T, index: number, list: T[]) {
         const newArray = [...list];
         newArray.splice(index, 0, element);
         return newArray;
-      } // if - else
+      }
     } else {
       return [...list, element];
-    } // if - else
+    }
   } else {
     return [element];
-  } // if - else
-} // listInsert
+  }
+}
 
 export function listPush<T>(toPush: T[], list: T[]) {
   if (toPush && toPush.length > 0) {
@@ -242,11 +242,11 @@ export function listPush<T>(toPush: T[], list: T[]) {
       return [...list, ...toPush];
     } else {
       return [...toPush];
-    } // if - else
+    }
   } else {
     return list;
-  } // if - else
-} // listPush
+  }
+}
 
 /**
  * Crea una nuova lista inserendo gli elementi della lista toInsert nella lista list, nell'ordine
@@ -270,19 +270,19 @@ export function listInsertBySort<T>(toInsert: T[], comparator: (a: T, b: T) => n
       } else {
         toReturn.push(toInsertElement);
         toInsertIndex++;
-      } // if - else
-    } // while
+      }
+    }
     for (let i = toInsertIndex; i < toInsert.length; i++) {
       toReturn.push(toInsert[i]);
-    } // for
+    }
     for (let i = listIndex; i < list.length; i++) {
       toReturn.push(list[i]);
-    } // for
+    }
     return toReturn;
   } else {
     return toInsert;
-  } // if - else
-} // listInsertBySort
+  }
+}
 
 export function listSortByIndex<T>(fromIndex: number, toIndex: number, list: T[]): T[] {
   if (list && list.length) {
@@ -292,8 +292,8 @@ export function listSortByIndex<T>(fromIndex: number, toIndex: number, list: T[]
     return newList;
   } else {
     return list;
-  } // if - else
-} // listSortByIndex
+  }
+}
 
 export function listSortByElement<T>(movingElement: T, toElement: T, list: T[]): T[] {
   if (list) {
@@ -302,5 +302,5 @@ export function listSortByElement<T>(movingElement: T, toElement: T, list: T[]):
     return listSortByIndex(fromIndex, toIndex, list);
   } else {
     return list;
-  } // if - else
-} // listSortByElement
+  }
+}

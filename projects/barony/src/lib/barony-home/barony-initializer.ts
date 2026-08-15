@@ -16,8 +16,8 @@ export function getRandomLands(nPlayers: number): {
   for (const type of BARONY_LAND_TYPES) {
     for (let i = 0; i < BARONY_NUMBER_OF_LAND_TILES[type]; i++) {
       typesPool.push(type);
-    } // for
-  } // for
+    }
+  }
   const landTypes = randomUtil.getRandomDraws(nTiles, typesPool);
   return coordinatess.map((coordinates, index) => {
     return {
@@ -29,7 +29,7 @@ export function getRandomLands(nPlayers: number): {
   // const nPieces = nPlayers * 9;
   // const lands = generateRectangularMap (nPieces);
   // return lands;
-} // getRandomLandTiles
+}
 
 function generateExhagonalMap(nTiles: number): BaronyLandCoordinates[] {
   const coordinates: BaronyLandCoordinates[] = [];
@@ -59,17 +59,17 @@ function generateExhagonalMap(nTiles: number): BaronyLandCoordinates[] {
       } else {
         side = 0;
         radius++;
-      } // if - else
-    } // if - else
+      }
+    }
     const sO = side === 0 && i === 0 ? sideOffsets[5] : sideOffsets[side];
     cX += sO.x;
     cY += sO.y;
     cZ += sO.z;
     coordinates.push({ x: cX, y: cY, z: cZ });
     counter++;
-  } // while
+  }
   return coordinates;
-} // generateExhagonalMap
+}
 
 function generateRectangularMap(nPieces: number): {
   coordinates: BaronyLandCoordinates;
@@ -89,8 +89,8 @@ function generateRectangularMap(nPieces: number): {
       map[piece[2]]++;
       map[piece[3]]++;
       piecesPool.push(piece);
-    } // for
-  } // for
+    }
+  }
   console.log("map", map);
 
   const choosenPieces = [];
@@ -98,7 +98,7 @@ function generateRectangularMap(nPieces: number): {
     const pieceIndex = randomUtil.getRandomInteger(0, piecesPool.length);
     const piece = piecesPool.splice(pieceIndex, 1)[0];
     choosenPieces.push(piece);
-  } // for
+  }
 
   const toReturn: {
     coordinates: BaronyLandCoordinates;
@@ -135,7 +135,7 @@ function generateRectangularMap(nPieces: number): {
         coordinates: { x: x, y: y + 1, z: z - 1 },
         type: piece[3]
       });
-    } // if - else
+    }
 
     pIndex++;
     if (pIndex > 6) {
@@ -144,7 +144,7 @@ function generateRectangularMap(nPieces: number): {
       up = true;
     } else {
       up = !up;
-    } // if - else
-  } // for
+    }
+  }
   return toReturn;
-} // generateRectangularMap
+}

@@ -20,7 +20,7 @@ interface AgotFcDeck {
   description: string;
   faction: AgotFactionCode;
   agenda: string;
-} // AgotFcDeck
+}
 
 @Component({
   selector: "agot-fc-decks",
@@ -281,7 +281,7 @@ export class AgotFcDecksComponent implements OnInit, OnDestroy {
               case "plot":
                 nPlots++;
                 break;
-            } // switch
+            }
           });
           console.log("nAgendas", nAgendas);
           console.log("nAttachments", nAttachments);
@@ -299,10 +299,10 @@ export class AgotFcDecksComponent implements OnInit, OnDestroy {
           console.log("nPlots", nPlots / n);
 
           console.log("nByFaction", nByFaction);
-        } // if
+        }
       })
     );
-  } // ngOnInit
+  }
 
   ngOnDestroy() {}
-} // AgotFcDecksComponent
+}

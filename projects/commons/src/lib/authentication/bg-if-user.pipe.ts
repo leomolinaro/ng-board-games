@@ -8,5 +8,5 @@ export class BgIfUserPipe implements PipeTransform {
   transform(expectedUser: BgUser): boolean {
     const condition = expectedUser.id === this.authService.getUser().id;
     return condition;
-  } // transform
-} // BgIfUserPipe
+  }
+}

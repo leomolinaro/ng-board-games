@@ -3,33 +3,33 @@ import { Injectable } from "@angular/core";
 export interface IBgProcess<C> {
   readonly type: "process";
   start(context: C): IBgProcessStep<C>;
-} // IBgProcess
+}
 
 export interface IBgSubProcess<C> {
   readonly type: "sub-process";
   start(context: C): IBgProcessStep<C>;
   next(context: C): IBgProcessStep<C>;
   readonly parent: IBgSubProcess<C> | IBgProcess<C>;
-} // IBgSubProcess
+}
 
 export interface IBgProcessTask<C> {
   readonly type: "task";
   next(context: C): IBgProcessStep<C>;
   readonly parent: IBgProcess<C> | IBgSubProcess<C>;
-} // IBgProcessTask
+}
 
 export interface IBgProcessParallelSplit<C> {
   readonly type: "parallel-split";
   getSteps(): IBgProcessStep<C>[];
-} // IBgGatewayParallelSplit
+}
 
 export interface IBgProcessParallelJoin {
   readonly type: "parallel-join";
-} // IBgProcessParallelJoin
+}
 
 export interface IBgProcessEndEvent {
   readonly type: "end-event";
-} // IBgProcessEndEvent
+}
 
 export type IBgProcessStep<C> =
   | IBgSubProcess<C>
@@ -53,14 +53,14 @@ export class BgProcessService {
   startProcess<C>(flow: IBgProcess<C>, context: C): IBgProcessTask<C>[] {
     const flowStep = flow.start(context);
     return this.getTasks(flowStep, flow, context);
-  } // startProcess
+  }
 
   resolveTask<C>(task: IBgProcessTask<C>, context: C): IBgProcessTask<C>[] {
     const nextStep = task.next(context);
     const parentStep = task.parent;
     const newTasks = this.getTasks(nextStep, parentStep, context);
     return newTasks;
-  } // resolveTask
+  }
 
   private getTasks<C>(
     flowStep: IBgProcessStep<C>,
@@ -70,7 +70,7 @@ export class BgProcessService {
     const tasks: IBgProcessTask<C>[] = [];
     this.appendTasks(flowStep, parentStep, tasks, context);
     return tasks;
-  } // getTasks
+  }
 
   private appendTasks<C>(
     step: IBgProcessStep<C>,
@@ -83,12 +83,12 @@ export class BgProcessService {
         const parallelSteps = step.getSteps();
         parallelSteps.forEach(s => this.appendTasks(s, parentStep, appendTasks, context));
         break;
-      } // case
+      }
       case "sub-process": {
         const startChildStep = step.start(context);
         this.appendTasks(startChildStep, step, appendTasks, context);
         break;
-      } // case
+      }
       case "parallel-join":
         break;
       case "task":
@@ -103,9 +103,9 @@ export class BgProcessService {
             const grandParentStep = parentStep.parent;
             this.appendTasks(nextFlowStep, grandParentStep, appendTasks, context);
             break;
-          } // case
-        } // switch
-      } // case
-    } // switch
-  } // appendTasks
-} // BgProcessService
+          }
+        }
+      }
+    }
+  }
+}

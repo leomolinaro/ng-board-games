@@ -27,8 +27,8 @@ export class BritAreaPathResolver implements Resolve<any> {
 
   resolve(): Observable<any> {
     return forkJoin([this.mapService.loadAreaPaths$(), this.mapService.loadAreaSlots$()]);
-  } // resolve
-} // BritAreaPathResolver
+  }
+}
 
 const gameResolvers = {
   areaPaths: BritAreaPathResolver

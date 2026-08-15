@@ -22,7 +22,7 @@ export class TlsmMessageService {
       width: "400px",
       data: { message: message, tokenSource: tokenSource }
     });
-  } // alert
+  }
 
   public confirm(message: string, tokenSource: string, confirm: string): Observable<boolean> {
     const dialogRef = this.dialog.open(TlsmMessageDialog, {
@@ -30,8 +30,8 @@ export class TlsmMessageService {
       data: { message: message, tokenSource: tokenSource, confirm: confirm }
     });
     return dialogRef.afterClosed();
-  } // alert
-} // TlsmMessageService
+  }
+}
 
 @Component({
   selector: "tlsm-message-dialog",
@@ -59,5 +59,5 @@ export class TlsmMessageDialog {
     this.tokenSource = data.tokenSource;
     this.message = data.message;
     this.confirm = data.confirm;
-  } // constructor
-} // TlsmMessageDialog
+  }
+}

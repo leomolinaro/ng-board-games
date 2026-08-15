@@ -43,12 +43,12 @@ export class BritPlayerLocalService implements BritPlayerService {
             placement.infantryPlacement[ipIndex] = ip;
           } else {
             placement.infantryPlacement.push(landAreaId);
-          } // if - else
+          }
           return void 0;
         })
       );
     }).pipe(mapTo(placement));
-  } // armiesPlacement$
+  }
 
   private chooseLandForPlacement$(
     iInfantry: number,
@@ -70,7 +70,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       canCancel: iInfantry !== 1
     }));
     return this.ui.areaChange$<BritLandAreaId>();
-  } // chooseLandForRecruitment$
+  }
 
   armyMovements$(nationId: BritNationId, playerId: BritColor): Observable<BritArmyMovements> {
     const armyMovements: BritArmyMovements = { movements: [] };
@@ -82,12 +82,12 @@ export class BritPlayerLocalService implements BritPlayerService {
           armyMovements.movements.push(movementOrPass);
           this.game.applyArmyMovement(movementOrPass, true);
           return this.armyMovement$(nationId, playerId, armyMovements.movements);
-        } // if - else
+        }
       }),
       last(),
       mapTo(armyMovements)
     );
-  } // armyMovements$
+  }
 
   private armyMovement$(
     nationId: BritNationId,
@@ -120,7 +120,7 @@ export class BritPlayerLocalService implements BritPlayerService {
                     return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
                   } else {
                     return { ...armyMovementOrPass, units: unitsOrAreaId };
-                  } // if - else
+                  }
                 })
               );
             } else {
@@ -129,13 +129,13 @@ export class BritPlayerLocalService implements BritPlayerService {
                   unitsOrPass === "pass" ? "pass" : { ...armyMovementOrPass, units: unitsOrPass }
                 )
               );
-            } // if - else
-          } // if - else
+            }
+          }
         }
       ),
       last()
     );
-  } // armyMovement$
+  }
 
   private chooseUnitsForMovement$(
     nationId: BritNationId,
@@ -157,7 +157,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       this.ui.selectedUnitsChange$(),
       this.ui.passChange$().pipe(mapTo("pass"))
     );
-  } // chooseUnitsForMovement$
+  }
 
   private chooseUnitsOrAreaForMovement$(
     nationId: BritNationId,
@@ -186,7 +186,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       canCancel: true
     }));
     return race(this.ui.selectedUnitsChange$(), this.ui.areaChange$());
-  } // chooseUnitsOrAreaForMovement$
+  }
 
   battleInitiation$(nationId: BritNationId, playerId: BritColor): Observable<BritBattleInitiation> {
     return this.chooseLandForBattle$(nationId, playerId).pipe(
@@ -194,7 +194,7 @@ export class BritPlayerLocalService implements BritPlayerService {
         return this.confirmBattleInitiation$(landId, playerId).pipe(map(() => ({ landId })));
       })
     );
-  } // battleInitiation$
+  }
 
   private chooseLandForBattle$(
     nationId: BritNationId,
@@ -209,7 +209,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       validAreas: validAreas
     }));
     return this.ui.areaChange$<BritLandAreaId>();
-  } // chooseLandForBattle$
+  }
 
   private confirmBattleInitiation$(landId: BritLandAreaId, playerId: BritColor): Observable<void> {
     this.ui.updateUi("Confirm battle initiation", s => ({
@@ -222,5 +222,5 @@ export class BritPlayerLocalService implements BritPlayerService {
       canCancel: true
     }));
     return this.ui.confirmChange$();
-  } // confirmBattleInitiation$
-} // BritPlayerLocalService
+  }
+}

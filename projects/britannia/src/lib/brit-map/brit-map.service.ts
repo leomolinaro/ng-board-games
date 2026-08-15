@@ -10,7 +10,7 @@ export type BritAreaSlots = Record<BritAreaId, Record<number, BritMapPoint[]>>;
 export interface BritMapPoint {
   x: number;
   y: number;
-} // BritMapPoint
+}
 
 const BRIT_POPULATION_START_Y = 61;
 const BRIT_POPULATION_START_WIDTH = 3;
@@ -112,13 +112,13 @@ export class BritMapService {
               pId => pId.substring(`round-${roundId}-`.length) as BritNationId
             );
             this.eventPaths[roundId] = roundEventPaths;
-          } // for
+          }
           this.svgLoaded = true;
           return true;
         })
       );
-    } // if - else
-  } // loadAreaPaths$
+    }
+  }
 
   private getGroupPaths<K extends string | number>(
     groupId: string,
@@ -134,10 +134,10 @@ export class BritMapService {
         const id = pathIdToId(pathId);
         const pathD = pathElement.getAttribute("d")!;
         paths[id] = pathD;
-      } // if
+      }
     });
     return paths;
-  } // getGroupPaths
+  }
 
   loadAreaSlots$(): Observable<boolean> {
     return this.http
@@ -148,18 +148,18 @@ export class BritMapService {
           return true;
         })
       );
-  } // loadAreaSlots$
+  }
 
   getAreaSlots(n: number, areaId: BritAreaId): BritMapPoint[] {
     return this.areaSlots[areaId][n];
-  } // getAreaSlots
+  }
 
   getPopulationX(population: BritPopulation, index: number): number {
     const startX = BRIT_POPULATION_START_X[population];
     return startX + (index % BRIT_POPULATION_START_WIDTH);
-  } // getPopulationX
+  }
 
   getPopulationY(population: BritPopulation, index: number): number {
     return BRIT_POPULATION_START_Y + Math.floor(index / BRIT_POPULATION_START_WIDTH);
-  } // getPopulationY
-} // BritMapService
+  }
+}

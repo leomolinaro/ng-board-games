@@ -49,7 +49,7 @@ function rawNumberSymbol(propName: string) {
 export interface NgLetContext<T> {
   $implicit: T | null;
   ngLet: T | null;
-} // NgLetContext
+}
 
 @Directive({
   selector: "[ngLet]",
@@ -67,12 +67,12 @@ export class NgLetDirective<T> implements OnInit {
   @Input()
   set ngLet(value: T) {
     this.context.$implicit = this.context.ngLet = value;
-  } // ngLet
+  }
 
   ngOnInit() {
     this.vcr.createEmbeddedView(this.templateRef, this.context);
-  } // ngOnInit
-} // NgLetDirective
+  }
+}
 
 export type SimpleChanges<C> = {
   [K in keyof C]: {
@@ -95,7 +95,7 @@ export function BooleanInput() {
       }
     });
   };
-} // BooleanInput
+}
 
 export function NumberInput(fallbackValue?: number) {
   if (fallbackValue === undefined) {
@@ -110,10 +110,10 @@ export function NumberInput(fallbackValue?: number) {
       set: function (value: any) {
         this[rawNumberKey] =
           !isNaN(parseFloat(value)) && !isNaN(Number(value)) ? Number(value) : fallbackValue;
-      } // set
+      }
     });
   };
-} // NumberInput
+}
 
 export function UntilDestroy(constructor: new (...args: any[]) => OnDestroy): void {
   const prot = constructor.prototype;
@@ -124,11 +124,11 @@ export function UntilDestroy(constructor: new (...args: any[]) => OnDestroy): vo
       if (this[destorySubjectSymbol]) {
         this[destorySubjectSymbol].next();
         this[destorySubjectSymbol].complete();
-      } // if
+      }
       originalDestroy.apply(this);
     };
-  } // if
-} // UntilDestroy
+  }
+}
 
 export const untilDestroy = <T>(component: OnDestroy): MonoTypeOperatorFunction<T> => {
   const c = component as any;
@@ -136,14 +136,14 @@ export const untilDestroy = <T>(component: OnDestroy): MonoTypeOperatorFunction<
   if (!obs) {
     c[destorySubjectSymbol] = new Subject();
     c[destroyObsSymbol] = c[destorySubjectSymbol].asObservable();
-  } // if
+  }
   if (!c[destroyUsedSymbol]) {
     console.warn(
       `Aggiungi il decoratore @TakeUntilDestroy nella classe [${c.constructor?.name}] dato che utilizza 'untilDestroy (this)'.`
     );
-  } // if
+  }
   return takeUntil<T>(c[destroyObsSymbol]);
-}; // untilDestroy
+};
 
 export function Loading() {
   return <K extends string>(componentProt: Record<K, Observable<boolean>>, inputKey: K) => {
@@ -156,7 +156,7 @@ export function Loading() {
       }
     });
   };
-} // Loading
+}
 
 function initLoading(componentInstance: any) {
   let loading$ = componentInstance[loadingObsSymbol];
@@ -165,8 +165,8 @@ function initLoading(componentInstance: any) {
     loading$ = $loading.asObservable().pipe(map(l => l > 0));
     componentInstance[loadingSubjectSymbol] = $loading;
     componentInstance[loadingObsSymbol] = loading$;
-  } // if
-} // initLoading
+  }
+}
 
 export function ChangeListener() {
   return <V, O extends Observable<V>>(
@@ -182,17 +182,17 @@ export function ChangeListener() {
         obs$.pipe(untilDestroy(this)).subscribe();
         return obs$;
       };
-    } // if
+    }
   };
-} // ChangeListener
+}
 
 interface AsyncEventConfig {
   suppressLoading?: boolean;
-} // AsyncEventConfig
+}
 
 interface DebouncingEventConfig extends AsyncEventConfig {
   dueTime?: number;
-} // DebouncingEventConfig
+}
 
 export function SingleEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
@@ -200,7 +200,7 @@ export function SingleEvent(config?: AsyncEventConfig) {
     config,
     false
   );
-} // SingleEvent
+}
 
 export function SwitchingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
@@ -208,7 +208,7 @@ export function SwitchingEvent(config?: AsyncEventConfig) {
     config,
     false
   );
-} // SwitchingEvent
+}
 
 export function MergingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
@@ -216,7 +216,7 @@ export function MergingEvent(config?: AsyncEventConfig) {
     config,
     false
   );
-} // MergingEvent
+}
 
 export function ConcatingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
@@ -224,7 +224,7 @@ export function ConcatingEvent(config?: AsyncEventConfig) {
     config,
     true
   );
-} // ConcatingEvent
+}
 
 export function ExhaustingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
@@ -232,7 +232,7 @@ export function ExhaustingEvent(config?: AsyncEventConfig) {
     config,
     false
   );
-} // ExhaustingEvent
+}
 
 export function DebouncingEvent(config?: DebouncingEventConfig) {
   return asyncEventDecorator(
@@ -244,7 +244,7 @@ export function DebouncingEvent(config?: DebouncingEventConfig) {
     config,
     true
   );
-} // DebouncingEvent
+}
 
 function asyncEventDecorator(
   generator$: (
@@ -268,13 +268,13 @@ function asyncEventDecorator(
       if (!$origin) {
         $origin = new Subject<{ args: any[]; eventName: string }>();
         this[asyncEventSubjectSymbol] = $origin;
-      } // if
+      }
       // Ricavo il subject per il loading, se esistente.
       let $loading: BehaviorSubject<number> | null = null;
       if (this[loadingUsedSymbol]) {
         initLoading(this);
         $loading = this[loadingSubjectSymbol];
-      } // if
+      }
       if (!this[asyncEventSubscribed]) {
         // Istanzio la funzione che dato l'observable originale, lo wrappa gestendo il catchError e il loading, se attivo.
         const getWrappedObservable$: (originalObservable$: Observable<any>) => Observable<any> =
@@ -303,20 +303,20 @@ function asyncEventDecorator(
             return getWrappedObservable$(originalObservable$);
           } else {
             return of(void 0);
-          } // if - else
+          }
         };
         generator$($origin.pipe(filter(({ eventName }) => eventName === methodName)), asyncEffect$)
           .pipe(untilDestroy(this))
           .subscribe();
         this[asyncEventSubscribed] = true;
-      } // if
+      }
       if (copyArgs) {
         args = args.map((arg: any) => ({ ...arg }));
       }
       $origin.next({ args, eventName: methodName });
     } as any; // questo cast è sensato in quanto viene cambiato l'output del metodo
   };
-} // asyncEventDecorator
+}
 
 export function lazyInject<T extends object>(token: ProviderToken<T>): T {
   const injector = inject(Injector);

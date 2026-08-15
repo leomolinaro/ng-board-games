@@ -12,7 +12,7 @@ export class AgotHttpService {
 
   getCards(): Observable<AgotCard[]> {
     return this.http.get<AgotCard[]>("https://thronesdb.com/api/public/cards/");
-  } // getCards
+  }
 
   getPacks(): Observable<AgotPack[]> {
     return this.http.get<AgotPack[]>("https://thronesdb.com/api/public/packs/").pipe(
@@ -30,5 +30,5 @@ export class AgotHttpService {
         })
       )
     );
-  } // getPacks
-} // AgotHttpService
+  }
+}

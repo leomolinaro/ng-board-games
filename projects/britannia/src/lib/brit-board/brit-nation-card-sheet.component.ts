@@ -17,7 +17,7 @@ interface BritUnitNode {
   imageSource: string;
   available: number;
   total: number;
-} // BritUnitNode
+}
 
 @Component({
   selector: "brit-nation-card-sheet",
@@ -97,12 +97,12 @@ export class BritNationCardSheetComponent implements OnInit {
 
   ngOnInit() {
     this.refresh(this.data[0], this.data[1]);
-  } // ngOnInit
+  }
 
   setNation(nationId: BritNationId, nationState: BritNationState) {
     this.refresh(nationId, nationState);
     this.cd.markForCheck();
-  } // setNation
+  }
 
   private refresh(nationId: BritNationId, nationState: BritNationState) {
     const nation = this.components.NATION[nationId];
@@ -114,14 +114,14 @@ export class BritNationCardSheetComponent implements OnInit {
         total: nation.nInfantries,
         available: nationState.nInfantries
       });
-    } // if
+    }
     if (nation.nCavalries) {
       this.unitNodes.push({
         imageSource: this.assetsService.getUnitImageSourceByType("cavalry", nation.id),
         total: nation.nCavalries,
         available: nationState.nCavalries
       });
-    } // if
+    }
     if (nation.nBuildings) {
       this.unitNodes.push({
         imageSource: this.assetsService.getUnitImageSourceByType(
@@ -131,17 +131,17 @@ export class BritNationCardSheetComponent implements OnInit {
         total: nation.nBuildings,
         available: nationState.nBuildings
       });
-    } // if
+    }
     for (const leader of nation.leaderIds) {
       this.unitNodes.push({
         imageSource: this.assetsService.getUnitImageSourceByType("leader", nation.id, leader),
         total: 1,
         available: 1
       });
-    } // if
-  } // refresh
+    }
+  }
 
   onCloseClick() {
     this.bottomSheetRef.dismiss();
-  } // onCloseClick
-} // BritNationCardSheetComponent
+  }
+}

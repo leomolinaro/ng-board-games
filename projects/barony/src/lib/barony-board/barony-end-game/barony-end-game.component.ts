@@ -47,5 +47,5 @@ export class BaronyEndGameComponent {
 
   getResourceImageSource(resourceType: BaronyResourceType) {
     return `assets/barony/resources/${resourceType}.png`;
-  } // getResourceImageSource
-} // BaronyEndGameComponent
+  }
+}

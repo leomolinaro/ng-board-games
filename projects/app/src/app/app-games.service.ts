@@ -6,13 +6,13 @@ export const GAME_PATH = {
   wort: "war-of-the-ring-2",
   agotLcg2: "a-game-of-thrones-lcg-2",
   talisman: "talisman"
-}; // GAME_PATH
+};
 
 export interface Games {
   name: string;
   routerLink: string;
   imageSource: string;
-} // Games
+}
 
 const GAMES: Games[] = [
   { name: "Barony", routerLink: GAME_PATH.barony, imageSource: "assets/barony/game-image.jpg" },
@@ -42,5 +42,5 @@ export class AppGamesService {
 
   getGames() {
     return GAMES;
-  } // getGames
-} // AppGamesService
+  }
+}

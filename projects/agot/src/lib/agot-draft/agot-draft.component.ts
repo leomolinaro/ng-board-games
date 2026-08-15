@@ -144,7 +144,7 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
         ];
       })
     );
-  } // ngOnInit
+  }
 
   ngOnDestroy() {}
 
@@ -156,5 +156,5 @@ export class AgotDraftComponent implements OnInit, OnDestroy {
       this.selectedPackIds,
       this.duplicates
     );
-  } // generate
-} // AgotDraftComponent
+  }
+}

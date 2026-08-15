@@ -19,9 +19,9 @@ export class TlsmDragonCardComponent implements OnInit {
 
   ngOnInit() {
     this.dragon$ = this.store.selectDragon$(this.dragonId);
-  } // ngOnInit
+  }
 
   discardScale() {
     this.store.discardScale(this.dragonId);
-  } // discardScale
-} // TlsmDragonCardComponent
+  }
+}

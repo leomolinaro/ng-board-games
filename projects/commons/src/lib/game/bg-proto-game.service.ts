@@ -7,7 +7,7 @@ export type BgBoardGame = "barony" | "britannia" | "wotr";
 export interface BgArcheoGame {
   name: string;
   online: boolean;
-} // BgArcheoGame
+}
 
 export interface BgProtoGame<Opt = any> {
   id: string;
@@ -17,7 +17,7 @@ export interface BgProtoGame<Opt = any> {
   online: boolean;
   state: BgProtoGameState;
   options?: Opt;
-} // BgProtoGame
+}
 
 export interface BgProtoPlayer<Pid extends string = string> {
   id: Pid;
@@ -25,7 +25,7 @@ export interface BgProtoPlayer<Pid extends string = string> {
   type: BgProtoPlayerType;
   name: string;
   ready: boolean;
-} // BgProtoPlayer
+}
 
 export type BgProtoGameState = "open" | "running" | "ended";
 export type BgProtoPlayerType = "user" | "open" | "closed" | "ai";

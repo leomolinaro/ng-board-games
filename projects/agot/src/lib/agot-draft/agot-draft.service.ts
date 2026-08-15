@@ -24,8 +24,8 @@ export class AgotDraftService {
         return 6;
       default:
         return 0;
-    } // switch
-  } // getTypeSort
+    }
+  }
 
   generateDraft(
     nCards: number,
@@ -71,11 +71,11 @@ export class AgotDraftService {
       for (const card of cards) {
         if (typeIds[card.type_code] && packIds[card.pack_code] && factionIds[card.faction_code]) {
           poolCards.push(card);
-        } // if
-      } // for
-    } // if
+        }
+      }
+    }
     return poolCards;
-  } // getPool
+  }
 
   public getRandom<T>(array: T[], num: number, duplicates: boolean): T[] | null {
     if (num > array.length) {
@@ -88,14 +88,14 @@ export class AgotDraftService {
         const i = Math.floor(Math.random() * copy.length);
         const x = copy[i];
         result.push(x);
-      } // while
+      }
     } else {
       while (num--) {
         const i = Math.floor(Math.random() * copy.length);
         const x = copy.splice(i, 1);
         result.push(x[0]);
-      } // while
-    } // if - else
+      }
+    }
     return result;
-  } // getRandom
-} // AgotDraftService
+  }
+}

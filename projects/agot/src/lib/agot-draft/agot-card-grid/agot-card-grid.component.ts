@@ -12,4 +12,4 @@ export class AgotCardGridComponent {
   constructor() {}
 
   @Input() cards!: AgotCard[];
-} // AgotCardGridComponent
+}

@@ -120,15 +120,15 @@ export class BritGameComponent implements OnInit, OnDestroy {
             game.owner
           );
           this.listenToGame(stories);
-        } // if
+        }
       })
     );
-  } // ngOnInit
+  }
 
   @ChangeListener()
   private listenToGame(stories: BritStoryDoc[]) {
     return this.gameService.game$(stories);
-  } // listenToGame
+  }
 
   private playerDocToPlayer(playerDoc: BritPlayerDoc, user: BgUser): BritPlayer {
     if (playerDoc.isAi) {
@@ -146,8 +146,8 @@ export class BritGameComponent implements OnInit, OnDestroy {
         isLocal: user.id === playerDoc.controller.id,
         isRemote: user.id !== playerDoc.controller.id
       };
-    } // if - else
-  } // playerDocToPlayer
+    }
+  }
 
   private playerDocToAPlayerInit(playerDoc: BritPlayerDoc): ABritPlayer {
     return {
@@ -156,7 +156,7 @@ export class BritGameComponent implements OnInit, OnDestroy {
       nationIds: this.components.getNationIdsOfColor(playerDoc.id),
       score: 0
     };
-  } // playerDocToAPlayerInit
+  }
 
   ngOnDestroy() {}
 
@@ -183,4 +183,4 @@ export class BritGameComponent implements OnInit, OnDestroy {
   }
   // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }
-} // BritGameComponent
+}

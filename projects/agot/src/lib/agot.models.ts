@@ -132,21 +132,21 @@ export interface AgotCard {
   label: string;
   ci: number;
   si: number;
-} // AgotCard
+}
 
 export interface AgotFaction {
   code: AgotFactionCode;
   name: string;
-} // AgotFaction
+}
 
 export interface AgotPack {
   name: string;
   code: AgotPackCode;
   cycle_position: number;
   position: number;
-} // AgotPack
+}
 
 export interface AgotType {
   code: AgotTypeCode;
   name: string;
-} // AgotType
+}

@@ -12,4 +12,4 @@ export class BritRulesService {
   readonly populationIncrease = inject(BritRulesPopulationIncreaseService);
   readonly movement = inject(BritRulesMovementService);
   readonly battlesRetreats = inject(BritRulesBattlesRetreatsService);
-} // BritRulesService
+}

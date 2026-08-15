@@ -14,9 +14,9 @@ export class BritRulesBattlesRetreatsService {
       if (this.isBattleArea(landId, state)) {
         return true;
       }
-    } // for
+    }
     return false;
-  } // hasBattlesToResolve
+  }
 
   private isBattleArea(landId: BritLandAreaId, state: BritGameState) {
     const areaState = state.areas[landId];
@@ -28,10 +28,10 @@ export class BritRulesBattlesRetreatsService {
         }
       } else {
         nationId = unit.nationId;
-      } // if - else
-    } // for
+      }
+    }
     return false;
-  } // isBattleArea
+  }
 
   getValidAreasForBattle(nationId: BritNationId, state: BritGameState) {
     const validAreas: BritLandAreaId[] = [];
@@ -39,7 +39,7 @@ export class BritRulesBattlesRetreatsService {
       if (this.isBattleArea(landId, state)) {
         validAreas.push(landId);
       }
-    } // for
+    }
     return validAreas;
-  } // getValidAreasForBattle
-} // BritRulesBattlesRetreatsService
+  }
+}

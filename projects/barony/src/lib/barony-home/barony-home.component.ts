@@ -84,7 +84,7 @@ export class BaronyHomeComponent implements OnInit {
         case "yellow":
           return "barony-player-yellow";
       }
-    } // playerRoleCssClass
+    }
   };
 
   ngOnInit(): void {}

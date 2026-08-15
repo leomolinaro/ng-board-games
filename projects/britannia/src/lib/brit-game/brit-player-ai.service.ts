@@ -15,13 +15,13 @@ export class BritPlayerAiService implements BritPlayerService {
     playerId: BritColor
   ): Observable<BritArmyPlacement> {
     throw new Error("Method not implemented.");
-  } // armiesPlacement$
+  }
 
   armyMovements$(nationId: BritNationId, playerId: BritColor): Observable<BritArmyMovements> {
     throw new Error("Method not implemented.");
-  } // armyMovements$
+  }
 
   battleInitiation$(nationId: BritNationId, playerId: BritColor): Observable<BritBattleInitiation> {
     throw new Error("Method not implemented.");
-  } // battleInitiation$
-} // BritPlayerAiService
+  }
+}

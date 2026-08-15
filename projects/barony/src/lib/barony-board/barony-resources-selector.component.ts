@@ -50,9 +50,9 @@ export class BaronyResourcesSelectorComponent implements OnChanges {
   // @Input () player!: BaronyPlayer;
   @Output() resourceClick = new EventEmitter<BaronyResourceType>();
 
-  ngOnChanges(): void {} // ngOnChanges
+  ngOnChanges(): void {}
 
   onResourceClick(resource: BaronyResourceType) {
     this.resourceClick.next(resource);
-  } // onBuildingClick
-} // BaronyResourcesSelectorComponent
+  }
+}

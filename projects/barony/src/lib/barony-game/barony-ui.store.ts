@@ -26,7 +26,7 @@ interface BaronyUiState {
   validBuildings: ("stronghold" | "village")[] | null;
   canPass: boolean;
   maxNumberOfKnights: number | null;
-} // BaronyUiState
+}
 
 @Injectable()
 export class BaronyUiStore extends signalStore(
@@ -67,7 +67,7 @@ export class BaronyUiStore extends signalStore(
       this.game.selectPlayerMap$(),
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   selectTurnPlayer$() {
     return this.game.select$(
@@ -75,7 +75,7 @@ export class BaronyUiStore extends signalStore(
       this.game.selectPlayerMap$(),
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   selectPlayers$() {
     return this.game.select$(
@@ -83,7 +83,7 @@ export class BaronyUiStore extends signalStore(
       this.game.selectPlayerMap$(),
       (playerIds, playerMap) => playerIds.map(id => playerMap[id])
     );
-  } // selectPlayers$
+  }
 
   updateUi<
     S extends BaronyUiState & {
@@ -91,7 +91,7 @@ export class BaronyUiStore extends signalStore(
     }
   >(actionName: string, updater: (state: BaronyUiState) => S) {
     patchState(this, updater);
-  } // updateUi
+  }
 
   resetUi(): Partial<BaronyUiState> {
     return {
@@ -104,7 +104,7 @@ export class BaronyUiStore extends signalStore(
       validLands: null,
       validResources: null
     };
-  } // resetUi
+  }
 
   setFirstActionUi(player: BaronyColor): Partial<BaronyUiState> {
     return {

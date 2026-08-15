@@ -10,22 +10,22 @@ export interface BritGameDoc {
   owner: BgUser;
   online: boolean;
   state: "open" | "closed";
-} // BritGameDoc
+}
 
 export interface ABritPlayerDoc {
   id: BritColor;
   name: string;
   sort: number;
-} // ABritPlayerDoc
+}
 
 export interface BritAiPlayerDoc extends ABritPlayerDoc {
   isAi: true;
-} // BritAiPlayerDoc
+}
 
 export interface BritReadPlayerDoc extends ABritPlayerDoc {
   isAi: false;
   controller: BgUser;
-} // BritReadPlayerDoc
+}
 
 export type BritPlayerDoc = BritAiPlayerDoc | BritReadPlayerDoc;
 
@@ -108,4 +108,4 @@ export class BritRemoteService {
   deleteStories$(gameId: string) {
     return this.cloud.deleteAll$(this.stories(gameId));
   }
-} // BritRemoteService
+}

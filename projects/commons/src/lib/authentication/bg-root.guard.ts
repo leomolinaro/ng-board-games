@@ -16,13 +16,13 @@ export class BgRootGuard implements CanActivate {
           return of(true);
         } else {
           return this.authService.autoSignIn$().pipe(map(autoUser => !!autoUser));
-        } // if - else
+        }
       }),
       tap(hasUser => {
         if (!hasUser) {
           this.router.navigate(["/"]);
-        } // if
+        }
       })
     );
-  } // canActivate
-} // BgRootGuard
+  }
+}

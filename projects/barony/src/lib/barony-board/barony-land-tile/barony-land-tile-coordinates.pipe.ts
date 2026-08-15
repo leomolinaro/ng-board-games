@@ -35,24 +35,24 @@ export class BaronyLandCoordinatesPipe implements PipeTransform {
         const p6y = p4y;
 
         return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y} ${p6x},${p6y}`;
-      } // case
+      }
       case "center-x": {
         if (translate) {
           return hexToCartesian(c).x + translate + "";
         } else {
           return hexToCartesian(c).x + "";
-        } // if - else
-      } // case
+        }
+      }
       case "center-y": {
         if (translate) {
           return hexToCartesian(c).y + translate + "";
         } else {
           return hexToCartesian(c).y + "";
-        } // if - else
-      } // case
-    } // switch
-  } // transform
-} // BaronyLandCoordinatesPipe
+        }
+      }
+    }
+  }
+}
 
 export function hexToCartesian(hex: { x: number; y: number }): {
   x: number;
@@ -63,4 +63,4 @@ export function hexToCartesian(hex: { x: number; y: number }): {
     x: (sqrt3 * hex.x + sqrt3Half * hex.y) * scaleForGap,
     y: oneHalf * hex.y * scaleForGap
   };
-} // hexToCartesian
+}

@@ -46,7 +46,7 @@ interface BritAreaNode {
   path: string;
   unitNodes: BritUnitNode[];
   tooltip: string;
-} // BritAreaNode
+}
 
 interface BritUnitNode {
   id: string;
@@ -58,14 +58,14 @@ interface BritUnitNode {
   svgY: number;
   tooltip: string;
   quantity: number;
-} // BritUnitNode
+}
 
 interface BritPopulationNode {
   id: BritPopulation;
   nationNodes: BritNationPopulationNode[];
   path: string;
   tooltip: string;
-} // BritPopulationNode
+}
 
 interface BritNationPopulationNode {
   id: BritNationId;
@@ -73,7 +73,7 @@ interface BritNationPopulationNode {
   state: BritNationState;
   imageSource: string;
   tooltip: string;
-} // BritNationPopulationNode
+}
 
 interface BritNationTurnNode {
   id: BritNationId;
@@ -81,7 +81,7 @@ interface BritNationTurnNode {
   state: BritNationState;
   path: string;
   tooltip: string;
-} // BritNationTurnNode
+}
 
 interface BritRoundNode {
   id: BritRoundId;
@@ -90,14 +90,14 @@ interface BritRoundNode {
   eventNodes: BritEventNode[];
   scoringPath: string | null;
   tooltip: string;
-} // BritRoundNode
+}
 
 interface BritEventNode {
   id: string;
   event: BritEvent;
   path: string;
   tooltip: string;
-} // BritEventNode
+}
 
 const GRID_STEP = 20;
 
@@ -184,11 +184,11 @@ export class BritMapComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.areaStates) {
       this.refreshAreaNodes();
-    } // if
+    }
     if (changes.nationStates) {
       this.refreshPopulationNodes();
       this.refreshNationTurnNodes();
-    } // if
+    }
     if (changes.validAreas) {
       this.isValidArea = this.validAreas
         ? arrayUtil.toMap(
@@ -200,7 +200,7 @@ export class BritMapComponent implements OnChanges, OnInit {
       if (!this.validUnits) {
         this.isValidUnit = this.validAreas ? {} : null;
       }
-    } // if
+    }
     if (changes.validUnits) {
       this.isValidUnit = this.validUnits
         ? arrayUtil.toMap(
@@ -212,23 +212,23 @@ export class BritMapComponent implements OnChanges, OnInit {
       if (!this.validAreas) {
         this.isValidArea = this.validUnits ? {} : null;
       }
-    } // if
+    }
     if (changes.selectedUnits) {
       if (this.selectedUnits) {
         this.nSelectedUnits = {};
         for (const selectedUnit of this.selectedUnits) {
           this.nSelectedUnits[this.getUnitNodeId(selectedUnit)] =
             selectedUnit.type === "leader" ? 1 : selectedUnit.quantity;
-        } // for
+        }
       } else {
         this.nSelectedUnits = null;
-      } // if - else
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   ngOnInit() {
     this.refreshRoundNodes();
-  } // ngOnInit
+  }
 
   private refreshAreaNodes(): boolean {
     const refreshedUnits = false;
@@ -242,7 +242,7 @@ export class BritMapComponent implements OnChanges, OnInit {
     this.areaNodes = nodes;
     this.areaNodeMap = map;
     return refreshedUnits;
-  } // refreshAreaNodes
+  }
 
   private refreshPopulationNodes() {
     const { nodes, map } = arrayUtil.entitiesToNodes(
@@ -260,9 +260,9 @@ export class BritMapComponent implements OnChanges, OnInit {
       if (population != null) {
         const populationNode = this.populationNodes[population];
         populationNode.nationNodes.push(nationNode);
-      } // if
+      }
     });
-  } // refreshPopulationNodes
+  }
 
   private refreshNationTurnNodes() {
     const { nodes, map } = arrayUtil.entitiesToNodes(
@@ -274,7 +274,7 @@ export class BritMapComponent implements OnChanges, OnInit {
     );
     this.nationTurnNodes = nodes;
     this.nationTurnNodeMap = map;
-  } // refreshNationTurnNodes
+  }
 
   private refreshRoundNodes() {
     const { nodes, map } = arrayUtil.entitiesToNodes(
@@ -286,7 +286,7 @@ export class BritMapComponent implements OnChanges, OnInit {
     );
     this.roundNodes = nodes;
     this.roundNodeMap = map;
-  } // refreshRoundNodes
+  }
 
   private areaToNode(areaId: BritAreaId, oldNode: BritAreaNode | null): BritAreaNode {
     const path = this.mapService.getAreaPath(areaId);
@@ -306,13 +306,13 @@ export class BritMapComponent implements OnChanges, OnInit {
       node.unitNodes = state.units.map((u, index) =>
         this.unitToNode(u, index, node, state.units.length)
       );
-    } // if - else
+    }
     return node;
-  } // areaToNode
+  }
 
   private getUnitNodeId(unit: BritAreaUnit) {
     return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
-  } // getUnitNodeId
+  }
 
   private unitToNode(
     unit: BritAreaUnit,
@@ -336,7 +336,7 @@ export class BritMapComponent implements OnChanges, OnInit {
           ? this.components.getLeader(unit.leaderId).name
           : `${this.components.getNation(unit.nationId).label} ${this.components.getUnitTypeLabel(unit.type, true)}`
     };
-  } // unitToNode
+  }
 
   private getUnitNodePoint(
     unitIndex: number,
@@ -345,7 +345,7 @@ export class BritMapComponent implements OnChanges, OnInit {
   ): BritMapPoint | null {
     const slots = this.mapService.getAreaSlots(nAreaUnits, areaId);
     return slots[unitIndex];
-  } // getUnitNodePoint
+  }
 
   private nationToTurnNode(
     nationId: BritNationId,
@@ -362,8 +362,8 @@ export class BritMapComponent implements OnChanges, OnInit {
         path: this.mapService.getNationTurnPath(nation.id),
         tooltip: nation.label
       };
-    } // if - else
-  } // nationToTurnNode
+    }
+  }
 
   private roundToNode(roundId: BritRoundId, oldNode: BritRoundNode | null): BritRoundNode {
     if (oldNode) {
@@ -384,8 +384,8 @@ export class BritMapComponent implements OnChanges, OnInit {
         eventNodes,
         tooltip: `Round ${round.id}\n(${round.fromYear}-${round.toYear})`
       };
-    } // if - else
-  } // roundToNode
+    }
+  }
 
   private nationToPopulationNode(
     nationId: BritNationId,
@@ -399,19 +399,19 @@ export class BritMapComponent implements OnChanges, OnInit {
       imageSource: this.assetsService.getNationPopulationMarkerImageSource(nation.id),
       tooltip: nation.label
     };
-  } // nationToPopulationNode
+  }
 
   onAreaClick(areaNode: BritAreaNode, event: MouseEvent) {
     if (this.validAreas?.includes(areaNode.id)) {
       this.areaClick.emit(areaNode.id);
-    } // if
-  } // onAreaClick
+    }
+  }
 
   onUnitClick(unitNode: BritUnitNode) {
     if (this.isValidUnit && this.isValidUnit[unitNode.id]) {
       this.unitClick.emit(unitNode.unit);
-    } // if
-  } // onUnitClick
+    }
+  }
 
   getNationPopulationNodeX = (
     nationNode: BritNationPopulationNode,
@@ -419,7 +419,7 @@ export class BritMapComponent implements OnChanges, OnInit {
     populationNode: BritPopulationNode
   ) => {
     return this.mapService.getPopulationX(populationNode.id, index) * GRID_STEP;
-  }; // getNationPopulationNodeX
+  };
 
   getNationPopulationNodeY = (
     nationNode: BritNationPopulationNode,
@@ -427,7 +427,7 @@ export class BritMapComponent implements OnChanges, OnInit {
     populationNode: BritPopulationNode
   ) => {
     return this.mapService.getPopulationY(populationNode.id, index) * GRID_STEP;
-  }; // getNationPopulationNodeY
+  };
 
   calculateSlots() {
     const splittedViewBox = this.viewBox.split(" ");
@@ -444,11 +444,11 @@ export class BritMapComponent implements OnChanges, OnInit {
         return elementId.slice(10) as BritAreaId;
       } else {
         return null;
-      } // if - else
+      }
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;
     const slots = this.slotsGeneratorService.generateSlots(xMax, yMax, coordinatesToAreaId);
     downloadUtil.downloadJson(slots, "britannia-map-slots.json");
-  } // calculateSlots
-} // BritMapComponent
+  }
+}

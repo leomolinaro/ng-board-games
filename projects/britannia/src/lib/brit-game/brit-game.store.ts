@@ -55,7 +55,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     );
 
     this.components = components;
-  } // constructor
+  }
 
   initGameState(players: BritPlayer[], gameId: string, gameOwner: BgUser) {
     this.update("Initial state", s => ({
@@ -67,7 +67,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         colors: players.map(p => p.id)
       }
     }));
-  } // initGameState
+  }
 
   private notTemporaryState: BritGameState | null = null;
   isTemporaryState() {
@@ -75,7 +75,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   }
   startTemporaryState() {
     this.notTemporaryState = this.get();
-  } // startTemporaryState
+  }
   endTemporaryState() {
     if (this.notTemporaryState) {
       const state = this.notTemporaryState;
@@ -83,8 +83,8 @@ export class BritGameStore extends BgStore<BritGameState> {
       this.notTemporaryState = null;
     } else {
       throw new Error("endTemporaryState without startTemporaryState");
-    } // if - else
-  } // endTemporaryState
+    }
+  }
 
   selectAreas$() {
     return this.select$(s => s.areas);
@@ -104,7 +104,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         return players ? players.colors.map(id => players.map[id]) : [];
       }
     );
-  } // selectPlayers$
+  }
 
   selectLogs$() {
     return this.select$(s => s.logs);
@@ -141,7 +141,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   const map = this.get (s => s.lands.map);
   //   const coordinates = this.get (s => s.lands.coordinates);
   //   return coordinates.map (coordinate => map[landCoordinatesToId (coordinate)]);
-  // } // getLandTiles
+  // }
   // getLandOrNull (land: BritLandCoordinates): BritLand | null { return this.getLand (land) || null; }
 
   // private selectLandTileMap$ () { return this.select$ (s => s.lands.map); }
@@ -152,7 +152,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //     this.selectLandTileKeys$ (),
   //     (map, keys) => keys.map (k => map[landCoordinatesToId (k)])
   //   );
-  // } // selectLandTiles$
+  // }
   // selectPlayerIds$ () { return this.select$ (s => s.players.ids); }
   // selectPlayerMap$ () { return this.select$ (s => s.players.map); }
   // selectLogs$ () { return this.select$ (s => s.logs); }
@@ -172,7 +172,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         }
       }
     };
-  } // updatePlayer
+  }
 
   private updateArea(
     areaId: BritAreaId,
@@ -186,7 +186,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         [areaId]: updater(s.areas[areaId])
       }
     };
-  } // updateArea
+  }
 
   private updateNation(
     nationId: BritNationId,
@@ -200,7 +200,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         [nationId]: updater(s.nations[nationId])
       }
     };
-  } // updateNation
+  }
 
   // private addPawnToPlayer (pawnType: BritPawnType, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
@@ -210,7 +210,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //       [pawnType]: p.pawns[pawnType] + 1
   //     }
   //   }));
-  // } // addPawnToPlayer
+  // }
 
   // private removePawnFromPlayer (pawnType: BritPawnType, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
@@ -220,21 +220,21 @@ export class BritGameStore extends BgStore<BritGameState> {
   //       [pawnType]: p.pawns[pawnType] - 1
   //     }
   //   }));
-  // } // removePawnFromPlayer
+  // }
 
   // private addPawnToLandTile (pawnType: BritPawnType, pawnColor: BritColor, land: BritLandCoordinates) {
   //   this.updateLand (land, lt => ({
   //     ...lt,
   //     pawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], lt.pawns)
   //   }));
-  // } // addPawnToLandTile
+  // }
 
   // private removePawnFromLandTile (pawnType: BritPawnType, pawnColor: BritColor, land: BritLandCoordinates) {
   //   this.updateLand (land, lt => ({
   //     ...lt,
   //     pawns: immutableUtil.listRemoveFirst (p => p.type === pawnType && p.color === pawnColor, lt.pawns)
   //   }));
-  // } // removePawnFromLandTile
+  // }
 
   // private addResourceToPlayer (resource: BritResourceType, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
@@ -244,7 +244,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //       [resource]: p.resources[resource] + 1
   //     }
   //   }));
-  // } // addResourceToPlayer
+  // }
 
   // private removeResourceFromPlayer (resource: BritResourceType, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
@@ -254,33 +254,33 @@ export class BritGameStore extends BgStore<BritGameState> {
   //       [resource]: p.resources[resource] - 1
   //     }
   //   }));
-  // } // addResourceToPlayer
+  // }
 
   // private getResourceFromLand (landCoordinates: BritLandCoordinates): BritResourceType {
   //   const land = this.getLand (landCoordinates);
   //   return land?.type as BritResourceType;
-  // } // getResourceFromLand
+  // }
 
   // private addVictoryPoints (victoryPoints: number, playerId: string) {
   //   this.updatePlayer (playerId, p => ({
   //     ...p,
   //     score: p.score + victoryPoints
   //   }));
-  // } // addVictoryPoints
+  // }
 
   // private addPawnToGameBox (pawnType: BritPawnType, pawnColor: BritColor) {
   //   this.updateGameBox (gameBox => ({
   //     ...gameBox,
   //     removedPawns: immutableUtil.listPush ([{ color: pawnColor, type: pawnType }], gameBox.removedPawns)
   //   }));
-  // } // addPawnToGameBox
+  // }
 
   private addLog(log: BritLog) {
     this.update("Add log", s => ({
       ...s,
       logs: [...s.logs, log]
     }));
-  } // addLog
+  }
 
   private setNationPopulation(
     population: BritPopulation | null,
@@ -295,7 +295,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       }),
       s
     );
-  } // setNationPopulation
+  }
 
   private setNationActive(
     active: boolean,
@@ -310,7 +310,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       }),
       s
     );
-  } // setNationActive
+  }
 
   private addUnitsToArea(
     unitType: Exclude<BritUnitType, "leader">,
@@ -355,11 +355,11 @@ export class BritGameStore extends BgStore<BritGameState> {
               area.units
             )
           };
-        } // if - else
+        }
       },
       s
     );
-  } // addUnitsToArea
+  }
 
   private removeUnitsFromAreaByIndex(
     unitIndex: number,
@@ -388,11 +388,11 @@ export class BritGameStore extends BgStore<BritGameState> {
               area.units
             )
           };
-        } // if - else
+        }
       },
       s
     );
-  } // removeUnitsFromAreaByIndex
+  }
 
   private addLeaderToArea(
     leaderId: BritLeaderId,
@@ -420,7 +420,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       }),
       s
     );
-  } // addLeaderToArea
+  }
 
   private findAreaLeaderIndex(
     leader: BritAreaLeader,
@@ -430,7 +430,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     return s.areas[areaId].units.findIndex(
       u => u.type === "leader" && u.leaderId === leader.leaderId
     );
-  } // findAreaLeaderIndex
+  }
 
   private findAreaUnitIndex(
     unit: Exclude<BritAreaUnit, BritAreaLeader>,
@@ -440,7 +440,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     return s.areas[areaId].units.findIndex(
       u => u.type === unit.type && u.nationId === unit.nationId && u.nMovements === unit.nMovements
     );
-  } // findAreaUnitIndex
+  }
 
   private removeUnitFromAreaByIndex(
     unitIndex: number,
@@ -455,7 +455,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       }),
       s
     );
-  } // removeUnitFromAreaByIndex
+  }
 
   private removeUnitsFromNation(
     unitType: Exclude<BritUnitType, "leader">,
@@ -474,11 +474,11 @@ export class BritGameStore extends BgStore<BritGameState> {
           case "saxon-buhr":
           case "roman-fort":
             return { ...n, nBuildings: n.nBuildings - quantity };
-        } // switch
+        }
       },
       s
     );
-  } // removeUnitsFromNation
+  }
 
   private removeLeaderFromNation(
     leaderId: BritLeaderId,
@@ -493,7 +493,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       }),
       s
     );
-  } // removeUnitFromNation
+  }
 
   applySetup(setup: BritSetup) {
     this.update("Setup", s => {
@@ -504,7 +504,7 @@ export class BritGameStore extends BgStore<BritGameState> {
             typeof areaSetup === "string" ? [areaSetup, 1] : [areaSetup[0], areaSetup[1]];
           state = this.removeUnitsFromNation("infantry", nationId, nInfantries, state);
           state = this.addUnitsToArea("infantry", nationId, areaId, nInfantries, 0, state);
-        } // if
+        }
         setup.populationMarkers.forEach(nationId => {
           state = this.setNationPopulation(0, nationId, state);
         });
@@ -514,7 +514,7 @@ export class BritGameStore extends BgStore<BritGameState> {
         return state;
       }, s);
     });
-  } // applySetup
+  }
 
   private placeInfantry(
     areaId: BritAreaId,
@@ -524,11 +524,11 @@ export class BritGameStore extends BgStore<BritGameState> {
     s = this.removeUnitsFromNation("infantry", nationId, 1, s);
     s = this.addUnitsToArea("infantry", nationId, areaId, 1, 0, s);
     return s;
-  } // placeInfantry
+  }
 
   applyInfantryPlacement(areaId: BritAreaId, nationId: BritNationId) {
     this.update("Apply infantry placement", s => this.placeInfantry(areaId, nationId, s));
-  } // applyInfantryPlacement
+  }
 
   applyPopulationIncrease(
     population: BritPopulation | null,
@@ -540,23 +540,23 @@ export class BritGameStore extends BgStore<BritGameState> {
       for (const ip of infantryPlacement) {
         for (let i = 0; i < ip.quantity; i++) {
           s = this.placeInfantry(ip.areaId, nationId, s);
-        } // for
-      } // for
+        }
+      }
       return s;
     });
-  } // applyPopulationIncrease
+  }
 
   applyArmyMovements(armyMovements: BritArmyMovements, doCountMovements: boolean) {
     this.update("Apply army movements", s => {
       for (const movement of armyMovements.movements) {
         s = this.armyMovement(movement, doCountMovements, s);
-      } // for
+      }
       for (const movement of armyMovements.movements) {
         s = this.resetAreaNMovements(movement.toAreaId, s);
-      } // for
+      }
       return s;
     });
-  } // applyArmyMovements
+  }
 
   private resetAreaNMovements(areaId: BritAreaId, s: BritGameState): BritGameState {
     return this.updateArea(
@@ -578,9 +578,9 @@ export class BritGameStore extends BgStore<BritGameState> {
               newUnit.quantity += unit.quantity;
             } else {
               newUnits.push({ ...unit, nMovements: 0 });
-            } // if - else
-          } // if - else
-        } // for
+            }
+          }
+        }
         return {
           ...area,
           units: newUnits
@@ -588,11 +588,11 @@ export class BritGameStore extends BgStore<BritGameState> {
       },
       s
     );
-  } // resetAreaNMovements
+  }
 
   applyArmyMovement(armyMovement: BritArmyMovement, doCountMovements: boolean) {
     this.update("Apply army movement", s => this.armyMovement(armyMovement, doCountMovements, s));
-  } // applyArmyMovement
+  }
 
   private armyMovement(
     armyMovement: BritArmyMovement,
@@ -628,16 +628,16 @@ export class BritGameStore extends BgStore<BritGameState> {
           nMovements,
           s
         );
-      } // if - else
-    } // for
+      }
+    }
     return s;
-  } // armyMovement
+  }
 
   // applyRecruitment (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);
   //   this.removePawnFromPlayer ("knight", player.id);
   //   this.addPawnToLandTile ("knight", player.color, land);
-  // } // applyRecruitment
+  // }
 
   // applyMovement (movement: BritMovement, playerId: string) {
   //   const player = this.getPlayer (playerId);
@@ -654,14 +654,14 @@ export class BritGameStore extends BgStore<BritGameState> {
   //       this.addPawnToPlayer (pawn.type, pawnPlayer.id);
   //       if (pawn.type === "village") {
   //         villagePlayer = pawnPlayer;
-  //       } // if
+  //       }
   //     });
   //     if (villagePlayer && movement.gainedResource) {
   //       this.removeResourceFromPlayer (movement.gainedResource, (villagePlayer as BritPlayer).id);
   //       this.addResourceToPlayer (movement.gainedResource, playerId);
-  //     } // if
-  //   } // if
-  // } // applyMovement
+  //     }
+  //   }
+  // }
 
   // applyConstruction (construction: BritConstruction, playerId: string) {
   //   const player = this.getPlayer (playerId);
@@ -671,7 +671,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   this.addPawnToPlayer ("knight", player.id);
   //   const resource = this.getResourceFromLand (construction.land);
   //   this.addResourceToPlayer (resource, player.id);
-  // } // applyConstruction
+  // }
 
   // applyNewCity (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);
@@ -680,7 +680,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   this.addPawnToPlayer ("village", playerId);
   //   this.removePawnFromPlayer ("city", playerId);
   //   this.addVictoryPoints (10, playerId);
-  // } // applyNewCity
+  // }
 
   // applyExpedition (land: BritLandCoordinates, playerId: string) {
   //   const player = this.getPlayer (playerId);
@@ -688,16 +688,16 @@ export class BritGameStore extends BgStore<BritGameState> {
   //   this.addPawnToLandTile ("knight", player.color, land);
   //   this.removePawnFromPlayer ("knight", playerId);
   //   this.addPawnToGameBox ("knight", player.color);
-  // } // applyExpedition
+  // }
 
   // discardResource (resource: BritResourceType, playerId: string) {
   //   this.removeResourceFromPlayer (resource, playerId);
-  // } // discardResource
+  // }
 
   // applyNobleTitle (resources: BritResourceType[], playerId: string) {
   //   resources.forEach (resource => this.discardResource (resource, playerId));
   //   this.addVictoryPoints (15, playerId);
-  // } // applyNobleTitle
+  // }
 
   logSetup() {
     this.addLog({ type: "setup" });
@@ -730,4 +730,4 @@ export class BritGameStore extends BgStore<BritGameState> {
   // logConstruction (construction: BritConstruction, player: string) { this.addLog ({ type: "construction", construction: construction, player: player }); }
   // logRecuitment (land: BritLandCoordinates, player: string) { this.addLog ({ type: "recruitment", land: land, player: player }); }
   // logSetupPlacement (land: BritLandCoordinates, player: string) { this.addLog ({ type: "setupPlacement", land: land, player: player }); }
-} // BritGameStore
+}

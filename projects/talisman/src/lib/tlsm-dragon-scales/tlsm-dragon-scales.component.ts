@@ -73,7 +73,7 @@ export class TlsmDragonScalesComponent {
     const messager = inject(TlsmMessageService);
     this.completeTokenResolver = new CompleteTokenResolver(store, messager);
     this.askTokenResolver = new AskTokenResolver(store, messager);
-  } // constructor
+  }
 
   private completeTokenResolver: CompleteTokenResolver;
   private askTokenResolver: AskTokenResolver;
@@ -89,11 +89,11 @@ export class TlsmDragonScalesComponent {
 
   addPlayer() {
     (<FormArray>this.optForm!.get("players")).push(new FormControl("", Validators.required));
-  } // addPlayer
+  }
 
   removePlayer(index: number) {
     (<FormArray>this.optForm!.get("players")).removeAt(index);
-  } // removePlayer
+  }
 
   openSettings() {
     const settings = this.store.getSettings();
@@ -107,7 +107,7 @@ export class TlsmDragonScalesComponent {
       ])
     }); // FormGroup
     this.sidenav.open();
-  } // openSettings
+  }
 
   closeSettings() {
     if (this.optForm!.valid) {
@@ -115,17 +115,17 @@ export class TlsmDragonScalesComponent {
       this.store.saveOpt([...optModel.players], optModel.scalesPerCrown);
       this.sidenav.close();
       this.optForm = null;
-    } // if
-  } // closeSettings
+    }
+  }
 
   newRound() {
     this.store.clearLog();
     for (const player of this.store.getPlayers()) {
       this.completeTokenResolver.drawToken(player);
-    } // for
-  } // newRound
+    }
+  }
 
   drawToken() {
     this.askTokenResolver.drawToken("Player");
-  } // drawToken
-} // TlsmDragonScalesComponent
+  }
+}

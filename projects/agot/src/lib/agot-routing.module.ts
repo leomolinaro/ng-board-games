@@ -1,19 +1,19 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { AGOT_UTILITY_PATHS } from "./agot-services/agot-utility.service";
+import { AGOT_FEATURE_PATHS } from "./agot-features";
 
 const routes: Routes = [
   {
     path: "",
-    loadChildren: () => import("./agot-home/agot-home.module").then(m => m.AgotHomeModule)
+    loadComponent: () => import("./agot-home").then(m => m.AgotHome)
   },
   {
-    path: AGOT_UTILITY_PATHS.draft,
+    path: AGOT_FEATURE_PATHS.draft,
     loadChildren: () => import("./agot-draft/agot-draft.module").then(m => m.AgotDraftModule)
   },
   {
-    path: AGOT_UTILITY_PATHS.fcDecks,
+    path: AGOT_FEATURE_PATHS.fcDecks,
     loadChildren: () =>
       import("./agot-fc-decks/agot-fc-decks.module").then(m => m.AgotFcPacksModule)
   },

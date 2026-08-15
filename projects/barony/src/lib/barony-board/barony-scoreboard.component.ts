@@ -8,7 +8,7 @@ interface BaronyCounterNode {
   href: string;
   x: number;
   y: number;
-} // BaronyCounterNode
+}
 
 @Component({
   selector: "barony-scoreboard",
@@ -64,14 +64,14 @@ export class BaronyScoreboardComponent implements OnChanges {
         const oldPlayer = changes.players.previousValue[i];
         if (player !== oldPlayer && player.score !== oldPlayer.score) {
           changed = true;
-        } // if
-      } // while
+        }
+      }
 
       if (changed) {
         this.refreshCounterNodes();
-      } // if
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   private refreshCounterNodes() {
     this.counterNodes = [];
@@ -81,7 +81,7 @@ export class BaronyScoreboardComponent implements OnChanges {
       if (!sameScorePlayers) {
         sameScorePlayers = [];
         playersByScore[p.score] = sameScorePlayers;
-      } // if
+      }
       sameScorePlayers.push(p);
     });
     objectUtil.forEachProp(playersByScore, (score, players: BaronyPlayer[]) => {
@@ -96,7 +96,7 @@ export class BaronyScoreboardComponent implements OnChanges {
         } else {
           row = 2;
           col = (p.score - 20) / 15;
-        } // if - else
+        }
         this.counterNodes.push({
           color: p.id,
           href: `assets/barony/pawns/${p.id}-counter.png`,
@@ -105,5 +105,5 @@ export class BaronyScoreboardComponent implements OnChanges {
         });
       });
     });
-  } // refreshCounterNodes
-} // BaronyScoreboardComponent
+  }
+}

@@ -121,31 +121,31 @@ export class BritActionsComponent implements OnChanges {
     //     this.isValid = arrayUtil.toMap (this.validActions, a => a, () => true) as any;
     //   } else {
     //     this.isValid = null;
-    //   } // if - else
-    // } // if
-  } // ngOnChanges
+    //   }
+    // }
+  }
 
   // onActionClick (action: BaronyAction) {
   //   if (this.isValid && this.isValid[action]) {
   //     this.actionClick.next (action);
-  //   } // if
-  // } // onActionClick
+  //   }
+  // }
 
   onPassClick() {
     if (this.canPass) {
       this.passClick.next();
-    } // if
-  } // onPassClick
+    }
+  }
 
   onConfirmClick() {
     if (this.canConfirm) {
       this.confirmClick.next();
-    } // if
-  } // onConfirmClick
+    }
+  }
 
   onCancelClick() {
     if (this.canCancel) {
       this.cancelClick.next();
-    } // if
-  } // onCancelClick
-} // BritActionsComponent
+    }
+  }
+}

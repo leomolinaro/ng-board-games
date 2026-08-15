@@ -12,21 +12,21 @@ export interface IAppState {
       varthrax: number;
       cadorus: number;
       grilipus: number;
-    }; // scales
+    };
     strikes: number;
     rages: number;
     slumbers: number;
-  }; // pool
+  };
   players: string[];
   settings: {
     scalesPerCrown: number;
     messagesLimit: number;
-  }; // settings
+  };
   logs: {
     message: string;
     tokenSource: string;
   }[];
-} // IAppState
+}
 
 export interface IDragon {
   id: TlsmDragonId;
@@ -35,12 +35,12 @@ export interface IDragon {
   nScales: number;
   imageSource: string;
   tokenSource: string;
-} // IDragon
+}
 
 export interface IAppAction {
   type: string;
   data?: any;
-} // IAppAction
+}
 
 export const INITIAL_STATE: IAppState = {
   varthrax: {
@@ -83,13 +83,13 @@ export const INITIAL_STATE: IAppState = {
     messagesLimit: 5
   }, // settings
   logs: []
-}; // INITIAL_STATE
+};
 
 @Injectable()
 export class TlsmStore extends BgStore<IAppState> {
   constructor() {
     super(INITIAL_STATE, "TlsmStore");
-  } // constructor
+  }
 
   getPlayers() {
     return this.get(s => s.players);
@@ -113,9 +113,9 @@ export class TlsmStore extends BgStore<IAppState> {
         return s.grilipus;
       } else {
         return null;
-      } // if - else
+      }
     });
-  } // getKing
+  }
 
   selectPool$() {
     return this.select$(s => s.pool);
@@ -141,7 +141,7 @@ export class TlsmStore extends BgStore<IAppState> {
         nScales: s[dragonId].nScales - 1
       }
     }));
-  } // discardScale
+  }
 
   saveOpt(players: string[], scalesPerCrown: number) {
     this.update("Save opt", s => ({
@@ -152,14 +152,14 @@ export class TlsmStore extends BgStore<IAppState> {
         scalesPerCrown: scalesPerCrown
       }
     }));
-  } // saveOpt
+  }
 
   clearLog() {
     this.update("Clear log", s => ({
       ...s,
       logs: []
     }));
-  } // clearLog
+  }
 
   resetScale(dragonId: string) {
     this.update("Reset scale", s => {
@@ -172,9 +172,9 @@ export class TlsmStore extends BgStore<IAppState> {
           return { ...s, grilipus: { ...s.grilipus, nScales: 0 } };
         default:
           return s;
-      } // switch
+      }
     });
-  } // resetScale
+  }
 
   crown(dragonId: string, crown: boolean) {
     this.update("Reset scale", s => {
@@ -187,36 +187,36 @@ export class TlsmStore extends BgStore<IAppState> {
           return { ...s, grilipus: { ...s.grilipus, crowned: crown } };
         default:
           return s;
-      } // switch
+      }
     });
-  } // crown
+  }
 
   addLog(message: string, tokenSource: string) {
     this.update("Reset scale", s => {
       return {
         ...s,
         logs: [...s.logs, { message: message, tokenSource: tokenSource }]
-      }; // return
+      };
     });
-  } // addLog
+  }
 
   drawStrike() {
     this.update("Reset scale", s => {
-      return { ...s, pool: { ...s.pool, strikes: s.pool.strikes - 1 } }; // return
+      return { ...s, pool: { ...s.pool, strikes: s.pool.strikes - 1 } };
     });
-  } // drawStrike
+  }
 
   drawRage() {
     this.update("Reset scale", s => {
-      return { ...s, pool: { ...s.pool, rages: s.pool.rages - 1 } }; // return
+      return { ...s, pool: { ...s.pool, rages: s.pool.rages - 1 } };
     });
-  } // drawRage
+  }
 
   drawSlumber() {
     this.update("Reset scale", s => {
-      return { ...s, pool: { ...s.pool, slumbers: s.pool.slumbers - 1 } }; // return
+      return { ...s, pool: { ...s.pool, slumbers: s.pool.slumbers - 1 } };
     });
-  } // drawSlumber
+  }
 
   drawScale(dragonId: string, resolved: boolean) {
     this.update("Reset scale", s => {
@@ -234,8 +234,8 @@ export class TlsmStore extends BgStore<IAppState> {
                 ...s.pool.scales,
                 varthrax: s.pool.scales.varthrax - 1
               }
-            } // pool
-          }; // return
+            }
+          };
         case "cadorus":
           return {
             ...s,
@@ -246,8 +246,8 @@ export class TlsmStore extends BgStore<IAppState> {
             pool: {
               ...s.pool,
               scales: { ...s.pool.scales, cadorus: s.pool.scales.cadorus - 1 }
-            } // pool
-          }; // return
+            }
+          };
         case "grilipus":
           return {
             ...s,
@@ -261,10 +261,10 @@ export class TlsmStore extends BgStore<IAppState> {
                 ...s.pool.scales,
                 grilipus: s.pool.scales.grilipus - 1
               }
-            } // pool
-          }; // return
-      } // switch
+            }
+          };
+      }
       return s;
     });
-  } // drawScale
-} // TlsmStore
+  }
+}

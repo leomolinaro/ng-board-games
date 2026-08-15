@@ -22,7 +22,7 @@ interface BritUiState {
   // validBuildings: ("stronghold" | "village")[] | null;
   canPass: boolean;
   canConfirm: boolean;
-} // BritUiState
+}
 
 @Injectable()
 export class BritUiStore extends BgStore<BritUiState> {
@@ -46,7 +46,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       },
       "Brit UI"
     );
-  } // constructor
+  }
 
   // actionChange (action: BritAction) { this.$actionChange.next (action); }
   passChange() {
@@ -146,7 +146,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       this.game.selectPlayerMap$(),
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   selectTurnPlayer$() {
     return this.game.select$(
@@ -154,7 +154,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       this.game.selectPlayerMap$(),
       (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
     );
-  } // selectCurrentPlayer$
+  }
 
   // selectOtherPlayers$ () {
   //   return this.game.select$ (
@@ -168,14 +168,14 @@ export class BritUiStore extends BgStore<BritUiState> {
   //         const offset = playerIds.indexOf (currentPlayerId);
   //         for (let i = 1; i < n; i++) {
   //           toReturn.push (playerMap[playerIds[(offset + i) % n]]);
-  //         } // for
+  //         }
   //         return toReturn;
   //       } else {
   //         return playerIds.map (id => playerMap[id]);
-  //       } // if - else
+  //       }
   //     }
   //   );
-  // } // selectOtherPlayers$
+  // }
 
   updateUi<
     S extends BritUiState & {
@@ -183,7 +183,7 @@ export class BritUiStore extends BgStore<BritUiState> {
     }
   >(actionName: string, updater: (state: BritUiState) => S) {
     this.update(actionName, updater);
-  } // updateUi
+  }
 
   resetUi(): Partial<BritUiState> {
     return {
@@ -199,19 +199,19 @@ export class BritUiStore extends BgStore<BritUiState> {
       // validLands: null,
       // validResources: null
     };
-  } // resetUi
+  }
 
   // setFirstActionUi (player: string): Partial<BritUiState> {
   //   return {
   //     turnPlayer: player,
   //     canCancel: false
   //   };
-  // } // setFirstActionUi
+  // }
 
   setCurrentPlayer(playerId: BritColor | null) {
     this.updateUi("Set current player", s => ({
       ...s,
       currentPlayer: playerId
     }));
-  } // setCurrentPlayer
-} // BritUiStore
+  }
+}

@@ -169,11 +169,11 @@ export class BgHomePlayerFormComponent {
 
   playerNameActive = (player: BgProtoPlayer) => {
     return (player.type === "ai" && this.isOwner) || this.isPlayer;
-  }; // playerNameActive
+  };
 
   onPlayerChange(player: BgProtoPlayer) {
     this.playerChange.next(player);
-  } // onPlayerChange
+  }
 
   onNextPlayerType() {
     const controllerPatch: { controller?: BgUser | null } = {};
@@ -188,26 +188,26 @@ export class BgHomePlayerFormComponent {
           readyPatch.ready = true;
         }
         break;
-      } // case
+      }
       case "closed": {
         controllerPatch.controller = null;
         namePatch.name = "";
         readyPatch.ready = false;
         break;
-      } // case
+      }
       case "open": {
         controllerPatch.controller = null;
         namePatch.name = "";
         readyPatch.ready = false;
         break;
-      } // case
+      }
       case "ai": {
         controllerPatch.controller = null;
         namePatch.name = "AI";
         readyPatch.ready = true;
         break;
-      } // case
-    } // switch
+      }
+    }
     this.playerChange.next({
       ...this.player,
       type: nextPlayerType,
@@ -215,7 +215,7 @@ export class BgHomePlayerFormComponent {
       ...namePatch,
       ...readyPatch
     });
-  } // onNextPlayerType
+  }
 
   private getNextPlayerType(currentType: BgProtoPlayerType): BgProtoPlayerType {
     if (this.isOwner) {
@@ -228,7 +228,7 @@ export class BgHomePlayerFormComponent {
           return "ai";
         case "ai":
           return "closed";
-      } // switch
+      }
     } else {
       switch (currentType) {
         case "closed":
@@ -239,7 +239,7 @@ export class BgHomePlayerFormComponent {
           return "user";
         case "ai":
           return "ai";
-      } // switch
-    } // if - else
-  } // getNextPlayerType
-} // BgHomePlayerFormComponent
+      }
+    }
+  }
+}

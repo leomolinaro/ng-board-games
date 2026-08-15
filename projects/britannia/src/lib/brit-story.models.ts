@@ -5,29 +5,29 @@ export type BritStory = BritArmyPlacement | BritArmyMovements | BritBattleInitia
 
 export interface BritArmyPlacement {
   infantryPlacement: (BritLandAreaId | { areaId: BritLandAreaId; quantity: number })[];
-} // BritArmyPlacement
+}
 
 export interface BritArmyMovements {
   movements: BritArmyMovement[];
-} // BritArmyMovements
+}
 
 export interface BritArmyMovement {
   units: BritAreaUnit[];
   toAreaId: BritAreaId;
-} // BritArmyMovement
+}
 
 export interface BritBattleInitiation {
   landId: BritLandAreaId;
-} // BritBattleInitiation
+}
 
-export interface BritBattleAttack {} // BritBattleAttack
+export interface BritBattleAttack {}
 
-export interface BritBattleDefend {} // BritBattleDefend
+export interface BritBattleDefend {}
 
-export interface BritBattleDefendResolution {} // BritBattleDefendResolution
+export interface BritBattleDefendResolution {}
 
-export interface BritBattleAttackResolution {} // BritBattleAttackResolution
+export interface BritBattleAttackResolution {}
 
-export interface BritRaidRetreat {} // BritRaidRetreat
+export interface BritRaidRetreat {}
 
-export interface BritOverpopulationChecks {} // BritOverpopulationChecks
+export interface BritOverpopulationChecks {}

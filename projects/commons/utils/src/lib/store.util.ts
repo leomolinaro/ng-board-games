@@ -24,7 +24,7 @@ export class BgStore<S extends object> {
     if (this.devtoolsInstance) {
       this.devtoolsInstance.init(defaultState);
     }
-  } // constructor
+  }
 
   private $state = new BehaviorSubject<S>(this.defaultState);
   private devtoolsInstance: BgReduxDevtoolsInstance | null;
@@ -37,8 +37,8 @@ export class BgStore<S extends object> {
       return projector(state);
     } else {
       return state;
-    } // if - else
-  } // get
+    }
+  }
 
   select$(): Observable<S>;
   select$<R>(projector: (s: S) => R): Observable<R>;
@@ -75,13 +75,13 @@ export class BgStore<S extends object> {
         );
       } else {
         observable$ = this.$state.pipe(map(s => (projector as any)(s)));
-      } // if - else
+      }
 
       return observable$.pipe(distinctUntilChanged());
     } else {
       return this.$state.asObservable();
-    } // if - else
-  } // select$
+    }
+  }
 
   private processSelectorArgs<A extends (Observable<unknown> | P)[], R, P = (...a: unknown[]) => R>(
     args: A
@@ -96,7 +96,7 @@ export class BgStore<S extends object> {
       observables,
       projector
     };
-  } // processSelectorArgs
+  }
 
   // selectAsync$<R> (projector: (s: S) => R): Observable<R>;
   // selectAsync$<
@@ -106,7 +106,7 @@ export class BgStore<S extends object> {
   // > (...args: O): Observable<R> {
   //   (args as any).push ({ debounce: true });
   //   return (this.componentStore as any).select (...args);
-  // } // selectSync$
+  // }
 
   update(actionName: string, updaterFnOrPatch: ((state: S) => S) | Partial<S>): void {
     const state = this.$state.getValue();
@@ -115,13 +115,13 @@ export class BgStore<S extends object> {
       newState = updaterFnOrPatch(state);
     } else {
       newState = { ...state, ...updaterFnOrPatch };
-    } // if - else
+    }
     this.$state.next(newState);
     if (this.devtoolsInstance) {
       this.devtoolsInstance.send(actionName, newState);
-    } // if
-  } // update
-} // SStore
+    }
+  }
+}
 
 export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
   return source =>
@@ -155,4 +155,4 @@ export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
       );
       return rootSubscription;
     });
-} // debounceSync
+}

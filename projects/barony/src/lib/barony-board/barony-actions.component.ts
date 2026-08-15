@@ -116,25 +116,25 @@ export class BaronyActionsComponent implements OnChanges {
         ) as any;
       } else {
         this.isValid = null;
-      } // if - else
-    } // if
-  } // ngOnChanges
+      }
+    }
+  }
 
   onActionClick(action: BaronyAction) {
     if (this.isValid && this.isValid[action]) {
       this.actionClick.next(action);
-    } // if
-  } // onActionClick
+    }
+  }
 
   onPassClick() {
     if (this.canPass) {
       this.passClick.next();
-    } // if
-  } // onPassClick
+    }
+  }
 
   onCancelClick() {
     if (this.canCancel) {
       this.cancelClick.next();
-    } // if
-  } // onCancelClick
-} // BaronyActionsComponent
+    }
+  }
+}

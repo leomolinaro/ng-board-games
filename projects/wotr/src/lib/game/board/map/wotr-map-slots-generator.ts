@@ -6,7 +6,7 @@ import { WotrMapPoint, WotrRegionSlots } from "./wotr-map.service";
 interface WotrRegionPoints {
   innerPoints: WotrMapRegionPoint[];
   outerBorderPoints: WotrMapPoint[];
-} // WotrRegionPoints
+}
 
 interface WotrMapRegionPoint {
   x: number;
@@ -14,7 +14,7 @@ interface WotrMapRegionPoint {
   centralEnergy: number;
   regionId: WotrRegionId;
   neighbours: WotrMapRegionPoint[];
-} // WotrMapRegionPoint
+}
 
 const MAX_SLOTS = 5;
 
@@ -46,12 +46,12 @@ export class WotrMapSlotsGenerator {
       for (let i = 1; i <= MAX_SLOTS; i++) {
         const slots = this.generateRegionSlots(i, regionPoints, region.id);
         regionSlots[i] = slots;
-      } // for
+      }
       areaSlots[region.id] = regionSlots;
-    } // for
+    }
 
     return areaSlots;
-  } // generateSlots
+  }
 
   private generateRegionPoints(
     regions: WotrRegion[],
@@ -78,7 +78,7 @@ export class WotrMapSlotsGenerator {
           if (!regionPointByY) {
             regionPointByY = {};
             regionPointByYByX[x] = regionPointByY;
-          } // if
+          }
           regionPointByY[y] = regionPoint;
           let regionPoints = regionPointsById[areaId];
           if (!regionPoints) {
@@ -87,11 +87,11 @@ export class WotrMapSlotsGenerator {
               outerBorderPoints: []
             };
             regionPointsById[areaId] = regionPoints;
-          } // if
+          }
           regionPoints.innerPoints.push(regionPoint);
-        } // if
-      } // for
-    } // for
+        }
+      }
+    }
 
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
     for (const region of regions) {
@@ -115,21 +115,21 @@ export class WotrMapSlotsGenerator {
               point.neighbours.push(regionPoint);
             } else {
               outerPoint = regionPoint;
-            } // if - else
+            }
           } else {
             outerPoint = { x: nX, y: nY };
-          } // if - else
+          }
           if (outerPoint) {
             const key = outerPoint.x + "-" + outerPoint.y;
             if (!foundOuterPoints[key]) {
               outerPoints.push(outerPoint);
               foundOuterPoints[key] = true;
-            } // if
-          } // if
-        } // for
-      } // for
+            }
+          }
+        }
+      }
       regionPoints.outerBorderPoints = outerPoints;
-    } // for
+    }
 
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
     for (const region of regions) {
@@ -138,13 +138,13 @@ export class WotrMapSlotsGenerator {
         let cenralEnergy = 0;
         for (const outerBorderPoint of regionPoints.outerBorderPoints) {
           cenralEnergy += this.centralEnergy(innerPoint, outerBorderPoint);
-        } // for
+        }
         innerPoint.centralEnergy = cenralEnergy;
-      } // for
-    } // for
+      }
+    }
 
     return regionPointsById;
-  } // generateRegionPoints
+  }
 
   private getRegionPointByCoordinates(
     x: number,
@@ -160,19 +160,19 @@ export class WotrMapSlotsGenerator {
       return null;
     }
     return regionPoint;
-  } // getRegionPointByCoordinates
+  }
 
   private centralEnergy(innerPoint: WotrMapPoint, outerPoint: WotrMapPoint) {
     return 1 / this.quadDistance(innerPoint, outerPoint);
-  } // centralEnergy
+  }
 
   private manyBodyEnergy(innerPoint1: WotrMapPoint, innerPoint2: WotrMapPoint) {
     return 2 / this.quadDistance(innerPoint1, innerPoint2);
-  } // manyBodyEnergy
+  }
 
   private quadDistance(pointA: { x: number; y: number }, pointB: { x: number; y: number }) {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
-  } // quadDistance
+  }
 
   private generateRegionSlots(
     n: number,
@@ -186,7 +186,7 @@ export class WotrMapSlotsGenerator {
     let slots = randomUtil.getRandomElements(n, n + 1, regionPoints.innerPoints);
     slots = scenario.run(slots, 0.1, 100);
     return slots.map(s => ({ x: s.x, y: s.y }));
-  } // generateRegionSlots
+  }
 
   private energy(points: WotrMapRegionPoint[]) {
     let totEnergy = 0;
@@ -196,10 +196,10 @@ export class WotrMapSlotsGenerator {
       for (let j = i + 1; j < points.length; j++) {
         const p2 = points[j];
         totEnergy += this.manyBodyEnergy(p1, p2);
-      } // for
-    } // for
+      }
+    }
     return totEnergy;
-  } // energy
+  }
 
   private randomNeighbor(
     points: WotrMapRegionPoint[],
@@ -219,10 +219,10 @@ export class WotrMapSlotsGenerator {
       if (i >= limit) {
         console.error("Loop!", regionId);
         newPoint = oldPoint;
-      } // if
+      }
     } else {
       newPoint = randomUtil.getRandomElement(regionPoints.innerPoints);
-    } // if - else
+    }
     return immutableUtil.listReplaceByIndex(index, newPoint, points);
-  } // randomNeighbor
-} // WotrMapSlotsGeneratorService
+  }
+}
