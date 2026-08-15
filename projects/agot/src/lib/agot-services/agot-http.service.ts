@@ -19,13 +19,9 @@ export class AgotHttpService {
       map(packs =>
         packs.sort((a, b) => {
           let comparison = a.cycle_position - b.cycle_position;
-          if (comparison !== 0) {
-            return comparison;
-          }
+          if (comparison !== 0) return comparison;
           comparison = a.position - b.position;
-          if (comparison !== 0) {
-            return comparison;
-          }
+          if (comparison !== 0) return comparison;
           return 0;
         })
       )

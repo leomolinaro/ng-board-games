@@ -9,11 +9,11 @@ import { AGOT_FEATURES } from "./agot-features";
     <mat-toolbar>
       <span>A Game of Thrones LCG 2.0</span>
     </mat-toolbar>
-    <div class="agot-utilities">
+    <div class="agot-features">
       @for (feature of features; track feature.routerLink) {
-        <div class="agot-utility-wrapper">
+        <div class="agot-feature-wrapper">
           <a
-            class="agot-utility"
+            class="agot-feature"
             [routerLink]="feature.routerLink">
             {{ feature.name }}
           </a>
@@ -22,19 +22,18 @@ import { AGOT_FEATURES } from "./agot-features";
     </div>
   `,
   styles: `
-    .agot-utilities {
+    .agot-features {
       display: flex;
       justify-content: center;
       margin-top: 40px;
       flex-wrap: wrap;
-      .agot-utility-wrapper {
+      .agot-feature-wrapper {
         padding: 10px;
-        .agot-utility {
+        .agot-feature {
           color: white;
           display: flex;
           justify-content: center;
           align-items: center;
-          // cursor: pointer;
           width: 200px;
           height: 50px;
           &:hover {

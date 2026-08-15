@@ -23,14 +23,11 @@ import { map, tap } from "rxjs/operators";
 import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
 import { AgotDataService } from "../agot-services/agot-data.service";
 import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
-import { AgotCardGridComponent } from "./agot-card-grid/agot-card-grid.component";
+import { AgotCardGrid } from "./agot-card-grid";
 import { AgotDraftService } from "./agot-draft.service";
 
 @Component({
   selector: "agot-draft",
-  templateUrl: "./agot-draft.component.html",
-  styleUrls: ["./agot-draft.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NgLetDirective,
     MatSidenavContainer,
@@ -52,12 +49,36 @@ import { AgotDraftService } from "./agot-draft.service";
     MatListOption,
     MatSidenavContent,
     MatIconButton,
-    AgotCardGridComponent,
-    AsyncPipe
-  ]
+    AsyncPipe,
+    AgotCardGrid
+  ],
+  templateUrl: "./agot-draft-page.html",
+  styles: `
+    .sidenav-container {
+      height: 100%;
+    }
+
+    .sidenav {
+      width: 300px;
+    }
+
+    mat-sidenav-content {
+      overflow: visible; // altrimenti compare una doppia scrollbar
+    }
+
+    .sidenav .mat-toolbar {
+      background: inherit;
+    }
+
+    .mat-toolbar.mat-primary {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  `
 })
 @UntilDestroy
-export class AgotDraftComponent implements OnInit, OnDestroy {
+export class AgotDraftPage implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   data = inject(AgotDataService);
   draft = inject(AgotDraftService);

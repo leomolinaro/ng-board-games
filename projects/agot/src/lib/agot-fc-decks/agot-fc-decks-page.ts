@@ -1,5 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from "@angular/core";
+import { Component, OnDestroy, OnInit, inject } from "@angular/core";
 import {
   MatCell,
   MatCellDef,
@@ -24,9 +24,6 @@ interface AgotFcDeck {
 
 @Component({
   selector: "agot-fc-decks",
-  templateUrl: "./agot-fc-decks.component.html",
-  styleUrls: ["./agot-fc-decks.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTable,
     MatColumnDef,
@@ -36,10 +33,65 @@ interface AgotFcDeck {
     MatRow,
     AsyncPipe,
     BgTransformPipe
-  ]
+  ],
+  template: `
+    <table
+      mat-table
+      [dataSource]="(loading$ | async) ? [] : decks"
+      class="agot-fc-table mat-elevation-z8">
+      <ng-container matColumnDef="faction">
+        <!-- <th mat-header-cell *matHeaderCellDef> No. </th> -->
+        <td
+          mat-cell
+          *matCellDef="let deck">
+          <div class="agot-fc-faction-cell">
+            <img
+              class="agot-fc-card-image"
+              [src]="deck | bgTransform: getDeckFactionImage"
+              width="100" />
+            <img
+              class="agot-fc-card-image"
+              [src]="deck | bgTransform: getDeckAgendaImage"
+              width="100" />
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <!-- <th mat-header-cell *matHeaderCellDef> Name </th> -->
+        <td
+          mat-cell
+          *matCellDef="let deck">
+          {{ deck.name }}
+        </td>
+      </ng-container>
+
+      <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> -->
+      <tr
+        mat-row
+        *matRowDef="let row; columns: deckColumns"></tr>
+    </table>
+  `,
+  styles: `
+    .agot-fc-table {
+      width: 100%;
+
+      .mat-column-faction {
+        width: 120px;
+        .agot-fc-faction-cell {
+          display: flex;
+          justify-content: space-evenly;
+          padding: 5px;
+          .agot-fc-card-image {
+            width: 50px;
+          }
+        }
+      }
+    }
+  `
 })
 @UntilDestroy
-export class AgotFcDecksComponent implements OnInit, OnDestroy {
+export class AgotFcDecksPage implements OnInit, OnDestroy {
   private data = inject(AgotDataService);
 
   deckColumns: string[] = ["faction", "name"];
