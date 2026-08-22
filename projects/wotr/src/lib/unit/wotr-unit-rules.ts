@@ -52,9 +52,10 @@ export class WotrUnitRules {
         : this.nationStore.shadowNations();
     return nations
       .filter(nation => this.canRecruitReinforcements(nation, constraints))
-      .reduce<
-        WotrReinforcementUnit[]
-      >((acc, nation) => [...acc, ...this.validReinforcementUnits(nation, constraints)], []);
+      .reduce<WotrReinforcementUnit[]>(
+        (acc, nation) => [...acc, ...this.validReinforcementUnits(nation, constraints)],
+        []
+      );
   }
 
   private validReinforcementUnits(
@@ -247,13 +248,13 @@ export class WotrUnitRules {
     return nNazgul;
   }
 
-  private canMoveArmy(army: WotrArmy, region: WotrRegion): boolean {
-    if (!this.unitModifiers.canMoveIntoRegion(region.id, army.front)) return false;
+  private canMoveArmy(army: WotrArmy, fromRegion: WotrRegion): boolean {
     const armyAtWar = this.isArmyAtWar(army);
     const armyUnitNations = this.armyUnitNations(army);
-    return region.neighbors.some(neighbor => {
+    return fromRegion.neighbors.some(neighbor => {
       if (neighbor.impassable) return false;
       if (!this.regionStore.isFreeForArmyMovement(neighbor.id, army.front)) return false;
+      if (!this.unitModifiers.canMoveIntoRegion(neighbor.id, army.front)) return false;
       if (armyAtWar) return true;
       const neighborRegion = this.regionStore.region(neighbor.id);
       if (!neighborRegion.nationId) return true;
