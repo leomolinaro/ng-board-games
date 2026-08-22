@@ -4,11 +4,26 @@ table {
   width: 100%;
 }
 
+[tuiTh],
+[tuiTd] {
+  border-inline-start: none;
+  border-inline-end: none;
+  background: transparent;
+}
+
+.resources-header {
+  text-align: center;
+}
+
 .b-end-game-resources-cell {
-  margin-top: 1vh;
-  display: grid;
-  grid-template-columns: 1.5vw 1.5vw 1.5vw 1.5vw;
-  column-gap: 1vmin;
+  justify-items: center;
+  > div {
+    margin-top: 1vh;
+    display: grid;
+    max-width: 150px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    column-gap: 1vmin;
+  }
 
   .b-end-game-resource-image {
     display: flex;
@@ -24,21 +39,17 @@ table {
   }
 }
 
-// .b-end-game-player-row {
-//   &.is-red {
-//     box-shadow: widget-shadow($red-light);
-//     &.is-winner { box-shadow: widget-shadow-hover($red-light); }
-//   }
-//   &.is-yellow {
-//     box-shadow: widget-shadow($yellow-light);
-//     &.is-winner { box-shadow: widget-shadow-hover($yellow-light); }
-//   }
-//   &.is-green {
-//     box-shadow: widget-shadow($green-light);
-//     &.is-winner { box-shadow: widget-shadow-hover($green-light); }
-//   }
-//   &.is-blue {
-//     box-shadow: widget-shadow($blue-light);
-//     &.is-winner { box-shadow: widget-shadow-hover($blue-light); }
-//   }
-// }
+.b-end-game-player-row {
+  &.is-red {
+    box-shadow: widget-shadow($red-light);
+  }
+  &.is-yellow {
+    box-shadow: widget-shadow($yellow-light);
+  }
+  &.is-green {
+    box-shadow: widget-shadow($green-light);
+  }
+  &.is-blue {
+    box-shadow: widget-shadow($blue-light);
+  }
+}

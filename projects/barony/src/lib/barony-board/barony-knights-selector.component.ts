@@ -1,9 +1,11 @@
 import { NgClass } from "@angular/common";
 import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { TuiIcon } from "@taiga-ui/core";
 
 @Component({
   selector: "barony-knights-selector",
+  imports: [NgClass, TuiIcon],
   template: `
     <div class="b-knights-selector-container">
       <div class="b-knights">
@@ -18,7 +20,7 @@ import { SimpleChanges } from "@leobg/commons/utils";
             'is-active': enableIncrease,
             'is-disabled': !enableIncrease
           }">
-          <i class="fa fa-caret-up"></i>
+          <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
@@ -26,13 +28,13 @@ import { SimpleChanges } from "@leobg/commons/utils";
             'is-active': enableDecrease,
             'is-disabled': !enableDecrease
           }">
-          <i class="fa fa-caret-down"></i>
+          <tui-icon icon="chevron-down" />
         </button>
       </div>
       <button
         class="b-knights-confirm"
         (click)="onConfirm()">
-        <i class="fa fa-check"></i>
+        <tui-icon icon="check" />
       </button>
     </div>
   `,
@@ -64,12 +66,6 @@ import { SimpleChanges } from "@leobg/commons/utils";
           width: 4vw;
           &.is-active {
             cursor: pointer;
-            &:hover {
-              // box-shadow: 0 0 6px 0px #fff;
-              // color: #666666;
-              // color: white;
-              // color: greenyellow;
-            }
           }
           &.is-disabled {
             cursor: no-drop;
@@ -84,13 +80,9 @@ import { SimpleChanges } from "@leobg/commons/utils";
         font-size: 3vmin;
         width: 4vw;
         height: 4vw;
-        &:hover {
-          // color: #666666;
-        }
       }
     }
-  `,
-  imports: [NgClass]
+  `
 })
 export class BaronyKnightsSelectorComponent implements OnChanges {
   constructor() {}

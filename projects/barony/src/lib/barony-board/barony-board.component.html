@@ -82,25 +82,25 @@
           class="b-board-button"
           [ngClass]="{ 'is-active': zoomFixed }"
           (click)="zoomFixed = !zoomFixed">
-          <i class="fa fa-search-plus"></i>
+          <tui-icon icon="search" />
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': summaryFixed }"
           (click)="summaryFixed = !summaryFixed">
-          <i class="fa fa-book"></i>
+          <tui-icon icon="book-open" />
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': scoreboardFixed }"
           (click)="scoreboardFixed = !scoreboardFixed">
-          <i class="fa fa-star"></i>
+          <tui-icon icon="star" />
         </button>
         <button
           class="b-board-button"
           [ngClass]="{ 'is-active': logsFixed }"
           (click)="logsFixed = !logsFixed">
-          <i class="fa fa-file-text"></i>
+          <tui-icon icon="file-text" />
         </button>
       </div>
     </div>
@@ -108,13 +108,8 @@
 </div>
 
 <ng-template #endGameDialog>
-  <h1
-    mat-dialog-title
-    class="mat-typography">
-    End game
-  </h1>
-  <barony-end-game
-    mat-dialog-content
-    [players]="players()">
-  </barony-end-game>
+  <div class="end-game-dialog">
+    <h1>End game</h1>
+    <barony-end-game [players]="players()"> </barony-end-game>
+  </div>
 </ng-template>

@@ -1,18 +1,16 @@
 import { NgClass } from "@angular/common";
 import {
   Component,
-  OnChanges,
-  OnDestroy,
   TemplateRef,
-  ViewChild,
+  effect,
   inject,
   input,
-  output
+  linkedSignal,
+  output,
+  viewChild
 } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { ExhaustingEvent, SimpleChanges, UntilDestroy } from "@leobg/commons/utils";
-import { of, switchMap } from "rxjs";
-import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
+import { BgMapZoomButtonsComponent } from "@leobg/commons";
+import { TuiDialogService, TuiIcon } from "@taiga-ui/core";
 import {
   BaronyAction,
   BaronyBuilding,
@@ -47,12 +45,16 @@ import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
     BaronyScoreboardComponent,
     BaronyLogsComponent,
     NgClass,
-    BaronyEndGameComponent
+    BaronyEndGameComponent,
+    TuiIcon
   ]
 })
-@UntilDestroy
-export class BaronyBoardComponent implements OnChanges, OnDestroy {
-  private matDialog = inject(MatDialog);
+export class BaronyBoardComponent {
+  constructor() {
+    effect(() => this.openEndGameDialog());
+  }
+
+  private readonly dialogs = inject(TuiDialogService);
 
   readonly lands = input.required<BaronyLand[]>();
   readonly logs = input.required<BaronyLog[]>();
@@ -81,77 +83,43 @@ export class BaronyBoardComponent implements OnChanges, OnDestroy {
   readonly knightsConfirm = output<number>();
   readonly resourceSelect = output<BaronyResourceType>();
 
-  @ViewChild("endGameDialog") endGameDialog!: TemplateRef<void>;
+  protected endGameDialog = viewChild.required<TemplateRef<void>>("endGameDialog");
 
-  summaryFixed = false;
-  logsFixed = false;
-  zoomFixed = false;
-  scoreboardFixed = false;
+  protected summaryFixed = false;
+  protected logsFixed = false;
+  protected zoomFixed = false;
+  protected scoreboardFixed = false;
 
-  numberOfKnights = 1;
+  protected numberOfKnights = linkedSignal(() => this.maxNumberOfKnights() || 0);
 
-  ngOnChanges(changes: SimpleChanges<this>): void {
-    if (changes.maxNumberOfKnights) {
-      this.numberOfKnights = this.maxNumberOfKnights() || 0;
-    }
-    if (changes.endGame && this.endGame()) {
-      this.openEndGameDialog();
-    }
-  }
-
-  ngOnDestroy() {}
-
-  onPlayerSelect(player: BaronyPlayer) {
+  protected onPlayerSelect(player: BaronyPlayer) {
     this.playerSelect.emit(player);
   }
-  onBuildingSelect(building: BaronyBuilding) {
+  protected onBuildingSelect(building: BaronyBuilding) {
     this.buildingSelect.emit(building);
   }
-  onLandTileClick(landTile: BaronyLand) {
+  protected onLandTileClick(landTile: BaronyLand) {
     this.landTileClick.emit(landTile);
   }
-  onActionClick(action: BaronyAction) {
+  protected onActionClick(action: BaronyAction) {
     this.actionClick.emit(action);
   }
-  onPassClick() {
+  protected onPassClick() {
     this.passClick.emit();
   }
-  onCancelClick() {
+  protected onCancelClick() {
     this.cancelClick.emit();
   }
-  onKnightsConfirm() {
-    this.knightsConfirm.emit(this.numberOfKnights);
-    this.numberOfKnights = 1;
+  protected onKnightsConfirm() {
+    this.knightsConfirm.emit(this.numberOfKnights());
+    this.numberOfKnights.set(1);
   }
-  onResourceSelect(resource: BaronyResourceType) {
+  protected onResourceSelect(resource: BaronyResourceType) {
     this.resourceSelect.emit(resource);
   }
 
-  @ExhaustingEvent()
   private openEndGameDialog() {
-    return of(void 0).pipe(
-      switchMap(() => {
-        const dialogRef = this.matDialog.open(this.endGameDialog, {
-          width: "80vw",
-          maxWidth: "80vw"
-          // data: {
-          //   protoGame: game,
-          //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-          //   deleteGame$: gameId => this.deleteGame$ (gameId),
-          //   roleToCssClass: role => this.config.playerRoleCssClass (role)
-          // }
-        });
-        return dialogRef
-          .afterClosed()
-          .pipe
-          // switchMap (output => {
-          //   if (output?.startGame) {
-          //     return this.config.startGame$ (output.gameId);
-          //   }
-          //   return of (void 0);
-          // })
-          ();
-      })
-    );
+    if (!this.endGame()) return;
+    this.dialogs.open(this.endGameDialog(), { size: "l" }).subscribe();
   }
 }

@@ -8,19 +8,21 @@
   }"
   (click)="onCardClick()">
   <div class="b-player-header">
-    <i
-      class="b-player-type-icon fa"
-      [ngClass]="
+    <tui-icon
+      class="b-player-type-icon"
+      [icon]="
         player().isAi
-          ? 'fa-desktop'
+          ? 'monitor'
           : player().isRemote
-            ? 'fa-globe'
+            ? 'globe'
             : currentPlayer()
-              ? 'fa-user'
-              : 'fa-user-o'
-      "></i>
+              ? 'user-round-check'
+              : 'user-round'
+      " />
     <div class="b-player-name">{{ player().name }}</div>
-    <i class="b-player-score-icon fa fa-star"></i>
+    <tui-icon
+      class="b-player-score-icon"
+      icon="star" />
     <div class="b-player-score">{{ player().score }}</div>
   </div>
   <div class="b-player-content">

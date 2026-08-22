@@ -16,6 +16,7 @@ import {
   BaronyPlayer,
   BaronyResourceType
 } from "../../barony-models";
+import { TuiIcon } from "@taiga-ui/core";
 
 interface BaronyPawnNode {
   source: string;
@@ -35,7 +36,7 @@ interface BaronyResourceNode {
   selector: "barony-player-status",
   templateUrl: "./barony-player-status.component.html",
   styleUrls: ["./barony-player-status.component.scss"],
-  imports: [NgClass]
+  imports: [NgClass, TuiIcon]
 })
 export class BaronyPlayerStatusComponent implements OnChanges {
   private authService = inject(BgAuthService);

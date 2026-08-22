@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from "@angular/core";
-import { BgMapZoomDirective } from "./bg-map-zoom.directive";
 import { MatIconButton } from "@angular/material/button";
+import { TuiIcon } from "@taiga-ui/core";
+import { BgMapZoomDirective } from "./bg-map-zoom.directive";
 
 @Component({
   selector: "bg-map-zoom-buttons",
@@ -9,37 +10,37 @@ import { MatIconButton } from "@angular/material/button";
       mat-icon-button
       class="move-up"
       (click)="onMoveUp()">
-      <i class="fa fa-angle-up"></i>
+      <tui-icon icon="chevron-up" />
     </button>
     <button
       mat-icon-button
       class="move-down"
       (click)="onMoveDown()">
-      <i class="fa fa-angle-down"></i>
+      <tui-icon icon="chevron-down" />
     </button>
     <button
       mat-icon-button
       class="move-left"
       (click)="onMoveLeft()">
-      <i class="fa fa-angle-left"></i>
+      <tui-icon icon="chevron-left" />
     </button>
     <button
       mat-icon-button
       class="move-right"
       (click)="onMoveRight()">
-      <i class="fa fa-angle-right"></i>
+      <tui-icon icon="chevron-right" />
     </button>
     <button
       mat-icon-button
       class="zoom-in"
       (click)="onZoomIn()">
-      <i class="fa fa-search-plus"></i>
+      <tui-icon icon="zoom-in" />
     </button>
     <button
       mat-icon-button
       class="zoom-out"
       (click)="onZoomOut()">
-      <i class="fa fa-search-minus"></i>
+      <tui-icon icon="zoom-out" />
     </button>
     <button
       mat-icon-button
@@ -51,7 +52,7 @@ import { MatIconButton } from "@angular/material/button";
       mat-icon-button
       class="auto-size"
       (click)="onAutoSize()">
-      <i class="fa fa-arrows-alt"></i>
+      <tui-icon icon="expand" />
     </button>
   `,
   styles: [
@@ -78,6 +79,9 @@ import { MatIconButton } from "@angular/material/button";
           justify-content: center;
           height: auto;
           width: auto;
+        }
+        tui-icon {
+          weight: 600;
         }
         .move-up {
           grid-area: moveUp;
@@ -109,12 +113,13 @@ import { MatIconButton } from "@angular/material/button";
         }
         .reset {
           grid-area: resetButton;
+          font-size: 70%;
         }
       }
     `
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconButton]
+  imports: [MatIconButton, TuiIcon]
 })
 export class BgMapZoomButtonsComponent implements OnInit {
   constructor() {}
