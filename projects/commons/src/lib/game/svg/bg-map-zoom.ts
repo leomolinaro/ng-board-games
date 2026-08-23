@@ -5,9 +5,9 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
-  Input,
   OnInit,
-  inject
+  inject,
+  input
 } from "@angular/core";
 
 const MOVE_STEP = 30;
@@ -26,7 +26,7 @@ interface BgMapZoomRefreshParams {
   selector: "svg[bgSvg]",
   template: "<ng-content></ng-content>"
 })
-export class BgSvgComponent {
+export class BgSvg {
   elementRef = inject<ElementRef<SVGSVGElement>>(ElementRef);
 
   createSVGPoint() {
@@ -38,18 +38,18 @@ export class BgSvgComponent {
 }
 
 @Directive({ selector: "[bgMapZoom]" })
-export class BgMapZoomDirective implements OnInit {
-  private bgSvg = inject(BgSvgComponent);
+export class BgMapZoom implements OnInit {
+  private bgSvg = inject(BgSvg);
   private cd = inject(ChangeDetectorRef);
   private elementRef = inject<ElementRef<SVGGElement>>(ElementRef);
 
-  @Input("bgMapZoom") config!: {
+  readonly config = input.required<{
     translateX?: number;
     translateY?: number;
     scale?: number;
     zoomStep?: number;
     translateStep?: number;
-  };
+  }>({ alias: "bgMapZoom" });
 
   @HostBinding("attr.transform")
   transform!: string;
@@ -70,11 +70,11 @@ export class BgMapZoomDirective implements OnInit {
   }
 
   private parseConfig() {
-    this.scale = this.config.scale || 1;
-    this.translateX = this.config.translateX || 0;
-    this.translateY = this.config.translateY || 0;
-    this.zoomStep = this.config.zoomStep || 0.1;
-    this.translateStep = this.config.translateStep || 15;
+    this.scale = this.config().scale || 1;
+    this.translateX = this.config().translateX || 0;
+    this.translateY = this.config().translateY || 0;
+    this.zoomStep = this.config().zoomStep || 0.1;
+    this.translateStep = this.config().translateStep || 15;
   }
 
   @HostListener("mousedown", ["$event"])

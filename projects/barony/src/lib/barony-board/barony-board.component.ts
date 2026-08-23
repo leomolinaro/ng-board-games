@@ -9,7 +9,6 @@ import {
   output,
   viewChild
 } from "@angular/core";
-import { BgMapZoomButtonsComponent } from "@leobg/commons";
 import { TuiDialogService, TuiIcon } from "@taiga-ui/core";
 import {
   BaronyAction,
@@ -29,6 +28,7 @@ import { BaronyMapComponent } from "./barony-map/barony-map.component";
 import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
 import { BaronyResourcesSelectorComponent } from "./barony-resources-selector.component";
 import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
+import { BgMapZoomButtons } from "../../../../commons/src";
 
 @Component({
   selector: "barony-board",
@@ -41,7 +41,7 @@ import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
     BaronyResourcesSelectorComponent,
     BaronyActionsComponent,
     BaronyPlayerStatusComponent,
-    BgMapZoomButtonsComponent,
+    BgMapZoomButtons,
     BaronyScoreboardComponent,
     BaronyLogsComponent,
     NgClass,

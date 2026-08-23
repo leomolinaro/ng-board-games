@@ -1,27 +1,24 @@
 import { booleanAttribute, Component, input, model } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { MatListModule } from "@angular/material/list";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { TuiCheckbox, TuiLabel } from "@taiga-ui/core";
 import { VARIANTS, WotrExpansion, WotrExpansionId, WotrVariantId } from "./wotr-expansion-models";
 
 @Component({
   selector: "wotr-variant-options-form",
-  imports: [MatListModule, BgTransformPipe, FormsModule],
+  imports: [BgTransformPipe, FormsModule, TuiCheckbox, TuiLabel],
   template: `
-    <mat-selection-list
-      multiple
-      [disabled]="readOnly()"
-      [ngModel]="variants()"
-      (ngModelChange)="variantsChange($event)">
-      @for (option of options; track option.id) {
-        <mat-list-option
-          [value]="option.id"
-          [disabled]="option | bgTransform: isDisabled : expansions()"
-          togglePosition="after">
-          <span matListItemTitle>{{ option.name }}</span>
-        </mat-list-option>
-      }
-    </mat-selection-list>
+    @for (option of options; track option.id) {
+      <label tuiLabel>
+        <input
+          tuiCheckbox
+          type="checkbox"
+          [disabled]="readOnly() || (option | bgTransform: isDisabled : expansions())"
+          [ngModel]="variants().includes(option.id)"
+          (ngModelChange)="toggleVariant(option.id, $event)" />
+        <span>{{ option.name }}</span>
+      </label>
+    }
   `
 })
 export class WotrVariantOptionsForm {
@@ -36,7 +33,13 @@ export class WotrVariantOptionsForm {
     expansions
   ) => option.requires?.some(requiredId => !expansions.includes(requiredId)) || false;
 
-  variantsChange(variants: WotrVariantId[]) {
-    this.variants.set(variants);
+  protected toggleVariant(optionId: WotrVariantId, checked: boolean): void {
+    const next = checked
+      ? this.variants().includes(optionId)
+        ? this.variants()
+        : [...this.variants(), optionId]
+      : this.variants().filter(variantId => variantId !== optionId);
+
+    this.variants.set(next);
   }
 }

@@ -15,14 +15,14 @@ import {
   isDevMode
 } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
-import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
-import { SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
+import { BgMapZoom, BgSvg } from "@leobg/commons";
 import {
-  BgMapZoomDirective as BgMapZoomDirective_1,
-  BgSvgComponent as BgSvgComponent_1
-} from "../../../../commons/src/lib/game/svg/bg-map-zoom.directive";
-import { BgTransformPipe } from "../../../../commons/utils/src/lib/bg-transform.pipe";
-import { NgLetDirective } from "../../../../commons/utils/src/lib/ng.util";
+  BgTransformPipe,
+  NgLetDirective,
+  SimpleChanges,
+  arrayUtil,
+  downloadUtil
+} from "@leobg/commons/utils";
 import { BritAssetsService } from "../brit-assets.service";
 import {
   BritArea,
@@ -106,14 +106,7 @@ const GRID_STEP = 20;
   templateUrl: "./brit-map.component.html",
   styleUrls: ["./brit-map.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    BgSvgComponent_1,
-    BgMapZoomDirective_1,
-    NgClass,
-    MatTooltip,
-    NgLetDirective,
-    BgTransformPipe
-  ]
+  imports: [BgMapZoom, BgSvg, NgClass, MatTooltip, NgLetDirective, BgTransformPipe]
 })
 export class BritMapComponent implements OnChanges, OnInit {
   private mapService = inject(BritMapService);
@@ -154,9 +147,9 @@ export class BritMapComponent implements OnChanges, OnInit {
   isValidUnit: Record<string, boolean> | null = null;
   nSelectedUnits: Record<string, number> | null = null;
 
-  @ViewChild(BgSvgComponent) bgSvg!: BgSvgComponent;
+  @ViewChild(BgSvg) bgSvg!: BgSvg;
   @ViewChild("britMap") mapElementRef!: ElementRef<SVGGElement>;
-  @ViewChild(BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
+  @ViewChild(BgMapZoom, { static: true }) bgMapZoom!: BgMapZoom;
 
   protected isDevMode = isDevMode();
 

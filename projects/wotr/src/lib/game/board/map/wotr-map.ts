@@ -9,7 +9,7 @@ import {
   isDevMode,
   output
 } from "@angular/core";
-import { BgMapZoomDirective, BgSvgComponent, BgSvgModule } from "@leobg/commons";
+import { BgMapZoom, BgSvg } from "@leobg/commons";
 import { downloadUtil } from "@leobg/commons/utils";
 import { WotrCurrentDieBox } from "../../../action-die/wotr-current-die-box";
 import { WotrAssetsStore } from "../../../assets/wotr-assets-store";
@@ -36,7 +36,8 @@ const GRID_STEP = 10;
 @Component({
   selector: "wotr-map",
   imports: [
-    BgSvgModule,
+    BgSvg,
+    BgMapZoom,
     WotrCurrentDieBox,
     WotrDeckBoxes,
     WotrElvenRingsBox,
@@ -127,9 +128,9 @@ export class WotrMap {
 
   protected testGridPoints: { x: number; y: number; color: string }[] = [];
 
-  @ViewChild(BgSvgComponent) bgSvg!: BgSvgComponent;
+  @ViewChild(BgSvg) bgSvg!: BgSvg;
   @ViewChild("wotrMap") mapElementRef!: ElementRef<SVGGElement>;
-  @ViewChild(BgMapZoomDirective, { static: true }) bgMapZoom!: BgMapZoomDirective;
+  @ViewChild(BgMapZoom, { static: true }) bgMapZoom!: BgMapZoom;
 
   protected isDevMode = isDevMode();
 

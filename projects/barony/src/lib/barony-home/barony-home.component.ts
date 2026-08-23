@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
+import { BgHome, BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
@@ -18,7 +18,7 @@ import { getRandomLands } from "./barony-initializer";
 
 @Component({
   selector: "barony-home",
-  imports: [BgHomeModule],
+  imports: [BgHome],
   template: ` <bg-home [config]="config"></bg-home> `,
   styles: [
     `
@@ -26,24 +26,16 @@ import { getRandomLands } from "./barony-initializer";
 
       ::ng-deep {
         .barony-player-blue {
-          .bg-player-type-button {
-            background-color: $blue;
-          }
+          --bg-player-color: #{$blue};
         }
         .barony-player-red {
-          .bg-player-type-button {
-            background-color: $red;
-          }
+          --bg-player-color: #{$red};
         }
         .barony-player-green {
-          .bg-player-type-button {
-            background-color: $green;
-          }
+          --bg-player-color: #{$green};
         }
         .barony-player-yellow {
-          .bg-player-type-button {
-            background-color: $yellow;
-          }
+          --bg-player-color: #{$yellow};
         }
       }
     `

@@ -27,17 +27,6 @@ main {
   max-width: 100%;
 }
 
-.bg-archeo-game {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  background: bg.$surface;
-  @include bg.golden-padding(4vmin);
-  .bg-archeo-game-create {
-    align-self: flex-end;
-  }
-}
-
 .bg-home-games-table {
   width: 100%;
   .bg-home-game-row:hover {

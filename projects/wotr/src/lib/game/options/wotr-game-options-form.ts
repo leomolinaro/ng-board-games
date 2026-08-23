@@ -1,12 +1,7 @@
 import { booleanAttribute, Component, computed, input, model } from "@angular/core";
-import {
-  MatAccordion,
-  MatExpansionPanel,
-  MatExpansionPanelDescription,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle
-} from "@angular/material/expansion";
 import { BgGameOptionsComponent } from "@leobg/commons";
+import { TuiButton, TuiExpand, TuiTitle } from "@taiga-ui/core";
+import { TuiAccordion } from "@taiga-ui/kit";
 import { getActionTokenName, WotrActionTokenOption } from "../../action-die/wotr-action-die-models";
 import { WotrActionTokenOptionsForm } from "../../action-die/wotr-action-token-options-form";
 import {
@@ -22,51 +17,69 @@ import { DEFAULT_OPTIONS, WotrGameOptions } from "./wotr-game-options";
 @Component({
   selector: "wotr-game-options-form",
   imports: [
+    TuiAccordion,
+    TuiButton,
+    TuiExpand,
+    TuiTitle,
     WotrActionTokenOptionsForm,
     WotrExpansionOptionsForm,
-    MatAccordion,
-    MatExpansionPanel,
-    MatExpansionPanelHeader,
-    MatExpansionPanelTitle,
-    MatExpansionPanelDescription,
     WotrVariantOptionsForm
   ],
   template: `
-    <ng-container>
-      <mat-accordion multi>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> Expansions </mat-panel-title>
-            <mat-panel-description> {{ expansionsSummary() }} </mat-panel-description>
-          </mat-expansion-panel-header>
-          <wotr-expansion-options-form
-            [expansions]="options().expansions"
-            [readOnly]="!isOwner()"
-            (expansionsChange)="expansionsChange($event)" />
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> Variants </mat-panel-title>
-            <mat-panel-description> {{ variantsSummary() }} </mat-panel-description>
-          </mat-expansion-panel-header>
-          <wotr-variant-options-form
-            [variants]="options().variants"
-            [expansions]="options().expansions"
-            [readOnly]="!isOwner()"
-            (variantsChange)="variantsChange($event)" />
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> Action Tokens </mat-panel-title>
-            <mat-panel-description> {{ tokensSummary() }} </mat-panel-description>
-          </mat-expansion-panel-header>
-          <wotr-action-token-options-form
-            [tokens]="options().tokens"
-            [readOnly]="!isOwner()"
-            (tokensChange)="tokensChange($event)" />
-        </mat-expansion-panel>
-      </mat-accordion>
-    </ng-container>
+    <tui-accordion [closeOthers]="false">
+      <button
+        tuiAccordion
+        tuiButton
+        type="button">
+        <strong tuiTitle
+          >Expansions
+          <span tuiSubtitle>{{ expansionsSummary() }}</span>
+        </strong>
+      </button>
+      <tui-expand>
+        <wotr-expansion-options-form
+          [expansions]="options().expansions"
+          [readOnly]="!isOwner()"
+          (expansionsChange)="expansionsChange($event)" />
+      </tui-expand>
+      <button
+        tuiAccordion
+        tuiButton
+        type="button">
+        <strong tuiTitle
+          >Variants
+          <span tuiSubtitle>{{ variantsSummary() }}</span>
+        </strong>
+      </button>
+      <tui-expand>
+        <wotr-variant-options-form
+          [variants]="options().variants"
+          [expansions]="options().expansions"
+          [readOnly]="!isOwner()"
+          (variantsChange)="variantsChange($event)" />
+      </tui-expand>
+      <button
+        tuiAccordion
+        tuiButton
+        type="button">
+        <strong tuiTitle
+          >Action Tokens
+          <span tuiSubtitle>{{ tokensSummary() }}</span>
+        </strong>
+      </button>
+      <tui-expand>
+        <wotr-action-token-options-form
+          [tokens]="options().tokens"
+          [readOnly]="!isOwner()"
+          (tokensChange)="tokensChange($event)" />
+      </tui-expand>
+    </tui-accordion>
+  `,
+  styles: `
+    [tuiSubtitle] {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   `
 })
 export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<WotrGameOptions> {

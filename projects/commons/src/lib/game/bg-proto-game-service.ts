@@ -1,10 +1,10 @@
 import { Injectable, inject } from "@angular/core";
 import { BgUser } from "../authentication/bg-auth.service";
-import { BgCloudCollectionQuery, BgCloudService } from "../cloud/bg-cloud.service";
+import { BgCloudCollectionQuery, BgCloudService } from "../cloud/bg-cloud-service";
 
 export type BgBoardGame = "barony" | "britannia" | "wotr";
 
-export interface BgArcheoGame {
+export interface NewGame {
   name: string;
   online: boolean;
 }

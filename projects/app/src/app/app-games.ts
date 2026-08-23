@@ -1,5 +1,3 @@
-import { Injectable } from "@angular/core";
-
 export const GAME_PATH = {
   barony: "barony",
   britannia: "britannia",
@@ -8,13 +6,13 @@ export const GAME_PATH = {
   talisman: "talisman"
 };
 
-export interface Games {
+export interface Game {
   name: string;
   routerLink: string;
   imageSource: string;
 }
 
-const GAMES: Games[] = [
+export const GAMES: Game[] = [
   { name: "Barony", routerLink: GAME_PATH.barony, imageSource: "assets/barony/game-image.jpg" },
   {
     name: "Britannia",
@@ -33,14 +31,3 @@ const GAMES: Games[] = [
   },
   { name: "War of the Ring", routerLink: GAME_PATH.wort, imageSource: "assets/wotr/game-image.png" }
 ];
-
-@Injectable({
-  providedIn: "root"
-})
-export class AppGamesService {
-  constructor() {}
-
-  getGames() {
-    return GAMES;
-  }
-}

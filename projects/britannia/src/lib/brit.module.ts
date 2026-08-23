@@ -5,8 +5,6 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { Resolve, RouterModule, Routes } from "@angular/router";
-import { BgSvgModule } from "@leobg/commons";
-import { BgTransformPipe, NgLetDirective } from "@leobg/commons/utils";
 import { Observable, forkJoin } from "rxjs";
 import { BritActionsComponent } from "./brit-board/brit-actions.component";
 import { BritBoardComponent } from "./brit-board/brit-board.component";
@@ -20,6 +18,7 @@ import { BritMapComponent } from "./brit-map/brit-map.component";
 import { BritMapService } from "./brit-map/brit-map.service";
 import { BritPlayerComponent } from "./brit-player/brit-player.component";
 import { BritUnitsSelectorComponent } from "./brit-units-selector/brit-units-selector.component";
+import { BgTransformPipe, NgLetDirective } from "../../../commons/utils/src";
 
 @Injectable()
 export class BritAreaPathResolver implements Resolve<any> {
@@ -45,7 +44,6 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     BritHomeComponent,
-    BgSvgModule,
     BgTransformPipe,
     MatBottomSheetModule,
     MatTooltipModule,

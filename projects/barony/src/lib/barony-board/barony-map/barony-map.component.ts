@@ -1,5 +1,5 @@
 import { Component, OnChanges, ViewChild, input, output } from "@angular/core";
-import { BgMapZoomDirective, BgSvgComponent } from "@leobg/commons";
+import { BgMapZoom, BgSvg } from "@leobg/commons";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../../barony-models";
 import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.component";
@@ -8,7 +8,7 @@ import { BaronyLandComponent } from "../barony-land-tile/barony-land-tile.compon
   selector: "barony-map",
   templateUrl: "./barony-map.component.html",
   styleUrls: ["./barony-map.component.scss"],
-  imports: [BgSvgComponent, BgMapZoomDirective, BaronyLandComponent]
+  imports: [BgSvg, BgMapZoom, BaronyLandComponent]
 })
 export class BaronyMapComponent implements OnChanges {
   constructor() {}
@@ -17,8 +17,8 @@ export class BaronyMapComponent implements OnChanges {
   readonly validLands = input<BaronyLandCoordinates[] | null>(null);
   readonly landTileClick = output<BaronyLand>();
 
-  @ViewChild(BgMapZoomDirective, { static: true })
-  bgMapZoom!: BgMapZoomDirective;
+  @ViewChild(BgMapZoom, { static: true })
+  bgMapZoom!: BgMapZoom;
 
   isValid: { [key: string]: boolean } | null = null;
 

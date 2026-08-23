@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgHomeConfig, BgHomeModule, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
+import { BgHome, BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
 import { Observable, forkJoin, from } from "rxjs";
 import { switchMap } from "rxjs/operators";
@@ -16,7 +16,7 @@ import {
 
 @Component({
   selector: "brit-home",
-  imports: [BgHomeModule],
+  imports: [BgHome],
   template: ` <bg-home [config]="config"></bg-home> `,
   styles: [
     `
@@ -24,24 +24,16 @@ import {
 
       ::ng-deep {
         .brit-player-blue {
-          .bg-player-type-button {
-            background-color: $blue;
-          }
+          --bg-player-color: #{$blue};
         }
         .brit-player-red {
-          .bg-player-type-button {
-            background-color: $red;
-          }
+          --bg-player-color: #{$red};
         }
         .brit-player-green {
-          .bg-player-type-button {
-            background-color: $green;
-          }
+          --bg-player-color: #{$green};
         }
         .brit-player-yellow {
-          .bg-player-type-button {
-            background-color: $yellow;
-          }
+          --bg-player-color: #{$yellow};
         }
       }
     `

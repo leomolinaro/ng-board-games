@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
-import { BgCloudService } from "../cloud/bg-cloud.service";
+import { BgCloudService } from "../cloud/bg-cloud-service";
 
 export type BgUserLoginType = "guest" | "google";
 

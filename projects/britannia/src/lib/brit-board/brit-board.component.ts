@@ -11,7 +11,6 @@ import {
 import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
 import { immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
-import { BgMapZoomButtonsComponent } from "../../../../commons/src/lib/game/svg/bg-map-zoom-buttons.component";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import {
   BritAreaLeader,
@@ -30,6 +29,7 @@ import {
   BritUnitsSelectorSheetComponent,
   BritUnitsSelectorSheetInput
 } from "./brit-units-selector-sheet.component";
+import { BgMapZoomButtons } from "../../../../commons/src";
 
 @Component({
   selector: "brit-board",
@@ -40,7 +40,7 @@ import {
     BritMapComponent,
     BritActionsComponent,
     BritPlayerComponent,
-    BgMapZoomButtonsComponent,
+    BgMapZoomButtons,
     BritLogsComponent,
     NgClass
   ]

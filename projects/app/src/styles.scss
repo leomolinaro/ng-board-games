@@ -16,3 +16,10 @@ h6 {
 p {
   margin: 0;
 }
+
+[tuiTheme] {
+  --tui-stroke-width: 4px;
+}
+[tuiTheme="dark"] {
+  --tui-text-action: white !important;
+}

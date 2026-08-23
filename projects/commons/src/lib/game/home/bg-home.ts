@@ -11,8 +11,7 @@ import {
   inject,
   input
 } from "@angular/core";
-import { MatButton } from "@angular/material/button";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
+import { RouterLink } from "@angular/router";
 import {
   BgTransformFn,
   BgTransformPipe,
@@ -23,7 +22,7 @@ import {
 } from "@leobg/commons/utils";
 import { TuiTabBar } from "@taiga-ui/addon-mobile";
 import { TuiTable, TuiTableControl } from "@taiga-ui/addon-table";
-import { TuiButton, TuiDropdown, TuiTitle } from "@taiga-ui/core";
+import { TuiButton, TuiDialogService, TuiDropdown, TuiTitle } from "@taiga-ui/core";
 import { TuiCell } from "@taiga-ui/core/components/cell";
 import {
   TuiAutoColorPipe,
@@ -33,27 +32,23 @@ import {
   TuiProgress,
   TuiStatus
 } from "@taiga-ui/kit";
-import { Observable, map, mapTo, of, switchMap, tap } from "rxjs";
+import { TuiNavigation } from "@taiga-ui/layout";
+import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
+import { Observable, firstValueFrom, map, mapTo, of, switchMap } from "rxjs";
 import { BgAuthService } from "../../authentication";
-import { BgAccountButtonComponent } from "../../authentication/bg-account-button.component";
+import { BgAccountButton } from "../../authentication/bg-account-button";
 import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
 import {
-  BgArcheoGame,
   BgBoardGame,
   BgProtoGame,
   BgProtoGameService,
   BgProtoGameState,
-  BgProtoPlayer
-} from "../bg-proto-game.service";
-import { BgHomeArcheoGameFormComponent } from "./bg-home-archeo-game-form.component";
+  BgProtoPlayer,
+  NewGame
+} from "../bg-proto-game-service";
+import { BgGameRoomDialog, BgRoomDialogInput, BgRoomDialogOutput } from "./bg-game-room-dialog";
 import { BgGameOptionsComponent } from "./bg-home-game-options";
-import {
-  BgHomeRoomDialogComponent,
-  BgRoomDialogInput,
-  BgRoomDialogOutput
-} from "./bg-home-room-dialog.component";
-
-import { TuiNavigation } from "@taiga-ui/layout";
+import { BgNewGameDialog } from "./bg-new-game-dialog";
 
 export interface BgHomeConfig<Pid extends string, Opt = any> {
   boardGame: BgBoardGame;
@@ -80,16 +75,14 @@ interface GameStateDecode {
 
 @Component({
   selector: "bg-home",
-  templateUrl: "./bg-home.component.html",
-  styleUrls: ["./bg-home.component.scss"],
+  templateUrl: "./bg-home.html",
+  styleUrls: ["./bg-home.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
-    BgAccountButtonComponent,
-    BgHomeArcheoGameFormComponent,
+    BgAccountButton,
     BgIfUserDirective,
     BgTransformPipe,
-    MatButton,
     TuiAutoColorPipe,
     TuiAvatar,
     TuiAvatar,
@@ -102,19 +95,19 @@ interface GameStateDecode {
     TuiNavigation,
     TuiProgress,
     TuiStatus,
-    TuiStatus,
     TuiTabBar,
     TuiTable,
     TuiTableControl,
-    TuiTitle
+    TuiTitle,
+    RouterLink
   ]
 })
 @UntilDestroy
-export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
+export class BgHome<Pid extends string> implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   private protoGameService = inject(BgProtoGameService);
   private authService = inject(BgAuthService);
-  private matDialog = inject(MatDialog);
+  private readonly dialogs = inject(TuiDialogService);
 
   config = input.required<BgHomeConfig<Pid>>();
   actions = input<BgHomeAction[]>();
@@ -134,13 +127,8 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
     .observe(Breakpoints.Handset)
     .pipe(map(result => result.matches));
 
-  archeoGame: BgArcheoGame = this.getDefaultArcheoGame();
-  archeoGameValid = false;
-
   protoGames$!: Observable<BgProtoGame[]>;
   gameColumns = ["run", "name", "state", "owner", "delete"];
-
-  private newGameDialogRef: MatDialogRef<void, any> | null = null;
 
   ngOnInit(): void {
     this.protoGames$ = this.protoGameService.selectProtoGames$(ref =>
@@ -150,70 +138,31 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  @ExhaustingEvent({ suppressLoading: true })
-  openNewGameDialog() {
-    return of(void 0).pipe(
-      switchMap(() => {
-        this.newGameDialogRef = this.matDialog.open(this.newGameDialog, {
-          width: "250px",
-          maxWidth: "80vw",
-          panelClass: "bg-new-game-dialog"
-          // data: {
-          //   protoGame: game,
-          //   createGame$: (protoGame, protoPlayers) => this.createGame$ (protoGame, protoPlayers),
-          //   deleteGame$: gameId => this.deleteGame$ (gameId),
-          //   roleToCssClass: role => this.config().playerRoleCssClass (role)
-          // }
-        });
-        return this.newGameDialogRef.afterClosed().pipe(
-          tap(() => (this.archeoGameValid = false))
-          // switchMap (output => {
-          //   if (output?.startGame) {
-          //     return this.config().startGame$ (output.gameId);
-          //   }
-          //   return of (void 0);
-          // })
-        );
+  protected async openNewGameDialog() {
+    const game = await firstValueFrom(
+      this.dialogs.open<NewGame | null>(new PolymorpheusComponent(BgNewGameDialog), {
+        label: "New Game",
+        size: "s"
       })
     );
+    if (!game) return;
+    await this.createGame(game);
   }
 
-  onArcheoGameChange(archeoGame: BgArcheoGame) {
-    this.archeoGame = archeoGame;
-    this.archeoGameValid = !!archeoGame.name;
-  }
-
-  @ExhaustingEvent({ suppressLoading: true })
-  onCreateGame() {
-    const archeoGame = this.archeoGame;
-    if (archeoGame) {
-      const user = this.authService.getUser();
-      const protoGame: Omit<BgProtoGame, "id"> = {
-        ...archeoGame,
-        boardGame: this.config().boardGame,
-        owner: user,
-        state: "open"
-      };
-      this.newGameDialogRef?.close();
-      this.archeoGame = this.getDefaultArcheoGame();
-      return this.protoGameService.insertProtoGame$(protoGame).pipe(
-        switchMap(savedProtoGame => {
-          const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config()
-            .playerIds()
-            .map(id => this.insertProtoPlayer$(id, savedProtoGame.id));
-          return concatJoin(inserts).pipe(mapTo(savedProtoGame));
-        }),
-        switchMap(pg => this.playersRoom$(pg))
-      );
-    }
-    return of(void 0);
-  }
-
-  private getDefaultArcheoGame() {
-    return {
-      name: "",
-      online: false
+  private async createGame(game: NewGame) {
+    const user = this.authService.getUser();
+    const protoGame: Omit<BgProtoGame, "id"> = {
+      ...game,
+      boardGame: this.config().boardGame,
+      owner: user,
+      state: "open"
     };
+    const savedProtoGame = await firstValueFrom(this.protoGameService.insertProtoGame$(protoGame));
+    const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config()
+      .playerIds()
+      .map(id => this.insertProtoPlayer$(id, savedProtoGame.id));
+    await firstValueFrom(concatJoin(inserts));
+    await this.playersRoom(savedProtoGame);
   }
 
   private insertProtoPlayer$(id: Pid, gameId: string) {
@@ -232,38 +181,30 @@ export class BgHomeComponent<Pid extends string> implements OnInit, OnDestroy {
     return this.deleteGame$(game.id);
   }
 
-  @ExhaustingEvent({ suppressLoading: true })
-  enterGame(game: BgProtoGame) {
+  async enterGame(game: BgProtoGame) {
     if (game.state === "running") {
-      return this.config().startGame$(game.id);
+      return firstValueFrom(this.config().startGame$(game.id));
     } else {
-      return this.playersRoom$(game);
+      return this.playersRoom(game);
     }
   }
 
-  private playersRoom$(game: BgProtoGame) {
-    const dialogRef = this.matDialog.open<
-      BgHomeRoomDialogComponent<Pid>,
-      BgRoomDialogInput<Pid>,
-      BgRoomDialogOutput
-    >(BgHomeRoomDialogComponent, {
-      width: "1000px",
-      data: {
-        protoGame: game,
-        createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
-        deleteGame$: gameId => this.deleteGame$(gameId),
-        playerIdToCssClass: role => this.config().playerIdCssClass(role),
-        optionsComponent: this.config().optionsComponent?.()
-      }
-    });
-    return dialogRef.afterClosed().pipe(
-      switchMap(output => {
-        if (output?.startGame) {
-          return this.config().startGame$(output.gameId);
-        }
-        return of(void 0);
+  private async playersRoom(game: BgProtoGame) {
+    const output = await firstValueFrom(
+      this.dialogs.open<BgRoomDialogOutput | null>(new PolymorpheusComponent(BgGameRoomDialog), {
+        label: game.name,
+        // width: "1000px",
+        data: {
+          protoGame: game,
+          createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
+          deleteGame$: gameId => this.deleteGame$(gameId),
+          playerIdToCssClass: role => this.config().playerIdCssClass(role),
+          optionsComponent: this.config().optionsComponent?.()
+        } satisfies BgRoomDialogInput<Pid, any>
       })
     );
+    if (output?.startGame) return firstValueFrom(this.config().startGame$(output.gameId));
+    return of(void 0);
   }
 
   private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<Pid>[]) {

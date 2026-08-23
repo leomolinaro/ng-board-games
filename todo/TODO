@@ -4,6 +4,7 @@ ARCHITECTURE
 [] ai instructions
 [] copyright
 [] remove angular material and use taiga ui
+[] remove fa fa fonts
 [] reduce/remove rxjs
 [] remove ignoreDeprecations strictInputTypes
 

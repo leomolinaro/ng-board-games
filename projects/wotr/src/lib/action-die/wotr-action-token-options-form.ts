@@ -1,7 +1,7 @@
 import { Component, inject, model } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { MatListModule } from "@angular/material/list";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { TuiCheckbox, TuiLabel } from "@taiga-ui/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import {
   ACTION_TOKEN_OPTIONS,
@@ -11,24 +11,30 @@ import {
 
 @Component({
   selector: "wotr-action-token-options-form",
-  imports: [MatListModule, BgTransformPipe, FormsModule],
+  imports: [BgTransformPipe, FormsModule, TuiCheckbox, TuiLabel],
   template: `
-    <mat-selection-list
-      multiple
-      [disabled]="readOnly()"
-      [(ngModel)]="tokens"
-      [compareWith]="compareTokens">
-      @for (option of options; track option.front + "_" + option.token) {
-        <mat-list-option
-          [value]="option"
-          togglePosition="after">
-          <img
-            matListItemAvatar
-            [src]="option | bgTransform: tokenImage" />
-          <span matListItemTitle>{{ option | bgTransform: tokenName }}</span>
-        </mat-list-option>
+    @for (option of options; track option.front + "_" + option.token) {
+      <label tuiLabel>
+        <input
+          tuiCheckbox
+          type="checkbox"
+          [disabled]="readOnly() || false"
+          [ngModel]="isSelected(option)"
+          (ngModelChange)="toggleToken(option, $event)" />
+        <img
+          [src]="option | bgTransform: tokenImage"
+          alt="" />
+        <span>{{ option | bgTransform: tokenName }}</span>
+      </label>
+    }
+  `,
+  styles: `
+    [tuiLabel] {
+      align-items: center;
+      img {
+        padding: 0.5rem;
       }
-    </mat-selection-list>
+    }
   `
 })
 export class WotrActionTokenOptionsForm {
@@ -40,6 +46,20 @@ export class WotrActionTokenOptionsForm {
 
   protected compareTokens = (a: WotrActionTokenOption, b: WotrActionTokenOption) =>
     a.token === b.token && a.front === b.front;
+
+  protected isSelected(option: WotrActionTokenOption): boolean {
+    return this.tokens().some(token => this.compareTokens(token, option));
+  }
+
+  protected toggleToken(option: WotrActionTokenOption, checked: boolean): void {
+    const next = checked
+      ? this.tokens().some(token => this.compareTokens(token, option))
+        ? this.tokens()
+        : [...this.tokens(), option]
+      : this.tokens().filter(token => !this.compareTokens(token, option));
+
+    this.tokens.set(next);
+  }
 
   protected tokenImage: BgTransformFn<WotrActionTokenOption, string> = token =>
     this.assets.actionTokenImage(token.token, token.front);

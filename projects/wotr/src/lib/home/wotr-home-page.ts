@@ -10,9 +10,9 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   BgAuthService,
+  BgHome,
   BgHomeAction,
   BgHomeConfig,
-  BgHomeModule,
   BgProtoGame,
   BgProtoPlayer,
   BgUser
@@ -37,7 +37,7 @@ import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
 
 @Component({
   selector: "wotr-home-page",
-  imports: [BgHomeModule],
+  imports: [BgHome],
   template: `
     <bg-home
       [config]="config"
@@ -50,14 +50,10 @@ import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
 
       ::ng-deep {
         .wotr-player-free-peoples {
-          .bg-player-type-button {
-            background-color: $blue;
-          }
+          --bg-player-color: #{$blue};
         }
         .wotr-player-shadow {
-          .bg-player-type-button {
-            background-color: $red;
-          }
+          --bg-player-color: #{$red};
         }
       }
       .load-example {

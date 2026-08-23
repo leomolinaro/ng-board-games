@@ -6,11 +6,9 @@ import { TUI_DARK_MODE, TuiRoot } from "@taiga-ui/core";
   imports: [RouterOutlet, TuiRoot],
   selector: "app-root",
   template: `
-    <!-- <div class="bg-app mat-typography mat-app-background"> -->
     <tui-root theme="dark">
       <router-outlet></router-outlet>
     </tui-root>
-    <!-- </div> -->
   `,
   styles: `
     tui-root {

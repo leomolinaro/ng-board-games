@@ -8,5 +8,5 @@
     "types": []
   },
   "exclude": ["**/*.spec.ts", "jest.config.ts", "**/*.test.ts"],
-  "include": ["**/*.ts", "../app/src/app/app-games.service.ts"]
+  "include": ["**/*.ts", "../app/src/app/app-games.ts"]
 }

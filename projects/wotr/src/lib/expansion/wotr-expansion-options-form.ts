@@ -1,26 +1,24 @@
 import { booleanAttribute, Component, input, model } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { MatListModule } from "@angular/material/list";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { TuiCheckbox, TuiLabel } from "@taiga-ui/core";
 import { EXPANSIONS, WotrExpansion, WotrExpansionId } from "./wotr-expansion-models";
 
 @Component({
   selector: "wotr-expansion-options-form",
-  imports: [MatListModule, BgTransformPipe, FormsModule],
+  imports: [BgTransformPipe, FormsModule, TuiCheckbox, TuiLabel],
   template: `
-    <mat-selection-list
-      multiple
-      [disabled]="readOnly()"
-      [(ngModel)]="expansions">
-      @for (option of options; track option.id) {
-        <mat-list-option
-          [value]="option.id"
-          [disabled]="option | bgTransform: isDisabled : expansions()"
-          togglePosition="after">
-          <span matListItemTitle>{{ option.name }}</span>
-        </mat-list-option>
-      }
-    </mat-selection-list>
+    @for (option of options; track option.id) {
+      <label tuiLabel>
+        <input
+          tuiCheckbox
+          type="checkbox"
+          [disabled]="readOnly() || (option | bgTransform: isDisabled : expansions())"
+          [ngModel]="expansions().includes(option.id)"
+          (ngModelChange)="toggleExpansion(option.id, $event)" />
+        <span>{{ option.name }}</span>
+      </label>
+    }
   `
 })
 export class WotrExpansionOptionsForm {
@@ -33,4 +31,14 @@ export class WotrExpansionOptionsForm {
     option,
     expansions
   ) => option.requires?.some(requiredId => !expansions.includes(requiredId)) || false;
+
+  protected toggleExpansion(optionId: WotrExpansionId, checked: boolean): void {
+    const next = checked
+      ? this.expansions().includes(optionId)
+        ? this.expansions()
+        : [...this.expansions(), optionId]
+      : this.expansions().filter(expansionId => expansionId !== optionId);
+
+    this.expansions.set(next);
+  }
 }

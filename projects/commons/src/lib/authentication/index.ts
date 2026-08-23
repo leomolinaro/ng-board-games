@@ -1,4 +1,4 @@
-export * from "./bg-account-button.component";
+export * from "./bg-account-button";
 
 export * from "./bg-auth.service";
 export * from "./bg-if-user-of.directive";

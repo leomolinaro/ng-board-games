@@ -1,7 +1,5 @@
-import { NgClass } from "@angular/common";
 import { ChangeDetectionStrategy, Component, Signal, computed, inject } from "@angular/core";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { BgSvgModule } from "@leobg/commons";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
@@ -35,7 +33,7 @@ const PSTEPWAR = PSTEP1 + PSTEP;
 
 @Component({
   selector: "[wotrPoliticalTrack]",
-  imports: [BgSvgModule, MatTooltipModule, NgClass],
+  imports: [MatTooltipModule],
   template: `
     @for (politicalNode of politicalNodes(); track politicalNode.id) {
       @let selectable = validNationMap()?.[politicalNode.id];
@@ -57,10 +55,8 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         [attr.y]="politicalNode.svgY"
         [attr.width]="24"
         [attr.height]="24"
-        [ngClass]="{
-          disabled: validNationMap() && !selectable,
-          selectable: validNationMap() && selectable
-        }"
+        [class.disabled]="validNationMap() && !selectable"
+        [class.selectable]="validNationMap() && selectable"
         (click)="onNationClick(politicalNode.id)"></svg:rect>
     }
   `,

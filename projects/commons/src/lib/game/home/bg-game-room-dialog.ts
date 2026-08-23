@@ -1,8 +1,6 @@
-import { CdkScrollable } from "@angular/cdk/scrolling";
 import { NgClass } from "@angular/common";
 import {
   AfterViewInit,
-  ChangeDetectionStrategy,
   Component,
   OnDestroy,
   Type,
@@ -13,24 +11,19 @@ import {
   viewChild
 } from "@angular/core";
 import { rxResource } from "@angular/core/rxjs-interop";
-import { MatButton } from "@angular/material/button";
-import {
-  MAT_DIALOG_DATA,
-  MatDialogActions,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle
-} from "@angular/material/dialog";
 import { ConcatingEvent, ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
+import { TuiButton, TuiDialogContext } from "@taiga-ui/core";
+import { TuiForm } from "@taiga-ui/layout";
+import { injectContext } from "@taiga-ui/polymorpheus";
 import { Observable, of } from "rxjs";
 import { tap } from "rxjs/operators";
 import { BgTransformPipe } from "../../../../utils/src/lib/bg-transform.pipe";
 import { BgAuthService } from "../../authentication";
 import { BgIfUserDirective } from "../../authentication/bg-if-user-of.directive";
 import { BgIfUserPipe } from "../../authentication/bg-if-user.pipe";
-import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game.service";
+import { BgProtoGame, BgProtoGameService, BgProtoPlayer } from "../bg-proto-game-service";
 import { BgGameOptionsComponent } from "./bg-home-game-options";
-import { BgHomePlayerFormComponent } from "./bg-home-player-form.component";
+import { BgPlayerForm } from "./bg-player-form";
 
 export interface BgRoomDialogInput<Pid extends string, Opt = any> {
   protoGame: BgProtoGame;
@@ -46,114 +39,90 @@ export interface BgRoomDialogOutput {
 }
 
 @Component({
-  selector: "bg-home-room-dialog",
+  selector: "bg-game-room-dialog",
   imports: [
-    MatDialogTitle,
-    CdkScrollable,
-    MatDialogContent,
-    BgHomePlayerFormComponent,
+    BgPlayerForm,
     NgClass,
     BgIfUserDirective,
-    MatDialogActions,
-    MatButton,
+    TuiButton,
     BgIfUserPipe,
-    BgTransformPipe
+    BgTransformPipe,
+    TuiForm
   ],
   template: `
-    <h1 mat-dialog-title>Players</h1>
-    <div
-      mat-dialog-content
-      class="bg-players">
-      @for (player of players(); let i = $index; track i) {
-        <bg-home-player-form
-          [onlineGame]="onlineGame"
-          [player]="player"
-          (playerChange)="onPlayerChange($event, player.id)"
-          [isOwner]="isOwner()"
-          [isPlayer]="player.controller && (player.controller | bgIfUser)"
-          [ngClass]="player.id | bgTransform: roleToCssClass">
-        </bg-home-player-form>
-      }
+    <div tuiForm>
+      <section class="players">
+        @for (player of players(); let i = $index; track i) {
+          <bg-player-form
+            [onlineGame]="onlineGame"
+            [player]="player"
+            (playerChange)="changePlayer($event, player.id)"
+            [isOwner]="isOwner()"
+            [isPlayer]="player.controller && (player.controller | bgIfUser)"
+            [ngClass]="player.id | bgTransform: roleToCssClass" />
+        }
+      </section>
       @if (optionsComponent) {
-        <div class="bg-options">
-          <ng-container #options></ng-container>
-        </div>
+        <ng-container #options></ng-container>
       }
-    </div>
-    <div
-      mat-dialog-actions
-      *bgIfUser="protoGame().owner">
-      <button
-        mat-button
-        color="warn"
-        (click)="onDeleteGameClick()">
-        Delete game
-      </button>
-      <button
-        class="bg-game-start-button"
-        mat-button
-        color="accent"
-        [disabled]="!validPlayers()"
-        (click)="onStartGameClick()">
-        Start game
-      </button>
+      <footer *bgIfUser="protoGame().owner">
+        <button
+          tuiButton
+          appearance="secondary-destructive"
+          (click)="deleteGame()">
+          Delete game
+        </button>
+        <button
+          tuiButton
+          color="primary"
+          [disabled]="!validPlayers()"
+          (click)="startGame()">
+          Start game
+        </button>
+      </footer>
     </div>
   `,
-  styles: [
-    `
-      @use "bg-variables" as bg;
-      :host {
-        background: bg.$surface;
-        display: block;
-      }
-      .bg-players {
-        display: flex;
-        flex-direction: column;
-        bg-home-player-form {
-          width: 100%;
-        }
-      }
-
-      .bg-options {
-        margin-top: 1vmin;
-      }
-
-      .bg-game-start-button {
-        margin-left: auto !important;
-      }
-    `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styles: `
+    .players {
+      display: grid;
+      grid-template-columns: max-content max-content minmax(12rem, 1fr) max-content;
+      align-items: center;
+      column-gap: 1rem;
+      row-gap: 0.5rem;
+    }
+  `
 })
 @UntilDestroy
-export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
-  implements AfterViewInit, OnDestroy
-{
-  private dialogRef =
-    inject<MatDialogRef<BgHomeRoomDialogComponent<Pid, Opt>, BgRoomDialogOutput>>(MatDialogRef);
-  private input = inject<BgRoomDialogInput<Pid, Opt>>(MAT_DIALOG_DATA);
+export class BgGameRoomDialog<Pid extends string, Opt = any> implements AfterViewInit, OnDestroy {
+  constructor() {
+    effect(() => this.autoStartGame());
+  }
+
+  protected readonly context =
+    injectContext<TuiDialogContext<BgRoomDialogOutput | null, BgRoomDialogInput<Pid, Opt>>>();
+
   private protoGameService = inject(BgProtoGameService);
   private authService = inject(BgAuthService);
 
-  protected onlineGame = this.input.protoGame.online;
+  protected onlineGame = this.context.data.protoGame.online;
   protected protoGame = rxResource<BgProtoGame<any>, void>({
     stream: () =>
-      this.protoGameService.selectProtoGame$(this.input.protoGame.id) as Observable<
+      this.protoGameService.selectProtoGame$(this.context.data.protoGame.id) as Observable<
         BgProtoGame<any>
       >,
-    defaultValue: this.input.protoGame
+    defaultValue: this.context.data.protoGame
   }).value;
-  protected optionsComponent = this.input.optionsComponent;
+  protected optionsComponent = this.context.data.optionsComponent;
   protected isOwner = computed(() => {
     const user = this.authService.getUser();
     return user && this.protoGame().owner.id === user.id;
   });
 
   protected optionsRef = viewChild("options", { read: ViewContainerRef });
-  roleToCssClass = (role: Pid) => this.input.playerIdToCssClass(role);
+  roleToCssClass = (role: Pid) => this.context.data.playerIdToCssClass(role);
 
   protected players = rxResource({
-    stream: () => this.protoGameService.selectProtoPlayers$<Pid>(this.input.protoGame.id)
+    stream: () => this.protoGameService.selectProtoPlayers$<Pid>(this.context.data.protoGame.id)
   }).value;
 
   protected validPlayers = computed(() => {
@@ -184,11 +153,11 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
     return true;
   });
 
-  private startGame = effect(() => {
+  private autoStartGame() {
     if (this.protoGame()?.state === "running") {
       this.closeDialog(true);
     }
-  });
+  }
 
   ngOnDestroy() {}
 
@@ -197,8 +166,8 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
     if (this.optionsComponent && optionsRef) {
       const componentRef = optionsRef.createComponent(this.optionsComponent);
       componentRef.setInput("isOwner", this.isOwner());
-      if (this.input.protoGame.options) {
-        componentRef.setInput("options", this.input.protoGame.options);
+      if (this.context.data.protoGame.options) {
+        componentRef.setInput("options", this.context.data.protoGame.options);
       }
       const subscription = componentRef.instance.options.subscribe(options => {
         this.updateOptions(options);
@@ -213,15 +182,15 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
   }
 
   @ConcatingEvent()
-  onPlayerChange(player: BgProtoPlayer<string>, playerId: string) {
+  changePlayer(player: BgProtoPlayer<string>, playerId: string) {
     return this.protoGameService.updateProtoPlayer$(player, playerId, this.protoGame().id);
   }
 
   @ExhaustingEvent()
-  onStartGameClick() {
+  startGame() {
     if (this.protoGame().state === "open") {
       const protoPlayers = this.players()!;
-      return this.input
+      return this.context.data
         .createGame$(this.protoGame(), protoPlayers)
         .pipe(tap(() => this.closeDialog(true)));
     } else {
@@ -231,14 +200,16 @@ export class BgHomeRoomDialogComponent<Pid extends string, Opt = any>
   }
 
   private closeDialog(startGame: boolean) {
-    this.dialogRef.close({
+    this.context.completeWith({
       startGame: startGame,
       gameId: this.protoGame().id
     });
   }
 
   @ExhaustingEvent()
-  onDeleteGameClick() {
-    return this.input.deleteGame$(this.protoGame().id).pipe(tap(() => this.closeDialog(false)));
+  deleteGame() {
+    return this.context.data
+      .deleteGame$(this.protoGame().id)
+      .pipe(tap(() => this.closeDialog(false)));
   }
 }

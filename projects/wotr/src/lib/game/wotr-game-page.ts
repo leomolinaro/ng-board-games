@@ -9,7 +9,7 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgAuthService, BgUser } from "@leobg/commons";
+import { BgAuthService, type BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";

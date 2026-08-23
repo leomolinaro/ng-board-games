@@ -1,3 +1,2 @@
-export * from "./bg-map-zoom-buttons.component";
-export * from "./bg-map-zoom.directive";
-export * from "./bg-svg.module";
+export * from "./bg-map-zoom";
+export * from "./bg-map-zoom-buttons";
