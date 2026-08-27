@@ -512,7 +512,7 @@ export class WotrCombatCards {
           this.freePeoples
         );
         const fp = params.freePeoples;
-        if (!fp.combatRoll || !fp.nCombatSuccesses)
+        if (!fp.combatRoll || fp.nCombatSuccesses == null)
           throw new Error("Combat roll or nCombatSuccesses not defined");
         if (fp.combatRoll.length > fp.nCombatSuccesses) fp.nCombatSuccesses += 1;
       }
