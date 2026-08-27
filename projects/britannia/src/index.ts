@@ -1,1 +1,1 @@
-export * from "./lib/brit.module";
+export * from "./lib/brit.routes";

@@ -1,5 +1,5 @@
-import { NgModule, inject } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { inject } from "@angular/core";
+import { Routes } from "@angular/router";
 import { WotrMapService } from "./game/board/map/wotr-map.service";
 import { WotrGamePage } from "./game/wotr-game-page";
 import { WotrHomePage } from "./home/wotr-home-page";
@@ -10,14 +10,9 @@ const gameResolvers = {
   regionSlots: () => inject(WotrMapService).loadRegionSlots$()
 };
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: "", component: WotrHomePage },
   { path: "game/:gameId", component: WotrGamePage, resolve: gameResolvers },
   { path: "scenario/:gameId", component: WotrScenarioPage, resolve: gameResolvers },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)]
-})
-export class WotrModule {}

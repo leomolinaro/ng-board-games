@@ -1,63 +1,96 @@
-import { CdkScrollable } from "@angular/cdk/scrolling";
+import { Component, inject, Injectable } from "@angular/core";
+import { TuiButton, TuiDialogContext, TuiDialogService } from "@taiga-ui/core";
+import { injectContext, PolymorpheusComponent } from "@taiga-ui/polymorpheus";
+import { firstValueFrom } from "rxjs";
 
-import { Component, Injectable, inject } from "@angular/core";
-import { MatButton } from "@angular/material/button";
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle
-} from "@angular/material/dialog";
-import { Observable } from "rxjs";
+interface DialogData {
+  tokenSource: string;
+  confirm?: string;
+}
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class TlsmMessageService {
-  private dialog = inject(MatDialog);
+  private dialogs = inject(TuiDialogService);
 
-  public alert(message: string, tokenSource: string) {
-    this.dialog.open(TlsmMessageDialog, {
-      width: "400px",
-      data: { message: message, tokenSource: tokenSource }
+  public alert(message: string, tokenSource: string): Promise<void> {
+    const dialog$ = this.dialogs.open(new PolymorpheusComponent(TlsmMessageDialog), {
+      label: message,
+      size: "s",
+      data: { tokenSource: tokenSource } satisfies DialogData
     });
+    return firstValueFrom(dialog$);
   }
 
-  public confirm(message: string, tokenSource: string, confirm: string): Observable<boolean> {
-    const dialogRef = this.dialog.open(TlsmMessageDialog, {
-      width: "400px",
-      data: { message: message, tokenSource: tokenSource, confirm: confirm }
+  public confirm(message: string, tokenSource: string, confirm: string): Promise<boolean> {
+    const dialog$ = this.dialogs.open<boolean>(new PolymorpheusComponent(TlsmMessageDialog), {
+      label: message,
+      size: "s",
+      data: { tokenSource: tokenSource, confirm: confirm } satisfies DialogData
     });
-    return dialogRef.afterClosed();
+    return firstValueFrom(dialog$);
   }
 }
 
 @Component({
   selector: "tlsm-message-dialog",
-  templateUrl: "tlsm-message-dialog.html",
-  imports: [
-    MatDialogTitle,
-    CdkScrollable,
-    MatDialogContent,
-    MatDialogActions,
-    MatButton,
-    MatDialogClose
-  ]
+  imports: [TuiButton],
+  template: `
+    <img
+      [src]="tokenSource"
+      alt="token"
+      style="width: 100px" />
+    <p>{{ confirm }}</p>
+    <footer>
+      @if (confirm) {
+        <button
+          tuiButton
+          (click)="context.completeWith(false)">
+          No
+        </button>
+      }
+      @if (confirm) {
+        <button
+          tuiButton
+          (click)="context.completeWith(true)">
+          Yes
+        </button>
+      }
+      @if (!confirm) {
+        <button
+          tuiButton
+          (click)="context.completeWith(true)">
+          Ok
+        </button>
+      }
+    </footer>
+  `,
+  styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    footer {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  `
 })
 export class TlsmMessageDialog {
-  dialogRef = inject<MatDialogRef<TlsmMessageDialog>>(MatDialogRef);
-  data = inject(MAT_DIALOG_DATA);
+  context = injectContext<TuiDialogContext<boolean, DialogData>>();
 
   tokenSource: string;
-  message: string;
-  confirm: string;
+  confirm: string | undefined;
 
   constructor() {
-    const data = this.data;
+    const data = this.context.data;
 
     this.tokenSource = data.tokenSource;
-    this.message = data.message;
     this.confirm = data.confirm;
   }
 }

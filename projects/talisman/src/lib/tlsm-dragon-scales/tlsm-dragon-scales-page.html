@@ -1,0 +1,66 @@
+<header tuiNavigationHeader>
+  <span tuiTitle> Talisman - Dragon scales </span>
+  <hr />
+  <button
+    tuiIconButton
+    iconStart="settings"
+    title="Settings"
+    type="button"
+    (click)="openSettings()"></button>
+</header>
+<main class="dashboard">
+  @for (dragon of store.dragons(); track dragon.id) {
+  <tlsm-dragon-card
+    class="dragon"
+    [class]="dragon.id"
+    [dragon]="dragon"
+    (scaleDiscard)="discardScale(dragon.id)" />
+  }
+  <div
+    tuiCardLarge
+    class="logs">
+    <header tuiHeader>
+      <h1 tuiTitle>Logs</h1>
+    </header>
+    <main>
+      @for (log of store.logs(); track $index) {
+      <div>
+        <img
+          [src]="log.tokenSource"
+          alt="token" />
+        <span>{{ log.message }}</span>
+      </div>
+      }
+    </main>
+  </div>
+  <div
+    tuiCardLarge
+    class="pool">
+    <header tuiHeader>
+      <h1 tuiTitle>Pool</h1>
+      <span tuiAccessories>
+        <button
+          appearance="secondary"
+          tuiButton
+          iconStart="coins"
+          (click)="drawToken()"
+          size="m"
+          title="Draw token">
+          Draw token
+        </button>
+      </span>
+    </header>
+    @if (store.pool(); as pool) {
+    <main>
+      <tlsm-dragon-scales-pool [pool]="pool" />
+    </main>
+    }
+  </div>
+  <button
+    color="accent"
+    class="new-round-button"
+    tuiIconButton
+    iconStart="play"
+    (click)="newRound()"
+    title="New round"></button>
+</main>

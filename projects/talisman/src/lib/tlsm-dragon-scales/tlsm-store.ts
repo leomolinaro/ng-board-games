@@ -1,22 +1,25 @@
-import { Injectable } from "@angular/core";
-import { BgStore } from "@leobg/commons/utils";
+import { computed, Injectable, signal } from "@angular/core";
 
 export type TlsmDragonId = "varthrax" | "cadorus" | "grilipus";
 
-export interface IAppState {
-  varthrax: IDragon;
-  cadorus: IDragon;
-  grilipus: IDragon;
-  pool: {
-    scales: {
-      varthrax: number;
-      cadorus: number;
-      grilipus: number;
-    };
-    strikes: number;
-    rages: number;
-    slumbers: number;
+const DRAGON_IDS: TlsmDragonId[] = ["varthrax", "cadorus", "grilipus"];
+
+export interface Pool {
+  scales: {
+    varthrax: number;
+    cadorus: number;
+    grilipus: number;
   };
+  strikes: number;
+  rages: number;
+  slumbers: number;
+}
+
+export interface IAppState {
+  varthrax: Dragon;
+  cadorus: Dragon;
+  grilipus: Dragon;
+  pool: Pool;
   players: string[];
   settings: {
     scalesPerCrown: number;
@@ -28,7 +31,7 @@ export interface IAppState {
   }[];
 }
 
-export interface IDragon {
+export interface Dragon {
   id: TlsmDragonId;
   name: string;
   crowned: boolean;
@@ -86,51 +89,22 @@ export const INITIAL_STATE: IAppState = {
 };
 
 @Injectable()
-export class TlsmStore extends BgStore<IAppState> {
-  constructor() {
-    super(INITIAL_STATE, "TlsmStore");
+export class TlsmStore {
+  private store = signal<IAppState>(INITIAL_STATE);
+
+  public readonly players = computed(() => this.store().players);
+  public readonly settings = computed(() => this.store().settings);
+  public readonly dragons = computed(() => DRAGON_IDS.map(id => this.store()[id]));
+  public readonly pool = computed(() => this.store().pool);
+  public readonly logs = computed(() => this.store().logs);
+  public readonly king = computed(() => this.dragons().find(d => d.crowned) ?? null);
+
+  dragon(dragonId: TlsmDragonId) {
+    return this.store()[dragonId];
   }
 
-  getPlayers() {
-    return this.get(s => s.players);
-  }
-  getSettings() {
-    return this.get(s => s.settings);
-  }
-  getDragon(dragonId: TlsmDragonId) {
-    return this.get(s => s[dragonId]);
-  }
-  getPool() {
-    return this.get(s => s.pool);
-  }
-  getKing(): IDragon | null {
-    return this.get(s => {
-      if (s.varthrax.crowned) {
-        return s.varthrax;
-      } else if (s.cadorus.crowned) {
-        return s.cadorus;
-      } else if (s.grilipus.crowned) {
-        return s.grilipus;
-      } else {
-        return null;
-      }
-    });
-  }
-
-  selectPool$() {
-    return this.select$(s => s.pool);
-  }
-  selectPlayers$() {
-    return this.select$(s => s.players);
-  }
-  selectCrowned$(dragonId: TlsmDragonId) {
-    return this.select$(s => s[dragonId].crowned);
-  }
-  selectLogs$() {
-    return this.select$(s => s.logs);
-  }
-  selectDragon$(dragonId: TlsmDragonId) {
-    return this.select$(s => s[dragonId]);
+  private update(action: string, updater: (state: IAppState) => IAppState) {
+    this.store.update(updater);
   }
 
   discardScale(dragonId: TlsmDragonId) {

@@ -33,12 +33,7 @@ import { GAMES } from "../app-games";
   `,
   styles: [
     `
-      :host {
-        display: block;
-        width: 100%;
-      }
       header {
-        display: flex;
         bg-account-button {
           margin-left: auto;
         }
@@ -46,9 +41,12 @@ import { GAMES } from "../app-games";
 
       main {
         display: flex;
+        flex-direction: row;
         justify-content: center;
+        flex-wrap: wrap;
         gap: 1rem;
         padding: 1rem;
+        flex: 1;
       }
 
       .game {

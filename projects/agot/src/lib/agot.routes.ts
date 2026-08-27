@@ -1,8 +1,7 @@
-import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 import { AGOT_FEATURE_PATHS } from "./agot-features";
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: "",
     loadComponent: () => import("./agot-home").then(m => m.AgotHome)
@@ -17,8 +16,3 @@ const routes: Routes = [
   },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)]
-})
-export class AgotModule {}
