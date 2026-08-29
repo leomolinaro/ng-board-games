@@ -289,34 +289,13 @@ export class WotrUnitRules {
     return false;
   }
 
-  private canFrontAttackWithLeadersFromRegion(region: WotrRegion, frontId: WotrFrontId): boolean {
-    if (region.army?.front === frontId) {
-      if (!this.doesArmyHaveLeadership(region.army, false)) return false;
-      return this.canArmyAttack(region.army, region);
-    } else if (region.underSiegeArmy?.front === frontId) {
-      if (!this.doesArmyHaveLeadership(region.underSiegeArmy, false)) return false;
-      return this.canArmyAttack(region.underSiegeArmy, region);
-    }
-    return false;
-  }
-
-  private canFrontAttackWithNazgulFromRegion(region: WotrRegion, frontId: WotrFrontId): boolean {
-    if (region.army?.front === frontId) {
-      if (!this.unitUtils.hasNazgul(region.army)) return false;
-      return this.canArmyAttack(region.army, region);
-    } else if (region.underSiegeArmy?.front === frontId) {
-      if (!this.unitUtils.hasNazgul(region.underSiegeArmy)) return false;
-      return this.canArmyAttack(region.underSiegeArmy, region);
-    }
-    return false;
-  }
-
   canFrontAttackWithLeader(frontId: WotrFrontId): boolean {
     return this.regionStore.regions().some(region => {
-      if (!region.army) return false;
-      if (region.army.front !== frontId) return false;
-      if (!this.doesArmyHaveLeadership(region.army, false)) return false;
-      return this.canArmyAttack(region.army, region);
+      const frontArmy = region.army?.front === frontId ? region.army : region.underSiegeArmy;
+      if (!frontArmy) return false;
+      if (frontArmy.front !== frontId) return false;
+      if (!this.doesArmyHaveLeadership(frontArmy, false)) return false;
+      return this.canArmyAttack(frontArmy, region);
     });
   }
 
