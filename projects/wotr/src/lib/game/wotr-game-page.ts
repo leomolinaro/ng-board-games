@@ -1,7 +1,6 @@
-import { Component, Injector, OnDestroy, OnInit, inject, input } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
+import { Component, OnDestroy, OnInit, inject, input } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { BgAuthService, type BgUser } from "@leobg/commons";
+import { BgAuthService, BgDialogService, type BgUser } from "@leobg/commons";
 import { UntilDestroy } from "@leobg/commons/utils";
 import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
 import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
@@ -124,8 +123,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private q = inject(WotrGameQuery);
   private router = inject(Router);
 
-  private dialog = inject(MatDialog);
-  private injector = inject(Injector);
+  private readonly dialogs = inject(BgDialogService);
 
   constructor() {
     inject(WotrActionDieHandler).init();
@@ -221,19 +219,14 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private storiesDialogRef: WotrStoriesDialogRef | null = null;
 
   editStories() {
-    const data: WotrStoriesDialogData = {
-      gameId: this.gameId
-    };
-    this.storiesDialogRef = this.dialog.open<WotrStoriesDialog, WotrStoriesDialogData, void>(
-      WotrStoriesDialog,
-      {
-        data,
-        injector: this.injector,
-        panelClass: "mat-typography",
-        maxHeight: "80vh",
-        maxWidth: "80vw"
-      }
-    );
+    this.dialogs
+      .open<WotrStoriesDialogData, void>(WotrStoriesDialog, {
+        data: {
+          gameId: this.gameId
+        },
+        size: "l"
+      })
+      .then();
   }
 
   protected reloadPage(replay: boolean) {

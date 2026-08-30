@@ -3,6 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   BgAuthService,
+  BgDialogService,
   BgHome,
   BgHomeAction,
   BgHomeConfig,
@@ -11,8 +12,6 @@ import {
   BgUser
 } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
-import { TuiDialogService } from "@taiga-ui/core";
-import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
 import { forkJoin, from, Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { WotrFrontId } from "../front/wotr-front-models";
@@ -147,7 +146,7 @@ export class WotrHomePage {
   private auth = inject(BgAuthService);
   protected user = toSignal(this.auth.getUser$());
   protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
-  private readonly dialogs = inject(TuiDialogService);
+  private readonly dialogs = inject(BgDialogService);
   private injector = inject(Injector);
 
   protected scenarioAction: BgHomeAction = {
@@ -155,10 +154,11 @@ export class WotrHomePage {
     label: "Scenario",
     action: () => {
       this.dialogs
-        .open<string>(new PolymorpheusComponent(WotrScenarioSelectorDialog, this.injector), {
+        .open(WotrScenarioSelectorDialog, {
+          injector: this.injector,
           size: "l"
         })
-        .subscribe();
+        .then();
     },
     icon: "@tui.bookmark"
   };

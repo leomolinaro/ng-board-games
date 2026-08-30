@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-@use "./styles/material.scss";
 @use "./styles/layout.scss";
 @use "./styles/scroll-bars.scss";
 @use "./styles/buttons.scss";
@@ -25,6 +24,8 @@ p {
 }
 [tuiTheme="dark"] {
   --tui-text-action: white !important;
+
+  --tui-background-elevation-1: #151515 !important;
   // --tui-background-accent-1: black;
   // --tui-background-accent-1-hover: #6c86e2;
   // --tui-background-accent-1-pressed: #314692;

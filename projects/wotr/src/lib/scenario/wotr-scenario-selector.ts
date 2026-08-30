@@ -1,5 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { injectDialogContext } from "@leobg/commons";
 import { type TuiHandler } from "@taiga-ui/cdk";
 import { TuiTree, TuiTreeItem } from "@taiga-ui/kit";
 import { WotrScenarioGroupInfo, WotrScenarioInfo } from "./wotr-scenario";
@@ -58,6 +59,7 @@ import { WotrScenarios } from "./wotr-scenarios";
   ]
 })
 export class WotrScenarioSelectorDialog {
+  context = injectDialogContext();
   private router = inject(Router);
   private scenarios = inject(WotrScenarios);
   protected readonly handler: TuiHandler<
@@ -74,6 +76,7 @@ export class WotrScenarioSelectorDialog {
       (node as any).controller.toggle(node);
     } else {
       this.onGameClick(value);
+      this.context.complete();
     }
   }
 

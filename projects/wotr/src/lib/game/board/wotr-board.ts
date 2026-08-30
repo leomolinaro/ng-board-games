@@ -8,20 +8,14 @@ import {
   output,
   signal
 } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { firstValueFrom } from "rxjs";
+import { TuiButton } from "@taiga-ui/core";
+import { BgDialogService } from "../../../../../commons/src";
 import { WotrActionDiceBox } from "../../action-die/wotr-action-dice-box";
 import { isCharacterCard, isStrategyCard, WotrCardId } from "../../card/wotr-card-models";
 import { WotrCardsDialog, WotrCardsDialogData } from "../../card/wotr-cards-dialog";
 import { WotrCharacterStore } from "../../character/wotr-character-store";
-import {
-  WotrFellowshipDialog,
-  WotrFellowshipDialogData,
-  WotrFellowshipDialogRef,
-  WotrFellowshipDialogResult
-} from "../../fellowship/wotr-fellowship-dialog";
+import { WotrFellowshipDialog } from "../../fellowship/wotr-fellowship-dialog";
 import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
 import { WotrFrontArea } from "../../front/wotr-front-area";
 import { WotrFrontId } from "../../front/wotr-front-models";
@@ -33,33 +27,28 @@ import { WotrLogStore } from "../../log/wotr-log-store";
 import { WotrNationStore } from "../../nation/wotr-nation-store";
 import { WotrOptionsPanel } from "../../player/wotr-options-panel";
 import { WotrPlayerToolbar } from "../../player/wotr-player-toolbar";
-import {
-  WotrRegionDialog,
-  WotrRegionDialogData,
-  WotrRegionDialogRef,
-  WotrRegionDialogResult
-} from "../../region/dialog/wotr-region-dialog";
+import { WotrRegionDialog } from "../../region/dialog/wotr-region-dialog";
 import { WotrRegion } from "../../region/wotr-region-models";
 import { WotrRegionStore } from "../../region/wotr-region-store";
 import { WotrRegionUnits } from "../../unit/wotr-unit-models";
 import { WotrGameStore } from "../wotr-game-store";
 import { WotrCardSelection, WotrGameUi } from "../wotr-game-ui";
 import { WotrMap } from "./map/wotr-map";
-import { WotrReplayButton } from "./wotr-replay-buttons";
+import { WotrReplayButtons } from "./wotr-replay-buttons";
 
 @Component({
   selector: "wotr-board",
   imports: [
     BgTransformPipe,
-    MatTabsModule,
     WotrMap,
     WotrLogList,
     WotrFrontArea,
     WotrHuntArea,
-    WotrReplayButton,
+    WotrReplayButtons,
     WotrActionDiceBox,
     WotrOptionsPanel,
-    WotrPlayerToolbar
+    WotrPlayerToolbar,
+    TuiButton
   ],
   template: `
     <div class="wotr-board">
@@ -80,34 +69,51 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
         }
       </div>
       <wotr-player-toolbar class="wotr-toolbar"></wotr-player-toolbar>
-      <div class="wotr-fronts">
-        <mat-tab-group [selectedIndex]="selectedFrontTabIndex()">
+      <div
+        class="wotr-fronts"
+        [class]="activeTabId">
+        <header>
           @for (front of fronts(); track front.id) {
-            <mat-tab
-              [label]="
+            <button
+              tuiButton
+              size="xs"
+              appearance="flat"
+              [class.is-active]="activeTabId === front.id"
+              (click)="activeTabId = front.id">
+              {{
                 front.name +
-                ' ' +
-                (front.handCards | bgTransform: nChaCards) +
-                ' / ' +
-                (front.handCards | bgTransform: nStrCards)
-              "
-              [labelClass]="front.id"
-              [bodyClass]="front.id">
-              <wotr-front-area
-                [front]="front"
-                [nations]="front.id === 'free-peoples' ? freePeoplesNations() : shadowNations()"
-                [characters]="characters()"
-                (cardClick)="onPreviewCardClick($event, front.id)">
-              </wotr-front-area>
-            </mat-tab>
+                  " " +
+                  (front.handCards | bgTransform: nChaCards) +
+                  " / " +
+                  (front.handCards | bgTransform: nStrCards)
+              }}
+            </button>
           }
-          <mat-tab label="Hunt">
-            <wotr-hunt-area
-              [hunt]="huntStore.state()"
-              [selectedHuntTabIndex]="selectedHuntTabIndex()">
-            </wotr-hunt-area>
-          </mat-tab>
-        </mat-tab-group>
+          <button
+            tuiButton
+            size="xs"
+            appearance="flat"
+            [class.is-active]="activeTabId === 'hunt'"
+            (click)="activeTabId = 'hunt'">
+            Hunt
+          </button>
+        </header>
+        @for (front of fronts(); track front.id) {
+          @if (activeTabId === front.id) {
+            <wotr-front-area
+              [front]="front"
+              [nations]="front.id === 'free-peoples' ? freePeoplesNations() : shadowNations()"
+              [characters]="characters()"
+              (cardClick)="onPreviewCardClick($event, front.id)">
+            </wotr-front-area>
+          }
+        }
+        @if (activeTabId === "hunt") {
+          <wotr-hunt-area
+            [hunt]="huntStore.state()"
+            [selectedHuntTabIndex]="selectedHuntTabIndex()">
+          </wotr-hunt-area>
+        }
       </div>
       <div class="wotr-action-dice-box">
         <wotr-action-dice-box />
@@ -126,9 +132,6 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
   styleUrls: ["./wotr-board.scss"]
 })
 export class WotrBoard {
-  private dialog = inject(MatDialog);
-  private injector = inject(Injector);
-
   protected regionStore = inject(WotrRegionStore);
   protected frontStore = inject(WotrFrontStore);
   protected huntStore = inject(WotrHuntStore);
@@ -138,6 +141,8 @@ export class WotrBoard {
   protected logStore = inject(WotrLogStore);
   protected ui = inject(WotrGameUi);
   private gameStore = inject(WotrGameStore);
+  private injector = inject(Injector);
+  private dialogs = inject(BgDialogService);
 
   protected freePeoples = this.frontStore.freePeoplesFront;
   protected shadow = this.frontStore.shadowFront;
@@ -149,6 +154,8 @@ export class WotrBoard {
   protected freePeoplesNations = this.nationStore.freePeoplesNations;
   protected nationById = this.nationStore.nationById;
   protected shadowNations = this.nationStore.shadowNations;
+
+  protected activeTabId = "free-peoples";
 
   replayMode = model();
 
@@ -210,9 +217,6 @@ export class WotrBoard {
     this.openFellowshipBoxDialog();
   });
 
-  private regionDialogRef: WotrRegionDialogRef | null = null;
-  private fellowshipDialogRef: WotrFellowshipDialogRef | null = null;
-
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
     this.openHandCardsDialog(cardId, frontId);
   }
@@ -243,46 +247,35 @@ export class WotrBoard {
     cardIds: WotrCardId[],
     selectableCards: WotrCardSelection | null
   ) {
-    const cardsDialogRef = this.dialog.open<
-      WotrCardsDialog,
-      WotrCardsDialogData,
-      undefined | WotrCardId[]
-    >(WotrCardsDialog, {
+    return this.dialogs.open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
       data: {
         focusedCardId,
         cardIds,
         selectableCards
       },
-      injector: this.injector,
-      panelClass: "wotr-cards-overlay-panel",
-      width: "100%",
-      maxWidth: "100%"
+      closable: false,
+      size: "l",
+      appearance: "wotr-cards-dialog"
     });
-    const result = await firstValueFrom(cardsDialogRef.afterClosed());
-    return result;
   }
 
   private async openRegionDialog(region: WotrRegion) {
     const regionUnitSelection = this.ui.regionUnitSelection();
-    const data: WotrRegionDialogData = {
-      region,
-      nationById: this.nationById(),
-      characterById: this.characterById(),
-      fellowship: this.fellowshipStore.state(),
-      regionSelection: this.ui.regionSelection()?.includes(region.id) ?? false,
-      unitSelection: regionUnitSelection?.regionIds.includes(region.id) ? regionUnitSelection : null
-    };
-    this.regionDialogRef = this.dialog.open<
-      WotrRegionDialog,
-      WotrRegionDialogData,
-      WotrRegionDialogResult
-    >(WotrRegionDialog, {
-      data,
+    const result = await this.dialogs.open(WotrRegionDialog, {
+      data: {
+        region,
+        nationById: this.nationById(),
+        characterById: this.characterById(),
+        fellowship: this.fellowshipStore.state(),
+        regionSelection: this.ui.regionSelection()?.includes(region.id) ?? false,
+        unitSelection: regionUnitSelection?.regionIds.includes(region.id)
+          ? regionUnitSelection
+          : null
+      },
+      label: region.name,
       injector: this.injector,
-      panelClass: "mat-typography"
+      size: "m"
     });
-    const result = await firstValueFrom(this.regionDialogRef.afterClosed());
-    this.regionDialogRef = null;
     if (result) {
       if (result === true) {
         this.ui.region.emit(region.id);
@@ -296,32 +289,22 @@ export class WotrBoard {
   }
 
   onRegionClick(region: WotrRegion) {
-    if (this.regionDialogRef) {
-      this.regionDialogRef.close();
-    }
     this.openRegionDialog(region);
   }
 
   onFellowshipBoxClick() {
-    if (this.fellowshipDialogRef) {
-      this.fellowshipDialogRef.close();
-    }
     this.openFellowshipBoxDialog();
   }
 
   private async openFellowshipBoxDialog() {
-    const data: WotrFellowshipDialogData = {
-      selection: this.ui.fellowshipCompanionsSelection()
-    };
-    this.fellowshipDialogRef = this.dialog.open<
-      WotrFellowshipDialog,
-      WotrFellowshipDialogData,
-      WotrFellowshipDialogResult
-    >(WotrFellowshipDialog, { data, injector: this.injector, panelClass: "mat-typography" });
-    const result = await firstValueFrom(this.fellowshipDialogRef.afterClosed());
-    this.fellowshipDialogRef = null;
-    if (result) {
-      this.ui.fellowshipCompanions.emit(result);
-    }
+    const result = await this.dialogs.open(WotrFellowshipDialog, {
+      data: {
+        selection: this.ui.fellowshipCompanionsSelection()
+      },
+      size: "m",
+      injector: this.injector,
+      label: "Fellowship"
+    });
+    if (result) this.ui.fellowshipCompanions.emit(result);
   }
 }

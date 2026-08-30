@@ -1,5 +1,5 @@
-import { Component, computed, inject, Injector, input, Signal } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
+import { Component, computed, inject, input, Signal } from "@angular/core";
+import { BgDialogService } from "@leobg/commons";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { isFreePeoplesCard, WotrCardId } from "../card/wotr-card-models";
 import { WotrCardsDialog, WotrCardsDialogData } from "../card/wotr-cards-dialog";
@@ -39,8 +39,7 @@ const YSTEP = 47;
   ]
 })
 export class WotrTableCardsComponent {
-  private dialog = inject(MatDialog);
-  private injector = inject(Injector);
+  private readonly dialogs = inject(BgDialogService);
 
   freePeoples = input.required<WotrFront>();
   shadow = input.required<WotrFront>();
@@ -72,19 +71,17 @@ export class WotrTableCardsComponent {
 
   protected openCardsDialog(cardId: WotrCardId) {
     const isFreePeoples = isFreePeoplesCard(cardId);
-    this.dialog.open<WotrCardsDialog, WotrCardsDialogData, undefined | WotrCardId[]>(
-      WotrCardsDialog,
-      {
+    this.dialogs
+      .open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
         data: {
           focusedCardId: cardId,
           cardIds: isFreePeoples ? this.freePeoples().tableCards : this.shadow().tableCards,
           selectableCards: null
         },
-        injector: this.injector,
-        panelClass: "wotr-cards-overlay-panel",
-        width: "100%",
-        maxWidth: "100%"
-      }
-    );
+        size: "l",
+        closable: false,
+        appearance: "wotr-cards-dialog"
+      })
+      .then();
   }
 }

@@ -1,61 +1,42 @@
 import { Component, model, output } from "@angular/core";
-import { MatRipple } from "@angular/material/core";
-import { MatIcon } from "@angular/material/icon";
+import { TuiButton, tuiButtonOptionsProvider } from "@taiga-ui/core";
 
 @Component({
   selector: "wotr-replay-buttons",
-  imports: [MatIcon, MatRipple],
+  imports: [TuiButton],
+  providers: [tuiButtonOptionsProvider({ size: "xs", appearance: "floating" })],
   template: `
-    <div class="toolbar">
-      <!-- <mat-icon
-        matRipple
-        fontIcon="keyboard_arrow_left"
-        (click)="replayNext.emit(-1)"></mat-icon> -->
-      <!-- style="font-size: 120%;" -->
-      <mat-icon
+    <header>
+      <button
+        tuiIconButton
         style="margin-right: 3px"
-        matRipple
-        fontIcon="edit"
+        iconStart="pencil"
         inline
-        (click)="edit.emit()"></mat-icon>
+        (click)="edit.emit()"></button>
       @if (replayMode()) {
-        <mat-icon
-          matRipple
-          fontIcon="keyboard_arrow_right"
-          (click)="replayNext.emit(1)"></mat-icon>
-        <mat-icon
-          matRipple
-          fontIcon="keyboard_double_arrow_right"
-          (click)="replayNext.emit(10)"></mat-icon>
-        <mat-icon
-          matRipple
-          fontIcon="last_page"
-          (click)="replayLast.emit()"></mat-icon>
+        <button
+          tuiIconButton
+          iconStart="chevron-right"
+          (click)="replayNext.emit(1)"></button>
+        <button
+          tuiIconButton
+          iconStart="chevrons-right"
+          (click)="replayNext.emit(10)"></button>
+        <button
+          tuiIconButton
+          iconStart="arrow-right-to-line"
+          (click)="replayLast.emit()"></button>
       } @else {
-        <button (click)="replayMode.set(true)">Replay</button>
+        <button
+          tuiButton
+          (click)="replayMode.set(true)">
+          Replay
+        </button>
       }
-    </div>
-  `,
-  styles: `
-    .toolbar {
-      display: flex;
-      align-items: center;
-    }
-    button {
-      background: none;
-      border: none;
-      color: white;
-    }
-    mat-icon,
-    button {
-      cursor: pointer;
-      &:hover {
-        color: #aaa;
-      }
-    }
+    </header>
   `
 })
-export class WotrReplayButton {
+export class WotrReplayButtons {
   replayMode = model();
 
   replayNext = output<number>();

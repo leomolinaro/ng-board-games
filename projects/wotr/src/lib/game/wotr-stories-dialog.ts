@@ -1,12 +1,11 @@
 import { JsonPipe } from "@angular/common";
 import { Component, effect, ElementRef, inject, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { getStoryId } from "../../../../commons/src";
+import { getStoryId, injectDialogContext } from "@leobg/commons";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrRemoteService } from "../remote/wotr-remote";
 
-export type WotrStoriesDialogRef = MatDialogRef<WotrStoriesDialog, void>;
+export type WotrStoriesDialogRef = { close: () => void };
 export interface WotrStoriesDialogData {
   gameId: string;
 }
@@ -116,9 +115,9 @@ export interface WotrStoriesDialogData {
   ]
 })
 export class WotrStoriesDialog {
-  protected data = inject<WotrStoriesDialogData>(MAT_DIALOG_DATA);
+  readonly context = injectDialogContext<WotrStoriesDialogData>();
+  protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
-  private dialogRef: WotrStoriesDialogRef = inject(MatDialogRef);
 
   private remote = inject(WotrRemoteService);
   protected content = viewChild<ElementRef<HTMLDivElement>>("content");

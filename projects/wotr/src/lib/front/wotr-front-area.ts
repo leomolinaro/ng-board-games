@@ -1,16 +1,6 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-  viewChild
-} from "@angular/core";
-import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
-import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
-import { TuiHint } from "@taiga-ui/core";
+import { Component, computed, effect, inject, input, output, signal } from "@angular/core";
+import { arrayUtil, BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
+import { TuiButton, tuiButtonOptionsProvider, TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCardId } from "../card/wotr-card-models";
 import { WotrCardTooltipService } from "../card/wotr-card-tooltip.service";
@@ -42,109 +32,132 @@ function initValidUnits(): ValidUnits {
 
 @Component({
   selector: "wotr-front-area",
-  imports: [MatTabsModule, BgTransformPipe, TuiHint],
+  imports: [BgTransformPipe, TuiButton, TuiHint],
+  providers: [tuiButtonOptionsProvider({ appearance: "flat", size: "xs" })],
   template: `
-    <mat-tab-group [selectedIndex]="selectedTabIndex()">
-      <mat-tab label="Cards">
-        <div class="cards">
-          @for (card of sortedHandCards(); track card) {
-            <img
-              class="card-preview-image"
-              [src]="card | bgTransform: cardPreviewImage"
-              [tuiHint]="cardTooltip.hint(card)"
-              [tuiHintAppearance]="cardTooltip.appearance"
-              (mouseenter)="cardTooltip.preload(card)"
-              (click)="cardClick.emit(card)" />
-          }
-        </div>
-      </mat-tab>
-      <mat-tab label="Reinforcements">
-        <div class="reinforcements">
-          @for (nation of nations(); track nation.id) {
-            @let validUnits = reinforcementUnitSelection()?.[nation.id];
-            @for (i of nation.reinforcements.regular | bgTransform: range; track i) {
+    <header>
+      <button
+        tuiButton
+        [class.is-active]="activeTabId === 'cards'"
+        (click)="activeTabId = 'cards'">
+        Cards
+      </button>
+      <button
+        tuiButton
+        [class.is-active]="activeTabId === 'reinforcements'"
+        (click)="activeTabId = 'reinforcements'">
+        Reinforcements
+      </button>
+      <button
+        tuiButton
+        [class.is-active]="activeTabId === 'casualties'"
+        (click)="activeTabId = 'casualties'">
+        Casualties
+      </button>
+    </header>
+    <main>
+      @switch (activeTabId) {
+        @case ("cards") {
+          <div class="cards">
+            @for (card of sortedHandCards(); track card) {
               <img
-                class="reinforcement-unit"
-                [class]="{
-                  disabled: validUnits && !validUnits.regulars,
-                  selectable: validUnits && validUnits.regulars
-                }"
-                [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
-                [tuiHint]="nation.regularLabel"
-                (click)="onReinforcementUnitSelect('regular', nation.id)" />
+                class="card-preview-image"
+                [src]="card | bgTransform: cardPreviewImage"
+                [tuiHint]="cardTooltip.hint(card)"
+                [tuiHintAppearance]="cardTooltip.appearance"
+                (mouseenter)="cardTooltip.preload(card)"
+                (click)="cardClick.emit(card)" />
             }
-            @for (i of nation.reinforcements.elite | bgTransform: range; track i) {
-              <img
-                class="reinforcement-unit"
-                [class]="{
-                  disabled: validUnits && !validUnits.elites,
-                  selectable: validUnits && validUnits.elites
-                }"
-                [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
-                [tuiHint]="nation.eliteLabel"
-                (click)="onReinforcementUnitSelect('elite', nation.id)" />
+          </div>
+        }
+        @case ("reinforcements") {
+          <div class="reinforcements">
+            @for (nation of nations(); track nation.id) {
+              @let validUnits = reinforcementUnitSelection()?.[nation.id];
+              @for (i of nation.reinforcements.regular | bgTransform: range; track i) {
+                <img
+                  class="reinforcement-unit"
+                  [class]="{
+                    disabled: validUnits && !validUnits.regulars,
+                    selectable: validUnits && validUnits.regulars
+                  }"
+                  [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
+                  [tuiHint]="nation.regularLabel"
+                  (click)="onReinforcementUnitSelect('regular', nation.id)" />
+              }
+              @for (i of nation.reinforcements.elite | bgTransform: range; track i) {
+                <img
+                  class="reinforcement-unit"
+                  [class]="{
+                    disabled: validUnits && !validUnits.elites,
+                    selectable: validUnits && validUnits.elites
+                  }"
+                  [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
+                  [tuiHint]="nation.eliteLabel"
+                  (click)="onReinforcementUnitSelect('elite', nation.id)" />
+              }
+              @for (i of nation.reinforcements.leader | bgTransform: range; track i) {
+                <img
+                  class="reinforcement-unit"
+                  [class]="{
+                    disabled: validUnits && !validUnits.leaders,
+                    selectable: validUnits && validUnits.leaders
+                  }"
+                  [src]="nation.id | bgTransform: leaderImage"
+                  [tuiHint]="nation.leaderLabel"
+                  (click)="onReinforcementUnitSelect('leader', nation.id)" />
+              }
+              @for (i of nation.reinforcements.nazgul | bgTransform: range; track i) {
+                <img
+                  class="reinforcement-unit"
+                  [class]="{
+                    disabled: validUnits && !validUnits.nazgul,
+                    selectable: validUnits && validUnits.nazgul
+                  }"
+                  [src]="nation.id | bgTransform: nazgulImage"
+                  tuiHint="Nazgul"
+                  (click)="onReinforcementUnitSelect('nazgul', nation.id)" />
+              }
             }
-            @for (i of nation.reinforcements.leader | bgTransform: range; track i) {
-              <img
-                class="reinforcement-unit"
-                [class]="{
-                  disabled: validUnits && !validUnits.leaders,
-                  selectable: validUnits && validUnits.leaders
-                }"
-                [src]="nation.id | bgTransform: leaderImage"
-                [tuiHint]="nation.leaderLabel"
-                (click)="onReinforcementUnitSelect('leader', nation.id)" />
+            @for (character of frontCharacters(); track character.id) {
+              @if (character.status === "available") {
+                <img
+                  [src]="character.id | bgTransform: characterImage"
+                  [tuiHint]="character.name" />
+              }
             }
-            @for (i of nation.reinforcements.nazgul | bgTransform: range; track i) {
-              <img
-                class="reinforcement-unit"
-                [class]="{
-                  disabled: validUnits && !validUnits.nazgul,
-                  selectable: validUnits && validUnits.nazgul
-                }"
-                [src]="nation.id | bgTransform: nazgulImage"
-                tuiHint="Nazgul"
-                (click)="onReinforcementUnitSelect('nazgul', nation.id)" />
+          </div>
+        }
+        @case ("casualties") {
+          <div class="casualties">
+            @for (nation of nations(); track nation.id) {
+              @for (i of nation.casualties.regular | bgTransform: range; track i) {
+                <img
+                  [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
+                  [tuiHint]="nation.regularLabel" />
+              }
+              @for (i of nation.casualties.elite | bgTransform: range; track i) {
+                <img
+                  [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
+                  [tuiHint]="nation.eliteLabel" />
+              }
+              @for (i of nation.casualties.leader | bgTransform: range; track i) {
+                <img
+                  [src]="nation.id | bgTransform: leaderImage"
+                  [tuiHint]="nation.leaderLabel" />
+              }
             }
-          }
-          @for (character of frontCharacters(); track character.id) {
-            @if (character.status === "available") {
-              <img
-                [src]="character.id | bgTransform: characterImage"
-                [tuiHint]="character.name" />
+            @for (character of frontCharacters(); track character.id) {
+              @if (character.status === "eliminated") {
+                <img
+                  [src]="character.id | bgTransform: characterImage"
+                  [tuiHint]="character.name" />
+              }
             }
-          }
-        </div>
-      </mat-tab>
-      <mat-tab label="Casualties">
-        <div class="casualties">
-          @for (nation of nations(); track nation.id) {
-            @for (i of nation.casualties.regular | bgTransform: range; track i) {
-              <img
-                [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
-                [tuiHint]="nation.regularLabel" />
-            }
-            @for (i of nation.casualties.elite | bgTransform: range; track i) {
-              <img
-                [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
-                [tuiHint]="nation.eliteLabel" />
-            }
-            @for (i of nation.casualties.leader | bgTransform: range; track i) {
-              <img
-                [src]="nation.id | bgTransform: leaderImage"
-                [tuiHint]="nation.leaderLabel" />
-            }
-          }
-          @for (character of frontCharacters(); track character.id) {
-            @if (character.status === "eliminated") {
-              <img
-                [src]="character.id | bgTransform: characterImage"
-                [tuiHint]="character.name" />
-            }
-          }
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+          </div>
+        }
+      }
+    </main>
   `,
   styles: [
     `
@@ -153,8 +166,24 @@ function initValidUnits(): ValidUnits {
       :host {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
+        flex: 1;
+        overflow: hidden;
+      }
+      header {
+        display: flex;
+        background-color: transparent;
+
+        button {
+          flex: 1;
+          border-radius: 0;
+          &.is-active {
+            color: $color;
+          }
+        }
+      }
+      main {
+        overflow: auto;
+        flex: 1;
       }
       .cards {
         margin-top: 5px;
@@ -162,21 +191,6 @@ function initValidUnits(): ValidUnits {
           cursor: pointer;
           &:not(:last-child) {
             margin-right: 5px;
-          }
-        }
-      }
-
-      mat-tab-group {
-        overflow: auto;
-        ::ng-deep {
-          .mat-mdc-tab-header {
-            --mat-tab-container-height: 25px;
-          }
-          .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-            color: var(--wotr-front-color);
-          }
-          .mat-mdc-tab .mdc-tab-indicator__content--underline {
-            display: none;
           }
         }
       }
@@ -198,6 +212,8 @@ export class WotrFrontArea {
   protected cardTooltip = inject(WotrCardTooltipService);
   protected ui = inject(WotrGameUi);
 
+  protected activeTabId = "cards";
+
   front = input.required<WotrFront>();
   nations = input.required<WotrNation[]>();
   characters = input<WotrCharacter[]>();
@@ -207,8 +223,6 @@ export class WotrFrontArea {
   });
 
   cardClick = output<WotrCardId>();
-
-  protected tabGroup = viewChild(MatTabGroup);
 
   private handCards = computed(() => this.front().handCards);
   protected sortedHandCards = computed(() => {

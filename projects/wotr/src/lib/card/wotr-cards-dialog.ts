@@ -1,7 +1,6 @@
 import { Component, computed, HostListener, inject, signal } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { TuiHint } from "@taiga-ui/core";
+import { injectDialogContext } from "../../../../commons/src";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCardSelection } from "../game/wotr-game-ui";
 import { WotrCardId } from "./wotr-card-models";
@@ -15,15 +14,15 @@ export interface WotrCardsDialogData {
 
 @Component({
   selector: "wotr-cards-dialog",
-  imports: [BgTransformPipe, TuiHint],
+  imports: [BgTransformPipe],
   template: `
     <div class="cards-container">
       @for (cardId of cardIds; track cardId) {
+        <!-- [tuiHint]="cardTooltip.hint(cardId)"
+          [tuiHintAppearance]="cardTooltip.appearance" -->
         <img
           class="card"
           [src]="cardId | bgTransform: cardImage"
-          [tuiHint]="cardTooltip.hint(cardId)"
-          [tuiHintAppearance]="cardTooltip.appearance"
           [class]="{
             focused: cardId === focusedCardId,
             selected: data.selectableCards && selectedCards().includes(cardId),
@@ -47,9 +46,17 @@ export interface WotrCardsDialogData {
   styles: [
     `
       @use "wotr-variables" as wotr;
+
+      ::ng-deep {
+        [data-appearance="wotr-cards-dialog"] {
+          width: 100%;
+          background-color: transparent;
+          overflow: visible;
+        }
+      }
+
       .cards-container {
-        // margin-left: 350px;
-        // width: calc(100% - 350px);
+        overflow: visible;
         padding-right: 250px;
         overflow-x: auto;
         padding-top: 20px;
@@ -108,10 +115,10 @@ export interface WotrCardsDialogData {
   ]
 })
 export class WotrCardsDialog {
-  protected data = inject<WotrCardsDialogData>(MAT_DIALOG_DATA);
+  readonly context = injectDialogContext<WotrCardsDialogData, WotrCardId[]>();
+  protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
   protected cardTooltip = inject(WotrCardTooltipService);
-  private dialogRef = inject(MatDialogRef<WotrCardsDialog, undefined | WotrCardId[]>);
 
   constructor() {
     this.cardIds = this.data.cardIds.slice();
@@ -137,7 +144,7 @@ export class WotrCardsDialog {
 
   onConfirm() {
     if (!this.canConfirm()) return;
-    this.dialogRef.close(this.selectedCards());
+    this.context.complete(this.selectedCards());
   }
 
   @HostListener("mouseover", ["$event"])

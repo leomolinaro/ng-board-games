@@ -5,10 +5,14 @@ ARCHITECTURE
 [] copyright
 [] remove angular material and use taiga ui
 [] remove ngClass, ngStyle
+[] angular closing tag
 [] prettier defaults
 [] remove fa fa fonts
 [] reduce/remove rxjs
+[] remove NgLetDirective
+[] review bg commons components
 [] remove ignoreDeprecations strictInputTypes
+[] Eslint e hooks
 
 WOTR
 [] refactor logs

@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { injectDialogContext } from "@leobg/commons";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
@@ -13,11 +13,6 @@ export interface WotrFellowshipDialogData {
 }
 
 export type WotrFellowshipDialogResult = WotrCompanionId[];
-
-export type WotrFellowshipDialogRef = MatDialogRef<
-  WotrFellowshipDialog,
-  WotrFellowshipDialogResult
->;
 
 export interface CompanionNode {
   id: WotrCompanionId;
@@ -34,7 +29,6 @@ export interface CompanionNode {
   selector: "wotr-fellowship-dialog",
   imports: [TuiHint],
   template: `
-    <h1>Fellowship</h1>
     <div>
       @for (unitNode of unitNodes; track unitNode.id) {
         <img
@@ -96,9 +90,9 @@ export interface CompanionNode {
   ]
 })
 export class WotrFellowshipDialog implements OnInit {
-  protected data = inject<WotrFellowshipDialogData>(MAT_DIALOG_DATA);
+  readonly context = injectDialogContext<WotrFellowshipDialogData, WotrFellowshipDialogResult>();
+  protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
-  private dialogRef: WotrFellowshipDialogRef = inject(MatDialogRef);
   private fellowshipStore = inject(WotrFellowshipStore);
   private q = inject(WotrGameQuery);
 
@@ -161,7 +155,7 @@ export class WotrFellowshipDialog implements OnInit {
       }
     }
 
-    this.dialogRef.close(output);
+    this.context.complete(output);
   }
 
   onUnitClick(unitNode: CompanionNode) {

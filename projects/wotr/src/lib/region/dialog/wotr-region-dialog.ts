@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { injectDialogContext } from "@leobg/commons";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
 import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
@@ -12,7 +13,6 @@ import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrRegion } from "../wotr-region-models";
 import { UnitNode } from "./wotr-region-unit-node";
 import { WotrRegionUnitSelection, selectionModeFactory } from "./wotr-region-unit-selection";
-import { TuiHint } from "@taiga-ui/core";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -26,13 +26,10 @@ export interface WotrRegionDialogData {
 export type WotrRegionDialogResult =
   true | WotrUnits | { removing: WotrUnits; downgrading: WotrUnits };
 
-export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialogResult>;
-
 @Component({
   selector: "wotr-region-dialog",
   imports: [TuiHint],
   template: `
-    <h1>{{ data.region.name }}</h1>
     <div [class]="{ 'unit-selection-active': data.unitSelection }">
       @for (unitNode of unitNodes; track unitNode.id) {
         <img
@@ -102,9 +99,9 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialo
   ]
 })
 export class WotrRegionDialog implements OnInit {
-  protected data = inject<WotrRegionDialogData>(MAT_DIALOG_DATA);
+  readonly context = injectDialogContext<WotrRegionDialogData, WotrRegionDialogResult>();
+  protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
-  private dialogRef: WotrRegionDialogRef = inject(MatDialogRef);
   private q = inject(WotrGameQuery);
   private unitModifiers = inject(WotrUnitModifiers);
   private unitUtils = inject(WotrUnitUtils);
@@ -255,7 +252,7 @@ export class WotrRegionDialog implements OnInit {
             this.addNodeToUnits(unitNode, removedUnits);
           }
         }
-        this.dialogRef.close({ removing: removedUnits, downgrading: downgradedUnits });
+        this.context.complete({ removing: removedUnits, downgrading: downgradedUnits });
       } else {
         const selectedUnits: WotrUnits = {};
         for (const unitNode of this.unitNodes) {
@@ -263,10 +260,10 @@ export class WotrRegionDialog implements OnInit {
             this.addNodeToUnits(unitNode, selectedUnits);
           }
         }
-        this.dialogRef.close(selectedUnits);
+        this.context.complete(selectedUnits);
       }
     } else if (this.data.regionSelection) {
-      this.dialogRef.close(true);
+      this.context.complete(true);
     }
   }
 
@@ -279,7 +276,7 @@ export class WotrRegionDialog implements OnInit {
           regular.quantity++;
         } else {
           units.regulars.push({
-            nation: unitNode.nationId!,
+            nation: unitNode.nationId,
             quantity: 1
           });
         }
@@ -292,7 +289,7 @@ export class WotrRegionDialog implements OnInit {
           elite.quantity++;
         } else {
           units.elites.push({
-            nation: unitNode.nationId!,
+            nation: unitNode.nationId,
             quantity: 1
           });
         }
@@ -305,7 +302,7 @@ export class WotrRegionDialog implements OnInit {
           leader.quantity++;
         } else {
           units.leaders.push({
-            nation: unitNode.nationId!,
+            nation: unitNode.nationId,
             quantity: 1
           });
         }
