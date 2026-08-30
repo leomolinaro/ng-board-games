@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BgUser } from "@leobg/commons";
-import { BgStore, arrayUtil, immutableUtil } from "@leobg/commons/utils";
+import { arrayUtil, BgStore, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import {
   BaronyColor,
@@ -82,13 +82,10 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     this.notTemporaryState = this.get();
   }
   endTemporaryState() {
-    if (this.notTemporaryState) {
-      const state = this.notTemporaryState;
-      this.update("End temporary state", s => ({ ...state }));
-      this.notTemporaryState = null;
-    } else {
-      throw new Error("endTemporaryState without startTemporaryState");
-    }
+    if (!this.notTemporaryState) throw new Error("endTemporaryState without startTemporaryState");
+    const state = this.notTemporaryState;
+    this.update("End temporary state", s => ({ ...state }));
+    this.notTemporaryState = null;
   }
 
   getGameId(): string {

@@ -1,7 +1,7 @@
 import { AsyncPipe } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { BaronyBoardComponent } from "../barony-board/barony-board.component";
+import { BaronyBoard } from "../barony-board/barony-board";
 import {
   BaronyAction,
   BaronyBuilding,
@@ -16,7 +16,8 @@ import { BaronyPlayerLocalService } from "./barony-player-local.service";
 import { BaronyUiStore } from "./barony-ui.store";
 
 @Component({
-  selector: "barony-game",
+  selector: "barony-game-page",
+  imports: [BaronyBoard, AsyncPipe],
   template: `
     <barony-board
       [lands]="lands$ | async"
@@ -43,17 +44,15 @@ import { BaronyUiStore } from "./barony-ui.store";
       (resourceSelect)="onResourceSelect($event)">
     </barony-board>
   `,
-  styleUrls: ["./barony-game.component.scss"],
   providers: [
     BaronyGameStore,
     BaronyUiStore,
     BaronyPlayerAiService,
     BaronyPlayerLocalService,
     BaronyGameService
-  ],
-  imports: [BaronyBoardComponent, AsyncPipe]
+  ]
 })
-export class BaronyGameComponent implements OnInit {
+export class BaronyGamePage implements OnInit {
   private game = inject(BaronyGameStore);
   protected ui = inject(BaronyUiStore);
   private route = inject(ActivatedRoute);

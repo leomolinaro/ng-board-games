@@ -35,7 +35,7 @@ import { BaronyBuilding, BaronyPlayer } from "../barony-models";
   `,
   imports: []
 })
-export class BaronyBuildingsSelectorComponent implements OnChanges {
+export class BaronyBuildingsSelector implements OnChanges {
   constructor() {}
 
   readonly buildings = input.required<BaronyBuilding[]>();

@@ -84,7 +84,7 @@ import { TuiIcon } from "@taiga-ui/core";
     }
   `
 })
-export class BaronyKnightsSelectorComponent implements OnChanges {
+export class BaronyKnightsSelector implements OnChanges {
   constructor() {}
 
   readonly number = input.required<number>();

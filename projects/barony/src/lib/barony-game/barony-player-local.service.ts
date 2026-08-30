@@ -42,41 +42,42 @@ export class BaronyPlayerLocalService {
           action: "recruitment",
           land: result.land.coordinates,
           numberOfKnights: result.numberOfKnights
-        } as BaronyTurnRectruitment;
+        } satisfies BaronyTurnRectruitment;
       }
       case "movement": {
         const movements = await this.chooseMovements(playerId);
         return {
           action: "movement",
           movements: movements
-        } as BaronyTurnMovement;
+        } satisfies BaronyTurnMovement;
       }
       case "construction": {
         const constructions = await this.chooseConstructions(playerId, null);
         return {
+          action: "construction",
           constructions: constructions
-        } as BaronyTurnConstruction;
+        } satisfies BaronyTurnConstruction;
       }
       case "newCity": {
         const land = await this.chooseNewCity(playerId);
         return {
           action: "newCity",
           land: land.coordinates
-        } as BaronyTurnNewCity;
+        } satisfies BaronyTurnNewCity;
       }
       case "expedition": {
         const land = await this.chooseExpedition(playerId);
         return {
           action: "expedition",
           land: land.coordinates
-        } as BaronyTurnExpedition;
+        } satisfies BaronyTurnExpedition;
       }
       case "nobleTitle": {
         const resources = await this.chooseNobleTitle(playerId);
         return {
           action: "nobleTitle",
           discardedResources: resources
-        } as BaronyTurnNobleTitle;
+        } satisfies BaronyTurnNobleTitle;
       }
       default:
         throw new Error("TODO");

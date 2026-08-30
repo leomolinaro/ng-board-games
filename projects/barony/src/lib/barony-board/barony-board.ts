@@ -1,15 +1,7 @@
 import { NgClass } from "@angular/common";
-import {
-  Component,
-  TemplateRef,
-  effect,
-  inject,
-  input,
-  linkedSignal,
-  output,
-  viewChild
-} from "@angular/core";
-import { TuiDialogService, TuiIcon } from "@taiga-ui/core";
+import { Component, effect, inject, input, linkedSignal, output } from "@angular/core";
+import { BgDialogService, BgMapZoomButtons } from "@leobg/commons";
+import { TuiIcon } from "@taiga-ui/core";
 import {
   BaronyAction,
   BaronyBuilding,
@@ -19,42 +11,40 @@ import {
   BaronyPlayer,
   BaronyResourceType
 } from "../barony-models";
-import { BaronyActionsComponent } from "./barony-actions.component";
-import { BaronyBuildingsSelectorComponent } from "./barony-buildings-selector.component";
-import { BaronyEndGameComponent } from "./barony-end-game/barony-end-game.component";
-import { BaronyKnightsSelectorComponent } from "./barony-knights-selector.component";
-import { BaronyLogsComponent } from "./barony-logs.component";
-import { BaronyMapComponent } from "./barony-map/barony-map.component";
-import { BaronyPlayerStatusComponent } from "./barony-player-status/barony-player-status.component";
-import { BaronyResourcesSelectorComponent } from "./barony-resources-selector.component";
-import { BaronyScoreboardComponent } from "./barony-scoreboard.component";
-import { BgMapZoomButtons } from "../../../../commons/src";
+import { BaronyActionsArea } from "./barony-actions";
+import { BaronyBuildingsSelector } from "./barony-buildings-selector";
+import { BaronyEndGameDialog } from "./barony-end-game-dialog";
+import { BaronyKnightsSelector } from "./barony-knights-selector";
+import { BaronyLogs } from "./barony-logs";
+import { BaronyMap } from "./barony-map";
+import { BaronyPlayerArea } from "./barony-player-area/barony-player-area";
+import { BaronyResourcesSelector } from "./barony-resources-selector";
+import { BaronyScoreboard } from "./barony-scoreboard";
 
 @Component({
   selector: "barony-board",
-  templateUrl: "./barony-board.component.html",
-  styleUrls: ["./barony-board.component.scss"],
   imports: [
-    BaronyMapComponent,
-    BaronyKnightsSelectorComponent,
-    BaronyBuildingsSelectorComponent,
-    BaronyResourcesSelectorComponent,
-    BaronyActionsComponent,
-    BaronyPlayerStatusComponent,
+    BaronyMap,
+    BaronyKnightsSelector,
+    BaronyBuildingsSelector,
+    BaronyResourcesSelector,
+    BaronyActionsArea,
+    BaronyPlayerArea,
     BgMapZoomButtons,
-    BaronyScoreboardComponent,
-    BaronyLogsComponent,
+    BaronyScoreboard,
+    BaronyLogs,
     NgClass,
-    BaronyEndGameComponent,
     TuiIcon
-  ]
+  ],
+  templateUrl: "./barony-board.html",
+  styleUrls: ["./barony-board.scss"]
 })
-export class BaronyBoardComponent {
+export class BaronyBoard {
   constructor() {
     effect(() => this.openEndGameDialog());
   }
 
-  private readonly dialogs = inject(TuiDialogService);
+  private readonly dialogs = inject(BgDialogService);
 
   readonly lands = input.required<BaronyLand[]>();
   readonly logs = input.required<BaronyLog[]>();
@@ -82,8 +72,6 @@ export class BaronyBoardComponent {
   readonly cancelClick = output<void>();
   readonly knightsConfirm = output<number>();
   readonly resourceSelect = output<BaronyResourceType>();
-
-  protected endGameDialog = viewChild.required<TemplateRef<void>>("endGameDialog");
 
   protected summaryFixed = false;
   protected logsFixed = false;
@@ -120,6 +108,14 @@ export class BaronyBoardComponent {
 
   private openEndGameDialog() {
     if (!this.endGame()) return;
-    this.dialogs.open(this.endGameDialog(), { size: "l" }).subscribe();
+    this.dialogs
+      .open(BaronyEndGameDialog, {
+        label: "End Game",
+        data: {
+          players: this.players()
+        },
+        size: "l"
+      })
+      .then(() => {});
   }
 }

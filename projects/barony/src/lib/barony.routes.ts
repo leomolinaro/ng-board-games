@@ -1,9 +1,9 @@
 import { Routes } from "@angular/router";
-import { BaronyGameComponent } from "./barony-game/barony-game.component";
+import { BaronyGamePage } from "./barony-game/barony-game-page";
 import { BaronyHomeComponent } from "./barony-home/barony-home.component";
 
 export const routes: Routes = [
   { path: "", component: BaronyHomeComponent },
-  { path: "game/:gameId", component: BaronyGameComponent },
+  { path: "game/:gameId", component: BaronyGamePage },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];

@@ -1,13 +1,14 @@
 import { Component, ElementRef, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BaronyLog } from "../barony-models";
-import { BaronyLogComponent } from "./barony-log.component";
+import { BaronyLogRow } from "./barony-log-row";
 
 @Component({
   selector: "barony-logs",
+  imports: [BaronyLogRow],
   template: `
     @for (log of logs(); track log) {
-      <barony-log [log]="log"></barony-log>
+      <barony-log-row [log]="log"></barony-log-row>
     }
   `,
   styles: [
@@ -20,15 +21,14 @@ import { BaronyLogComponent } from "./barony-log.component";
         color: white;
       }
     `
-  ],
-  imports: [BaronyLogComponent]
+  ]
 })
-export class BaronyLogsComponent implements OnChanges {
+export class BaronyLogs implements OnChanges {
   private elementRef = inject(ElementRef);
 
   readonly logs = input.required<BaronyLog[]>();
 
-  ngOnChanges(changes: SimpleChanges<BaronyLogsComponent>) {
+  ngOnChanges(changes: SimpleChanges<BaronyLogs>) {
     if (changes.logs) {
       setTimeout(
         () => (this.elementRef.nativeElement.scrollTop = this.elementRef.nativeElement.scrollHeight)

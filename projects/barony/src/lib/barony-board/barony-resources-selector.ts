@@ -35,7 +35,7 @@ import { BaronyResourceType } from "../barony-models";
   `,
   imports: []
 })
-export class BaronyResourcesSelectorComponent implements OnChanges {
+export class BaronyResourcesSelector implements OnChanges {
   constructor() {}
 
   readonly resources = input.required<BaronyResourceType[]>();

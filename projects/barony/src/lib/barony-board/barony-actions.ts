@@ -5,7 +5,7 @@ import { BARONY_ACTIONS } from "../barony-constants";
 import { BaronyAction } from "../barony-models";
 
 @Component({
-  selector: "barony-actions",
+  selector: "barony-actions-area",
   template: `
     <div class="b-actions">
       <button
@@ -73,7 +73,7 @@ import { BaronyAction } from "../barony-models";
   `,
   imports: [NgClass]
 })
-export class BaronyActionsComponent implements OnChanges {
+export class BaronyActionsArea implements OnChanges {
   constructor() {}
 
   readonly validActions = input<BaronyAction[] | null>(null);

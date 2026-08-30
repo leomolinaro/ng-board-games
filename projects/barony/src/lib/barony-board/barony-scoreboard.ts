@@ -41,7 +41,7 @@ interface BaronyCounterNode {
   `,
   imports: [BgSvg]
 })
-export class BaronyScoreboardComponent implements OnChanges {
+export class BaronyScoreboard implements OnChanges {
   constructor() {}
 
   players = input.required<BaronyPlayer[]>();

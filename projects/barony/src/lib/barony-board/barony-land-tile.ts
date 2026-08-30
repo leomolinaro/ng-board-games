@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { Component, OnChanges, input, output } from "@angular/core";
+import { Component, OnChanges, computed, input, output } from "@angular/core";
 import { Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
 import {
@@ -8,7 +8,7 @@ import {
   BaronyLandType,
   BaronyPawn,
   BaronyPawnType
-} from "../../barony-models";
+} from "../barony-models";
 import { BaronyLandCoordinatesPipe, hexToCartesian } from "./barony-land-tile-coordinates.pipe";
 
 interface BaronyPawnNode {
@@ -24,8 +24,98 @@ interface BaronyPawnNode {
 
 @Component({
   selector: "[baronyLandTile]",
-  templateUrl: "./barony-land-tile.component.html",
-  styleUrls: ["./barony-land-tile.component.scss"],
+  template: `
+    <svg:g
+      class="b-land-tile"
+      [ngClass]="{
+        'is-active': active(),
+        'is-disabled': disabled()
+      }"
+      (click)="onLandTileClick()">
+      <svg:polygon
+        class="b-land-tile-polygon"
+        [attr.id]="coordinates().x + ' ' + coordinates().y + ' ' + coordinates().z"
+        [attr.points]="coordinates() | baronyLandTileCoordinates: 'hexagon'"
+        [attr.fill]="url()"></svg:polygon>
+
+      @if (active()) {
+        <svg:circle
+          class="b-land-tile-active-signal"
+          [attr.cx]="coordinates() | baronyLandTileCoordinates: 'center-x'"
+          [attr.cy]="coordinates() | baronyLandTileCoordinates: 'center-y'"
+          [attr.r]="activeCircleRadius"
+          stroke="black"
+          stroke-width="0.03"
+          fill="transparent" />
+      }
+
+      @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+        <svg:image
+          [attr.width]="pawnWidth"
+          [attr.height]="pawnHeight"
+          preserveAspectRatio="none"
+          [attr.xlink:href]="pawnNode.href"
+          [attr.x]="pawnNode.x"
+          [attr.y]="pawnNode.y"></svg:image>
+      }
+
+      @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+        <ng-container>
+          @if (pawnNode.quantity > 1) {
+            <svg:text
+              class="b-land-tile-pawn-quantity"
+              [attr.x]="pawnNode.xText"
+              [attr.y]="pawnNode.yText">
+              {{ pawnNode.quantity }}
+            </svg:text>
+          }
+        </ng-container>
+      }
+    </svg:g>
+  `,
+  styles: `
+    @use "bg-variables" as bg;
+
+    .b-land-tile {
+      &.is-active {
+        cursor: pointer;
+      }
+      &.is-disabled {
+        fill-opacity: 0.8;
+      }
+      .b-land-tile-polygon {
+        stroke-width: 0.035px;
+        stroke: bg.$background;
+      }
+      .b-land-tile-active-signal {
+        cursor: pointer;
+        stroke: white;
+        // stroke-dasharray: 0.05,0.05;
+        stroke-width: 0.07;
+        // animation: dash 10s linear;
+        stroke-dasharray: 0.5;
+
+        animation-duration: 10s;
+        animation-name: activeSignal;
+        animation-iteration-count: infinite;
+        animation-direction: normal;
+      }
+      .b-land-tile-pawn-quantity {
+        font-size: 0.5px;
+        fill: white;
+        font-weight: 600;
+      }
+    }
+
+    @keyframes activeSignal {
+      from {
+        stroke-dashoffset: 0;
+      }
+      to {
+        stroke-dashoffset: 10;
+      }
+    }
+  `,
   imports: [NgClass, BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
@@ -37,6 +127,8 @@ export class BaronyLandComponent implements OnChanges {
   readonly active = input<boolean>(false);
   readonly disabled = input<boolean>(false);
   readonly landTileClick = output<void>();
+
+  protected url = computed(() => `url('#${this.type()}')`);
 
   @Loading() loading$!: Observable<boolean>;
 

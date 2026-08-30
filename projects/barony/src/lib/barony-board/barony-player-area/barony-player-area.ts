@@ -9,6 +9,7 @@ import {
   output
 } from "@angular/core";
 import { BgAuthService } from "@leobg/commons";
+import { TuiIcon } from "@taiga-ui/core";
 import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../../barony-constants";
 import {
   BaronyBuilding,
@@ -16,7 +17,6 @@ import {
   BaronyPlayer,
   BaronyResourceType
 } from "../../barony-models";
-import { TuiIcon } from "@taiga-ui/core";
 
 interface BaronyPawnNode {
   source: string;
@@ -33,12 +33,12 @@ interface BaronyResourceNode {
 }
 
 @Component({
-  selector: "barony-player-status",
-  templateUrl: "./barony-player-status.component.html",
-  styleUrls: ["./barony-player-status.component.scss"],
-  imports: [NgClass, TuiIcon]
+  selector: "barony-player-area",
+  imports: [NgClass, TuiIcon],
+  templateUrl: "./barony-player-area.html",
+  styleUrls: ["./barony-player-area.scss"]
 })
-export class BaronyPlayerStatusComponent implements OnChanges {
+export class BaronyPlayerArea implements OnChanges {
   private authService = inject(BgAuthService);
 
   readonly player = input.required<BaronyPlayer>();

@@ -1,0 +1,101 @@
+<div class="b-board">
+  <div class="b-board-map-layer">
+    <barony-map
+      #baronyMap
+      [lands]="lands()"
+      [validLands]="validLands()"
+      (landTileClick)="onLandTileClick($event)">
+    </barony-map>
+  </div>
+  <div class="b-board-widgets-layer">
+    @if (message()) { @let p = turnPlayer();
+    <div [class]="'b-board-instructions-widget' + (p ? ' is-' + p.id : '')">
+      <div class="b-board-instructions">{{ message() }}</div>
+      @if (maxNumberOfKnights()) {
+      <barony-knights-selector
+        [(number)]="numberOfKnights"
+        min="1"
+        [max]="maxNumberOfKnights()"
+        (confirm)="onKnightsConfirm()">
+      </barony-knights-selector>
+      } @if (validBuildings()) {
+      <barony-buildings-selector
+        [buildings]="validBuildings()"
+        [player]="currentPlayer()"
+        (buildingClick)="onBuildingSelect($event)">
+      </barony-buildings-selector>
+      } @if (validResources()) {
+      <barony-resources-selector
+        [resources]="validResources()?.resources"
+        (resourceClick)="onResourceSelect($event)">
+      </barony-resources-selector>
+      }
+    </div>
+    } @if (validActions() || canPass() || canCancel()) {
+    <barony-actions-area
+      class="b-board-actions-widget"
+      [canPass]="canPass()"
+      [canCancel]="canCancel()"
+      [validActions]="validActions()"
+      (actionClick)="onActionClick($event)"
+      (passClick)="onPassClick()"
+      (cancelClick)="onCancelClick()">
+    </barony-actions-area>
+    }
+    <div class="b-board-players-widget">
+      @for (player of players(); track player.id) {
+      <barony-player-area
+        class="b-board-player-widget"
+        (selectPlayer)="onPlayerSelect(player)"
+        [player]="player"
+        [currentPlayer]="player === currentPlayer()">
+      </barony-player-area>
+      }
+    </div>
+    <div class="b-board-extras">
+      @if (zoomFixed) {
+      <bg-map-zoom-buttons
+        class="b-board-zoom-buttons-widget"
+        [controls]="baronyMap.bgMapZoom"></bg-map-zoom-buttons>
+      } @if (summaryFixed) {
+      <img
+        class="b-board-summary-image"
+        src="assets/barony/summary.jpg" />
+      } @if (scoreboardFixed) {
+      <barony-scoreboard
+        class="b-board-scoreboard-widget"
+        [players]="players()"></barony-scoreboard>
+      } @if (logsFixed) {
+      <barony-logs
+        class="b-board-logs-widget"
+        [logs]="logs()"></barony-logs>
+      }
+      <div class="b-board-buttons">
+        <button
+          class="b-board-button"
+          [ngClass]="{ 'is-active': zoomFixed }"
+          (click)="zoomFixed = !zoomFixed">
+          <tui-icon icon="search" />
+        </button>
+        <button
+          class="b-board-button"
+          [ngClass]="{ 'is-active': summaryFixed }"
+          (click)="summaryFixed = !summaryFixed">
+          <tui-icon icon="book-open" />
+        </button>
+        <button
+          class="b-board-button"
+          [ngClass]="{ 'is-active': scoreboardFixed }"
+          (click)="scoreboardFixed = !scoreboardFixed">
+          <tui-icon icon="star" />
+        </button>
+        <button
+          class="b-board-button"
+          [ngClass]="{ 'is-active': logsFixed }"
+          (click)="logsFixed = !logsFixed">
+          <tui-icon icon="file-text" />
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
