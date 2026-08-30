@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -10,7 +9,6 @@ import {
   viewChild
 } from "@angular/core";
 import { MatTabGroup, MatTabsModule } from "@angular/material/tabs";
-import { MatTooltip } from "@angular/material/tooltip";
 import { BgTransformFn, BgTransformPipe, arrayUtil } from "@leobg/commons/utils";
 import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
@@ -44,7 +42,7 @@ function initValidUnits(): ValidUnits {
 
 @Component({
   selector: "wotr-front-area",
-  imports: [MatTabsModule, BgTransformPipe, MatTooltip, TuiHint],
+  imports: [MatTabsModule, BgTransformPipe, TuiHint],
   template: `
     <mat-tab-group [selectedIndex]="selectedTabIndex()">
       <mat-tab label="Cards">
@@ -72,7 +70,7 @@ function initValidUnits(): ValidUnits {
                   selectable: validUnits && validUnits.regulars
                 }"
                 [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
-                [matTooltip]="nation.regularLabel"
+                [tuiHint]="nation.regularLabel"
                 (click)="onReinforcementUnitSelect('regular', nation.id)" />
             }
             @for (i of nation.reinforcements.elite | bgTransform: range; track i) {
@@ -83,7 +81,7 @@ function initValidUnits(): ValidUnits {
                   selectable: validUnits && validUnits.elites
                 }"
                 [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
-                [matTooltip]="nation.eliteLabel"
+                [tuiHint]="nation.eliteLabel"
                 (click)="onReinforcementUnitSelect('elite', nation.id)" />
             }
             @for (i of nation.reinforcements.leader | bgTransform: range; track i) {
@@ -94,7 +92,7 @@ function initValidUnits(): ValidUnits {
                   selectable: validUnits && validUnits.leaders
                 }"
                 [src]="nation.id | bgTransform: leaderImage"
-                [matTooltip]="nation.leaderLabel"
+                [tuiHint]="nation.leaderLabel"
                 (click)="onReinforcementUnitSelect('leader', nation.id)" />
             }
             @for (i of nation.reinforcements.nazgul | bgTransform: range; track i) {
@@ -105,7 +103,7 @@ function initValidUnits(): ValidUnits {
                   selectable: validUnits && validUnits.nazgul
                 }"
                 [src]="nation.id | bgTransform: nazgulImage"
-                matTooltip="Nazgul"
+                tuiHint="Nazgul"
                 (click)="onReinforcementUnitSelect('nazgul', nation.id)" />
             }
           }
@@ -113,7 +111,7 @@ function initValidUnits(): ValidUnits {
             @if (character.status === "available") {
               <img
                 [src]="character.id | bgTransform: characterImage"
-                [matTooltip]="character.name" />
+                [tuiHint]="character.name" />
             }
           }
         </div>
@@ -124,24 +122,24 @@ function initValidUnits(): ValidUnits {
             @for (i of nation.casualties.regular | bgTransform: range; track i) {
               <img
                 [src]="nation.id | bgTransform: armyUnitImage : 'regular'"
-                [matTooltip]="nation.regularLabel" />
+                [tuiHint]="nation.regularLabel" />
             }
             @for (i of nation.casualties.elite | bgTransform: range; track i) {
               <img
                 [src]="nation.id | bgTransform: armyUnitImage : 'elite'"
-                [matTooltip]="nation.eliteLabel" />
+                [tuiHint]="nation.eliteLabel" />
             }
             @for (i of nation.casualties.leader | bgTransform: range; track i) {
               <img
                 [src]="nation.id | bgTransform: leaderImage"
-                [matTooltip]="nation.leaderLabel" />
+                [tuiHint]="nation.leaderLabel" />
             }
           }
           @for (character of frontCharacters(); track character.id) {
             @if (character.status === "eliminated") {
               <img
                 [src]="character.id | bgTransform: characterImage"
-                [matTooltip]="character.name" />
+                [tuiHint]="character.name" />
             }
           }
         </div>
@@ -193,8 +191,7 @@ function initValidUnits(): ValidUnits {
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrFrontArea {
   protected assets = inject(WotrAssetsStore);

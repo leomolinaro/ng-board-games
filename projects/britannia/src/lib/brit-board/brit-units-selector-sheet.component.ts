@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from "@angular/core";
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from "@angular/material/bottom-sheet";
+import { Component, OnInit, inject } from "@angular/core";
+import { TuiDialogContext } from "@taiga-ui/core";
+import { injectContext } from "@taiga-ui/polymorpheus";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritAreaUnit } from "../brit-game-state.models";
 import { BritUnitsSelectorComponent } from "../brit-units-selector/brit-units-selector.component";
@@ -22,13 +23,12 @@ export interface BritUnitsSelectorSheetInput {
     </brit-units-selector>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BritUnitsSelectorComponent]
 })
 export class BritUnitsSelectorSheetComponent implements OnInit {
-  private bottomSheetRef =
-    inject<MatBottomSheetRef<BritUnitsSelectorSheetComponent, number>>(MatBottomSheetRef);
-  data = inject<BritUnitsSelectorSheetInput>(MAT_BOTTOM_SHEET_DATA);
+  private readonly context =
+    injectContext<TuiDialogContext<number | undefined, BritUnitsSelectorSheetInput>>();
+  data = this.context.data;
   private assetsService = inject(BritAssetsService);
 
   imageSource!: string;
@@ -43,10 +43,10 @@ export class BritUnitsSelectorSheetComponent implements OnInit {
   }
 
   onCloseClick() {
-    this.bottomSheetRef.dismiss();
+    this.context.completeWith(undefined);
   }
 
   onConfirm() {
-    this.bottomSheetRef.dismiss(this.quantity);
+    this.context.completeWith(this.quantity);
   }
 }

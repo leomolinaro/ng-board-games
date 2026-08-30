@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   ViewChild,
@@ -103,8 +102,7 @@ const GRID_STEP = 10;
     <!-- @if (isDevMode) {
       <button style="position: absolute; bottom: 0; left: 0;" (click)="calculateSlots ()">Calculate slots</button>
     } -->
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrMap {
   private mapService = inject(WotrMapService);

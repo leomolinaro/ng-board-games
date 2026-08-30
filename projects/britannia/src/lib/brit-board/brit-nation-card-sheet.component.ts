@@ -1,13 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  inject
-} from "@angular/core";
-import { MAT_BOTTOM_SHEET_DATA, MatBottomSheetRef } from "@angular/material/bottom-sheet";
-import { MatIconButton } from "@angular/material/button";
-import { MatIcon } from "@angular/material/icon";
+import { ChangeDetectorRef, Component, OnInit, inject } from "@angular/core";
+import { TuiDialogContext } from "@taiga-ui/core";
+import { injectContext } from "@taiga-ui/polymorpheus";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
@@ -25,12 +18,6 @@ interface BritUnitNode {
     <img
       class="brit-nation-card"
       [src]="nationCardImageSource" />
-    <button
-      mat-icon-button
-      class="brit-nation-card-close-button"
-      (click)="onCloseClick()">
-      <mat-icon>close</mat-icon>
-    </button>
     <div class="brit-nation-units">
       @for (unitNode of unitNodes; track unitNode) {
         <div class="brit-nation-unit">
@@ -50,15 +37,11 @@ interface BritUnitNode {
       :host {
         display: flex;
         flex-direction: column;
+        align-items: center;
         .brit-nation-card {
           max-width: 500px;
           min-width: 30vw;
           height: auto;
-        }
-        .brit-nation-card-close-button {
-          position: absolute;
-          right: 5px;
-          top: 5px;
         }
         .brit-nation-units {
           @include golden-padding(10px);
@@ -80,14 +63,12 @@ interface BritUnitNode {
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconButton, MatIcon]
+  ]
 })
 export class BritNationCardSheetComponent implements OnInit {
-  private bottomSheetRef =
-    inject<MatBottomSheetRef<BritNationCardSheetComponent, void>>(MatBottomSheetRef);
-  data = inject<[BritNationId, BritNationState]>(MAT_BOTTOM_SHEET_DATA);
+  private readonly context =
+    injectContext<TuiDialogContext<void, [BritNationId, BritNationState]>>();
+  data = this.context.data;
   private assetsService = inject(BritAssetsService);
   private components = inject(BritComponentsService);
   private cd = inject(ChangeDetectorRef);
@@ -139,9 +120,5 @@ export class BritNationCardSheetComponent implements OnInit {
         available: 1
       });
     }
-  }
-
-  onCloseClick() {
-    this.bottomSheetRef.dismiss();
   }
 }

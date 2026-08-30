@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, output } from "@angular/core";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { Component, computed, inject, input, output } from "@angular/core";
 import { arrayUtil } from "../../../../commons/utils/src";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../character/wotr-character-models";
@@ -14,7 +13,7 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
 
 @Component({
   selector: "[wotrRegions]",
-  imports: [MatTooltipModule, WotrRegionArea, WotrMordorTrack, WotrStrongholdBox],
+  imports: [WotrRegionArea, WotrMordorTrack, WotrStrongholdBox],
   template: `
     @for (point of testGridPoints; track point) {
       <svg:circle
@@ -52,8 +51,7 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         wotrMordorTrack
         [fellowship]="fellowship()"></svg:g>
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrRegionAreas {
   private mapService = inject(WotrMapService);

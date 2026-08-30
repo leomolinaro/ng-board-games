@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
+import { Component, computed, inject, input } from "@angular/core";
 import { MatTabsModule } from "@angular/material/tabs";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
@@ -87,8 +87,7 @@ import { WotrHuntState } from "./wotr-hunt-store";
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrHuntArea {
   protected assets = inject(WotrAssetsStore);

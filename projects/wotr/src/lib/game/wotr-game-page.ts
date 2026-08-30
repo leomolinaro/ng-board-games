@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Injector,
-  OnDestroy,
-  OnInit,
-  inject,
-  input
-} from "@angular/core";
+import { Component, Injector, OnDestroy, OnInit, inject, input } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgAuthService, type BgUser } from "@leobg/commons";
@@ -80,7 +72,6 @@ import { WotrStoryService } from "./wotr-story-service";
       (replayLast)="reloadPage(false)">
     </wotr-board>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     WotrGameQuery,
     WotrGameStore,

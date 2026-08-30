@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject } from "@angular/core";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { Component, Signal, computed, inject } from "@angular/core";
 import { arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
@@ -33,7 +32,6 @@ const PSTEPWAR = PSTEP1 + PSTEP;
 
 @Component({
   selector: "[wotrPoliticalTrack]",
-  imports: [MatTooltipModule],
   template: `
     @for (politicalNode of politicalNodes(); track politicalNode.id) {
       @let selectable = validNationMap()?.[politicalNode.id];
@@ -74,8 +72,7 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrPoliticalTrack {
   private assets = inject(WotrAssetsStore);

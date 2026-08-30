@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import { Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrFront, WotrFrontId } from "./wotr-front-models";
 
@@ -25,8 +25,7 @@ const OFFSET = 5;
         [attr.y]="victoryMarkerNode.svgY"
         [attr.xlink:href]="victoryMarkerNode.image" />
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrVictoryPointsTrack {
   fronts = input.required<WotrFront[]>();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrFrontStore } from "../front/wotr-front-store";
 
@@ -20,8 +20,7 @@ import { WotrFrontStore } from "../front/wotr-front-store";
         [attr.y]="749"
         [attr.xlink:href]="currentTokenImage()" />
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrCurrentDieBox {
   private assets = inject(WotrAssetsStore);

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -124,8 +123,7 @@ import { WotrReplayButton } from "./wotr-replay-buttons";
       </div>
     </div>
   `,
-  styleUrls: ["./wotr-board.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ["./wotr-board.scss"]
 })
 export class WotrBoard {
   private dialog = inject(MatDialog);

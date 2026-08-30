@@ -19,7 +19,13 @@ p {
 
 [tuiTheme] {
   --tui-stroke-width: 4px;
+  tui-hint {
+    justify-self: baseline; // otherwise the hint is stretched in the grid layout cell of tui-popups
+  }
 }
 [tuiTheme="dark"] {
   --tui-text-action: white !important;
+  // --tui-background-accent-1: black;
+  // --tui-background-accent-1-hover: #6c86e2;
+  // --tui-background-accent-1-pressed: #314692;
 }

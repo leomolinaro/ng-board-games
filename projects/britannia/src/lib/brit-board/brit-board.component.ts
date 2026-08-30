@@ -1,15 +1,10 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  TrackByFunction,
-  inject
-} from "@angular/core";
-import { MatBottomSheet, MatBottomSheetRef } from "@angular/material/bottom-sheet";
+import { Component, TrackByFunction, inject, input, output } from "@angular/core";
+import { BgMapZoomButtons } from "@leobg/commons";
 import { immutableUtil } from "@leobg/commons/utils";
+import { TuiSheetDialogService } from "@taiga-ui/addon-mobile";
+import { TuiIcon } from "@taiga-ui/core";
+import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
 import { Observable } from "rxjs";
 import { BritAreaId, BritNationId } from "../brit-components.models";
 import {
@@ -25,56 +20,52 @@ import { BritPlayerComponent } from "../brit-player/brit-player.component";
 import { BritActionsComponent } from "./brit-actions.component";
 import { BritLogsComponent } from "./brit-logs.component";
 import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
-import {
-  BritUnitsSelectorSheetComponent,
-  BritUnitsSelectorSheetInput
-} from "./brit-units-selector-sheet.component";
-import { BgMapZoomButtons } from "../../../../commons/src";
+import { BritUnitsSelectorSheetComponent } from "./brit-units-selector-sheet.component";
 
 @Component({
   selector: "brit-board",
   templateUrl: "./brit-board.component.html",
   styleUrls: ["./brit-board.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BritMapComponent,
     BritActionsComponent,
     BritPlayerComponent,
     BgMapZoomButtons,
     BritLogsComponent,
-    NgClass
+    NgClass,
+    TuiIcon
   ]
 })
 export class BritBoardComponent {
-  private bottomSheet = inject(MatBottomSheet);
+  private readonly sheets = inject(TuiSheetDialogService);
 
-  @Input() areaStates!: Record<BritAreaId, BritAreaState>;
-  @Input() nationStates!: Record<BritNationId, BritNationState>;
-  @Input() players!: BritPlayer[];
-  @Input() logs!: BritLog[];
-  @Input() turnPlayer: BritPlayer | null = null;
-  @Input() currentPlayer: BritPlayer | null = null;
+  readonly areaStates = input.required<Record<BritAreaId, BritAreaState>>();
+  readonly nationStates = input.required<Record<BritNationId, BritNationState>>();
+  readonly players = input.required<BritPlayer[]>();
+  readonly logs = input.required<BritLog[]>();
+  readonly turnPlayer = input<BritPlayer | null>(null);
+  readonly currentPlayer = input<BritPlayer | null>(null);
   // @Input () otherPlayers!: BaronyPlayer[];
-  @Input() message: string | null = null;
-  @Input() validAreas: BritAreaId[] | null = null;
-  @Input() validUnits: BritAreaUnit[] | null = null;
-  @Input() selectedUnits: BritAreaUnit[] | null = null;
+  readonly message = input<string | null>(null);
+  readonly validAreas = input<BritAreaId[] | null>(null);
+  readonly validUnits = input<BritAreaUnit[] | null>(null);
+  readonly selectedUnits = input<BritAreaUnit[] | null>(null);
   // @Input () validActions: BaronyAction[] | null = null;
   // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
   // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
-  @Input() canPass: boolean = false;
-  @Input() canConfirm: boolean = false;
-  @Input() canCancel: boolean = false;
+  readonly canPass = input<boolean>(false);
+  readonly canConfirm = input<boolean>(false);
+  readonly canCancel = input<boolean>(false);
 
-  @Output() playerSelect = new EventEmitter<BritPlayer>();
+  readonly playerSelect = output<BritPlayer>();
   // @Output () buildingSelect = new EventEmitter<BaronyBuilding> ();
-  @Output() areaClick = new EventEmitter<BritAreaId>();
-  @Output() unitClick = new EventEmitter<BritAreaUnit>();
-  @Output() selectedUnitsChange = new EventEmitter<BritAreaUnit[]>();
+  readonly areaClick = output<BritAreaId>();
+  readonly unitClick = output<BritAreaUnit>();
+  readonly selectedUnitsChange = output<BritAreaUnit[]>();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
-  @Output() passClick = new EventEmitter<void>();
-  @Output() confirmClick = new EventEmitter<void>();
-  @Output() cancelClick = new EventEmitter<void>();
+  readonly passClick = output<void>();
+  readonly confirmClick = output<void>();
+  readonly cancelClick = output<void>();
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
 
@@ -108,36 +99,25 @@ export class BritBoardComponent {
   private lastBottomSheet: "nation-card" | "unit-number-selection" | null = null;
 
   onPlayerNationClick(nationId: BritNationId) {
-    const openedRef: MatBottomSheetRef<
-      BritNationCardSheetComponent,
-      [BritNationId, BritNationState]
-    > | null =
-      this.lastBottomSheet === "nation-card" ? this.bottomSheet._openedBottomSheetRef : null;
-    const nationState = this.nationStates[nationId];
-    if (openedRef) {
-      openedRef.instance.setNation(nationId, nationState);
-    } else {
-      this.lastBottomSheet = "nation-card";
-      this.bottomSheet.open<BritNationCardSheetComponent, [BritNationId, BritNationState], void>(
-        BritNationCardSheetComponent,
-        {
-          data: [nationId, nationState],
-          panelClass: "brit-nation-card-sheet",
-          hasBackdrop: false
-        }
-      );
-    }
+    const nationState = this.nationStates()[nationId];
+    this.lastBottomSheet = "nation-card";
+    this.sheets
+      .open<void>(new PolymorpheusComponent(BritNationCardSheetComponent), {
+        data: [nationId, nationState]
+      })
+      .subscribe();
   }
 
   onUnitClick(unit: BritAreaUnit) {
-    if (this.selectedUnits) {
+    const selectedUnits = this.selectedUnits();
+    if (selectedUnits) {
       const unitId = this.getUnitNodeId(unit);
-      const selectedIndex = this.selectedUnits.findIndex(u => this.getUnitNodeId(u) === unitId);
-      const selectedUnit = selectedIndex >= 0 ? this.selectedUnits[selectedIndex] : null;
+      const selectedIndex = selectedUnits.findIndex(u => this.getUnitNodeId(u) === unitId);
+      const selectedUnit = selectedIndex >= 0 ? selectedUnits[selectedIndex] : null;
       const newSelectedUnits =
         selectedIndex >= 0
-          ? immutableUtil.listRemoveByIndex(selectedIndex, this.selectedUnits)
-          : [...this.selectedUnits];
+          ? immutableUtil.listRemoveByIndex(selectedIndex, selectedUnits)
+          : [...selectedUnits];
       if (unit.type === "leader" || unit.quantity === 1) {
         if (!selectedUnit) {
           newSelectedUnits.push(unit);
@@ -173,15 +153,11 @@ export class BritBoardComponent {
     maxQuantity: number
   ): Observable<number | undefined> {
     this.lastBottomSheet = "unit-number-selection";
-    const ref = this.bottomSheet.open<
-      BritUnitsSelectorSheetComponent,
-      BritUnitsSelectorSheetInput,
-      number
-    >(BritUnitsSelectorSheetComponent, {
-      data: { unit, quantity, maxQuantity },
-      panelClass: "brit-unit-number-selection-sheet",
-      hasBackdrop: true
-    });
-    return ref.afterDismissed();
+    return this.sheets.open<number | undefined>(
+      new PolymorpheusComponent(BritUnitsSelectorSheetComponent),
+      {
+        data: { unit, quantity, maxQuantity }
+      }
+    );
   }
 }

@@ -2,19 +2,20 @@
   <div class="brit-board-map-layer">
     <brit-map
       #britMap
-      [areaStates]="areaStates"
-      [nationStates]="nationStates"
-      [validAreas]="validAreas"
-      [validUnits]="validUnits"
-      [selectedUnits]="selectedUnits"
+      [areaStates]="areaStates()"
+      [nationStates]="nationStates()"
+      [validAreas]="validAreas()"
+      [validUnits]="validUnits()"
+      [selectedUnits]="selectedUnits()"
       (areaClick)="areaClick.emit($event)"
       (unitClick)="onUnitClick($event)">
     </brit-map>
   </div>
   <div class="brit-board-widgets-layer">
-    @if (message) {
-      <div [class]="'brit-board-instructions-widget' + (turnPlayer ? ' is-' + turnPlayer.id : '')">
-        <div class="brit-board-instructions">{{ message }}</div>
+    @if (message()) {
+      @let tp = turnPlayer();
+      <div [class]="'brit-board-instructions-widget' + (tp ? ' is-' + tp.id : '')">
+        <div class="brit-board-instructions">{{ message() }}</div>
       </div>
     }
     <!-- *ngIf="validActions || canPass || canCancel" -->
@@ -22,19 +23,19 @@
     <!-- (actionClick)="onActionClick ($event)" -->
     <brit-actions
       class="brit-board-actions-widget"
-      [canPass]="canPass"
-      [canConfirm]="canConfirm"
-      [canCancel]="canCancel"
+      [canPass]="canPass()"
+      [canConfirm]="canConfirm()"
+      [canCancel]="canCancel()"
       (passClick)="onPassClick()"
       (confirmClick)="onConfirmClick()"
       (cancelClick)="onCancelClick()">
     </brit-actions>
     <div class="brit-board-players-widget">
-      @for (player of players; track playerTrackBy($index, player)) {
+      @for (player of players(); track playerTrackBy($index, player)) {
         <brit-player
           class="brit-board-player-widget"
           [player]="player"
-          [currentPlayer]="player === currentPlayer"
+          [currentPlayer]="player === currentPlayer()"
           (selectPlayer)="onPlayerSelect(player)"
           (nationClick)="onPlayerNationClick($event)">
         </brit-player>
@@ -49,20 +50,24 @@
       @if (logsFixed) {
         <brit-logs
           class="brit-board-logs-widget"
-          [logs]="logs"></brit-logs>
+          [logs]="logs()"></brit-logs>
       }
       <div class="brit-board-buttons">
         <button
           class="brit-board-button"
           [ngClass]="{ 'is-active': logsFixed }"
           (click)="logsFixed = !logsFixed">
-          <i class="brit-board-logs-icon fa fa-file-text"></i>
+          <tui-icon
+            icon="file-text"
+            class="brit-board-logs-icon" />
         </button>
         <button
           class="brit-board-button"
           [ngClass]="{ 'is-active': zoomFixed }"
           (click)="zoomFixed = !zoomFixed">
-          <i class="brit-board-logs-icon fa fa-search-plus"></i>
+          <tui-icon
+            icon="search"
+            class="brit-board-logs-icon" />
         </button>
       </div>
     </div>

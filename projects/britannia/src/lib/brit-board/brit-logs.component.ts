@@ -1,18 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  inject
-} from "@angular/core";
+import { Component, ElementRef, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritLog } from "../brit-game-state.models";
 import { BritLogComponent } from "./brit-log.component";
 
 @Component({
   selector: "brit-logs",
-  template: '@for (log of logs; track log) {<brit-log [log]="log"></brit-log>}',
+  template: '@for (log of logs(); track log) {<brit-log [log]="log"></brit-log>}',
   styles: [
     `
       :host {
@@ -24,13 +17,12 @@ import { BritLogComponent } from "./brit-log.component";
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BritLogComponent]
 })
 export class BritLogsComponent implements OnChanges {
   private elementRef = inject(ElementRef);
 
-  @Input() logs!: BritLog[];
+  readonly logs = input.required<BritLog[]>();
 
   ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.logs) {

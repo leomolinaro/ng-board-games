@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnChanges,
-  OnInit,
-  inject,
-  input,
-  isDevMode
-} from "@angular/core";
+import { Component, ElementRef, OnChanges, OnInit, inject, input, isDevMode } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { WotrLog } from "./wotr-log-models";
 import { WotrLogRow } from "./wotr-log-row";
@@ -34,8 +25,7 @@ const DEBUG_LOG_INDEXES = "wotr.debugLogIndex";
         color: white;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrLogList implements OnChanges, OnInit {
   private elementRef = inject(ElementRef);

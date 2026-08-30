@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from "@angular/core";
+import { Component, computed, inject } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrFront, WotrFrontId } from "../front/wotr-front-models";
 import { WotrFrontStore } from "../front/wotr-front-store";
@@ -62,8 +62,7 @@ interface ActionTokendNode {
         opacity: 0.5;
       }
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrActionDiceBox {
   protected assets = inject(WotrAssetsStore);

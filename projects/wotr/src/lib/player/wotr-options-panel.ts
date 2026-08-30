@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, linkedSignal } from "@angular/core";
+import { Component, inject, linkedSignal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { WotrGameUi } from "../game/wotr-game-ui";
 
@@ -42,8 +42,7 @@ import { WotrGameUi } from "../game/wotr-game-ui";
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrOptionsPanel {
   protected ui = inject(WotrGameUi);

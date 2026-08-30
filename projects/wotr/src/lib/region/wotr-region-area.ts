@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-  Signal
-} from "@angular/core";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { Component, computed, inject, input, output, Signal } from "@angular/core";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
 import {
   WotrCharacter,
@@ -115,7 +106,6 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
 
 @Component({
   selector: "[wotrRegion]",
-  imports: [MatTooltipModule],
   template: `
     <svg:g>
       @if (regionNode().controlMarker; as controlMarker) {
@@ -258,8 +248,7 @@ const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-
         fill: white;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrRegionArea {
   private mapService = inject(WotrMapService);

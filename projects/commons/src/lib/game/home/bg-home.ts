@@ -1,7 +1,6 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { AsyncPipe } from "@angular/common";
 import {
-  ChangeDetectionStrategy,
   Component,
   OnDestroy,
   OnInit,
@@ -77,7 +76,6 @@ interface GameStateDecode {
   selector: "bg-home",
   templateUrl: "./bg-home.html",
   styleUrls: ["./bg-home.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AsyncPipe,
     BgAccountButton,

@@ -1,13 +1,5 @@
 import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges
-} from "@angular/core";
+import { Component, OnChanges, SimpleChanges, input, output } from "@angular/core";
 
 @Component({
   selector: "brit-actions",
@@ -16,29 +8,29 @@ import {
       <button
         class="brit-action brit-cancel"
         [ngClass]="{
-          'is-active': canCancel,
-          'is-disabled': !canCancel
+          'is-active': canCancel(),
+          'is-disabled': !canCancel()
         }"
         (click)="onCancelClick()">
         {{ labels.cancel }}
       </button>
-      @if (!canConfirm) {
+      @if (!canConfirm()) {
         <button
           class="brit-action brit-pass"
           [ngClass]="{
-            'is-active': canPass,
-            'is-disabled': !canPass
+            'is-active': canPass(),
+            'is-disabled': !canPass()
           }"
           (click)="onPassClick()">
           {{ labels.pass }}
         </button>
       }
-      @if (canConfirm) {
+      @if (canConfirm()) {
         <button
           class="brit-action brit-confirm"
           [ngClass]="{
-            'is-active': canConfirm,
-            'is-disabled': !canConfirm
+            'is-active': canConfirm(),
+            'is-disabled': !canConfirm()
           }"
           (click)="onConfirmClick()">
           {{ labels.confirm }}
@@ -90,20 +82,19 @@ import {
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass]
 })
 export class BritActionsComponent implements OnChanges {
   constructor() {}
 
   // @Input () validActions: BaronyAction[] | null = null;
-  @Input() canPass!: boolean;
-  @Input() canConfirm!: boolean;
-  @Input() canCancel!: boolean;
+  readonly canPass = input.required<boolean>();
+  readonly canConfirm = input.required<boolean>();
+  readonly canCancel = input.required<boolean>();
   // @Output () actionClick = new EventEmitter<BaronyAction> ();
-  @Output() passClick = new EventEmitter<void>();
-  @Output() confirmClick = new EventEmitter<void>();
-  @Output() cancelClick = new EventEmitter<void>();
+  readonly passClick = output<void>();
+  readonly confirmClick = output<void>();
+  readonly cancelClick = output<void>();
 
   actions = [];
 
@@ -132,19 +123,19 @@ export class BritActionsComponent implements OnChanges {
   // }
 
   onPassClick() {
-    if (this.canPass) {
+    if (this.canPass()) {
       this.passClick.emit();
     }
   }
 
   onConfirmClick() {
-    if (this.canConfirm) {
+    if (this.canConfirm()) {
       this.confirmClick.emit();
     }
   }
 
   onCancelClick() {
-    if (this.canCancel) {
+    if (this.canCancel()) {
       this.cancelClick.emit();
     }
   }

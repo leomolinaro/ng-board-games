@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  Injector,
-  input,
-  Signal
-} from "@angular/core";
+import { Component, computed, inject, Injector, input, Signal } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { isFreePeoplesCard, WotrCardId } from "../card/wotr-card-models";
@@ -44,8 +36,7 @@ const YSTEP = 47;
         fill: white;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrTableCardsComponent {
   private dialog = inject(MatDialog);

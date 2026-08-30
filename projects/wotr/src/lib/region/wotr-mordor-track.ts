@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from "@angular/core";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { Component, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
 
@@ -23,7 +22,6 @@ const MORDOR_TRACK_ATTR_Y = {
 
 @Component({
   selector: "[wotrMordorTrack]",
-  imports: [MatTooltipModule],
   template: `
     <svg:g>
       <svg:image
@@ -34,8 +32,7 @@ const MORDOR_TRACK_ATTR_Y = {
         transform="scale(0.8, 0.8)"
         [attr.xlink:href]="image().source" />
     </svg:g>
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrMordorTrack {
   private assets = inject(WotrAssetsStore);

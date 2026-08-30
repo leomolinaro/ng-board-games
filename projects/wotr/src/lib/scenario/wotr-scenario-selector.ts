@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { type TuiHandler } from "@taiga-ui/cdk";
 import { TuiTree, TuiTreeItem } from "@taiga-ui/kit";
@@ -55,8 +55,7 @@ import { WotrScenarios } from "./wotr-scenarios";
         font-size: 80%;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrScenarioSelectorDialog {
   private router = inject(Router);

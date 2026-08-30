@@ -1,17 +1,15 @@
 import { NgClass } from "@angular/common";
 import {
-  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
   OnInit,
-  Output,
   TrackByFunction,
-  inject
+  booleanAttribute,
+  inject,
+  input,
+  output
 } from "@angular/core";
-import { MatTooltip } from "@angular/material/tooltip";
 import { BgAuthService } from "@leobg/commons";
-import { BooleanInput } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
@@ -40,22 +38,78 @@ interface BritNationNode {
 
 @Component({
   selector: "brit-player",
-  templateUrl: "./brit-player.component.html",
+  template: `
+    <div
+      [class]="'brit-player-card ' + 'is-' + player().id"
+      [ngClass]="{
+        'is-current': currentPlayer(),
+        'is-ai': player().isAi,
+        'is-remote': player().isRemote,
+        'is-local': player().isLocal
+      }"
+      (click)="onCardClick()">
+      <div class="brit-player-header">
+        <i
+          class="brit-player-type-icon fa"
+          [ngClass]="
+            player().isAi
+              ? 'fa-desktop'
+              : player().isRemote
+                ? 'fa-globe'
+                : currentPlayer()
+                  ? 'fa-user'
+                  : 'fa-user-o'
+          "></i>
+        <div class="brit-player-name">{{ player().name }}</div>
+        <i class="brit-player-score-icon fa fa-star"></i>
+        <div class="brit-player-score">{{ player().score }}</div>
+      </div>
+      <div class="brit-player-content">
+        @for (nationNode of nationNodes; track nationTrackBy($index, nationNode)) {
+          <div
+            class="brit-player-nation"
+            (click)="onNationClick(nationNode, $event)">
+            <img
+              class="brit-player-nation-icon"
+              [src]="nationNode.iconSource"
+              [tuiHint]="nationNode.nation.label" />
+          </div>
+        }
+
+        <!-- <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
+    class="brit-player-pawn-image"
+    [ngClass]="{ 'is-active': pawnNode.active }"
+    (click)="onPawnClick (pawnNode)">
+    <img [src]="pawnNode.source">
+  </div> -->
+        <!-- <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="brit-player-resource-image"
+  [ngClass]="{ 'is-active': resourceNode.active }"
+  (click)="onResourceClick (resourceNode)">
+  <img [src]="resourceNode.source">
+</div>
+<div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy" class="brit-player-pawn-quantity">
+  {{ $any (player.pawns)[pawnNode.type] }}
+</div>
+<div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="brit-player-resource-quantity">
+  {{ resourceNode.quantity }}
+</div> -->
+      </div>
+    </div>
+  `,
   styleUrls: ["./brit-player.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass, MatTooltip]
+  imports: [NgClass, TuiHint]
 })
 export class BritPlayerComponent implements OnInit {
   private authService = inject(BgAuthService);
   private assetsService = inject(BritAssetsService);
   private components = inject(BritComponentsService);
 
-  @Input() player!: BritPlayer;
-  @Input() @BooleanInput() currentPlayer: boolean = false;
+  readonly player = input.required<BritPlayer>();
+  readonly currentPlayer = input(false, { transform: booleanAttribute });
   // @Input () validBuildings: BritBuilding[] | null = null;
   // @Input () validResources: BritResourceType[] | null = null;
-  @Output() selectPlayer = new EventEmitter<void>();
-  @Output() nationClick = new EventEmitter<BritNationId>();
+  readonly selectPlayer = output<void>();
+  readonly nationClick = output<BritNationId>();
   // @Output () clickPawn = new EventEmitter<BritPawnType> ();
   // @Output () clickResource = new EventEmitter<BritResourceType> ();
 
@@ -71,7 +125,7 @@ export class BritPlayerComponent implements OnInit {
   // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
   ngOnInit(): void {
-    for (const nationId of this.player.nationIds) {
+    for (const nationId of this.player().nationIds) {
       this.nationNodes.push({
         id: nationId,
         nation: this.components.NATION[nationId],
@@ -82,11 +136,8 @@ export class BritPlayerComponent implements OnInit {
   }
 
   onCardClick() {
-    if (
-      !this.player.isAi &&
-      this.authService.isUserId(this.player.controller.id) &&
-      !this.currentPlayer
-    ) {
+    const player = this.player();
+    if (!player.isAi && this.authService.isUserId(player.controller.id) && !this.currentPlayer()) {
       this.selectPlayer.emit();
     }
   }

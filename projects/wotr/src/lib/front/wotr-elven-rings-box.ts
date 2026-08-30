@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import { Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrGameUi } from "../game/wotr-game-ui";
 import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
@@ -82,8 +82,7 @@ const Y0 = 18;
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrElvenRingsBox {
   protected ui = inject(WotrGameUi);

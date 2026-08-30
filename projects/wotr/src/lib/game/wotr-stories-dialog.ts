@@ -1,12 +1,5 @@
 import { JsonPipe } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  ElementRef,
-  inject,
-  viewChild
-} from "@angular/core";
+import { Component, effect, ElementRef, inject, viewChild } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { getStoryId } from "../../../../commons/src";
@@ -120,8 +113,7 @@ export interface WotrStoriesDialogData {
         scrollbar-gutter: stable both-edges; /* keeps layout stable during scroll */
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrStoriesDialog {
   protected data = inject<WotrStoriesDialogData>(MAT_DIALOG_DATA);

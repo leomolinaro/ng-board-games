@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   EventEmitter,
@@ -183,8 +182,7 @@ export type WotrLogParsedFragment =
         height: 16px;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFragment> {
   private actionRegistry = inject(WotrActionRegistry);

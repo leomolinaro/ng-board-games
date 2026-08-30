@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { Component } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { TuiButton, TuiTitle } from "@taiga-ui/core";
 import { AGOT_FEATURES } from "./agot-features";
@@ -56,7 +56,6 @@ import { AGOT_FEATURES } from "./agot-features";
       filter: brightness(1.04);
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, TuiButton, TuiTitle]
 })
 export class AgotHome {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
+import { Component, Signal, computed, inject, input } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrFellowship } from "./wotr-fellowship-models";
 
@@ -29,8 +29,7 @@ const CORRUPTION_Y = 25;
       [attr.x]="corruptionNode().svgX"
       [attr.y]="corruptionNode().svgY"
       [attr.xlink:href]="corruptionNode().image" />
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrFellowshipTrack {
   fellowship = input.required<WotrFellowship>();

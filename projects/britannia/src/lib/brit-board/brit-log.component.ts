@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { ChangeDetectionStrategy, Component, Input, OnChanges, inject } from "@angular/core";
+import { Component, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
@@ -39,9 +39,9 @@ type BritLogFragment =
     <div
       class="brit-log"
       [ngClass]="{
-        'brit-log-h0': log.type === 'setup' || log.type === 'round',
-        'brit-log-h1': log.type === 'nation-turn',
-        'brit-log-h2': log.type === 'phase'
+        'brit-log-h0': log().type === 'setup' || log().type === 'round',
+        'brit-log-h1': log().type === 'nation-turn',
+        'brit-log-h2': log().type === 'phase'
       }">
       @for (fragment of fragments; track fragment) {
         @switch (fragment.type) {
@@ -93,19 +93,18 @@ type BritLogFragment =
       }
     `
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass]
 })
 export class BritLogComponent implements OnChanges {
   private components = inject(BritComponentsService);
 
-  @Input() log!: BritLog;
+  readonly log = input.required<BritLog>();
 
   fragments!: BritLogFragment[];
 
   ngOnChanges(changes: SimpleChanges<this>) {
     if (changes.log) {
-      const l = this.log;
+      const l = this.log();
       switch (l.type) {
         case "setup":
           this.fragments = [this.string("Setup")];

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, resource } from "@angular/core";
+import { Component, inject, resource } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService } from "../../../../commons/src";
+import { DEFAULT_OPTIONS } from "../game/options/wotr-game-options";
 import { WotrGameConfig } from "../game/wotr-game-config";
 import { WotrGamePage } from "../game/wotr-game-page";
 import { WotrRemoteService } from "../remote/wotr-remote";
@@ -10,7 +11,6 @@ import { BgAuthServiceMock } from "./mocks/bg-auth.service.mock";
 import { WotrRemoteMock } from "./mocks/wotr-remote-mock";
 import { WotrSetupRulesMock } from "./mocks/wotr-setup-rules.mock";
 import { WotrScenarios } from "./wotr-scenarios";
-import { DEFAULT_OPTIONS } from "../game/options/wotr-game-options";
 
 @Component({
   selector: "wotr-scenario-page",
@@ -20,7 +20,6 @@ import { DEFAULT_OPTIONS } from "../game/options/wotr-game-options";
       <wotr-game-page [gameConfig]="gameConfig()" />,
     }
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     { provide: BgAuthService, useClass: BgAuthServiceMock },
     { provide: WotrRemoteService, useClass: WotrRemoteMock },

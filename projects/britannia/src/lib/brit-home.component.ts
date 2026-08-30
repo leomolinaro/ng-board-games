@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BgHome, BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
 import { concatJoin } from "@leobg/commons/utils";
@@ -37,8 +37,7 @@ import {
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class BritHomeComponent {
   private router = inject(Router);

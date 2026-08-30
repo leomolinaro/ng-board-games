@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  HostListener,
-  inject,
-  signal
-} from "@angular/core";
+import { Component, computed, HostListener, inject, signal } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
 import { TuiHint } from "@taiga-ui/core";
@@ -112,8 +105,7 @@ export interface WotrCardsDialogData {
         @include wotr.button;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrCardsDialog {
   protected data = inject<WotrCardsDialogData>(MAT_DIALOG_DATA);

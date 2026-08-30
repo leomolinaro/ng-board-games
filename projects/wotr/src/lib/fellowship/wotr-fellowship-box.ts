@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Signal,
-  computed,
-  inject,
-  input,
-  output
-} from "@angular/core";
+import { Component, Signal, computed, inject, input, output } from "@angular/core";
 import { WotrAssetsStore } from "../assets/wotr-assets-store";
 import { WotrGameQuery } from "../game/wotr-game-query";
 import { WotrFellowship } from "./wotr-fellowship-models";
@@ -66,8 +58,7 @@ const BOXHEIGHT = 164;
         fill: black;
       }
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class WotrFellowshipBox {
   fellowship = input.required<WotrFellowship>();

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  Injector,
-  isDevMode
-} from "@angular/core";
+import { Component, computed, inject, Injector, isDevMode } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -62,8 +55,7 @@ import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
         left: 50px;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrHomePage {
   private router = inject(Router);

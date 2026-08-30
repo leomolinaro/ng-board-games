@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, input } from "@angular/core";
+import { Component, Signal, computed, input } from "@angular/core";
 import { WotrFront } from "./wotr-front-models";
 
 interface WotrDeckBoxNode {
@@ -38,8 +38,7 @@ const S_Y = 808;
         fill: white;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrDeckBoxes {
   freePeoples = input.required<WotrFront>();

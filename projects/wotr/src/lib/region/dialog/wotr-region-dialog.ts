@@ -1,13 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal
-} from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
 import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
 import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
@@ -20,6 +12,7 @@ import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
 import { WotrRegion } from "../wotr-region-models";
 import { UnitNode } from "./wotr-region-unit-node";
 import { WotrRegionUnitSelection, selectionModeFactory } from "./wotr-region-unit-selection";
+import { TuiHint } from "@taiga-ui/core";
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -31,15 +24,13 @@ export interface WotrRegionDialogData {
 }
 
 export type WotrRegionDialogResult =
-  | true
-  | WotrUnits
-  | { removing: WotrUnits; downgrading: WotrUnits };
+  true | WotrUnits | { removing: WotrUnits; downgrading: WotrUnits };
 
 export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialogResult>;
 
 @Component({
   selector: "wotr-region-dialog",
-  imports: [MatTooltipModule],
+  imports: [TuiHint],
   template: `
     <h1>{{ data.region.name }}</h1>
     <div [class]="{ 'unit-selection-active': data.unitSelection }">
@@ -55,8 +46,7 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialo
           [src]="unitNode.source"
           [width]="unitNode.width"
           [height]="unitNode.height"
-          [matTooltip]="unitNode.label"
-          matTooltipPosition="above"
+          [tuiHint]="unitNode.label"
           (click)="onUnitClick(unitNode)" />
       }
     </div>
@@ -109,8 +99,7 @@ export type WotrRegionDialogRef = MatDialogRef<WotrRegionDialog, WotrRegionDialo
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrRegionDialog implements OnInit {
   protected data = inject<WotrRegionDialogData>(MAT_DIALOG_DATA);

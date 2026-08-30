@@ -1,12 +1,5 @@
 import { AsyncPipe } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  inject
-} from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild, inject } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
@@ -60,7 +53,6 @@ import { BritUiStore } from "./brit-ui.store";
     (resourceSelect)="onResourceSelect ($event)" -->
   `,
   styles: [""],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     BritGameStore,
     BritUiStore,

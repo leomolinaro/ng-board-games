@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  EventEmitter,
-  inject,
-  input,
-  Output,
-  Signal
-} from "@angular/core";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { Component, computed, EventEmitter, inject, input, Output, Signal } from "@angular/core";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
 import {
   WotrCharacter,
@@ -109,7 +99,6 @@ function svgY(regionId: WotrRegionId) {
 
 @Component({
   selector: "[wotrStronghold]",
-  imports: [MatTooltipModule],
   template: `
     <svg:g>
       @if (regionNode().shadowFrame; as shadowFrame) {
@@ -234,8 +223,7 @@ function svgY(regionId: WotrRegionId) {
         fill: white;
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrStrongholdBox {
   private mapService = inject(WotrMapService);

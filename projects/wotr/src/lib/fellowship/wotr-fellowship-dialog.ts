@@ -1,15 +1,7 @@
-import { NgClass } from "@angular/common";
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal
-} from "@angular/core";
+import { Component, OnInit, computed, inject, signal } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { MatTooltipModule } from "@angular/material/tooltip";
 import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
 import { WotrCompanionId } from "../character/wotr-character-models";
 import { WotrGameQuery } from "../game/wotr-game-query";
@@ -40,22 +32,20 @@ export interface CompanionNode {
 
 @Component({
   selector: "wotr-fellowship-dialog",
-  imports: [MatTooltipModule, NgClass],
+  imports: [TuiHint],
   template: `
     <h1>Fellowship</h1>
     <div>
       @for (unitNode of unitNodes; track unitNode.id) {
         <img
           class="unit"
-          [ngClass]="{
-            disabled: unitNode.disabled,
-            selectable: unitNode.selectable,
-            selected: unitNode.selected
-          }"
+          [class.disabled]="unitNode.disabled"
+          [class.selectable]="unitNode.selectable"
+          [class.selected]="unitNode.selected"
           [src]="unitNode.source"
           [width]="unitNode.width"
           [height]="unitNode.height"
-          [matTooltip]="unitNode.label"
+          [tuiHint]="unitNode.label"
           (click)="onUnitClick(unitNode)" />
       }
     </div>
@@ -68,7 +58,7 @@ export interface CompanionNode {
       <button
         class="confirm-button"
         [disabled]="canConfirm() !== true"
-        [ngClass]="{ disabled: canConfirm() !== true }"
+        [class.disabled]="canConfirm() !== true"
         (click)="onConfirm()">
         Confirm companions
       </button>
@@ -103,8 +93,7 @@ export interface CompanionNode {
         }
       }
     `
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  ]
 })
 export class WotrFellowshipDialog implements OnInit {
   protected data = inject<WotrFellowshipDialogData>(MAT_DIALOG_DATA);
