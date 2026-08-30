@@ -1,11 +1,16 @@
 import { Component, ElementRef, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritLog } from "../brit-game-state.models";
-import { BritLogComponent } from "./brit-log.component";
+import { BritLogRow } from "./brit-log-row";
 
 @Component({
   selector: "brit-logs",
-  template: '@for (log of logs(); track log) {<brit-log [log]="log"></brit-log>}',
+  imports: [BritLogRow],
+  template: `
+    @for (log of logs(); track log) {
+      <brit-log-row [log]="log"></brit-log-row>
+    }
+  `,
   styles: [
     `
       :host {
@@ -16,10 +21,9 @@ import { BritLogComponent } from "./brit-log.component";
         color: white;
       }
     `
-  ],
-  imports: [BritLogComponent]
+  ]
 })
-export class BritLogsComponent implements OnChanges {
+export class BritLogs implements OnChanges {
   private elementRef = inject(ElementRef);
 
   readonly logs = input.required<BritLog[]>();

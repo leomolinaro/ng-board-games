@@ -20,6 +20,7 @@ import {
   arrayUtil,
   downloadUtil
 } from "@leobg/commons/utils";
+import { TuiHint } from "@taiga-ui/core";
 import { BritAssetsService } from "../brit-assets.service";
 import {
   BritArea,
@@ -35,7 +36,6 @@ import { BritComponentsService } from "../brit-components.service";
 import { BritAreaState, BritAreaUnit, BritNationState } from "../brit-game-state.models";
 import { BritMapSlotsGeneratorService } from "./brit-map-slots-generator.service";
 import { BritMapPoint, BritMapService } from "./brit-map.service";
-import { TuiHint } from "@taiga-ui/core";
 
 interface BritAreaNode {
   id: BritAreaId;
@@ -101,11 +101,11 @@ const GRID_STEP = 20;
 
 @Component({
   selector: "brit-map",
-  templateUrl: "./brit-map.component.html",
-  styleUrls: ["./brit-map.component.scss"],
+  templateUrl: "./brit-map.html",
+  styleUrls: ["./brit-map.scss"],
   imports: [BgMapZoom, BgSvg, NgClass, NgLetDirective, BgTransformPipe, TuiHint]
 })
-export class BritMapComponent implements OnChanges, OnInit {
+export class BritMap implements OnChanges, OnInit {
   private mapService = inject(BritMapService);
   private slotsGeneratorService = inject(BritMapSlotsGeneratorService);
   private assetsService = inject(BritAssetsService);

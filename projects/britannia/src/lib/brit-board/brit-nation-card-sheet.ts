@@ -65,7 +65,7 @@ interface BritUnitNode {
     `
   ]
 })
-export class BritNationCardSheetComponent implements OnInit {
+export class BritNationCardSheet implements OnInit {
   private readonly context =
     injectContext<TuiDialogContext<void, [BritNationId, BritNationState]>>();
   data = this.context.data;

@@ -96,7 +96,7 @@ interface BritNationNode {
       </div>
     </div>
   `,
-  styleUrls: ["./brit-player.component.scss"],
+  styleUrls: ["./brit-player-area.scss"],
   imports: [NgClass, TuiHint]
 })
 export class BritPlayerComponent implements OnInit {

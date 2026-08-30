@@ -1,8 +1,8 @@
 import { Injectable, inject } from "@angular/core";
 import { Resolve, Routes } from "@angular/router";
 import { Observable, forkJoin } from "rxjs";
-import { BritGameComponent } from "./brit-game/brit-game.component";
-import { BritHomeComponent } from "./brit-home.component";
+import { BritGamePage } from "./brit-game/brit-game-page";
+import { BritHome } from "./brit-home";
 import { BritMapService } from "./brit-map/brit-map.service";
 
 @Injectable({
@@ -21,7 +21,7 @@ const gameResolvers = {
 };
 
 export const routes: Routes = [
-  { path: "", component: BritHomeComponent },
-  { path: "game/:gameId", component: BritGameComponent, resolve: gameResolvers },
+  { path: "", component: BritHome },
+  { path: "game/:gameId", component: BritGamePage, resolve: gameResolvers },
   { path: "**", redirectTo: "", pathMatch: "full" }
 ];

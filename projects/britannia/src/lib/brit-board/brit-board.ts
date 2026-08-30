@@ -15,23 +15,23 @@ import {
   BritNationState,
   BritPlayer
 } from "../brit-game-state.models";
-import { BritMapComponent } from "../brit-map/brit-map.component";
-import { BritPlayerComponent } from "../brit-player/brit-player.component";
-import { BritActionsComponent } from "./brit-actions.component";
-import { BritLogsComponent } from "./brit-logs.component";
-import { BritNationCardSheetComponent } from "./brit-nation-card-sheet.component";
-import { BritUnitsSelectorSheetComponent } from "./brit-units-selector-sheet.component";
+import { BritMap } from "../brit-map/brit-map";
+import { BritPlayerComponent } from "../brit-player/brit-player-area";
+import { BritActionsComponent } from "./brit-actions-area";
+import { BritLogs } from "./brit-logs";
+import { BritNationCardSheet } from "./brit-nation-card-sheet";
+import { BritUnitsSelectorSheet } from "./brit-units-selector-sheet";
 
 @Component({
   selector: "brit-board",
-  templateUrl: "./brit-board.component.html",
-  styleUrls: ["./brit-board.component.scss"],
+  templateUrl: "./brit-board.html",
+  styleUrls: ["./brit-board.scss"],
   imports: [
-    BritMapComponent,
+    BritMap,
     BritActionsComponent,
     BritPlayerComponent,
     BgMapZoomButtons,
-    BritLogsComponent,
+    BritLogs,
     NgClass,
     TuiIcon
   ]
@@ -102,7 +102,7 @@ export class BritBoardComponent {
     const nationState = this.nationStates()[nationId];
     this.lastBottomSheet = "nation-card";
     this.sheets
-      .open<void>(new PolymorpheusComponent(BritNationCardSheetComponent), {
+      .open<void>(new PolymorpheusComponent(BritNationCardSheet), {
         data: [nationId, nationState]
       })
       .subscribe();
@@ -153,11 +153,8 @@ export class BritBoardComponent {
     maxQuantity: number
   ): Observable<number | undefined> {
     this.lastBottomSheet = "unit-number-selection";
-    return this.sheets.open<number | undefined>(
-      new PolymorpheusComponent(BritUnitsSelectorSheetComponent),
-      {
-        data: { unit, quantity, maxQuantity }
-      }
-    );
+    return this.sheets.open<number | undefined>(new PolymorpheusComponent(BritUnitsSelectorSheet), {
+      data: { unit, quantity, maxQuantity }
+    });
   }
 }

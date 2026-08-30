@@ -34,7 +34,7 @@ type BritLogFragment =
   | BritLogAreaFragment /*  | BritLogLandFragment | BritLogPawnFragment */;
 
 @Component({
-  selector: "brit-log",
+  selector: "brit-log-row",
   template: `
     <div
       class="brit-log"
@@ -95,7 +95,7 @@ type BritLogFragment =
   ],
   imports: [NgClass]
 })
-export class BritLogComponent implements OnChanges {
+export class BritLogRow implements OnChanges {
   private components = inject(BritComponentsService);
 
   readonly log = input.required<BritLog>();

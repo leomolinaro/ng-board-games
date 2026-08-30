@@ -39,7 +39,7 @@ import {
     `
   ]
 })
-export class BritHomeComponent {
+export class BritHome {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private gameService = inject(BritRemoteService);

@@ -39,12 +39,10 @@ import { SimpleChanges } from "@leobg/commons/utils";
       </button>
     </div>
   `,
-  styleUrls: ["./brit-units-selector.component.scss"],
+  styleUrls: ["./brit-units-selector.scss"],
   imports: [NgClass]
 })
-export class BritUnitsSelectorComponent implements OnChanges {
-  constructor() {}
-
+export class BritUnitsSelector implements OnChanges {
   readonly number = input.required<number>();
   readonly imageSource = input.required<string>();
   readonly min = input.required<number>();

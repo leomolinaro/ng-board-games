@@ -4,7 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { BgAuthService, BgUser } from "@leobg/commons";
 import { ChangeListener, SingleEvent, UntilDestroy } from "@leobg/commons/utils";
 import { forkJoin, tap } from "rxjs";
-import { BritBoardComponent } from "../brit-board/brit-board.component";
+import { BritBoardComponent } from "../brit-board/brit-board";
 import { BritAreaId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
 import { ABritPlayer, BritAreaUnit, BritPlayer } from "../brit-game-state.models";
@@ -63,7 +63,7 @@ import { BritUiStore } from "./brit-ui.store";
   imports: [BritBoardComponent, AsyncPipe]
 })
 @UntilDestroy
-export class BritGameComponent implements OnInit, OnDestroy {
+export class BritGamePage implements OnInit, OnDestroy {
   private components = inject(BritComponentsService);
   private game = inject(BritGameStore);
   private ui = inject(BritUiStore);
