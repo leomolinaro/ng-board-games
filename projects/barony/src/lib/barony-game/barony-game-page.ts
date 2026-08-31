@@ -1,8 +1,9 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BaronyBoard } from '../barony-board/barony-board';
-import {
+import type {
   BaronyAction,
   BaronyBuilding,
   BaronyLand,
@@ -59,7 +60,7 @@ export class BaronyGamePage implements OnInit {
   private route = inject(ActivatedRoute);
   private gameService = inject(BaronyGameService);
 
-  private gameId = this.route.snapshot.paramMap.get('gameId') as string;
+  private gameId = this.route.snapshot.paramMap.get('gameId')!;
 
   lands$ = this.game.selectLands$();
   logs$ = this.game.selectLogs$();

@@ -1,17 +1,17 @@
-import { WotrAbility } from '../../ability/wotr-ability';
-import { WotrActionDie } from '../../action-die/wotr-action-die-models';
-import {
+import type { WotrAbility } from '../../ability/wotr-ability';
+import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import type {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
   WotrAfterActionDieResolution,
 } from '../../action-die/wotr-action-die-modifiers';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrDieStory } from '../../game/wotr-story-models';
-import { WotrRegion } from '../../region/wotr-region-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrDieStory } from '../../game/wotr-story-models';
+import type { WotrRegion } from '../../region/wotr-region-models';
 import { playCharacter } from '../wotr-character-actions';
 import { WotrPlayableCharacterCard } from './wotr-playable-character-card';
 

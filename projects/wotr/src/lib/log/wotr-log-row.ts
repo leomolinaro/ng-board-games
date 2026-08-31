@@ -1,3 +1,4 @@
+import type { OnInit, Signal } from '@angular/core';
 import {
   Component,
   computed,
@@ -5,33 +6,28 @@ import {
   inject,
   input,
   isDevMode,
-  OnInit,
   Output,
-  Signal,
 } from '@angular/core';
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { cardToLabel, combatCardToLabel } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrFragmentCreator } from '../commons/wotr-action-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrFragmentCreator } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
-import {
-  elvenRingLabel,
-  WotrElvenRing,
-  WotrFrontId,
-} from '../front/wotr-front-models';
-import { WotrPhase } from '../game-turn/wotr-phase-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import { elvenRingLabel } from '../front/wotr-front-models';
+import type { WotrPhase } from '../game-turn/wotr-phase-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNation, WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNation, WotrNationId } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
 import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
-import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import {
+import type {
   WotrLog,
   WotrLogCardFragment,
   WotrLogFragment,
@@ -347,7 +343,7 @@ export class WotrLogRow
               this.card(combatCardToLabel(l.story.card)),
             ];
           default:
-            throw new Error(`Unknown log type ${(l as any).type}`);
+            throw new Error(`Unknown log type`);
         }
       }
       case 'elven-ring': {
@@ -387,8 +383,6 @@ export class WotrLogRow
         return [this.string('The fellowship is revealed on the Mordor Track')];
       case 'move-in-mordor':
         return [this.string('The fellowship moves on the Mordor Track')];
-      default:
-        throw new Error(`Unknown log type ${(l as any).type}`);
     }
   });
 
@@ -413,8 +407,6 @@ export class WotrLogRow
           return this.string(f.label);
         case 'token':
           return this.token(f.token, f.front);
-        default:
-          throw new Error(`Unknown fragment type ${(f as any).type}`);
       }
     }
   }

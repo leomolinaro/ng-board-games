@@ -1,21 +1,21 @@
-import { WotrAbility } from '../../ability/wotr-ability';
-import {
+import type { WotrAbility } from '../../ability/wotr-ability';
+import type {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
 } from '../../action-die/wotr-action-die-modifiers';
-import { WotrCombatRound } from '../../battle/wotr-battle-models';
-import {
+import type { WotrCombatRound } from '../../battle/wotr-battle-models';
+import type {
   WotrBattleModifiers,
   WotrBeforeCombatRound,
 } from '../../battle/wotr-battle-modifiers';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
 import { advanceNation } from '../../nation/wotr-nation-actions';
-import { WotrNationId } from '../../nation/wotr-nation-models';
-import { WotrRegion } from '../../region/wotr-region-models';
-import { WotrCharacterId } from '../wotr-character-models';
+import type { WotrNationId } from '../../nation/wotr-nation-models';
+import type { WotrRegion } from '../../region/wotr-region-models';
+import type { WotrCharacterId } from '../wotr-character-models';
 
 export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRound> {
   constructor(

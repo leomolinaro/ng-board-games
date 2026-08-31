@@ -1,17 +1,19 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
+import type { Signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { immutableUtil } from '@leobg/commons/utils';
-import { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
 import { WotrCharacterStore } from '../character/wotr-character-store';
-import { WotrFrontId } from '../front/wotr-front-models';
-import {
-  frontOfNation,
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type {
   WotrNation,
-  WotrNationId,
-} from '../nation/wotr-nation-models';
-import { WotrRecruitmentConstraints } from '../unit/wotr-unit-handler';
-import { WotrArmy, WotrFreeUnits, WotrUnits } from '../unit/wotr-unit-models';
-import { WotrUnitUtils } from '../unit/wotr-unit-utils';
+  WotrNationId} from '../nation/wotr-nation-models';
 import {
+  frontOfNation
+} from '../nation/wotr-nation-models';
+import type { WotrRecruitmentConstraints } from '../unit/wotr-unit-handler';
+import type { WotrArmy, WotrFreeUnits, WotrUnits } from '../unit/wotr-unit-models';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
+import type {
   WotrNeighbor,
   WotrRegion,
   WotrRegionId,

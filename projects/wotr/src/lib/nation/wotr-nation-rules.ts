@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrArmyAttack } from '../battle/wotr-battle-actions';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrNation } from './wotr-nation-models';
+import type { WotrArmyAttack } from '../battle/wotr-battle-actions';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrNation } from './wotr-nation-models';
 import { WotrNationModifiers } from './wotr-nation-modifiers';
 import { WotrNationStore } from './wotr-nation-store';
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrRegionId } from './wotr-region-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrRegionId } from './wotr-region-models';
 
 export type WotrAfterRegionControlChange = (
   regionId: WotrRegionId,

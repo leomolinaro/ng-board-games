@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BritSetup } from '../brit-game-state.models';
+import type { BritSetup } from '../brit-game-state.models';
 
 @Injectable({
   providedIn: 'root',

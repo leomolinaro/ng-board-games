@@ -1,6 +1,6 @@
-import { WotrCharacterQuery } from '../../character/wotr-character-query';
-import { WotrFrontId } from '../../front/wotr-front-models';
-import {
+import type { WotrCharacterQuery } from '../../character/wotr-character-query';
+import type { WotrFrontId } from '../../front/wotr-front-models';
+import type {
   WotrGenericUnitType,
   WotrNationId,
 } from '../../nation/wotr-nation-models';

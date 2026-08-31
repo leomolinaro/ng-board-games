@@ -1,13 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrActionDie } from '../action-die/wotr-action-die-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrActionDie } from '../action-die/wotr-action-die-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
 import { advanceNation } from './wotr-nation-actions';
 import { WotrNationHandler } from './wotr-nation-handler';
-import { WotrNationId } from './wotr-nation-models';
-import { WotrNationAdvanceSource, WotrNationRules } from './wotr-nation-rules';
+import type { WotrNationId } from './wotr-nation-models';
+import type { WotrNationAdvanceSource} from './wotr-nation-rules';
+import { WotrNationRules } from './wotr-nation-rules';
 import { WotrNationStore } from './wotr-nation-store';
 
 @Injectable()

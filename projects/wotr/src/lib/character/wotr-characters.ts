@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrAbility } from '../ability/wotr-ability';
-import { WotrActionDie } from '../action-die/wotr-action-die-models';
+import type { WotrAbility } from '../ability/wotr-ability';
+import type { WotrActionDie } from '../action-die/wotr-action-die-models';
 import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
 import { WotrBattleModifiers } from '../battle/wotr-battle-modifiers';
 import { WotrBattleStore } from '../battle/wotr-battle-store';
 import { WotrBattleUi } from '../battle/wotr-battle-ui';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { WotrGameStore } from '../game/wotr-game-store';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
@@ -47,7 +47,7 @@ import {
   DenethorCorruptedSteward,
   FateOfTheWhiteTower,
 } from './characters/kome/denethor';
-import { KomeSovereignCard } from './characters/kome/kome-sovereign-card';
+import type { KomeSovereignCard } from './characters/kome/kome-sovereign-card';
 import { RedWrath, TheBlackSerpent } from './characters/kome/the-black-serpent';
 import {
   LordOfTheBats,
@@ -84,9 +84,9 @@ import {
   TheMouthOfSauron,
 } from './characters/the-mouth-of-sauron';
 import { SorcererAbility, TheWitchKing } from './characters/the-witch-king';
-import { WotrPlayableCharacterCard } from './characters/wotr-playable-character-card';
+import type { WotrPlayableCharacterCard } from './characters/wotr-playable-character-card';
 import { WotrCharacterHandler } from './wotr-character-handler';
-import { KomeSovereignId, WotrCharacterId } from './wotr-character-models';
+import type { KomeSovereignId, WotrCharacterId } from './wotr-character-models';
 import { WotrCharacterModifiers } from './wotr-character-modifiers';
 
 @Injectable()
@@ -353,16 +353,16 @@ export class WotrCharacters {
           );
         return this.characters['gandalf-the-white'];
       case 'aragorn':
-        if (!this.characters['aragorn'])
-          this.characters['aragorn'] = new WotrAragorn(
+        if (!this.characters.aragorn)
+          this.characters.aragorn = new WotrAragorn(
             this.q,
             this.battleModifiers,
           );
-        return this.characters['aragorn'];
+        return this.characters.aragorn;
       case 'saruman':
-        if (!this.characters['saruman'])
-          this.characters['saruman'] = new WotrSaruman(this.q);
-        return this.characters['saruman'];
+        if (!this.characters.saruman)
+          this.characters.saruman = new WotrSaruman(this.q);
+        return this.characters.saruman;
       case 'the-witch-king':
         if (!this.characters['the-witch-king'])
           this.characters['the-witch-king'] = new TheWitchKing(
@@ -375,9 +375,9 @@ export class WotrCharacters {
           this.characters['the-mouth-of-sauron'] = new TheMouthOfSauron(this.q);
         return this.characters['the-mouth-of-sauron'];
       case 'ugluk':
-        if (!this.characters['ugluk'])
-          this.characters['ugluk'] = new Ugluk(this.q, this.battleModifiers);
-        return this.characters['ugluk'];
+        if (!this.characters.ugluk)
+          this.characters.ugluk = new Ugluk(this.q, this.battleModifiers);
+        return this.characters.ugluk;
       case 'the-shadow-of-mirkwood':
         if (!this.characters['the-shadow-of-mirkwood'])
           this.characters['the-shadow-of-mirkwood'] = new TheShadowOfMirkwood(
@@ -400,45 +400,45 @@ export class WotrCharacters {
   getSovereignCard(sovereignId: KomeSovereignId): KomeSovereignCard {
     switch (sovereignId) {
       case 'thranduil':
-        if (!this.sovereigns['thranduil'])
-          this.sovereigns['thranduil'] = new Thranduil(
+        if (!this.sovereigns.thranduil)
+          this.sovereigns.thranduil = new Thranduil(
             this.q,
             this.characterHandler,
             this.logger,
           );
-        return this.sovereigns['thranduil'];
+        return this.sovereigns.thranduil;
       case 'brand':
-        if (!this.sovereigns['brand'])
-          this.sovereigns['brand'] = new Brand(
+        if (!this.sovereigns.brand)
+          this.sovereigns.brand = new Brand(
             this.q,
             this.characterHandler,
             this.logger,
           );
-        return this.sovereigns['brand'];
+        return this.sovereigns.brand;
       case 'dain':
-        if (!this.sovereigns['dain'])
-          this.sovereigns['dain'] = new Dain(
+        if (!this.sovereigns.dain)
+          this.sovereigns.dain = new Dain(
             this.q,
             this.characterHandler,
             this.logger,
           );
-        return this.sovereigns['dain'];
+        return this.sovereigns.dain;
       case 'denethor':
-        if (!this.sovereigns['denethor'])
-          this.sovereigns['denethor'] = new Denethor(
+        if (!this.sovereigns.denethor)
+          this.sovereigns.denethor = new Denethor(
             this.q,
             this.characterHandler,
             this.logger,
           );
-        return this.sovereigns['denethor'];
+        return this.sovereigns.denethor;
       case 'theoden':
-        if (!this.sovereigns['theoden'])
-          this.sovereigns['theoden'] = new Theoden(
+        if (!this.sovereigns.theoden)
+          this.sovereigns.theoden = new Theoden(
             this.q,
             this.characterHandler,
             this.logger,
           );
-        return this.sovereigns['theoden'];
+        return this.sovereigns.theoden;
     }
   }
 

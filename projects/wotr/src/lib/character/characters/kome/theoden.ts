@@ -1,19 +1,19 @@
-import { WotrAbility } from '../../../ability/wotr-ability';
-import { WotrFrontId } from '../../../front/wotr-front-models';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrLogWriter } from '../../../log/wotr-log-writer';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import {
+import type { WotrAbility } from '../../../ability/wotr-ability';
+import type { WotrFrontId } from '../../../front/wotr-front-models';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrLogWriter } from '../../../log/wotr-log-writer';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type {
   WotrAfterRegionControlChange,
   WotrRegionModifiers,
 } from '../../../region/wotr-region-modifiers';
-import { WotrRegionStore } from '../../../region/wotr-region-store';
-import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
-import {
+import type { WotrRegionStore } from '../../../region/wotr-region-store';
+import type { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
+import type {
   WotrRecruitmentConstraintsModifier,
   WotrUnitModifiers,
 } from '../../../unit/wotr-unit-modifiers';
-import { WotrCharacterHandler } from '../../wotr-character-handler';
+import type { WotrCharacterHandler } from '../../wotr-character-handler';
 import { KomeSovereignCard } from './kome-sovereign-card';
 
 // Theoden - King of the Riddermark (Level 2, Leadership 1, Shadow Resistance 3)

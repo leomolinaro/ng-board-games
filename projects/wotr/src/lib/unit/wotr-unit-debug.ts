@@ -1,8 +1,9 @@
 import { computed, effect, inject } from '@angular/core';
-import { frontOfNation, WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import { frontOfNation } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrArmy } from './wotr-unit-models';
+import type { WotrArmy } from './wotr-unit-models';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
 export class WotrUnitDebug {

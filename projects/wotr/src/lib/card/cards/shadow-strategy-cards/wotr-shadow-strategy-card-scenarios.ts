@@ -1,4 +1,4 @@
-import { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
+import type { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
 import { theFightingUrukHai } from './02-the-fighting-uruk-hai';
 import { theShadowIsMoving } from './19-the-shadow-is-moving';
 

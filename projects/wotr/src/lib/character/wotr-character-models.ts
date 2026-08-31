@@ -1,6 +1,6 @@
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
 
 export type WotrCompanionId =
   | 'gandalf-the-grey'

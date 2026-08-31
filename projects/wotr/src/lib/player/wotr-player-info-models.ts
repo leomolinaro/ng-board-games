@@ -1,5 +1,5 @@
-import { BgUser } from '@leobg/commons';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { BgUser } from '@leobg/commons';
+import type { WotrFrontId } from '../front/wotr-front-models';
 
 export interface AWotrPlayerInfo {
   id: WotrFrontId;

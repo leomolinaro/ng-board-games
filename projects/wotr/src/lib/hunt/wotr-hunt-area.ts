@@ -5,13 +5,14 @@ import {
   input,
   linkedSignal,
 } from '@angular/core';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiButton, tuiButtonOptionsProvider } from '@taiga-ui/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameStore } from '../game/wotr-game-store';
 import { KomeCorruptionBoard } from './kome-corruption-board';
-import { WotrHuntTileId } from './wotr-hunt-models';
-import { WotrHuntState } from './wotr-hunt-store';
+import type { WotrHuntTileId } from './wotr-hunt-models';
+import type { WotrHuntState } from './wotr-hunt-store';
 
 export type HuntTabId = 'pool' | 'drawn' | 'removed' | 'kings-corruption';
 

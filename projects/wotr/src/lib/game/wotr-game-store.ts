@@ -1,56 +1,56 @@
 // import { withDevtools } from "@angular-architects/ngrx-toolkit";
 import { computed, inject, Injectable } from '@angular/core';
-import { BgUser } from '@leobg/commons';
+import type { BgUser } from '@leobg/commons';
 import { arrayUtil } from '@leobg/commons/utils';
 import { patchState, signalStore, withState } from '@ngrx/signals';
+import type { WotrBattleState } from '../battle/wotr-battle-store';
 import {
   initialeState as battleInitialeState,
-  WotrBattleState,
   WotrBattleStore,
 } from '../battle/wotr-battle-store';
+import type { WotrCharacterState } from '../character/wotr-character-store';
 import {
   initialeState as characterInitialeState,
-  WotrCharacterState,
   WotrCharacterStore,
 } from '../character/wotr-character-store';
-import { WotrFellowship } from '../fellowship/wotr-fellowship-models';
+import type { WotrFellowship } from '../fellowship/wotr-fellowship-models';
 import {
   initialState as fellowshipInitialeState,
   WotrFellowshipStore,
 } from '../fellowship/wotr-fellowship-store';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontState } from '../front/wotr-front-store';
 import {
   initialState as frontInitialState,
-  WotrFrontState,
   WotrFrontStore,
 } from '../front/wotr-front-store';
+import type { WotrHuntState } from '../hunt/wotr-hunt-store';
 import {
   initialeState as huntInitialeState,
-  WotrHuntState,
   WotrHuntStore,
 } from '../hunt/wotr-hunt-store';
-import { WotrLog } from '../log/wotr-log-models';
+import type { WotrLog } from '../log/wotr-log-models';
 import {
   initialeState as lognitialeState,
   WotrLogStore,
 } from '../log/wotr-log-store';
+import type { WotrNationState } from '../nation/wotr-nation-store';
 import {
   initialeState as nationInitialeState,
-  WotrNationState,
   WotrNationStore,
 } from '../nation/wotr-nation-store';
-import { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import type { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import type { WotrPlayerInfoState } from '../player/wotr-player-info-store';
 import {
   initialState as playerInitialStore,
-  WotrPlayerInfoState,
   WotrPlayerInfoStore,
 } from '../player/wotr-player-info-store';
+import type { WotrRegionState } from '../region/wotr-region-store';
 import {
   initialeState as regionInitialeState,
-  WotrRegionState,
   WotrRegionStore,
 } from '../region/wotr-region-store';
-import { WotrGameOptions } from './options/wotr-game-options';
+import type { WotrGameOptions } from './options/wotr-game-options';
 
 export interface WotrGameState {
   gameId: string;

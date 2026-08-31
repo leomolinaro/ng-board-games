@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrFellowshipMove } from '../fellowship/wotr-fellowship-models';
-import { WotrUiChoice } from '../game/wotr-game-ui';
-import { WotrHuntEffectParams, WotrHuntTileId } from './wotr-hunt-models';
+import type { WotrFellowshipMove } from '../fellowship/wotr-fellowship-models';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrHuntEffectParams, WotrHuntTileId } from './wotr-hunt-models';
 
 export class WotrHuntRollModifiers {
   rollModifiers: number[] = [];

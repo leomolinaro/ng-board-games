@@ -37,8 +37,8 @@ import {
   moveArmy,
 } from '../../unit/wotr-unit-actions';
 import { elite, nazgul, regular } from '../../unit/wotr-unit-models';
-import { WotrScenarioDefinition } from '../wotr-scenario';
-import { WotrStoriesBuilder } from '../wotr-story-builder';
+import type { WotrScenarioDefinition } from '../wotr-scenario';
+import type { WotrStoriesBuilder } from '../wotr-story-builder';
 
 export const scenario: WotrScenarioDefinition = {
   options: {

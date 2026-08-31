@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { BaronyGameStore } from '../barony-game/barony-game.store';
-import {
+import type {
   BaronyColor,
   BaronyLand,
   BaronyLandCoordinates,
@@ -188,7 +188,7 @@ export class BaronyLogRow {
 
   private land(landId: BaronyLandCoordinates): BaronyLogLandFragment {
     const land = this.game.getLand(landId);
-    let label: string = '';
+    let label = '';
     switch (land.type) {
       case 'fields':
         label = 'fields';

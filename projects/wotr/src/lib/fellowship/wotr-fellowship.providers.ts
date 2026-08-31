@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrFellowshipHandler } from './wotr-fellowship-handler';
 import { WotrFellowshipModifiers } from './wotr-fellowship-modifiers';
 import { WotrFellowshipRules } from './wotr-fellowship-rules';

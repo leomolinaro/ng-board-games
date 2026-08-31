@@ -1,12 +1,15 @@
-import { Component, computed, inject, input, Signal } from '@angular/core';
+import type { Signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { BgDialogService } from '@leobg/commons';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import { isFreePeoplesCard, WotrCardId } from '../card/wotr-card-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import { isFreePeoplesCard } from '../card/wotr-card-models';
+import type {
+  WotrCardsDialogData} from '../card/wotr-cards-dialog';
 import {
-  WotrCardsDialog,
-  WotrCardsDialogData,
+  WotrCardsDialog
 } from '../card/wotr-cards-dialog';
-import { WotrFront } from './wotr-front-models';
+import type { WotrFront } from './wotr-front-models';
 
 interface WotrTableCardNode {
   id: WotrCardId;

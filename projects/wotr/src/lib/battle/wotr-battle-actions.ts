@@ -1,17 +1,18 @@
-import {
+import type {
   WotrCardId,
-  WotrCardLabel,
+  WotrCardLabel} from '../card/wotr-card-models';
+import {
   labelToCardId,
 } from '../card/wotr-card-models';
 import { frontOfNation } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
-import {
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type {
   WotrArmy,
   WotrLeaderUnits,
   WotrUnitComposer,
   WotrUnits,
 } from '../unit/wotr-unit-models';
-import { WotrCombatDie } from './wotr-combat-die-models';
+import type { WotrCombatDie } from './wotr-combat-die-models';
 
 export type WotrBattleAction =
   | WotrArmyAttack
@@ -39,7 +40,7 @@ export interface WotrArmyAttack {
 export function attack(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   retroguard?: WotrArmy,
 ): WotrArmyAttack {
   const action: WotrArmyAttack = { type: 'army-attack', fromRegion, toRegion };

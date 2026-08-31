@@ -1,11 +1,14 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { injectDialogContext } from '@leobg/commons';
-import { BgTransformFn, arrayUtil } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { arrayUtil } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
-import { WotrAssetsStore, WotrUnitImage } from '../assets/wotr-assets-store';
-import { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrUnitImage } from '../assets/wotr-assets-store';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import type { WotrCompanionId } from '../character/wotr-character-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrFellowshipCompanionSelection } from '../game/wotr-game-ui';
+import type { WotrFellowshipCompanionSelection } from '../game/wotr-game-ui';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export interface WotrFellowshipDialogData {

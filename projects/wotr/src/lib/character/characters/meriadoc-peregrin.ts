@@ -1,17 +1,17 @@
-import { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrUiChoice } from '../../game/wotr-game-ui';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrHuntEffectParams } from '../../hunt/wotr-hunt-models';
-import {
+import type { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrUiChoice } from '../../game/wotr-game-ui';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrHuntEffectParams } from '../../hunt/wotr-hunt-models';
+import type {
   WotrHuntEffectChoiceModifier,
   WotrHuntModifiers,
 } from '../../hunt/wotr-hunt-modifiers';
-import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import type { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
 import { eliminateCharacter } from '../wotr-character-actions';
-import { WotrCompanionId } from '../wotr-character-models';
-import {
+import type { WotrCompanionId } from '../wotr-character-models';
+import type {
   WotrBeforeCharacterElimination,
   WotrCharacterEliminationParams,
   WotrCharacterModifiers,

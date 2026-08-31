@@ -1,5 +1,3 @@
-import { Key } from './types.util';
-
 export function range<T = number>(
   length: number,
   supplier?: (index: number) => T,
@@ -25,7 +23,7 @@ export function isNotEmpty<T>(array: T[]): boolean {
 export function sortComparatorByKey(
   key: string,
 ): (val1: object, val2: object) => number {
-  return (val1: { [key: string]: any }, val2: { [key: string]: any }) => {
+  return (val1: Record<string, any>, val2: Record<string, any>) => {
     return val1[key] < val2[key] ? -1 : val1[key] === val2[key] ? 0 : 1;
   };
 }
@@ -48,13 +46,13 @@ export function translate<T>(firstIndex: number, array: T[]): T[] {
   return toReturn;
 }
 
-export function toMap<T, K extends Key, V>(
+export function toMap<T, V>(
   array: T[],
-  keyGetter: (e: T, index: number) => K,
-  valueGetter?: (e: T, key: K, index: number) => V,
-): { [key: string]: V } {
+  keyGetter: (e: T, index: number) => string,
+  valueGetter?: (e: T, key: string, index: number) => V,
+): Record<string, V> {
   const vG = valueGetter || ((e) => e as unknown as V);
-  const map: { [key: string]: V } = {};
+  const map: Record<string, V> = {};
   array?.forEach((e, index) => {
     const key = keyGetter(e, index);
     map[key] = vG(e, key, index);
@@ -64,22 +62,6 @@ export function toMap<T, K extends Key, V>(
 
 export function safeArray<T>(array: T[]): T[] {
   return array || [];
-}
-
-export function mapToDistinct<T, V extends string | number>(
-  array: T[],
-  valueGetter: (e: T) => V,
-): V[] {
-  const toReturn: V[] = [];
-  const set: { [key: string]: boolean } = {};
-  array.forEach((e) => {
-    const value = valueGetter(e);
-    if (!set[value]) {
-      set[value] = true;
-      toReturn.push(value);
-    }
-  });
-  return toReturn;
 }
 
 export function flattify<T>(arrays: T[][]): T[] {

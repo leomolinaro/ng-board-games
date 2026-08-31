@@ -1,4 +1,4 @@
-import {
+import type {
   BaronyAction,
   BaronyColor,
   BaronyLandPiece,

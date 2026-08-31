@@ -1,10 +1,10 @@
-import { WotrCard, WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrPlayer } from '../player/wotr-player';
-import { WotrRegionId } from '../region/wotr-region-models';
-import { WotrArmy } from '../unit/wotr-unit-models';
-import { WotrArmyAttack } from './wotr-battle-actions';
-import { WotrCombatDie } from './wotr-combat-die-models';
+import type { WotrCard, WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrPlayer } from '../player/wotr-player';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrArmy } from '../unit/wotr-unit-models';
+import type { WotrArmyAttack } from './wotr-battle-actions';
+import type { WotrCombatDie } from './wotr-combat-die-models';
 
 export interface WotrBattle {
   region: WotrRegionId;
@@ -30,13 +30,13 @@ export class WotrCombatFront {
   frontId = this.player.frontId;
 
   combatCard?: WotrCard;
-  forfeitedCombatCard: boolean = false;
-  cancelledCombatCard: boolean = false;
-  maxNCombatDice: number = 5;
-  lessNCombatDice: number = 0;
-  lessNLeaderDice: number = 0;
-  forfeitedLeadership: number = 0;
-  negateNazgulLeadership: boolean = false;
+  forfeitedCombatCard = false;
+  cancelledCombatCard = false;
+  maxNCombatDice = 5;
+  lessNCombatDice = 0;
+  lessNLeaderDice = 0;
+  forfeitedLeadership = 0;
+  negateNazgulLeadership = false;
   /** Modifiers applied to the combat strength */
   combatStrengthModifiers: number[] = [];
   /** Modifiers applied to each die during the combat roll */
@@ -46,14 +46,14 @@ export class WotrCombatFront {
   /** Modifiers to the number of hits inflicted by this front to the other */
   hitsModifiers: number[] = [];
   cancelledCharacters: WotrCharacterId[] = [];
-  leaderRollCancelled: boolean = false;
+  leaderRollCancelled = false;
 
   combatRoll?: WotrCombatDie[];
   nCombatSuccesses?: number;
   leaderReRoll?: WotrCombatDie[];
   nLeaderSuccesses?: number;
   nTotalHits?: number;
-  nPreCombatHits: number = 0;
+  nPreCombatHits = 0;
 
   canRemoveRegularToContinueSiege?: boolean;
 

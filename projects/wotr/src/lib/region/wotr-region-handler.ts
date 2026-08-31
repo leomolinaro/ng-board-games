@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrRegionAction } from './wotr-region-actions';
-import { WotrRegionId } from './wotr-region-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrRegionAction } from './wotr-region-actions';
+import type { WotrRegionId } from './wotr-region-models';
 import { WotrRegionModifiers } from './wotr-region-modifiers';
 import { WotrRegionStore } from './wotr-region-store';
 

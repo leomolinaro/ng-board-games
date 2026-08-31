@@ -1,8 +1,8 @@
-import { WotrActionDie } from '../action-die/wotr-action-die-models';
-import { WotrCombatDie } from '../battle/wotr-combat-die-models';
-import { KomeSovereignId } from '../character/wotr-character-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrHuntTileId } from './wotr-hunt-models';
+import type { WotrActionDie } from '../action-die/wotr-action-die-models';
+import type { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import type { KomeSovereignId } from '../character/wotr-character-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrHuntTileId } from './wotr-hunt-models';
 
 export type WotrHuntAction =
   | WotrHuntAllocation

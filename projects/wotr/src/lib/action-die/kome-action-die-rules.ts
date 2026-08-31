@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
 
 @Injectable()

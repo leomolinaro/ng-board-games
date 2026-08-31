@@ -1,7 +1,8 @@
-import { Injectable, Signal, computed } from '@angular/core';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrBattle } from './wotr-battle-models';
+import type { Signal} from '@angular/core';
+import { Injectable, computed } from '@angular/core';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrBattle } from './wotr-battle-models';
 
 export type WotrBattleState = WotrBattle | null;
 

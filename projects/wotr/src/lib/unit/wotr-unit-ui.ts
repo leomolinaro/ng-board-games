@@ -1,18 +1,19 @@
 import { inject, Injectable } from '@angular/core';
 import { attack, forfeitLeadership } from '../battle/wotr-battle-actions';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { findAction, WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import { findAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { WotrEffectStory } from '../game/wotr-story-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrEffectStory } from '../game/wotr-story-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
-import { WotrRegionId } from '../region/wotr-region-models';
-import { WotrRegionQuery } from '../region/wotr-region-query';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionQuery } from '../region/wotr-region-query';
 import { WotrRegionStore } from '../region/wotr-region-store';
+import type { WotrArmyMovement } from './wotr-unit-actions';
 import {
   disbandEliteUnit,
   disbandRegularUnit,
@@ -26,17 +27,10 @@ import {
   recruitLeader,
   recruitNazgul,
   recruitRegularUnit,
-  WotrArmyMovement,
 } from './wotr-unit-actions';
-import {
-  WotrRecruitmentConstraints,
-  WotrUnitHandler,
-} from './wotr-unit-handler';
-import {
-  character,
-  elite,
-  leader,
-  nazgul,
+import type { WotrRecruitmentConstraints } from './wotr-unit-handler';
+import { WotrUnitHandler } from './wotr-unit-handler';
+import type {
   WotrArmy,
   WotrEliminateUnitsParams,
   WotrForfeitLeadershipParams,
@@ -46,6 +40,7 @@ import {
   WotrUnitComposer,
   WotrUnits,
 } from './wotr-unit-models';
+import { character, elite, leader, nazgul } from './wotr-unit-models';
 import { WotrUnitModifiers } from './wotr-unit-modifiers';
 import { WotrUnitRules } from './wotr-unit-rules';
 import { WotrUnitUtils } from './wotr-unit-utils';
@@ -400,7 +395,7 @@ export class WotrUnitUi {
     }
     let nLeftRegions = Math.min(availableRegionIds.length, nMaxRegions);
     let nLeftUnits = Math.min(nReinforcements, nLeftRegions * nUnitsPerRegion);
-    let continuee = true;
+    let continuee: boolean;
     const actions: WotrAction[] = [];
     do {
       const regionId = await this.ui.askRegion(
@@ -449,7 +444,7 @@ export class WotrUnitUi {
   async recruitRegularsOrElitesByCard(
     regionId: WotrRegionId,
     nationId: WotrNationId,
-    nUnits: number = 1,
+    nUnits = 1,
   ): Promise<WotrAction[]> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return [];
@@ -530,17 +525,17 @@ export class WotrUnitUi {
             canPass: true,
           },
         );
-        if (!unit) {
-          continuee = false;
-        } else if (unit.type === 'regular') {
-          this.unitHandler.recruitRegularUnit(1, nationId, regionId);
-          nChosenRegulars++;
-        } else if (unit.type === 'elite') {
-          this.unitHandler.recruitEliteUnit(1, nationId, regionId);
-          nChosenElites++;
-        } else if (unit.type === 'nazgul') {
-          this.unitHandler.recruitNazgul(1, regionId);
-          nChosenNazguls++;
+        if (unit) {
+          if (unit.type === 'regular') {
+            this.unitHandler.recruitRegularUnit(1, nationId, regionId);
+            nChosenRegulars++;
+          } else if (unit.type === 'elite') {
+            this.unitHandler.recruitEliteUnit(1, nationId, regionId);
+            nChosenElites++;
+          } else if (unit.type === 'nazgul') {
+            this.unitHandler.recruitNazgul(1, regionId);
+            nChosenNazguls++;
+          }
         }
         continuee =
           nChosenRegulars < nRegulars ||
@@ -654,13 +649,10 @@ export class WotrUnitUi {
 
   async eliminateUnits(
     params: WotrEliminateUnitsParams,
-    frontId: string,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     for (const unitMatch of params.units) {
-      actions.push(
-        ...(await this.eliminateUnit(unitMatch, params.regionIds, frontId)),
-      );
+      actions.push(...(await this.eliminateUnit(unitMatch, params.regionIds)));
     }
     return actions;
   }
@@ -668,7 +660,6 @@ export class WotrUnitUi {
   async eliminateUnit(
     selection: WotrRegionUnitMatch,
     regionIds: WotrRegionId[] | null,
-    frontId: string,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     if (!regionIds) {
@@ -834,7 +825,7 @@ export class WotrUnitUi {
     } else if (params.points === 'all') {
       return 'all';
     }
-    throw new Error(`Invalid points value: ${params.points}`);
+    throw new Error(`Invalid points value`);
   }
 
   async rageOfTheDunledingsMoveUnits(
@@ -886,7 +877,6 @@ export class WotrUnitUi {
   async theEaglesAreComingEffect(
     nHits: number,
     region: WotrRegionId,
-    cardId: WotrCardId,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     const shadowArmy = this.q.region(region).army('shadow')!;
@@ -897,10 +887,10 @@ export class WotrUnitUi {
         unitMatches.push({ unitType: 'nazgul' });
       }
       actions.push(
-        ...(await this.eliminateUnits(
-          { regionIds: [region], units: unitMatches },
-          cardId,
-        )),
+        ...(await this.eliminateUnits({
+          regionIds: [region],
+          units: unitMatches,
+        })),
       );
     }
     const remainingNazgul = nNazgul - nHits;
@@ -918,7 +908,7 @@ export class WotrUnitUi {
     return actions;
   }
 
-  async faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrAction[]> {
+  async faramirsRangersRecruit(): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     actions.push(
       ...(await this.recruitRegularsOrElitesByCard('osgiliath', 'gondor', 1)),
@@ -929,7 +919,6 @@ export class WotrUnitUi {
 
   async deadMenOfDunharrowRecruit(
     regionId: WotrRegionId,
-    cardId: WotrCardId,
   ): Promise<WotrAction[]> {
     return this.recruitUnitsInSameRegionByCard(regionId, 'gondor', 3, 0, 0);
   }

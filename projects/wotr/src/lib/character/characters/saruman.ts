@@ -1,22 +1,22 @@
-import { WotrAbility } from '../../ability/wotr-ability';
-import { WotrActionDie } from '../../action-die/wotr-action-die-models';
-import {
+import type { WotrAbility } from '../../ability/wotr-ability';
+import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import type {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
 } from '../../action-die/wotr-action-die-modifiers';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrUiCharacterChoice, WotrUiChoice } from '../../game/wotr-game-ui';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrRegionId } from '../../region/wotr-region-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrUiCharacterChoice, WotrUiChoice } from '../../game/wotr-game-ui';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrRegionId } from '../../region/wotr-region-models';
 import { upgradeRegularUnit } from '../../unit/wotr-unit-actions';
-import {
+import type {
   WotrLeaderModifier,
   WotrUnitModifiers,
 } from '../../unit/wotr-unit-modifiers';
 import { playCharacter } from '../wotr-character-actions';
-import { WotrCharacterId } from '../wotr-character-models';
+import type { WotrCharacterId } from '../wotr-character-models';
 import { WotrPlayableCharacterCard } from './wotr-playable-character-card';
 
 // Saruman - Corrupted Wizard (Level 0, Leadership 1, +1 Action Die)

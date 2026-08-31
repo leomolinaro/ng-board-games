@@ -1,49 +1,53 @@
 import { inject, Injectable } from '@angular/core';
 import { unexpectedStory } from '@leobg/commons';
-import {
+import type {
   WotrCard,
   WotrCardCombatLabel,
   WotrCardId,
 } from '../../card/wotr-card-models';
+import type {
+  WotrCharacterChoose,
+  WotrCharacterElimination} from '../../character/wotr-character-actions';
 import {
   chooseCharacter,
-  eliminateCharacter,
-  WotrCharacterChoose,
-  WotrCharacterElimination,
+  eliminateCharacter
 } from '../../character/wotr-character-actions';
+import type {
+  WotrAction} from '../../commons/wotr-action-models';
 import {
   findAction,
-  findActions,
-  WotrAction,
+  findActions
 } from '../../commons/wotr-action-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
 import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
 import { assertAction } from '../../game/wotr-story-models';
 import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
-import { WotrPlayer } from '../../player/wotr-player';
+import type { WotrPlayer } from '../../player/wotr-player';
 import { WotrShadowPlayer } from '../../player/wotr-shadow-player';
-import { WotrRegionId } from '../../region/wotr-region-models';
-import {
-  eliminateLeader,
+import type { WotrRegionId } from '../../region/wotr-region-models';
+import type {
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
   WotrLeaderElimination,
-  WotrRegularUnitElimination,
-} from '../../unit/wotr-unit-actions';
+  WotrRegularUnitElimination} from '../../unit/wotr-unit-actions';
 import {
+  eliminateLeader
+} from '../../unit/wotr-unit-actions';
+import type {
   WotrArmy,
   WotrForfeitLeadershipParams,
   WotrRegionUnitMatch,
 } from '../../unit/wotr-unit-models';
 import { WotrUnitRules } from '../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
-import {
-  retreat,
+import type {
   WotrCombatRoll,
-  WotrLeaderForfeit,
+  WotrLeaderForfeit} from '../wotr-battle-actions';
+import {
+  retreat
 } from '../wotr-battle-actions';
-import { WotrCombatFront, WotrCombatRound } from '../wotr-battle-models';
+import type { WotrCombatFront, WotrCombatRound } from '../wotr-battle-models';
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;

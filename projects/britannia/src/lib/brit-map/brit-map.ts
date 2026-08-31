@@ -1,10 +1,11 @@
-import {
-  ChangeDetectorRef,
-  Component,
+import type {
   ElementRef,
   OnChanges,
   OnInit,
-  TrackByFunction,
+  TrackByFunction} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
   ViewChild,
   inject,
   input,
@@ -12,15 +13,16 @@ import {
   output,
 } from '@angular/core';
 import { BgMapZoom, BgSvg } from '@leobg/commons';
+import type {
+  SimpleChanges} from '@leobg/commons/utils';
 import {
   BgTransformPipe,
-  SimpleChanges,
   arrayUtil,
   downloadUtil,
 } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
 import { BritAssetsService } from '../brit-assets.service';
-import {
+import type {
   BritArea,
   BritAreaId,
   BritEvent,
@@ -31,13 +33,14 @@ import {
   BritRoundId,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import {
+import type {
   BritAreaState,
   BritAreaUnit,
   BritNationState,
 } from '../brit-game-state.models';
 import { BritMapSlotsGeneratorService } from './brit-map-slots-generator.service';
-import { BritMapPoint, BritMapService } from './brit-map.service';
+import type { BritMapPoint} from './brit-map.service';
+import { BritMapService } from './brit-map.service';
 
 interface BritAreaNode {
   id: BritAreaId;
@@ -463,7 +466,7 @@ export class BritMap implements OnChanges, OnInit {
         clientP.x,
         clientP.y,
       )?.id;
-      if (elementId && elementId.startsWith('brit-area-')) {
+      if (elementId?.startsWith('brit-area-')) {
         return elementId.slice(10) as BritAreaId;
       } else {
         return null;

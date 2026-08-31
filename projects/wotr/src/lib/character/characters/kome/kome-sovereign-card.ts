@@ -1,14 +1,14 @@
-import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
-import { WotrAction } from '../../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
-import { WotrLogWriter } from '../../../log/wotr-log-writer';
-import { WotrNationId } from '../../../nation/wotr-nation-models';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import type { WotrLogWriter } from '../../../log/wotr-log-writer';
+import type { WotrNationId } from '../../../nation/wotr-nation-models';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import { awakeSovereign, moveCharacters } from '../../wotr-character-actions';
-import { WotrCharacterHandler } from '../../wotr-character-handler';
-import { KomeSovereignId } from '../../wotr-character-models';
+import type { WotrCharacterHandler } from '../../wotr-character-handler';
+import type { KomeSovereignId } from '../../wotr-character-models';
 import { validSovereignAwakeningDie } from './commons';
 
 export abstract class KomeSovereignCard {

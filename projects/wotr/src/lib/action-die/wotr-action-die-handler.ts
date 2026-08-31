@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
   WotrStoryApplier,
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFrontHandler } from '../front/wotr-front-handler';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import {
+import type {
   WotrDieStory,
   WotrPassStory,
   WotrSkipTokensStory,
@@ -16,8 +16,8 @@ import {
 } from '../game/wotr-story-models';
 import { WotrHuntStore } from '../hunt/wotr-hunt-store';
 import { WotrLogWriter } from '../log/wotr-log-writer';
-import { WotrActionDieAction } from './wotr-action-die-actions';
-import {
+import type { WotrActionDieAction } from './wotr-action-die-actions';
+import type {
   WotrActionDie,
   WotrActionToken,
   WotrSpecialActionDieType,

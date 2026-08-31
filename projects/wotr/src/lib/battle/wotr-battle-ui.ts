@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { randomUtil } from '@leobg/commons/utils';
-import { getCard, WotrCardId } from '../card/wotr-card-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import { getCard } from '../card/wotr-card-models';
 import { eliminateCharacter } from '../character/wotr-character-actions';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrUiOption } from '../game/wotr-game-ui';
+import type { WotrUiOption } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { WotrStory } from '../game/wotr-story-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrStory } from '../game/wotr-story-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   downgradeEliteUnit,
@@ -17,14 +18,18 @@ import {
   eliminateNazgul,
   eliminateRegularUnit,
 } from '../unit/wotr-unit-actions';
-import { WotrUnits } from '../unit/wotr-unit-models';
+import type { WotrUnits } from '../unit/wotr-unit-models';
 import { WotrUnitRules } from '../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../unit/wotr-unit-utils';
-import {
+import type {
   WotrCombatCardAbility,
-  WotrCombatCardParams,
+  WotrCombatCardParams} from './combat-cards/wotr-combat-cards';
+import {
   WotrCombatCards,
 } from './combat-cards/wotr-combat-cards';
+import type {
+  WotrCombatReRoll,
+  WotrCombatRoll} from './wotr-battle-actions';
 import {
   advanceArmy,
   ceaseBattle,
@@ -35,15 +40,13 @@ import {
   notRetreat,
   notRetreatIntoSiege,
   retreat,
-  retreatIntoSiege,
-  WotrCombatReRoll,
-  WotrCombatRoll,
+  retreatIntoSiege
 } from './wotr-battle-actions';
 import { WotrBattleHandler } from './wotr-battle-handler';
-import { WotrCombatRound } from './wotr-battle-models';
+import type { WotrCombatRound } from './wotr-battle-models';
 import { WotrBattleModifiers } from './wotr-battle-modifiers';
 import { WotrBattleStore } from './wotr-battle-store';
-import { WotrCombatDie } from './wotr-combat-die-models';
+import type { WotrCombatDie } from './wotr-combat-die-models';
 
 @Injectable()
 export class WotrBattleUi {

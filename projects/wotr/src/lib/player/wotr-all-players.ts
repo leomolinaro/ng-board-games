@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrCombatRound } from '../battle/wotr-battle-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrStory } from '../game/wotr-story-models';
+import type { WotrCombatRound } from '../battle/wotr-battle-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrStory } from '../game/wotr-story-models';
 import { WotrStoryService } from '../game/wotr-story-service';
 
 @Injectable()

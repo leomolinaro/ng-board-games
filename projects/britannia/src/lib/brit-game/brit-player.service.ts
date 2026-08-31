@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
-import { BritColor, BritNationId } from '../brit-components.models';
-import {
+import type { Observable } from 'rxjs';
+import type { BritColor, BritNationId } from '../brit-components.models';
+import type {
   BritArmyMovements,
   BritArmyPlacement,
   BritBattleInitiation,

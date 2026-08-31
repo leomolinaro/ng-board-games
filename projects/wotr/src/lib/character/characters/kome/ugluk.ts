@@ -1,20 +1,20 @@
-import { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
-import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
+import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
 import { forfeitCombatCardById } from '../../../battle/wotr-battle-actions';
-import { WotrCombatRound } from '../../../battle/wotr-battle-models';
-import {
+import type { WotrCombatRound } from '../../../battle/wotr-battle-models';
+import type {
   WotrBattleModifiers,
   WotrBeforeCombatCardRevealing,
 } from '../../../battle/wotr-battle-modifiers';
-import { WotrAction } from '../../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
-import {
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import type {
   WotrBeforeHuntRoll,
   WotrHuntModifiers,
 } from '../../../hunt/wotr-hunt-modifiers';
-import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import { playCharacter } from '../../wotr-character-actions';
 import {
   activateCharacterAbility,
@@ -91,7 +91,7 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
     if (!round.shadow.combatCard) return;
     this.round = round;
     if (!(await activateCharacterAbility(this, 'ugluk', this.shadow))) return;
-    // eslint-disable-next-line require-atomic-updates
+     
     round.shadow.forfeitedCombatCard = true;
     round.shadow.combatModifiers.push(1);
     round.shadow.leaderModifiers.push(1);

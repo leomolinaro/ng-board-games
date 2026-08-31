@@ -1,4 +1,4 @@
-import { InputSignalWithTransform, ModelSignal } from '@angular/core';
+import type { InputSignalWithTransform, ModelSignal } from '@angular/core';
 
 export interface BgGameOptionsComponent<Opt> {
   options: ModelSignal<Opt>;

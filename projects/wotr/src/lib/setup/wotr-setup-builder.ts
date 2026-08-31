@@ -1,13 +1,13 @@
-import {
+import type {
   KomeSovereignId,
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
-import { WotrGameOptions } from '../game/options/wotr-game-options';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
-import {
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type {
   WotrFrontDecksSetup,
   WotrInPlayCharacterSetup,
   WotrNationSetup,

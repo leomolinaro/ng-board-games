@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WotrAssetsStore } from '../../../assets/wotr-assets-store';
-import { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
 
 export type WotrRegionSlots = Record<
   WotrRegionId,
@@ -60,8 +61,8 @@ export class WotrMapService {
   private assets = inject(WotrAssetsStore);
 
   private svgLoaded = false;
-  private regionPaths!: { [id in WotrRegionId]: string };
-  private strongholdPaths!: Partial<{ [id in WotrRegionId]: string }>;
+  private regionPaths!: Record<WotrRegionId, string>;
+  private strongholdPaths!: Partial<Record<WotrRegionId, string>>;
   private viewBox!: string;
   private width!: number;
   private regionSlots!: WotrRegionSlots;

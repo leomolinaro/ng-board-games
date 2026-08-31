@@ -1,7 +1,7 @@
 import { separateCompanions } from '../../fellowship/wotr-fellowship-actions';
 import { advanceNation } from '../../nation/wotr-nation-actions';
-import { WotrScenario, WotrScenarioGroup } from '../../scenario/wotr-scenario';
-import { WotrStoriesBuilder } from '../../scenario/wotr-story-builder';
+import type { WotrScenario, WotrScenarioGroup } from '../../scenario/wotr-scenario';
+import type { WotrStoriesBuilder } from '../../scenario/wotr-story-builder';
 import { playCharacter } from '../wotr-character-actions';
 
 export function gandalfTheWhiteScenarios(): WotrScenarioGroup {

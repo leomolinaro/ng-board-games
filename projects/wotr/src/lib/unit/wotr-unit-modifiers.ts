@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
-import { WotrRecruitmentConstraints } from './wotr-unit-handler';
-import { WotrArmy } from './wotr-unit-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRecruitmentConstraints } from './wotr-unit-handler';
+import type { WotrArmy } from './wotr-unit-models';
 
 export type WotrLeaderModifier = (
   unitType: WotrArmyUnitType,

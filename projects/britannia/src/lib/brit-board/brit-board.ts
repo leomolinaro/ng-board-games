@@ -1,18 +1,12 @@
-import {
-  Component,
-  TrackByFunction,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { BgMapZoomButtons } from '@leobg/commons';
 import { immutableUtil } from '@leobg/commons/utils';
 import { TuiSheetDialogService } from '@taiga-ui/addon-mobile';
 import { TuiIcon } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { Observable } from 'rxjs';
-import { BritAreaId, BritNationId } from '../brit-components.models';
-import {
+import type { Observable } from 'rxjs';
+import type { BritAreaId, BritNationId } from '../brit-components.models';
+import type {
   BritAreaLeader,
   BritAreaState,
   BritAreaUnit,
@@ -73,8 +67,6 @@ export class BritBoardComponent {
   readonly cancelClick = output<void>();
   // @Output () knightsConfirm = new EventEmitter<number> ();
   // @Output () resourceSelect = new EventEmitter<BaronyResourceType> ();
-
-  playerTrackBy: TrackByFunction<BritPlayer> = (index, player) => player.id;
 
   summaryFixed = false;
   logsFixed = false;

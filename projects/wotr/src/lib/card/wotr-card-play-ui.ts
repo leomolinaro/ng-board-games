@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrUiAbility } from '../ability/wotr-ability';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrUiAbility } from '../ability/wotr-ability';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { WotrStory } from '../game/wotr-story-models';
+import type { WotrStory } from '../game/wotr-story-models';
 import { WotrCards } from './cards/wotr-cards';
 import { playCardId } from './wotr-card-actions';
-import { getCard, WotrCardId, WotrCardType } from './wotr-card-models';
+import type { WotrCardId, WotrCardType } from './wotr-card-models';
+import { getCard } from './wotr-card-models';
 
 @Injectable()
 export class WotrCardPlayUi {

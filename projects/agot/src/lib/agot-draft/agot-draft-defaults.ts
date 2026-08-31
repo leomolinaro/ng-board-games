@@ -1,4 +1,4 @@
-import { AgotFactionCode, AgotPackCode } from '../agot.models';
+import type { AgotFactionCode, AgotPackCode } from '../agot.models';
 
 export const DEFAULT_TYPE_IDS: string[] = [
   'character',

@@ -1,4 +1,5 @@
-import { AgotFactionCode, agotAgendaCode as agenda } from '../agot.models';
+import type { AgotFactionCode} from '../agot.models';
+import { agotAgendaCode as agenda } from '../agot.models';
 
 export interface AgotFcDeck {
   id: string;

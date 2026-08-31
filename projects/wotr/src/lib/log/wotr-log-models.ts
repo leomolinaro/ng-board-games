@@ -1,15 +1,15 @@
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
-import { WotrPhase } from '../game-turn/wotr-phase-models';
-import { WotrStory } from '../game/wotr-story-models';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrPhase } from '../game-turn/wotr-phase-models';
+import type { WotrStory } from '../game/wotr-story-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrLogSetup {
   type: 'setup';

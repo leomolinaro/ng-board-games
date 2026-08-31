@@ -1,6 +1,6 @@
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrArmy, WotrFreeUnits } from '../unit/wotr-unit-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrArmy, WotrFreeUnits } from '../unit/wotr-unit-models';
 
 export type WotrRegionId =
   | 'forlindon'
@@ -109,7 +109,7 @@ export type WotrRegionId =
   | 'far-harad'
   | 'khand';
 
-export type WotrNeighbor = { id: WotrRegionId; impassable: boolean };
+export interface WotrNeighbor { id: WotrRegionId; impassable: boolean }
 
 export type WotrSettlentType = 'town' | 'city' | 'stronghold';
 

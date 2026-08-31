@@ -1,11 +1,13 @@
 import { provideHttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideAppInitializer } from '@angular/core';
+import type { ApplicationConfig} from '@angular/core';
+import { provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import type {
+  TuiHintOptions} from '@taiga-ui/core';
 import {
   provideTaiga,
   TUI_HINT_DEFAULT_OPTIONS,
-  TUI_HINT_OPTIONS,
-  TuiHintOptions,
+  TUI_HINT_OPTIONS
 } from '@taiga-ui/core';
 import { getApps, initializeApp } from 'firebase/app';
 import { environment } from '../environments/environment';

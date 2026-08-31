@@ -1,8 +1,8 @@
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import {
+import type {
   WotrCardId,
   WotrCharacterCardId,
   WotrStrategyCardId,

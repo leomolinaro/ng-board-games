@@ -1,10 +1,10 @@
 import { unexpectedStory } from '../../../../../commons/src';
-import { WotrUiAbility } from '../../ability/wotr-ability';
-import { WotrActionDie } from '../../action-die/wotr-action-die-models';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrPlayer } from '../../player/wotr-player';
-import { WotrCharacterId } from '../wotr-character-models';
+import type { WotrUiAbility } from '../../ability/wotr-ability';
+import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrPlayer } from '../../player/wotr-player';
+import type { WotrCharacterId } from '../wotr-character-models';
 
 export abstract class WotrPlayableCharacterCard {
   public abstract characterId: WotrCharacterId;

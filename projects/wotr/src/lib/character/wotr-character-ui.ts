@@ -1,21 +1,23 @@
 import { Injectable, inject } from '@angular/core';
-import { WotrUiAbility } from '../ability/wotr-ability';
-import { WotrActionDie } from '../action-die/wotr-action-die-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrUiAbility } from '../ability/wotr-ability';
+import type { WotrActionDie } from '../action-die/wotr-action-die-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { WotrStory } from '../game/wotr-story-models';
+import type { WotrStory } from '../game/wotr-story-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrNazgulMovement, moveNazgul } from '../unit/wotr-unit-actions';
+import type { WotrNazgulMovement} from '../unit/wotr-unit-actions';
+import { moveNazgul } from '../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../unit/wotr-unit-handler';
+import type {
+  WotrCharacterMovement} from './wotr-character-actions';
 import {
-  WotrCharacterMovement,
   moveCharacters,
 } from './wotr-character-actions';
 import { WotrCharacterHandler } from './wotr-character-handler';
-import { WotrCharacterId } from './wotr-character-models';
+import type { WotrCharacterId } from './wotr-character-models';
 import { WotrCharacterModifiers } from './wotr-character-modifiers';
 import { WotrCharacterRules } from './wotr-character-rules';
 import { WotrCharacters } from './wotr-characters';

@@ -1,17 +1,17 @@
-import { WotrUiAbility } from '../../../ability/wotr-ability';
-import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import type { WotrUiAbility } from '../../../ability/wotr-ability';
+import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
 import { forfeitCombatCardById } from '../../../battle/wotr-battle-actions';
-import { WotrCombatRound } from '../../../battle/wotr-battle-models';
-import {
+import type { WotrCombatRound } from '../../../battle/wotr-battle-models';
+import type {
   WotrBattleModifiers,
   WotrBeforeCombatCardRevealing,
 } from '../../../battle/wotr-battle-modifiers';
-import { WotrBattleUi } from '../../../battle/wotr-battle-ui';
-import { WotrAction } from '../../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
-import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrBattleUi } from '../../../battle/wotr-battle-ui';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import type { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import { playCharacter } from '../../wotr-character-actions';
 import {
   activateCharacterAbility,
@@ -85,7 +85,7 @@ export class RedWrath implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
       !(await activateCharacterAbility(this, 'the-black-serpent', this.shadow))
     )
       return;
-    // eslint-disable-next-line require-atomic-updates
+     
     round.shadow.forfeitedCombatCard = true;
     round.shadow.combatModifiers.push(
       round.shadow.combatCard.combatLabel === 'Relentless Assault' ? 2 : 1,

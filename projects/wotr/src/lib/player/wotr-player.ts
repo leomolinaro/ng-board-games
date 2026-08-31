@@ -1,14 +1,14 @@
-import { WotrUiAbility } from '../ability/wotr-ability';
-import { WotrCombatCardAbility } from '../battle/combat-cards/wotr-combat-cards';
-import { WotrCombatRound } from '../battle/wotr-battle-models';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrStory } from '../game/wotr-story-models';
-import { WotrStoryService } from '../game/wotr-story-service';
-import { WotrRegionId } from '../region/wotr-region-models';
-import {
+import type { WotrUiAbility } from '../ability/wotr-ability';
+import type { WotrCombatCardAbility } from '../battle/combat-cards/wotr-combat-cards';
+import type { WotrCombatRound } from '../battle/wotr-battle-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrStory } from '../game/wotr-story-models';
+import type { WotrStoryService } from '../game/wotr-story-service';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type {
   WotrEliminateUnitsParams,
   WotrForfeitLeadershipParams,
 } from '../unit/wotr-unit-models';

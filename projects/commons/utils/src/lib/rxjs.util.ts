@@ -1,9 +1,10 @@
+import type {
+  Observable,
+  ObservableInput,
+  ObservedValuesFromArray} from 'rxjs';
 import {
   concat,
   EMPTY,
-  Observable,
-  ObservableInput,
-  ObservedValuesFromArray,
   of,
 } from 'rxjs';
 import { expand, last, toArray } from 'rxjs/operators';

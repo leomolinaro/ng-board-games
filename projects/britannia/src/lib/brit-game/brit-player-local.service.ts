@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { forN } from '@leobg/commons/utils';
+import type {
+  Observable} from 'rxjs';
 import {
   EMPTY,
-  Observable,
   expand,
   last,
   map,
@@ -10,23 +11,23 @@ import {
   race,
   switchMap,
 } from 'rxjs';
-import {
+import type {
   BritAreaId,
   BritColor,
   BritLandAreaId,
   BritNationId,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritAreaUnit } from '../brit-game-state.models';
+import type { BritAreaUnit } from '../brit-game-state.models';
 import { BritRulesService } from '../brit-rules/brit-rules.service';
-import {
+import type {
   BritArmyMovement,
   BritArmyMovements,
   BritArmyPlacement,
   BritBattleInitiation,
 } from '../brit-story.models';
 import { BritGameStore } from './brit-game.store';
-import { BritPlayerService } from './brit-player.service';
+import type { BritPlayerService } from './brit-player.service';
 import { BritUiStore } from './brit-ui.store';
 
 @Injectable()

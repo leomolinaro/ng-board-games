@@ -1,10 +1,12 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import type { OnDestroy, OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ExhaustingEvent, UntilDestroy } from '@leobg/commons/utils';
 import { TuiButton, TuiDataList, TuiDropdown } from '@taiga-ui/core';
 import { switchMap } from 'rxjs/operators';
-import { BgAuthService, BgUserLoginType } from './bg-auth.service';
+import type { BgUserLoginType } from './bg-auth.service';
+import { BgAuthService } from './bg-auth.service';
 
 @Component({
   selector: 'bg-account-button',

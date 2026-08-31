@@ -1,5 +1,6 @@
-import { Component, OnChanges, input, output } from '@angular/core';
-import { BaronyResourceType } from '../barony-models';
+import type { OnChanges} from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import type { BaronyResourceType } from '../barony-models';
 
 @Component({
   selector: 'barony-resources-selector',

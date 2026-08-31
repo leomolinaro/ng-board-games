@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   BaronyAction,
   BaronyColor,
   BaronyConstruction,
@@ -27,7 +27,7 @@ export class BaronyPlayerLocalService {
 
   async setupPlacement(playerId: BaronyColor): Promise<BaronySetupPlacement> {
     const landTile = await this.chooseLandForSetupPlacement(playerId);
-    return <BaronySetupPlacement>{
+    return {
       type: 'setupPlacement',
       land: landTile.coordinates,
     };
@@ -229,7 +229,6 @@ export class BaronyPlayerLocalService {
           )
         ) {
           const resource = await this.chooseResourceForVillageDestruction(
-            player,
             villagePlayer.id,
           );
           return {
@@ -257,7 +256,6 @@ export class BaronyPlayerLocalService {
   }
 
   private chooseResourceForVillageDestruction(
-    player: BaronyColor,
     villagePlayer: BaronyColor,
   ): Promise<BaronyResourceType> {
     const validResourcesForVillageDestruction =

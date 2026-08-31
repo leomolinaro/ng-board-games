@@ -1,6 +1,7 @@
+import type {
+  Observable} from 'rxjs';
 import {
   EMPTY,
-  Observable,
   expand,
   filter,
   first,
@@ -11,7 +12,7 @@ import {
   race,
   tap,
 } from 'rxjs';
-import { BgAuthService, BgUser } from '../authentication/bg-auth.service';
+import type { BgAuthService, BgUser } from '../authentication/bg-auth.service';
 
 interface ABgPlayer<Id extends string> {
   id: Id;
@@ -60,7 +61,7 @@ export abstract class ABgGameService<
   protected abstract localPlayer: PlSrv;
   protected abstract aiPlayer: PlSrv;
 
-  protected storyTime: number = 0;
+  protected storyTime = 0;
   protected abstract storyDocs: BgStoryDoc<Pid, St>[] | null;
 
   protected abstract getGameId(): string;

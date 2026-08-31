@@ -1,21 +1,21 @@
-import { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
+import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
 import { forfeitCombatCardById } from '../../../battle/wotr-battle-actions';
-import { WotrCombatRound } from '../../../battle/wotr-battle-models';
-import {
+import type { WotrCombatRound } from '../../../battle/wotr-battle-models';
+import type {
   WotrAfterCombatCardRevealing,
   WotrBattleModifiers,
 } from '../../../battle/wotr-battle-modifiers';
-import { WotrAction } from '../../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrLogWriter } from '../../../log/wotr-log-writer';
-import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
-import {
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrLogWriter } from '../../../log/wotr-log-writer';
+import type { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
+import type {
   WotrRecruitmentConstraintsModifier,
   WotrUnitModifiers,
 } from '../../../unit/wotr-unit-modifiers';
-import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
-import { WotrCharacterHandler } from '../../wotr-character-handler';
+import type { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
+import type { WotrCharacterHandler } from '../../wotr-character-handler';
 import { activateCharacterAbility } from '../wotr-playable-character-card';
 import { KomeSovereignCard } from './kome-sovereign-card';
 
@@ -91,9 +91,9 @@ export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardReveal
     if (!combatRound.defender.combatCard) return;
     this.round = combatRound;
     if (!(await activateCharacterAbility(this, 'brand', this.shadow))) return;
-    // eslint-disable-next-line require-atomic-updates
+     
     combatRound.freePeoples.cancelledCombatCard = true;
-    // eslint-disable-next-line require-atomic-updates
+     
     combatRound.shadow.forfeitedCombatCard = true;
   };
 

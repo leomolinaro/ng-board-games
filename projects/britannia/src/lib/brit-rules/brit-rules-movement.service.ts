@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { BritAreaId, BritNationId } from '../brit-components.models';
+import type { BritAreaId, BritNationId } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritAreaUnit, BritGameState } from '../brit-game-state.models';
+import type { BritAreaUnit, BritGameState } from '../brit-game-state.models';
 
 // interface BritMovingGroup {
 //   areaUnit: BritAreaUnit[];

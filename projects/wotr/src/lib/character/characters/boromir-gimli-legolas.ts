@@ -1,6 +1,6 @@
-import { WotrActionDieModifiers } from '../../action-die/wotr-action-die-modifiers';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrRegion } from '../../region/wotr-region-models';
+import type { WotrActionDieModifiers } from '../../action-die/wotr-action-die-modifiers';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrRegion } from '../../region/wotr-region-models';
 import { AdvanceAnyDieAbility } from './commons';
 
 // Boromir - Son of Denethor (Level 2, Leadership 1)

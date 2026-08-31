@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import type { OnDestroy, OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BgAccountButton, BgAuthService } from '@leobg/commons';
 import { SingleEvent, UntilDestroy } from '@leobg/commons/utils';

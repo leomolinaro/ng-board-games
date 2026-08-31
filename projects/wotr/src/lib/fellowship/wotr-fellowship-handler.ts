@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { WotrCharacterHandler } from '../character/wotr-character-handler';
-import {
+import type {
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
 import { WotrCharacterModifiers } from '../character/wotr-character-modifiers';
-import {
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
@@ -17,13 +17,14 @@ import { WotrHuntModifiers } from '../hunt/wotr-hunt-modifiers';
 import { WotrHuntStore } from '../hunt/wotr-hunt-store';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import { WotrNationHandler } from '../nation/wotr-nation-handler';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
+import type {
+  WotrFellowshipAction,
+  WotrFellowshipCorruption} from './wotr-fellowship-actions';
 import {
   changeGuide,
-  corruptFellowship,
-  WotrFellowshipAction,
-  WotrFellowshipCorruption,
+  corruptFellowship
 } from './wotr-fellowship-actions';
 import { WotrRingDestroyed } from './wotr-fellowship-models';
 import { WotrFellowshipModifiers } from './wotr-fellowship-modifiers';

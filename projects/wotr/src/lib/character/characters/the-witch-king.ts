@@ -1,20 +1,20 @@
-import { WotrUiAbility } from '../../ability/wotr-ability';
-import { WotrActionDie } from '../../action-die/wotr-action-die-models';
-import { WotrCombatRound } from '../../battle/wotr-battle-models';
-import {
+import type { WotrUiAbility } from '../../ability/wotr-ability';
+import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import type { WotrCombatRound } from '../../battle/wotr-battle-models';
+import type {
   WotrAfterCombatRound,
   WotrBattleModifiers,
 } from '../../battle/wotr-battle-modifiers';
-import { WotrBattleStore } from '../../battle/wotr-battle-store';
-import { WotrCard } from '../../card/wotr-card-models';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrNationHandler } from '../../nation/wotr-nation-handler';
-import { WotrShadowPlayer } from '../../player/wotr-shadow-player';
-import { WotrRegion } from '../../region/wotr-region-models';
+import type { WotrBattleStore } from '../../battle/wotr-battle-store';
+import type { WotrCard } from '../../card/wotr-card-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrNationHandler } from '../../nation/wotr-nation-handler';
+import type { WotrShadowPlayer } from '../../player/wotr-shadow-player';
+import type { WotrRegion } from '../../region/wotr-region-models';
 import { playCharacter } from '../wotr-character-actions';
-import { WotrCharacterId } from '../wotr-character-models';
+import type { WotrCharacterId } from '../wotr-character-models';
 import {
   activateCharacterAbility,
   WotrPlayableCharacterCard,

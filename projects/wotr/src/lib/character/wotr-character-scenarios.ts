@@ -1,4 +1,4 @@
-import { WotrScenarioGroup } from '../scenario/wotr-scenario';
+import type { WotrScenarioGroup } from '../scenario/wotr-scenario';
 import { gandalfTheWhiteScenarios } from './characters/gandalf-the-white-scenarios';
 import { brandScenarios } from './characters/kome/brand-scenarios';
 import { meriadocPeregrinScenarios } from './characters/meriadoc-peregrin-scenarios';

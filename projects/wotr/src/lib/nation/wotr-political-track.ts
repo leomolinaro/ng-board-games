@@ -1,8 +1,9 @@
-import { Component, Signal, computed, inject } from '@angular/core';
+import type { Signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { arrayUtil } from '@leobg/commons/utils';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameUi } from '../game/wotr-game-ui';
-import {
+import type {
   WotrNation,
   WotrNationId,
   WotrPoliticalStep,
@@ -98,7 +99,7 @@ export class WotrPoliticalTrack {
     return arrayUtil.toMap(
       validNations,
       (n) => n,
-      (n) => true, // true if the nation is valid, false otherwise
+      () => true, // true if the nation is valid, false otherwise
     );
   });
 
@@ -108,16 +109,13 @@ export class WotrPoliticalTrack {
       this.politicalNodeMap || {},
       (nation) => nation.id,
       (nation, node) => nation === node?.nation,
-      (nation, index, oldNode) => this.nationToPoliticalNode(nation, oldNode),
+      (nation) => this.nationToPoliticalNode(nation),
     );
     this.politicalNodeMap = map;
     return nodes;
   });
 
-  private nationToPoliticalNode(
-    nation: WotrNation,
-    oldNode: WotrPoliticalNode | null,
-  ): WotrPoliticalNode {
+  private nationToPoliticalNode(nation: WotrNation): WotrPoliticalNode {
     const node: WotrPoliticalNode = {
       id: nation.id,
       nation,

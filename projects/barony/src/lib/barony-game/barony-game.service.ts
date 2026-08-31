@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { ABgGameService, BgAuthService, BgUser } from '@leobg/commons';
+import type { BgUser } from '@leobg/commons';
+import { ABgGameService, BgAuthService } from '@leobg/commons';
 import { from } from 'rxjs';
-import {
+import type {
   ABaronyPlayer,
   BaronyColor,
   BaronyConstruction,
@@ -11,13 +12,15 @@ import {
   BaronyResourceType,
   BaronySetupPlacement,
   BaronyStory,
-  BaronyTurn,
+  BaronyTurn} from '../barony-models';
+import {
   landCoordinatesToId,
 } from '../barony-models';
-import {
+import type {
   BaronyPlayerDoc,
-  BaronyRemoteService,
-  BaronyStoryDoc,
+  BaronyStoryDoc} from '../barony-remote.service';
+import {
+  BaronyRemoteService
 } from '../barony-remote.service';
 import { BaronyGameStore } from './barony-game.store';
 import { BaronyPlayerAiService } from './barony-player-ai.service';

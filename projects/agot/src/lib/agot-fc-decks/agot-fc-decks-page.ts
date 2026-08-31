@@ -1,12 +1,14 @@
 import { Component, inject, resource } from '@angular/core';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiTabBar } from '@taiga-ui/addon-mobile';
 import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
 import { TuiDropdown, TuiTitle } from '@taiga-ui/core';
 import { TuiCell } from '@taiga-ui/core/components/cell';
 import { TuiItemsWithMore, TuiProgress } from '@taiga-ui/kit';
 import { AgotData } from '../agot-services/agot-data';
-import { AgotFcDeck, DECKS } from './agot-fc-decks';
+import type { AgotFcDeck} from './agot-fc-decks';
+import { DECKS } from './agot-fc-decks';
 
 @Component({
   selector: 'agot-fc-decks',

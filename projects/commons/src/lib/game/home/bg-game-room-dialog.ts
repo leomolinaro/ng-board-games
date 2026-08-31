@@ -1,8 +1,6 @@
+import type { AfterViewInit, OnDestroy, Type } from '@angular/core';
 import {
-  AfterViewInit,
   Component,
-  OnDestroy,
-  Type,
   ViewContainerRef,
   computed,
   effect,
@@ -15,24 +13,23 @@ import {
   ExhaustingEvent,
   UntilDestroy,
 } from '@leobg/commons/utils';
-import { TuiButton, TuiDialogContext } from '@taiga-ui/core';
+import type { TuiDialogContext } from '@taiga-ui/core';
+import { TuiButton } from '@taiga-ui/core';
 import { TuiForm } from '@taiga-ui/layout';
 import { injectContext } from '@taiga-ui/polymorpheus';
-import { Observable, of } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { BgTransformPipe } from '../../../../utils/src/lib/bg-transform.pipe';
 import { BgAuthService } from '../../authentication';
 import { BgIfUserDirective } from '../../authentication/bg-if-user-of.directive';
 import { BgIfUserPipe } from '../../authentication/bg-if-user.pipe';
-import {
-  BgProtoGame,
-  BgProtoGameService,
-  BgProtoPlayer,
-} from '../bg-proto-game-service';
-import { BgGameOptionsComponent } from './bg-home-game-options';
+import type { BgProtoGame, BgProtoPlayer } from '../bg-proto-game-service';
+import { BgProtoGameService } from '../bg-proto-game-service';
+import type { BgGameOptionsComponent } from './bg-home-game-options';
 import { BgPlayerForm } from './bg-player-form';
 
-export interface BgRoomDialogInput<Pid extends string, Opt = any> {
+export interface BgRoomDialogInput<Pid extends string, Opt = unknown> {
   protoGame: BgProtoGame;
   createGame$: (
     protoGame: BgProtoGame,
@@ -107,7 +104,7 @@ export interface BgRoomDialogOutput {
   `,
 })
 @UntilDestroy
-export class BgGameRoomDialog<Pid extends string, Opt = any>
+export class BgGameRoomDialog<Pid extends string, Opt = unknown>
   implements AfterViewInit, OnDestroy
 {
   constructor() {
@@ -123,11 +120,11 @@ export class BgGameRoomDialog<Pid extends string, Opt = any>
   private authService = inject(BgAuthService);
 
   protected onlineGame = this.context.data.protoGame.online;
-  protected protoGame = rxResource<BgProtoGame<any>, void>({
+  protected protoGame = rxResource<BgProtoGame<unknown>, void>({
     stream: () =>
       this.protoGameService.selectProtoGame$(
         this.context.data.protoGame.id,
-      ) as Observable<BgProtoGame<any>>,
+      ) as Observable<BgProtoGame<unknown>>,
     defaultValue: this.context.data.protoGame,
   }).value;
   protected optionsComponent = this.context.data.optionsComponent;

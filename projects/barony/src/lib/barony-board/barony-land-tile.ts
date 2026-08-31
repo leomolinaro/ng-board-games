@@ -1,7 +1,8 @@
-import { Component, OnChanges, computed, input, output } from '@angular/core';
-import { Loading, SimpleChanges, immutableUtil } from '@leobg/commons/utils';
-import { Observable } from 'rxjs';
-import {
+import type { OnChanges } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import { immutableUtil } from '@leobg/commons/utils';
+import type {
   BaronyColor,
   BaronyLandCoordinates,
   BaronyLandType,
@@ -136,8 +137,6 @@ export class BaronyLandComponent implements OnChanges {
   readonly landTileClick = output<void>();
 
   protected url = computed(() => `url('#${this.type()}')`);
-
-  @Loading() loading$!: Observable<boolean>;
 
   pawnNodes!: BaronyPawnNode[];
   private hexCenter!: { x: number; y: number };

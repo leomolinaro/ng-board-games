@@ -1,11 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
-import { Observable, first, map, of, switchMap, tap } from 'rxjs';
+import type { CanActivate } from '@angular/router';
+import { Router } from '@angular/router';
+import type { Observable } from 'rxjs';
+import { first, map, of, switchMap } from 'rxjs';
 import { BgAuthService } from './bg-auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -13,10 +10,7 @@ export class BgRootGuard implements CanActivate {
   private authService = inject(BgAuthService);
   router = inject(Router);
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
-  ): Observable<boolean> {
+  canActivate(): Observable<boolean> {
     return this.authService.getUser$().pipe(
       first(),
       switchMap((user) => {
@@ -28,10 +22,9 @@ export class BgRootGuard implements CanActivate {
             .pipe(map((autoUser) => !!autoUser));
         }
       }),
-      tap((hasUser) => {
-        if (!hasUser) {
-          this.router.navigate(['/']);
-        }
+      switchMap((hasUser) => {
+        if (!hasUser) return this.router.navigate(['/']);
+        return of(hasUser);
       }),
     );
   }

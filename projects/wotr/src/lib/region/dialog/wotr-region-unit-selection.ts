@@ -1,18 +1,18 @@
 import { immutableUtil } from '../../../../../commons/utils/src';
-import { WotrCharacterId } from '../../character/wotr-character-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrNationId } from '../../nation/wotr-nation-models';
-import {
-  unitTypeMatchLabel,
+import type { WotrCharacterId } from '../../character/wotr-character-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrNationId } from '../../nation/wotr-nation-models';
+import type {
   WotrRegionUnitTypeMatch,
   WotrUnits,
 } from '../../unit/wotr-unit-models';
-import { WotrUnitModifiers } from '../../unit/wotr-unit-modifiers';
-import { WotrMovingUnits } from '../../unit/wotr-unit-ui';
-import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
-import { WotrRegion, WotrRegionId } from '../wotr-region-models';
-import { UnitNode } from './wotr-region-unit-node';
+import { unitTypeMatchLabel } from '../../unit/wotr-unit-models';
+import type { WotrUnitModifiers } from '../../unit/wotr-unit-modifiers';
+import type { WotrMovingUnits } from '../../unit/wotr-unit-ui';
+import type { WotrUnitUtils } from '../../unit/wotr-unit-utils';
+import type { WotrRegion, WotrRegionId } from '../wotr-region-models';
+import type { UnitNode } from './wotr-region-unit-node';
 
 export type WotrRegionUnitSelection =
   | WotrMovingArmyUnitSelection
@@ -174,7 +174,7 @@ export function selectionModeFactory(
     case 'theGreyCompany':
       return new TheGreyCompanySelectionMode(unitSelection);
     default:
-      throw new Error(`Unknown selection mode type: ${unitSelection}`);
+      throw new Error(`Unknown selection mode type`);
   }
 }
 
@@ -371,7 +371,7 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     const someArmyUnits = selectedNodes.some((node) => {
       if (node.type === 'regular') return true;
       if (node.type === 'elite') return true;
@@ -688,7 +688,7 @@ export class RageOfTheDunlendingsSelectionMode implements WotrRegionUnitSelectio
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     if (
       selectedNodes.length &&
       selectedNodes.length <= this.unitSelection.maxNArmyUnits
@@ -711,7 +711,7 @@ export class HeroicDeathSelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 1) return true;
     return 'Select one character or leader to eliminate.';
   }
@@ -732,7 +732,7 @@ export class BlackBreathSelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 1) return true;
     return 'Select one character or leader to eliminate.';
   }
@@ -750,7 +750,7 @@ export class WordsOfPowerSelectionMode implements WotrRegionUnitSelectionMode {
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 1) return true;
     return 'Select one Companion to cancel.';
   }
@@ -771,7 +771,7 @@ export class TheGreyCompanySelectionMode implements WotrRegionUnitSelectionMode 
     }
   }
 
-  canConfirm(selectedNodes: UnitNode[], region: WotrRegion): true | string {
+  canConfirm(selectedNodes: UnitNode[]): true | string {
     if (selectedNodes.length === 1) return true;
     return 'Select one regular unit to eliminate.';
   }

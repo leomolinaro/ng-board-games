@@ -1,27 +1,30 @@
+import type {
+  Signal} from '@angular/core';
 import {
   Component,
   computed,
   EventEmitter,
   inject,
   input,
-  Output,
-  Signal,
+  Output
 } from '@angular/core';
-import { WotrAssetsStore, WotrUnitImage } from '../assets/wotr-assets-store';
-import {
+import type { WotrUnitImage } from '../assets/wotr-assets-store';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import type {
   WotrCharacter,
   WotrCharacterId,
   WotrCompanionId,
   WotrMinionId,
 } from '../character/wotr-character-models';
 import { WotrMapService } from '../game/board/map/wotr-map.service';
-import {
-  frontOfNation,
+import type {
   WotrArmyUnitType,
-  WotrNationId,
+  WotrNationId} from '../nation/wotr-nation-models';
+import {
+  frontOfNation
 } from '../nation/wotr-nation-models';
-import { WotrArmy } from '../unit/wotr-unit-models';
-import { WotrRegion, WotrRegionId } from './wotr-region-models';
+import type { WotrArmy } from '../unit/wotr-unit-models';
+import type { WotrRegion, WotrRegionId } from './wotr-region-models';
 
 interface WotrRegionNode {
   id: WotrRegionId;

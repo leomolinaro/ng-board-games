@@ -1,4 +1,4 @@
-import { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
+import type { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
 import { balrogOfMoria } from './17-balrog-of-moria';
 
 export function shadowCharacterCardScenarios(): WotrScenarioGroup {

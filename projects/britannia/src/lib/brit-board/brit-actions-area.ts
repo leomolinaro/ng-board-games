@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnChanges,
-  SimpleChanges,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'brit-actions',
@@ -83,14 +77,10 @@ import {
     `,
   ],
 })
-export class BritActionsComponent implements OnChanges {
-  constructor() {}
-
-  // @Input () validActions: BaronyAction[] | null = null;
+export class BritActionsComponent {
   readonly canPass = input.required<boolean>();
   readonly canConfirm = input.required<boolean>();
   readonly canCancel = input.required<boolean>();
-  // @Output () actionClick = new EventEmitter<BaronyAction> ();
   readonly passClick = output<void>();
   readonly confirmClick = output<void>();
   readonly cancelClick = output<void>();
@@ -103,23 +93,7 @@ export class BritActionsComponent implements OnChanges {
     cancel: 'Cancel',
   };
 
-  isValid: { [action: string]: boolean } | null = null;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // if (changes.validActions || changes.canPass) {
-    //   if (this.validActions) {
-    //     this.isValid = arrayUtil.toMap (this.validActions, a => a, () => true) as any;
-    //   } else {
-    //     this.isValid = null;
-    //   }
-    // }
-  }
-
-  // onActionClick (action: BaronyAction) {
-  //   if (this.isValid && this.isValid[action]) {
-  //     this.actionClick.next (action);
-  //   }
-  // }
+  isValid: Record<string, boolean> | null = null;
 
   onPassClick() {
     if (this.canPass()) {

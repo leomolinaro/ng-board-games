@@ -1,7 +1,8 @@
-import { Component, input, OnChanges, SimpleChanges } from '@angular/core';
+import type { OnChanges, SimpleChanges } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { BgSvg } from '@leobg/commons';
 import { objectUtil } from '@leobg/commons/utils';
-import { BaronyColor, BaronyPlayer } from '../barony-models';
+import type { BaronyColor, BaronyPlayer } from '../barony-models';
 
 interface BaronyCounterNode {
   color: BaronyColor;

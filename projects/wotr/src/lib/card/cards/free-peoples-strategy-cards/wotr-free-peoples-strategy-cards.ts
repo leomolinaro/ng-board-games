@@ -1,27 +1,31 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrAbility } from '../../../ability/wotr-ability';
+import type { WotrAbility } from '../../../ability/wotr-ability';
+import type {
+  WotrActionDieChoiceModifier} from '../../../action-die/wotr-action-die-modifiers';
 import {
-  WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
 } from '../../../action-die/wotr-action-die-modifiers';
-import { attack, WotrCombatRoll } from '../../../battle/wotr-battle-actions';
-import {
+import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+import { attack } from '../../../battle/wotr-battle-actions';
+import type {
   WotrCombatFront,
   WotrCombatRound,
 } from '../../../battle/wotr-battle-models';
 import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
-import { WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import type {
+  WotrAfterFellowshipDeclaration} from '../../../fellowship/wotr-fellowship-modifiers';
 import {
-  WotrAfterFellowshipDeclaration,
   WotrFellowshipModifiers,
 } from '../../../fellowship/wotr-fellowship-modifiers';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrUiChoice } from '../../../game/wotr-game-ui';
+import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
 import { assertAction } from '../../../game/wotr-story-models';
-import {
+import type {
   WotrAfterFellowshipReveal,
-  WotrFellowshipProgressDieAddedToHuntBoxPrevented,
+  WotrFellowshipProgressDieAddedToHuntBoxPrevented} from '../../../hunt/wotr-hunt-modifiers';
+import {
   WotrHuntModifiers,
 } from '../../../hunt/wotr-hunt-modifiers';
 import {
@@ -31,15 +35,17 @@ import {
 import { WotrNationHandler } from '../../../nation/wotr-nation-handler';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type {
+  WotrRegionChoose} from '../../../region/wotr-region-actions';
 import {
-  targetRegion,
-  WotrRegionChoose,
+  targetRegion
 } from '../../../region/wotr-region-actions';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
-import {
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type {
   WotrCanAttackRegionModifier,
-  WotrCanMoveIntoRegionModifier,
+  WotrCanMoveIntoRegionModifier} from '../../../unit/wotr-unit-modifiers';
+import {
   WotrUnitModifiers,
 } from '../../../unit/wotr-unit-modifiers';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
@@ -50,13 +56,14 @@ import {
   playCardOnTableId,
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
-import {
-  getCard,
+import type {
   WotrCard,
   WotrCardId,
-  WotrFreePeoplesStrategyCardId,
+  WotrFreePeoplesStrategyCardId} from '../../wotr-card-models';
+import {
+  getCard
 } from '../../wotr-card-models';
-import { WotrEventCard } from '../wotr-cards';
+import type { WotrEventCard } from '../wotr-cards';
 
 @Injectable()
 export class WotrFreePeoplesStrategyCards {

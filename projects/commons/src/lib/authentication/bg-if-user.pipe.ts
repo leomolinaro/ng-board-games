@@ -1,5 +1,7 @@
-import { Pipe, PipeTransform, inject } from '@angular/core';
-import { BgAuthService, BgUser } from './bg-auth.service';
+import type { PipeTransform} from '@angular/core';
+import { Pipe, inject } from '@angular/core';
+import type { BgUser } from './bg-auth.service';
+import { BgAuthService } from './bg-auth.service';
 
 @Pipe({ name: 'bgIfUser' })
 export class BgIfUserPipe implements PipeTransform {

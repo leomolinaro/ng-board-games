@@ -1,13 +1,15 @@
+import type {
+  MonoTypeOperatorFunction} from 'rxjs';
 import {
   asapScheduler,
   BehaviorSubject,
   combineLatest,
-  MonoTypeOperatorFunction,
   Observable,
   Subscription,
 } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { bgReduxDevtools, BgReduxDevtoolsInstance } from './redux-devtools';
+import type { BgReduxDevtoolsInstance } from './redux-devtools';
+import { bgReduxDevtools } from './redux-devtools';
 
 export type Exactly<S, T> = {
   [K in keyof S]: K extends keyof T ? T[K] : never;
@@ -139,8 +141,7 @@ export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
       let actionValue: T | undefined;
       const rootSubscription = new Subscription();
       rootSubscription.add(
-        // tslint:disable-next-line: deprecation
-        source.subscribe({
+               source.subscribe({
           complete: () => {
             if (actionSubscription) {
               observer.next(actionValue);

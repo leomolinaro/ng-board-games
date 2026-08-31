@@ -1,20 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import { WotrCardId } from '../card/wotr-card-models';
-import {
+import type { WotrCardId } from '../card/wotr-card-models';
+import type {
   KomeSovereign,
   KomeSovereignId,
   WotrCharacter,
   WotrCharacterId,
 } from '../character/wotr-character-models';
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
 
 const BASE_PATH = 'assets/wotr';
 

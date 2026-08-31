@@ -1,8 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { TuiDialogContext } from '@taiga-ui/core';
+import type { OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
+import type { TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
 import { BritAssetsService } from '../brit-assets.service';
-import { BritAreaUnit } from '../brit-game-state.models';
+import type { BritAreaUnit } from '../brit-game-state.models';
 import { BritUnitsSelector } from '../brit-units-selector/brit-units-selector';
 
 export interface BritUnitsSelectorSheetInput {

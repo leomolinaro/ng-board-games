@@ -1,4 +1,4 @@
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 
 export type WotrNationId =
   | 'dwarves'

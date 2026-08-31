@@ -1,16 +1,16 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { arrayUtil } from '../../../../commons/utils/src';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import {
+import type {
   WotrCharacter,
   WotrCharacterId,
 } from '../character/wotr-character-models';
-import { WotrFellowship } from '../fellowship/wotr-fellowship-models';
+import type { WotrFellowship } from '../fellowship/wotr-fellowship-models';
 import { WotrMapService } from '../game/board/map/wotr-map.service';
 import { WotrGameUi } from '../game/wotr-game-ui';
 import { WotrMordorTrack } from './wotr-mordor-track';
 import { WotrRegionArea } from './wotr-region-area';
-import { WotrRegion, WotrRegionId } from './wotr-region-models';
+import type { WotrRegion, WotrRegionId } from './wotr-region-models';
 import { WotrRegionStore } from './wotr-region-store';
 import { WotrStrongholdBox } from './wotr-stronghold-box';
 

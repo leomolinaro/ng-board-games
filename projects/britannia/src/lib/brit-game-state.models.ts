@@ -1,5 +1,5 @@
-import { BgUser } from '@leobg/commons';
-import {
+import type { BgUser } from '@leobg/commons';
+import type {
   BritAreaId,
   BritColor,
   BritLandAreaId,
@@ -13,7 +13,7 @@ export interface BritGameState {
   gameId: string;
   gameOwner: BgUser;
   players: {
-    map: { [color in BritColor]?: BritPlayer };
+    map: Partial<Record<BritColor, BritPlayer>>;
     colors: BritColor[];
   };
   areas: Record<BritAreaId, BritAreaState>;

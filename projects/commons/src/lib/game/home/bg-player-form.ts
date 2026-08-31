@@ -15,8 +15,12 @@ import {
   TuiTextfield,
 } from '@taiga-ui/core';
 import { TuiForm } from '@taiga-ui/layout';
-import { BgAuthService, BgUser } from '../../authentication';
-import { BgProtoPlayer, BgProtoPlayerType } from '../bg-proto-game-service';
+import type { BgUser } from '../../authentication';
+import { BgAuthService } from '../../authentication';
+import type {
+  BgProtoPlayer,
+  BgProtoPlayerType,
+} from '../bg-proto-game-service';
 
 interface PlayerType {
   type: BgProtoPlayerType;
@@ -150,7 +154,7 @@ export class BgPlayerForm {
 
   protected setNextPlayerType() {
     const controllerPatch: { controller?: BgUser | null } = {};
-    const namePatch: { name?: string | '' } = {};
+    const namePatch: { name?: string } = {};
     const readyPatch: { ready?: boolean } = {};
     const nextPlayerType = this.getNextPlayerType(this.player().type);
     switch (nextPlayerType) {

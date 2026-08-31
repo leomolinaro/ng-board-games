@@ -1,8 +1,9 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import type { Signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { immutableUtil } from '@leobg/commons/utils';
-import { KomeSovereignId } from '../character/wotr-character-models';
+import type { KomeSovereignId } from '../character/wotr-character-models';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
-import { WotrHuntTile, WotrHuntTileId } from './wotr-hunt-models';
+import type { WotrHuntTile, WotrHuntTileId } from './wotr-hunt-models';
 
 export interface WotrHuntState {
   map: Record<WotrHuntTileId, WotrHuntTile>;

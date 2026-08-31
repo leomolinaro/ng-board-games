@@ -7,24 +7,23 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  BgAuthService,
-  BgDialogService,
-  BgHome,
+import type {
   BgHomeAction,
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
   BgUser,
 } from '@leobg/commons';
+import { BgAuthService, BgDialogService, BgHome } from '@leobg/commons';
 import { concatJoin } from '@leobg/commons/utils';
-import { forkJoin, from, Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrGameOptions } from '../game/options/wotr-game-options';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
 import { WotrGameOptionsFormComponent } from '../game/options/wotr-game-options-form';
 import { WotrRemoteService } from '../remote/wotr-remote';
-import {
+import type {
   AWotrPlayerDoc,
   WotrAiPlayerDoc,
   WotrGameDoc,

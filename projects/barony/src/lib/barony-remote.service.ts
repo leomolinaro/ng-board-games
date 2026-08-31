@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   BgCloudCollectionQuery,
-  BgCloudService,
   BgStoryDoc,
-  BgUser,
+  BgUser} from '@leobg/commons';
+import {
+  BgCloudService
 } from '@leobg/commons';
-import { Observable } from 'rxjs';
-import { BaronyColor, BaronyLandType, BaronyStory } from './barony-models';
+import type { Observable } from 'rxjs';
+import type { BaronyColor, BaronyLandType, BaronyStory } from './barony-models';
 
 export interface BaronyGameDoc {
   id: string;
@@ -75,13 +76,13 @@ export class BaronyRemoteService {
   }
   getPlayers(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>  ,
   ) {
     return this.cloud.getAll(this.players(gameId), queryFn);
   }
   selectPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>  ,
   ) {
     return this.cloud.selectAll$(this.players(gameId), queryFn);
   }
@@ -128,7 +129,7 @@ export class BaronyRemoteService {
   }
   getStories(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>  ,
   ) {
     return this.cloud.getAll(this.stories(gameId), queryFn);
   }
@@ -137,7 +138,7 @@ export class BaronyRemoteService {
   }
   selectStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>  ,
   ) {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }

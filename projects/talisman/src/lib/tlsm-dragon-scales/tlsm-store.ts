@@ -40,11 +40,6 @@ export interface Dragon {
   tokenSource: string;
 }
 
-export interface IAppAction {
-  type: string;
-  data?: any;
-}
-
 export const INITIAL_STATE: IAppState = {
   varthrax: {
     id: 'varthrax',
@@ -107,7 +102,7 @@ export class TlsmStore {
     return this.store()[dragonId];
   }
 
-  private update(action: string, updater: (state: IAppState) => IAppState) {
+  private update(_action: string, updater: (state: IAppState) => IAppState) {
     this.store.update(updater);
   }
 

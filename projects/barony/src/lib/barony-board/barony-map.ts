@@ -1,9 +1,12 @@
-import { Component, OnChanges, ViewChild, input, output } from '@angular/core';
+import type { OnChanges} from '@angular/core';
+import { Component, ViewChild, input, output } from '@angular/core';
 import { BgMapZoom, BgSvg } from '@leobg/commons';
-import { SimpleChanges, arrayUtil } from '@leobg/commons/utils';
-import {
+import type { SimpleChanges} from '@leobg/commons/utils';
+import { arrayUtil } from '@leobg/commons/utils';
+import type {
   BaronyLand,
-  BaronyLandCoordinates,
+  BaronyLandCoordinates} from '../barony-models';
+import {
   landCoordinatesToId,
 } from '../barony-models';
 import { BaronyLandComponent } from './barony-land-tile';
@@ -121,7 +124,7 @@ export class BaronyMap implements OnChanges {
   @ViewChild(BgMapZoom, { static: true })
   bgMapZoom!: BgMapZoom;
 
-  isValid: { [key: string]: boolean } | null = null;
+  isValid: Record<string, boolean> | null = null;
 
   ngOnChanges(changes: SimpleChanges<BaronyMap>): void {
     if (changes.validLands) {

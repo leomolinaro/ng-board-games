@@ -1,14 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  OnChanges,
-  OnInit,
-  inject,
-  input,
-  isDevMode,
-} from '@angular/core';
-import { SimpleChanges } from '@leobg/commons/utils';
-import { WotrLog } from './wotr-log-models';
+import type { OnChanges, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, input, isDevMode } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import type { WotrLog } from './wotr-log-models';
 import { WotrLogRow } from './wotr-log-row';
 
 const DEBUG_LOG_INDEXES = 'wotr.debugLogIndex';
@@ -21,7 +14,7 @@ const DEBUG_LOG_INDEXES = 'wotr.debugLogIndex';
       <wotr-log-row
         [log]="log"
         [debugBreakpoint]="debugIndexes[i]"
-        (click)="onLogClick(log, i)"
+        (click)="onLogClick(i)"
       ></wotr-log-row>
     }
   `,
@@ -37,7 +30,7 @@ const DEBUG_LOG_INDEXES = 'wotr.debugLogIndex';
   ],
 })
 export class WotrLogList implements OnChanges, OnInit {
-  private elementRef = inject(ElementRef);
+  private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   logs = input.required<WotrLog[]>();
   protected debugIndexes: Record<string, boolean> = {};
@@ -58,7 +51,7 @@ export class WotrLogList implements OnChanges, OnInit {
     }
   }
 
-  onLogClick(log: WotrLog, index: number) {
+  onLogClick(index: number) {
     if (isDevMode()) {
       if (this.debugIndexes[index]) {
         delete this.debugIndexes[index];

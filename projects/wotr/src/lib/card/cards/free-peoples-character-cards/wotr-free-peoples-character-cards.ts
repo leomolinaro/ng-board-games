@@ -1,24 +1,28 @@
 import { inject, Injectable } from '@angular/core';
 import { lazyInject } from '@leobg/commons/utils';
-import { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
+import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
 import { changeActionDie } from '../../../action-die/wotr-action-die-actions';
 import { WotrActionDieHandler } from '../../../action-die/wotr-action-die-handler';
+import type {
+  WotrCombatRoll} from '../../../battle/wotr-battle-actions';
 import {
-  rollCombatDice,
-  WotrCombatRoll,
+  rollCombatDice
 } from '../../../battle/wotr-battle-actions';
+import type {
+  WotrCharacterMovement} from '../../../character/wotr-character-actions';
 import {
   eliminateCharacter,
-  moveCharacters,
-  WotrCharacterMovement,
+  moveCharacters
 } from '../../../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../../../character/wotr-character-handler';
+import type {
+  WotrAfterCompanionLeavingTheFellowship} from '../../../character/wotr-character-modifiers';
 import {
-  WotrAfterCompanionLeavingTheFellowship,
   WotrCharacterModifiers,
 } from '../../../character/wotr-character-modifiers';
-import { WotrCharacterQuery } from '../../../character/wotr-character-query';
-import { findAction, WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrCharacterQuery } from '../../../character/wotr-character-query';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import { findAction } from '../../../commons/wotr-action-models';
 import {
   healFellowship,
   hideFellowship,
@@ -27,54 +31,59 @@ import {
 import { WotrFellowshipHandler } from '../../../fellowship/wotr-fellowship-handler';
 import { WotrFrontStore } from '../../../front/wotr-front-store';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrUiChoice } from '../../../game/wotr-game-ui';
+import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { assertAction } from '../../../game/wotr-story-models';
+import type {
+  WotrHuntTileDraw} from '../../../hunt/wotr-hunt-actions';
 import {
   addHuntTile,
-  returnHuntTile,
-  WotrHuntTileDraw,
+  returnHuntTile
 } from '../../../hunt/wotr-hunt-actions';
-import {
+import type {
   WotrHuntEffectParams,
   WotrHuntTileId,
 } from '../../../hunt/wotr-hunt-models';
-import {
+import type {
   WotrAfterTileDrawn,
   WotrHuntDrawPrevented,
-  WotrHuntEffectChoiceModifier,
+  WotrHuntEffectChoiceModifier} from '../../../hunt/wotr-hunt-modifiers';
+import {
   WotrHuntModifiers,
 } from '../../../hunt/wotr-hunt-modifiers';
 import { WotrHuntStore } from '../../../hunt/wotr-hunt-store';
 import { WotrNationHandler } from '../../../nation/wotr-nation-handler';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type {
+  WotrRegionChoose} from '../../../region/wotr-region-actions';
 import {
-  targetRegion,
-  WotrRegionChoose,
+  targetRegion
 } from '../../../region/wotr-region-actions';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import {
   eliminateRegularUnit,
   recruitEliteUnit,
   recruitRegularUnit,
 } from '../../../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../../../unit/wotr-unit-handler';
-import { WotrReinforcementUnit } from '../../../unit/wotr-unit-models';
+import type { WotrReinforcementUnit } from '../../../unit/wotr-unit-models';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
+import type {
+  WotrCardDiscardFromTable} from '../../wotr-card-actions';
 import {
   discardCardFromTableById,
   playCardOnTable,
-  playCardOnTableId,
-  WotrCardDiscardFromTable,
+  playCardOnTableId
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
-import {
+import type {
   WotrCardId,
   WotrFreePeoplesCharacterCardId,
 } from '../../wotr-card-models';
-import { activateTableCard, WotrCards, WotrEventCard } from '../wotr-cards';
+import type { WotrEventCard } from '../wotr-cards';
+import { activateTableCard, WotrCards } from '../wotr-cards';
 
 @Injectable()
 export class WotrFreePeoplesCharacterCards {
@@ -180,7 +189,7 @@ export class WotrFreePeoplesCharacterCards {
               handler: (params) => {
                 if (params.tableCardsUsed) return [];
                 const choice: WotrUiChoice<WotrHuntEffectParams> = {
-                  // eslint-disable-next-line quotes, @typescript-eslint/quotes
+                  // eslint-disable-next-line @typescript-eslint/quotes
                   label: () => 'Discard "Axe and Bow"',
                   card: () => 'fpcha06',
                   actions: async () => [discardCardFromTableById('fpcha06')],
@@ -211,7 +220,7 @@ export class WotrFreePeoplesCharacterCards {
               handler: (params) => {
                 if (params.tableCardsUsed) return [];
                 const choice: WotrUiChoice<WotrHuntEffectParams> = {
-                  // eslint-disable-next-line quotes, @typescript-eslint/quotes
+                  // eslint-disable-next-line @typescript-eslint/quotes
                   label: () => 'Discard "Horn of Gondor"',
                   card: () => 'fpcha07',
                   actions: async () => [discardCardFromTableById('fpcha07')],

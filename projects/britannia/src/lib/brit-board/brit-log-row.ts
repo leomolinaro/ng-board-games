@@ -1,13 +1,14 @@
-import { Component, OnChanges, inject, input } from '@angular/core';
-import { SimpleChanges } from '@leobg/commons/utils';
-import {
+import type { OnChanges} from '@angular/core';
+import { Component, inject, input } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import type {
   BritArea,
   BritAreaId,
   BritLeaderId,
   BritPhase,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import {
+import type {
   BritAreaLeader,
   BritAreaUnit,
   BritLog,

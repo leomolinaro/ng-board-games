@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { Pool } from './tlsm-store';
+import type { Pool } from './tlsm-store';
 
 interface Scale {
   height: number;

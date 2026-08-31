@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { BgCloudCollectionQuery, BgCloudService } from '@leobg/commons';
-import { WotrStoryDoc } from '../game/wotr-story-models';
-import { WotrGameDoc, WotrPlayerDoc } from './wotr-remote-models';
+import type { BgCloudCollectionQuery} from '@leobg/commons';
+import { BgCloudService } from '@leobg/commons';
+import type { WotrStoryDoc } from '../game/wotr-story-models';
+import type { WotrGameDoc, WotrPlayerDoc } from './wotr-remote-models';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class WotrRemoteService {
   async getGame(gameId: string) {
     return this.cloud.get(gameId, this.games());
   }
-  selectGames$(queryFn?: BgCloudCollectionQuery<WotrGameDoc> | undefined) {
+  selectGames$(queryFn?: BgCloudCollectionQuery<WotrGameDoc>  ) {
     return this.cloud.selectAll$(this.games(), queryFn);
   }
   insertGame$(game: WotrGameDoc) {
@@ -33,13 +34,13 @@ export class WotrRemoteService {
   }
   getPlayers(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc>  ,
   ) {
     return this.cloud.getAll(this.players(gameId), queryFn);
   }
   selectPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc>  ,
   ) {
     return this.cloud.selectAll$(this.players(gameId), queryFn);
   }
@@ -68,7 +69,7 @@ export class WotrRemoteService {
   }
   getStories(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<WotrStoryDoc>  ,
   ) {
     return this.cloud.getAll(this.stories(gameId), queryFn);
   }
@@ -77,7 +78,7 @@ export class WotrRemoteService {
   }
   selectStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<WotrStoryDoc>  ,
   ) {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }

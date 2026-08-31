@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from '@leobg/commons/utils';
-import { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrMapPoint, WotrRegionSlots } from './wotr-map.service';
+import type { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrMapPoint, WotrRegionSlots } from './wotr-map.service';
 
 interface WotrRegionPoints {
   innerPoints: WotrMapRegionPoint[];

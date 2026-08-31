@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   BritArea,
   BritAreaId,
   BritLandArea,
@@ -9,7 +9,7 @@ import {
   BritRoundId,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritGameState } from '../brit-game-state.models';
+import type { BritGameState } from '../brit-game-state.models';
 
 export interface BritPopulationIncreaseData {
   nInfantries: number;

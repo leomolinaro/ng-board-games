@@ -1,4 +1,4 @@
-import { WotrScenarioGroup } from '../wotr-scenario';
+import type { WotrScenarioGroup } from '../wotr-scenario';
 import { scenario as myGame1 } from './my-game-1';
 import { scenario as myGame2 } from './my-game-2';
 import { scenario as myGame3 } from './my-game-3';

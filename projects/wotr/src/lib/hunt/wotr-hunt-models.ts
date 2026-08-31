@@ -1,4 +1,4 @@
-import { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrCompanionId } from '../character/wotr-character-models';
 
 export type WotrHuntTileId =
   | '0r'

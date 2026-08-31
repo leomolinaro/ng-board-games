@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
+import type {
   CollectionReference,
   DocumentReference,
   FieldPath,
@@ -8,6 +8,8 @@ import {
   Query,
   QueryConstraint,
   WhereFilterOp,
+} from 'firebase/firestore';
+import {
   collection,
   deleteDoc,
   doc,
@@ -23,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { Observable, from } from 'rxjs';
 
-export type BgCloudCollectionQuery<T> = (
+export type BgCloudCollectionQuery<_T> = (
   factory: BgCloudQueryContraintFactory,
 ) => unknown;
 
@@ -45,7 +47,7 @@ export class BgCloudQueryContraintFactory {
   }
 }
 
-export class BgCloudCollection<T> {
+export class BgCloudCollection<_T> {
   constructor(public path: string) {}
 }
 
@@ -61,7 +63,7 @@ export class BgCloudService {
 
   selectAll$<T>(
     coll: BgCloudCollection<T>,
-    queryFn?: BgCloudCollectionQuery<T> | undefined,
+    queryFn?: BgCloudCollectionQuery<T>,
   ): Observable<T[]> {
     if (queryFn) {
       const qf = new BgCloudQueryContraintFactory();
@@ -75,14 +77,14 @@ export class BgCloudService {
 
   getAll$<T>(
     coll: BgCloudCollection<T>,
-    queryFn?: BgCloudCollectionQuery<T> | undefined,
+    queryFn?: BgCloudCollectionQuery<T>,
   ): Observable<T[]> {
     return from(this.getAll(coll, queryFn));
   }
 
   async getAll<T>(
     coll: BgCloudCollection<T>,
-    queryFn?: BgCloudCollectionQuery<T> | undefined,
+    queryFn?: BgCloudCollectionQuery<T>,
   ): Promise<T[]> {
     const snapshot = await this.getDocs(coll, queryFn);
     const result: T[] = [];
@@ -92,7 +94,7 @@ export class BgCloudService {
 
   private async getDocs<T>(
     coll: BgCloudCollection<T>,
-    queryFn?: BgCloudCollectionQuery<T> | undefined,
+    queryFn?: BgCloudCollectionQuery<T>,
   ) {
     if (queryFn) {
       const qf = new BgCloudQueryContraintFactory();
@@ -222,7 +224,7 @@ export class BgCloudService {
       const unsubscribe = onSnapshot(
         ref,
         (snapshot) => {
-          subscriber.next(snapshot.docs.map((docSnap) => docSnap.data() as T));
+          subscriber.next(snapshot.docs.map((docSnap) => docSnap.data()));
         },
         (error) => subscriber.error(error),
       );

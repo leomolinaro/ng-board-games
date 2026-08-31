@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { BaronyGamePage } from './barony-game/barony-game-page';
 import { BaronyHomeComponent } from './barony-home/barony-home.component';
 

@@ -1,5 +1,6 @@
-import { Component, OnChanges, input, output } from '@angular/core';
-import { BaronyBuilding, BaronyPlayer } from '../barony-models';
+import type { OnChanges} from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import type { BaronyBuilding, BaronyPlayer } from '../barony-models';
 
 @Component({
   selector: 'barony-buildings-selector',

@@ -1,35 +1,35 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrCombatDie } from '../battle/wotr-combat-die-models';
-import { WotrCardDiscardFromTable } from '../card/wotr-card-actions';
+import type { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import type { WotrCardDiscardFromTable } from '../card/wotr-card-actions';
 import { cardToLabel } from '../card/wotr-card-models';
-import { WotrCharacterElimination } from '../character/wotr-character-actions';
+import type { WotrCharacterElimination } from '../character/wotr-character-actions';
 import { WotrCharacterModifiers } from '../character/wotr-character-modifiers';
 import { findAction } from '../commons/wotr-action-models';
-import {
+import type {
   WotrCompanionRandom,
   WotrCompanionSeparation,
   WotrFellowshipCorruption,
   WotrFellowshipReveal,
   WotrFellowshipRevealInMordor,
 } from '../fellowship/wotr-fellowship-actions';
-import { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
+import type { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { assertAction, filterActions } from '../game/wotr-story-models';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
-import { WotrPlayer } from '../player/wotr-player';
+import type { WotrPlayer } from '../player/wotr-player';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import {
+import type {
   WotrHuntReRoll,
   WotrHuntRoll,
   WotrHuntShelobsLairRoll,
   WotrHuntTileDraw,
 } from './wotr-hunt-actions';
 import { WotrHuntHandler } from './wotr-hunt-handler';
-import { WotrHuntEffectParams, WotrHuntTileId } from './wotr-hunt-models';
+import type { WotrHuntEffectParams, WotrHuntTileId } from './wotr-hunt-models';
 import {
   WotrHuntModifiers,
   WotrHuntRollModifiers,
@@ -134,7 +134,7 @@ export class WotrHuntFlow {
       huntTile.type === 'free-people-special'
     )
       return;
-    let damage = 0;
+    let damage: number;
     if (huntTile.eye) {
       damage = options.nSuccesses!;
     } else if (huntTile.dice) {

@@ -1,8 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import type {
+  TuiDialogContext} from '@taiga-ui/core';
 import {
   TuiButton,
-  TuiDialogContext,
   TuiInput,
   TuiLabel,
   TuiTextfield,

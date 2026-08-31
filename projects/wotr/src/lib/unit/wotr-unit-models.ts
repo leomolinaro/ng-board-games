@@ -1,11 +1,11 @@
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import {
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type {
   WotrGenericUnitType,
   WotrNationId,
 } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrUnits {
   regulars?: WotrNationUnit[];
@@ -93,16 +93,16 @@ export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
   }
 }
 
-export function regular(nation: WotrNationId, quantity: number = 1) {
+export function regular(nation: WotrNationId, quantity = 1) {
   return new WotrNationUnitComposer('regulars', nation, quantity);
 }
-export function elite(nation: WotrNationId, quantity: number = 1) {
+export function elite(nation: WotrNationId, quantity = 1) {
   return new WotrNationUnitComposer('elites', nation, quantity);
 }
-export function leader(nation: WotrNationId, quantity: number = 1) {
+export function leader(nation: WotrNationId, quantity = 1) {
   return new WotrNationUnitComposer('leaders', nation, quantity);
 }
-export function nazgul(quantity: number = 1) {
+export function nazgul(quantity = 1) {
   return new WotrNazgulComposer(quantity);
 }
 export function character(...characters: WotrCharacterId[]) {

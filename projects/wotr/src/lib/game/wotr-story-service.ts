@@ -2,17 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { ABgGameService, BgAuthService, getStoryId } from '@leobg/commons';
 import { Subject, firstValueFrom, from } from 'rxjs';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import { WotrPlayerAi } from '../player/wotr-player-ai';
-import { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import type { WotrPlayerAi } from '../player/wotr-player-ai';
+import type { WotrPlayerInfo } from '../player/wotr-player-info-models';
 import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
-import { WotrPlayerStoryService } from '../player/wotr-player-story-service';
-import { WotrPlayerUi } from '../player/wotr-player-ui';
+import type { WotrPlayerStoryService } from '../player/wotr-player-story-service';
+import type { WotrPlayerUi } from '../player/wotr-player-ui';
 import { WotrRemoteService } from '../remote/wotr-remote';
 import { WotrGameStore } from './wotr-game-store';
 import { WotrGameUi } from './wotr-game-ui';
-import { WotrStory, WotrStoryDoc } from './wotr-story-models';
+import type { WotrStory, WotrStoryDoc } from './wotr-story-models';
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;

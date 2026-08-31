@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { WotrActionDieHandler } from '../action-die/wotr-action-die-handler';
-import { WotrStoryApplier } from '../commons/wotr-action-models';
+import type { WotrStoryApplier } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFrontHandler } from '../front/wotr-front-handler';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import {
+import type {
   WotrCardEffectStory,
   WotrDieCardStory,
   WotrSkipCardEffectStory,

@@ -1,91 +1,106 @@
 import { inject, Injectable } from '@angular/core';
 import { randomUtil } from '../../../../../../commons/utils/src';
-import { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
-import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
-import {
+import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
+import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import type {
   WotrActionDieChoiceModifier,
-  WotrActionDieModifiers,
-  WotrAfterActionDieCardResolution,
-} from '../../../action-die/wotr-action-die-modifiers';
-import { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+  WotrAfterActionDieCardResolution} from '../../../action-die/wotr-action-die-modifiers';
 import {
+  WotrActionDieModifiers
+} from '../../../action-die/wotr-action-die-modifiers';
+import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+import type {
   WotrCombatFront,
   WotrCombatRound,
 } from '../../../battle/wotr-battle-models';
+import type {
+  WotrTableCombatCardGetter} from '../../../battle/wotr-battle-modifiers';
 import {
-  WotrBattleModifiers,
-  WotrTableCombatCardGetter,
+  WotrBattleModifiers
 } from '../../../battle/wotr-battle-modifiers';
+import type {
+  WotrAfterCharacterElimination} from '../../../character/wotr-character-modifiers';
 import {
-  WotrAfterCharacterElimination,
   WotrCharacterModifiers,
 } from '../../../character/wotr-character-modifiers';
-import { findAction, WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import { findAction } from '../../../commons/wotr-action-models';
+import type {
+  WotrCompanionRandom} from '../../../fellowship/wotr-fellowship-actions';
 import {
   chooseRandomCompanion,
   corruptFellowship,
-  pushFellowship,
-  WotrCompanionRandom,
+  pushFellowship
 } from '../../../fellowship/wotr-fellowship-actions';
 import { WotrFellowshipHandler } from '../../../fellowship/wotr-fellowship-handler';
-import { WotrFellowshipMove } from '../../../fellowship/wotr-fellowship-models';
+import type { WotrFellowshipMove } from '../../../fellowship/wotr-fellowship-models';
+import type {
+  WotrAfterFellowshipDeclaration} from '../../../fellowship/wotr-fellowship-modifiers';
 import {
-  WotrAfterFellowshipDeclaration,
   WotrFellowshipModifiers,
 } from '../../../fellowship/wotr-fellowship-modifiers';
 import { useElvenRing } from '../../../front/wotr-front-actions';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrUiChoice } from '../../../game/wotr-game-ui';
-import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
-import { assertAction, WotrStory } from '../../../game/wotr-story-models';
+import type { WotrUiChoice } from '../../../game/wotr-game-ui';
+import type { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import type { WotrStory } from '../../../game/wotr-story-models';
+import { assertAction } from '../../../game/wotr-story-models';
+import type {
+  WotrHuntTileDraw} from '../../../hunt/wotr-hunt-actions';
 import {
   addHuntTile,
-  lidlessEye,
-  WotrHuntTileDraw,
+  lidlessEye
 } from '../../../hunt/wotr-hunt-actions';
+import type {
+  WotrHuntTileResolutionOptions} from '../../../hunt/wotr-hunt-flow';
 import {
-  WotrHuntFlow,
-  WotrHuntTileResolutionOptions,
+  WotrHuntFlow
 } from '../../../hunt/wotr-hunt-flow';
 import { WotrHuntHandler } from '../../../hunt/wotr-hunt-handler';
-import {
+import type {
   WotrAfterFellowshipReveal,
-  WotrBeforeHuntRoll,
+  WotrBeforeHuntRoll} from '../../../hunt/wotr-hunt-modifiers';
+import {
   WotrHuntModifiers,
 } from '../../../hunt/wotr-hunt-modifiers';
 import { WotrHuntStore } from '../../../hunt/wotr-hunt-store';
 import { WotrLogWriter } from '../../../log/wotr-log-writer';
-import {
+import type {
   WotrAfterNationActivation,
-  WotrCanActivateNationModifier,
+  WotrCanActivateNationModifier} from '../../../nation/wotr-nation-modifiers';
+import {
   WotrNationModifiers,
 } from '../../../nation/wotr-nation-modifiers';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type {
+  WotrRegionChoose} from '../../../region/wotr-region-actions';
 import {
-  targetRegion,
-  WotrRegionChoose,
+  targetRegion
 } from '../../../region/wotr-region-actions';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import { WotrRegionStore } from '../../../region/wotr-region-store';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
+import type {
+  WotrCardDiscardFromTable,
+  WotrCardPlayOnTable} from '../../wotr-card-actions';
 import {
   discardCardFromTableById,
   discardRandomCardById,
   playCardOnTable,
-  playCardOnTableId,
-  WotrCardDiscardFromTable,
-  WotrCardPlayOnTable,
+  playCardOnTableId
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
-import {
-  isShadowCharacterCard,
+import type {
   WotrCardId,
-  WotrShadowCharacterCardId,
+  WotrShadowCharacterCardId} from '../../wotr-card-models';
+import {
+  isShadowCharacterCard
 } from '../../wotr-card-models';
-import { activateTableCard, WotrEventCard } from '../wotr-cards';
+import type { WotrEventCard } from '../wotr-cards';
+import { activateTableCard } from '../wotr-cards';
 
 @Injectable()
 export class WotrShadowCharacterCards {

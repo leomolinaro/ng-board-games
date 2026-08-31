@@ -1,33 +1,35 @@
 import { inject, Injectable } from '@angular/core';
 import { arrayUtil } from '@leobg/commons/utils';
-import {
+import type {
   WotrActionToken,
   WotrFreePeoplesActionToken,
   WotrShadowActionToken,
 } from '../action-die/wotr-action-die-models';
-import {
+import type {
   WotrCharacterCardId,
   WotrStrategyCardId,
 } from '../card/wotr-card-models';
 import { WotrCardUtils } from '../card/wotr-card-utils';
-import {
-  baseCharacters,
-  komeCharacters,
+import type {
   KomeSovereignId,
   WotrCharacterId,
-  WotrCompanionId,
+  WotrCompanionId} from '../character/wotr-character-models';
+import {
+  baseCharacters,
+  komeCharacters
 } from '../character/wotr-character-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrGameOptions } from '../game/options/wotr-game-options';
-import { WotrGameConfig } from '../game/wotr-game-config';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
+import type { WotrGameConfig } from '../game/wotr-game-config';
 import { WotrGameStore } from '../game/wotr-game-store';
+import type {
+  WotrHuntTileId} from '../hunt/wotr-hunt-models';
 import {
   baseHuntTiles,
-  komeHuntTiles,
-  WotrHuntTileId,
+  komeHuntTiles
 } from '../hunt/wotr-hunt-models';
-import { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrSetup {
   regions: WotrRegionSetup[];

@@ -1,25 +1,27 @@
 import { inject, Injectable } from '@angular/core';
 import { eliminateCharacter } from '../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../character/wotr-character-handler';
-import { WotrCompanionId } from '../character/wotr-character-models';
-import { WotrCharacterQuery } from '../character/wotr-character-query';
-import { WotrAction } from '../commons/wotr-action-models';
+import type { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrCharacterQuery } from '../character/wotr-character-query';
+import type { WotrAction } from '../commons/wotr-action-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrUiChoice, WotrUiOption } from '../game/wotr-game-ui';
+import type { WotrUiChoice, WotrUiOption } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import type {
+  WotrFellowshipGuide} from './wotr-fellowship-actions';
 import {
   changeGuide,
   declareFellowship,
   healFellowship,
   hideFellowship,
   moveFelloswhip,
-  separateCompanions,
-  WotrFellowshipGuide,
+  separateCompanions
 } from './wotr-fellowship-actions';
 import { WotrFellowshipHandler } from './wotr-fellowship-handler';
+import type {
+  WotrSeparateCompanionsOptions} from './wotr-fellowship-rules';
 import {
-  WotrFellowshipRules,
-  WotrSeparateCompanionsOptions,
+  WotrFellowshipRules
 } from './wotr-fellowship-rules';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
 

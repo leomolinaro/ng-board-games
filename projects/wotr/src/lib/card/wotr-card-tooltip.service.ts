@@ -1,6 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { WotrAssetsStore, WotrCardText } from '../assets/wotr-assets-store';
-import { WotrCardId } from './wotr-card-models';
+import type { WotrCardText } from '../assets/wotr-assets-store';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import type { WotrCardId } from './wotr-card-models';
 
 @Injectable({ providedIn: 'root' })
 export class WotrCardTooltipService {

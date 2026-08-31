@@ -1,8 +1,8 @@
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrAction {
   type: string;
@@ -60,7 +60,8 @@ export type WotrActionApplierMap<A extends WotrAction> = {
 export type WotrStoryApplier<S extends WotrStory> = (
   story: S,
   front: WotrFrontId,
-) => Promise<void>;
+) => void | Promise<void>;
+
 export type WotrStoryApplierMap<S extends WotrStory> = {
   [key in S['type']]: WotrStoryApplier<{ type: key } & S>;
 };

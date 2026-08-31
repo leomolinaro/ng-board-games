@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrCombatCards } from './combat-cards/wotr-combat-cards';
 import { WotrBattleHandler } from './wotr-battle-handler';
 import { WotrBattleModifiers } from './wotr-battle-modifiers';

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { arrayUtil } from '../../../../commons/utils/src';
-import {
+import type {
   KomeSovereignId,
   WotrCharacterId,
 } from '../character/wotr-character-models';
@@ -11,14 +11,14 @@ import {
 import { WotrCharacterStore } from '../character/wotr-character-store';
 import { WotrFellowshipQuery } from '../fellowship/wotr-fellowship-query';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontQuery } from '../front/wotr-front-query';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import { WotrHuntStore } from '../hunt/wotr-hunt-store';
-import { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
 import { WotrNationQuery } from '../nation/wotr-nation-query';
 import { WotrNationStore } from '../nation/wotr-nation-store';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionQuery } from '../region/wotr-region-query';
 import { WotrRegionStore } from '../region/wotr-region-store';
 import { WotrUnitUtils } from '../unit/wotr-unit-utils';

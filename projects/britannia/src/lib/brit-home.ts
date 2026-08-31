@@ -1,22 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  BgHome,
+import type {
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
-  BgUser,
+  BgUser} from '@leobg/commons';
+import {
+  BgHome
 } from '@leobg/commons';
 import { concatJoin } from '@leobg/commons/utils';
-import { Observable, forkJoin, from } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { BritColor } from './brit-components.models';
+import type { BritColor } from './brit-components.models';
 import { BritComponentsService } from './brit-components.service';
-import {
+import type {
   ABritPlayerDoc,
   BritAiPlayerDoc,
   BritPlayerDoc,
-  BritReadPlayerDoc,
+  BritReadPlayerDoc} from './brit-remote.service';
+import {
   BritRemoteService,
 } from './brit-remote.service';
 

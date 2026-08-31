@@ -1,7 +1,7 @@
-import { Observable } from 'rxjs';
-import { WotrLog } from '../log/wotr-log-models';
+import type { Observable } from 'rxjs';
+import type { WotrLog } from '../log/wotr-log-models';
 import { WotrScenarioPageBuilder } from '../scenario/wotr-scenario-page-builder';
-import { WotrGamePage } from './wotr-game-page';
+import type { WotrGamePage } from './wotr-game-page';
 
 describe('WotrGameComponent', () => {
   let component: WotrGamePage;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCardId } from '../card/wotr-card-models';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrCombatFront, WotrCombatRound } from './wotr-battle-models';
+import type { WotrCombatFront, WotrCombatRound } from './wotr-battle-models';
 
 export type WotrBeforeCombatRound = (
   combatRound: WotrCombatRound,

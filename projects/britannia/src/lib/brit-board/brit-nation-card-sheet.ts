@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import { TuiDialogContext } from '@taiga-ui/core';
+import type { OnInit} from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import type { TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
 import { BritAssetsService } from '../brit-assets.service';
-import { BritNationId } from '../brit-components.models';
+import type { BritNationId } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritNationState } from '../brit-game-state.models';
+import type { BritNationState } from '../brit-game-state.models';
 
 interface BritUnitNode {
   imageSource: string;

@@ -1,6 +1,7 @@
-import { Injectable, Signal, computed } from '@angular/core';
-import { WotrFrontId } from '../front/wotr-front-models';
-import {
+import type { Signal} from '@angular/core';
+import { Injectable, computed } from '@angular/core';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type {
   WotrFreeGenericUnitType,
   WotrGenericUnitType,
   WotrNation,

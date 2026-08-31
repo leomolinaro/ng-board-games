@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrNationHandler } from './wotr-nation-handler';
 import { WotrNationModifiers } from './wotr-nation-modifiers';
 import { WotrNationRules } from './wotr-nation-rules';

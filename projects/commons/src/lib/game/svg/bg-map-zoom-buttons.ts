@@ -1,6 +1,7 @@
-import { Component, OnInit, input } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TuiButton } from '@taiga-ui/core';
-import { BgMapZoom } from './bg-map-zoom';
+import type { BgMapZoom } from './bg-map-zoom';
 
 @Component({
   selector: 'bg-map-zoom-buttons',

@@ -1,7 +1,9 @@
-import { Component, OnChanges, input, output } from '@angular/core';
-import { SimpleChanges, arrayUtil } from '@leobg/commons/utils';
+import type { OnChanges} from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import type { SimpleChanges} from '@leobg/commons/utils';
+import { arrayUtil } from '@leobg/commons/utils';
 import { BARONY_ACTIONS } from '../barony-constants';
-import { BaronyAction } from '../barony-models';
+import type { BaronyAction } from '../barony-models';
 
 @Component({
   selector: 'barony-actions-area',
@@ -91,7 +93,7 @@ export class BaronyActionsArea implements OnChanges {
     cancel: 'Cancel',
   };
 
-  isValid: { [action: string]: boolean } | null = null;
+  isValid: Record<string, boolean> | null = null;
 
   ngOnChanges(changes: SimpleChanges<this>): void {
     if (changes.validActions || changes.canPass) {
@@ -101,7 +103,7 @@ export class BaronyActionsArea implements OnChanges {
           validActions,
           (a) => a,
           () => true,
-        ) as any;
+        );
       } else {
         this.isValid = null;
       }

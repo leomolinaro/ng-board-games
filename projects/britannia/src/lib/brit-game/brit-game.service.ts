@@ -1,23 +1,25 @@
 import { inject, Injectable } from '@angular/core';
 import { ABgGameService, BgAuthService } from '@leobg/commons';
 import { forEach, forN } from '@leobg/commons/utils';
-import { firstValueFrom, from, Observable, of } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { firstValueFrom, from, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
-import {
+import type {
   BritColor,
   BritLandAreaId,
   BritNationId,
   BritRoundId,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritPlayer } from '../brit-game-state.models';
-import { BritRemoteService, BritStoryDoc } from '../brit-remote.service';
+import type { BritPlayer } from '../brit-game-state.models';
+import type { BritStoryDoc } from '../brit-remote.service';
+import { BritRemoteService } from '../brit-remote.service';
 import { BritRulesService } from '../brit-rules/brit-rules.service';
-import { BritStory } from '../brit-story.models';
+import type { BritStory } from '../brit-story.models';
 import { BritGameStore } from './brit-game.store';
 import { BritPlayerAiService } from './brit-player-ai.service';
 import { BritPlayerLocalService } from './brit-player-local.service';
-import { BritPlayerService } from './brit-player.service';
+import type { BritPlayerService } from './brit-player.service';
 import { BritUiStore } from './brit-ui.store';
 
 @Injectable()
@@ -123,8 +125,8 @@ export class BritGameService extends ABgGameService<
       return this.populationIncreasePhase$(nationId, player.id, roundId).pipe(
         switchMap(() => this.movementPhase$(nationId, player.id)),
         switchMap(() => this.battlesRetreatsPhase$(nationId, player.id)),
-        switchMap(() => this.raiderWithdrawalPhase$(nationId, player.id)),
-        switchMap(() => this.overpopulationPhase$(nationId, player.id)),
+        switchMap(() => this.raiderWithdrawalPhase$()),
+        switchMap(() => this.overpopulationPhase$()),
       );
     } else {
       return of(void 0);
@@ -240,12 +242,12 @@ export class BritGameService extends ABgGameService<
     }
   }
 
-  private raiderWithdrawalPhase$(nationId: BritNationId, playerId: BritColor) {
+  private raiderWithdrawalPhase$() {
     this.game.logPhase('raiderWithdrawal');
     return of(void 0);
   }
 
-  private overpopulationPhase$(nationId: BritNationId, playerId: BritColor) {
+  private overpopulationPhase$() {
     this.game.logPhase('overpopulation');
     return of(void 0);
   }

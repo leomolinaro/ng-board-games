@@ -1,6 +1,7 @@
+import type {
+  Signal} from '@angular/core';
 import {
   Component,
-  Signal,
   computed,
   inject,
   input,
@@ -8,7 +9,7 @@ import {
 } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrFellowship } from './wotr-fellowship-models';
+import type { WotrFellowship } from './wotr-fellowship-models';
 
 interface WotrCompanionNode {
   id: string;

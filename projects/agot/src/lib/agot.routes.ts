@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { AGOT_FEATURE_PATHS } from './agot-features';
 
 export const routes: Routes = [

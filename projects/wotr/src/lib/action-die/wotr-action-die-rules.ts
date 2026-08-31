@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { oppositeFront, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import { oppositeFront } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { WotrHuntStore } from '../hunt/wotr-hunt-store';
 import { WotrNationRules } from '../nation/wotr-nation-rules';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrActionToken } from './wotr-action-die-models';
+import type { WotrActionToken } from './wotr-action-die-models';
 
 @Injectable()
 export class WotrActionDieRules {

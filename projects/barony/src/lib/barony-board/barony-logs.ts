@@ -1,6 +1,7 @@
-import { Component, ElementRef, OnChanges, inject, input } from '@angular/core';
-import { SimpleChanges } from '@leobg/commons/utils';
-import { BaronyLog } from '../barony-models';
+import type { OnChanges } from '@angular/core';
+import { Component, ElementRef, inject, input } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import type { BaronyLog } from '../barony-models';
 import { BaronyLogRow } from './barony-log-row';
 
 @Component({
@@ -24,7 +25,7 @@ import { BaronyLogRow } from './barony-log-row';
   ],
 })
 export class BaronyLogs implements OnChanges {
-  private elementRef = inject(ElementRef);
+  private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly logs = input.required<BaronyLog[]>();
 

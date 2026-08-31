@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { KomeActionDieRules } from './kome-action-die-rules';
 import { WotrActionDieHandler } from './wotr-action-die-handler';
 import { WotrActionDieModifiers } from './wotr-action-die-modifiers';

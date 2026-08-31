@@ -1,5 +1,6 @@
-import { Component, OnChanges, input, output } from '@angular/core';
-import { SimpleChanges } from '@leobg/commons/utils';
+import type { OnChanges} from '@angular/core';
+import { Component, input, output } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
 import { TuiIcon } from '@taiga-ui/core';
 
 @Component({

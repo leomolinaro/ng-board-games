@@ -1,9 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import { WotrFront, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFront, WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import { WotrGameUi } from '../game/wotr-game-ui';
-import { WotrActionDie, WotrActionToken } from './wotr-action-die-models';
+import type { WotrActionDie, WotrActionToken } from './wotr-action-die-models';
 
 interface FrontNode {
   id: WotrFrontId;

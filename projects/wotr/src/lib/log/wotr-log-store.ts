@@ -1,5 +1,6 @@
-import { Injectable, Signal } from '@angular/core';
-import { WotrLog } from './wotr-log-models';
+import type { Signal } from '@angular/core';
+import { Injectable } from '@angular/core';
+import type { WotrLog } from './wotr-log-models';
 
 export type WotrLogState = WotrLog[];
 

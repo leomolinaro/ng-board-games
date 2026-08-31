@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
+import type { Auth, User } from 'firebase/auth';
 import {
-  Auth,
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
   signOut,
-  User,
 } from 'firebase/auth';
 import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -53,7 +52,7 @@ export class BgAuthService {
     return this.$user.asObservable();
   }
   getUser() {
-    return this.$user.getValue() as BgUser;
+    return this.$user.getValue()!;
   }
   hasUser() {
     return !!this.$user.getValue();
@@ -116,7 +115,7 @@ export class BgAuthService {
       case 'guest':
         return this.guestProvider;
       default:
-        throw new Error(`Login type ${type} not implemented.`);
+        throw new Error(`Login type not implemented.`);
     }
   }
 

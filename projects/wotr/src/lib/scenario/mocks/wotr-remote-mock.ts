@@ -1,8 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { BgCloudCollectionQuery } from '@leobg/commons';
-import { Observable, of } from 'rxjs';
-import { WotrStoryDoc } from '../../game/wotr-story-models';
-import { WotrGameDoc, WotrPlayerDoc } from '../../remote/wotr-remote-models';
+import type { Observable } from 'rxjs';
+import { of } from 'rxjs';
+import type { WotrStoryDoc } from '../../game/wotr-story-models';
+import type {
+  WotrGameDoc,
+  WotrPlayerDoc,
+} from '../../remote/wotr-remote-models';
 import { WotrScenarios } from '../wotr-scenarios';
 import { WotrStoriesBuilder } from '../wotr-story-builder';
 
@@ -10,7 +13,7 @@ import { WotrStoriesBuilder } from '../wotr-story-builder';
 export class WotrRemoteMock {
   private examples = inject(WotrScenarios);
 
-  async getGame(gameId: string): Promise<WotrGameDoc> {
+  async getGame(): Promise<WotrGameDoc> {
     return {
       id: '123',
       name: 'test',
@@ -24,82 +27,66 @@ export class WotrRemoteMock {
       },
     };
   }
-  selectGames$(queryFn?: BgCloudCollectionQuery<WotrGameDoc> | undefined): any {
+  selectGames$(): any {
     throw new Error('Mock remote');
   }
-  insertGame$(game: WotrGameDoc): Observable<WotrGameDoc> {
+  insertGame$(): Observable<WotrGameDoc> {
     throw new Error('Mock remote');
   }
-  updateGame$(patch: Partial<WotrGameDoc>, gameId: string): any {
+  updateGame$(): any {
     throw new Error('Mock remote');
   }
-  deleteGame$(gameId: string): any {
+  deleteGame$(): any {
     throw new Error('Mock remote');
   }
 
-  async getPlayers(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined,
-  ): Promise<WotrPlayerDoc[]> {
+  async getPlayers(): Promise<WotrPlayerDoc[]> {
     return [
       { id: 'free-peoples', name: 'FP', controller: { id: 'me' } },
       { id: 'shadow', name: 'S', controller: { id: 'me' } },
     ] as any;
   }
-  selectPlayers$(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrPlayerDoc> | undefined,
-  ): any {
+  selectPlayers$(): any {
     throw new Error('Mock remote');
   }
-  selectPlayer$(playerId: string, gameId: string): any {
+  selectPlayer$(): any {
     throw new Error('Mock remote');
   }
-  insertPlayer$(player: WotrPlayerDoc, gameId: string): any {
+  insertPlayer$(): any {
     throw new Error('Mock remote');
   }
-  updatePlayer$(
-    patch: Partial<WotrPlayerDoc>,
-    playerId: string,
-    gameId: string,
-  ): any {
+  updatePlayer$(): any {
     throw new Error('Mock remote');
   }
-  deletePlayer$(playerId: string, gameId: string): any {
+  deletePlayer$(): any {
     throw new Error('Mock remote');
   }
-  deletePlayers$(gameId: string): any {
+  deletePlayers$(): any {
     throw new Error('Mock remote');
   }
 
-  async getStories(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined,
-  ): Promise<WotrStoryDoc[]> {
+  async getStories(gameId: string): Promise<WotrStoryDoc[]> {
     return (await this.examples.getScenario(gameId).loadDefinition()).stories(
       new WotrStoriesBuilder(),
     );
   }
-  getStory$(storyId: number, gameId: string): any {
+  getStory$(): any {
     throw new Error('Mock remote');
   }
-  selectStories$(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<WotrStoryDoc> | undefined,
-  ): any {
+  selectStories$(): any {
     throw new Error('Mock remote');
   }
-  selectStory$(storyId: string, gameId: string): any {
+  selectStory$(): any {
     throw new Error('Mock remote');
   }
-  insertStory$(storyId: string, story: WotrStoryDoc, gameId: string): any {
+  insertStory$(): any {
     // throw new Error("Mock remote");
     return of(null);
   }
-  deleteStory$(storyId: string, gameId: string): any {
+  deleteStory$(): any {
     throw new Error('Mock remote');
   }
-  deleteStories$(gameId: string): any {
+  deleteStories$(): any {
     throw new Error('Mock remote');
   }
 }

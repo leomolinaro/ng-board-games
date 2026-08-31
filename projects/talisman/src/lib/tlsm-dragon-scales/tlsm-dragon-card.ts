@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { TuiAvatar } from '@taiga-ui/kit';
 import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
-import { Dragon } from './tlsm-store';
+import type { Dragon } from './tlsm-store';
 
 @Component({
   selector: 'tlsm-dragon-card',

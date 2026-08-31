@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrAllPlayers } from './wotr-all-players';
 import { WotrFreePeoplesPlayer } from './wotr-free-peoples-player';
 import { WotrPlayerAi } from './wotr-player-ai';

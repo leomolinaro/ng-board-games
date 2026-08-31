@@ -1,5 +1,5 @@
-import { BritAreaId, BritLandAreaId } from './brit-components.models';
-import { BritAreaUnit } from './brit-game-state.models';
+import type { BritAreaId, BritLandAreaId } from './brit-components.models';
+import type { BritAreaUnit } from './brit-game-state.models';
 
 export type BritStory =
   BritArmyPlacement | BritArmyMovements | BritBattleInitiation;

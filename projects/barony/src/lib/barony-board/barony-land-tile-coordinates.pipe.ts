@@ -1,5 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { BaronyLandCoordinates } from '../barony-models';
+import type { PipeTransform } from '@angular/core';
+import { Pipe } from '@angular/core';
+import type { BaronyLandCoordinates } from '../barony-models';
 
 const sqrt3Half = Math.sqrt(3) / 2.0;
 const half = 0.5;
@@ -58,8 +59,6 @@ export function hexToCartesian(hex: { x: number; y: number }): {
   x: number;
   y: number;
 } {
-  const radius =
-    (Math.abs(hex.x) + Math.abs(hex.y) + Math.abs(hex.x + hex.y)) / 2;
   return {
     x: (sqrt3 * hex.x + sqrt3Half * hex.y) * scaleForGap,
     y: oneHalf * hex.y * scaleForGap,

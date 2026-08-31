@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 
 @Component({
   selector: 'wotr-player-badge',

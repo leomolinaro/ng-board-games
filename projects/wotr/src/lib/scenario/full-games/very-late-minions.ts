@@ -1,5 +1,5 @@
-/* eslint-disable max-statements-per-line */
-/* eslint-disable @typescript-eslint/no-shadow */
+ 
+ 
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
 import { discardDice } from '../../action-die/wotr-action-die-actions';
@@ -52,8 +52,8 @@ import {
   upgradeRegularUnit,
 } from '../../unit/wotr-unit-actions';
 import { character, elite, nazgul, regular } from '../../unit/wotr-unit-models';
-import { WotrScenarioDefinition } from '../wotr-scenario';
-import { WotrStoriesBuilder } from '../wotr-story-builder';
+import type { WotrScenarioDefinition } from '../wotr-scenario';
+import type { WotrStoriesBuilder } from '../wotr-story-builder';
 
 // export const fpTokens: WotrActionToken[] = ["draw-card", "political-advance"];
 

@@ -1,4 +1,5 @@
-import { WotrCardId, WotrCardLabel, labelToCardId } from './wotr-card-models';
+import type { WotrCardId, WotrCardLabel} from './wotr-card-models';
+import { labelToCardId } from './wotr-card-models';
 
 export type WotrCardAction =
   | WotrCardDraw

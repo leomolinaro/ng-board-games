@@ -1,23 +1,26 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
-import { WotrFrontId, oppositeFront } from '../front/wotr-front-models';
+import type { WotrFrontId} from '../front/wotr-front-models';
+import { oppositeFront } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
-import { WotrCards } from './cards/wotr-cards';
-import {
+import type { WotrCards } from './cards/wotr-cards';
+import type {
   WotrCardAction,
-  WotrCardDiscardFromTable,
+  WotrCardDiscardFromTable} from './wotr-card-actions';
+import {
   discardCardFromTableById,
   drawCardIds,
 } from './wotr-card-actions';
-import { WotrCardId, cardToLabel, isFreePeoplesCard } from './wotr-card-models';
+import type { WotrCardId} from './wotr-card-models';
+import { cardToLabel, isFreePeoplesCard } from './wotr-card-models';
 
 @Injectable()
 export class WotrCardHandler {

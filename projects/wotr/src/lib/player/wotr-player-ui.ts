@@ -1,38 +1,38 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrUiAbility } from '../ability/wotr-ability';
-import { WotrCombatCardAbility } from '../battle/combat-cards/wotr-combat-cards';
-import { WotrCombatRound } from '../battle/wotr-battle-models';
+import type { WotrUiAbility } from '../ability/wotr-ability';
+import type { WotrCombatCardAbility } from '../battle/combat-cards/wotr-combat-cards';
+import type { WotrCombatRound } from '../battle/wotr-battle-models';
 import { WotrBattleStore } from '../battle/wotr-battle-store';
 import { WotrBattleUi } from '../battle/wotr-battle-ui';
 import { WotrCardDrawUi } from '../card/wotr-card-draw-ui';
-import { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCardId } from '../card/wotr-card-models';
 import { WotrCardPlayUi } from '../card/wotr-card-play-ui';
-import {
+import type {
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
 import { WotrCharacterUi } from '../character/wotr-character-ui';
-import { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
+import type { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
 import { WotrFellowshipUi } from '../fellowship/wotr-fellowship-ui';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import {
+import type {
   WotrBaseStory,
   WotrCardEffectStory,
   WotrCombatCardEffectStory,
   WotrEffectStory,
   WotrStory,
 } from '../game/wotr-story-models';
-import { WotrHuntEffectParams } from '../hunt/wotr-hunt-models';
+import type { WotrHuntEffectParams } from '../hunt/wotr-hunt-models';
 import { WotrHuntUi } from '../hunt/wotr-hunt-ui';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionUi } from '../region/wotr-region-ui';
-import {
+import type {
   WotrEliminateUnitsParams,
   WotrForfeitLeadershipParams,
 } from '../unit/wotr-unit-models';
 import { WotrUnitUi } from '../unit/wotr-unit-ui';
-import { WotrPlayerStoryService } from './wotr-player-story-service';
+import type { WotrPlayerStoryService } from './wotr-player-story-service';
 
 @Injectable()
 export class WotrPlayerUi implements WotrPlayerStoryService {
@@ -282,19 +282,19 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async eliminateUnits(
     params: WotrEliminateUnitsParams,
     cardId: WotrCardId,
-    frontId: WotrFrontId,
+    _frontId: WotrFrontId,
   ): Promise<WotrCardEffectStory> {
     return {
       type: 'card-effect',
       card: cardId,
-      actions: await this.unitUi.eliminateUnits(params, frontId),
+      actions: await this.unitUi.eliminateUnits(params),
     };
   }
 
   async chooseRegion(
     regions: WotrRegionId[],
     cardId: WotrCardId,
-    frontId: WotrFrontId,
+    _frontId: WotrFrontId,
   ): Promise<WotrCardEffectStory> {
     return {
       type: 'card-effect',
@@ -311,11 +311,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return {
       type: 'card-effect',
       card: cardId,
-      actions: await this.unitUi.theEaglesAreComingEffect(
-        nHits,
-        region,
-        cardId,
-      ),
+      actions: await this.unitUi.theEaglesAreComingEffect(nHits, region),
     };
   }
 
@@ -325,7 +321,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return {
       type: 'card-effect',
       card: cardId,
-      actions: await this.unitUi.faramirsRangersRecruit(cardId),
+      actions: await this.unitUi.faramirsRangersRecruit(),
     };
   }
 
@@ -336,7 +332,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     return {
       type: 'card-effect',
       card: cardId,
-      actions: await this.unitUi.deadMenOfDunharrowRecruit(regionId, cardId),
+      actions: await this.unitUi.deadMenOfDunharrowRecruit(regionId),
     };
   }
 

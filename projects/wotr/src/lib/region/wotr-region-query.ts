@@ -1,10 +1,10 @@
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrArmy } from '../unit/wotr-unit-models';
-import { WotrUnitUtils } from '../unit/wotr-unit-utils';
-import { WotrRegionId } from './wotr-region-models';
-import { WotrRegionStore } from './wotr-region-store';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrArmy } from '../unit/wotr-unit-models';
+import type { WotrUnitUtils } from '../unit/wotr-unit-utils';
+import type { WotrRegionId } from './wotr-region-models';
+import type { WotrRegionStore } from './wotr-region-store';
 
 export class WotrRegionQuery {
   constructor(

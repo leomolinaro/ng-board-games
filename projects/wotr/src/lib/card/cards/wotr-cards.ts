@@ -1,20 +1,21 @@
 import { inject, Injectable } from '@angular/core';
 import { unexpectedStory } from '../../../../../commons/src';
-import { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
 import { WotrFrontStore } from '../../front/wotr-front-store';
 import { WotrGameStore } from '../../game/wotr-game-store';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrDieCardStory, WotrStory } from '../../game/wotr-story-models';
-import { WotrPlayer } from '../../player/wotr-player';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrDieCardStory, WotrStory } from '../../game/wotr-story-models';
+import type { WotrPlayer } from '../../player/wotr-player';
+import type {
+  WotrCardId,
+  WotrCardType} from '../wotr-card-models';
 import {
   getCard,
   isFreePeopleCharacterCard,
   isFreePeopleStrategyCard,
-  isShadowCharacterCard,
-  WotrCardId,
-  WotrCardType,
+  isShadowCharacterCard
 } from '../wotr-card-models';
 import { WotrFreePeoplesCharacterCards } from './free-peoples-character-cards/wotr-free-peoples-character-cards';
 import { WotrFreePeoplesStrategyCards } from './free-peoples-strategy-cards/wotr-free-peoples-strategy-cards';

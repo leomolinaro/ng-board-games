@@ -1,7 +1,9 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import type { OnDestroy, OnInit} from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BgAuthService, BgUser } from '@leobg/commons';
+import type { BgUser } from '@leobg/commons';
+import { BgAuthService } from '@leobg/commons';
 import {
   ChangeListener,
   SingleEvent,
@@ -9,17 +11,18 @@ import {
 } from '@leobg/commons/utils';
 import { forkJoin, tap } from 'rxjs';
 import { BritBoardComponent } from '../brit-board/brit-board';
-import { BritAreaId } from '../brit-components.models';
+import type { BritAreaId } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import {
+import type {
   ABritPlayer,
   BritAreaUnit,
   BritPlayer,
 } from '../brit-game-state.models';
-import {
+import type {
   BritPlayerDoc,
-  BritRemoteService,
-  BritStoryDoc,
+  BritStoryDoc} from '../brit-remote.service';
+import {
+  BritRemoteService
 } from '../brit-remote.service';
 import { BritGameService } from './brit-game.service';
 import { BritGameStore } from './brit-game.store';

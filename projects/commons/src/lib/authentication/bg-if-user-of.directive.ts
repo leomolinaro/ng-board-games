@@ -5,11 +5,12 @@ import {
   ViewContainerRef,
   inject,
 } from '@angular/core';
-import { BgAuthService, BgUser } from './bg-auth.service';
+import type { BgUser } from './bg-auth.service';
+import { BgAuthService } from './bg-auth.service';
 
 @Directive({ selector: '[bgIfUser]' })
 export class BgIfUserDirective {
-  private templateRef = inject<TemplateRef<any>>(TemplateRef);
+  private templateRef = inject<TemplateRef<unknown>>(TemplateRef);
   private viewContainer = inject(ViewContainerRef);
   private authService = inject(BgAuthService);
 

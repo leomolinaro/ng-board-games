@@ -1,17 +1,19 @@
-import { Injectable, Signal, computed } from '@angular/core';
+import type { Signal} from '@angular/core';
+import { Injectable, computed } from '@angular/core';
 import { immutableUtil } from '@leobg/commons/utils';
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import {
+import type {
   WotrCardId,
   WotrCharacterCardId,
-  WotrStrategyCardId,
+  WotrStrategyCardId} from '../card/wotr-card-models';
+import {
   isCharacterCard,
   isStrategyCard,
 } from '../card/wotr-card-models';
-import { WotrElvenRing, WotrFront, WotrFrontId } from './wotr-front-models';
+import type { WotrElvenRing, WotrFront, WotrFrontId } from './wotr-front-models';
 
 export interface WotrFrontState {
   ids: WotrFrontId[];

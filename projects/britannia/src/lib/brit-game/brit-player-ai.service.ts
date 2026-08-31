@@ -1,37 +1,23 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BritColor, BritNationId } from '../brit-components.models';
-import {
+import { Injectable } from '@angular/core';
+import type { Observable } from 'rxjs';
+import type {
   BritArmyMovements,
   BritArmyPlacement,
   BritBattleInitiation,
 } from '../brit-story.models';
-import { BritGameStore } from './brit-game.store';
-import { BritPlayerService } from './brit-player.service';
+import type { BritPlayerService } from './brit-player.service';
 
 @Injectable()
 export class BritPlayerAiService implements BritPlayerService {
-  private game = inject(BritGameStore);
-
-  armyPlacement$(
-    nInfantries: number,
-    nationId: BritNationId,
-    playerId: BritColor,
-  ): Observable<BritArmyPlacement> {
+  armyPlacement$(): Observable<BritArmyPlacement> {
     throw new Error('Method not implemented.');
   }
 
-  armyMovements$(
-    nationId: BritNationId,
-    playerId: BritColor,
-  ): Observable<BritArmyMovements> {
+  armyMovements$(): Observable<BritArmyMovements> {
     throw new Error('Method not implemented.');
   }
 
-  battleInitiation$(
-    nationId: BritNationId,
-    playerId: BritColor,
-  ): Observable<BritBattleInitiation> {
+  battleInitiation$(): Observable<BritBattleInitiation> {
     throw new Error('Method not implemented.');
   }
 }

@@ -3,7 +3,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { uiEvent } from '@leobg/commons/utils';
 import { patchState, signalStore, withState } from '@ngrx/signals';
 import { first, skip } from 'rxjs';
-import {
+import type {
   BaronyAction,
   BaronyColor,
   BaronyLand,

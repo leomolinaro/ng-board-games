@@ -1,8 +1,9 @@
 import { JsonPipe } from '@angular/common';
+import type {
+  ElementRef} from '@angular/core';
 import {
   Component,
   effect,
-  ElementRef,
   inject,
   viewChild,
 } from '@angular/core';
@@ -11,7 +12,7 @@ import { getStoryId, injectDialogContext } from '@leobg/commons';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrRemoteService } from '../remote/wotr-remote';
 
-export type WotrStoriesDialogRef = { close: () => void };
+export interface WotrStoriesDialogRef { close: () => void }
 export interface WotrStoriesDialogData {
   gameId: string;
 }

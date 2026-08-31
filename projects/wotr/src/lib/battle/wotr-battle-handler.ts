@@ -1,41 +1,44 @@
 import { inject, Injectable } from '@angular/core';
 import { WotrCards } from '../card/cards/wotr-cards';
 import { getCard, isCharacterCard } from '../card/wotr-card-models';
-import {
-  findAction,
+import type {
   WotrActionLoggerMap,
-  WotrStoryApplier,
+  WotrStoryApplier} from '../commons/wotr-action-models';
+import {
+  findAction
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFrontHandler } from '../front/wotr-front-handler';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import {
-  assertAction,
+import type {
   WotrCombatCardEffectStory,
-  WotrSkipCombatCardEffectStory,
+  WotrSkipCombatCardEffectStory} from '../game/wotr-story-models';
+import {
+  assertAction
 } from '../game/wotr-story-models';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import { WotrNationHandler } from '../nation/wotr-nation-handler';
 import { WotrAllPlayers } from '../player/wotr-all-players';
 import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
-import { WotrPlayer } from '../player/wotr-player';
+import type { WotrPlayer } from '../player/wotr-player';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
 import { WotrRegionHandler } from '../region/wotr-region-handler';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrRegularUnitElimination } from '../unit/wotr-unit-actions';
+import type { WotrRegularUnitElimination } from '../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../unit/wotr-unit-handler';
-import { WotrArmy } from '../unit/wotr-unit-models';
+import type { WotrArmy } from '../unit/wotr-unit-models';
 import { WotrUnitRules } from '../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../unit/wotr-unit-utils';
-import {
+import type {
   WotrCombatCardEffectParams,
-  WotrCombatCardParams,
+  WotrCombatCardParams} from './combat-cards/wotr-combat-cards';
+import {
   WotrCombatCards,
 } from './combat-cards/wotr-combat-cards';
-import {
+import type {
   WotrArmyAdvance,
   WotrArmyAttack,
   WotrArmyNotAdvance,
@@ -51,14 +54,15 @@ import {
   WotrCombatReRoll,
   WotrCombatRoll,
 } from './wotr-battle-actions';
-import {
+import type {
   WotrBattle,
-  WotrCombatFront,
+  WotrCombatFront} from './wotr-battle-models';
+import {
   WotrCombatRound,
 } from './wotr-battle-models';
 import { WotrBattleModifiers } from './wotr-battle-modifiers';
 import { WotrBattleStore } from './wotr-battle-store';
-import { WotrCombatDie } from './wotr-combat-die-models';
+import type { WotrCombatDie } from './wotr-combat-die-models';
 
 @Injectable()
 export class WotrBattleHandler {
@@ -441,7 +445,7 @@ export class WotrBattleHandler {
     );
     switch (action.type) {
       case 'combat-card-choose':
-        // eslint-disable-next-line require-atomic-updates
+         
         combatFront.combatCard = getCard(action.card);
         break;
       case 'combat-card-choose-not':
@@ -531,7 +535,7 @@ export class WotrBattleHandler {
     };
     const { shadow: shadowRoll, 'free-peoples': freePeoplesRoll } =
       await this.parallelRollCombatDice(nDice);
-    // eslint-disable-next-line require-atomic-updates
+     
     combatRound.shadow.combatRoll = shadowRoll;
     combatRound.shadow.nCombatSuccesses = this.getNRollSuccesses(
       shadowRoll,
@@ -573,7 +577,7 @@ export class WotrBattleHandler {
         };
         const { shadow: shadowReRoll, 'free-peoples': freePeoplesReRoll } =
           await this.parallelReRollCombatDice(nDice);
-        // eslint-disable-next-line require-atomic-updates
+         
         combatRound.shadow.leaderReRoll = shadowReRoll;
         combatRound.shadow.nLeaderSuccesses = this.getNRollSuccesses(
           shadowReRoll,
@@ -593,7 +597,7 @@ export class WotrBattleHandler {
           defenderNReRolls,
           combatRound.defender.player,
         );
-        // eslint-disable-next-line require-atomic-updates
+         
         combatRound.defender.leaderReRoll = defenderReRoll;
         combatRound.defender.nLeaderSuccesses = this.getNRollSuccesses(
           defenderReRoll,
@@ -607,7 +611,7 @@ export class WotrBattleHandler {
         attackerNReRolls,
         combatRound.attacker.player,
       );
-      // eslint-disable-next-line require-atomic-updates
+       
       combatRound.attacker.leaderReRoll = attackerReRoll;
       combatRound.attacker.nLeaderSuccesses = this.getNRollSuccesses(
         attackerReRoll,

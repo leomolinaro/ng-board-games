@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { targetRegion, WotrRegionChoose } from './wotr-region-actions';
-import { WotrRegionId } from './wotr-region-models';
+import type { WotrRegionChoose } from './wotr-region-actions';
+import { targetRegion } from './wotr-region-actions';
+import type { WotrRegionId } from './wotr-region-models';
 
 @Injectable()
 export class WotrRegionUi {

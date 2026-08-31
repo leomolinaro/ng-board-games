@@ -1,16 +1,17 @@
-import { WotrUiAbility } from '../../ability/wotr-ability';
-import {
+import type { WotrUiAbility } from '../../ability/wotr-ability';
+import type {
   WotrActionDieModifiers,
   WotrAfterActionDieCardResolution,
 } from '../../action-die/wotr-action-die-modifiers';
+import type {
+  WotrCardId} from '../../card/wotr-card-models';
 import {
-  isFreePeopleCharacterCard,
-  WotrCardId,
+  isFreePeopleCharacterCard
 } from '../../card/wotr-card-models';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
 import { activateCharacterAbility } from './wotr-playable-character-card';
 
 // Gandalf the Grey - The Grey Wanderer (Level 3, Leadership 1)

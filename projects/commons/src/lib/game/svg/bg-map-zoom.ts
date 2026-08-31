@@ -1,3 +1,4 @@
+import type { OnInit } from '@angular/core';
 import {
   ChangeDetectorRef,
   Component,
@@ -5,7 +6,6 @@ import {
   ElementRef,
   HostBinding,
   HostListener,
-  OnInit,
   inject,
   input,
 } from '@angular/core';
@@ -60,7 +60,7 @@ export class BgMapZoom implements OnInit {
   private zoomStep!: number;
   private translateStep!: number;
 
-  private grabbing: boolean = false;
+  private grabbing = false;
   private grabbingX: number | null = null;
   private grabbingY: number | null = null;
 
@@ -96,8 +96,8 @@ export class BgMapZoom implements OnInit {
     }
   }
 
-  @HostListener('mouseleave', ['$event'])
-  onMouseLeave(event: MouseEvent) {
+  @HostListener('mouseleave')
+  onMouseLeave() {
     if (this.grabbing) {
       this.endGrabbing();
     }

@@ -1,10 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCompanionId } from '../character/wotr-character-models';
-import { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameStore } from '../game/wotr-game-store';
-import { WotrStory } from '../game/wotr-story-models';
-import { WotrPlayerStoryService } from './wotr-player-story-service';
+import type { WotrStory } from '../game/wotr-story-models';
+import type { WotrPlayerStoryService } from './wotr-player-story-service';
 
 @Injectable()
 export class WotrPlayerAi implements WotrPlayerStoryService {
@@ -49,7 +46,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   huntEffect(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
-  lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrStory> {
+  lureOfTheRingEffect(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
   revealFellowship(): Promise<WotrStory> {
@@ -118,13 +115,10 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   theEaglesAreComingEffect(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
-  faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory> {
+  faramirsRangersRecruit(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
-  deadMenOfDunharrowRecruit(
-    regionId: string,
-    cardId: string | null,
-  ): Promise<WotrStory> {
+  deadMenOfDunharrowRecruit(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
   deadMenOfDunharrowCasualties(): Promise<WotrStory> {
@@ -133,7 +127,7 @@ export class WotrPlayerAi implements WotrPlayerStoryService {
   chooseCorruptionTile(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
-  makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory> {
+  makeRulerDieChoice(): Promise<WotrStory> {
     throw new Error('Method not implemented.');
   }
 }

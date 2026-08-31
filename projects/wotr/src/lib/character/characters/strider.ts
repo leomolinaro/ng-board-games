@@ -1,13 +1,13 @@
-import { WotrAbility } from '../../ability/wotr-ability';
-import {
+import type { WotrAbility } from '../../ability/wotr-ability';
+import type {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
 } from '../../action-die/wotr-action-die-modifiers';
-import { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
 import { hideFellowship } from '../../fellowship/wotr-fellowship-actions';
-import { WotrFellowshipStore } from '../../fellowship/wotr-fellowship-store';
-import { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
-import { WotrCharacterId } from '../wotr-character-models';
+import type { WotrFellowshipStore } from '../../fellowship/wotr-fellowship-store';
+import type { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
+import type { WotrCharacterId } from '../wotr-character-models';
 
 // Strider - Ranger of the North (Level 3, Leadership 1)
 // Guide. You may use any of your Action die results to hide a revealed Fellowship.

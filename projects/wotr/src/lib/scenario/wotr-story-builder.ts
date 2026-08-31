@@ -1,15 +1,16 @@
 import { rollActionDice } from '../action-die/wotr-action-die-actions';
-import {
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import type { WotrCombatDie } from '../battle/wotr-combat-die-models';
 import { discardCards, drawCards } from '../card/wotr-card-actions';
-import { WotrCardLabel, labelToCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
-import {
+import type { WotrCardLabel } from '../card/wotr-card-models';
+import { labelToCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type {
   WotrBaseStory,
   WotrCardEffectStory,
   WotrCharacterEffectStory,
@@ -30,7 +31,7 @@ import {
   reRollHuntDice,
   rollHuntDice,
 } from '../hunt/wotr-hunt-actions';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
 
 export class WotrFrontStoryComposer {
   constructor(
@@ -265,7 +266,6 @@ export class WotrFrontStoryComposer {
   }
   skipCharacterReaction(
     character: WotrCharacterId,
-    ...actions: WotrAction[]
   ): WotrStoryDoc & WotrSkipCharacterEffectStory {
     return { type: 'character-effect-skip', character, ...this.story() };
   }

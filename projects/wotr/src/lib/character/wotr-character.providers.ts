@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrCharacterHandler } from './wotr-character-handler';
 import { WotrCharacterModifiers } from './wotr-character-modifiers';
 import { WotrCharacterRules } from './wotr-character-rules';

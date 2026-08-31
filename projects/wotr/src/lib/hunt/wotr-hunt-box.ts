@@ -1,14 +1,15 @@
+import type {
+  Signal} from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
-  Signal,
   computed,
   inject,
   input,
 } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameUi } from '../game/wotr-game-ui';
-import { WotrHuntState } from './wotr-hunt-store';
+import type { WotrHuntState } from './wotr-hunt-store';
 
 interface WotrHuntDieNode {
   id: string;

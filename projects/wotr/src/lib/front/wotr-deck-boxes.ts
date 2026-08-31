@@ -1,5 +1,6 @@
-import { Component, Signal, computed, input } from '@angular/core';
-import { WotrFront } from './wotr-front-models';
+import type { Signal} from '@angular/core';
+import { Component, computed, input } from '@angular/core';
+import type { WotrFront } from './wotr-front-models';
 
 interface WotrDeckBoxNode {
   id: string;

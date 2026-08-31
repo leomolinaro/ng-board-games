@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import type { OnDestroy, OnInit} from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BgAuthService, BgDialogService, type BgUser } from '@leobg/commons';
 import { UntilDestroy } from '@leobg/commons/utils';
@@ -32,7 +33,7 @@ import { logProviders } from '../log/wotr-log.providers';
 import { WotrNationHandler } from '../nation/wotr-nation-handler';
 import { WotrNationModifiers } from '../nation/wotr-nation-modifiers';
 import { nationProviders } from '../nation/wotr-nation.providers';
-import {
+import type {
   AWotrPlayerInfo,
   WotrPlayerInfo,
 } from '../player/wotr-player-info-models';
@@ -41,7 +42,7 @@ import { playerProviders } from '../player/wotr-player.providers';
 import { WotrRegionHandler } from '../region/wotr-region-handler';
 import { regionProviders } from '../region/wotr-region.providers';
 import { WotrRemoteService } from '../remote/wotr-remote';
-import { WotrPlayerDoc } from '../remote/wotr-remote-models';
+import type { WotrPlayerDoc } from '../remote/wotr-remote-models';
 import { scenarioProviders } from '../scenario/wotr-scenario-providers';
 import { setupProviders } from '../setup/wotr-setup.providers';
 import { WotrUnitHandler } from '../unit/wotr-unit-handler';
@@ -50,15 +51,16 @@ import { WotrUnitUtils } from '../unit/wotr-unit-utils';
 import { unitProviders } from '../unit/wotr-unit.providers';
 import { WotrMapSlotsGenerator } from './board/map/wotr-map-slots-generator';
 import { WotrBoard } from './board/wotr-board';
-import { WotrGameConfig } from './wotr-game-config';
+import type { WotrGameConfig } from './wotr-game-config';
 import { WotrGameQuery } from './wotr-game-query';
 import { WotrGameStore } from './wotr-game-store';
 import { WotrGameUi } from './wotr-game-ui';
 import { WotrGameUiContext } from './wotr-game-ui-context';
-import {
-  WotrStoriesDialog,
+import type {
   WotrStoriesDialogData,
-  WotrStoriesDialogRef,
+  WotrStoriesDialogRef} from './wotr-stories-dialog';
+import {
+  WotrStoriesDialog
 } from './wotr-stories-dialog';
 import { WotrStoryService } from './wotr-story-service';
 

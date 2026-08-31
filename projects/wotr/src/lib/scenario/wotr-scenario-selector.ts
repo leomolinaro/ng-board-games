@@ -2,8 +2,9 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { injectDialogContext } from '@leobg/commons';
 import { type TuiHandler } from '@taiga-ui/cdk';
-import { TuiTree, TuiTreeItem } from '@taiga-ui/kit';
-import { WotrScenarioGroupInfo, WotrScenarioInfo } from './wotr-scenario';
+import type { TuiTreeItem } from '@taiga-ui/kit';
+import { TuiTree } from '@taiga-ui/kit';
+import type { WotrScenarioGroupInfo, WotrScenarioInfo } from './wotr-scenario';
 import { WotrScenarios } from './wotr-scenarios';
 
 @Component({
@@ -74,20 +75,21 @@ export class WotrScenarioSelectorDialog {
 
   protected scenarioInfos = this.scenarios.getScenarioInfos();
 
-  protected onNodeClick(
+  protected async onNodeClick(
     node: TuiTreeItem,
     value: WotrScenarioGroupInfo | WotrScenarioInfo,
   ) {
     if ('scenarios' in value) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       (node as any).controller.toggle(node);
     } else {
-      this.onGameClick(value);
+      await this.onGameClick(value);
       this.context.complete();
     }
   }
 
-  protected onGameClick(info: WotrScenarioInfo) {
-    this.router.navigate(['scenario', info.id], {
+  protected async onGameClick(info: WotrScenarioInfo) {
+    await this.router.navigate(['scenario', info.id], {
       relativeTo: this.activatedRoute,
     });
   }

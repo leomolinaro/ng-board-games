@@ -1,4 +1,4 @@
-import { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
+import type { WotrScenarioGroup } from '../../../scenario/wotr-scenario';
 import { elvenCloaksScenarios } from './01-elven-cloaks-scenarios';
 import { mithrilCoatAndStingScenarios } from './05-mithril-coat-and-sting-scenarios';
 import { axeAndBowScenarios } from './06-axe-and-bow-scenarios';

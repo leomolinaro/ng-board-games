@@ -1,18 +1,10 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  Type,
-  ViewChild,
-  inject,
-  input,
-} from '@angular/core';
+import type { OnDestroy, OnInit, TemplateRef, Type } from '@angular/core';
+import { Component, ViewChild, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import {
-  BgTransformFn,
   BgTransformPipe,
   ExhaustingEvent,
   Loading,
@@ -38,35 +30,36 @@ import {
 } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
-import { Observable, firstValueFrom, map, mapTo, of, switchMap } from 'rxjs';
+import type { Observable } from 'rxjs';
+import { firstValueFrom, map, mapTo, of, switchMap } from 'rxjs';
 import { BgAuthService } from '../../authentication';
 import { BgAccountButton } from '../../authentication/bg-account-button';
 import { BgIfUserDirective } from '../../authentication/bg-if-user-of.directive';
-import {
+import type {
   BgBoardGame,
   BgProtoGame,
-  BgProtoGameService,
   BgProtoGameState,
   BgProtoPlayer,
   NewGame,
 } from '../bg-proto-game-service';
-import {
-  BgGameRoomDialog,
+import { BgProtoGameService } from '../bg-proto-game-service';
+import type {
   BgRoomDialogInput,
   BgRoomDialogOutput,
 } from './bg-game-room-dialog';
-import { BgGameOptionsComponent } from './bg-home-game-options';
+import { BgGameRoomDialog } from './bg-game-room-dialog';
+import type { BgGameOptionsComponent } from './bg-home-game-options';
 import { BgNewGameDialog } from './bg-new-game-dialog';
 
-export interface BgHomeConfig<Pid extends string, Opt = any> {
+export interface BgHomeConfig<Pid extends string, Opt = unknown> {
   boardGame: BgBoardGame;
   boardGameName: string;
-  startGame$: (gameId: string) => Observable<any>;
-  deleteGame$: (gameId: string) => Observable<any>;
+  startGame$: (gameId: string) => Observable<unknown>;
+  deleteGame$: (gameId: string) => Observable<unknown>;
   createGame$: (
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<Pid>[],
-  ) => Observable<any>;
+  ) => Observable<unknown>;
   playerIds: () => Pid[];
   playerIdCssClass: (playerId: Pid) => string;
   optionsComponent?: () => Type<BgGameOptionsComponent<Opt>>;
@@ -218,7 +211,7 @@ export class BgHome<Pid extends string> implements OnInit, OnDestroy {
             deleteGame$: (gameId) => this.deleteGame$(gameId),
             playerIdToCssClass: (role) => this.config().playerIdCssClass(role),
             optionsComponent: this.config().optionsComponent?.(),
-          } satisfies BgRoomDialogInput<Pid, any>,
+          } satisfies BgRoomDialogInput<Pid, unknown>,
         },
       ),
     );

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import {
+import type {
   AgotCard,
   AgotFaction,
   AgotPack,
@@ -108,9 +108,9 @@ export class AgotData {
     this.packs.set(packs);
 
     const factions: AgotFaction[] = [];
-    const factionIds: { [code: string]: boolean } = {};
+    const factionIds: Record<string, boolean> = {};
     const types: AgotType[] = [];
-    const typeIds: { [code: string]: boolean } = {};
+    const typeIds: Record<string, boolean> = {};
     cards.forEach((card) => {
       const factionCode = card.faction_code;
       if (!factionIds[factionCode]) {

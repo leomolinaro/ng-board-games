@@ -1,20 +1,20 @@
-import { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
-import { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import type { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
+import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
 import { forfeitLeadership } from '../../battle/wotr-battle-actions';
-import { WotrCombatRound } from '../../battle/wotr-battle-models';
-import {
+import type { WotrCombatRound } from '../../battle/wotr-battle-models';
+import type {
   WotrBattleModifiers,
   WotrBeforeCombatRound,
 } from '../../battle/wotr-battle-modifiers';
-import { WotrAction } from '../../commons/wotr-action-models';
-import { WotrGameQuery } from '../../game/wotr-game-query';
-import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
-import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
-import { WotrRegionId } from '../../region/wotr-region-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import type { WotrGameQuery } from '../../game/wotr-game-query';
+import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import type { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import type { WotrRegionId } from '../../region/wotr-region-models';
 import { character } from '../../unit/wotr-unit-models';
-import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
+import type { WotrUnitUtils } from '../../unit/wotr-unit-utils';
 import { playCharacter } from '../wotr-character-actions';
-import {
+import type {
   WotrCharacterModifiers,
   WotrCharacterMovementLevelModifier,
 } from '../wotr-character-modifiers';

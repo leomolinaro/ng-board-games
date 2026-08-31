@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { AgotData } from '../agot-services/agot-data';
-import { AgotCard } from '../agot.models';
+import type { AgotCard } from '../agot.models';
 
 @Injectable({
   providedIn: 'root',
@@ -59,9 +59,9 @@ export class AgotDraftService {
   }
 
   private getPool(types: string[], factions: string[], packs: string[]) {
-    const typeIds: { [id: string]: boolean } = {};
-    const factionIds: { [id: string]: boolean } = {};
-    const packIds: { [id: string]: boolean } = {};
+    const typeIds: Record<string, boolean> = {};
+    const factionIds: Record<string, boolean> = {};
+    const packIds: Record<string, boolean> = {};
     types.forEach((id) => (typeIds[id] = true));
     factions.forEach((id) => (factionIds[id] = true));
     packs.forEach((id) => (packIds[id] = true));

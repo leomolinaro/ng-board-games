@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil } from '@leobg/commons/utils';
-import {
+import type {
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
 import { KomeSovereignQuery } from '../character/wotr-character-query';
-import { WotrGameQuery } from '../game/wotr-game-query';
-import { frontOfNation, WotrNationId } from '../nation/wotr-nation-models';
-import { WotrArmy, WotrLeaderUnits, WotrUnits } from './wotr-unit-models';
+import type { WotrGameQuery } from '../game/wotr-game-query';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import { frontOfNation } from '../nation/wotr-nation-models';
+import type { WotrArmy, WotrLeaderUnits, WotrUnits } from './wotr-unit-models';
 
 @Injectable()
 export class WotrUnitUtils {
@@ -268,8 +269,7 @@ export class WotrUnitUtils {
   nazgulLeadership(units: WotrUnits): number {
     let leadership = 0;
     if (units.nNazgul) leadership += units.nNazgul;
-    if (units.characters && units.characters.indexOf('the-witch-king') >= 0)
-      leadership += 2;
+    if (units.characters?.includes('the-witch-king')) leadership += 2;
     return leadership;
   }
 
@@ -280,11 +280,6 @@ export class WotrUnitUtils {
 
   leadership(units: WotrLeaderUnits): number {
     let leadership = 0;
-    if (units.elites) {
-      for (const elite of units.elites) {
-        // leadership += elite.quantity;
-      }
-    }
     if (units.leaders) {
       for (const leader of units.leaders) {
         leadership += leader.quantity;

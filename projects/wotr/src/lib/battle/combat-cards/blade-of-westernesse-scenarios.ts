@@ -1,5 +1,5 @@
-import { WotrScenario, WotrScenarioGroup } from '../../scenario/wotr-scenario';
-import { WotrStoriesBuilder } from '../../scenario/wotr-story-builder';
+import type { WotrScenario, WotrScenarioGroup } from '../../scenario/wotr-scenario';
+import type { WotrStoriesBuilder } from '../../scenario/wotr-story-builder';
 import {
   attack,
   combatCard,

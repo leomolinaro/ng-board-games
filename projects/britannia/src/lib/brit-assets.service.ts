@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {
+import type {
   BritLeaderId,
   BritNationId,
   BritUnitType,
 } from './brit-components.models';
-import { BritAreaUnit } from './brit-game-state.models';
+import type { BritAreaUnit } from './brit-game-state.models';
 
 @Injectable({
   providedIn: 'root',

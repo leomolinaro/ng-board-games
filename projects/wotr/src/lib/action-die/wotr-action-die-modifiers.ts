@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrUiChoice } from '../game/wotr-game-ui';
-import { WotrDieCardStory, WotrDieStory } from '../game/wotr-story-models';
-import { WotrActionDie, WotrActionDieResult } from './wotr-action-die-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrDieCardStory, WotrDieStory } from '../game/wotr-story-models';
+import type { WotrActionDie, WotrActionDieResult } from './wotr-action-die-models';
 
 export type WotrActionDieChoiceModifier = (
   params: WotrActionDieChoiceParams,

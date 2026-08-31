@@ -1,26 +1,24 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrActionDie } from '../action-die/wotr-action-die-models';
-import { cardToLabel, WotrCardId } from '../card/wotr-card-models';
-import { KomeSovereignId } from '../character/wotr-character-models';
+import type { WotrActionDie } from '../action-die/wotr-action-die-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import { cardToLabel } from '../card/wotr-card-models';
+import type { KomeSovereignId } from '../character/wotr-character-models';
 import { WotrCharacterStore } from '../character/wotr-character-store';
-import { WotrCharacters } from '../character/wotr-characters';
-import {
+import type { WotrCharacters } from '../character/wotr-characters';
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import { WotrGameStore } from '../game/wotr-game-store';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import { KomeCorruptionFlow } from './kome-corruption-flow';
-import {
-  corruptSovereign,
-  KomeCorruptSovereign,
-  WotrHuntAction,
-} from './wotr-hunt-actions';
-import { WotrHuntTileId } from './wotr-hunt-models';
+import type { KomeCorruptSovereign, WotrHuntAction } from './wotr-hunt-actions';
+import { corruptSovereign } from './wotr-hunt-actions';
+import type { WotrHuntTileId } from './wotr-hunt-models';
 import { WotrHuntStore } from './wotr-hunt-store';
 
 @Injectable()
@@ -46,38 +44,38 @@ export class WotrHuntHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrHuntAction> {
     return {
-      'hunt-allocation': (action, front) =>
+      'hunt-allocation': (action) =>
         this.huntStore.addHuntDice(action.quantity),
-      'hunt-lidless-eye-die-change': (action, front) =>
+      'hunt-lidless-eye-die-change': (action) =>
         this.lidlessEyeChange(action.dice),
-      'hunt-roll': (action, front) => {
+      'hunt-roll': () => {
         /*empty*/
       },
-      'hunt-re-roll': (action, front) => {
+      'hunt-re-roll': () => {
         /*empty*/
       },
-      'hunt-shelobs-lair-roll': (action, front) => {
+      'hunt-shelobs-lair-roll': () => {
         /*empty*/
       },
-      'hunt-tile-draw': (action, front) => {
+      'hunt-tile-draw': (action) => {
         action.tiles.forEach((tile) => this.huntStore.drawHuntTile(tile));
       },
-      'hunt-tile-add': (action, front) => {
+      'hunt-tile-add': (action) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
           this.huntStore.moveAvailableTileToPool(action.tile);
         } else {
           this.huntStore.moveAvailableTileToReady(action.tile);
         }
       },
-      'hunt-tile-return': (action, front) =>
+      'hunt-tile-return': (action) =>
         this.huntStore.returnDrawnTileToPool(action.tile),
-      'corruption-start-attempt': async (action, front) =>
+      'corruption-start-attempt': async (action) =>
         this.startCorruptionAttempt(action.sovereign, action.tile),
-      'corruption-continue-attempt': async (action, front) =>
+      'corruption-continue-attempt': (action) =>
         this.continueCorruptionAttempt(action.tile),
-      'corruption-stop-attempt': async (action, front) =>
+      'corruption-stop-attempt': (action) =>
         this.stopCorruptionAttempt(action.tile),
-      'corrupt-sovereign': (action, front) => {
+      'corrupt-sovereign': () => {
         throw new Error(
           'This should be handled by the effect logger and not the action applier',
         );
@@ -205,15 +203,15 @@ export class WotrHuntHandler {
   ) {
     this.huntStore.drawCorruptionTile(tile);
     this.huntStore.startCorruptionAttempt(sovereign, tile);
-    await this.corruptionFlow.corruptionAttempt(sovereign, tile);
+    await this.corruptionFlow.corruptionAttempt();
   }
 
-  async continueCorruptionAttempt(tile: WotrHuntTileId) {
+  continueCorruptionAttempt(tile: WotrHuntTileId) {
     this.huntStore.drawCorruptionTile(tile);
     this.huntStore.continueCorruptionAttempt(tile);
   }
 
-  async stopCorruptionAttempt(tile: WotrHuntTileId) {
+  stopCorruptionAttempt(tile: WotrHuntTileId) {
     const corruptionAttempt = this.huntStore.getCorruptionAttempt();
     if (!corruptionAttempt)
       throw new Error('No corruption attempt in progress');

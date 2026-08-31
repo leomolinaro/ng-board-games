@@ -1,13 +1,14 @@
+import type {
+  WotrCardId,
+  WotrCardType} from '../card/wotr-card-models';
 import {
   getCard,
   isCharacterCard,
-  isStrategyCard,
-  WotrCardId,
-  WotrCardType,
+  isStrategyCard
 } from '../card/wotr-card-models';
-import { WotrCharacterStore } from '../character/wotr-character-store';
-import { WotrElvenRing, WotrFrontId } from './wotr-front-models';
-import { WotrFrontStore } from './wotr-front-store';
+import type { WotrCharacterStore } from '../character/wotr-character-store';
+import type { WotrElvenRing, WotrFrontId } from './wotr-front-models';
+import type { WotrFrontStore } from './wotr-front-store';
 
 export class WotrFrontQuery {
   constructor(

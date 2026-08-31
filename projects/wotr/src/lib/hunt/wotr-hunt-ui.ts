@@ -1,34 +1,37 @@
 import { inject, Injectable } from '@angular/core';
 import { randomUtil } from '../../../../commons/utils/src';
-import { WotrCombatDie } from '../battle/wotr-combat-die-models';
-import { WotrCardDiscardFromTable } from '../card/wotr-card-actions';
+import type { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import type { WotrCardDiscardFromTable } from '../card/wotr-card-actions';
 import { WotrCardHandler } from '../card/wotr-card-handler';
-import { getCard, WotrCardId } from '../card/wotr-card-models';
-import {
-  eliminateCharacter,
-  WotrCharacterElimination,
-} from '../character/wotr-character-actions';
+import type { WotrCardId } from '../card/wotr-card-models';
+import { getCard } from '../card/wotr-card-models';
+import type { WotrCharacterElimination } from '../character/wotr-character-actions';
+import { eliminateCharacter } from '../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../character/wotr-character-handler';
-import { WotrCompanionId } from '../character/wotr-character-models';
-import { findAction, WotrAction } from '../commons/wotr-action-models';
-import {
-  chooseRandomCompanion,
-  corruptFellowship,
-  revealFellowship,
-  revealFellowshipInMordor,
+import type { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import { findAction } from '../commons/wotr-action-models';
+import type {
   WotrCompanionRandom,
   WotrCompanionSeparation,
   WotrFellowshipCorruption,
   WotrFellowshipReveal,
   WotrFellowshipRevealInMordor,
 } from '../fellowship/wotr-fellowship-actions';
+import {
+  chooseRandomCompanion,
+  corruptFellowship,
+  revealFellowship,
+  revealFellowshipInMordor,
+} from '../fellowship/wotr-fellowship-actions';
 import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
 import { WotrFellowshipUi } from '../fellowship/wotr-fellowship-ui';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrUiChoice } from '../game/wotr-game-ui';
+import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
 import { WotrRegionStore } from '../region/wotr-region-store';
+import type { WotrHuntTileDraw } from './wotr-hunt-actions';
 import {
   allocateHuntDice,
   continueCorruptionAttempt,
@@ -38,10 +41,9 @@ import {
   rollShelobsLairDie,
   startCorruptionAttempt,
   stopCorruptionAttempt,
-  WotrHuntTileDraw,
 } from './wotr-hunt-actions';
 import { WotrHuntHandler } from './wotr-hunt-handler';
-import { WotrHuntEffectParams } from './wotr-hunt-models';
+import type { WotrHuntEffectParams } from './wotr-hunt-models';
 import { WotrHuntModifiers } from './wotr-hunt-modifiers';
 import { WotrHuntStore } from './wotr-hunt-store';
 
@@ -96,7 +98,7 @@ export class WotrHuntUi {
   private randomCompanionChoice: WotrUiChoice<WotrHuntEffectParams> = {
     label: () => 'Eliminate a random companion',
     isAvailable: () => this.fellowshipStore.companions().length > 0,
-    actions: async () => {
+    actions: () => {
       const companions = this.fellowshipStore.companions();
       const randomCompanion = randomUtil.getRandomElement(companions);
       return [chooseRandomCompanion(randomCompanion)];
@@ -107,7 +109,7 @@ export class WotrHuntUi {
     damage: number,
   ) => WotrUiChoice<WotrHuntEffectParams> = (damage) => ({
     label: () => 'Use the Ring',
-    actions: async (params) => {
+    actions: () => {
       return [corruptFellowship(damage)];
     },
   });
@@ -218,7 +220,7 @@ export class WotrHuntUi {
       actions.push(eliminateCharacter(...randomCompanionIds));
       damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
       casualtyTaken = true;
-      this.characterHandler.eliminateCharacters(randomCompanionIds);
+      await this.characterHandler.eliminateCharacters(randomCompanionIds);
       if (wasGuide) {
         actions.push(await this.fellowshipUi.changeGuide());
       }

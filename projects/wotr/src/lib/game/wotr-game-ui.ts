@@ -1,32 +1,32 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { lazyInject, uiEvent } from '@leobg/commons/utils';
 import { patchState, signalStore, withState } from '@ngrx/signals';
-import {
+import type {
   WotrActionChoice,
   WotrActionDie,
   WotrActionToken,
   WotrSpecialActionDieType,
 } from '../action-die/wotr-action-die-models';
-import { WotrCardId } from '../card/wotr-card-models';
-import {
+import type { WotrCardId } from '../card/wotr-card-models';
+import type {
   KomeSovereignId,
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrPlayerInfo } from '../player/wotr-player-info-models';
 import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
-import { WotrRegionUnitSelection } from '../region/dialog/wotr-region-unit-selection';
-import { WotrRegionId } from '../region/wotr-region-models';
-import {
+import type { WotrRegionUnitSelection } from '../region/dialog/wotr-region-unit-selection';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type {
   WotrRegionUnits,
   WotrReinforcementUnit,
   WotrUnits,
 } from '../unit/wotr-unit-models';
 import { WotrGameUiContext } from './wotr-game-ui-context';
-import { WotrDieCardStory, WotrDieStory } from './wotr-story-models';
+import type { WotrDieCardStory, WotrDieStory } from './wotr-story-models';
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -98,8 +98,6 @@ export interface WotrInputQuantitySelection {
   default: number;
 }
 
-export interface WotrPlayerUiState {}
-
 export const initialState: WotrGameUiState = {
   currentPlayerId: null,
   canCancel: false,
@@ -128,7 +126,10 @@ export interface WotrUiOption<O = unknown> {
 export interface WotrUiChoice<P = WotrFrontId> {
   label(): string;
   isAvailable?(params: P): boolean;
-  actions(params: P, ui: WotrGameUiContext): Promise<WotrAction[]>;
+  actions(
+    params: P,
+    ui: WotrGameUiContext,
+  ): WotrAction[] | Promise<WotrAction[]>;
   character?: WotrCharacterId;
   card?: () => WotrCardId | null;
 }

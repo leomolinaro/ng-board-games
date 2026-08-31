@@ -1,11 +1,13 @@
 import { booleanAttribute, Component, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiCheckbox, TuiLabel } from '@taiga-ui/core';
-import {
-  EXPANSIONS,
+import type {
   WotrExpansion,
-  WotrExpansionId,
+  WotrExpansionId} from './wotr-expansion-models';
+import {
+  EXPANSIONS
 } from './wotr-expansion-models';
 
 @Component({

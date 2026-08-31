@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { randomUtil } from '@leobg/commons/utils';
-import {
+import type {
   BaronyColor,
   BaronyConstruction,
   BaronyLand,
@@ -8,12 +8,6 @@ import {
   BaronyResourceType,
   BaronySetupPlacement,
   BaronyTurn,
-  BaronyTurnConstruction,
-  BaronyTurnExpedition,
-  BaronyTurnMovement,
-  BaronyTurnNewCity,
-  BaronyTurnNobleTitle,
-  BaronyTurnRectruitment,
 } from '../barony-models';
 import { BaronyGameStore } from './barony-game.store';
 import * as baronyRules from './barony-rules';
@@ -22,16 +16,16 @@ import * as baronyRules from './barony-rules';
 export class BaronyPlayerAiService {
   private game = inject(BaronyGameStore);
 
-  async setupPlacement(playerId: BaronyColor): Promise<BaronySetupPlacement> {
+  setupPlacement(): Promise<BaronySetupPlacement> {
     const validLands = baronyRules.getValidLandsForSetupPlacement(this.game);
     const land = randomUtil.getRandomElement(validLands);
-    return {
+    return Promise.resolve({
       type: 'setupPlacement',
       land: land.coordinates,
-    };
+    });
   }
 
-  async turn(playerId: BaronyColor): Promise<BaronyTurn> {
+  turn(playerId: BaronyColor): Promise<BaronyTurn> {
     const validActions = baronyRules.getValidActions(playerId, this.game);
     const action = randomUtil.getRandomElement(validActions);
     switch (action) {
@@ -46,11 +40,11 @@ export class BaronyPlayerAiService {
           playerId,
           this.game,
         );
-        return <BaronyTurnRectruitment>{
+        return Promise.resolve({
           action: 'recruitment',
           land: land.coordinates,
           numberOfKnights: maxKnights,
-        };
+        });
       }
       case 'movement': {
         const validSourceLands =
@@ -69,20 +63,20 @@ export class BaronyPlayerAiService {
             );
           const sourceLand2 = randomUtil.getRandomElement(validSourceLands2);
           const secondMovement = this.executeMovement(sourceLand2, playerId);
-          return <BaronyTurnMovement>{
+          return Promise.resolve({
             action: 'movement',
             movements: [firstMovement, secondMovement],
-          };
+          });
         } else {
-          return <BaronyTurnMovement>{
+          return Promise.resolve({
             action: 'movement',
             movements: [firstMovement],
-          };
+          });
         }
       }
       case 'construction': {
         const constructions: BaronyConstruction[] = [];
-        let validConstruction = true;
+        let validConstruction: boolean;
         do {
           const validLands = baronyRules.getValidLandsForConstruction(
             playerId,
@@ -105,10 +99,10 @@ export class BaronyPlayerAiService {
             this.game,
           );
         } while (validConstruction);
-        return <BaronyTurnConstruction>{
+        return Promise.resolve({
           action: 'construction',
           constructions: constructions,
-        };
+        });
       }
       case 'newCity': {
         const validLands = baronyRules.getValidLandsForNewCity(
@@ -116,10 +110,10 @@ export class BaronyPlayerAiService {
           this.game,
         );
         const land = randomUtil.getRandomElement(validLands);
-        return <BaronyTurnNewCity>{
+        return Promise.resolve({
           action: 'newCity',
           land: land.coordinates,
-        };
+        });
       }
       case 'expedition': {
         const validLands = baronyRules.getValidLandsForExpedition(
@@ -127,10 +121,10 @@ export class BaronyPlayerAiService {
           this.game,
         );
         const land = randomUtil.getRandomElement(validLands);
-        return <BaronyTurnExpedition>{
+        return Promise.resolve({
           action: 'expedition',
           land: land.coordinates,
-        };
+        });
       }
       case 'nobleTitle': {
         const resources: BaronyResourceType[] = [];
@@ -156,13 +150,12 @@ export class BaronyPlayerAiService {
             resources.push('mountain');
           }
         }
-        return <BaronyTurnNobleTitle>{
+        return Promise.resolve({
           action: 'nobleTitle',
           discardedResources: resources,
-        };
+        });
       }
     }
-    throw new Error('TODO');
   }
 
   private executeMovement(

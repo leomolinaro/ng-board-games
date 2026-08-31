@@ -1,4 +1,4 @@
-import { WotrNationId } from './wotr-nation-models';
+import type { WotrNationId } from './wotr-nation-models';
 
 export type WotrNationAction =
   | WotrPoliticalAdvance
@@ -13,7 +13,7 @@ export interface WotrPoliticalAdvance {
 }
 export function advanceNation(
   nation: WotrNationId,
-  nSteps: number = 1,
+  nSteps = 1,
 ): WotrPoliticalAdvance {
   return { type: 'political-advance', nation, quantity: nSteps };
 }
@@ -25,7 +25,7 @@ export interface WotrPoliticalRecede {
 }
 export function recedeNation(
   nation: WotrNationId,
-  nSteps: number = 1,
+  nSteps = 1,
 ): WotrPoliticalRecede {
   return { type: 'political-recede', nation, quantity: nSteps };
 }

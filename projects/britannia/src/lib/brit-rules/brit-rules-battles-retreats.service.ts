@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { BritLandAreaId, BritNationId } from '../brit-components.models';
+import type { BritLandAreaId, BritNationId } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritGameState } from '../brit-game-state.models';
+import type { BritGameState } from '../brit-game-state.models';
 
 @Injectable({
   providedIn: 'root',

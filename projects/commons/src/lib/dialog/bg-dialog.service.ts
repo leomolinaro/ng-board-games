@@ -1,9 +1,7 @@
-import { inject, Injectable, Injector, Type } from '@angular/core';
-import {
-  TuiDialogContext,
-  TuiDialogOptions,
-  TuiDialogService,
-} from '@taiga-ui/core';
+import type { Injector, Type } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import type { TuiDialogContext, TuiDialogOptions } from '@taiga-ui/core';
+import { TuiDialogService } from '@taiga-ui/core';
 import { injectContext, PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { firstValueFrom } from 'rxjs';
 
@@ -36,7 +34,7 @@ export interface DialogComponent<TData, TResult> {
 export type DialogOptions<TData> = Partial<TuiDialogOptions<TData>> & {
   injector?: Injector;
 } & (TData extends void
-    ? {}
+    ? object
     : {
         data: TData;
       });

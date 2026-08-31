@@ -1,27 +1,28 @@
 import { Injectable, inject } from '@angular/core';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterElimination } from '../character/wotr-character-actions';
-import {
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterElimination } from '../character/wotr-character-actions';
+import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFrontHandler } from '../front/wotr-front-handler';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { filterActions } from '../game/wotr-story-models';
 import { WotrNationHandler } from '../nation/wotr-nation-handler';
-import {
+import type {
   WotrGenericUnitType,
-  WotrNationId,
+  WotrNationId} from '../nation/wotr-nation-models';
+import {
   frontOfNation,
 } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
-import { WotrPlayer } from '../player/wotr-player';
+import type { WotrPlayer } from '../player/wotr-player';
 import { WotrRegionHandler } from '../region/wotr-region-handler';
-import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import {
+import type {
   WotrArmyMovement,
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
@@ -30,7 +31,7 @@ import {
   WotrRegularUnitElimination,
   WotrUnitAction,
 } from './wotr-unit-actions';
-import { WotrArmy } from './wotr-unit-models';
+import type { WotrArmy } from './wotr-unit-models';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
 export interface WotrRecruitmentConstraints {

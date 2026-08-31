@@ -6,11 +6,11 @@ import {
   retreatIntoSiege,
   rollCombatDice,
 } from '../../../battle/wotr-battle-actions';
-import {
+import type {
   WotrScenario,
   WotrScenarioGroup,
 } from '../../../scenario/wotr-scenario';
-import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
+import type { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
 import { downgradeEliteUnit } from '../../../unit/wotr-unit-actions';
 
 export function theFightingUrukHai(): WotrScenarioGroup {

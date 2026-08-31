@@ -1,7 +1,8 @@
-import { Injectable, Signal, computed } from '@angular/core';
-import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import {
+import type { Signal} from '@angular/core';
+import { Injectable, computed } from '@angular/core';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type {
   KomeSovereign,
   KomeSovereignId,
   WotrCharacter,

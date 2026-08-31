@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BgUser } from '@leobg/commons';
+import type { BgUser } from '@leobg/commons';
 import { arrayUtil, BgStore, immutableUtil } from '@leobg/commons/utils';
-import { Observable } from 'rxjs';
-import {
+import type { Observable } from 'rxjs';
+import type {
   BaronyColor,
   BaronyConstruction,
   BaronyFinalScores,
@@ -14,8 +14,8 @@ import {
   BaronyPawnType,
   BaronyPlayer,
   BaronyResourceType,
-  landCoordinatesToId,
 } from '../barony-models';
+import { landCoordinatesToId } from '../barony-models';
 
 interface BaronyGameBox {
   removedPawns: BaronyPawn[];
@@ -25,11 +25,11 @@ interface BaronyGameState {
   gameId: string;
   gameOwner: BgUser;
   players: {
-    map: { [id in BaronyColor]?: BaronyPlayer };
+    map: Partial<Record<BaronyColor, BaronyPlayer>>;
     ids: BaronyColor[];
   };
   lands: {
-    map: { [id: string]: BaronyLand };
+    map: Record<string, BaronyLand>;
     coordinates: BaronyLandCoordinates[];
   };
   gameBox: BaronyGameBox;
@@ -90,7 +90,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     if (!this.notTemporaryState)
       throw new Error('endTemporaryState without startTemporaryState');
     const state = this.notTemporaryState;
-    this.update('End temporary state', (s) => ({ ...state }));
+    this.update('End temporary state', () => ({ ...state }));
     this.notTemporaryState = null;
   }
 
@@ -335,7 +335,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
         .forEach((pawn) => {
           const pawnPlayer = this.getPlayers().find(
             (p) => p.id === pawn.color,
-          ) as BaronyPlayer;
+          )!;
           this.removePawnFromLandTile(pawn.type, pawn.color, land.coordinates);
           this.addPawnToPlayer(pawn.type, pawnPlayer.id);
           if (pawn.type === 'village') {

@@ -5,7 +5,7 @@ import { cardScenarios } from '../card/wotr-card-scenarios';
 import { characterScenarios } from '../character/wotr-character-scenarios';
 import { huntScenarios } from '../hunt/wotr-hunt-scenarios';
 import { fullGameScenarios } from './full-games/wotr-full-game-scenarios';
-import {
+import type {
   WotrScenario,
   WotrScenarioGroup,
   WotrScenarioGroupInfo,

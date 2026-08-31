@@ -1,14 +1,14 @@
-import { WotrAbility } from '../../../ability/wotr-ability';
-import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
-import { WotrBattleStore } from '../../../battle/wotr-battle-store';
-import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrLogWriter } from '../../../log/wotr-log-writer';
-import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
-import {
+import type { WotrAbility } from '../../../ability/wotr-ability';
+import type { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import type { WotrBattleStore } from '../../../battle/wotr-battle-store';
+import type { WotrGameQuery } from '../../../game/wotr-game-query';
+import type { WotrLogWriter } from '../../../log/wotr-log-writer';
+import type { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
+import type {
   WotrRecruitmentConstraintsModifier,
   WotrUnitModifiers,
 } from '../../../unit/wotr-unit-modifiers';
-import { WotrCharacterHandler } from '../../wotr-character-handler';
+import type { WotrCharacterHandler } from '../../wotr-character-handler';
 import { SovereingFateOf } from './commons';
 import { KomeSovereignCard } from './kome-sovereign-card';
 

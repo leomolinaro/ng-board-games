@@ -1,6 +1,6 @@
-import { BgUser } from '@leobg/commons';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrGameOptions } from '../game/options/wotr-game-options';
+import type { BgUser } from '@leobg/commons';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
 
 export interface WotrGameDoc {
   id: string;

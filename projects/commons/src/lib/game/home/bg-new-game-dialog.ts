@@ -1,16 +1,17 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
+import type {
+  TuiDialogContext} from '@taiga-ui/core';
 import {
   TuiButton,
-  TuiDialogContext,
   TuiInput,
   TuiLabel,
 } from '@taiga-ui/core';
 import { TuiRadioList } from '@taiga-ui/kit';
 import { TuiForm } from '@taiga-ui/layout';
 import { injectContext } from '@taiga-ui/polymorpheus';
-import { NewGame } from '../bg-proto-game-service';
+import type { NewGame } from '../bg-proto-game-service';
 
 @Component({
   selector: 'bg-home-archeo-game-form',

@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import {
+import type {
   BgCloudCollectionQuery,
-  BgCloudService,
   BgStoryDoc,
-  BgUser,
+  BgUser} from '@leobg/commons';
+import {
+  BgCloudService
 } from '@leobg/commons';
-import { Observable } from 'rxjs';
-import { BritColor } from './brit-components.models';
-import { BritStory } from './brit-story.models';
+import type { Observable } from 'rxjs';
+import type { BritColor } from './brit-components.models';
+import type { BritStory } from './brit-story.models';
 
 export interface BritGameDoc {
   id: string;
@@ -48,7 +49,7 @@ export class BritRemoteService {
   getGame$(gameId: string) {
     return this.cloud.get$(gameId, this.games());
   }
-  selectGames$(queryFn?: BgCloudCollectionQuery<BritGameDoc> | undefined) {
+  selectGames$(queryFn?: BgCloudCollectionQuery<BritGameDoc>  ) {
     return this.cloud.selectAll$(this.games(), queryFn);
   }
   insertGame$(game: BritGameDoc) {
@@ -66,13 +67,13 @@ export class BritRemoteService {
   }
   getPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BritPlayerDoc>  ,
   ) {
     return this.cloud.getAll$(this.players(gameId), queryFn);
   }
   selectPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritPlayerDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BritPlayerDoc>  ,
   ) {
     return this.cloud.selectAll$(this.players(gameId), queryFn);
   }
@@ -104,7 +105,7 @@ export class BritRemoteService {
   }
   getStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BritStoryDoc>  ,
   ) {
     return this.cloud.getAll$(this.stories(gameId), queryFn);
   }
@@ -113,7 +114,7 @@ export class BritRemoteService {
   }
   selectStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritStoryDoc> | undefined,
+    queryFn?: BgCloudCollectionQuery<BritStoryDoc>  ,
   ) {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }

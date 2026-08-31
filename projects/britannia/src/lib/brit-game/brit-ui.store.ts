@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { BgStore } from '@leobg/commons/utils';
-import { Observable, Subject } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { Subject } from 'rxjs';
 import { first, skip } from 'rxjs/operators';
-import { BritAreaId, BritColor } from '../brit-components.models';
-import { BritAreaUnit } from '../brit-game-state.models';
+import type { BritAreaId, BritColor } from '../brit-components.models';
+import type { BritAreaUnit } from '../brit-game-state.models';
 import { BritGameStore } from './brit-game.store';
 
 interface BritUiState {

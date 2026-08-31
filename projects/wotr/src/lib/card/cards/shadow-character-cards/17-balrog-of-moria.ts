@@ -4,11 +4,11 @@ import {
   retreatIntoSiege,
 } from '../../../battle/wotr-battle-actions';
 import { declareFellowship } from '../../../fellowship/wotr-fellowship-actions';
-import {
+import type {
   WotrScenario,
   WotrScenarioGroup,
 } from '../../../scenario/wotr-scenario';
-import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
+import type { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
 import { playCardOnTable } from '../../wotr-card-actions';
 
 export function balrogOfMoria(): WotrScenarioGroup {

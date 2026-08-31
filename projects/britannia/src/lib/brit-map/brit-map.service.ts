@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {
+import type {
   BritAreaId,
   BritNationId,
   BritPopulation,
@@ -36,14 +37,12 @@ export class BritMapService {
   private components = inject(BritComponentsService);
 
   private svgLoaded = false;
-  private areaPaths!: { [id in BritAreaId]: string };
-  private populationTrackPaths!: { [id in BritPopulation]: string };
-  private nationTurnPaths!: { [id in BritNationId]: string };
-  private roundPaths!: { [id in BritRoundId]: string };
-  private eventPaths!: {
-    [id in BritRoundId]: { [id1 in BritNationId]: string };
-  };
-  private scoringRoundPaths!: { [id in BritRoundId]: string };
+  private areaPaths!: Record<BritAreaId, string>;
+  private populationTrackPaths!: Record<BritPopulation, string>;
+  private nationTurnPaths!: Record<BritNationId, string>;
+  private roundPaths!: Record<BritRoundId, string>;
+  private eventPaths!: Record<BritRoundId, Record<BritNationId, string>>;
+  private scoringRoundPaths!: Record<BritRoundId, string>;
   private viewBox!: string;
   private width!: number;
   private areaSlots!: BritAreaSlots;

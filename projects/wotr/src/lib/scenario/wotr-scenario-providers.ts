@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrRemoteMock } from './mocks/wotr-remote-mock';
 import { WotrScenarios } from './wotr-scenarios';
 

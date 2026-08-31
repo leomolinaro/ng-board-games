@@ -1,7 +1,7 @@
-import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
-import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrNationId } from './wotr-nation-models';
-import { WotrNationStore } from './wotr-nation-store';
+import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionStore } from '../region/wotr-region-store';
+import type { WotrNationId } from './wotr-nation-models';
+import type { WotrNationStore } from './wotr-nation-store';
 
 export class WotrNationQuery {
   constructor(

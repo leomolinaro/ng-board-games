@@ -3,16 +3,16 @@ import { unexpectedStory } from '@leobg/commons';
 import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
 import { WotrCharacterStore } from '../character/wotr-character-store';
 import { WotrCharacters } from '../character/wotr-characters';
-import { WotrStoryApplier } from '../commons/wotr-action-models';
+import type { WotrStoryApplier } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
 import { WotrRingDestroyed } from '../fellowship/wotr-fellowship-models';
 import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
 import { oppositeFront } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import { WotrGameConfig } from '../game/wotr-game-config';
+import type { WotrGameConfig } from '../game/wotr-game-config';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import {
+import type {
   WotrBaseStory,
   WotrDieCardStory,
   WotrDieStory,
@@ -27,10 +27,11 @@ import { WotrLogWriter } from '../log/wotr-log-writer';
 import { WotrNationStore } from '../nation/wotr-nation-store';
 import { WotrAllPlayers } from '../player/wotr-all-players';
 import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
-import { WotrPlayer } from '../player/wotr-player';
+import type { WotrPlayer } from '../player/wotr-player';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrSetup, WotrSetupRules } from '../setup/wotr-setup-rules';
+import type { WotrSetup} from '../setup/wotr-setup-rules';
+import { WotrSetupRules } from '../setup/wotr-setup-rules';
 
 @Injectable()
 export class WotrGameFlow {

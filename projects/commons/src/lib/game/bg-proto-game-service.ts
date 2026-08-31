@@ -1,9 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { BgUser } from '../authentication/bg-auth.service';
-import {
-  BgCloudCollectionQuery,
-  BgCloudService,
-} from '../cloud/bg-cloud-service';
+import type { BgUser } from '../authentication/bg-auth.service';
+import type { BgCloudCollectionQuery } from '../cloud/bg-cloud-service';
+import { BgCloudService } from '../cloud/bg-cloud-service';
 
 export type BgBoardGame = 'barony' | 'britannia' | 'wotr';
 
@@ -12,7 +10,7 @@ export interface NewGame {
   online: boolean;
 }
 
-export interface BgProtoGame<Opt = any> {
+export interface BgProtoGame<Opt = unknown> {
   id: string;
   name: string;
   boardGame: BgBoardGame;
@@ -45,7 +43,7 @@ export class BgProtoGameService {
   getProtoGame$(gameId: string) {
     this.cloud.get$(gameId, this.protoGames());
   }
-  selectProtoGames$(queryFn?: BgCloudCollectionQuery<BgProtoGame> | undefined) {
+  selectProtoGames$(queryFn?: BgCloudCollectionQuery<BgProtoGame>) {
     return this.cloud.selectAll$(this.protoGames(), queryFn);
   }
   selectProtoGame$(gameId: string) {
@@ -71,13 +69,13 @@ export class BgProtoGameService {
   }
   getProtoPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BgProtoPlayer> | undefined,
+    queryFn?: BgCloudCollectionQuery<BgProtoPlayer>,
   ) {
     return this.cloud.getAll$(this.protoPlayers(gameId), queryFn);
   }
   selectProtoPlayers$<Pid extends string>(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BgProtoPlayer<Pid>> | undefined,
+    queryFn?: BgCloudCollectionQuery<BgProtoPlayer<Pid>>,
   ) {
     return this.cloud.selectAll$(this.protoPlayers<Pid>(gameId), queryFn);
   }

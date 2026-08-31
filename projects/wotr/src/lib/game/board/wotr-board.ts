@@ -8,24 +8,27 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiButton } from '@taiga-ui/core';
 import { BgDialogService } from '../../../../../commons/src';
 import { WotrActionDiceBox } from '../../action-die/wotr-action-dice-box';
+import type {
+  WotrCardId} from '../../card/wotr-card-models';
 import {
   isCharacterCard,
-  isStrategyCard,
-  WotrCardId,
+  isStrategyCard
 } from '../../card/wotr-card-models';
+import type {
+  WotrCardsDialogData} from '../../card/wotr-cards-dialog';
 import {
-  WotrCardsDialog,
-  WotrCardsDialogData,
+  WotrCardsDialog
 } from '../../card/wotr-cards-dialog';
 import { WotrCharacterStore } from '../../character/wotr-character-store';
 import { WotrFellowshipDialog } from '../../fellowship/wotr-fellowship-dialog';
 import { WotrFellowshipStore } from '../../fellowship/wotr-fellowship-store';
 import { WotrFrontArea } from '../../front/wotr-front-area';
-import { WotrFrontId } from '../../front/wotr-front-models';
+import type { WotrFrontId } from '../../front/wotr-front-models';
 import { WotrFrontStore } from '../../front/wotr-front-store';
 import { WotrHuntArea } from '../../hunt/wotr-hunt-area';
 import { WotrHuntStore } from '../../hunt/wotr-hunt-store';
@@ -35,11 +38,12 @@ import { WotrNationStore } from '../../nation/wotr-nation-store';
 import { WotrOptionsPanel } from '../../player/wotr-options-panel';
 import { WotrPlayerToolbar } from '../../player/wotr-player-toolbar';
 import { WotrRegionDialog } from '../../region/dialog/wotr-region-dialog';
-import { WotrRegion } from '../../region/wotr-region-models';
+import type { WotrRegion } from '../../region/wotr-region-models';
 import { WotrRegionStore } from '../../region/wotr-region-store';
-import { WotrRegionUnits } from '../../unit/wotr-unit-models';
+import type { WotrRegionUnits } from '../../unit/wotr-unit-models';
 import { WotrGameStore } from '../wotr-game-store';
-import { WotrCardSelection, WotrGameUi } from '../wotr-game-ui';
+import type { WotrCardSelection} from '../wotr-game-ui';
+import { WotrGameUi } from '../wotr-game-ui';
 import { WotrMap } from './map/wotr-map';
 import { WotrReplayButtons } from './wotr-replay-buttons';
 

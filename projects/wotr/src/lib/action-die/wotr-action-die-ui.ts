@@ -1,15 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { randomUtil } from '@leobg/commons/utils';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import {
+import type {
   WotrActionResolutionSelection,
   WotrUiChoice,
 } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import {
+import type {
   WotrDieCardStory,
   WotrDieStory,
   WotrElvenRingAction,
@@ -25,7 +25,7 @@ import {
   skipActionDie,
 } from './wotr-action-die-actions';
 import { WotrActionDieHandler } from './wotr-action-die-handler';
-import {
+import type {
   WotrActionDie,
   WotrActionDieResult,
   WotrActionToken,

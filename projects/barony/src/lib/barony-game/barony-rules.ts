@@ -3,19 +3,18 @@ import {
   BARONY_RESOURCE_TYPES,
   BARONY_WINNING_POINTS,
 } from '../barony-constants';
-import {
+import type {
   BaronyAction,
   BaronyColor,
   BaronyFinalScores,
   BaronyLand,
   BaronyLandCoordinates,
   BaronyMovement,
-  BaronyPawn,
   BaronyPawnType,
   BaronyPlayer,
   BaronyResourceType,
 } from '../barony-models';
-import { BaronyGameStore } from './barony-game.store';
+import type { BaronyGameStore } from './barony-game.store';
 
 export function getValidActions(
   player: BaronyColor,
@@ -218,10 +217,8 @@ export function getVillageDestroyedPlayer(
   const player = game.getPlayer(playerId);
   const villagePawn = land.pawns.find(
     (p) => p.type === 'village' && p.color !== player.id,
-  ) as BaronyPawn;
-  return game
-    .getPlayers()
-    .find((p) => p.id === villagePawn.color) as BaronyPlayer;
+  )!;
+  return game.getPlayers().find((p) => p.id === villagePawn.color)!;
 }
 
 export function getValidResourcesForVillageDestruction(

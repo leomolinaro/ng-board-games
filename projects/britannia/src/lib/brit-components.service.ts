@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
+import type {
   BritArea,
   BritAreaId,
   BritColor,
@@ -942,9 +942,9 @@ class BritEventBuilder {
 
   private _invasions: BritInvasion[] | null = null;
   private _revolt: BritRevolt | null = null;
-  private _majorInvasion: boolean = false;
-  private _raiding: boolean = false;
-  private _boats: boolean = false;
+  private _majorInvasion = false;
+  private _raiding = false;
+  private _boats = false;
   private _special: BritSpecialEvent | null = null;
   private _leader: BritLeaderId | null = null;
 

@@ -1,61 +1,69 @@
 import { inject, Injectable } from '@angular/core';
 import { immutableUtil } from '../../../../../../commons/utils/src';
-import { WotrAbility } from '../../../ability/wotr-ability';
+import type { WotrAbility } from '../../../ability/wotr-ability';
 import { discardDice } from '../../../action-die/wotr-action-die-actions';
+import type {
+  WotrActionDieChoiceModifier} from '../../../action-die/wotr-action-die-modifiers';
 import {
-  WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
 } from '../../../action-die/wotr-action-die-modifiers';
-import { attack, WotrCombatRoll } from '../../../battle/wotr-battle-actions';
-import {
+import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+import { attack } from '../../../battle/wotr-battle-actions';
+import type {
   WotrCombatFront,
   WotrCombatRound,
 } from '../../../battle/wotr-battle-models';
+import type {
+  WotrCanUseCombatCardModifier} from '../../../battle/wotr-battle-modifiers';
 import {
-  WotrBattleModifiers,
-  WotrCanUseCombatCardModifier,
+  WotrBattleModifiers
 } from '../../../battle/wotr-battle-modifiers';
 import { moveCharacters } from '../../../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../../../character/wotr-character-handler';
-import { findAction, WotrAction } from '../../../commons/wotr-action-models';
+import type { WotrAction } from '../../../commons/wotr-action-models';
+import { findAction } from '../../../commons/wotr-action-models';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
-import { WotrUiChoice } from '../../../game/wotr-game-ui';
+import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import type {
+  WotrPoliticalRecede} from '../../../nation/wotr-nation-actions';
 import {
-  recedeNation,
-  WotrPoliticalRecede,
+  recedeNation
 } from '../../../nation/wotr-nation-actions';
-import { WotrNationId } from '../../../nation/wotr-nation-models';
-import {
+import type { WotrNationId } from '../../../nation/wotr-nation-models';
+import type {
   WotrAfterNationAdvance,
-  WotrCanAdvanceNationModifier,
+  WotrCanAdvanceNationModifier} from '../../../nation/wotr-nation-modifiers';
+import {
   WotrNationModifiers,
 } from '../../../nation/wotr-nation-modifiers';
-import { WotrNationAdvanceSource } from '../../../nation/wotr-nation-rules';
+import type { WotrNationAdvanceSource } from '../../../nation/wotr-nation-rules';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import type {
+  WotrRegionChoose} from '../../../region/wotr-region-actions';
 import {
-  targetRegion,
-  WotrRegionChoose,
+  targetRegion
 } from '../../../region/wotr-region-actions';
-import { WotrRegionId } from '../../../region/wotr-region-models';
-import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegionQuery } from '../../../region/wotr-region-query';
+import type {
+  WotrArmyMovement} from '../../../unit/wotr-unit-actions';
 import {
   eliminateLeader,
-  upgradeRegularUnit,
-  WotrArmyMovement,
+  upgradeRegularUnit
 } from '../../../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../../../unit/wotr-unit-handler';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
-import { WotrMovingUnits } from '../../../unit/wotr-unit-ui';
+import type { WotrMovingUnits } from '../../../unit/wotr-unit-ui';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
 import {
   discardCardFromTableById,
   playCardOnTableId,
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
-import { WotrShadowStrategyCardId } from '../../wotr-card-models';
-import { WotrEventCard } from '../wotr-cards';
+import type { WotrShadowStrategyCardId } from '../../wotr-card-models';
+import type { WotrEventCard } from '../wotr-cards';
 
 @Injectable()
 export class WotrShadowStrategyCards {

@@ -7,27 +7,28 @@ import {
   output,
   signal,
 } from '@angular/core';
+import type {
+  BgTransformFn} from '@leobg/commons/utils';
 import {
   arrayUtil,
-  BgTransformFn,
   BgTransformPipe,
 } from '@leobg/commons/utils';
 import { TuiButton, tuiButtonOptionsProvider, TuiHint } from '@taiga-ui/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCardId } from '../card/wotr-card-models';
 import { WotrCardTooltipService } from '../card/wotr-card-tooltip.service';
-import {
+import type {
   WotrCharacter,
   WotrCharacterId,
 } from '../character/wotr-character-models';
 import { WotrGameUi } from '../game/wotr-game-ui';
-import {
+import type {
   WotrArmyUnitType,
   WotrGenericUnitType,
   WotrNation,
   WotrNationId,
 } from '../nation/wotr-nation-models';
-import { WotrFront } from './wotr-front-models';
+import type { WotrFront } from './wotr-front-models';
 
 interface ValidUnits {
   regulars: boolean;

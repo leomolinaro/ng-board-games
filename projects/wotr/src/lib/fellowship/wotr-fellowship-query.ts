@@ -1,11 +1,11 @@
-import {
+import type {
   WotrCharacterId,
   WotrCompanionId,
 } from '../character/wotr-character-models';
-import { WotrNationStore } from '../nation/wotr-nation-store';
-import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
-import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrFellowshipStore } from './wotr-fellowship-store';
+import type { WotrNationStore } from '../nation/wotr-nation-store';
+import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionStore } from '../region/wotr-region-store';
+import type { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export class WotrFellowshipQuery {
   constructor(

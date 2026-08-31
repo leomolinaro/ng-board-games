@@ -27,7 +27,7 @@
     <div class="b-player-score">{{ player().score }}</div>
   </div>
   <div class="b-player-content">
-    @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
+    @for (pawnNode of pawnNodes; track pawnNode.type) {
     <div
       class="b-player-pawn-image"
       [class.is-active]="pawnNode.active"
@@ -35,8 +35,7 @@
     >
       <img [src]="pawnNode.source" />
     </div>
-    } @for (resourceNode of resourceNodes; track resourceTrackBy($index,
-    resourceNode)) {
+    } @for (resourceNode of resourceNodes; track resourceNode.type) {
     <div
       class="b-player-resource-image"
       [class.is-active]="resourceNode.active"
@@ -44,12 +43,11 @@
     >
       <img [src]="resourceNode.source" />
     </div>
-    } @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
+    } @for (pawnNode of pawnNodes; track pawnNode.type) {
     <div class="b-player-pawn-quantity">
       {{ $any(player().pawns)[pawnNode.type] }}
     </div>
-    } @for (resourceNode of resourceNodes; track resourceTrackBy($index,
-    resourceNode)) {
+    } @for (resourceNode of resourceNodes; track resourceNode.type) {
     <div class="b-player-resource-quantity">{{ resourceNode.quantity }}</div>
     }
   </div>

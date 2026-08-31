@@ -1,7 +1,6 @@
+import type { OnInit } from '@angular/core';
 import {
   Component,
-  OnInit,
-  TrackByFunction,
   booleanAttribute,
   inject,
   input,
@@ -10,9 +9,9 @@ import {
 import { BgAuthService } from '@leobg/commons';
 import { TuiHint, TuiIcon } from '@taiga-ui/core';
 import { BritAssetsService } from '../brit-assets.service';
-import { BritNation, BritNationId } from '../brit-components.models';
+import type { BritNation, BritNationId } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritPlayer } from '../brit-game-state.models';
+import type { BritPlayer } from '../brit-game-state.models';
 
 // interface BritPawnNode {
 //   source: string;
@@ -68,10 +67,7 @@ interface BritNationNode {
         <div class="brit-player-score">{{ player().score }}</div>
       </div>
       <div class="brit-player-content">
-        @for (
-          nationNode of nationNodes;
-          track nationTrackBy($index, nationNode)
-        ) {
+        @for (nationNode of nationNodes; track nationNode.id) {
           <div
             class="brit-player-nation"
             (click)="onNationClick(nationNode, $event)"
@@ -126,12 +122,6 @@ export class BritPlayerComponent implements OnInit {
   nationNodes: BritNationNode[] = [];
 
   selectedNationNode: BritNationNode | null = null;
-
-  nationTrackBy: TrackByFunction<BritNationNode> = (
-    index,
-    nationNode: BritNationNode,
-  ) => nationNode.id;
-  // resourceTrackBy = (resourceNode: BritResourceNode) => resourceNode.type;
 
   ngOnInit(): void {
     for (const nationId of this.player().nationIds) {

@@ -1,27 +1,31 @@
-import { Component, OnInit, inject } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  BgHome,
+import type {
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
-  BgUser,
+  BgUser} from '@leobg/commons';
+import {
+  BgHome
 } from '@leobg/commons';
 import { concatJoin } from '@leobg/commons/utils';
-import { Observable, forkJoin, from } from 'rxjs';
+import type { Observable} from 'rxjs';
+import { forkJoin, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { BARONY_COLORS } from '../barony-constants';
-import {
+import type {
   BaronyColor,
   BaronyLandCoordinates,
   BaronyLandType,
 } from '../barony-models';
-import {
+import type {
   ABaronyPlayerDoc,
   BaronyAiPlayerDoc,
   BaronyMapDoc,
   BaronyPlayerDoc,
-  BaronyReadPlayerDoc,
+  BaronyReadPlayerDoc} from '../barony-remote.service';
+import {
   BaronyRemoteService,
 } from '../barony-remote.service';
 import { getRandomLands } from './barony-initializer';

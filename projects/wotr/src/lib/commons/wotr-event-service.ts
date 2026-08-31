@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WotrEvent, WotrEventConsumer } from './wotr-event-models';
+import type { WotrEvent, WotrEventConsumer } from './wotr-event-models';
 
 @Injectable()
 export class WotrEventService {

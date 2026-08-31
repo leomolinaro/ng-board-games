@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { BgRootGuard } from '@leobg/commons';
 import { GAME_PATH } from './app-games';
 

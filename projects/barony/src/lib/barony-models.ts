@@ -1,4 +1,4 @@
-import { BgAiPlayer, BgRealPlayer, BgUser } from '@leobg/commons';
+import type { BgAiPlayer, BgRealPlayer, BgUser } from '@leobg/commons';
 
 export type BaronyColor = 'blue' | 'yellow' | 'red' | 'green';
 export type BaronyLandType =
@@ -18,8 +18,8 @@ export interface ABaronyPlayer {
   id: BaronyColor;
   name: string;
   score: number;
-  pawns: { [type in BaronyPawnType]: number };
-  resources: { [type in BaronyResourceType]: number };
+  pawns: Record<BaronyPawnType, number>;
+  resources: Record<BaronyResourceType, number>;
   victoryPoints: number;
   winner: boolean;
 }

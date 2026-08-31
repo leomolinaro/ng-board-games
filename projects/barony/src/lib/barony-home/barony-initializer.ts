@@ -4,7 +4,7 @@ import {
   BARONY_LAND_TYPES,
   BARONY_NUMBER_OF_LAND_TILES,
 } from '../barony-constants';
-import {
+import type {
   BaronyLandCoordinates,
   BaronyLandPiece,
   BaronyLandType,
@@ -80,7 +80,7 @@ function generateRectangularMap(nPieces: number): {
   type: BaronyLandType;
 }[] {
   const piecesPool: BaronyLandPiece[] = [];
-  const map: { [key in BaronyLandType]: number } = {
+  const map: Record<BaronyLandType, number> = {
     fields: 0,
     mountain: 0,
     forest: 0,

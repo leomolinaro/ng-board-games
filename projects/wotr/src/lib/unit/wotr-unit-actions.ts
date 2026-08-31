@@ -1,6 +1,6 @@
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegionId } from '../region/wotr-region-models';
-import { WotrUnitComposer, WotrUnits } from './wotr-unit-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrUnitComposer, WotrUnits } from './wotr-unit-models';
 
 export type WotrUnitAction =
   | WotrArmyMovement
@@ -27,7 +27,7 @@ export interface WotrArmyMovement {
 export function moveArmy(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
+   
   leftUnits?: WotrUnits,
 ): WotrArmyMovement {
   const movement: WotrArmyMovement = {
@@ -53,7 +53,7 @@ export interface WotrNazgulMovement {
 export function moveNazgul(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-  nNazgul: number = 1,
+  nNazgul = 1,
 ): WotrNazgulMovement {
   return { type: 'nazgul-movement', fromRegion, toRegion, nNazgul };
 }
@@ -67,7 +67,7 @@ export interface WotrRegularUnitRecruitment {
 export function recruitRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrRegularUnitRecruitment {
   return { type: 'regular-unit-recruitment', region, nation, quantity };
 }
@@ -80,7 +80,7 @@ export interface WotrRegularUnitElimination {
 export function eliminateRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrRegularUnitElimination {
   return { type: 'regular-unit-elimination', region, nation, quantity };
 }
@@ -94,7 +94,7 @@ export interface WotrRegulardUnitUpgrade {
 export function upgradeRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrRegulardUnitUpgrade {
   return { type: 'regular-unit-upgrade', region, nation, quantity };
 }
@@ -108,7 +108,7 @@ export interface WotrRegularUnitDisband {
 export function disbandRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrRegularUnitDisband {
   return { type: 'regular-unit-disband', region, nation, quantity };
 }
@@ -122,7 +122,7 @@ export interface WotrEliteUnitRecruitment {
 export function recruitEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrEliteUnitRecruitment {
   return { type: 'elite-unit-recruitment', region, nation, quantity };
 }
@@ -136,7 +136,7 @@ export interface WotrEliteUnitElimination {
 export function eliminateEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrEliteUnitElimination {
   return { type: 'elite-unit-elimination', region, nation, quantity };
 }
@@ -150,7 +150,7 @@ export interface WotrEliteUnitDowngrade {
 export function downgradeEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrEliteUnitDowngrade {
   return { type: 'elite-unit-downgrade', region, nation, quantity };
 }
@@ -164,7 +164,7 @@ export interface WotrEliteUnitDisband {
 export function disbandEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrEliteUnitDisband {
   return { type: 'elite-unit-disband', region, nation, quantity };
 }
@@ -178,7 +178,7 @@ export interface WotrLeaderRecruitment {
 export function recruitLeader(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrLeaderRecruitment {
   return { type: 'leader-recruitment', region, nation, quantity };
 }
@@ -191,7 +191,7 @@ export interface WotrLeaderElimination {
 export function eliminateLeader(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrLeaderElimination {
   return { type: 'leader-elimination', region, nation, quantity };
 }
@@ -203,7 +203,7 @@ export interface WotrNazgulRecruitment {
 }
 export function recruitNazgul(
   region: WotrRegionId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrNazgulRecruitment {
   return { type: 'nazgul-recruitment', region, quantity };
 }
@@ -214,7 +214,7 @@ export interface WotrNazgulElimination {
 }
 export function eliminateNazgul(
   region: WotrRegionId,
-  quantity: number = 1,
+  quantity = 1,
 ): WotrNazgulElimination {
   return { type: 'nazgul-elimination', region, quantity };
 }

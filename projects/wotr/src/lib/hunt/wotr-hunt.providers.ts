@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrHuntFlow } from './wotr-hunt-flow';
 import { WotrHuntHandler } from './wotr-hunt-handler';
 import { WotrHuntModifiers } from './wotr-hunt-modifiers';

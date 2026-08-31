@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { objectUtil } from '@leobg/commons/utils';
-import { WotrFrontId } from '../front/wotr-front-models';
-import {
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type {
   WotrAction,
   WotrActionApplier,
   WotrActionLogger,
@@ -16,11 +16,11 @@ import { WotrEventService } from './wotr-event-service';
 export class WotrActionRegistry {
   private eventService = inject(WotrEventService);
 
-  private actionAppliers: Map<string, WotrActionApplier<WotrAction>> =
-    new Map();
-  private storyAppliers: Map<string, WotrStoryApplier<WotrStory>> = new Map();
-  private actionLoggers: Map<string, WotrActionLogger<WotrAction>> = new Map();
-  private effectLoggers: Map<string, WotrEffectLogger<WotrAction>> = new Map();
+  private actionAppliers =
+    new Map<string, WotrActionApplier<WotrAction>>();
+  private storyAppliers = new Map<string, WotrStoryApplier<WotrStory>>();
+  private actionLoggers = new Map<string, WotrActionLogger<WotrAction>>();
+  private effectLoggers = new Map<string, WotrEffectLogger<WotrAction>>();
 
   clear() {
     this.actionAppliers.clear();

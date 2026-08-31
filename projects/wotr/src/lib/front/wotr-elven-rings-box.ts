@@ -1,7 +1,8 @@
-import { Component, Signal, computed, inject, input } from '@angular/core';
+import type { Signal} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameUi } from '../game/wotr-game-ui';
-import { WotrElvenRing, WotrFrontId } from './wotr-front-models';
+import type { WotrElvenRing, WotrFrontId } from './wotr-front-models';
 
 interface WotrElvenRingNode {
   id: WotrElvenRing;

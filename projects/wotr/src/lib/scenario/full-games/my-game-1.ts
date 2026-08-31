@@ -1,6 +1,6 @@
-import { WotrCardDraw } from '../../card/wotr-card-actions';
-import { WotrScenarioDefinition } from '../wotr-scenario';
-import { WotrStoriesBuilder } from '../wotr-story-builder';
+import type { WotrCardDraw } from '../../card/wotr-card-actions';
+import type { WotrScenarioDefinition } from '../wotr-scenario';
+import type { WotrStoriesBuilder } from '../wotr-story-builder';
 
 export const scenario: WotrScenarioDefinition = {
   options: {

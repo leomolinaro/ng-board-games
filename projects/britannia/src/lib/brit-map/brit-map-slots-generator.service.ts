@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { immutableUtil, randomUtil } from '@leobg/commons/utils';
-import {
+import type {
   BritAreaId,
   BritLandAreaId,
-  BritSeaAreaId,
+  BritSeaAreaId} from '../brit-components.models';
+import {
   isBritLandAreaId,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import { BritAreaSlots, BritMapPoint } from './brit-map.service';
+import type { BritAreaSlots, BritMapPoint } from './brit-map.service';
 
 interface BritLandPoints {
   innerPoints: BritMapLandPoint[];

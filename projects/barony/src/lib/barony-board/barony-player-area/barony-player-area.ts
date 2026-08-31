@@ -1,19 +1,12 @@
-import {
-  Component,
-  OnChanges,
-  SimpleChanges,
-  TrackByFunction,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import type { OnChanges, SimpleChanges } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { BgAuthService } from '@leobg/commons';
 import { TuiIcon } from '@taiga-ui/core';
 import {
   BARONY_PAWN_TYPES,
   BARONY_RESOURCE_TYPES,
 } from '../../barony-constants';
-import {
+import type {
   BaronyBuilding,
   BaronyPawnType,
   BaronyPlayer,
@@ -54,15 +47,6 @@ export class BaronyPlayerArea implements OnChanges {
   pawnNodes!: BaronyPawnNode[];
   resourceNodes!: BaronyResourceNode[];
 
-  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (
-    index,
-    pawnNode: BaronyPawnNode,
-  ) => pawnNode.type;
-  resourceTrackBy: TrackByFunction<BaronyResourceNode> = (
-    index,
-    resourceNode: BaronyResourceNode,
-  ) => resourceNode.type;
-
   ngOnChanges(changes: SimpleChanges): void {
     let refreshPawns = false;
     let refreshResources = false;
@@ -86,9 +70,9 @@ export class BaronyPlayerArea implements OnChanges {
       this.pawnNodes = BARONY_PAWN_TYPES.map((pt) => {
         const validBuildings = this.validBuildings();
         return {
-          source: `assets/barony/pawns/${this['player']().id}-${pt}.png`,
+          source: `assets/barony/pawns/${this.player().id}-${pt}.png`,
           type: pt,
-          quantity: this['player']().pawns[pt],
+          quantity: this.player().pawns[pt],
           active:
             validBuildings && (pt === 'stronghold' || pt === 'village')
               ? validBuildings.includes(pt)
@@ -103,7 +87,7 @@ export class BaronyPlayerArea implements OnChanges {
         return {
           source: `assets/barony/resources/${rt}.png`,
           type: rt,
-          quantity: this['player']().resources[rt],
+          quantity: this.player().resources[rt],
           active: validResources ? validResources.includes(rt) : false,
         };
       });
@@ -111,7 +95,7 @@ export class BaronyPlayerArea implements OnChanges {
   }
 
   onCardClick() {
-    const player = this['player']();
+    const player = this.player();
     if (
       !player.isAi &&
       this.authService.isUserId(player.controller.id) &&

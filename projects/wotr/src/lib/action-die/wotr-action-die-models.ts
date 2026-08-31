@@ -1,4 +1,4 @@
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 
 export type WotrActionDieResult =
   | 'character'

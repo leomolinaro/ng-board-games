@@ -1,12 +1,14 @@
 import { Component, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiCheckbox, TuiLabel } from '@taiga-ui/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import type {
+  WotrActionTokenOption} from './wotr-action-die-models';
 import {
   ACTION_TOKEN_OPTIONS,
-  getActionTokenName,
-  WotrActionTokenOption,
+  getActionTokenName
 } from './wotr-action-die-models';
 
 @Component({

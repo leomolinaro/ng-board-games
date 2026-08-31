@@ -5,11 +5,12 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { injectDialogContext } from '../../../../commons/src';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import { WotrCardSelection } from '../game/wotr-game-ui';
-import { WotrCardId } from './wotr-card-models';
+import type { WotrCardSelection } from '../game/wotr-game-ui';
+import type { WotrCardId } from './wotr-card-models';
 import { WotrCardTooltipService } from './wotr-card-tooltip.service';
 
 export interface WotrCardsDialogData {

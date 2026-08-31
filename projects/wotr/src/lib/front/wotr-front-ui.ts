@@ -1,13 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import {
+import type {
   WotrActionDie,
   WotrActionDieResult,
 } from '../action-die/wotr-action-die-models';
-import { WotrUiOption } from '../game/wotr-game-ui';
+import type { WotrUiOption } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import { WotrElvenRingAction } from '../game/wotr-story-models';
+import type { WotrElvenRingAction } from '../game/wotr-story-models';
 import { WotrFrontHandler } from './wotr-front-handler';
-import { WotrElvenRing, WotrFrontId } from './wotr-front-models';
+import type { WotrElvenRing, WotrFrontId } from './wotr-front-models';
 
 @Injectable()
 export class WotrFrontUi {

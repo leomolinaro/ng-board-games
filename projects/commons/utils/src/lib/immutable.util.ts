@@ -1,6 +1,6 @@
 // In caso di errore, stampo in console un messaggio e ritorno le liste originali.
 
-import { Key } from './types.util';
+export type Key = string | number;
 
 function error(msg: string) {
   throw new Error(msg);
@@ -10,14 +10,14 @@ function toMap<E, V = E>(
   list: E[],
   keyGetter: (e: E) => any,
   valueGetter?: (e: E) => V,
-): { [key: string]: V } {
+): Record<string, V> {
   if (list) {
     if (valueGetter) {
-      const map: { [key: string]: V } = {};
+      const map: Record<string, V> = {};
       list.forEach((e) => (map[keyGetter(e)] = valueGetter(e)));
       return map;
     } else {
-      const map: { [key: string]: V } = {};
+      const map: Record<string, V> = {};
       list.forEach((e) => (map[keyGetter(e)] = e as unknown as V));
       return map;
     }
@@ -180,55 +180,6 @@ export function listReplaceByIndex<T>(index: number, element: T, list: T[]) {
   return newList;
 }
 
-export function listMergeFirst<T>(
-  matcher: (e: T) => boolean,
-  changes: Partial<T>,
-  list: T[],
-) {
-  if (list) {
-    const index = list.findIndex(matcher);
-    if (index >= 0) {
-      return listMergeByIndex(index, changes, list);
-    } else {
-      error('match not found');
-      return list;
-    }
-  } else {
-    error('empty list');
-    return list;
-  }
-}
-
-export function listMergeAll<T>(
-  keyGetter: (e: T) => string,
-  changesMap: { [id: string]: Partial<T> },
-  list: T[],
-) {
-  const toReturn: T[] = [];
-  let changed = false;
-  for (const e of list) {
-    const key = keyGetter(e);
-    const elementChange = changesMap[key];
-    if (elementChange) {
-      toReturn.push({ ...e, ...elementChange });
-      changed = true;
-    } else {
-      toReturn.push(e);
-    }
-  }
-  return toReturn;
-}
-
-export function listMergeByIndex<T>(
-  index: number,
-  change: Partial<T>,
-  list: T[],
-) {
-  const newList = [...list];
-  newList[index] = { ...newList[index], ...change };
-  return newList;
-}
-
 export function listInsert<T>(element: T, index: number, list: T[]) {
   if (list) {
     if (index != null && index >= 0) {
@@ -255,75 +206,6 @@ export function listPush<T>(toPush: T[], list: T[]) {
     } else {
       return [...toPush];
     }
-  } else {
-    return list;
-  }
-}
-
-/**
- * Crea una nuova lista inserendo gli elementi della lista toInsert nella lista list, nell'ordine
- * dato dal comparatore.
- * N.B.: la lista list dev'essere già ordinata!
- */
-export function listInsertBySort<T>(
-  toInsert: T[],
-  comparator: (a: T, b: T) => number,
-  list: T[],
-) {
-  toInsert = [...toInsert];
-  toInsert.sort(comparator);
-  if (list) {
-    const toReturn: T[] = [];
-    let toInsertIndex = 0;
-    let listIndex = 0;
-    while (toInsertIndex < toInsert.length && listIndex < list.length) {
-      const toInsertElement = toInsert[toInsertIndex];
-      const listElement = list[listIndex];
-      const comparison = comparator(toInsertElement, listElement);
-      if (comparison > 0) {
-        toReturn.push(listElement);
-        listIndex++;
-      } else {
-        toReturn.push(toInsertElement);
-        toInsertIndex++;
-      }
-    }
-    for (let i = toInsertIndex; i < toInsert.length; i++) {
-      toReturn.push(toInsert[i]);
-    }
-    for (let i = listIndex; i < list.length; i++) {
-      toReturn.push(list[i]);
-    }
-    return toReturn;
-  } else {
-    return toInsert;
-  }
-}
-
-export function listSortByIndex<T>(
-  fromIndex: number,
-  toIndex: number,
-  list: T[],
-): T[] {
-  if (list && list.length) {
-    const element = list[fromIndex];
-    let newList = listRemoveByIndex(fromIndex, list);
-    newList = listInsert(element, toIndex, newList);
-    return newList;
-  } else {
-    return list;
-  }
-}
-
-export function listSortByElement<T>(
-  movingElement: T,
-  toElement: T,
-  list: T[],
-): T[] {
-  if (list) {
-    const fromIndex = list.indexOf(movingElement);
-    const toIndex = list.indexOf(toElement);
-    return listSortByIndex(fromIndex, toIndex, list);
   } else {
     return list;
   }

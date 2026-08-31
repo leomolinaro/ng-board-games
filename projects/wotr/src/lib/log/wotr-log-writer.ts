@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { WotrBattleStore } from '../battle/wotr-battle-store';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrAction } from '../commons/wotr-action-models';
-import { WotrFrontId } from '../front/wotr-front-models';
-import { WotrPhase } from '../game-turn/wotr-phase-models';
-import { WotrElvenRingAction, WotrStory } from '../game/wotr-story-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrPhase } from '../game-turn/wotr-phase-models';
+import type { WotrElvenRingAction, WotrStory } from '../game/wotr-story-models';
 import { WotrHuntStore } from '../hunt/wotr-hunt-store';
-import { WotrLog, WotrLogFragment } from './wotr-log-models';
+import type { WotrLog, WotrLogFragment } from './wotr-log-models';
 import { WotrLogStore } from './wotr-log-store';
 
 @Injectable()

@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
   displayName: 'wotr',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],

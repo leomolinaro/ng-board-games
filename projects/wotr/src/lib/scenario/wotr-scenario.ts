@@ -1,8 +1,8 @@
-import { WotrGameOptions } from '../game/options/wotr-game-options';
-import { WotrStoryDoc } from '../game/wotr-story-models';
-import { WotrSetupBuilder } from '../setup/wotr-setup-builder';
-import { WotrSetup } from '../setup/wotr-setup-rules';
-import { WotrStoriesBuilder } from './wotr-story-builder';
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
+import type { WotrStoryDoc } from '../game/wotr-story-models';
+import type { WotrSetupBuilder } from '../setup/wotr-setup-builder';
+import type { WotrSetup } from '../setup/wotr-setup-rules';
+import type { WotrStoriesBuilder } from './wotr-story-builder';
 
 export interface WotrScenarioGroup {
   id: string;

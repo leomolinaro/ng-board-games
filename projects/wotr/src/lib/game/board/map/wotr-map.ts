@@ -1,6 +1,7 @@
+import type {
+  ElementRef} from '@angular/core';
 import {
   Component,
-  ElementRef,
   ViewChild,
   computed,
   inject,
@@ -12,23 +13,23 @@ import { BgMapZoom, BgSvg } from '@leobg/commons';
 import { downloadUtil } from '@leobg/commons/utils';
 import { WotrCurrentDieBox } from '../../../action-die/wotr-current-die-box';
 import { WotrAssetsStore } from '../../../assets/wotr-assets-store';
-import {
+import type {
   WotrCharacter,
   WotrCharacterId,
 } from '../../../character/wotr-character-models';
 import { WotrFellowshipBox } from '../../../fellowship/wotr-fellowship-box';
-import { WotrFellowship } from '../../../fellowship/wotr-fellowship-models';
+import type { WotrFellowship } from '../../../fellowship/wotr-fellowship-models';
 import { WotrFellowshipTrack } from '../../../fellowship/wotr-fellowship-track';
 import { WotrDeckBoxes } from '../../../front/wotr-deck-boxes';
 import { WotrElvenRingsBox } from '../../../front/wotr-elven-rings-box';
-import { WotrFront } from '../../../front/wotr-front-models';
+import type { WotrFront } from '../../../front/wotr-front-models';
 import { WotrTableCardsComponent } from '../../../front/wotr-table-card-boxes';
 import { WotrVictoryPointsTrack } from '../../../front/wotr-victory-points-track';
 import { WotrHuntBox } from '../../../hunt/wotr-hunt-box';
-import { WotrHuntState } from '../../../hunt/wotr-hunt-store';
+import type { WotrHuntState } from '../../../hunt/wotr-hunt-store';
 import { WotrPoliticalTrack } from '../../../nation/wotr-political-track';
 import { WotrRegionAreas } from '../../../region/wotr-region-areas';
-import { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
 import { WotrGameUi } from '../../wotr-game-ui';
 import { WotrMapSlotsGenerator } from './wotr-map-slots-generator';
 import { WotrMapService } from './wotr-map.service';
@@ -167,7 +168,7 @@ export class WotrMap {
         clientP.x,
         clientP.y,
       )?.id;
-      if (elementId && elementId.startsWith('wotr-region-')) {
+      if (elementId?.startsWith('wotr-region-')) {
         return elementId.slice(12) as WotrRegionId;
       } else {
         return null;

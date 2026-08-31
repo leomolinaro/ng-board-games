@@ -1,6 +1,7 @@
-import { Component, Signal, computed, inject, input } from '@angular/core';
+import type { Signal} from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import { WotrFellowship } from './wotr-fellowship-models';
+import type { WotrFellowship } from './wotr-fellowship-models';
 
 interface WotrFellowshipMarkerNode {
   id: string;

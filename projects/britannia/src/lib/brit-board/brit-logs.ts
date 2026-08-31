@@ -1,6 +1,7 @@
-import { Component, ElementRef, OnChanges, inject, input } from '@angular/core';
-import { SimpleChanges } from '@leobg/commons/utils';
-import { BritLog } from '../brit-game-state.models';
+import type { OnChanges } from '@angular/core';
+import { Component, ElementRef, inject, input } from '@angular/core';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import type { BritLog } from '../brit-game-state.models';
 import { BritLogRow } from './brit-log-row';
 
 @Component({
@@ -24,7 +25,7 @@ import { BritLogRow } from './brit-log-row';
   ],
 })
 export class BritLogs implements OnChanges {
-  private elementRef = inject(ElementRef);
+  private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly logs = input.required<BritLog[]>();
 

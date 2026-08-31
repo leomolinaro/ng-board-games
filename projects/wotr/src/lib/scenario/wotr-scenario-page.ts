@@ -2,7 +2,7 @@ import { Component, inject, resource } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BgAuthService } from '../../../../commons/src';
 import { DEFAULT_OPTIONS } from '../game/options/wotr-game-options';
-import { WotrGameConfig } from '../game/wotr-game-config';
+import type { WotrGameConfig } from '../game/wotr-game-config';
 import { WotrGamePage } from '../game/wotr-game-page';
 import { WotrRemoteService } from '../remote/wotr-remote';
 import { WotrSetupBuilder } from '../setup/wotr-setup-builder';
@@ -32,7 +32,7 @@ export class WotrScenarioPage {
 
   private gameId: string = this.route.snapshot.paramMap.get('gameId')!;
   protected gameConfig = resource<WotrGameConfig, void>({
-    loader: async () => {
+    loader: () => {
       const scenario = this.scenarios.getScenario(this.gameId);
       const gameConfig: WotrGameConfig = {};
       const scenarioDef = scenario.loadDefinition();
@@ -42,7 +42,7 @@ export class WotrScenarioPage {
       if (setup)
         gameConfig.setup = (rules) =>
           setup(new WotrSetupBuilder(options || DEFAULT_OPTIONS, rules));
-      return gameConfig;
+      return Promise.resolve(gameConfig);
     },
   }).value;
 }

@@ -1,5 +1,6 @@
 import { Component, inject, Injectable } from '@angular/core';
-import { TuiButton, TuiDialogContext, TuiDialogService } from '@taiga-ui/core';
+import type { TuiDialogContext} from '@taiga-ui/core';
+import { TuiButton, TuiDialogService } from '@taiga-ui/core';
 import { injectContext, PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import { firstValueFrom } from 'rxjs';
 

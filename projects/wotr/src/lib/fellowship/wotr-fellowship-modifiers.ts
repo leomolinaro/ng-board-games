@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrFellowshipMove } from './wotr-fellowship-models';
+import type { WotrFellowshipMove } from './wotr-fellowship-models';
 
 export type WotrAfterFellowshipDeclaration = (
   params: WotrFellowshipMove,

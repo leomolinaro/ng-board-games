@@ -1,26 +1,31 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import type { OnInit} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { injectDialogContext } from '@leobg/commons';
-import { BgTransformFn, arrayUtil } from '@leobg/commons/utils';
+import type { BgTransformFn} from '@leobg/commons/utils';
+import { arrayUtil } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
-import { WotrAssetsStore, WotrUnitImage } from '../../assets/wotr-assets-store';
-import {
+import type { WotrUnitImage } from '../../assets/wotr-assets-store';
+import { WotrAssetsStore } from '../../assets/wotr-assets-store';
+import type {
   WotrCharacter,
   WotrCharacterId,
 } from '../../character/wotr-character-models';
-import { WotrFellowship } from '../../fellowship/wotr-fellowship-models';
+import type { WotrFellowship } from '../../fellowship/wotr-fellowship-models';
 import { WotrGameQuery } from '../../game/wotr-game-query';
-import {
+import type {
   WotrNation,
-  WotrNationId,
+  WotrNationId} from '../../nation/wotr-nation-models';
+import {
   frontOfNation,
 } from '../../nation/wotr-nation-models';
-import { WotrUnits } from '../../unit/wotr-unit-models';
+import type { WotrUnits } from '../../unit/wotr-unit-models';
 import { WotrUnitModifiers } from '../../unit/wotr-unit-modifiers';
 import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
-import { WotrRegion } from '../wotr-region-models';
-import { UnitNode } from './wotr-region-unit-node';
+import type { WotrRegion } from '../wotr-region-models';
+import type { UnitNode } from './wotr-region-unit-node';
+import type {
+  WotrRegionUnitSelection} from './wotr-region-unit-selection';
 import {
-  WotrRegionUnitSelection,
   selectionModeFactory,
 } from './wotr-region-unit-selection';
 

@@ -5,23 +5,26 @@ import {
   input,
   model,
 } from '@angular/core';
-import { BgGameOptionsComponent } from '@leobg/commons';
+import type { BgGameOptionsComponent } from '@leobg/commons';
 import { TuiButton, TuiExpand, TuiTitle } from '@taiga-ui/core';
 import { TuiAccordion } from '@taiga-ui/kit';
+import type {
+  WotrActionTokenOption} from '../../action-die/wotr-action-die-models';
 import {
-  getActionTokenName,
-  WotrActionTokenOption,
+  getActionTokenName
 } from '../../action-die/wotr-action-die-models';
 import { WotrActionTokenOptionsForm } from '../../action-die/wotr-action-token-options-form';
+import type {
+  WotrExpansionId,
+  WotrVariantId} from '../../expansion/wotr-expansion-models';
 import {
   getExpansion,
-  getVariant,
-  WotrExpansionId,
-  WotrVariantId,
+  getVariant
 } from '../../expansion/wotr-expansion-models';
 import { WotrExpansionOptionsForm } from '../../expansion/wotr-expansion-options-form';
 import { WotrVariantOptionsForm } from '../../expansion/wotr-variant-options-form';
-import { DEFAULT_OPTIONS, WotrGameOptions } from './wotr-game-options';
+import type { WotrGameOptions } from './wotr-game-options';
+import { DEFAULT_OPTIONS } from './wotr-game-options';
 
 @Component({
   selector: 'wotr-game-options-form',
@@ -113,7 +116,7 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
   expansionsChange(expansions: WotrExpansionId[]) {
     for (const expansion of expansions) {
       const requiredExpansions = getExpansion(expansion).requires || [];
-      // eslint-disable-next-line no-loop-func
+       
       if (
         requiredExpansions.some((required) => !expansions.includes(required))
       ) {

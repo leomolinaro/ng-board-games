@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+ 
 import { inject, Injectable } from '@angular/core';
 import { WotrFrontStore } from '../front/wotr-front-store';
-import { WotrGameOptions } from '../game/options/wotr-game-options';
-import {
+import type { WotrGameOptions } from '../game/options/wotr-game-options';
+import type {
   WotrCardNumber,
   WotrFreePeoplesCharacterCardId,
   WotrFreePeoplesStrategyCardId,

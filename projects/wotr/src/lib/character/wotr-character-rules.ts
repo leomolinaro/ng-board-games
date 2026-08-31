@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegion } from '../region/wotr-region-models';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegion } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import { WotrCharacterId } from './wotr-character-models';
-import { WotrCharacterMovementOptions } from './wotr-character-ui';
+import type { WotrCharacterId } from './wotr-character-models';
+import type { WotrCharacterMovementOptions } from './wotr-character-ui';
 
 @Injectable()
 export class WotrCharacterRules {

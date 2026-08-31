@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrNationId } from './wotr-nation-models';
-import {
+import type { WotrNationId } from './wotr-nation-models';
+import type {
   WotrNationActivationSource,
   WotrNationAdvanceSource,
 } from './wotr-nation-rules';

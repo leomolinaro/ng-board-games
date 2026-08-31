@@ -1,12 +1,12 @@
-import { WotrAbility } from '../../../ability/wotr-ability';
-import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
-import { WotrCombatRound } from '../../../battle/wotr-battle-models';
-import {
+import type { WotrAbility } from '../../../ability/wotr-ability';
+import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import type { WotrCombatRound } from '../../../battle/wotr-battle-models';
+import type {
   WotrBattleModifiers,
   WotrBeforeCombatRound,
 } from '../../../battle/wotr-battle-modifiers';
-import { WotrBattleStore } from '../../../battle/wotr-battle-store';
-import { WotrRegionId } from '../../../region/wotr-region-models';
+import type { WotrBattleStore } from '../../../battle/wotr-battle-store';
+import type { WotrRegionId } from '../../../region/wotr-region-models';
 
 export function validSovereignAwakeningDie(die: WotrActionDie): boolean {
   if (die === 'muster') return true;

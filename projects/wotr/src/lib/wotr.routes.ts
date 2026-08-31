@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { WotrMapService } from './game/board/map/wotr-map.service';
 import { WotrGamePage } from './game/wotr-game-page';
 import { WotrHomePage } from './home/wotr-home-page';

@@ -1,12 +1,14 @@
-import { BgStoryDoc, unexpectedStory } from '@leobg/commons';
-import {
+import type { BgStoryDoc} from '@leobg/commons';
+import { unexpectedStory } from '@leobg/commons';
+import type {
   WotrActionDie,
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCharacterId } from '../character/wotr-character-models';
-import { findAction, WotrAction } from '../commons/wotr-action-models';
-import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrAction } from '../commons/wotr-action-models';
+import { findAction } from '../commons/wotr-action-models';
+import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 
 export interface WotrBaseStory {
   type: 'base';

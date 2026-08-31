@@ -4,11 +4,11 @@ import {
   stopCorruptionAttempt,
 } from '../../../hunt/wotr-hunt-actions';
 import { baseHuntTiles, komeHuntTiles } from '../../../hunt/wotr-hunt-models';
-import {
+import type {
   WotrScenario,
   WotrScenarioGroup,
 } from '../../../scenario/wotr-scenario';
-import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
+import type { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
 
 export function brandScenarios(): WotrScenarioGroup {
   return {

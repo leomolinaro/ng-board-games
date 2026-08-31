@@ -1,4 +1,4 @@
-import { Provider } from '@angular/core';
+import type { Provider } from '@angular/core';
 import { WotrFrontHandler } from './wotr-front-handler';
 import { WotrFrontStore } from './wotr-front-store';
 import { WotrFrontUi } from './wotr-front-ui';

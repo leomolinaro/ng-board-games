@@ -1,14 +1,14 @@
-import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
-import { WotrNationId } from '../nation/wotr-nation-models';
-import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
-import { WotrRegionStore } from '../region/wotr-region-store';
-import {
+import type { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import type { WotrNationId } from '../nation/wotr-nation-models';
+import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionStore } from '../region/wotr-region-store';
+import type {
   KomeSovereign,
   KomeSovereignId,
   WotrCharacter,
   WotrCharacterId,
 } from './wotr-character-models';
-import { WotrCharacterStore } from './wotr-character-store';
+import type { WotrCharacterStore } from './wotr-character-store';
 
 export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   constructor(

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { WotrCardId } from '../card/wotr-card-models';
-import { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCompanionId } from '../character/wotr-character-models';
 import { WotrCharacterRules } from '../character/wotr-character-rules';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import { WotrRegionStore } from '../region/wotr-region-store';

@@ -1,23 +1,23 @@
 import { Injectable, inject } from '@angular/core';
-import { WotrArmyAttack } from '../battle/wotr-battle-actions';
-import { WotrCharacterId } from '../character/wotr-character-models';
+import type { WotrArmyAttack } from '../battle/wotr-battle-actions';
+import type { WotrCharacterId } from '../character/wotr-character-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
-import { WotrFrontId } from '../front/wotr-front-models';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import { WotrStory } from '../game/wotr-story-models';
+import type { WotrStory } from '../game/wotr-story-models';
 import { WotrStoryService } from '../game/wotr-story-service';
 import { WotrLogWriter } from '../log/wotr-log-writer';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import {
+import type {
   WotrPoliticalActivation,
   WotrPoliticalAdvance,
   WotrPoliticalAdvanceAtWar,
   WotrPoliticalRecede,
 } from './wotr-nation-actions';
-import { WotrNationId } from './wotr-nation-models';
+import type { WotrNationId } from './wotr-nation-models';
 import { WotrNationModifiers } from './wotr-nation-modifiers';
-import {
+import type {
   WotrNationActivationSource,
   WotrNationAdvanceSource,
 } from './wotr-nation-rules';
@@ -272,7 +272,7 @@ export class WotrNationHandler {
   }
 
   private currentNationAdvanceSource(): WotrNationAdvanceSource {
-    const story = this.storyService.getCurrentStory() as WotrStory;
+    const story = this.storyService.getCurrentStory()!;
     switch (story.type) {
       case 'die':
         if (story.character) return 'character-ability';

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { BgDialogService, BgMapZoomButtons } from '@leobg/commons';
 import { TuiIcon } from '@taiga-ui/core';
-import {
+import type {
   BaronyAction,
   BaronyBuilding,
   BaronyLand,
@@ -47,7 +47,9 @@ import { BaronyScoreboard } from './barony-scoreboard';
 })
 export class BaronyBoard {
   constructor() {
-    effect(() => this.openEndGameDialog());
+    effect(() => {
+      this.openEndGameDialog().then(() => {});
+    });
   }
 
   private readonly dialogs = inject(BgDialogService);
@@ -114,9 +116,9 @@ export class BaronyBoard {
     this.resourceSelect.emit(resource);
   }
 
-  private openEndGameDialog() {
+  private async openEndGameDialog() {
     if (!this.endGame()) return;
-    this.dialogs
+    await this.dialogs
       .open(BaronyEndGameDialog, {
         label: 'End Game',
         data: {

@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import type { OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TUI_DARK_MODE, TuiRoot } from '@taiga-ui/core';
 

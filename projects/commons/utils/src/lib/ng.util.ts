@@ -1,15 +1,9 @@
-import {
-  Injector,
-  OnDestroy,
-  ProviderToken,
-  inject,
-  runInInjectionContext,
-} from '@angular/core';
+import type { OnDestroy, ProviderToken } from '@angular/core';
+import { Injector, inject, runInInjectionContext } from '@angular/core';
+import type { MonoTypeOperatorFunction, Observable } from 'rxjs';
 import {
   BehaviorSubject,
   EMPTY,
-  MonoTypeOperatorFunction,
-  Observable,
   Subject,
   catchError,
   concatMap,
@@ -154,7 +148,6 @@ export function ChangeListener() {
     if (originalMethod) {
       methodDescriptor.value = function (this: any, ...args: any) {
         const obs$ = originalMethod.apply(this, args);
-        // tslint:disable-next-line: deprecation
         obs$.pipe(untilDestroy(this)).subscribe();
         return obs$;
       };

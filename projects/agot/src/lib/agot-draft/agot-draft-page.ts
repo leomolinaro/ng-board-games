@@ -10,10 +10,10 @@ import {
 } from '@taiga-ui/core';
 import { TuiAccordion, TuiProgress } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
-import { Observable } from 'rxjs';
+import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AgotData } from '../agot-services/agot-data';
-import { AgotCard, AgotFactionCode, AgotPackCode } from '../agot.models';
+import type { AgotCard, AgotFactionCode, AgotPackCode } from '../agot.models';
 import { AgotCardGrid } from './agot-card-grid';
 import { AgotCheckboxList } from './agot-checkbox-list';
 import {

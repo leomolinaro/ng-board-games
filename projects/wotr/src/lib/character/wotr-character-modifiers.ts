@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
-import { WotrCharacterId, WotrCompanionId } from './wotr-character-models';
+import type { WotrCharacterId, WotrCompanionId } from './wotr-character-models';
 
 export interface WotrCharacterEliminationParams {
   characterId: WotrCharacterId;

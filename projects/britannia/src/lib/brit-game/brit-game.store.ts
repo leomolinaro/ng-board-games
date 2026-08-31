@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { BgUser } from '@leobg/commons';
+import type { BgUser } from '@leobg/commons';
 import { BgStore, arrayUtil, immutableUtil } from '@leobg/commons/utils';
-import {
+import type {
   BritAreaId,
   BritColor,
   BritLandAreaId,
@@ -13,7 +13,7 @@ import {
   BritUnitType,
 } from '../brit-components.models';
 import { BritComponentsService } from '../brit-components.service';
-import {
+import type {
   BritAreaLeader,
   BritAreaState,
   BritAreaUnit,
@@ -23,7 +23,7 @@ import {
   BritPlayer,
   BritSetup,
 } from '../brit-game-state.models';
-import { BritArmyMovement, BritArmyMovements } from '../brit-story.models';
+import type { BritArmyMovement, BritArmyMovements } from '../brit-story.models';
 
 @Injectable()
 export class BritGameStore extends BgStore<BritGameState> {
@@ -63,10 +63,7 @@ export class BritGameStore extends BgStore<BritGameState> {
       gameId: gameId,
       gameOwner: gameOwner,
       players: {
-        map: arrayUtil.toMap(players, (p) => p.id) as Record<
-          BritColor,
-          BritPlayer
-        >,
+        map: arrayUtil.toMap(players, (p) => p.id),
         colors: players.map((p) => p.id),
       },
     }));

@@ -4,7 +4,7 @@ import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
 import { TuiIcon } from '@taiga-ui/core';
 import { BARONY_RESOURCE_TYPES } from '../barony-constants';
-import { BaronyPlayer, BaronyResourceType } from '../barony-models';
+import type { BaronyPlayer, BaronyResourceType } from '../barony-models';
 
 interface BaronyEndGameData {
   players: BaronyPlayer[];

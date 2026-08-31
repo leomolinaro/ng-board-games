@@ -1,5 +1,5 @@
-import { WotrCompanionId } from '../character/wotr-character-models';
-import { WotrRegionId } from '../region/wotr-region-models';
+import type { WotrCompanionId } from '../character/wotr-character-models';
+import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrFellowshipDeclare {
   type: 'fellowship-declare';

@@ -1,20 +1,17 @@
 import { inject, Injectable } from '@angular/core';
-import { KomeSovereignId } from '../character/wotr-character-models';
 import { findAction } from '../commons/wotr-action-models';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
-import {
+import type {
   KomeCorruptionContinueAttempt,
   KomeCorruptionStopAttempt,
 } from './wotr-hunt-actions';
-import { WotrHuntTileId } from './wotr-hunt-models';
-import { WotrHuntStore } from './wotr-hunt-store';
+import type { WotrHuntTileId } from './wotr-hunt-models';
 
 @Injectable()
 export class KomeCorruptionFlow {
   private shadow = inject(WotrShadowPlayer);
-  private huntStore = inject(WotrHuntStore);
 
-  async corruptionAttempt(sovereign: KomeSovereignId, tile: WotrHuntTileId) {
+  async corruptionAttempt() {
     let choosenTile: WotrHuntTileId | null = null;
     while (!choosenTile) {
       const story = await this.shadow.chooseCorruptionTile();

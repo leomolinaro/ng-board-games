@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { baseCharacters } from '../../character/wotr-character-models';
 import { DEFAULT_OPTIONS } from '../../game/options/wotr-game-options';
-import { WotrSetup, WotrSetupRules } from '../../setup/wotr-setup-rules';
+import type { WotrSetup} from '../../setup/wotr-setup-rules';
+import { WotrSetupRules } from '../../setup/wotr-setup-rules';
 
 @Injectable()
 export class WotrSetupRulesMock extends WotrSetupRules {
