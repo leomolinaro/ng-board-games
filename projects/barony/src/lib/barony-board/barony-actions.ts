@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
 import { BARONY_ACTIONS } from "../barony-constants";
@@ -10,29 +9,23 @@ import { BaronyAction } from "../barony-models";
     <div class="b-actions">
       <button
         class="b-action b-cancel"
-        [ngClass]="{
-          'is-active': canCancel(),
-          'is-disabled': !canCancel()
-        }"
+        [class.is-active]="canCancel()"
+        [class.is-disabled]="!canCancel()"
         (click)="onCancelClick()">
         {{ labels.cancel }}
       </button>
       <button
         class="b-action b-pass"
-        [ngClass]="{
-          'is-active': canPass(),
-          'is-disabled': !canPass()
-        }"
+        [class.is-active]="canPass()"
+        [class.is-disabled]="!canPass()"
         (click)="onPassClick()">
         {{ labels.pass }}
       </button>
       @for (action of actions; track action) {
         <button
           class="b-action"
-          [ngClass]="{
-            'is-active': isValid ? isValid[action] : false,
-            'is-disabled': isValid ? !isValid[action] : true
-          }"
+          [class.is-active]="isValid ? isValid[action] : false"
+          [class.is-disabled]="isValid ? !isValid[action] : true"
           (click)="onActionClick(action)">
           {{ $any(labels)[action] }}
         </button>
@@ -70,8 +63,7 @@ import { BaronyAction } from "../barony-models";
         }
       }
     }
-  `,
-  imports: [NgClass]
+  `
 })
 export class BaronyActionsArea implements OnChanges {
   constructor() {}

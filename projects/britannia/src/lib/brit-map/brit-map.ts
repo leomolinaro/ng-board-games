@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import {
   ChangeDetectorRef,
   Component,
@@ -13,13 +12,7 @@ import {
   output
 } from "@angular/core";
 import { BgMapZoom, BgSvg } from "@leobg/commons";
-import {
-  BgTransformPipe,
-  NgLetDirective,
-  SimpleChanges,
-  arrayUtil,
-  downloadUtil
-} from "@leobg/commons/utils";
+import { BgTransformPipe, SimpleChanges, arrayUtil, downloadUtil } from "@leobg/commons/utils";
 import { TuiHint } from "@taiga-ui/core";
 import { BritAssetsService } from "../brit-assets.service";
 import {
@@ -103,7 +96,7 @@ const GRID_STEP = 20;
   selector: "brit-map",
   templateUrl: "./brit-map.html",
   styleUrls: ["./brit-map.scss"],
-  imports: [BgMapZoom, BgSvg, NgClass, NgLetDirective, BgTransformPipe, TuiHint]
+  imports: [BgMapZoom, BgSvg, BgTransformPipe, TuiHint]
 })
 export class BritMap implements OnChanges, OnInit {
   private mapService = inject(BritMapService);

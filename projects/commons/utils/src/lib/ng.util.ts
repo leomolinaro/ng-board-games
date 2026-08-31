@@ -1,15 +1,4 @@
-import {
-  Directive,
-  Injector,
-  Input,
-  OnDestroy,
-  OnInit,
-  ProviderToken,
-  TemplateRef,
-  ViewContainerRef,
-  inject,
-  runInInjectionContext
-} from "@angular/core";
+import { Injector, OnDestroy, ProviderToken, inject, runInInjectionContext } from "@angular/core";
 import {
   BehaviorSubject,
   EMPTY,
@@ -44,34 +33,6 @@ function rawBooleanSymbol(propName: string) {
 }
 function rawNumberSymbol(propName: string) {
   return Symbol(`__${propName}Raw`);
-}
-
-export interface NgLetContext<T> {
-  $implicit: T | null;
-  ngLet: T | null;
-}
-
-@Directive({
-  selector: "[ngLet]",
-  standalone: true
-})
-export class NgLetDirective<T> implements OnInit {
-  private vcr = inject(ViewContainerRef);
-  private templateRef = inject<TemplateRef<NgLetContext<T>>>(TemplateRef);
-
-  private context: NgLetContext<T> = {
-    $implicit: null,
-    ngLet: null
-  };
-
-  @Input()
-  set ngLet(value: T) {
-    this.context.$implicit = this.context.ngLet = value;
-  }
-
-  ngOnInit() {
-    this.vcr.createEmbeddedView(this.templateRef, this.context);
-  }
 }
 
 export type SimpleChanges<C> = {

@@ -1,9 +1,10 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
+import { TuiIcon } from "@taiga-ui/core";
 
 @Component({
   selector: "brit-units-selector",
+  imports: [TuiIcon],
   template: `
     <div class="brit-unit-selector-container">
       <img
@@ -17,30 +18,25 @@ import { SimpleChanges } from "@leobg/commons/utils";
       <div class="brit-unit-buttons">
         <button
           (click)="onIncrease()"
-          [ngClass]="{
-            'is-active': enableIncrease,
-            'is-disabled': !enableIncrease
-          }">
-          <i class="fa fa-caret-up"></i>
+          [class.is-active]="enableIncrease"
+          [class.is-disabled]="!enableIncrease">
+          <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
-          [ngClass]="{
-            'is-active': enableDecrease,
-            'is-disabled': !enableDecrease
-          }">
-          <i class="fa fa-caret-down"></i>
+          [class.is-active]="enableDecrease"
+          [class.is-disabled]="!enableDecrease">
+          <tui-icon icon="chevron-down" />
         </button>
       </div>
       <button
         class="brit-unit-confirm"
         (click)="onConfirm()">
-        <i class="fa fa-check"></i>
+        <tui-icon icon="check" />
       </button>
     </div>
   `,
-  styleUrls: ["./brit-units-selector.scss"],
-  imports: [NgClass]
+  styleUrls: ["./brit-units-selector.scss"]
 })
 export class BritUnitsSelector implements OnChanges {
   readonly number = input.required<number>();

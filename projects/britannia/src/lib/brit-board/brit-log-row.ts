@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, inject, input } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
@@ -38,11 +37,9 @@ type BritLogFragment =
   template: `
     <div
       class="brit-log"
-      [ngClass]="{
-        'brit-log-h0': log().type === 'setup' || log().type === 'round',
-        'brit-log-h1': log().type === 'nation-turn',
-        'brit-log-h2': log().type === 'phase'
-      }">
+      [class.brit-log-h0]="log().type === 'setup' || log().type === 'round'"
+      [class.brit-log-h1]="log().type === 'nation-turn'"
+      [class.brit-log-h2]="log().type === 'phase'">
       @for (fragment of fragments; track fragment) {
         @switch (fragment.type) {
           @case ("string") {
@@ -51,8 +48,8 @@ type BritLogFragment =
           @case ("area") {
             <span>{{ fragment.label }}</span>
           }
-          <!-- <a *ngSwitchCase="'player'" [ngClass]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
-          <a *ngSwitchCase="'land'" [ngClass]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
+          <!-- <a *ngSwitchCase="'player'" [class]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
+          <a *ngSwitchCase="'land'" [class]="'is-' + $any (fragment).land.type">{{ fragment.label }}</a>
           <a *ngSwitchCase="'pawn'">{{ fragment.label }}</a> -->
         }
       }
@@ -92,8 +89,7 @@ type BritLogFragment =
         }
       }
     `
-  ],
-  imports: [NgClass]
+  ]
 })
 export class BritLogRow implements OnChanges {
   private components = inject(BritComponentsService);

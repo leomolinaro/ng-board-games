@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import {
   Component,
   OnChanges,
@@ -34,7 +33,7 @@ interface BaronyResourceNode {
 
 @Component({
   selector: "barony-player-area",
-  imports: [NgClass, TuiIcon],
+  imports: [TuiIcon],
   templateUrl: "./barony-player-area.html",
   styleUrls: ["./barony-player-area.scss"]
 })

@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import {
   AfterViewInit,
   Component,
@@ -40,15 +39,7 @@ export interface BgRoomDialogOutput {
 
 @Component({
   selector: "bg-game-room-dialog",
-  imports: [
-    BgPlayerForm,
-    NgClass,
-    BgIfUserDirective,
-    TuiButton,
-    BgIfUserPipe,
-    BgTransformPipe,
-    TuiForm
-  ],
+  imports: [BgPlayerForm, BgIfUserDirective, TuiButton, BgIfUserPipe, BgTransformPipe, TuiForm],
   template: `
     <div tuiForm>
       <section class="players">
@@ -59,7 +50,7 @@ export interface BgRoomDialogOutput {
             (playerChange)="changePlayer($event, player.id)"
             [isOwner]="isOwner()"
             [isPlayer]="player.controller && (player.controller | bgIfUser)"
-            [ngClass]="player.id | bgTransform: roleToCssClass" />
+            [class]="player.id | bgTransform: roleToCssClass" />
         }
       </section>
       @if (optionsComponent) {

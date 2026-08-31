@@ -1,11 +1,10 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, input, output } from "@angular/core";
 import { SimpleChanges } from "@leobg/commons/utils";
 import { TuiIcon } from "@taiga-ui/core";
 
 @Component({
   selector: "barony-knights-selector",
-  imports: [NgClass, TuiIcon],
+  imports: [TuiIcon],
   template: `
     <div class="b-knights-selector-container">
       <div class="b-knights">
@@ -16,18 +15,14 @@ import { TuiIcon } from "@taiga-ui/core";
       <div class="b-knights-buttons">
         <button
           (click)="onIncrease()"
-          [ngClass]="{
-            'is-active': enableIncrease,
-            'is-disabled': !enableIncrease
-          }">
+          [class.is-active]="enableIncrease"
+          [class.is-disabled]="!enableIncrease">
           <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
-          [ngClass]="{
-            'is-active': enableDecrease,
-            'is-disabled': !enableDecrease
-          }">
+          [class.is-active]="enableDecrease"
+          [class.is-disabled]="!enableDecrease">
           <tui-icon icon="chevron-down" />
         </button>
       </div>

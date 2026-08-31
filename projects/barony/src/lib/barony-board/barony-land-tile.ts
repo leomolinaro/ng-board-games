@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, computed, input, output } from "@angular/core";
 import { Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
 import { Observable } from "rxjs";
@@ -27,10 +26,8 @@ interface BaronyPawnNode {
   template: `
     <svg:g
       class="b-land-tile"
-      [ngClass]="{
-        'is-active': active(),
-        'is-disabled': disabled()
-      }"
+      [class.is-active]="active()"
+      [class.is-disabled]="disabled()"
       (click)="onLandTileClick()">
       <svg:polygon
         class="b-land-tile-polygon"
@@ -116,7 +113,7 @@ interface BaronyPawnNode {
       }
     }
   `,
-  imports: [NgClass, BaronyLandCoordinatesPipe]
+  imports: [BaronyLandCoordinatesPipe]
 })
 export class BaronyLandComponent implements OnChanges {
   constructor() {}

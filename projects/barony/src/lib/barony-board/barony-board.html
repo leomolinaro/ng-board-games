@@ -73,25 +73,25 @@
       <div class="b-board-buttons">
         <button
           class="b-board-button"
-          [ngClass]="{ 'is-active': zoomFixed }"
+          [class.is-active]="zoomFixed"
           (click)="zoomFixed = !zoomFixed">
           <tui-icon icon="search" />
         </button>
         <button
           class="b-board-button"
-          [ngClass]="{ 'is-active': summaryFixed }"
+          [class.is-active]="summaryFixed"
           (click)="summaryFixed = !summaryFixed">
           <tui-icon icon="book-open" />
         </button>
         <button
           class="b-board-button"
-          [ngClass]="{ 'is-active': scoreboardFixed }"
+          [class.is-active]="scoreboardFixed"
           (click)="scoreboardFixed = !scoreboardFixed">
           <tui-icon icon="star" />
         </button>
         <button
           class="b-board-button"
-          [ngClass]="{ 'is-active': logsFixed }"
+          [class.is-active]="logsFixed"
           (click)="logsFixed = !logsFixed">
           <tui-icon icon="file-text" />
         </button>

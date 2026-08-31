@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, TrackByFunction, inject, input, output } from "@angular/core";
 import { BgMapZoomButtons } from "@leobg/commons";
 import { immutableUtil } from "@leobg/commons/utils";
@@ -26,15 +25,7 @@ import { BritUnitsSelectorSheet } from "./brit-units-selector-sheet";
   selector: "brit-board",
   templateUrl: "./brit-board.html",
   styleUrls: ["./brit-board.scss"],
-  imports: [
-    BritMap,
-    BritActionsComponent,
-    BritPlayerComponent,
-    BgMapZoomButtons,
-    BritLogs,
-    NgClass,
-    TuiIcon
-  ]
+  imports: [BritMap, BritActionsComponent, BritPlayerComponent, BgMapZoomButtons, BritLogs, TuiIcon]
 })
 export class BritBoardComponent {
   private readonly sheets = inject(TuiSheetDialogService);

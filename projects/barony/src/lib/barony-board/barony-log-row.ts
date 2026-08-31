@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, computed, inject, input } from "@angular/core";
 import { BaronyGameStore } from "../barony-game/barony-game.store";
 import {
@@ -38,23 +37,20 @@ type BaronyLogFragment =
 
 @Component({
   selector: "barony-log-row",
-  imports: [NgClass],
   template: `
     <div
       class="b-log"
-      [ngClass]="{
-        'b-log-title': log().type === 'setup' || log().type === 'turn'
-      }">
+      [class.b-log-title]="log().type === 'setup' || log().type === 'turn'">
       @for (fragment of fragments(); track fragment) {
         @switch (fragment.type) {
           @case ("string") {
             <span>{{ fragment.label }}</span>
           }
           @case ("player") {
-            <a [ngClass]="'is-' + $any(fragment).player.color">{{ fragment.label }}</a>
+            <a [class]="'is-' + $any(fragment).player.color">{{ fragment.label }}</a>
           }
           @case ("land") {
-            <a [ngClass]="'is-' + $any(fragment).land.type">{{ fragment.label }}</a>
+            <a [class]="'is-' + $any(fragment).land.type">{{ fragment.label }}</a>
           }
           @case ("pawn") {
             <a>{{ fragment.label }}</a>

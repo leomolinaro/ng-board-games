@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, OnChanges, SimpleChanges, input, output } from "@angular/core";
 
 @Component({
@@ -7,20 +6,16 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
     <div class="brit-actions">
       <button
         class="brit-action brit-cancel"
-        [ngClass]="{
-          'is-active': canCancel(),
-          'is-disabled': !canCancel()
-        }"
+        [class.is-active]="canCancel()"
+        [class.is-disabled]="!canCancel()"
         (click)="onCancelClick()">
         {{ labels.cancel }}
       </button>
       @if (!canConfirm()) {
         <button
           class="brit-action brit-pass"
-          [ngClass]="{
-            'is-active': canPass(),
-            'is-disabled': !canPass()
-          }"
+          [class.is-active]="canPass()"
+          [class.is-disabled]="!canPass()"
           (click)="onPassClick()">
           {{ labels.pass }}
         </button>
@@ -28,10 +23,8 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
       @if (canConfirm()) {
         <button
           class="brit-action brit-confirm"
-          [ngClass]="{
-            'is-active': canConfirm(),
-            'is-disabled': !canConfirm()
-          }"
+          [class.is-active]="canConfirm()"
+          [class.is-disabled]="!canConfirm()"
           (click)="onConfirmClick()">
           {{ labels.confirm }}
         </button>
@@ -39,10 +32,8 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
       <!-- <button
       *ngFor="let action of actions"
       class="brit-action"
-        [ngClass]="{
-          'is-active': isValid ? isValid[action] : false,
-          'is-disabled': isValid ? !isValid[action] : true
-        }"
+      [class.is-active]="isValid ? isValid[action] : false"
+      [class.is-disabled]="isValid ? !isValid[action] : true"
       (click)="onActionClick (action)">
       {{ labels[action] }}
     </button> -->
@@ -81,8 +72,7 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
         }
       }
     `
-  ],
-  imports: [NgClass]
+  ]
 })
 export class BritActionsComponent implements OnChanges {
   constructor() {}

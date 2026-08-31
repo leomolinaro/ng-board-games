@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import { Component, effect, inject, input, linkedSignal, output } from "@angular/core";
 import { BgDialogService, BgMapZoomButtons } from "@leobg/commons";
 import { TuiIcon } from "@taiga-ui/core";
@@ -33,7 +32,7 @@ import { BaronyScoreboard } from "./barony-scoreboard";
     BgMapZoomButtons,
     BaronyScoreboard,
     BaronyLogs,
-    NgClass,
+
     TuiIcon
   ],
   templateUrl: "./barony-board.html",

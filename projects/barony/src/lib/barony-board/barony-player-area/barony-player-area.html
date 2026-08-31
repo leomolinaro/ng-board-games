@@ -1,11 +1,9 @@
 <div
   [class]="'b-player-card ' + 'is-' + player().id"
-  [ngClass]="{
-    'is-current': currentPlayer(),
-    'is-ai': player().isAi,
-    'is-remote': player().isRemote,
-    'is-local': player().isLocal
-  }"
+  [class.is-current]="currentPlayer()"
+  [class.is-ai]="player().isAi"
+  [class.is-remote]="player().isRemote"
+  [class.is-local]="player().isLocal"
   (click)="onCardClick()">
   <div class="b-player-header">
     <tui-icon
@@ -27,30 +25,23 @@
   </div>
   <div class="b-player-content">
     @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
-      <div
-        class="b-player-pawn-image"
-        [ngClass]="{ 'is-active': pawnNode.active }"
-        (click)="onPawnClick(pawnNode)">
-        <img [src]="pawnNode.source" />
-      </div>
-    }
-    @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
-      <div
-        class="b-player-resource-image"
-        [ngClass]="{ 'is-active': resourceNode.active }"
-        (click)="onResourceClick(resourceNode)">
-        <img [src]="resourceNode.source" />
-      </div>
-    }
-    @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
-      <div class="b-player-pawn-quantity">
-        {{ $any(player().pawns)[pawnNode.type] }}
-      </div>
-    }
-    @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
-      <div class="b-player-resource-quantity">
-        {{ resourceNode.quantity }}
-      </div>
+    <div
+      class="b-player-pawn-image"
+      [class.is-active]="pawnNode.active"
+      (click)="onPawnClick(pawnNode)">
+      <img [src]="pawnNode.source" />
+    </div>
+    } @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
+    <div
+      class="b-player-resource-image"
+      [class.is-active]="resourceNode.active"
+      (click)="onResourceClick(resourceNode)">
+      <img [src]="resourceNode.source" />
+    </div>
+    } @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
+    <div class="b-player-pawn-quantity">{{ $any(player().pawns)[pawnNode.type] }}</div>
+    } @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
+    <div class="b-player-resource-quantity">{{ resourceNode.quantity }}</div>
     }
   </div>
 </div>

@@ -1,4 +1,3 @@
-import { NgClass } from "@angular/common";
 import {
   Component,
   OnInit,
@@ -9,7 +8,7 @@ import {
   output
 } from "@angular/core";
 import { BgAuthService } from "@leobg/commons";
-import { TuiHint } from "@taiga-ui/core";
+import { TuiHint, TuiIcon } from "@taiga-ui/core";
 import { BritAssetsService } from "../brit-assets.service";
 import { BritNation, BritNationId } from "../brit-components.models";
 import { BritComponentsService } from "../brit-components.service";
@@ -38,30 +37,31 @@ interface BritNationNode {
 
 @Component({
   selector: "brit-player",
+  imports: [TuiHint, TuiIcon],
   template: `
     <div
       [class]="'brit-player-card ' + 'is-' + player().id"
-      [ngClass]="{
-        'is-current': currentPlayer(),
-        'is-ai': player().isAi,
-        'is-remote': player().isRemote,
-        'is-local': player().isLocal
-      }"
+      [class.is-active]="currentPlayer()"
+      [class.is-ai]="player().isAi"
+      [class.is-remote]="player().isRemote"
+      [class.is-local]="player().isLocal"
       (click)="onCardClick()">
       <div class="brit-player-header">
-        <i
-          class="brit-player-type-icon fa"
-          [ngClass]="
+        <tui-icon
+          class="brit-player-type-icon"
+          [icon]="
             player().isAi
-              ? 'fa-desktop'
+              ? 'monitor'
               : player().isRemote
-                ? 'fa-globe'
+                ? 'globe'
                 : currentPlayer()
-                  ? 'fa-user'
-                  : 'fa-user-o'
-          "></i>
+                  ? 'user-round-check'
+                  : 'user-round'
+          " />
         <div class="brit-player-name">{{ player().name }}</div>
-        <i class="brit-player-score-icon fa fa-star"></i>
+        <tui-icon
+          icon="star"
+          class="brit-player-score-icon"></tui-icon>
         <div class="brit-player-score">{{ player().score }}</div>
       </div>
       <div class="brit-player-content">
@@ -78,12 +78,12 @@ interface BritNationNode {
 
         <!-- <div *ngFor="let pawnNode of pawnNodes; trackBy: pawnTrackBy"
     class="brit-player-pawn-image"
-    [ngClass]="{ 'is-active': pawnNode.active }"
+    [class.is-active]="pawnNode.active"
     (click)="onPawnClick (pawnNode)">
     <img [src]="pawnNode.source">
   </div> -->
         <!-- <div *ngFor="let resourceNode of resourceNodes; trackBy: resourceTrackBy" class="brit-player-resource-image"
-  [ngClass]="{ 'is-active': resourceNode.active }"
+  [class.is-active]="resourceNode.active"
   (click)="onResourceClick (resourceNode)">
   <img [src]="resourceNode.source">
 </div>
@@ -96,8 +96,7 @@ interface BritNationNode {
       </div>
     </div>
   `,
-  styleUrls: ["./brit-player-area.scss"],
-  imports: [NgClass, TuiHint]
+  styleUrls: ["./brit-player-area.scss"]
 })
 export class BritPlayerComponent implements OnInit {
   private authService = inject(BgAuthService);
