@@ -1,18 +1,26 @@
-import { Injectable } from "@angular/core";
-import { WotrModifier } from "../commons/wotr-modifier";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRecruitmentConstraints } from "./wotr-unit-handler";
-import { WotrArmy } from "./wotr-unit-models";
+import { Injectable } from '@angular/core';
+import { WotrModifier } from '../commons/wotr-modifier';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
+import { WotrRecruitmentConstraints } from './wotr-unit-handler';
+import { WotrArmy } from './wotr-unit-models';
 
-export type WotrLeaderModifier = (unitType: WotrArmyUnitType, nationId: WotrNationId) => boolean;
+export type WotrLeaderModifier = (
+  unitType: WotrArmyUnitType,
+  nationId: WotrNationId,
+) => boolean;
 export type WotrCanMoveIntoRegionModifier = (
   regionId: WotrRegionId,
-  frontId: WotrFrontId
+  frontId: WotrFrontId,
 ) => boolean;
-export type WotrCanAttackRegionModifier = (regionId: WotrRegionId, frontId: WotrFrontId) => boolean;
-export type WotrRecruitmentConstraintsModifier = (constraints: WotrRecruitmentConstraints) => void;
+export type WotrCanAttackRegionModifier = (
+  regionId: WotrRegionId,
+  frontId: WotrFrontId,
+) => boolean;
+export type WotrRecruitmentConstraintsModifier = (
+  constraints: WotrRecruitmentConstraints,
+) => void;
 
 @Injectable()
 export class WotrUnitModifiers {
@@ -20,29 +28,37 @@ export class WotrUnitModifiers {
 
   nLeaders(army: WotrArmy): number {
     let nLeaders = 0;
-    army.regulars?.forEach(unit => {
-      if (this.isLeader("regular", unit.nation)) nLeaders += unit.quantity;
+    army.regulars?.forEach((unit) => {
+      if (this.isLeader('regular', unit.nation)) nLeaders += unit.quantity;
     });
-    army.elites?.forEach(unit => {
-      if (this.isLeader("elite", unit.nation)) nLeaders += unit.quantity;
+    army.elites?.forEach((unit) => {
+      if (this.isLeader('elite', unit.nation)) nLeaders += unit.quantity;
     });
     return nLeaders;
   }
 
   isLeader(unitType: WotrArmyUnitType, nationId: WotrNationId): boolean {
-    return this.leaderModifier.get().some(modifier => modifier(unitType, nationId));
+    return this.leaderModifier
+      .get()
+      .some((modifier) => modifier(unitType, nationId));
   }
 
-  public readonly canMoveIntoRegionModifier = new WotrModifier<WotrCanMoveIntoRegionModifier>();
+  public readonly canMoveIntoRegionModifier =
+    new WotrModifier<WotrCanMoveIntoRegionModifier>();
 
   canMoveIntoRegion(regionId: WotrRegionId, frontId: WotrFrontId): boolean {
-    return this.canMoveIntoRegionModifier.get().every(modifier => modifier(regionId, frontId));
+    return this.canMoveIntoRegionModifier
+      .get()
+      .every((modifier) => modifier(regionId, frontId));
   }
 
-  public readonly canAttackRegionModifier = new WotrModifier<WotrCanAttackRegionModifier>();
+  public readonly canAttackRegionModifier =
+    new WotrModifier<WotrCanAttackRegionModifier>();
 
   canAttackRegion(regionId: WotrRegionId, frontId: WotrFrontId): boolean {
-    return this.canAttackRegionModifier.get().every(modifier => modifier(regionId, frontId));
+    return this.canAttackRegionModifier
+      .get()
+      .every((modifier) => modifier(regionId, frontId));
   }
 
   public readonly recruitmentConstraintsModifier =

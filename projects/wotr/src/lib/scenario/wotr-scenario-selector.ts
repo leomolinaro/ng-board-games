@@ -1,13 +1,13 @@
-import { Component, inject } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { injectDialogContext } from "@leobg/commons";
-import { type TuiHandler } from "@taiga-ui/cdk";
-import { TuiTree, TuiTreeItem } from "@taiga-ui/kit";
-import { WotrScenarioGroupInfo, WotrScenarioInfo } from "./wotr-scenario";
-import { WotrScenarios } from "./wotr-scenarios";
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { injectDialogContext } from '@leobg/commons';
+import { type TuiHandler } from '@taiga-ui/cdk';
+import { TuiTree, TuiTreeItem } from '@taiga-ui/kit';
+import { WotrScenarioGroupInfo, WotrScenarioInfo } from './wotr-scenario';
+import { WotrScenarios } from './wotr-scenarios';
 
 @Component({
-  selector: "wotr-scenario-selector-dialog",
+  selector: 'wotr-scenario-selector-dialog',
   imports: [TuiTree],
   template: `
     <div class="scenario-tree-container">
@@ -16,22 +16,25 @@ import { WotrScenarios } from "./wotr-scenarios";
           [value]="scenarioGroup"
           [childrenHandler]="handler"
           [content]="content"
-          [tuiTreeController]="true" />
+          [tuiTreeController]="true"
+        />
       }
     </div>
     <ng-template
       #content
       let-node="node"
-      let-value>
+      let-value
+    >
       <div
         class="scenario-node"
         [class.scenario-group]="value.type === 'group'"
         [class.scenario]="value.type === 'scenario'"
         [style.--node-level]="node.level"
-        (click)="onNodeClick(node, value)">
+        (click)="onNodeClick(node, value)"
+      >
         <div class="scenario-content">
           <div class="scenario-name">{{ value.name }}</div>
-          @if (value.description && value.type === "scenario") {
+          @if (value.description && value.type === 'scenario') {
             <div class="scenario-description">{{ value.description }}</div>
           }
         </div>
@@ -55,8 +58,8 @@ import { WotrScenarios } from "./wotr-scenarios";
       .scenario-description {
         font-size: 80%;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrScenarioSelectorDialog {
   context = injectDialogContext();
@@ -65,14 +68,17 @@ export class WotrScenarioSelectorDialog {
   protected readonly handler: TuiHandler<
     WotrScenarioGroupInfo,
     readonly (WotrScenarioGroupInfo | WotrScenarioInfo)[]
-  > = item => item.scenarios || [];
+  > = (item) => item.scenarios || [];
 
   private activatedRoute = inject(ActivatedRoute);
 
   protected scenarioInfos = this.scenarios.getScenarioInfos();
 
-  protected onNodeClick(node: TuiTreeItem, value: WotrScenarioGroupInfo | WotrScenarioInfo) {
-    if ("scenarios" in value) {
+  protected onNodeClick(
+    node: TuiTreeItem,
+    value: WotrScenarioGroupInfo | WotrScenarioInfo,
+  ) {
+    if ('scenarios' in value) {
       (node as any).controller.toggle(node);
     } else {
       this.onGameClick(value);
@@ -81,6 +87,8 @@ export class WotrScenarioSelectorDialog {
   }
 
   protected onGameClick(info: WotrScenarioInfo) {
-    this.router.navigate(["scenario", info.id], { relativeTo: this.activatedRoute });
+    this.router.navigate(['scenario', info.id], {
+      relativeTo: this.activatedRoute,
+    });
   }
 }

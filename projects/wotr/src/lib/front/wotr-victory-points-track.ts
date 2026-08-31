@@ -1,6 +1,6 @@
-import { Component, Signal, computed, inject, input } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFront, WotrFrontId } from "./wotr-front-models";
+import { Component, Signal, computed, inject, input } from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrFront, WotrFrontId } from './wotr-front-models';
 
 interface WotrVictoryMarkerNode {
   id: WotrFrontId;
@@ -15,17 +15,21 @@ const Y0 = 819;
 const OFFSET = 5;
 
 @Component({
-  selector: "[wotrVictoryPointsTrack]",
+  selector: '[wotrVictoryPointsTrack]',
   imports: [],
   template: `
-    @for (victoryMarkerNode of victoryMarkerNodes(); track victoryMarkerNode.id) {
+    @for (
+      victoryMarkerNode of victoryMarkerNodes();
+      track victoryMarkerNode.id
+    ) {
       <svg:image
         transform="scale(0.8, 0.8)"
         [attr.x]="victoryMarkerNode.svgX"
         [attr.y]="victoryMarkerNode.svgY"
-        [attr.xlink:href]="victoryMarkerNode.image" />
+        [attr.xlink:href]="victoryMarkerNode.image"
+      />
     }
-  `
+  `,
 })
 export class WotrVictoryPointsTrack {
   fronts = input.required<WotrFront[]>();
@@ -46,9 +50,12 @@ export class WotrVictoryPointsTrack {
         image: this.assets.victoryMarker(front.id, front.victoryPoints),
         svgX:
           X0 +
-          (front.victoryPoints > 10 ? front.victoryPoints - 10 : front.victoryPoints) * XSTEP +
+          (front.victoryPoints > 10
+            ? front.victoryPoints - 10
+            : front.victoryPoints) *
+            XSTEP +
           frontOffset,
-        svgY: Y0 + frontOffset
+        svgY: Y0 + frontOffset,
       };
     });
   });

@@ -1,66 +1,69 @@
-import { Component, OnDestroy, OnInit, inject, input } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { BgAuthService, BgDialogService, type BgUser } from "@leobg/commons";
-import { UntilDestroy } from "@leobg/commons/utils";
-import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
-import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { actionDieProviders } from "../action-die/wotr-action-die.providers";
-import { WotrBattleHandler } from "../battle/wotr-battle-handler";
-import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
-import { battleProviders } from "../battle/wotr-battle.providers";
-import { WotrCards } from "../card/cards/wotr-cards";
-import { WotrCardHandler } from "../card/wotr-card-handler";
-import { WotrCardStoryHandler } from "../card/wotr-card-story-handler";
-import { cardProviders } from "../card/wotr-card.providers";
-import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCharacterModifiers } from "../character/wotr-character-modifiers";
-import { characterProviders } from "../character/wotr-character.providers";
-import { WotrCharacters } from "../character/wotr-characters";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { commonsProviders } from "../commons/wotr-commons.providers";
-import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
-import { WotrFellowshipModifiers } from "../fellowship/wotr-fellowship-modifiers";
-import { fellowshipProviders } from "../fellowship/wotr-fellowship.providers";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
-import { frontProviders } from "../front/wotr-front.providers";
-import { WotrGameFlow } from "../game-turn/wotr-game-flow";
-import { gameTurnProviders } from "../game-turn/wotr-game-turn.providers";
-import { WotrHuntHandler } from "../hunt/wotr-hunt-handler";
-import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
-import { huntProviders } from "../hunt/wotr-hunt.providers";
-import { logProviders } from "../log/wotr-log.providers";
-import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrNationModifiers } from "../nation/wotr-nation-modifiers";
-import { nationProviders } from "../nation/wotr-nation.providers";
-import { AWotrPlayerInfo, WotrPlayerInfo } from "../player/wotr-player-info-models";
-import { WotrPlayerUi } from "../player/wotr-player-ui";
-import { playerProviders } from "../player/wotr-player.providers";
-import { WotrRegionHandler } from "../region/wotr-region-handler";
-import { regionProviders } from "../region/wotr-region.providers";
-import { WotrRemoteService } from "../remote/wotr-remote";
-import { WotrPlayerDoc } from "../remote/wotr-remote-models";
-import { scenarioProviders } from "../scenario/wotr-scenario-providers";
-import { setupProviders } from "../setup/wotr-setup.providers";
-import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { unitProviders } from "../unit/wotr-unit.providers";
-import { WotrMapSlotsGenerator } from "./board/map/wotr-map-slots-generator";
-import { WotrBoard } from "./board/wotr-board";
-import { WotrGameConfig } from "./wotr-game-config";
-import { WotrGameQuery } from "./wotr-game-query";
-import { WotrGameStore } from "./wotr-game-store";
-import { WotrGameUi } from "./wotr-game-ui";
-import { WotrGameUiContext } from "./wotr-game-ui-context";
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BgAuthService, BgDialogService, type BgUser } from '@leobg/commons';
+import { UntilDestroy } from '@leobg/commons/utils';
+import { WotrActionDieHandler } from '../action-die/wotr-action-die-handler';
+import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
+import { actionDieProviders } from '../action-die/wotr-action-die.providers';
+import { WotrBattleHandler } from '../battle/wotr-battle-handler';
+import { WotrBattleModifiers } from '../battle/wotr-battle-modifiers';
+import { battleProviders } from '../battle/wotr-battle.providers';
+import { WotrCards } from '../card/cards/wotr-cards';
+import { WotrCardHandler } from '../card/wotr-card-handler';
+import { WotrCardStoryHandler } from '../card/wotr-card-story-handler';
+import { cardProviders } from '../card/wotr-card.providers';
+import { WotrCharacterHandler } from '../character/wotr-character-handler';
+import { WotrCharacterModifiers } from '../character/wotr-character-modifiers';
+import { characterProviders } from '../character/wotr-character.providers';
+import { WotrCharacters } from '../character/wotr-characters';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { commonsProviders } from '../commons/wotr-commons.providers';
+import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
+import { WotrFellowshipModifiers } from '../fellowship/wotr-fellowship-modifiers';
+import { fellowshipProviders } from '../fellowship/wotr-fellowship.providers';
+import { WotrFrontHandler } from '../front/wotr-front-handler';
+import { frontProviders } from '../front/wotr-front.providers';
+import { WotrGameFlow } from '../game-turn/wotr-game-flow';
+import { gameTurnProviders } from '../game-turn/wotr-game-turn.providers';
+import { WotrHuntHandler } from '../hunt/wotr-hunt-handler';
+import { WotrHuntModifiers } from '../hunt/wotr-hunt-modifiers';
+import { huntProviders } from '../hunt/wotr-hunt.providers';
+import { logProviders } from '../log/wotr-log.providers';
+import { WotrNationHandler } from '../nation/wotr-nation-handler';
+import { WotrNationModifiers } from '../nation/wotr-nation-modifiers';
+import { nationProviders } from '../nation/wotr-nation.providers';
+import {
+  AWotrPlayerInfo,
+  WotrPlayerInfo,
+} from '../player/wotr-player-info-models';
+import { WotrPlayerUi } from '../player/wotr-player-ui';
+import { playerProviders } from '../player/wotr-player.providers';
+import { WotrRegionHandler } from '../region/wotr-region-handler';
+import { regionProviders } from '../region/wotr-region.providers';
+import { WotrRemoteService } from '../remote/wotr-remote';
+import { WotrPlayerDoc } from '../remote/wotr-remote-models';
+import { scenarioProviders } from '../scenario/wotr-scenario-providers';
+import { setupProviders } from '../setup/wotr-setup.providers';
+import { WotrUnitHandler } from '../unit/wotr-unit-handler';
+import { WotrUnitModifiers } from '../unit/wotr-unit-modifiers';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
+import { unitProviders } from '../unit/wotr-unit.providers';
+import { WotrMapSlotsGenerator } from './board/map/wotr-map-slots-generator';
+import { WotrBoard } from './board/wotr-board';
+import { WotrGameConfig } from './wotr-game-config';
+import { WotrGameQuery } from './wotr-game-query';
+import { WotrGameStore } from './wotr-game-store';
+import { WotrGameUi } from './wotr-game-ui';
+import { WotrGameUiContext } from './wotr-game-ui-context';
 import {
   WotrStoriesDialog,
   WotrStoriesDialogData,
-  WotrStoriesDialogRef
-} from "./wotr-stories-dialog";
-import { WotrStoryService } from "./wotr-story-service";
+  WotrStoriesDialogRef,
+} from './wotr-stories-dialog';
+import { WotrStoryService } from './wotr-story-service';
 
 @Component({
-  selector: "wotr-game-page",
+  selector: 'wotr-game-page',
   imports: [WotrBoard],
   template: `
     <wotr-board
@@ -68,7 +71,8 @@ import { WotrStoryService } from "./wotr-story-service";
       (replayModeChange)="reloadPage(true)"
       (editStories)="editStories()"
       (replayNext)="story.nextReplay($event)"
-      (replayLast)="reloadPage(false)">
+      (replayLast)="reloadPage(false)"
+    >
     </wotr-board>
   `,
   providers: [
@@ -94,8 +98,8 @@ import { WotrStoryService } from "./wotr-story-service";
     ...regionProviders,
     ...setupProviders,
     ...scenarioProviders,
-    ...unitProviders
-  ]
+    ...unitProviders,
+  ],
 })
 @UntilDestroy
 export class WotrGamePage implements OnInit, OnDestroy {
@@ -145,24 +149,28 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.huntHandler.characters = this.characterAbilities;
   }
 
-  private gameId: string = this.route.snapshot.paramMap.get("gameId")!;
-  protected replayMode = this.route.snapshot.queryParamMap?.get("replay") === "true";
+  private gameId: string = this.route.snapshot.paramMap.get('gameId')!;
+  protected replayMode =
+    this.route.snapshot.queryParamMap?.get('replay') === 'true';
 
   gameConfig = input<WotrGameConfig>();
 
   async ngOnInit() {
     const [game, players, stories] = await Promise.all([
       this.remote.getGame(this.gameId),
-      this.remote.getPlayers(this.gameId, ref => ref.orderBy("sort")),
-      this.remote.getStories(this.gameId, ref => ref.orderBy("time").orderBy("playerId"))
+      this.remote.getPlayers(this.gameId, (ref) => ref.orderBy('sort')),
+      this.remote.getStories(this.gameId, (ref) =>
+        ref.orderBy('time').orderBy('playerId'),
+      ),
     ]);
     if (game) {
       const user = this.auth.getUser();
       this.store.initGameState(
-        players.map(p => this.playerDocToPlayerInfo(p, user)),
+        players.map((p) => this.playerDocToPlayerInfo(p, user)),
         this.gameId,
         game.owner,
-        this.gameConfig()?.options ?? game.options ?? { expansions: [], variants: [], tokens: [] }
+        this.gameConfig()?.options ??
+          game.options ?? { expansions: [], variants: [], tokens: [] },
       );
       if (this.replayMode) {
         this.story.setReplayMode(true);
@@ -177,13 +185,16 @@ export class WotrGamePage implements OnInit, OnDestroy {
     }
   }
 
-  private playerDocToPlayerInfo(playerDoc: WotrPlayerDoc, user: BgUser): WotrPlayerInfo {
+  private playerDocToPlayerInfo(
+    playerDoc: WotrPlayerDoc,
+    user: BgUser,
+  ): WotrPlayerInfo {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInfo(playerDoc),
         isAi: true,
         isLocal: false,
-        isRemote: false
+        isRemote: false,
       };
     } else {
       return {
@@ -191,7 +202,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
         isAi: false,
         controller: playerDoc.controller,
         isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id
+        isRemote: user.id !== playerDoc.controller.id,
       };
     }
   }
@@ -199,7 +210,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private playerDocToAPlayerInfo(playerDoc: WotrPlayerDoc): AWotrPlayerInfo {
     return {
       id: playerDoc.id,
-      name: playerDoc.name
+      name: playerDoc.name,
     };
   }
 
@@ -222,9 +233,9 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.dialogs
       .open<WotrStoriesDialogData, void>(WotrStoriesDialog, {
         data: {
-          gameId: this.gameId
+          gameId: this.gameId,
         },
-        size: "l"
+        size: 'l',
       })
       .then();
   }
@@ -233,7 +244,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: replay ? { replay } : {},
-      queryParamsHandling: "replace"
+      queryParamsHandling: 'replace',
     });
     setTimeout(() => location.reload());
   }

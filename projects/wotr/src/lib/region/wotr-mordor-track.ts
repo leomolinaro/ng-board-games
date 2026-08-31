@@ -1,6 +1,6 @@
-import { Component, computed, inject, input } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
+import { Component, computed, inject, input } from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrFellowship } from '../fellowship/wotr-fellowship-models';
 
 const MORDOR_TRACK_ATTR_X = {
   0: 1046,
@@ -8,7 +8,7 @@ const MORDOR_TRACK_ATTR_X = {
   2: 1123,
   3: 1115,
   4: 1079,
-  5: 1038
+  5: 1038,
 };
 
 const MORDOR_TRACK_ATTR_Y = {
@@ -17,11 +17,11 @@ const MORDOR_TRACK_ATTR_Y = {
   2: 599,
   3: 557,
   4: 537,
-  5: 548
+  5: 548,
 };
 
 @Component({
-  selector: "[wotrMordorTrack]",
+  selector: '[wotrMordorTrack]',
   template: `
     <svg:g>
       <svg:image
@@ -30,20 +30,23 @@ const MORDOR_TRACK_ATTR_Y = {
         [attr.x]="attrX()"
         [attr.y]="attrY()"
         transform="scale(0.8, 0.8)"
-        [attr.xlink:href]="image().source" />
+        [attr.xlink:href]="image().source"
+      />
     </svg:g>
-  `
+  `,
 })
 export class WotrMordorTrack {
   private assets = inject(WotrAssetsStore);
 
   fellowship = input.required<WotrFellowship>();
 
-  private revealed = computed(() => this.fellowship().status === "revealed");
+  private revealed = computed(() => this.fellowship().status === 'revealed');
   private mordorTrack = computed(() => this.fellowship().mordorTrack!);
-  protected image = computed(() => this.assets.fellowshipImage(this.revealed()));
+  protected image = computed(() =>
+    this.assets.fellowshipImage(this.revealed()),
+  );
   protected attrX = computed(() => MORDOR_TRACK_ATTR_X[this.mordorTrack()]);
   protected attrY = computed(
-    () => MORDOR_TRACK_ATTR_Y[this.mordorTrack()] + (this.revealed() ? 0 : 16)
+    () => MORDOR_TRACK_ATTR_Y[this.mordorTrack()] + (this.revealed() ? 0 : 16),
   );
 }

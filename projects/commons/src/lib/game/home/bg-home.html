@@ -5,7 +5,8 @@
     tuiIconButton
     type="button"
     iconStart="layout-grid"
-    [routerLink]="['/']"></a>
+    [routerLink]="['/']"
+  ></a>
   <span tuiTitle>{{ config().boardGameName }}</span>
   <hr />
   <bg-account-button></bg-account-button>
@@ -18,7 +19,8 @@
     <table
       tuiTable
       size="m"
-      [style.width.rem]="58">
+      [style.width.rem]="58"
+    >
       <tbody tuiTbody>
         @for (game of protoGames$ | async; track game.id) {
         <tr>
@@ -30,7 +32,8 @@
                 size="xs"
                 tuiIconButton
                 type="button"
-                (click)="enterGame(game)">
+                (click)="enterGame(game)"
+              >
                 Play
               </button>
             </span>
@@ -42,13 +45,16 @@
           </td>
           <td tuiTd>
             @let stateDecoded = game.state | bgTransform: stateDecode;
-            <span [tuiStatus]="stateDecoded.color">{{ stateDecoded.label }}</span>
+            <span [tuiStatus]="stateDecoded.color"
+              >{{ stateDecoded.label }}</span
+            >
           </td>
           <td tuiTd>
             <div tuiCell="m">
               <div
                 [style.background]="game.owner.displayName | tuiAutoColor"
-                [tuiAvatar]="game.owner.displayName | tuiInitials"></div>
+                [tuiAvatar]="game.owner.displayName | tuiInitials"
+              ></div>
               <span tuiTitle>
                 {{ game.owner.displayName }}
                 <span tuiSubtitle>{{ game.owner.email }}</span>
@@ -57,7 +63,8 @@
           </td>
           <td
             tuiTd
-            *bgIfUser="game.owner">
+            *bgIfUser="game.owner"
+          >
             <span tuiStatus>
               <button
                 appearance="action-destructive"
@@ -65,7 +72,8 @@
                 size="xs"
                 tuiIconButton
                 type="button"
-                (click)="deleteGame(game)">
+                (click)="deleteGame(game)"
+              >
                 Delete
               </button>
             </span>
@@ -84,7 +92,8 @@
     type="button"
     color="primary"
     [icon]="action.icon"
-    (click)="action.action()">
+    (click)="action.action()"
+  >
     {{ action.label }}
   </button>
   }
@@ -93,7 +102,8 @@
     type="button"
     color="primary"
     icon="@tui.plus"
-    (click)="openNewGameDialog()">
+    (click)="openNewGameDialog()"
+  >
     New Game
   </button>
 </nav>

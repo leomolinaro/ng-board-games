@@ -1,6 +1,12 @@
-import { Component, computed, inject, Injector, isDevMode } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  Component,
+  computed,
+  inject,
+  Injector,
+  isDevMode,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   BgAuthService,
   BgDialogService,
@@ -9,36 +15,37 @@ import {
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
-  BgUser
-} from "@leobg/commons";
-import { concatJoin } from "@leobg/commons/utils";
-import { forkJoin, from, Observable } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameOptions } from "../game/options/wotr-game-options";
-import { WotrGameOptionsFormComponent } from "../game/options/wotr-game-options-form";
-import { WotrRemoteService } from "../remote/wotr-remote";
+  BgUser,
+} from '@leobg/commons';
+import { concatJoin } from '@leobg/commons/utils';
+import { forkJoin, from, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameOptions } from '../game/options/wotr-game-options';
+import { WotrGameOptionsFormComponent } from '../game/options/wotr-game-options-form';
+import { WotrRemoteService } from '../remote/wotr-remote';
 import {
   AWotrPlayerDoc,
   WotrAiPlayerDoc,
   WotrGameDoc,
   WotrPlayerDoc,
-  WotrReadPlayerDoc
-} from "../remote/wotr-remote-models";
-import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
+  WotrReadPlayerDoc,
+} from '../remote/wotr-remote-models';
+import { WotrScenarioSelectorDialog } from '../scenario/wotr-scenario-selector';
 
 @Component({
-  selector: "wotr-home-page",
+  selector: 'wotr-home-page',
   imports: [BgHome],
   template: `
     <bg-home
       [config]="config"
-      [actions]="devMode && isAdmin() ? [scenarioAction] : []">
+      [actions]="devMode && isAdmin() ? [scenarioAction] : []"
+    >
     </bg-home>
   `,
   styles: [
     `
-      @use "wotr-variables" as *;
+      @use 'wotr-variables' as *;
 
       ::ng-deep {
         .wotr-player-free-peoples {
@@ -53,8 +60,8 @@ import { WotrScenarioSelectorDialog } from "../scenario/wotr-scenario-selector";
         bottom: 50px;
         left: 50px;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrHomePage {
   private router = inject(Router);
@@ -64,50 +71,64 @@ export class WotrHomePage {
   protected devMode = isDevMode();
 
   protected config: BgHomeConfig<WotrFrontId, WotrGameOptions> = {
-    boardGame: "wotr",
-    boardGameName: "War of the Ring (2nd Edition)",
+    boardGame: 'wotr',
+    boardGameName: 'War of the Ring (2nd Edition)',
     startGame$: (gameId: string) =>
-      from(this.router.navigate(["game", gameId], { relativeTo: this.activatedRoute })),
+      from(
+        this.router.navigate(['game', gameId], {
+          relativeTo: this.activatedRoute,
+        }),
+      ),
     deleteGame$: (gameId: string) =>
       concatJoin([
         this.remote.deleteStories$(gameId),
         this.remote.deletePlayers$(gameId),
-        this.remote.deleteGame$(gameId)
+        this.remote.deleteGame$(gameId),
       ]),
-    createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
-    playerIds: () => ["free-peoples", "shadow"],
+    createGame$: (protoGame, protoPlayers) =>
+      this.createGame$(protoGame, protoPlayers),
+    playerIds: () => ['free-peoples', 'shadow'],
     playerIdCssClass: (front: WotrFrontId) => {
       switch (front) {
-        case "free-peoples":
-          return "wotr-player-free-peoples";
-        case "shadow":
-          return "wotr-player-shadow";
+        case 'free-peoples':
+          return 'wotr-player-free-peoples';
+        case 'shadow':
+          return 'wotr-player-shadow';
       }
     },
-    optionsComponent: () => WotrGameOptionsFormComponent
+    optionsComponent: () => WotrGameOptionsFormComponent,
   };
 
-  private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<WotrFrontId>[]) {
+  private createGame$(
+    protoGame: BgProtoGame,
+    protoPlayers: BgProtoPlayer<WotrFrontId>[],
+  ) {
     const game: WotrGameDoc = {
       id: protoGame.id,
       owner: protoGame.owner,
       name: protoGame.name,
       online: protoGame.online,
-      state: "open"
+      state: 'open',
     };
     if (protoGame.options) game.options = protoGame.options as WotrGameOptions;
     return this.remote.insertGame$(game).pipe(
       switchMap(({ id }) =>
         forkJoin([
           ...protoPlayers.map((p, index) => {
-            if (p.type === "ai") {
+            if (p.type === 'ai') {
               return this.insertAiPlayer$(p.name, p.id, index + 1, id);
             } else {
-              return this.insertRealPlayer$(p.name, p.id, index + 1, p.controller!, id);
+              return this.insertRealPlayer$(
+                p.name,
+                p.id,
+                index + 1,
+                p.controller!,
+                id,
+              );
             }
-          })
-        ])
-      )
+          }),
+        ]),
+      ),
     );
   }
 
@@ -115,11 +136,11 @@ export class WotrHomePage {
     name: string,
     front: WotrFrontId,
     sort: number,
-    gameId: string
+    gameId: string,
   ): Observable<WotrPlayerDoc> {
     const player: WotrAiPlayerDoc = {
       ...this.aPlayerDoc(name, front, sort),
-      isAi: true
+      isAi: true,
     };
     return this.remote.insertPlayer$(player, gameId);
   }
@@ -129,37 +150,43 @@ export class WotrHomePage {
     front: WotrFrontId,
     sort: number,
     controller: BgUser,
-    gameId: string
+    gameId: string,
   ): Observable<WotrPlayerDoc> {
     const player: WotrReadPlayerDoc = {
       ...this.aPlayerDoc(name, front, sort),
       isAi: false,
-      controller: controller
+      controller: controller,
     };
     return this.remote.insertPlayer$(player, gameId);
   }
 
-  private aPlayerDoc(name: string, front: WotrFrontId, sort: number): AWotrPlayerDoc {
+  private aPlayerDoc(
+    name: string,
+    front: WotrFrontId,
+    sort: number,
+  ): AWotrPlayerDoc {
     return { name: name, id: front, sort: sort };
   }
 
   private auth = inject(BgAuthService);
   protected user = toSignal(this.auth.getUser$());
-  protected isAdmin = computed(() => this.user()?.email === "rhapsody.leo@gmail.com");
+  protected isAdmin = computed(
+    () => this.user()?.email === 'rhapsody.leo@gmail.com',
+  );
   private readonly dialogs = inject(BgDialogService);
   private injector = inject(Injector);
 
   protected scenarioAction: BgHomeAction = {
-    id: "scenario",
-    label: "Scenario",
+    id: 'scenario',
+    label: 'Scenario',
     action: () => {
       this.dialogs
         .open(WotrScenarioSelectorDialog, {
           injector: this.injector,
-          size: "l"
+          size: 'l',
         })
         .then();
     },
-    icon: "@tui.bookmark"
+    icon: '@tui.bookmark',
   };
 }

@@ -1,1 +1,1 @@
-export * from "./lib/agot.routes";
+export * from './lib/agot.routes';

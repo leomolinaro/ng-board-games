@@ -1,15 +1,18 @@
-import { Component, computed, inject } from "@angular/core";
-import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { KomeSovereign, KomeSovereignId } from "../character/wotr-character-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameStore } from "../game/wotr-game-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrHuntTileId } from "./wotr-hunt-models";
+import { Component, computed, inject } from '@angular/core';
+import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import {
+  KomeSovereign,
+  KomeSovereignId,
+} from '../character/wotr-character-models';
+import { WotrCharacterStore } from '../character/wotr-character-store';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameStore } from '../game/wotr-game-store';
+import { WotrGameUi } from '../game/wotr-game-ui';
+import { WotrHuntTileId } from './wotr-hunt-models';
 
 @Component({
-  selector: "kome-corruption-board",
+  selector: 'kome-corruption-board',
   imports: [BgTransformPipe],
   template: `
     @let selection = sovereignSelectionMap();
@@ -19,12 +22,14 @@ import { WotrHuntTileId } from "./wotr-hunt-models";
           class="ruler-cell"
           [class]="{
             selectable: selection && selection[sovereign.id],
-            disabled: selection && !selection[sovereign.id]
-          }">
+            disabled: selection && !selection[sovereign.id],
+          }"
+        >
           <img
             [src]="sovereign | bgTransform: sovereignImage"
-            (click)="selectSovereign(sovereign.id)" />
-          @if (sovereign.sovereignStatus === "corrupted") {
+            (click)="selectSovereign(sovereign.id)"
+          />
+          @if (sovereign.sovereignStatus === 'corrupted') {
             <div class="corrupted-overlay"></div>
           }
         </div>
@@ -36,14 +41,20 @@ import { WotrHuntTileId } from "./wotr-hunt-models";
           @for (tile of sovereign.corruptionTiles; track $index) {
             <img
               class="hunt-tile"
-              [src]="tile | bgTransform: huntTileImage : { currentFront: currentFront() }" />
+              [src]="
+                tile
+                  | bgTransform
+                    : huntTileImage
+                    : { currentFront: currentFront() }
+              "
+            />
           }
         </div>
       }
     </div>
   `,
   styles: `
-    @use "wotr-variables" as wotr;
+    @use 'wotr-variables' as wotr;
 
     .corruption-grid {
       padding: 0.5rem;
@@ -85,7 +96,7 @@ import { WotrHuntTileId } from "./wotr-hunt-models";
         position: absolute;
       }
     }
-  `
+  `,
 })
 export class KomeCorruptionBoard {
   private gameStore = inject(WotrGameStore);
@@ -98,7 +109,10 @@ export class KomeCorruptionBoard {
 
   protected currentFront = this.ui.currentPlayerId;
 
-  protected sovereignSelectionMap = computed<Record<KomeSovereignId, boolean> | null>(() => {
+  protected sovereignSelectionMap = computed<Record<
+    KomeSovereignId,
+    boolean
+  > | null>(() => {
     const selection = this.ui.sovereignSelection();
     if (!selection) return null;
     const map: Record<KomeSovereignId, boolean> = {
@@ -106,7 +120,7 @@ export class KomeCorruptionBoard {
       dain: false,
       denethor: false,
       theoden: false,
-      thranduil: false
+      thranduil: false,
     };
     for (const sovereign of selection) {
       map[sovereign] = true;
@@ -114,15 +128,16 @@ export class KomeCorruptionBoard {
     return map;
   });
 
-  protected sovereignImage: BgTransformFn<KomeSovereign, string> = (sovereign: KomeSovereign) =>
-    this.assets.sovereignAvatar(sovereign.id);
+  protected sovereignImage: BgTransformFn<KomeSovereign, string> = (
+    sovereign: KomeSovereign,
+  ) => this.assets.sovereignAvatar(sovereign.id);
 
   protected huntTileImage: BgTransformFn<
     WotrHuntTileId,
     string,
     { currentFront: WotrFrontId | null }
   > = (tileId: WotrHuntTileId, params) =>
-    this.visibleCorruptionTiles() || params.currentFront === "shadow"
+    this.visibleCorruptionTiles() || params.currentFront === 'shadow'
       ? this.assets.huntTileImage(tileId)
       : this.assets.huntTileBack();
 

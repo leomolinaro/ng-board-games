@@ -1,31 +1,40 @@
-import { Injectable } from "@angular/core";
-import { WotrModifier } from "../commons/wotr-modifier";
-import { WotrFellowshipMove } from "../fellowship/wotr-fellowship-models";
-import { WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrHuntEffectParams, WotrHuntTileId } from "./wotr-hunt-models";
+import { Injectable } from '@angular/core';
+import { WotrModifier } from '../commons/wotr-modifier';
+import { WotrFellowshipMove } from '../fellowship/wotr-fellowship-models';
+import { WotrUiChoice } from '../game/wotr-game-ui';
+import { WotrHuntEffectParams, WotrHuntTileId } from './wotr-hunt-models';
 
 export class WotrHuntRollModifiers {
   rollModifiers: number[] = [];
   reRollModifiers: number[] = [];
 }
-export type WotrBeforeHuntRoll = (modifiers: WotrHuntRollModifiers) => Promise<void>;
+export type WotrBeforeHuntRoll = (
+  modifiers: WotrHuntRollModifiers,
+) => Promise<void>;
 
 export type WotrHuntDrawPrevented = () => Promise<boolean>;
 
-export type WotrAfterTileDrawn = (tile: WotrHuntTileId) => Promise<WotrHuntTileId>;
+export type WotrAfterTileDrawn = (
+  tile: WotrHuntTileId,
+) => Promise<WotrHuntTileId>;
 
 export type WotrHuntEffectChoiceModifier = (
-  params: WotrHuntEffectParams
+  params: WotrHuntEffectParams,
 ) => WotrUiChoice<WotrHuntEffectParams>[];
 
-export type WotrAfterFellowshipReveal = (params: WotrFellowshipMove) => Promise<void>;
+export type WotrAfterFellowshipReveal = (
+  params: WotrFellowshipMove,
+) => Promise<void>;
 
-export type WotrFellowshipProgressDieAddedToHuntBoxPrevented = () => Promise<boolean>;
+export type WotrFellowshipProgressDieAddedToHuntBoxPrevented =
+  () => Promise<boolean>;
 
 @Injectable()
 export class WotrHuntModifiers {
   public readonly beforeHuntRoll = new WotrModifier<WotrBeforeHuntRoll>();
-  public async onBeforeHuntRoll(modifiers: WotrHuntRollModifiers): Promise<void> {
+  public async onBeforeHuntRoll(
+    modifiers: WotrHuntRollModifiers,
+  ): Promise<void> {
     for (const handler of this.beforeHuntRoll.get()) {
       await handler(modifiers);
     }
@@ -52,17 +61,24 @@ export class WotrHuntModifiers {
     return tile;
   }
 
-  public readonly huntEffectChoices = new WotrModifier<WotrHuntEffectChoiceModifier>();
-  public getHuntEffectChoices(params: WotrHuntEffectParams): WotrUiChoice<WotrHuntEffectParams>[] {
+  public readonly huntEffectChoices =
+    new WotrModifier<WotrHuntEffectChoiceModifier>();
+  public getHuntEffectChoices(
+    params: WotrHuntEffectParams,
+  ): WotrUiChoice<WotrHuntEffectParams>[] {
     return this.huntEffectChoices
       .get()
-      .reduce<
-        WotrUiChoice<WotrHuntEffectParams>[]
-      >((choices, modifier) => choices.concat(modifier(params)), []);
+      .reduce<WotrUiChoice<WotrHuntEffectParams>[]>(
+        (choices, modifier) => choices.concat(modifier(params)),
+        [],
+      );
   }
 
-  public readonly afterFellowshipReveal = new WotrModifier<WotrAfterFellowshipReveal>();
-  public async onAfterFellowshipReveal(params: WotrFellowshipMove): Promise<void> {
+  public readonly afterFellowshipReveal =
+    new WotrModifier<WotrAfterFellowshipReveal>();
+  public async onAfterFellowshipReveal(
+    params: WotrFellowshipMove,
+  ): Promise<void> {
     for (const handler of this.afterFellowshipReveal.get()) {
       await handler(params);
     }

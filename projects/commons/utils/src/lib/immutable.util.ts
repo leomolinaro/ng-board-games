@@ -1,6 +1,6 @@
 // In caso di errore, stampo in console un messaggio e ritorno le liste originali.
 
-import { Key } from "./types.util";
+import { Key } from './types.util';
 
 function error(msg: string) {
   throw new Error(msg);
@@ -9,16 +9,16 @@ function error(msg: string) {
 function toMap<E, V = E>(
   list: E[],
   keyGetter: (e: E) => any,
-  valueGetter?: (e: E) => V
+  valueGetter?: (e: E) => V,
 ): { [key: string]: V } {
   if (list) {
     if (valueGetter) {
       const map: { [key: string]: V } = {};
-      list.forEach(e => (map[keyGetter(e)] = valueGetter(e)));
+      list.forEach((e) => (map[keyGetter(e)] = valueGetter(e)));
       return map;
     } else {
       const map: { [key: string]: V } = {};
-      list.forEach(e => (map[keyGetter(e)] = e as unknown as V));
+      list.forEach((e) => (map[keyGetter(e)] = e as unknown as V));
       return map;
     }
   }
@@ -32,8 +32,8 @@ function toMap<E, V = E>(
 export function listGetByIndicies<T>(indicies: number[], list: T[]) {
   const indexMap = toMap(
     indicies,
-    i => i,
-    i => true
+    (i) => i,
+    (i) => true,
   );
   return list.filter((element, index) => indexMap[index]);
 }
@@ -55,12 +55,12 @@ export function listMergeLists<P, E>(
   patchListKeyGetter: (e: P) => any,
   entityOldList: E[],
   entityListKeyGetter: (e: E) => any,
-  createEntity: (p: P, key: any) => E
+  createEntity: (p: P, key: any) => E,
 ) {
   const entityOldMap = toMap(entityOldList, entityListKeyGetter);
   const entityNewList: E[] = [];
   let entityListChanged = false;
-  patchList.forEach(p => {
+  patchList.forEach((p) => {
     const key = patchListKeyGetter(p);
     let e = entityOldMap[key];
     if (e) {
@@ -83,20 +83,20 @@ export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
     if (index >= 0) {
       return listRemoveByIndex(index, list);
     } else {
-      error("match not found");
+      error('match not found');
       return list;
     }
   } else {
-    error("empty list");
+    error('empty list');
     return list;
   }
 }
 
 export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
   if (list) {
-    return list.filter(e => !matcher(e));
+    return list.filter((e) => !matcher(e));
   } else {
-    error("empty list");
+    error('empty list');
     return list;
   }
 }
@@ -108,23 +108,27 @@ export function listRemoveByIndex<T>(index: number, list: T[]) {
 export function listRemoveByIndicies<T>(indicies: number[], list: T[]) {
   const indexMap = toMap(
     indicies,
-    i => i,
-    i => true
+    (i) => i,
+    (i) => true,
   );
   return list.filter((element, index) => !indexMap[index]);
 }
 
-export function listReplaceFirst<T>(matcher: (e: T) => boolean, element: T, list: T[]) {
+export function listReplaceFirst<T>(
+  matcher: (e: T) => boolean,
+  element: T,
+  list: T[],
+) {
   if (list) {
     const index = list.findIndex(matcher);
     if (index >= 0) {
       return listReplaceByIndex(index, element, list);
     } else {
-      error("match not found");
+      error('match not found');
       return list;
     }
   } else {
-    error("empty list");
+    error('empty list');
     return list;
   }
 }
@@ -133,7 +137,7 @@ export function listReplaceFirstOrInsert<T>(
   matcher: (e: T) => boolean,
   element: T,
   insertIndex: number,
-  list: T[]
+  list: T[],
 ) {
   if (list) {
     const index = list.findIndex(matcher);
@@ -151,7 +155,7 @@ export function listUpdateFirstOrPush<T>(
   matcher: (e: T) => boolean,
   updater: (e: T) => T,
   pusher: () => T,
-  list: T[]
+  list: T[],
 ) {
   const index = list.findIndex(matcher);
   if (index >= 0) {
@@ -176,17 +180,21 @@ export function listReplaceByIndex<T>(index: number, element: T, list: T[]) {
   return newList;
 }
 
-export function listMergeFirst<T>(matcher: (e: T) => boolean, changes: Partial<T>, list: T[]) {
+export function listMergeFirst<T>(
+  matcher: (e: T) => boolean,
+  changes: Partial<T>,
+  list: T[],
+) {
   if (list) {
     const index = list.findIndex(matcher);
     if (index >= 0) {
       return listMergeByIndex(index, changes, list);
     } else {
-      error("match not found");
+      error('match not found');
       return list;
     }
   } else {
-    error("empty list");
+    error('empty list');
     return list;
   }
 }
@@ -194,7 +202,7 @@ export function listMergeFirst<T>(matcher: (e: T) => boolean, changes: Partial<T
 export function listMergeAll<T>(
   keyGetter: (e: T) => string,
   changesMap: { [id: string]: Partial<T> },
-  list: T[]
+  list: T[],
 ) {
   const toReturn: T[] = [];
   let changed = false;
@@ -211,7 +219,11 @@ export function listMergeAll<T>(
   return toReturn;
 }
 
-export function listMergeByIndex<T>(index: number, change: Partial<T>, list: T[]) {
+export function listMergeByIndex<T>(
+  index: number,
+  change: Partial<T>,
+  list: T[],
+) {
   const newList = [...list];
   newList[index] = { ...newList[index], ...change };
   return newList;
@@ -221,7 +233,7 @@ export function listInsert<T>(element: T, index: number, list: T[]) {
   if (list) {
     if (index != null && index >= 0) {
       if (index > list.length) {
-        error("index greater than list length");
+        error('index greater than list length');
         return list;
       } else {
         const newArray = [...list];
@@ -253,7 +265,11 @@ export function listPush<T>(toPush: T[], list: T[]) {
  * dato dal comparatore.
  * N.B.: la lista list dev'essere già ordinata!
  */
-export function listInsertBySort<T>(toInsert: T[], comparator: (a: T, b: T) => number, list: T[]) {
+export function listInsertBySort<T>(
+  toInsert: T[],
+  comparator: (a: T, b: T) => number,
+  list: T[],
+) {
   toInsert = [...toInsert];
   toInsert.sort(comparator);
   if (list) {
@@ -284,7 +300,11 @@ export function listInsertBySort<T>(toInsert: T[], comparator: (a: T, b: T) => n
   }
 }
 
-export function listSortByIndex<T>(fromIndex: number, toIndex: number, list: T[]): T[] {
+export function listSortByIndex<T>(
+  fromIndex: number,
+  toIndex: number,
+  list: T[],
+): T[] {
   if (list && list.length) {
     const element = list[fromIndex];
     let newList = listRemoveByIndex(fromIndex, list);
@@ -295,7 +315,11 @@ export function listSortByIndex<T>(fromIndex: number, toIndex: number, list: T[]
   }
 }
 
-export function listSortByElement<T>(movingElement: T, toElement: T, list: T[]): T[] {
+export function listSortByElement<T>(
+  movingElement: T,
+  toElement: T,
+  list: T[],
+): T[] {
   if (list) {
     const fromIndex = list.indexOf(movingElement);
     const toIndex = list.indexOf(toElement);

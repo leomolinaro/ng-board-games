@@ -1,17 +1,17 @@
-import { Injectable, inject } from "@angular/core";
-import { unexpectedStory } from "@leobg/commons";
-import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrCharacters } from "../character/wotr-characters";
-import { WotrStoryApplier } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
-import { WotrRingDestroyed } from "../fellowship/wotr-fellowship-models";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { oppositeFront } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrGameConfig } from "../game/wotr-game-config";
-import { WotrGameQuery } from "../game/wotr-game-query";
+import { Injectable, inject } from '@angular/core';
+import { unexpectedStory } from '@leobg/commons';
+import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
+import { WotrCharacterStore } from '../character/wotr-character-store';
+import { WotrCharacters } from '../character/wotr-characters';
+import { WotrStoryApplier } from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
+import { WotrRingDestroyed } from '../fellowship/wotr-fellowship-models';
+import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import { oppositeFront } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrGameConfig } from '../game/wotr-game-config';
+import { WotrGameQuery } from '../game/wotr-game-query';
 import {
   WotrBaseStory,
   WotrDieCardStory,
@@ -19,18 +19,18 @@ import {
   WotrPassStory,
   WotrSkipTokensStory,
   WotrStory,
-  WotrTokenStory
-} from "../game/wotr-story-models";
-import { WotrRingBearerCorrupted } from "../hunt/wotr-hunt-models";
-import { WotrHuntStore } from "../hunt/wotr-hunt-store";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrNationStore } from "../nation/wotr-nation-store";
-import { WotrAllPlayers } from "../player/wotr-all-players";
-import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
-import { WotrPlayer } from "../player/wotr-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrSetup, WotrSetupRules } from "../setup/wotr-setup-rules";
+  WotrTokenStory,
+} from '../game/wotr-story-models';
+import { WotrRingBearerCorrupted } from '../hunt/wotr-hunt-models';
+import { WotrHuntStore } from '../hunt/wotr-hunt-store';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrNationStore } from '../nation/wotr-nation-store';
+import { WotrAllPlayers } from '../player/wotr-all-players';
+import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
+import { WotrPlayer } from '../player/wotr-player';
+import { WotrShadowPlayer } from '../player/wotr-shadow-player';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrSetup, WotrSetupRules } from '../setup/wotr-setup-rules';
 
 @Injectable()
 export class WotrGameFlow {
@@ -55,7 +55,7 @@ export class WotrGameFlow {
   private setupService = inject(WotrSetupRules);
 
   init() {
-    this.actionRegistry.registerStory("base", this.baseStory);
+    this.actionRegistry.registerStory('base', this.baseStory);
   }
 
   private baseStory: WotrStoryApplier<WotrBaseStory> = async (story, front) => {
@@ -87,7 +87,9 @@ export class WotrGameFlow {
     const gameSetup = this.setupService.getGameSetup(config);
     this.logger.logSetup();
     this.applySetup(gameSetup);
-    this.characterAbilities.activateInPlayAbilities(this.fellowshipStore.companions());
+    this.characterAbilities.activateInPlayAbilities(
+      this.fellowshipStore.companions(),
+    );
   }
 
   private async round(roundNumber: number) {
@@ -110,8 +112,8 @@ export class WotrGameFlow {
   private async firstPhase() {
     this.logger.logPhase(1);
     this.huntStore.resetHuntBox();
-    this.frontStore.resetElvenRingUsed("free-peoples");
-    this.frontStore.resetElvenRingUsed("shadow");
+    this.frontStore.resetElvenRingUsed('free-peoples');
+    this.frontStore.resetElvenRingUsed('shadow');
     this.q.resetMessengerOfTheDarkTower();
     this.fellowshipStore.resetMoveOrHideAttempt();
     this.frontStore.skipDiscardExcessCards(true);
@@ -145,7 +147,10 @@ export class WotrGameFlow {
 
   private checkMoveToMordorTrack() {
     const fellowshipRegion = this.regionStore.fellowshipRegion();
-    if (fellowshipRegion === "morannon" || fellowshipRegion === "minas-morgul") {
+    if (
+      fellowshipRegion === 'morannon' ||
+      fellowshipRegion === 'minas-morgul'
+    ) {
       this.regionStore.removeFellowshipFromRegion();
       this.fellowshipStore.moveOnMordorTrack();
       this.huntStore.moveDrawnEyeTilesToAvailable();
@@ -168,11 +173,13 @@ export class WotrGameFlow {
   }
 
   private eyeResultsToHuntBox() {
-    const nEyeResults = this.frontStore.shadowFront().actionDice.reduce((counter, die) => {
-      if (die === "eye") counter++;
-      return counter;
-    }, 0);
-    this.frontStore.removeAllEyeResults("shadow");
+    const nEyeResults = this.frontStore
+      .shadowFront()
+      .actionDice.reduce((counter, die) => {
+        if (die === 'eye') counter++;
+        return counter;
+      }, 0);
+    this.frontStore.removeAllEyeResults('shadow');
     this.huntStore.addHuntDice(nEyeResults);
   }
 
@@ -188,24 +195,34 @@ export class WotrGameFlow {
   }
 
   private async chooseAction(
-    player: WotrPlayer
+    player: WotrPlayer,
   ): Promise<
-    WotrDieStory | WotrTokenStory | WotrDieCardStory | WotrPassStory | WotrSkipTokensStory
+    | WotrDieStory
+    | WotrTokenStory
+    | WotrDieCardStory
+    | WotrPassStory
+    | WotrSkipTokensStory
   > {
     const story = await player.actionResolution();
     switch (story.type) {
-      case "die":
-        await this.actionDieModifiers.onAfterActionDieResolution(story, player.frontId);
+      case 'die':
+        await this.actionDieModifiers.onAfterActionDieResolution(
+          story,
+          player.frontId,
+        );
         return story;
-      case "die-card":
-        await this.actionDieModifiers.onAfterActionDieCardResolution(story, player.frontId);
+      case 'die-card':
+        await this.actionDieModifiers.onAfterActionDieCardResolution(
+          story,
+          player.frontId,
+        );
         return story;
-      case "die-pass":
-      case "token":
-      case "token-skip":
+      case 'die-pass':
+      case 'token':
+      case 'token-skip':
         return story;
       default:
-        throw unexpectedStory(story, "die or token");
+        throw unexpectedStory(story, 'die or token');
     }
   }
 
@@ -223,8 +240,8 @@ export class WotrGameFlow {
   }
 
   private getFirstResolutionFrontId(): WotrPlayer | null {
-    const freePeoplesFrontQ = this.q.front("free-peoples");
-    const shadowFrontQ = this.q.front("shadow");
+    const freePeoplesFrontQ = this.q.front('free-peoples');
+    const shadowFrontQ = this.q.front('shadow');
     if (freePeoplesFrontQ.hasActionDice()) return this.freePeoples;
     if (freePeoplesFrontQ.hasActionTokens()) return this.freePeoples;
     if (shadowFrontQ.hasActionDice()) return this.shadow;
@@ -232,15 +249,21 @@ export class WotrGameFlow {
     return null;
   }
 
-  private getNextResolutionFrontId(player: WotrPlayer, story: WotrStory): WotrPlayer | null {
+  private getNextResolutionFrontId(
+    player: WotrPlayer,
+    story: WotrStory,
+  ): WotrPlayer | null {
     const otherPlayer =
-      oppositeFront(player.frontId) === "free-peoples" ? this.freePeoples : this.shadow;
+      oppositeFront(player.frontId) === 'free-peoples'
+        ? this.freePeoples
+        : this.shadow;
     const otherFrontQ = this.q.front(otherPlayer.frontId);
     if (otherFrontQ.hasActionDice()) return otherPlayer;
-    if (otherFrontQ.hasActionTokens() && story.type !== "token-skip") return otherPlayer;
+    if (otherFrontQ.hasActionTokens() && story.type !== 'token-skip')
+      return otherPlayer;
     const frontQ = this.q.front(player.frontId);
     if (frontQ.hasActionDice()) return player;
-    if (frontQ.hasActionTokens() && story.type !== "token-skip") return player;
+    if (frontQ.hasActionTokens() && story.type !== 'token-skip') return player;
     return null;
   }
 
@@ -266,7 +289,10 @@ export class WotrGameFlow {
     }
     for (const r of setup.regions) {
       if (r.nRegulars) {
-        this.nationStore.removeRegularsFromReinforcements(r.nRegulars, r.nation);
+        this.nationStore.removeRegularsFromReinforcements(
+          r.nRegulars,
+          r.nation,
+        );
         this.regionStore.addRegularsToArmy(r.nRegulars, r.nation, r.region);
       }
       if (r.nElites) {
@@ -288,12 +314,13 @@ export class WotrGameFlow {
     }
     for (const n of setup.nations) {
       if (n.active) this.nationStore.activate(true, n.nation);
-      if (n.politicalStep !== 3) this.nationStore.setPoliticalStep(n.politicalStep, n.nation);
+      if (n.politicalStep !== 3)
+        this.nationStore.setPoliticalStep(n.politicalStep, n.nation);
     }
     this.characterStore.setCharactersIds(setup.characters);
     this.huntStore.setHuntPool(setup.huntPool);
-    this.frontStore.setActionTokens(setup.freePeopleTokens, "free-peoples");
-    this.frontStore.setActionTokens(setup.shadowTokens, "shadow");
+    this.frontStore.setActionTokens(setup.freePeopleTokens, 'free-peoples');
+    this.frontStore.setActionTokens(setup.shadowTokens, 'shadow');
     this.fellowshipStore.setCompanions(setup.fellowship.companions);
     for (const companion of setup.fellowship.companions) {
       this.q.character(companion).setInFellowship();
@@ -303,10 +330,16 @@ export class WotrGameFlow {
     this.regionStore.addFellowshipToRegion(setup.fellowship.region);
     for (const inPlayCharacter of setup.inPlayCharacters) {
       this.characterStore.setInPlay(inPlayCharacter.character);
-      if (inPlayCharacter.mode === "army") {
-        this.regionStore.addCharacterToArmy(inPlayCharacter.character, inPlayCharacter.region);
+      if (inPlayCharacter.mode === 'army') {
+        this.regionStore.addCharacterToArmy(
+          inPlayCharacter.character,
+          inPlayCharacter.region,
+        );
       } else {
-        this.regionStore.addCharacterToFreeUnits(inPlayCharacter.character, inPlayCharacter.region);
+        this.regionStore.addCharacterToFreeUnits(
+          inPlayCharacter.character,
+          inPlayCharacter.region,
+        );
       }
     }
   }

@@ -1,14 +1,21 @@
-import { Component, OnChanges, SimpleChanges, input, output } from "@angular/core";
+import {
+  Component,
+  OnChanges,
+  SimpleChanges,
+  input,
+  output,
+} from '@angular/core';
 
 @Component({
-  selector: "brit-actions",
+  selector: 'brit-actions',
   template: `
     <div class="brit-actions">
       <button
         class="brit-action brit-cancel"
         [class.is-active]="canCancel()"
         [class.is-disabled]="!canCancel()"
-        (click)="onCancelClick()">
+        (click)="onCancelClick()"
+      >
         {{ labels.cancel }}
       </button>
       @if (!canConfirm()) {
@@ -16,7 +23,8 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
           class="brit-action brit-pass"
           [class.is-active]="canPass()"
           [class.is-disabled]="!canPass()"
-          (click)="onPassClick()">
+          (click)="onPassClick()"
+        >
           {{ labels.pass }}
         </button>
       }
@@ -25,7 +33,8 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
           class="brit-action brit-confirm"
           [class.is-active]="canConfirm()"
           [class.is-disabled]="!canConfirm()"
-          (click)="onConfirmClick()">
+          (click)="onConfirmClick()"
+        >
           {{ labels.confirm }}
         </button>
       }
@@ -41,7 +50,7 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
   `,
   styles: [
     `
-      @use "barony-variables" as *;
+      @use 'barony-variables' as *;
 
       .brit-actions {
         display: grid;
@@ -71,8 +80,8 @@ import { Component, OnChanges, SimpleChanges, input, output } from "@angular/cor
           }
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BritActionsComponent implements OnChanges {
   constructor() {}
@@ -89,9 +98,9 @@ export class BritActionsComponent implements OnChanges {
   actions = [];
 
   labels = {
-    pass: "Pass",
-    confirm: "Confirm",
-    cancel: "Cancel"
+    pass: 'Pass',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
   };
 
   isValid: { [action: string]: boolean } | null = null;

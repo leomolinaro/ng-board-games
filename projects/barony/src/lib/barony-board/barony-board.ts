@@ -1,6 +1,13 @@
-import { Component, effect, inject, input, linkedSignal, output } from "@angular/core";
-import { BgDialogService, BgMapZoomButtons } from "@leobg/commons";
-import { TuiIcon } from "@taiga-ui/core";
+import {
+  Component,
+  effect,
+  inject,
+  input,
+  linkedSignal,
+  output,
+} from '@angular/core';
+import { BgDialogService, BgMapZoomButtons } from '@leobg/commons';
+import { TuiIcon } from '@taiga-ui/core';
 import {
   BaronyAction,
   BaronyBuilding,
@@ -8,20 +15,20 @@ import {
   BaronyLandCoordinates,
   BaronyLog,
   BaronyPlayer,
-  BaronyResourceType
-} from "../barony-models";
-import { BaronyActionsArea } from "./barony-actions";
-import { BaronyBuildingsSelector } from "./barony-buildings-selector";
-import { BaronyEndGameDialog } from "./barony-end-game-dialog";
-import { BaronyKnightsSelector } from "./barony-knights-selector";
-import { BaronyLogs } from "./barony-logs";
-import { BaronyMap } from "./barony-map";
-import { BaronyPlayerArea } from "./barony-player-area/barony-player-area";
-import { BaronyResourcesSelector } from "./barony-resources-selector";
-import { BaronyScoreboard } from "./barony-scoreboard";
+  BaronyResourceType,
+} from '../barony-models';
+import { BaronyActionsArea } from './barony-actions';
+import { BaronyBuildingsSelector } from './barony-buildings-selector';
+import { BaronyEndGameDialog } from './barony-end-game-dialog';
+import { BaronyKnightsSelector } from './barony-knights-selector';
+import { BaronyLogs } from './barony-logs';
+import { BaronyMap } from './barony-map';
+import { BaronyPlayerArea } from './barony-player-area/barony-player-area';
+import { BaronyResourcesSelector } from './barony-resources-selector';
+import { BaronyScoreboard } from './barony-scoreboard';
 
 @Component({
-  selector: "barony-board",
+  selector: 'barony-board',
   imports: [
     BaronyMap,
     BaronyKnightsSelector,
@@ -33,10 +40,10 @@ import { BaronyScoreboard } from "./barony-scoreboard";
     BaronyScoreboard,
     BaronyLogs,
 
-    TuiIcon
+    TuiIcon,
   ],
-  templateUrl: "./barony-board.html",
-  styleUrls: ["./barony-board.scss"]
+  templateUrl: './barony-board.html',
+  styleUrls: ['./barony-board.scss'],
 })
 export class BaronyBoard {
   constructor() {
@@ -53,7 +60,7 @@ export class BaronyBoard {
   readonly message = input<string | null>(null);
   readonly validLands = input<BaronyLandCoordinates[] | null>(null);
   readonly validActions = input<BaronyAction[] | null>(null);
-  readonly validBuildings = input<("stronghold" | "village")[] | null>(null);
+  readonly validBuildings = input<('stronghold' | 'village')[] | null>(null);
   readonly validResources = input<{
     player: string;
     resources: BaronyResourceType[];
@@ -77,7 +84,9 @@ export class BaronyBoard {
   protected zoomFixed = false;
   protected scoreboardFixed = false;
 
-  protected numberOfKnights = linkedSignal(() => this.maxNumberOfKnights() || 0);
+  protected numberOfKnights = linkedSignal(
+    () => this.maxNumberOfKnights() || 0,
+  );
 
   protected onPlayerSelect(player: BaronyPlayer) {
     this.playerSelect.emit(player);
@@ -109,11 +118,11 @@ export class BaronyBoard {
     if (!this.endGame()) return;
     this.dialogs
       .open(BaronyEndGameDialog, {
-        label: "End Game",
+        label: 'End Game',
         data: {
-          players: this.players()
+          players: this.players(),
         },
-        size: "l"
+        size: 'l',
       })
       .then(() => {});
   }

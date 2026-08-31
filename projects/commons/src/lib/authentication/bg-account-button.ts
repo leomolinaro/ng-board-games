@@ -1,13 +1,13 @@
-import { AsyncPipe } from "@angular/common";
-import { Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { Router } from "@angular/router";
-import { ExhaustingEvent, UntilDestroy } from "@leobg/commons/utils";
-import { TuiButton, TuiDataList, TuiDropdown } from "@taiga-ui/core";
-import { switchMap } from "rxjs/operators";
-import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
+import { AsyncPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { ExhaustingEvent, UntilDestroy } from '@leobg/commons/utils';
+import { TuiButton, TuiDataList, TuiDropdown } from '@taiga-ui/core';
+import { switchMap } from 'rxjs/operators';
+import { BgAuthService, BgUserLoginType } from './bg-auth.service';
 
 @Component({
-  selector: "bg-account-button",
+  selector: 'bg-account-button',
   imports: [TuiButton, TuiDropdown, AsyncPipe, TuiDataList],
   template: `
     @if (user$ | async; as user) {
@@ -16,7 +16,8 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
         appearance="secondary-grayscale"
         iconStart="@tui.circle-user"
         [tuiDropdown]="dropdownContent"
-        [(tuiDropdownOpen)]="dropdownOpen"></button>
+        [(tuiDropdownOpen)]="dropdownOpen"
+      ></button>
       <ng-template #dropdownContent>
         <tui-data-list>
           <header>
@@ -28,14 +29,16 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
             tuiOption
             appearance="flat"
             type="button"
-            (click)="onSignOutClick()">
+            (click)="onSignOutClick()"
+          >
             Sign out
           </button>
           <button
             tuiOption
             appearance="flat"
             type="button"
-            (click)="onDeleteAccountClick()">
+            (click)="onDeleteAccountClick()"
+          >
             Delete account
           </button>
         </tui-data-list>
@@ -45,7 +48,8 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
         tuiButton
         appearance="secondary"
         [tuiDropdown]="dropdownContent"
-        [(tuiDropdownOpen)]="dropdownOpen">
+        [(tuiDropdownOpen)]="dropdownOpen"
+      >
         Sign in
       </button>
       <ng-template #dropdownContent>
@@ -54,14 +58,16 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
             tuiOption
             appearance="flat"
             type="button"
-            (click)="onSignInClick('guest')">
+            (click)="onSignInClick('guest')"
+          >
             Sign in as guest
           </button>
           <button
             tuiOption
             appearance="flat"
             type="button"
-            (click)="onSignInClick('google')">
+            (click)="onSignInClick('google')"
+          >
             Sign in with Google
           </button>
         </tui-data-list>
@@ -73,8 +79,8 @@ import { BgAuthService, BgUserLoginType } from "./bg-auth.service";
       tui-data-list header {
         padding: 0.5rem;
       }
-    `
-  ]
+    `,
+  ],
 })
 @UntilDestroy
 export class BgAccountButton implements OnInit, OnDestroy {
@@ -95,11 +101,15 @@ export class BgAccountButton implements OnInit, OnDestroy {
 
   @ExhaustingEvent()
   onSignOutClick() {
-    return this.authService.signOut$().pipe(switchMap(() => this.router.navigate([""])));
+    return this.authService
+      .signOut$()
+      .pipe(switchMap(() => this.router.navigate([''])));
   }
 
   @ExhaustingEvent()
   onDeleteAccountClick() {
-    return this.authService.deleteUser$().pipe(switchMap(() => this.router.navigate([""])));
+    return this.authService
+      .deleteUser$()
+      .pipe(switchMap(() => this.router.navigate([''])));
   }
 }

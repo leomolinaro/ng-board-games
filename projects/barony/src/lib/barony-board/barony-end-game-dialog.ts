@@ -1,23 +1,24 @@
-import { Component } from "@angular/core";
-import { injectDialogContext } from "@leobg/commons";
-import { BgTransformPipe } from "@leobg/commons/utils";
-import { TuiTable, TuiTableControl } from "@taiga-ui/addon-table";
-import { TuiIcon } from "@taiga-ui/core";
-import { BARONY_RESOURCE_TYPES } from "../barony-constants";
-import { BaronyPlayer, BaronyResourceType } from "../barony-models";
+import { Component } from '@angular/core';
+import { injectDialogContext } from '@leobg/commons';
+import { BgTransformPipe } from '@leobg/commons/utils';
+import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
+import { TuiIcon } from '@taiga-ui/core';
+import { BARONY_RESOURCE_TYPES } from '../barony-constants';
+import { BaronyPlayer, BaronyResourceType } from '../barony-models';
 
 interface BaronyEndGameData {
   players: BaronyPlayer[];
 }
 
 @Component({
-  selector: "barony-end-game-dialog",
+  selector: 'barony-end-game-dialog',
   imports: [BgTransformPipe, TuiIcon, TuiTable, TuiTableControl],
   template: `
     <table
       tuiTable
       size="m"
-      class="b-end-game-table">
+      class="b-end-game-table"
+    >
       <thead>
         <tr>
           <th tuiTh></th>
@@ -25,7 +26,8 @@ interface BaronyEndGameData {
           <th tuiTh>Score</th>
           <th
             tuiTh
-            class="resources-header">
+            class="resources-header"
+          >
             Resources
           </th>
           <th tuiTh>Victory points</th>
@@ -36,7 +38,8 @@ interface BaronyEndGameData {
           <tr
             class="b-end-game-player-row"
             [class]="'is-' + player.id"
-            [class.is-winner]="player.winner">
+            [class.is-winner]="player.winner"
+          >
             <td tuiTd>
               @if (player.winner) {
                 <tui-icon icon="trophy" />
@@ -50,11 +53,14 @@ interface BaronyEndGameData {
             </td>
             <td
               tuiTd
-              class="b-end-game-resources-cell">
+              class="b-end-game-resources-cell"
+            >
               <div>
                 @for (resourceType of resourceTypes; track resourceType) {
                   <div class="b-end-game-resource-image">
-                    <img [src]="resourceType | bgTransform: getResourceImageSource" />
+                    <img
+                      [src]="resourceType | bgTransform: getResourceImageSource"
+                    />
                   </div>
                 }
                 @for (resourceType of resourceTypes; track resourceType) {
@@ -73,7 +79,7 @@ interface BaronyEndGameData {
     </table>
   `,
   styles: `
-    @use "barony-variables" as *;
+    @use 'barony-variables' as *;
 
     table {
       width: 100%;
@@ -128,13 +134,13 @@ interface BaronyEndGameData {
         box-shadow: widget-shadow($blue-light);
       }
     }
-  `
+  `,
 })
 export class BaronyEndGameDialog {
   context = injectDialogContext<BaronyEndGameData>();
   readonly players = this.context.data.players;
 
-  playerColumns = ["player", "score", "resources", "victoryPoints", "winner"];
+  playerColumns = ['player', 'score', 'resources', 'victoryPoints', 'winner'];
 
   resourceTypes = BARONY_RESOURCE_TYPES;
 

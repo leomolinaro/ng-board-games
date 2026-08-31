@@ -1,10 +1,10 @@
-import { Injectable, inject } from "@angular/core";
-import { BritLandAreaId, BritNationId } from "../brit-components.models";
-import { BritComponentsService } from "../brit-components.service";
-import { BritGameState } from "../brit-game-state.models";
+import { Injectable, inject } from '@angular/core';
+import { BritLandAreaId, BritNationId } from '../brit-components.models';
+import { BritComponentsService } from '../brit-components.service';
+import { BritGameState } from '../brit-game-state.models';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BritRulesBattlesRetreatsService {
   private components = inject(BritComponentsService);

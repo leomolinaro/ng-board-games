@@ -1,16 +1,16 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
-import { WotrBattleStore } from "../../../battle/wotr-battle-store";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrLogWriter } from "../../../log/wotr-log-writer";
-import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import { WotrAbility } from '../../../ability/wotr-ability';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import { WotrBattleStore } from '../../../battle/wotr-battle-store';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrLogWriter } from '../../../log/wotr-log-writer';
+import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
 import {
   WotrRecruitmentConstraintsModifier,
-  WotrUnitModifiers
-} from "../../../unit/wotr-unit-modifiers";
-import { WotrCharacterHandler } from "../../wotr-character-handler";
-import { SovereingFateOf } from "./commons";
-import { KomeSovereignCard } from "./kome-sovereign-card";
+  WotrUnitModifiers,
+} from '../../../unit/wotr-unit-modifiers';
+import { WotrCharacterHandler } from '../../wotr-character-handler';
+import { SovereingFateOf } from './commons';
+import { KomeSovereignCard } from './kome-sovereign-card';
 
 // Denethor - Lord Steward of Gondor (Level 1, Leadership 1, Shadow Reistance 3)
 // If Gondor is active and Minas Tirith is unconquered, you may spend a Muster
@@ -39,15 +39,15 @@ export class Denethor extends KomeSovereignCard {
   constructor(
     protected q: WotrGameQuery,
     protected characterHandler: WotrCharacterHandler,
-    protected logger: WotrLogWriter
+    protected logger: WotrLogWriter,
   ) {
     super();
   }
 
-  readonly sovereignId = "denethor";
-  protected readonly nation = "gondor";
-  protected readonly awakeningRegion = "minas-tirith";
-  protected readonly corruptionRegion = "minas-tirith";
+  readonly sovereignId = 'denethor';
+  protected readonly nation = 'gondor';
+  protected readonly awakeningRegion = 'minas-tirith';
+  protected readonly corruptionRegion = 'minas-tirith';
 }
 
 export class DenethorCorruptedSteward implements WotrAbility<WotrRecruitmentConstraintsModifier> {
@@ -56,13 +56,16 @@ export class DenethorCorruptedSteward implements WotrAbility<WotrRecruitmentCons
   modifier = this.unitModifiers.recruitmentConstraintsModifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
-    constraints.excludedRegionsForEliteUnits.add("minas-tirith");
-    constraints.excludedRegionsForLeaderUnits.add("minas-tirith");
+    constraints.excludedRegionsForEliteUnits.add('minas-tirith');
+    constraints.excludedRegionsForLeaderUnits.add('minas-tirith');
   }
 }
 
 export class FateOfTheWhiteTower extends SovereingFateOf {
-  constructor(battleModifiers: WotrBattleModifiers, battleStore: WotrBattleStore) {
-    super("minas-tirith", battleModifiers, battleStore);
+  constructor(
+    battleModifiers: WotrBattleModifiers,
+    battleStore: WotrBattleStore,
+  ) {
+    super('minas-tirith', battleModifiers, battleStore);
   }
 }

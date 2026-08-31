@@ -1,14 +1,17 @@
-import { Injectable, Signal, computed } from "@angular/core";
-import { immutableUtil } from "@leobg/commons/utils";
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
+import { Injectable, Signal, computed } from '@angular/core';
+import { immutableUtil } from '@leobg/commons/utils';
+import {
+  WotrActionDie,
+  WotrActionToken,
+} from '../action-die/wotr-action-die-models';
 import {
   WotrCardId,
   WotrCharacterCardId,
   WotrStrategyCardId,
   isCharacterCard,
-  isStrategyCard
-} from "../card/wotr-card-models";
-import { WotrElvenRing, WotrFront, WotrFrontId } from "./wotr-front-models";
+  isStrategyCard,
+} from '../card/wotr-card-models';
+import { WotrElvenRing, WotrFront, WotrFrontId } from './wotr-front-models';
 
 export interface WotrFrontState {
   ids: WotrFrontId[];
@@ -19,17 +22,25 @@ export interface WotrFrontState {
 
 export function initialState(): WotrFrontState {
   return {
-    ids: ["free-peoples", "shadow"],
+    ids: ['free-peoples', 'shadow'],
     map: {
-      "free-peoples": initialFront("free-peoples", "Free Peoples", ["vilya", "nenya", "narya"]),
-      "shadow": initialFront("shadow", "Shadow", [])
+      'free-peoples': initialFront('free-peoples', 'Free Peoples', [
+        'vilya',
+        'nenya',
+        'narya',
+      ]),
+      shadow: initialFront('shadow', 'Shadow', []),
     },
     currentCard: null,
-    skipDiscardExcessCards: false
+    skipDiscardExcessCards: false,
   };
 }
 
-function initialFront(id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]): WotrFront {
+function initialFront(
+  id: WotrFrontId,
+  name: string,
+  elvenRings: WotrElvenRing[],
+): WotrFront {
   return {
     id,
     name,
@@ -45,20 +56,23 @@ function initialFront(id: WotrFrontId, name: string, elvenRings: WotrElvenRing[]
     currentActionToken: null,
     elvenRings,
     elvenRingUsed: false,
-    victoryPoints: 0
+    victoryPoints: 0,
   };
 }
 
 @Injectable()
 export class WotrFrontStore {
-  update!: (actionName: string, updater: (a: WotrFrontState) => WotrFrontState) => void;
+  update!: (
+    actionName: string,
+    updater: (a: WotrFrontState) => WotrFrontState,
+  ) => void;
   state!: Signal<WotrFrontState>;
 
   fronts = computed(() => {
     const s = this.state();
-    return s.ids.map(id => s.map[id]);
+    return s.ids.map((id) => s.map[id]);
   });
-  freePeoplesFront = computed(() => this.state().map["free-peoples"]);
+  freePeoplesFront = computed(() => this.state().map['free-peoples']);
   shadowFront = computed(() => this.state().map.shadow);
   frontIds() {
     return this.state().ids;
@@ -72,9 +86,9 @@ export class WotrFrontStore {
     return this.state().skipDiscardExcessCards;
   }
   skipDiscardExcessCards(skip: boolean): void {
-    this.update("skipDiscardExcessCards", s => ({
+    this.update('skipDiscardExcessCards', (s) => ({
       ...s,
-      skipDiscardExcessCards: skip
+      skipDiscardExcessCards: skip,
     }));
   }
 
@@ -83,205 +97,258 @@ export class WotrFrontStore {
   }
 
   setElvenRingUsed(frontId: WotrFrontId): void {
-    this.updateFront("setElvenRingUsed", frontId, front => ({
+    this.updateFront('setElvenRingUsed', frontId, (front) => ({
       ...front,
-      elvenRingUsed: true
+      elvenRingUsed: true,
     }));
   }
   resetElvenRingUsed(frontId: WotrFrontId): void {
-    this.updateFront("resetElvenRingUsed", frontId, front => ({
+    this.updateFront('resetElvenRingUsed', frontId, (front) => ({
       ...front,
-      elvenRingUsed: false
+      elvenRingUsed: false,
     }));
   }
 
   private updateFront(
     actionName: string,
     frontId: WotrFrontId,
-    updater: (a: WotrFront) => WotrFront
+    updater: (a: WotrFront) => WotrFront,
   ) {
-    this.update(actionName, s => ({ ...s, map: { ...s.map, [frontId]: updater(s.map[frontId]) } }));
+    this.update(actionName, (s) => ({
+      ...s,
+      map: { ...s.map, [frontId]: updater(s.map[frontId]) },
+    }));
   }
 
   clearCurrentCard() {
-    this.update("clearCurrentCard", s => ({ ...s, currentCard: null }));
+    this.update('clearCurrentCard', (s) => ({ ...s, currentCard: null }));
   }
 
   setCurrentCard(currentCard: WotrCardId) {
-    this.update("setCurrentCard", s => ({ ...s, currentCard }));
+    this.update('setCurrentCard', (s) => ({ ...s, currentCard }));
   }
 
   setCharacterDeck(characterDeck: WotrCharacterCardId[], frontId: WotrFrontId) {
-    this.updateFront("setCharacterDeck", frontId, front => ({ ...front, characterDeck }));
+    this.updateFront('setCharacterDeck', frontId, (front) => ({
+      ...front,
+      characterDeck,
+    }));
   }
 
   setStrategyDeck(strategyDeck: WotrStrategyCardId[], frontId: WotrFrontId) {
-    this.updateFront("setStrategyDeck", frontId, front => ({ ...front, strategyDeck }));
+    this.updateFront('setStrategyDeck', frontId, (front) => ({
+      ...front,
+      strategyDeck,
+    }));
   }
 
   discardCards(cardIds: WotrCardId[], frontId: WotrFrontId) {
-    this.updateFront("discardCards", frontId, front => {
+    this.updateFront('discardCards', frontId, (front) => {
       let characterDiscardPile = front.characterDiscardPile;
       let strategyDiscardPile = front.strategyDiscardPile;
       let handCards = front.handCards;
       for (const cardId of cardIds) {
         if (!handCards.includes(cardId)) continue;
-        handCards = immutableUtil.listRemoveFirst(c => c === cardId, handCards);
+        handCards = immutableUtil.listRemoveFirst(
+          (c) => c === cardId,
+          handCards,
+        );
         if (isCharacterCard(cardId)) {
-          characterDiscardPile = immutableUtil.listPush([cardId], characterDiscardPile);
+          characterDiscardPile = immutableUtil.listPush(
+            [cardId],
+            characterDiscardPile,
+          );
         }
         if (isStrategyCard(cardId)) {
-          strategyDiscardPile = immutableUtil.listPush([cardId], strategyDiscardPile);
+          strategyDiscardPile = immutableUtil.listPush(
+            [cardId],
+            strategyDiscardPile,
+          );
         }
       }
       return {
         ...front,
         handCards,
         characterDiscardPile,
-        strategyDiscardPile
+        strategyDiscardPile,
       };
     });
   }
 
   drawCards(cardIds: WotrCardId[], frontId: WotrFrontId) {
-    this.updateFront("drawCards", frontId, front => {
+    this.updateFront('drawCards', frontId, (front) => {
       let characterDeck = front.characterDeck;
       let strategyDeck = front.strategyDeck;
       for (const cardId of cardIds) {
         if (isCharacterCard(cardId)) {
-          characterDeck = immutableUtil.listRemoveFirst(c => c === cardId, characterDeck);
+          characterDeck = immutableUtil.listRemoveFirst(
+            (c) => c === cardId,
+            characterDeck,
+          );
         } else if (isStrategyCard(cardId)) {
-          strategyDeck = immutableUtil.listRemoveFirst(c => c === cardId, strategyDeck);
+          strategyDeck = immutableUtil.listRemoveFirst(
+            (c) => c === cardId,
+            strategyDeck,
+          );
         }
       }
       return {
         ...front,
         characterDeck,
         strategyDeck,
-        handCards: immutableUtil.listPush(cardIds, front.handCards)
+        handCards: immutableUtil.listPush(cardIds, front.handCards),
       };
     });
   }
 
   setActionTokens(tokens: WotrActionToken[], frontId: WotrFrontId): void {
-    this.updateFront("setActionTokens", frontId, front => ({
+    this.updateFront('setActionTokens', frontId, (front) => ({
       ...front,
-      actionTokens: tokens
+      actionTokens: tokens,
     }));
   }
 
   setActionDice(dice: WotrActionDie[], frontId: WotrFrontId): void {
-    this.updateFront("setActionDice", frontId, front => ({
+    this.updateFront('setActionDice', frontId, (front) => ({
       ...front,
-      actionDice: dice
+      actionDice: dice,
     }));
   }
 
   setCurrentActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
-    this.updateFront("setCurrentActionDie", frontId, front => ({
+    this.updateFront('setCurrentActionDie', frontId, (front) => ({
       ...front,
-      currentActionDie: die
+      currentActionDie: die,
     }));
   }
 
   removeCurrentActionDie(frontId: WotrFrontId): void {
-    this.updateFront("removeCurrentActionDie", frontId, front => ({
+    this.updateFront('removeCurrentActionDie', frontId, (front) => ({
       ...front,
-      currentActionDie: null
+      currentActionDie: null,
     }));
   }
 
   removeActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
-    this.updateFront("removeActionDie", frontId, front => {
-      if (typeof die === "string") {
+    this.updateFront('removeActionDie', frontId, (front) => {
+      if (typeof die === 'string') {
         return {
           ...front,
-          actionDice: immutableUtil.listRemoveFirst(d => d === die, front.actionDice)
+          actionDice: immutableUtil.listRemoveFirst(
+            (d) => d === die,
+            front.actionDice,
+          ),
         };
       } else {
         return {
           ...front,
           actionDice: immutableUtil.listRemoveFirst(
-            d => typeof d !== "string" && d.type === die.type && d.result === die.result,
-            front.actionDice
-          )
+            (d) =>
+              typeof d !== 'string' &&
+              d.type === die.type &&
+              d.result === die.result,
+            front.actionDice,
+          ),
         };
       }
     });
   }
 
   addActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
-    this.updateFront("addActionDie", frontId, front => ({
+    this.updateFront('addActionDie', frontId, (front) => ({
       ...front,
-      actionDice: immutableUtil.listPush([die], front.actionDice)
+      actionDice: immutableUtil.listPush([die], front.actionDice),
     }));
   }
 
   removeElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): void {
-    this.updateFront("removeElvenRing", frontId, front => ({
+    this.updateFront('removeElvenRing', frontId, (front) => ({
       ...front,
-      elvenRings: immutableUtil.listRemoveFirst(r => r === ring, front.elvenRings)
+      elvenRings: immutableUtil.listRemoveFirst(
+        (r) => r === ring,
+        front.elvenRings,
+      ),
     }));
   }
 
   addElvenRing(ring: WotrElvenRing, frontId: WotrFrontId): void {
-    this.updateFront("addElvenRing", frontId, front => ({
+    this.updateFront('addElvenRing', frontId, (front) => ({
       ...front,
-      elvenRings: immutableUtil.listPush([ring], front.elvenRings)
+      elvenRings: immutableUtil.listPush([ring], front.elvenRings),
     }));
   }
 
   removeAllEyeResults(frontId: WotrFrontId): void {
-    this.updateFront("removeAllEyeResults", frontId, front => ({
+    this.updateFront('removeAllEyeResults', frontId, (front) => ({
       ...front,
-      actionDice: immutableUtil.listRemoveAll(d => d === "eye", front.actionDice)
+      actionDice: immutableUtil.listRemoveAll(
+        (d) => d === 'eye',
+        front.actionDice,
+      ),
     }));
   }
 
-  changeActionDie(die: WotrActionDie, toDie: WotrActionDie, frontId: WotrFrontId): void {
-    this.updateFront("changeActionDie", frontId, front => ({
+  changeActionDie(
+    die: WotrActionDie,
+    toDie: WotrActionDie,
+    frontId: WotrFrontId,
+  ): void {
+    this.updateFront('changeActionDie', frontId, (front) => ({
       ...front,
-      actionDice: immutableUtil.listReplaceFirst(d => d === die, toDie, front.actionDice)
+      actionDice: immutableUtil.listReplaceFirst(
+        (d) => d === die,
+        toDie,
+        front.actionDice,
+      ),
     }));
   }
 
   setCurrentActionToken(token: WotrActionToken, frontId: WotrFrontId): void {
-    this.updateFront("setCurrentActionToken", frontId, front => ({
+    this.updateFront('setCurrentActionToken', frontId, (front) => ({
       ...front,
-      currentActionToken: token
+      currentActionToken: token,
     }));
   }
 
   removeCurrentActionToken(frontId: WotrFrontId): void {
-    this.updateFront("removeCurrentActionToken", frontId, front => ({
+    this.updateFront('removeCurrentActionToken', frontId, (front) => ({
       ...front,
-      currentActionToken: null
+      currentActionToken: null,
     }));
   }
 
   removeActionToken(token: WotrActionToken, frontId: WotrFrontId): void {
-    this.updateFront("removeActionToken", frontId, front => ({
+    this.updateFront('removeActionToken', frontId, (front) => ({
       ...front,
-      actionTokens: immutableUtil.listRemoveFirst(t => t === token, front.actionTokens)
+      actionTokens: immutableUtil.listRemoveFirst(
+        (t) => t === token,
+        front.actionTokens,
+      ),
     }));
   }
 
   playCardOnTable(card: WotrCardId, frontId: WotrFrontId): void {
-    this.updateFront("playCardOnTable", frontId, front => ({
+    this.updateFront('playCardOnTable', frontId, (front) => ({
       ...front,
-      tableCards: immutableUtil.listPush([card], front.tableCards)
+      tableCards: immutableUtil.listPush([card], front.tableCards),
       // handCards: immutableUtil.listRemoveFirst(c => c === card, front.handCards)
     }));
   }
 
   discardCardFromTable(card: WotrCardId, frontId: WotrFrontId): void {
-    this.updateFront("discardCardFromTable", frontId, front => ({
+    this.updateFront('discardCardFromTable', frontId, (front) => ({
       ...front,
-      tableCards: immutableUtil.listRemoveFirst(c => c === card, front.tableCards)
+      tableCards: immutableUtil.listRemoveFirst(
+        (c) => c === card,
+        front.tableCards,
+      ),
     }));
   }
 
   setVictoryPoints(victoryPoints: number, front: WotrFrontId) {
-    this.updateFront("setVictoryPoints", front, f => ({ ...f, victoryPoints }));
+    this.updateFront('setVictoryPoints', front, (f) => ({
+      ...f,
+      victoryPoints,
+    }));
   }
 }

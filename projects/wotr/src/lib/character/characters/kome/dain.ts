@@ -1,16 +1,16 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
-import { WotrBattleStore } from "../../../battle/wotr-battle-store";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrLogWriter } from "../../../log/wotr-log-writer";
-import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import { WotrAbility } from '../../../ability/wotr-ability';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import { WotrBattleStore } from '../../../battle/wotr-battle-store';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrLogWriter } from '../../../log/wotr-log-writer';
+import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
 import {
   WotrRecruitmentConstraintsModifier,
-  WotrUnitModifiers
-} from "../../../unit/wotr-unit-modifiers";
-import { WotrCharacterHandler } from "../../wotr-character-handler";
-import { SovereingFateOf } from "./commons";
-import { KomeSovereignCard } from "./kome-sovereign-card";
+  WotrUnitModifiers,
+} from '../../../unit/wotr-unit-modifiers';
+import { WotrCharacterHandler } from '../../wotr-character-handler';
+import { SovereingFateOf } from './commons';
+import { KomeSovereignCard } from './kome-sovereign-card';
 
 // Dain Ironfoot - King Under the Mountain (Level 1, Leadership 1, Shadow Resistance 4)
 // If the Dwarves are active and Erebor is unconquered, you may spend a Muster Action die
@@ -38,15 +38,15 @@ export class Dain extends KomeSovereignCard {
   constructor(
     protected q: WotrGameQuery,
     protected characterHandler: WotrCharacterHandler,
-    protected logger: WotrLogWriter
+    protected logger: WotrLogWriter,
   ) {
     super();
   }
 
-  readonly sovereignId = "dain";
-  protected readonly nation = "dwarves";
-  protected readonly awakeningRegion = "erebor";
-  protected readonly corruptionRegion = "erebor";
+  readonly sovereignId = 'dain';
+  protected readonly nation = 'dwarves';
+  protected readonly awakeningRegion = 'erebor';
+  protected readonly corruptionRegion = 'erebor';
 }
 
 export class DainCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
@@ -55,13 +55,16 @@ export class DainCorruptedKing implements WotrAbility<WotrRecruitmentConstraints
   modifier = this.unitModifiers.recruitmentConstraintsModifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
-    constraints.excludedRegionsForEliteUnits.add("erebor");
-    constraints.excludedRegionsForLeaderUnits.add("erebor");
+    constraints.excludedRegionsForEliteUnits.add('erebor');
+    constraints.excludedRegionsForLeaderUnits.add('erebor');
   }
 }
 
 export class FateOfTheLonelyMountain extends SovereingFateOf {
-  constructor(battleModifiers: WotrBattleModifiers, battleStore: WotrBattleStore) {
-    super("erebor", battleModifiers, battleStore);
+  constructor(
+    battleModifiers: WotrBattleModifiers,
+    battleStore: WotrBattleStore,
+  ) {
+    super('erebor', battleModifiers, battleStore);
   }
 }

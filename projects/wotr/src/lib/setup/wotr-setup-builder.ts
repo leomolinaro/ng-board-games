@@ -1,25 +1,25 @@
 import {
   KomeSovereignId,
   WotrCharacterId,
-  WotrCompanionId
-} from "../character/wotr-character-models";
-import { WotrGameOptions } from "../game/options/wotr-game-options";
-import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+  WotrCompanionId,
+} from '../character/wotr-character-models';
+import { WotrGameOptions } from '../game/options/wotr-game-options';
+import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 import {
   WotrFrontDecksSetup,
   WotrInPlayCharacterSetup,
   WotrNationSetup,
   WotrRegionSetup,
   WotrSetup,
-  WotrSetupRules
-} from "./wotr-setup-rules";
+  WotrSetupRules,
+} from './wotr-setup-rules';
 
 export class WotrSetupBuilder {
   constructor(
     private options: WotrGameOptions,
-    private rules: WotrSetupRules
+    private rules: WotrSetupRules,
   ) {}
 
   static of(options: WotrGameOptions, rules: WotrSetupRules): WotrSetupBuilder {
@@ -32,7 +32,7 @@ export class WotrSetupBuilder {
     return this;
   }
 
-  private fwRegion: WotrRegionId = "rivendell";
+  private fwRegion: WotrRegionId = 'rivendell';
   fellowshipRegion(region: WotrRegionId): WotrSetupBuilder {
     this.fwRegion = region;
     return this;
@@ -44,20 +44,20 @@ export class WotrSetupBuilder {
     return this;
   }
 
-  private fwGuide: WotrCompanionId = "gandalf-the-grey";
+  private fwGuide: WotrCompanionId = 'gandalf-the-grey';
   fellowshipGuide(companionId: WotrCompanionId): WotrSetupBuilder {
     this.fwGuide = companionId;
     return this;
   }
 
   private fwCompanions: WotrCompanionId[] = [
-    "gandalf-the-grey",
-    "strider",
-    "boromir",
-    "legolas",
-    "gimli",
-    "meriadoc",
-    "peregrin"
+    'gandalf-the-grey',
+    'strider',
+    'boromir',
+    'legolas',
+    'gimli',
+    'meriadoc',
+    'peregrin',
   ];
   fellowshipCompanions(...companionIds: WotrCompanionId[]): WotrSetupBuilder {
     this.fwCompanions = companionIds;
@@ -74,7 +74,7 @@ export class WotrSetupBuilder {
       nLeaders?: number;
       nNazgul?: number;
       ruler?: KomeSovereignId;
-    }
+    },
   ): WotrSetupBuilder {
     this.regions.push({
       region,
@@ -83,19 +83,25 @@ export class WotrSetupBuilder {
       nElites: units.nElites ?? 0,
       nLeaders: units.nLeaders ?? 0,
       nNazgul: units.nNazgul ?? 0,
-      ruler: units.ruler ?? null
+      ruler: units.ruler ?? null,
     });
     return this;
   }
 
   private inPlayCharacters: WotrInPlayCharacterSetup[] = [];
-  characterInArmy(character: WotrCharacterId, region: WotrRegionId): WotrSetupBuilder {
-    this.inPlayCharacters.push({ region, character, mode: "army" });
+  characterInArmy(
+    character: WotrCharacterId,
+    region: WotrRegionId,
+  ): WotrSetupBuilder {
+    this.inPlayCharacters.push({ region, character, mode: 'army' });
     return this;
   }
 
-  characterInFreeUnits(character: WotrCharacterId, region: WotrRegionId): WotrSetupBuilder {
-    this.inPlayCharacters.push({ region, character, mode: "free" });
+  characterInFreeUnits(
+    character: WotrCharacterId,
+    region: WotrRegionId,
+  ): WotrSetupBuilder {
+    this.inPlayCharacters.push({ region, character, mode: 'free' });
     return this;
   }
 
@@ -103,7 +109,7 @@ export class WotrSetupBuilder {
   nation(
     nation: WotrNationId,
     active: boolean,
-    politicalStep: WotrPoliticalStep
+    politicalStep: WotrPoliticalStep,
   ): WotrSetupBuilder {
     this.nations.push({ nation, active, politicalStep });
     return this;
@@ -123,14 +129,14 @@ export class WotrSetupBuilder {
         progress: this.fwProgress,
         region: this.fwRegion,
         companions: this.fwCompanions,
-        guide: this.fwGuide
+        guide: this.fwGuide,
       },
       freePeopleTokens: [],
       shadowTokens: [],
       huntPool: this._huntPool,
       characters: [],
       nations: this.nations,
-      inPlayCharacters: this.inPlayCharacters
+      inPlayCharacters: this.inPlayCharacters,
     };
   }
 }

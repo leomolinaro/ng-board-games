@@ -1,36 +1,40 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrCards } from "../card/cards/wotr-cards";
-import { getCard, isCharacterCard } from "../card/wotr-card-models";
-import { findAction, WotrActionLoggerMap, WotrStoryApplier } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrGameQuery } from "../game/wotr-game-query";
+import { inject, Injectable } from '@angular/core';
+import { WotrCards } from '../card/cards/wotr-cards';
+import { getCard, isCharacterCard } from '../card/wotr-card-models';
+import {
+  findAction,
+  WotrActionLoggerMap,
+  WotrStoryApplier,
+} from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFrontHandler } from '../front/wotr-front-handler';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrGameQuery } from '../game/wotr-game-query';
 import {
   assertAction,
   WotrCombatCardEffectStory,
-  WotrSkipCombatCardEffectStory
-} from "../game/wotr-story-models";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrAllPlayers } from "../player/wotr-all-players";
-import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
-import { WotrPlayer } from "../player/wotr-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionHandler } from "../region/wotr-region-handler";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrRegularUnitElimination } from "../unit/wotr-unit-actions";
-import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrArmy } from "../unit/wotr-unit-models";
-import { WotrUnitRules } from "../unit/wotr-unit-rules";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
+  WotrSkipCombatCardEffectStory,
+} from '../game/wotr-story-models';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrNationHandler } from '../nation/wotr-nation-handler';
+import { WotrAllPlayers } from '../player/wotr-all-players';
+import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
+import { WotrPlayer } from '../player/wotr-player';
+import { WotrShadowPlayer } from '../player/wotr-shadow-player';
+import { WotrRegionHandler } from '../region/wotr-region-handler';
+import { WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrRegularUnitElimination } from '../unit/wotr-unit-actions';
+import { WotrUnitHandler } from '../unit/wotr-unit-handler';
+import { WotrArmy } from '../unit/wotr-unit-models';
+import { WotrUnitRules } from '../unit/wotr-unit-rules';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
 import {
   WotrCombatCardEffectParams,
   WotrCombatCardParams,
-  WotrCombatCards
-} from "./combat-cards/wotr-combat-cards";
+  WotrCombatCards,
+} from './combat-cards/wotr-combat-cards';
 import {
   WotrArmyAdvance,
   WotrArmyAttack,
@@ -45,12 +49,16 @@ import {
   WotrCombatCardChoose,
   WotrCombatCardChooseNot,
   WotrCombatReRoll,
-  WotrCombatRoll
-} from "./wotr-battle-actions";
-import { WotrBattle, WotrCombatFront, WotrCombatRound } from "./wotr-battle-models";
-import { WotrBattleModifiers } from "./wotr-battle-modifiers";
-import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatDie } from "./wotr-combat-die-models";
+  WotrCombatRoll,
+} from './wotr-battle-actions';
+import {
+  WotrBattle,
+  WotrCombatFront,
+  WotrCombatRound,
+} from './wotr-battle-models';
+import { WotrBattleModifiers } from './wotr-battle-modifiers';
+import { WotrBattleStore } from './wotr-battle-store';
+import { WotrCombatDie } from './wotr-combat-die-models';
 
 @Injectable()
 export class WotrBattleHandler {
@@ -74,45 +82,50 @@ export class WotrBattleHandler {
   private cards = inject(WotrCards);
 
   init() {
-    this.actionRegistry.registerAction<WotrArmyAttack>("army-attack", (action, front) =>
-      this.applyArmyAttack(action, front)
+    this.actionRegistry.registerAction<WotrArmyAttack>(
+      'army-attack',
+      (action, front) => this.applyArmyAttack(action, front),
     );
     this.actionRegistry.registerAction<WotrArmyRetreatIntoSiege>(
-      "army-retreat-into-siege",
-      action => this.retreatIntoSiege(action.region)
+      'army-retreat-into-siege',
+      (action) => this.retreatIntoSiege(action.region),
     );
-    this.actionRegistry.registerAction<WotrArmyRetreat>("army-retreat", action =>
-      this.retreat(action.toRegion)
+    this.actionRegistry.registerAction<WotrArmyRetreat>(
+      'army-retreat',
+      (action) => this.retreat(action.toRegion),
     );
-    this.actionRegistry.registerAction<WotrArmyAdvance>("army-advance", (action, front) =>
-      this.applyArmyAdvance(action)
+    this.actionRegistry.registerAction<WotrArmyAdvance>(
+      'army-advance',
+      (action, front) => this.applyArmyAdvance(action),
     );
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
-    this.actionRegistry.registerStory("combat-card-effect", this.reactionCombatCard);
-    this.actionRegistry.registerStory("combat-card-effect-skip", this.reactionCombatCardSkip);
+    this.actionRegistry.registerStory(
+      'combat-card-effect',
+      this.reactionCombatCard,
+    );
+    this.actionRegistry.registerStory(
+      'combat-card-effect-skip',
+      this.reactionCombatCardSkip,
+    );
   }
 
-  private reactionCombatCard: WotrStoryApplier<WotrCombatCardEffectStory> = async (
-    story,
-    front
-  ) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
-    }
-  };
+  private reactionCombatCard: WotrStoryApplier<WotrCombatCardEffectStory> =
+    async (story, front) => {
+      for (const action of story.actions) {
+        this.logger.logAction(action, story, front);
+        await this.actionRegistry.applyAction(action, front);
+      }
+    };
 
-  private reactionCombatCardSkip: WotrStoryApplier<WotrSkipCombatCardEffectStory> = async (
-    story,
-    front
-  ) => {
-    this.logger.logStory(story, front);
-  };
+  private reactionCombatCardSkip: WotrStoryApplier<WotrSkipCombatCardEffectStory> =
+    async (story, front) => {
+      this.logger.logStory(story, front);
+    };
 
   private async applyArmyAttack(action: WotrArmyAttack, front: WotrFrontId) {
     this.nationHandler.checkNationActivationByAttack(action);
     this.nationHandler.checkNationAdvanceByAttack(action.toRegion);
-    if (front === "free-peoples") {
+    if (front === 'free-peoples') {
       await this.resolveBattleFlow(action, this.freePeoples, this.shadow);
     } else {
       await this.resolveBattleFlow(action, this.shadow, this.freePeoples);
@@ -142,81 +155,107 @@ export class WotrBattleHandler {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrBattleAction> {
     return {
-      "army-attack": (action, front, f) => [
+      'army-attack': (action, front, f) => [
         f.player(front),
-        " army in ",
+        ' army in ',
         f.region(action.fromRegion),
-        " attacks ",
-        f.region(action.toRegion)
+        ' attacks ',
+        f.region(action.toRegion),
       ],
-      "army-retreat-into-siege": (action, front, f) => [
+      'army-retreat-into-siege': (action, front, f) => [
         f.player(front),
-        " army in ",
+        ' army in ',
         f.region(action.region),
-        " retreat into siege"
+        ' retreat into siege',
       ],
-      "army-not-retreat-into-siege": (action, front, f) => [
+      'army-not-retreat-into-siege': (action, front, f) => [
         f.player(front),
-        " army in ",
+        ' army in ',
         f.region(action.region),
-        " does not retreat into siege"
+        ' does not retreat into siege',
       ],
-      "army-retreat": (action, front, f) => [
+      'army-retreat': (action, front, f) => [
         f.player(front),
-        " retreats in ",
-        f.region(action.toRegion)
+        ' retreats in ',
+        f.region(action.toRegion),
       ],
-      "army-not-retreat": (action, front, f) => [f.player(front), " does not retreat"],
-      "army-advance": (action, front, f) => [f.player(front), " advances into the attacked region"],
-      "army-not-advance": (action, front, f) => [
+      'army-not-retreat': (action, front, f) => [
         f.player(front),
-        " does not advance into the attacked region"
+        ' does not retreat',
       ],
-      "battle-continue": (action, front, f) => [
+      'army-advance': (action, front, f) => [
         f.player(front),
-        " continues battle in ",
-        f.region(action.region)
+        ' advances into the attacked region',
       ],
-      "battle-cease": (action, front, f) => [
+      'army-not-advance': (action, front, f) => [
         f.player(front),
-        " ceases tha battle in ",
-        f.region(action.region)
+        ' does not advance into the attacked region',
       ],
-      "leader-forfeit": (action, front, f) => {
+      'battle-continue': (action, front, f) => [
+        f.player(front),
+        ' continues battle in ',
+        f.region(action.region),
+      ],
+      'battle-cease': (action, front, f) => [
+        f.player(front),
+        ' ceases tha battle in ',
+        f.region(action.region),
+      ],
+      'leader-forfeit': (action, front, f) => {
         const forfeitedUnits: string[] = [];
-        const nElites = action.leaders.elites?.reduce((n, elite) => n + elite.quantity, 0) || 0;
-        if (nElites > 0) forfeitedUnits.push(`${nElites} elite unit${nElites > 1 ? "s" : ""}`);
-        const nLeaders = action.leaders.leaders?.reduce((n, leader) => n + leader.quantity, 0) || 0;
-        if (nLeaders > 0) forfeitedUnits.push(`${nLeaders} leader${nLeaders > 1 ? "s" : ""}`);
+        const nElites =
+          action.leaders.elites?.reduce((n, elite) => n + elite.quantity, 0) ||
+          0;
+        if (nElites > 0)
+          forfeitedUnits.push(`${nElites} elite unit${nElites > 1 ? 's' : ''}`);
+        const nLeaders =
+          action.leaders.leaders?.reduce(
+            (n, leader) => n + leader.quantity,
+            0,
+          ) || 0;
+        if (nLeaders > 0)
+          forfeitedUnits.push(`${nLeaders} leader${nLeaders > 1 ? 's' : ''}`);
         const nNazgul = action.leaders.nNazgul || 0;
-        if (nNazgul > 0) forfeitedUnits.push(`${nNazgul} Nazgul${nNazgul > 1 ? "s" : ""}`);
-        action.leaders.characters?.forEach(characterId => {
+        if (nNazgul > 0)
+          forfeitedUnits.push(`${nNazgul} Nazgul${nNazgul > 1 ? 's' : ''}`);
+        action.leaders.characters?.forEach((characterId) => {
           forfeitedUnits.push(this.q.character(characterId).name);
         });
-        return [f.player(front), ` forfeits leadership of ${forfeitedUnits.join(", ")}`];
+        return [
+          f.player(front),
+          ` forfeits leadership of ${forfeitedUnits.join(', ')}`,
+        ];
       },
-      "combat-card-choose": (action, front, f) => [
+      'combat-card-choose': (action, front, f) => [
         f.player(front),
-        ` chooses a ${isCharacterCard(action.card) ? "character" : "strategy"} combat card`
+        ` chooses a ${isCharacterCard(action.card) ? 'character' : 'strategy'} combat card`,
       ],
-      "combat-card-choose-not": (action, front, f) => [
+      'combat-card-choose-not': (action, front, f) => [
         f.player(front),
-        " does not play any combat card"
+        ' does not play any combat card',
       ],
-      "combat-roll": (action, front, f) => [f.player(front), " rolls ", action.dice.join(", ")],
-      "combat-re-roll": (action, front, f) => [
+      'combat-roll': (action, front, f) => [
         f.player(front),
-        " re-rolls ",
-        action.dice.join(", ")
+        ' rolls ',
+        action.dice.join(', '),
       ],
-      "combat-card-forfeit": (action, front, f) => [
+      'combat-re-roll': (action, front, f) => [
         f.player(front),
-        ` forfeits ${getCard(action.card).combatLabel}`
-      ]
+        ' re-rolls ',
+        action.dice.join(', '),
+      ],
+      'combat-card-forfeit': (action, front, f) => [
+        f.player(front),
+        ` forfeits ${getCard(action.card).combatLabel}`,
+      ],
     };
   }
 
-  async resolveBattleFlow(action: WotrArmyAttack, attacker: WotrPlayer, defender: WotrPlayer) {
+  async resolveBattleFlow(
+    action: WotrArmyAttack,
+    attacker: WotrPlayer,
+    defender: WotrPlayer,
+  ) {
     this.logger.logBattleResolution();
     const currentCardId = this.frontStore.currentCard();
     if (currentCardId) this.cards.activateBattleAbilities(currentCardId);
@@ -231,7 +270,7 @@ export class WotrBattleHandler {
       retroguard,
       region: action.toRegion,
       siege,
-      nSiegeCombatRounds
+      nSiegeCombatRounds,
     };
     this.battleStore.startBattle(battle);
     await this.resolveBattle(battle);
@@ -251,23 +290,29 @@ export class WotrBattleHandler {
         battle.defender,
         () => this.defendingArmy(battle.action, battle.siege),
         battle.siege,
-        battle.siege && (battle.nSiegeCombatRounds ?? 0) > round
+        battle.siege && (battle.nSiegeCombatRounds ?? 0) > round,
       );
       continueBattle = await this.resolveCombat(combatRound, battle);
       round++;
     } while (continueBattle);
   }
 
-  private async resolveCombat(combatRound: WotrCombatRound, battle: WotrBattle): Promise<boolean> {
+  private async resolveCombat(
+    combatRound: WotrCombatRound,
+    battle: WotrBattle,
+  ): Promise<boolean> {
     let attackedRegion = this.attackedRegion(combatRound.action);
-    const hasStronghold = attackedRegion.settlement === "stronghold";
+    const hasStronghold = attackedRegion.settlement === 'stronghold';
     if (hasStronghold && !combatRound.siege && !attackedRegion.underSiegeArmy) {
-      const retreatIntoSiege = await this.wantRetreatIntoSiege(combatRound.defender.player);
+      const retreatIntoSiege = await this.wantRetreatIntoSiege(
+        combatRound.defender.player,
+      );
       if (retreatIntoSiege) {
         await this.battleAdvance(combatRound.attacker.player);
         attackedRegion = this.attackedRegion(combatRound.action);
         // If the attacked does not advance, the defender moves out of siege
-        if (!attackedRegion.army) this.regionStore.moveArmyOutOfSiege(attackedRegion.id);
+        if (!attackedRegion.army)
+          this.regionStore.moveArmyOutOfSiege(attackedRegion.id);
         return false;
       }
     }
@@ -311,11 +356,17 @@ export class WotrBattleHandler {
       } else {
         const mustContinueBattle = !this.battleModifiers.canCease(combatRound);
         let wantContinueBattle = false;
-        if (!mustContinueBattle) wantContinueBattle = await this.wantContinueBattle(combatRound);
+        if (!mustContinueBattle)
+          wantContinueBattle = await this.wantContinueBattle(combatRound);
         if (mustContinueBattle || wantContinueBattle) {
           if (this.canRetreat(combatRound.defender)) {
-            const wantRetreat = await this.wantRetreat(combatRound.defender.player);
-            if (wantRetreat === "army-retreat-into-siege" || wantRetreat === "army-retreat") {
+            const wantRetreat = await this.wantRetreat(
+              combatRound.defender.player,
+            );
+            if (
+              wantRetreat === 'army-retreat-into-siege' ||
+              wantRetreat === 'army-retreat'
+            ) {
               attackerWon = true;
             } else {
               continueBattle = true;
@@ -339,9 +390,11 @@ export class WotrBattleHandler {
       ) {
         this.regionHandler.setControlledBy(
           combatRound.attacker.frontId,
-          combatRound.action.toRegion
+          combatRound.action.toRegion,
         );
-        this.nationHandler.checkNationAdvanceByCapture(combatRound.action.toRegion);
+        this.nationHandler.checkNationAdvanceByCapture(
+          combatRound.action.toRegion,
+        );
         this.frontHandler.refreshVictoryPoints();
       }
       const fromRegion = this.regionStore.region(combatRound.action.fromRegion);
@@ -350,7 +403,8 @@ export class WotrBattleHandler {
       const toRegion = this.regionStore.region(combatRound.action.toRegion);
       if (
         toRegion.underSiegeArmy &&
-        (!toRegion.army || toRegion.army.front === toRegion.underSiegeArmy.front)
+        (!toRegion.army ||
+          toRegion.army.front === toRegion.underSiegeArmy.front)
       )
         this.regionStore.moveArmyOutOfSiege(toRegion.id);
     }
@@ -373,20 +427,24 @@ export class WotrBattleHandler {
     await this.chooseCombatCard(combatRound.defender, combatRound);
   }
 
-  private async chooseCombatCard(combatFront: WotrCombatFront, combatRound: WotrCombatRound) {
-    if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound)) return;
+  private async chooseCombatCard(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+  ) {
+    if (!this.battleModifiers.canUseCombatCard(combatFront, combatRound))
+      return;
     const story = await combatFront.player.chooseCombatCard(combatRound);
     const action = assertAction<WotrCombatCardChoose | WotrCombatCardChooseNot>(
       story,
-      "combat-card-choose",
-      "combat-card-choose-not"
+      'combat-card-choose',
+      'combat-card-choose-not',
     );
     switch (action.type) {
-      case "combat-card-choose":
+      case 'combat-card-choose':
         // eslint-disable-next-line require-atomic-updates
         combatFront.combatCard = getCard(action.card);
         break;
-      case "combat-card-choose-not":
+      case 'combat-card-choose-not':
         break;
     }
   }
@@ -398,13 +456,19 @@ export class WotrBattleHandler {
 
   private revealCombatCard(combatFront: WotrCombatFront) {
     if (combatFront.combatCard) {
-      this.frontStore.discardCards([combatFront.combatCard.id], combatFront.frontId);
+      this.frontStore.discardCards(
+        [combatFront.combatCard.id],
+        combatFront.frontId,
+      );
       this.battleStore.addAttackerCombatCard(combatFront.combatCard.id);
       this.logger.logCombatCard(combatFront.combatCard.id, combatFront.frontId);
     }
   }
 
-  private async resolveCombatCards(timing: number, combatRound: WotrCombatRound) {
+  private async resolveCombatCards(
+    timing: number,
+    combatRound: WotrCombatRound,
+  ) {
     await this.resolveCombatCard(timing, combatRound.defender, combatRound);
     await this.resolveCombatCard(timing, combatRound.attacker, combatRound);
   }
@@ -412,52 +476,60 @@ export class WotrBattleHandler {
   private async resolveCombatCard(
     timing: number,
     combatFront: WotrCombatFront,
-    combatRound: WotrCombatRound
+    combatRound: WotrCombatRound,
   ) {
     if (!combatFront.combatCard) return;
     if (combatFront.forfeitedCombatCard) return;
     if (combatFront.cancelledCombatCard) return;
     const combatTiming = combatFront.combatCard.combatTiming;
-    if (typeof combatTiming === "number") {
+    if (typeof combatTiming === 'number') {
       if (combatTiming !== timing) return;
     } else if (!combatTiming.includes(timing)) {
       return;
     }
-    const params = this.combatCardEffectParams(combatFront.frontId, combatRound, timing);
+    const params = this.combatCardEffectParams(
+      combatFront.frontId,
+      combatRound,
+      timing,
+    );
     await this.combatCards.combatCardReaction(combatFront.combatCard, params);
   }
 
-  combatCardParams(frontId: WotrFrontId, combatRound: WotrCombatRound): WotrCombatCardParams {
+  combatCardParams(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound,
+  ): WotrCombatCardParams {
     return {
       front: frontId,
       combatRound,
       shadow: combatRound.shadow,
       freePeoples: combatRound.freePeoples,
       isAttacker: combatRound.attacker.frontId === frontId,
-      attackedArmy: () => this.defendingArmy(combatRound.action, combatRound.siege),
+      attackedArmy: () =>
+        this.defendingArmy(combatRound.action, combatRound.siege),
       attackingArmy: () => this.attackingArmy(combatRound.action),
       toRegion: combatRound.action.toRegion,
-      fromRegion: combatRound.action.fromRegion
+      fromRegion: combatRound.action.fromRegion,
     };
   }
 
   combatCardEffectParams(
     frontId: WotrFrontId,
     combatRound: WotrCombatRound,
-    timing: number
+    timing: number,
   ): WotrCombatCardEffectParams {
     return {
       ...this.combatCardParams(frontId, combatRound),
-      timing
+      timing,
     };
   }
 
   private async combatRolls(combatRound: WotrCombatRound) {
     const nDice: Record<WotrFrontId, number> = {
-      "free-peoples": this.getNRolls(combatRound.freePeoples, combatRound),
-      "shadow": this.getNRolls(combatRound.shadow, combatRound)
+      'free-peoples': this.getNRolls(combatRound.freePeoples, combatRound),
+      shadow: this.getNRolls(combatRound.shadow, combatRound),
     };
-    const { "shadow": shadowRoll, "free-peoples": freePeoplesRoll } =
+    const { shadow: shadowRoll, 'free-peoples': freePeoplesRoll } =
       await this.parallelRollCombatDice(nDice);
     // eslint-disable-next-line require-atomic-updates
     combatRound.shadow.combatRoll = shadowRoll;
@@ -465,14 +537,14 @@ export class WotrBattleHandler {
       shadowRoll,
       combatRound.shadow,
       combatRound,
-      false
+      false,
     );
     combatRound.freePeoples.combatRoll = freePeoplesRoll;
     combatRound.freePeoples.nCombatSuccesses = this.getNRollSuccesses(
       freePeoplesRoll,
       combatRound.freePeoples,
       combatRound,
-      false
+      false,
     );
   }
 
@@ -480,21 +552,26 @@ export class WotrBattleHandler {
     const defenderNReRolls = this.getNReRolls(
       combatRound.defender,
       combatRound.attacker,
-      combatRound
+      combatRound,
     );
     const attackerNReRolls = this.getNReRolls(
       combatRound.attacker,
       combatRound.defender,
-      combatRound
+      combatRound,
     );
     if (defenderNReRolls) {
       if (attackerNReRolls) {
         const nDice: Record<WotrFrontId, number> = {
-          "shadow": combatRound.defender.frontId === "shadow" ? defenderNReRolls : attackerNReRolls,
-          "free-peoples":
-            combatRound.defender.frontId === "free-peoples" ? defenderNReRolls : attackerNReRolls
+          shadow:
+            combatRound.defender.frontId === 'shadow'
+              ? defenderNReRolls
+              : attackerNReRolls,
+          'free-peoples':
+            combatRound.defender.frontId === 'free-peoples'
+              ? defenderNReRolls
+              : attackerNReRolls,
         };
-        const { "shadow": shadowReRoll, "free-peoples": freePeoplesReRoll } =
+        const { shadow: shadowReRoll, 'free-peoples': freePeoplesReRoll } =
           await this.parallelReRollCombatDice(nDice);
         // eslint-disable-next-line require-atomic-updates
         combatRound.shadow.leaderReRoll = shadowReRoll;
@@ -502,19 +579,19 @@ export class WotrBattleHandler {
           shadowReRoll,
           combatRound.shadow,
           combatRound,
-          true
+          true,
         );
         combatRound.freePeoples.leaderReRoll = freePeoplesReRoll;
         combatRound.freePeoples.nLeaderSuccesses = this.getNRollSuccesses(
           freePeoplesReRoll,
           combatRound.freePeoples,
           combatRound,
-          true
+          true,
         );
       } else {
         const defenderReRoll = await this.reRollCombatDice(
           defenderNReRolls,
-          combatRound.defender.player
+          combatRound.defender.player,
         );
         // eslint-disable-next-line require-atomic-updates
         combatRound.defender.leaderReRoll = defenderReRoll;
@@ -522,13 +599,13 @@ export class WotrBattleHandler {
           defenderReRoll,
           combatRound.defender,
           combatRound,
-          true
+          true,
         );
       }
     } else if (attackerNReRolls) {
       const attackerReRoll = await this.reRollCombatDice(
         attackerNReRolls,
-        combatRound.attacker.player
+        combatRound.attacker.player,
       );
       // eslint-disable-next-line require-atomic-updates
       combatRound.attacker.leaderReRoll = attackerReRoll;
@@ -536,55 +613,76 @@ export class WotrBattleHandler {
         attackerReRoll,
         combatRound.attacker,
         combatRound,
-        true
+        true,
       );
     }
     combatRound.defender.nTotalHits =
-      (combatRound.defender.nCombatSuccesses ?? 0) + (combatRound.defender.nLeaderSuccesses ?? 0);
+      (combatRound.defender.nCombatSuccesses ?? 0) +
+      (combatRound.defender.nLeaderSuccesses ?? 0);
     combatRound.attacker.nTotalHits =
-      (combatRound.attacker.nCombatSuccesses ?? 0) + (combatRound.attacker.nLeaderSuccesses ?? 0);
+      (combatRound.attacker.nCombatSuccesses ?? 0) +
+      (combatRound.attacker.nLeaderSuccesses ?? 0);
   }
 
-  private getNRolls(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+  private getNRolls(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+  ): number {
     const combatStrength = this.getCombatStrength(combatFront, combatRound);
     let nRolls = Math.min(combatStrength, 5);
     const lessCombatDiceByCard = this.battleModifiers.getCardLessCombatDice(
       combatFront,
-      combatRound
+      combatRound,
     );
-    if (lessCombatDiceByCard) nRolls = Math.max(1, nRolls - lessCombatDiceByCard);
-    if (combatFront.lessNCombatDice) nRolls = Math.max(1, nRolls - combatFront.lessNCombatDice);
-    if (combatFront.maxNCombatDice) nRolls = Math.min(nRolls, combatFront.maxNCombatDice);
+    if (lessCombatDiceByCard)
+      nRolls = Math.max(1, nRolls - lessCombatDiceByCard);
+    if (combatFront.lessNCombatDice)
+      nRolls = Math.max(1, nRolls - combatFront.lessNCombatDice);
+    if (combatFront.maxNCombatDice)
+      nRolls = Math.min(nRolls, combatFront.maxNCombatDice);
     return nRolls;
   }
 
   private getNReRolls(
     combatFront: WotrCombatFront,
     oppositeCombatFront: WotrCombatFront,
-    combatRound: WotrCombatRound
+    combatRound: WotrCombatRound,
   ): number {
     if (combatFront.leaderRollCancelled) return 0;
     const combatRoll = combatFront.combatRoll!;
     const nSuccesses = combatFront.nCombatSuccesses!;
     const nFailures = combatRoll.length - nSuccesses;
     if (!nFailures) return 0;
-    const oppositeHitPoints = this.getHitPoints(oppositeCombatFront, combatRound);
+    const oppositeHitPoints = this.getHitPoints(
+      oppositeCombatFront,
+      combatRound,
+    );
     if (nSuccesses >= oppositeHitPoints) return 0;
     const leadership = this.getLeadership(combatFront, combatRound);
     if (!leadership) return 0;
     let nReRolls = Math.min(nFailures, leadership);
-    if (combatFront.lessNLeaderDice) nReRolls = Math.max(0, nReRolls - combatFront.lessNLeaderDice);
+    if (combatFront.lessNLeaderDice)
+      nReRolls = Math.max(0, nReRolls - combatFront.lessNLeaderDice);
     return nReRolls;
   }
 
-  private getHitPoints(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+  private getHitPoints(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+  ): number {
     if (combatFront.isAttacker) {
       const retroguard = this.battle().retroguard;
-      const retroguardLeadership = retroguard ? this.getUnitsHitPoints(retroguard) : 0;
-      const armyLeadership = this.getUnitsHitPoints(this.attackingArmy(combatRound.action));
+      const retroguardLeadership = retroguard
+        ? this.getUnitsHitPoints(retroguard)
+        : 0;
+      const armyLeadership = this.getUnitsHitPoints(
+        this.attackingArmy(combatRound.action),
+      );
       return armyLeadership - retroguardLeadership;
     } else {
-      return this.getUnitsHitPoints(this.defendingArmy(combatRound.action, combatRound.siege));
+      return this.getUnitsHitPoints(
+        this.defendingArmy(combatRound.action, combatRound.siege),
+      );
     }
   }
 
@@ -598,16 +696,22 @@ export class WotrBattleHandler {
     return damagePoints;
   }
 
-  getCombatStrength(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+  getCombatStrength(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+  ): number {
     const army = combatFront.army();
     let strength = this.unitRules.getArmyCombatStrength(army);
-    combatFront.combatStrengthModifiers.forEach(modifier => {
+    combatFront.combatStrengthModifiers.forEach((modifier) => {
       strength += modifier;
     });
     return strength;
   }
 
-  private getLeadership(combatFront: WotrCombatFront, combatRound: WotrCombatRound): number {
+  private getLeadership(
+    combatFront: WotrCombatFront,
+    combatRound: WotrCombatRound,
+  ): number {
     const army = combatFront.isAttacker
       ? this.attackingArmy(combatRound.action)
       : this.defendingArmy(combatRound.action, combatRound.siege);
@@ -617,7 +721,7 @@ export class WotrBattleHandler {
         army,
         false,
         combatFront.cancelledCharacters,
-        combatFront.negateNazgulLeadership
+        combatFront.negateNazgulLeadership,
       ) - combatFront.forfeitedLeadership
     );
   }
@@ -626,9 +730,13 @@ export class WotrBattleHandler {
     roll: WotrCombatDie[],
     combatFront: WotrCombatFront,
     combatRound: WotrCombatRound,
-    reRoll: boolean
+    reRoll: boolean,
   ) {
-    const successThreashold = this.getSuccessThreashold(combatFront, combatRound, reRoll);
+    const successThreashold = this.getSuccessThreashold(
+      combatFront,
+      combatRound,
+      reRoll,
+    );
     return roll.reduce((successes, dice) => {
       if (dice >= successThreashold) {
         successes++;
@@ -640,10 +748,15 @@ export class WotrBattleHandler {
   private getSuccessThreashold(
     combatFront: WotrCombatFront,
     combatRound: WotrCombatRound,
-    reRoll: boolean
+    reRoll: boolean,
   ) {
-    const defaultSuccessThreashold = this.getDefaultSuccessThreashold(combatFront, combatRound);
-    const modifiers = reRoll ? combatFront.leaderModifiers : combatFront.combatModifiers;
+    const defaultSuccessThreashold = this.getDefaultSuccessThreashold(
+      combatFront,
+      combatRound,
+    );
+    const modifiers = reRoll
+      ? combatFront.leaderModifiers
+      : combatFront.combatModifiers;
     return modifiers.reduce((t, modifier) => {
       t -= modifier;
       return t;
@@ -652,11 +765,14 @@ export class WotrBattleHandler {
 
   private getDefaultSuccessThreashold(
     combatFront: WotrCombatFront,
-    combatRound: WotrCombatRound
+    combatRound: WotrCombatRound,
   ): number {
     if (combatFront.isAttacker) {
       const region = this.attackedRegion(combatRound.action);
-      if ((region.fortification || region.settlement === "city") && combatRound.round === 1) {
+      if (
+        (region.fortification || region.settlement === 'city') &&
+        combatRound.round === 1
+      ) {
         return 6;
       }
       if (region.underSiegeArmy) {
@@ -666,26 +782,34 @@ export class WotrBattleHandler {
     return 5;
   }
 
-  private async chooseCasualties(combatRound: WotrCombatRound, battle: WotrBattle) {
+  private async chooseCasualties(
+    combatRound: WotrCombatRound,
+    battle: WotrBattle,
+  ) {
     const attackingArmy = this.attackingArmy(combatRound.action);
     let defenderHits = combatRound.defender.nTotalHits || 0;
-    for (const modifier of combatRound.defender.hitsModifiers) defenderHits += modifier;
+    for (const modifier of combatRound.defender.hitsModifiers)
+      defenderHits += modifier;
     await this.unitHandler.chooseArmyCasualties(
       defenderHits,
       attackingArmy,
       battle.action.fromRegion,
       null,
-      combatRound.attacker.player
+      combatRound.attacker.player,
     );
-    const attackedArmy = this.defendingArmy(combatRound.action, combatRound.siege);
+    const attackedArmy = this.defendingArmy(
+      combatRound.action,
+      combatRound.siege,
+    );
     let attackerHits = combatRound.attacker.nTotalHits || 0;
-    for (const modifier of combatRound.attacker.hitsModifiers) attackerHits += modifier;
+    for (const modifier of combatRound.attacker.hitsModifiers)
+      attackerHits += modifier;
     await this.unitHandler.chooseArmyCasualties(
       attackerHits,
       attackedArmy,
       battle.action.toRegion,
       null,
-      combatRound.defender.player
+      combatRound.defender.player,
     );
   }
 
@@ -694,7 +818,10 @@ export class WotrBattleHandler {
   }
   private attackingArmy(action: WotrArmyAttack): WotrArmy {
     if (action.retroguard) {
-      return this.unitUtils.splitUnits(this.attackingRegion(action).army, action.retroguard)!;
+      return this.unitUtils.splitUnits(
+        this.attackingRegion(action).army,
+        action.retroguard,
+      )!;
     } else {
       return this.attackingRegion(action).army!;
     }
@@ -712,15 +839,13 @@ export class WotrBattleHandler {
 
   private async wantRetreatIntoSiege(player: WotrPlayer): Promise<boolean> {
     const story = await player.wantRetreatIntoSiege();
-    const action = assertAction<WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege>(
-      story,
-      "army-retreat-into-siege",
-      "army-not-retreat-into-siege"
-    );
+    const action = assertAction<
+      WotrArmyRetreatIntoSiege | WotrArmyNotRetreatIntoSiege
+    >(story, 'army-retreat-into-siege', 'army-not-retreat-into-siege');
     switch (action.type) {
-      case "army-retreat-into-siege":
+      case 'army-retreat-into-siege':
         return true;
-      case "army-not-retreat-into-siege":
+      case 'army-not-retreat-into-siege':
         return false;
     }
   }
@@ -728,69 +853,75 @@ export class WotrBattleHandler {
   private canRetreat(defender: WotrCombatFront): boolean {
     const battle = this.battle();
     const region = this.regionStore.region(battle.action.toRegion);
-    return region.neighbors.some(neighbor => {
+    return region.neighbors.some((neighbor) => {
       return this.regionStore.isFreeForArmyRetreat(neighbor, defender.frontId);
     });
   }
 
   private async wantRetreat(
-    player: WotrPlayer
-  ): Promise<"army-retreat-into-siege" | "army-retreat" | "army-not-retreat"> {
+    player: WotrPlayer,
+  ): Promise<'army-retreat-into-siege' | 'army-retreat' | 'army-not-retreat'> {
     const story = await player.wantRetreat();
-    const action = assertAction<WotrArmyRetreatIntoSiege | WotrArmyRetreat | WotrArmyNotRetreat>(
-      story,
-      "army-retreat-into-siege",
-      "army-retreat",
-      "army-not-retreat"
-    );
+    const action = assertAction<
+      WotrArmyRetreatIntoSiege | WotrArmyRetreat | WotrArmyNotRetreat
+    >(story, 'army-retreat-into-siege', 'army-retreat', 'army-not-retreat');
     return action.type;
   }
 
-  private async reRollCombatDice(nDice: number, player: WotrPlayer): Promise<WotrCombatDie[]> {
+  private async reRollCombatDice(
+    nDice: number,
+    player: WotrPlayer,
+  ): Promise<WotrCombatDie[]> {
     const story = await player.reRollCombatDice(nDice);
-    const action = assertAction<WotrCombatReRoll>(story, "combat-re-roll");
+    const action = assertAction<WotrCombatReRoll>(story, 'combat-re-roll');
     return action.dice;
   }
 
   private async parallelRollCombatDice(
-    nDice: Record<WotrFrontId, number>
+    nDice: Record<WotrFrontId, number>,
   ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
     const stories = await this.allPlayers.rollCombatDice(nDice);
     return {
-      "free-peoples": assertAction<WotrCombatRoll>(stories["free-peoples"], "combat-roll").dice,
-      "shadow": assertAction<WotrCombatRoll>(stories.shadow, "combat-roll").dice
+      'free-peoples': assertAction<WotrCombatRoll>(
+        stories['free-peoples'],
+        'combat-roll',
+      ).dice,
+      shadow: assertAction<WotrCombatRoll>(stories.shadow, 'combat-roll').dice,
     };
   }
 
   private async parallelReRollCombatDice(
-    nDice: Record<WotrFrontId, number>
+    nDice: Record<WotrFrontId, number>,
   ): Promise<Record<WotrFrontId, WotrCombatDie[]>> {
     const stories = await this.allPlayers.reRollCombatDice(nDice);
     return {
-      "free-peoples": assertAction<WotrCombatReRoll>(stories["free-peoples"], "combat-re-roll")
+      'free-peoples': assertAction<WotrCombatReRoll>(
+        stories['free-peoples'],
+        'combat-re-roll',
+      ).dice,
+      shadow: assertAction<WotrCombatReRoll>(stories.shadow, 'combat-re-roll')
         .dice,
-      "shadow": assertAction<WotrCombatReRoll>(stories.shadow, "combat-re-roll").dice
     };
   }
 
   private async battleAdvance(player: WotrPlayer): Promise<boolean> {
     const currentCard = this.frontStore.currentCard();
-    if (currentCard === "sstr10") {
+    if (currentCard === 'sstr10') {
       this.applyArmyAdvance({
-        type: "army-advance"
+        type: 'army-advance',
       });
       return true;
     }
     const story = await player.battleAdvance();
     const action = assertAction<WotrArmyAdvance | WotrArmyNotAdvance>(
       story,
-      "army-advance",
-      "army-not-advance"
+      'army-advance',
+      'army-not-advance',
     );
     switch (action.type) {
-      case "army-advance":
+      case 'army-advance':
         return true;
-      case "army-not-advance":
+      case 'army-not-advance':
         return false;
     }
   }
@@ -801,24 +932,29 @@ export class WotrBattleHandler {
     return this.unitUtils.hasEliteUnits(attackingArmy);
   }
 
-  private async wantContinueBattle(combatRound: WotrCombatRound): Promise<boolean> {
-    const story = await combatRound.attacker.player.wantContinueBattle(combatRound);
-    if (!("actions" in story)) throw new Error("Invalid story");
+  private async wantContinueBattle(
+    combatRound: WotrCombatRound,
+  ): Promise<boolean> {
+    const story =
+      await combatRound.attacker.player.wantContinueBattle(combatRound);
+    if (!('actions' in story)) throw new Error('Invalid story');
     const regularUnitElimination = findAction<WotrRegularUnitElimination>(
       story.actions,
-      "regular-unit-elimination"
+      'regular-unit-elimination',
     );
     if (regularUnitElimination)
-      this.battleStore.addNRegularCasualtiesToContinueSiege(regularUnitElimination.quantity);
+      this.battleStore.addNRegularCasualtiesToContinueSiege(
+        regularUnitElimination.quantity,
+      );
     const action = assertAction<WotrBattleContinue | WotrBattleCease>(
       story,
-      "battle-continue",
-      "battle-cease"
+      'battle-continue',
+      'battle-cease',
     );
     switch (action.type) {
-      case "battle-continue":
+      case 'battle-continue':
         return true;
-      case "battle-cease":
+      case 'battle-cease':
         return false;
     }
   }

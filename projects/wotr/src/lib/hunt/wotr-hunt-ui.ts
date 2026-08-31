@@ -1,13 +1,16 @@
-import { inject, Injectable } from "@angular/core";
-import { randomUtil } from "../../../../commons/utils/src";
-import { WotrCombatDie } from "../battle/wotr-combat-die-models";
-import { WotrCardDiscardFromTable } from "../card/wotr-card-actions";
-import { WotrCardHandler } from "../card/wotr-card-handler";
-import { getCard, WotrCardId } from "../card/wotr-card-models";
-import { eliminateCharacter, WotrCharacterElimination } from "../character/wotr-character-actions";
-import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { findAction, WotrAction } from "../commons/wotr-action-models";
+import { inject, Injectable } from '@angular/core';
+import { randomUtil } from '../../../../commons/utils/src';
+import { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import { WotrCardDiscardFromTable } from '../card/wotr-card-actions';
+import { WotrCardHandler } from '../card/wotr-card-handler';
+import { getCard, WotrCardId } from '../card/wotr-card-models';
+import {
+  eliminateCharacter,
+  WotrCharacterElimination,
+} from '../character/wotr-character-actions';
+import { WotrCharacterHandler } from '../character/wotr-character-handler';
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { findAction, WotrAction } from '../commons/wotr-action-models';
 import {
   chooseRandomCompanion,
   corruptFellowship,
@@ -17,15 +20,15 @@ import {
   WotrCompanionSeparation,
   WotrFellowshipCorruption,
   WotrFellowshipReveal,
-  WotrFellowshipRevealInMordor
-} from "../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipHandler } from "../fellowship/wotr-fellowship-handler";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { WotrRegionStore } from "../region/wotr-region-store";
+  WotrFellowshipRevealInMordor,
+} from '../fellowship/wotr-fellowship-actions';
+import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
+import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import { WotrFellowshipUi } from '../fellowship/wotr-fellowship-ui';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrUiChoice } from '../game/wotr-game-ui';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   allocateHuntDice,
   continueCorruptionAttempt,
@@ -35,12 +38,12 @@ import {
   rollShelobsLairDie,
   startCorruptionAttempt,
   stopCorruptionAttempt,
-  WotrHuntTileDraw
-} from "./wotr-hunt-actions";
-import { WotrHuntHandler } from "./wotr-hunt-handler";
-import { WotrHuntEffectParams } from "./wotr-hunt-models";
-import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
-import { WotrHuntStore } from "./wotr-hunt-store";
+  WotrHuntTileDraw,
+} from './wotr-hunt-actions';
+import { WotrHuntHandler } from './wotr-hunt-handler';
+import { WotrHuntEffectParams } from './wotr-hunt-models';
+import { WotrHuntModifiers } from './wotr-hunt-modifiers';
+import { WotrHuntStore } from './wotr-hunt-store';
 
 @Injectable()
 export class WotrHuntUi {
@@ -57,23 +60,25 @@ export class WotrHuntUi {
   private huntHandler = inject(WotrHuntHandler);
 
   private eliminateGuideChoice: WotrUiChoice<WotrHuntEffectParams> = {
-    label: () => "Eliminate the guide",
-    isAvailable: () => this.fellowshipStore.guide() !== "gollum",
+    label: () => 'Eliminate the guide',
+    isAvailable: () => this.fellowshipStore.guide() !== 'gollum',
     actions: async () => {
       const actions: WotrAction[] = [];
       const guide = this.fellowshipStore.guide();
       actions.push(eliminateCharacter(guide));
       await this.characterHandler.eliminateCharactersOnly([guide]);
-      if (this.fellowshipStore.guide() !== "gollum") {
+      if (this.fellowshipStore.guide() !== 'gollum') {
         actions.push(await this.fellowshipUi.changeGuide());
       }
       return actions;
-    }
+    },
   };
 
   private gollumRevealingChoice: WotrUiChoice<WotrHuntEffectParams> = {
-    label: () => "Reveal with Gollum",
-    isAvailable: () => this.fellowshipStore.isHidden() && this.fellowshipStore.guide() === "gollum",
+    label: () => 'Reveal with Gollum',
+    isAvailable: () =>
+      this.fellowshipStore.isHidden() &&
+      this.fellowshipStore.guide() === 'gollum',
     actions: async () => {
       const actions: WotrAction[] = [];
       if (this.fellowshipStore.isOnMordorTrack()) {
@@ -85,39 +90,44 @@ export class WotrHuntUi {
         this.fellowshipHandler.reveal(a[0].region);
       }
       return actions;
-    }
+    },
   };
 
   private randomCompanionChoice: WotrUiChoice<WotrHuntEffectParams> = {
-    label: () => "Eliminate a random companion",
+    label: () => 'Eliminate a random companion',
     isAvailable: () => this.fellowshipStore.companions().length > 0,
     actions: async () => {
       const companions = this.fellowshipStore.companions();
       const randomCompanion = randomUtil.getRandomElement(companions);
       return [chooseRandomCompanion(randomCompanion)];
-    }
+    },
   };
 
-  private useRingChoice: (damage: number) => WotrUiChoice<WotrHuntEffectParams> = damage => ({
-    label: () => "Use the Ring",
-    actions: async params => {
+  private useRingChoice: (
+    damage: number,
+  ) => WotrUiChoice<WotrHuntEffectParams> = (damage) => ({
+    label: () => 'Use the Ring',
+    actions: async (params) => {
       return [corruptFellowship(damage)];
-    }
+    },
   });
 
   async huntAllocationPhase(): Promise<WotrAction[]> {
     const min = this.huntStore.minimumNumberOfHuntDice();
     const max = this.huntStore.maximumNumberOfHuntDice();
-    const quantity = await this.ui.askQuantity("How many hunt dice do you want to allocate?", {
-      min,
-      max,
-      default: min
-    });
+    const quantity = await this.ui.askQuantity(
+      'How many hunt dice do you want to allocate?',
+      {
+        min,
+        max,
+        default: min,
+      },
+    );
     return [allocateHuntDice(quantity)];
   }
 
   async rollHuntDice(): Promise<WotrAction> {
-    await this.ui.askContinue("Roll hunt dice");
+    await this.ui.askContinue('Roll hunt dice');
     const huntDice: WotrCombatDie[] = [];
     for (let i = 0; i < this.huntStore.nHuntDice(); i++) {
       huntDice.push(randomUtil.getRandomInteger(1, 7) as WotrCombatDie);
@@ -142,36 +152,50 @@ export class WotrHuntUi {
 
   async revealFellowship(): Promise<[WotrFellowshipReveal]> {
     const progress = this.fellowshipStore.progress();
-    const fellowshipRegion = this.regionStore.regions().find(r => r.fellowship)!;
+    const fellowshipRegion = this.regionStore
+      .regions()
+      .find((r) => r.fellowship)!;
     const reachableRegions = this.regionStore.reachableRegions(
       fellowshipRegion.id,
       progress,
       undefined,
-      region => region.id !== "minas-morgul" && region.id !== "morannon"
+      (region) => region.id !== 'minas-morgul' && region.id !== 'morannon',
     );
-    const validRegions = reachableRegions.filter(r => {
+    const validRegions = reachableRegions.filter((r) => {
       const region = this.regionStore.region(r);
-      if (region.settlement !== "city" && region.settlement !== "stronghold") return true;
-      if (region.controlledBy !== "free-peoples") return true;
+      if (region.settlement !== 'city' && region.settlement !== 'stronghold')
+        return true;
+      if (region.controlledBy !== 'free-peoples') return true;
       return false;
     });
     const chosenRegion = await this.ui.askRegion(
-      "Choose a region where to reveal the fellowship",
-      validRegions
+      'Choose a region where to reveal the fellowship',
+      validRegions,
     );
     return [revealFellowship(chosenRegion)];
   }
 
-  async drawHuntTile(n: number, triggeredCardId: WotrCardId | null): Promise<WotrHuntTileDraw> {
+  async drawHuntTile(
+    n: number,
+    triggeredCardId: WotrCardId | null,
+  ): Promise<WotrHuntTileDraw> {
     const card = triggeredCardId ? getCard(triggeredCardId) : null;
     if (n === 1) {
-      await this.ui.askContinue(`Draw hunt tile${card ? ` for ${card.label}` : ""}`);
+      await this.ui.askContinue(
+        `Draw hunt tile${card ? ` for ${card.label}` : ''}`,
+      );
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return drawHuntTile(huntTile);
     } else {
       n = Math.min(n, this.huntStore.huntPool().length);
-      await this.ui.askContinue(`Draw ${n} hunt tiles${card ? ` for ${card.label}` : ""}`);
-      const huntTiles = randomUtil.getRandomElements(n, n, this.huntStore.huntPool());
+      await this.ui.askContinue(
+        `Draw ${n} hunt tiles${card ? ` for ${card.label}` : ''}`,
+      );
+      const huntTiles = randomUtil.getRandomElements(
+        n,
+        n,
+        this.huntStore.huntPool(),
+      );
       return drawHuntTile(...huntTiles);
     }
   }
@@ -185,8 +209,12 @@ export class WotrHuntUi {
     if (randomCompanionIds) {
       const guide = this.fellowshipStore.guide();
       const wasGuide = randomCompanionIds.includes(guide);
-      const randomCompanions = randomCompanionIds.map(id => this.q.character(id));
-      await this.ui.askContinue(`Eliminate ${randomCompanions.map(c => c.name).join(", ")}`);
+      const randomCompanions = randomCompanionIds.map((id) =>
+        this.q.character(id),
+      );
+      await this.ui.askContinue(
+        `Eliminate ${randomCompanions.map((c) => c.name).join(', ')}`,
+      );
       actions.push(eliminateCharacter(...randomCompanionIds));
       damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
       casualtyTaken = true;
@@ -207,16 +235,21 @@ export class WotrHuntUi {
       if (!casualtyTaken && !params.onlyRingAbsorbtion) {
         if (
           this.fellowshipStore.isHidden() &&
-          this.fellowshipStore.guide() === "gollum" &&
+          this.fellowshipStore.guide() === 'gollum' &&
           !params.isRevealing
         ) {
           choices.push(this.gollumRevealingChoice);
         }
-        if (!params.mustEliminateRandomCompanion) choices.push(this.eliminateGuideChoice);
+        if (!params.mustEliminateRandomCompanion)
+          choices.push(this.eliminateGuideChoice);
         choices.push(this.randomCompanionChoice);
       }
       const hasCompanion = this.fellowshipStore.companions().length > 0;
-      if (casualtyTaken || !params.mustEliminateRandomCompanion || !hasCompanion)
+      if (
+        casualtyTaken ||
+        !params.mustEliminateRandomCompanion ||
+        !hasCompanion
+      )
         choices.push(this.useRingChoice(damage));
       // Can use card with Foul Thing from the Deep
       // https://boardgamegeek.com/thread/969048/confirmation-can-you-use-horn-of-gondor-against-fo
@@ -225,27 +258,36 @@ export class WotrHuntUi {
       const chosenActions = await this.ui.askChoice(
         `Absorb ${damage}/${params.damage} hunt damage points`,
         choices,
-        params
+        params,
       );
       actions.push(...chosenActions);
       const characterElimination = findAction<WotrCharacterElimination>(
         chosenActions,
-        "character-elimination"
+        'character-elimination',
       );
-      const randomCompanion = findAction<WotrCompanionRandom>(chosenActions, "companion-random");
-      const useRing = findAction<WotrFellowshipCorruption>(chosenActions, "fellowship-corruption");
+      const randomCompanion = findAction<WotrCompanionRandom>(
+        chosenActions,
+        'companion-random',
+      );
+      const useRing = findAction<WotrFellowshipCorruption>(
+        chosenActions,
+        'fellowship-corruption',
+      );
       const discardTableCard = findAction<WotrCardDiscardFromTable>(
         chosenActions,
-        "card-discard-from-table"
+        'card-discard-from-table',
       );
-      const gollumRevealing = findAction<WotrFellowshipReveal>(chosenActions, "fellowship-reveal");
+      const gollumRevealing = findAction<WotrFellowshipReveal>(
+        chosenActions,
+        'fellowship-reveal',
+      );
       const gollumRevealingInMordor = findAction<WotrFellowshipRevealInMordor>(
         chosenActions,
-        "fellowship-reveal-in-mordor"
+        'fellowship-reveal-in-mordor',
       );
       const companionSeparation = findAction<WotrCompanionSeparation>(
         chosenActions,
-        "companion-separation"
+        'companion-separation',
       );
       if (randomCompanion) {
         continuee = false;
@@ -254,21 +296,23 @@ export class WotrHuntUi {
 
       if (characterElimination) {
         if (
-          params.guideSpecialAbilityAbsorption?.companionId === characterElimination.characters[0]
+          params.guideSpecialAbilityAbsorption?.companionId ===
+          characterElimination.characters[0]
         ) {
           // Meriadoc and Peregrin separate for 1 damage absorption
           damage -= params.guideSpecialAbilityAbsorption.amount;
         } else {
           damage -= characterElimination.characters.reduce(
             (sum, c) => sum + this.q.character(c).level,
-            0
+            0,
           );
           casualtyTaken = true;
         }
       }
       if (companionSeparation) {
         if (
-          params.guideSpecialAbilityAbsorption?.companionId === companionSeparation.companions[0]
+          params.guideSpecialAbilityAbsorption?.companionId ===
+          companionSeparation.companions[0]
         ) {
           // Meriadoc and Peregrin separate for 1 damage absorption
           damage -= params.guideSpecialAbilityAbsorption.amount;
@@ -276,7 +320,9 @@ export class WotrHuntUi {
       }
       if (useRing) damage -= useRing.quantity;
       if (discardTableCard) {
-        damage -= this.huntHandler.cardHuntDamageReduction(discardTableCard.card);
+        damage -= this.huntHandler.cardHuntDamageReduction(
+          discardTableCard.card,
+        );
         params.tableCardsUsed = true;
         this.cardHandler.discardCardFromTable(discardTableCard.card);
       }
@@ -287,11 +333,11 @@ export class WotrHuntUi {
 
   async lureOfTheRingEffect(character: WotrCompanionId): Promise<WotrAction[]> {
     const companion = this.q.character(character);
-    const option = await this.ui.askOption<"corrupt" | "eliminate">("Choose", [
-      { label: `Add ${companion.level} corruption points`, value: "corrupt" },
-      { label: `Eliminate ${companion.name}`, value: "eliminate" }
+    const option = await this.ui.askOption<'corrupt' | 'eliminate'>('Choose', [
+      { label: `Add ${companion.level} corruption points`, value: 'corrupt' },
+      { label: `Eliminate ${companion.name}`, value: 'eliminate' },
     ]);
-    if (option === "corrupt") {
+    if (option === 'corrupt') {
       return [corruptFellowship(companion.level)];
     } else {
       return [eliminateCharacter(character)];
@@ -299,31 +345,34 @@ export class WotrHuntUi {
   }
 
   private async startCorruptionAttempt() {
-    const awailableSovereigns = this.q.sovereigns.filter(s => !s.isAwakened() && !s.isCorrupted());
-    const chosenSovereign = await this.ui.askSovereign(
-      "Choose a sovereign to corrupt",
-      awailableSovereigns.map(s => s.id)
+    const awailableSovereigns = this.q.sovereigns.filter(
+      (s) => !s.isAwakened() && !s.isCorrupted(),
     );
-    await this.ui.askContinue("Draw hunt tile");
+    const chosenSovereign = await this.ui.askSovereign(
+      'Choose a sovereign to corrupt',
+      awailableSovereigns.map((s) => s.id),
+    );
+    await this.ui.askContinue('Draw hunt tile');
     const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
     return startCorruptionAttempt(chosenSovereign, huntTile);
   }
 
   corruptionAttemptChoice: WotrUiChoice = {
-    label: () => "Corruption attempt",
-    actions: async () => [await this.startCorruptionAttempt()]
+    label: () => 'Corruption attempt',
+    actions: async () => [await this.startCorruptionAttempt()],
   };
 
   async chooseCorruptionTile(): Promise<WotrAction> {
     const corruptionAttempt = this.huntStore.getCorruptionAttempt();
-    if (!corruptionAttempt) throw new Error("No corruption attempt in progress");
+    if (!corruptionAttempt)
+      throw new Error('No corruption attempt in progress');
     const drawnTiles = corruptionAttempt.drawnTiles;
     const lastDrawnTileId = drawnTiles[drawnTiles.length - 1];
     const lastDrawnTile = this.huntStore.huntTile(lastDrawnTileId);
     if (lastDrawnTile.crown) {
       return stopCorruptionAttempt(lastDrawnTileId);
-    } else if (lastDrawnTile.type !== "standard" || lastDrawnTile.eye) {
-      await this.ui.askContinue("Draw hunt tile");
+    } else if (lastDrawnTile.type !== 'standard' || lastDrawnTile.eye) {
+      await this.ui.askContinue('Draw hunt tile');
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return continueCorruptionAttempt(huntTile);
     }
@@ -331,36 +380,38 @@ export class WotrHuntUi {
     const remainingDraws = nHuntDice - drawnTiles.length;
     if (this.q.sequentialCorruptionDraw()) {
       if (remainingDraws > 1) {
-        const option = await this.ui.askOption<"choose" | "draw">(
-          "Do you want to choose the last tile?",
+        const option = await this.ui.askOption<'choose' | 'draw'>(
+          'Do you want to choose the last tile?',
           [
-            { label: "Yes, choose the last tile", value: "choose" },
-            { label: "No, draw another tile", value: "draw" }
-          ]
+            { label: 'Yes, choose the last tile', value: 'choose' },
+            { label: 'No, draw another tile', value: 'draw' },
+          ],
         );
-        if (option === "draw") {
-          await this.ui.askContinue("Draw hunt tile");
-          const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+        if (option === 'draw') {
+          await this.ui.askContinue('Draw hunt tile');
+          const huntTile = randomUtil.getRandomElement(
+            this.huntStore.huntPool(),
+          );
           return continueCorruptionAttempt(huntTile);
         } else {
           return stopCorruptionAttempt(lastDrawnTileId);
         }
       } else {
-        await this.ui.askContinue("Choose the last tile");
+        await this.ui.askContinue('Choose the last tile');
         return stopCorruptionAttempt(lastDrawnTileId);
       }
     } else {
       if (remainingDraws > 0) {
-        await this.ui.askContinue("Draw hunt tile");
+        await this.ui.askContinue('Draw hunt tile');
         const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
         return continueCorruptionAttempt(huntTile);
       } else {
         const chosenTile = await this.ui.askOption(
-          "Choose a corruption tile to apply",
-          drawnTiles.map(id => ({
+          'Choose a corruption tile to apply',
+          drawnTiles.map((id) => ({
             label: id,
-            value: id
-          }))
+            value: id,
+          })),
         );
         return stopCorruptionAttempt(chosenTile);
       }

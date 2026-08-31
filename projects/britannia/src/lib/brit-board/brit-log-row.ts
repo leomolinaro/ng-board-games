@@ -1,22 +1,32 @@
-import { Component, OnChanges, inject, input } from "@angular/core";
-import { SimpleChanges } from "@leobg/commons/utils";
-import { BritArea, BritAreaId, BritLeaderId, BritPhase } from "../brit-components.models";
-import { BritComponentsService } from "../brit-components.service";
-import { BritAreaLeader, BritAreaUnit, BritLog, BritPlayer } from "../brit-game-state.models";
+import { Component, OnChanges, inject, input } from '@angular/core';
+import { SimpleChanges } from '@leobg/commons/utils';
+import {
+  BritArea,
+  BritAreaId,
+  BritLeaderId,
+  BritPhase,
+} from '../brit-components.models';
+import { BritComponentsService } from '../brit-components.service';
+import {
+  BritAreaLeader,
+  BritAreaUnit,
+  BritLog,
+  BritPlayer,
+} from '../brit-game-state.models';
 
 interface BritLogStringFragment {
-  type: "string";
+  type: 'string';
   label: string;
 }
 
 interface BritLogPlayerFragment {
-  type: "player";
+  type: 'player';
   label: string;
   player: BritPlayer;
 }
 
 interface BritLogAreaFragment {
-  type: "area";
+  type: 'area';
   label: string;
   area: BritArea;
 }
@@ -33,19 +43,20 @@ type BritLogFragment =
   | BritLogAreaFragment /*  | BritLogLandFragment | BritLogPawnFragment */;
 
 @Component({
-  selector: "brit-log-row",
+  selector: 'brit-log-row',
   template: `
     <div
       class="brit-log"
       [class.brit-log-h0]="log().type === 'setup' || log().type === 'round'"
       [class.brit-log-h1]="log().type === 'nation-turn'"
-      [class.brit-log-h2]="log().type === 'phase'">
+      [class.brit-log-h2]="log().type === 'phase'"
+    >
       @for (fragment of fragments; track fragment) {
         @switch (fragment.type) {
-          @case ("string") {
+          @case ('string') {
             <span>{{ fragment.label }}</span>
           }
-          @case ("area") {
+          @case ('area') {
             <span>{{ fragment.label }}</span>
           }
           <!-- <a *ngSwitchCase="'player'" [class]="'is-' + $any (fragment).player.color">{{ fragment.label }}</a>
@@ -57,7 +68,7 @@ type BritLogFragment =
   `,
   styles: [
     `
-      @use "brit-variables" as *;
+      @use 'brit-variables' as *;
 
       .brit-log {
         margin-left: 1.5vw;
@@ -88,8 +99,8 @@ type BritLogFragment =
           color: $green;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BritLogRow implements OnChanges {
   private components = inject(BritComponentsService);
@@ -102,38 +113,44 @@ export class BritLogRow implements OnChanges {
     if (changes.log) {
       const l = this.log();
       switch (l.type) {
-        case "setup":
-          this.fragments = [this.string("Setup")];
+        case 'setup':
+          this.fragments = [this.string('Setup')];
           break;
-        case "round":
+        case 'round':
           this.fragments = [this.string(`Round ${l.roundId}`)];
           break;
-        case "nation-turn":
-          this.fragments = [this.string(this.components.NATION[l.nationId].label)];
+        case 'nation-turn':
+          this.fragments = [
+            this.string(this.components.NATION[l.nationId].label),
+          ];
           break;
-        case "phase":
+        case 'phase':
           this.fragments = [this.string(this.getPhaseLabel(l.phase))];
           break;
-        case "population-marker-set":
+        case 'population-marker-set':
           this.fragments = [
             this.string(
-              `Population marker ${l.populationMarker == null ? "unset" : `set to ${l.populationMarker}`}`
-            )
+              `Population marker ${l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`}`,
+            ),
           ];
           break;
-        case "infantry-placement":
+        case 'infantry-placement':
           this.fragments = [
-            this.string(`${l.quantity} infantr${l.quantity === 1 ? "y" : "ies"} placed in `),
-            this.area(l.landId)
+            this.string(
+              `${l.quantity} infantr${l.quantity === 1 ? 'y' : 'ies'} placed in `,
+            ),
+            this.area(l.landId),
           ];
           break;
-        case "infantry-reinforcement":
+        case 'infantry-reinforcement':
           this.fragments = [
-            this.string(`${l.quantity} infantry reinforcement${l.quantity === 1 ? "" : "s"} in `),
-            this.area(l.areaId)
+            this.string(
+              `${l.quantity} infantry reinforcement${l.quantity === 1 ? '' : 's'} in `,
+            ),
+            this.area(l.areaId),
           ];
           break;
-        case "army-movement": {
+        case 'army-movement': {
           this.fragments = [];
           let quantity = 0;
           let isFirst = true;
@@ -141,9 +158,9 @@ export class BritLogRow implements OnChanges {
             if (isFirst) {
               isFirst = false;
             } else {
-              this.fragments.push(this.string(", "));
+              this.fragments.push(this.string(', '));
             }
-            if (unit.type === "leader") {
+            if (unit.type === 'leader') {
               quantity++;
               this.fragments.push(this.leader(unit.leaderId));
             } else {
@@ -151,9 +168,11 @@ export class BritLogRow implements OnChanges {
               this.fragments.push(this.unit(unit));
             }
           }
-          this.fragments.push(this.string(` ${quantity === 1 ? "moves" : "move"} from `));
+          this.fragments.push(
+            this.string(` ${quantity === 1 ? 'moves' : 'move'} from `),
+          );
           this.fragments.push(this.area(l.units[0].areaId));
-          this.fragments.push(this.string(" to "));
+          this.fragments.push(this.string(' to '));
           this.fragments.push(this.area(l.toAreaId));
           break;
         }
@@ -172,33 +191,35 @@ export class BritLogRow implements OnChanges {
 
   private string(label: string): BritLogStringFragment {
     return {
-      type: "string",
-      label: label
+      type: 'string',
+      label: label,
     };
   }
 
   private area(areaId: BritAreaId): BritLogAreaFragment {
     const area = this.components.AREA[areaId];
     return {
-      type: "area",
+      type: 'area',
       label: area.name,
-      area
+      area,
     };
   }
 
   private leader(leaderId: BritLeaderId): BritLogStringFragment {
     return {
-      type: "string",
-      label: this.components.getLeader(leaderId).name
+      type: 'string',
+      label: this.components.getLeader(leaderId).name,
     };
   }
 
-  private unit(unit: Exclude<BritAreaUnit, BritAreaLeader>): BritLogStringFragment {
+  private unit(
+    unit: Exclude<BritAreaUnit, BritAreaLeader>,
+  ): BritLogStringFragment {
     return {
-      type: "string",
+      type: 'string',
       label: `${unit.quantity} ${this.components
         .getNation(unit.nationId)
-        .label.toLowerCase()} ${this.components.getUnitTypeLabel(unit.type, unit.quantity === 1)}`
+        .label.toLowerCase()} ${this.components.getUnitTypeLabel(unit.type, unit.quantity === 1)}`,
     };
   }
 
@@ -245,16 +266,16 @@ export class BritLogRow implements OnChanges {
 
   private getPhaseLabel(phase: BritPhase): string {
     switch (phase) {
-      case "populationIncrease":
-        return "Population Increase";
-      case "movement":
-        return "Movement";
-      case "battlesRetreats":
-        return "Battles / Retreats";
-      case "raiderWithdrawal":
-        return "Raider Withdrawal";
-      case "overpopulation":
-        return "Overpopulation";
+      case 'populationIncrease':
+        return 'Population Increase';
+      case 'movement':
+        return 'Movement';
+      case 'battlesRetreats':
+        return 'Battles / Retreats';
+      case 'raiderWithdrawal':
+        return 'Raider Withdrawal';
+      case 'overpopulation':
+        return 'Overpopulation';
     }
   }
 }

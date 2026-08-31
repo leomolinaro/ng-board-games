@@ -1,81 +1,84 @@
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
-import { WotrCardId } from "../card/wotr-card-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
-import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrStory } from "../game/wotr-story-models";
-import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+import {
+  WotrActionDie,
+  WotrActionToken,
+} from '../action-die/wotr-action-die-models';
+import { WotrCardId } from '../card/wotr-card-models';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import { WotrPhase } from '../game-turn/wotr-phase-models';
+import { WotrStory } from '../game/wotr-story-models';
+import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrLogSetup {
-  type: "setup";
+  type: 'setup';
 }
 export interface WotrLogEndGame {
-  type: "endGame";
+  type: 'endGame';
 }
 export interface WotrLogRound {
-  type: "round";
+  type: 'round';
   roundNumber: number;
 }
 export interface WotrLogAction {
-  type: "action";
+  type: 'action';
   front: WotrFrontId;
   action: WotrAction;
   story: WotrStory;
-  during?: "battle" | "hunt";
+  during?: 'battle' | 'hunt';
 }
 export interface WotrLogNoActions {
-  type: "no-actions";
+  type: 'no-actions';
   front: WotrFrontId;
   story: WotrStory;
-  during?: "battle" | "hunt";
+  during?: 'battle' | 'hunt';
 }
 export interface WotrLogElvenRing {
-  type: "elven-ring";
+  type: 'elven-ring';
   ring: WotrElvenRing;
   fromDie: WotrActionDie;
   toDie: WotrActionDie;
   front: WotrFrontId;
-  during?: "battle" | "hunt";
+  during?: 'battle' | 'hunt';
 }
 export interface WotrLogEffect {
-  type: "effect";
+  type: 'effect';
   effect: WotrAction;
-  during?: "battle" | "hunt";
+  during?: 'battle' | 'hunt';
 }
 export interface WotrLogStory {
-  type: "story";
+  type: 'story';
   front: WotrFrontId;
   story: WotrStory;
-  during?: "battle" | "hunt";
+  during?: 'battle' | 'hunt';
 }
 export interface WotrLogV2 {
-  type: "v2";
+  type: 'v2';
   fragments: (string | WotrLogFragment)[];
 }
 
 export interface WotrLogPhase {
-  type: "phase";
+  type: 'phase';
   phase: WotrPhase;
 }
 export interface WotrLogBattleResolution {
-  type: "battle-resolution";
+  type: 'battle-resolution';
 }
 export interface WotrLogHuntResolution {
-  type: "hunt-resolution";
+  type: 'hunt-resolution';
 }
 export interface WotrLogRevealInMordor {
-  type: "reveal-in-mordor";
+  type: 'reveal-in-mordor';
 }
 export interface WotrLogMoveInMordor {
-  type: "move-in-mordor";
+  type: 'move-in-mordor';
 }
 export interface WotrLogCombatCard {
-  type: "combat-card";
+  type: 'combat-card';
   card: WotrCardId;
   front: WotrFrontId;
-  during: "battle";
+  during: 'battle';
 }
 
 export type WotrLog =
@@ -96,43 +99,43 @@ export type WotrLog =
   | WotrLogMoveInMordor;
 
 export interface WotrLogStringFragment {
-  type: "string";
+  type: 'string';
   label: string;
 }
 export interface WotrLogCardFragment {
-  type: "card";
+  type: 'card';
   label: string;
 }
 export interface WotrLogPlayerFragment {
-  type: "player";
+  type: 'player';
   front: WotrFrontId;
 }
 export function playerLog(front: WotrFrontId): WotrLogPlayerFragment {
-  return { type: "player", front };
+  return { type: 'player', front };
 }
 export interface WotrLogRegionFragment {
-  type: "region";
+  type: 'region';
   region: WotrRegionId;
 }
 export function regionLog(region: WotrRegionId): WotrLogRegionFragment {
-  return { type: "region", region };
+  return { type: 'region', region };
 }
 export interface WotrLogNationFragment {
-  type: "nation";
+  type: 'nation';
   nation: WotrNationId;
 }
 export interface WotrLogDieFragment {
-  type: "die";
+  type: 'die';
   die: WotrActionDie;
   front: WotrFrontId;
 }
 export interface WotrLogTokenFragment {
-  type: "token";
+  type: 'token';
   token: WotrActionToken;
   front: WotrFrontId;
 }
 export interface WotrLogHuntTileFragment {
-  type: "hunt-tile";
+  type: 'hunt-tile';
   tile: WotrHuntTileId;
 }
 

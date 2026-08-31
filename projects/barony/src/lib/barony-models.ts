@@ -1,17 +1,18 @@
-import { BgAiPlayer, BgRealPlayer, BgUser } from "@leobg/commons";
+import { BgAiPlayer, BgRealPlayer, BgUser } from '@leobg/commons';
 
-export type BaronyColor = "blue" | "yellow" | "red" | "green";
-export type BaronyLandType = "mountain" | "forest" | "plain" | "fields" | "lake";
-export type BaronyPawnType = "city" | "knight" | "village" | "stronghold";
-export type BaronyBuilding = Extract<BaronyPawnType, "village" | "stronghold">;
+export type BaronyColor = 'blue' | 'yellow' | 'red' | 'green';
+export type BaronyLandType =
+  'mountain' | 'forest' | 'plain' | 'fields' | 'lake';
+export type BaronyPawnType = 'city' | 'knight' | 'village' | 'stronghold';
+export type BaronyBuilding = Extract<BaronyPawnType, 'village' | 'stronghold'>;
 export type BaronyAction =
-  | "recruitment"
-  | "movement"
-  | "construction"
-  | "newCity"
-  | "expedition"
-  | "nobleTitle";
-export type BaronyResourceType = "mountain" | "forest" | "plain" | "fields";
+  | 'recruitment'
+  | 'movement'
+  | 'construction'
+  | 'newCity'
+  | 'expedition'
+  | 'nobleTitle';
+export type BaronyResourceType = 'mountain' | 'forest' | 'plain' | 'fields';
 
 export interface ABaronyPlayer {
   id: BaronyColor;
@@ -80,46 +81,46 @@ export interface BaronyConstruction {
 }
 
 export interface BaronyLogMovement {
-  type: "movement";
+  type: 'movement';
   movement: BaronyMovement;
   player: BaronyColor;
 }
 export interface BaronyLogExpedition {
-  type: "expedition";
+  type: 'expedition';
   land: BaronyLandCoordinates;
   player: BaronyColor;
 }
 export interface BaronyLogNobleTitle {
-  type: "nobleTitle";
+  type: 'nobleTitle';
   resources: BaronyResourceType[];
   player: BaronyColor;
 }
 export interface BaronyLogNewCity {
-  type: "newCity";
+  type: 'newCity';
   land: BaronyLandCoordinates;
   player: BaronyColor;
 }
 export interface BaronyLogConstruction {
-  type: "construction";
+  type: 'construction';
   construction: BaronyConstruction;
   player: BaronyColor;
 }
 export interface BaronyLogRecuitment {
-  type: "recruitment";
+  type: 'recruitment';
   land: BaronyLandCoordinates;
   player: BaronyColor;
 }
 export interface BaronyLogTurn {
-  type: "turn";
+  type: 'turn';
   player: BaronyColor;
 }
 export interface BaronyLogSetupPlacement {
-  type: "setupPlacement";
+  type: 'setupPlacement';
   land: BaronyLandCoordinates;
   player: BaronyColor;
 }
 export interface BaronyLogSetup {
-  type: "setup";
+  type: 'setup';
 }
 
 export type BaronyLog =
@@ -136,7 +137,7 @@ export type BaronyLog =
 export type BaronyStory = BaronySetupPlacement | BaronyTurn;
 
 export interface BaronySetupPlacement {
-  type: "setupPlacement";
+  type: 'setupPlacement';
   land: BaronyLandCoordinates;
 }
 
@@ -147,28 +148,28 @@ interface ABaronyTurn {
   readonly action: BaronyAction;
 }
 export interface BaronyTurnRectruitment extends ABaronyTurn {
-  readonly action: "recruitment";
+  readonly action: 'recruitment';
   land: BaronyLandCoordinates;
   numberOfKnights: number;
 }
 export interface BaronyTurnMovement extends ABaronyTurn {
-  readonly action: "movement";
+  readonly action: 'movement';
   movements: BaronyMovement[];
 }
 export interface BaronyTurnConstruction extends ABaronyTurn {
-  readonly action: "construction";
+  readonly action: 'construction';
   constructions: BaronyConstruction[];
 }
 export interface BaronyTurnNewCity extends ABaronyTurn {
-  readonly action: "newCity";
+  readonly action: 'newCity';
   land: BaronyLandCoordinates;
 }
 export interface BaronyTurnExpedition extends ABaronyTurn {
-  readonly action: "expedition";
+  readonly action: 'expedition';
   land: BaronyLandCoordinates;
 }
 export interface BaronyTurnNobleTitle extends ABaronyTurn {
-  readonly action: "nobleTitle";
+  readonly action: 'nobleTitle';
   discardedResources: BaronyResourceType[];
 }
 export type BaronyTurn =

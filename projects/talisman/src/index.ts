@@ -1,1 +1,1 @@
-export * from "./lib/tlsm.routes";
+export * from './lib/tlsm.routes';

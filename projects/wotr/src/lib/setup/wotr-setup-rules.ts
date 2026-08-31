@@ -1,26 +1,33 @@
-import { inject, Injectable } from "@angular/core";
-import { arrayUtil } from "@leobg/commons/utils";
+import { inject, Injectable } from '@angular/core';
+import { arrayUtil } from '@leobg/commons/utils';
 import {
   WotrActionToken,
   WotrFreePeoplesActionToken,
-  WotrShadowActionToken
-} from "../action-die/wotr-action-die-models";
-import { WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-models";
-import { WotrCardUtils } from "../card/wotr-card-utils";
+  WotrShadowActionToken,
+} from '../action-die/wotr-action-die-models';
+import {
+  WotrCharacterCardId,
+  WotrStrategyCardId,
+} from '../card/wotr-card-models';
+import { WotrCardUtils } from '../card/wotr-card-utils';
 import {
   baseCharacters,
   komeCharacters,
   KomeSovereignId,
   WotrCharacterId,
-  WotrCompanionId
-} from "../character/wotr-character-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameOptions } from "../game/options/wotr-game-options";
-import { WotrGameConfig } from "../game/wotr-game-config";
-import { WotrGameStore } from "../game/wotr-game-store";
-import { baseHuntTiles, komeHuntTiles, WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId, WotrPoliticalStep } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+  WotrCompanionId,
+} from '../character/wotr-character-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameOptions } from '../game/options/wotr-game-options';
+import { WotrGameConfig } from '../game/wotr-game-config';
+import { WotrGameStore } from '../game/wotr-game-store';
+import {
+  baseHuntTiles,
+  komeHuntTiles,
+  WotrHuntTileId,
+} from '../hunt/wotr-hunt-models';
+import { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrSetup {
   regions: WotrRegionSetup[];
@@ -53,7 +60,7 @@ export interface WotrRegionSetup {
 export interface WotrInPlayCharacterSetup {
   character: WotrCharacterId;
   region: WotrRegionId;
-  mode: "army" | "free";
+  mode: 'army' | 'free';
 }
 
 export interface WotrNationSetup {
@@ -79,78 +86,79 @@ export class WotrSetupRules {
     const freePeopleTokens: WotrFreePeoplesActionToken[] = [];
     const shadowTokens: WotrShadowActionToken[] = [];
     const options = this.gameStore.gameOptions();
-    options.tokens.forEach(t => {
-      if (t.front === "free-peoples") freePeopleTokens.push(t.token as WotrFreePeoplesActionToken);
+    options.tokens.forEach((t) => {
+      if (t.front === 'free-peoples')
+        freePeopleTokens.push(t.token as WotrFreePeoplesActionToken);
       else shadowTokens.push(t.token as WotrShadowActionToken);
     });
     return {
       decks: this.shuffledDecks(options),
       regions: [
-        this.fpRegionSetup("erebor", "dwarves", 1, 2, 1, "dain"),
-        this.fpRegionSetup("ered-luin", "dwarves", 1, 0, 0),
-        this.fpRegionSetup("iron-hills", "dwarves", 1, 0, 0),
-        this.fpRegionSetup("grey-havens", "elves", 1, 1, 1),
-        this.fpRegionSetup("rivendell", "elves", 0, 2, 1),
-        this.fpRegionSetup("woodland-realm", "elves", 1, 1, 1, "thranduil"),
-        this.fpRegionSetup("lorien", "elves", 1, 2, 1),
-        this.fpRegionSetup("minas-tirith", "gondor", 3, 1, 1, "denethor"),
-        this.fpRegionSetup("dol-amroth", "gondor", 3, 0, 0),
-        this.fpRegionSetup("osgiliath", "gondor", 2, 0, 0),
-        this.fpRegionSetup("pelargir", "gondor", 1, 0, 0),
-        this.fpRegionSetup("bree", "north", 1, 0, 0),
-        this.fpRegionSetup("carrock", "north", 1, 0, 0),
-        this.fpRegionSetup("dale", "north", 1, 0, 1, "brand"),
-        this.fpRegionSetup("north-downs", "north", 0, 1, 0),
-        this.fpRegionSetup("the-shire", "north", 1, 0, 1),
-        this.fpRegionSetup("edoras", "rohan", 1, 1, 0, "theoden"),
-        this.fpRegionSetup("fords-of-isen", "rohan", 2, 0, 1),
-        this.fpRegionSetup("helms-deep", "rohan", 1, 0, 0),
-        this.sRegionSetup("orthanc", "isengard", 4, 1, 0),
-        this.sRegionSetup("north-dunland", "isengard", 1, 0, 0),
-        this.sRegionSetup("south-dunland", "isengard", 1, 0, 0),
-        this.sRegionSetup("barad-dur", "sauron", 4, 1, 1),
-        this.sRegionSetup("dol-guldur", "sauron", 5, 1, 1),
-        this.sRegionSetup("gorgoroth", "sauron", 3, 0, 0),
-        this.sRegionSetup("minas-morgul", "sauron", 5, 0, 1),
-        this.sRegionSetup("moria", "sauron", 2, 0, 0),
-        this.sRegionSetup("mount-gundabad", "sauron", 2, 0, 0),
-        this.sRegionSetup("nurn", "sauron", 2, 0, 0),
-        this.sRegionSetup("morannon", "sauron", 5, 0, 1),
-        this.sRegionSetup("far-harad", "southrons", 3, 1, 0),
-        this.sRegionSetup("near-harad", "southrons", 3, 1, 0),
-        this.sRegionSetup("north-rhun", "southrons", 2, 0, 0),
-        this.sRegionSetup("south-rhun", "southrons", 3, 1, 0),
-        this.sRegionSetup("umbar", "southrons", 3, 0, 0)
+        this.fpRegionSetup('erebor', 'dwarves', 1, 2, 1, 'dain'),
+        this.fpRegionSetup('ered-luin', 'dwarves', 1, 0, 0),
+        this.fpRegionSetup('iron-hills', 'dwarves', 1, 0, 0),
+        this.fpRegionSetup('grey-havens', 'elves', 1, 1, 1),
+        this.fpRegionSetup('rivendell', 'elves', 0, 2, 1),
+        this.fpRegionSetup('woodland-realm', 'elves', 1, 1, 1, 'thranduil'),
+        this.fpRegionSetup('lorien', 'elves', 1, 2, 1),
+        this.fpRegionSetup('minas-tirith', 'gondor', 3, 1, 1, 'denethor'),
+        this.fpRegionSetup('dol-amroth', 'gondor', 3, 0, 0),
+        this.fpRegionSetup('osgiliath', 'gondor', 2, 0, 0),
+        this.fpRegionSetup('pelargir', 'gondor', 1, 0, 0),
+        this.fpRegionSetup('bree', 'north', 1, 0, 0),
+        this.fpRegionSetup('carrock', 'north', 1, 0, 0),
+        this.fpRegionSetup('dale', 'north', 1, 0, 1, 'brand'),
+        this.fpRegionSetup('north-downs', 'north', 0, 1, 0),
+        this.fpRegionSetup('the-shire', 'north', 1, 0, 1),
+        this.fpRegionSetup('edoras', 'rohan', 1, 1, 0, 'theoden'),
+        this.fpRegionSetup('fords-of-isen', 'rohan', 2, 0, 1),
+        this.fpRegionSetup('helms-deep', 'rohan', 1, 0, 0),
+        this.sRegionSetup('orthanc', 'isengard', 4, 1, 0),
+        this.sRegionSetup('north-dunland', 'isengard', 1, 0, 0),
+        this.sRegionSetup('south-dunland', 'isengard', 1, 0, 0),
+        this.sRegionSetup('barad-dur', 'sauron', 4, 1, 1),
+        this.sRegionSetup('dol-guldur', 'sauron', 5, 1, 1),
+        this.sRegionSetup('gorgoroth', 'sauron', 3, 0, 0),
+        this.sRegionSetup('minas-morgul', 'sauron', 5, 0, 1),
+        this.sRegionSetup('moria', 'sauron', 2, 0, 0),
+        this.sRegionSetup('mount-gundabad', 'sauron', 2, 0, 0),
+        this.sRegionSetup('nurn', 'sauron', 2, 0, 0),
+        this.sRegionSetup('morannon', 'sauron', 5, 0, 1),
+        this.sRegionSetup('far-harad', 'southrons', 3, 1, 0),
+        this.sRegionSetup('near-harad', 'southrons', 3, 1, 0),
+        this.sRegionSetup('north-rhun', 'southrons', 2, 0, 0),
+        this.sRegionSetup('south-rhun', 'southrons', 3, 1, 0),
+        this.sRegionSetup('umbar', 'southrons', 3, 0, 0),
       ],
       fellowship: {
         progress: 0,
-        region: "rivendell",
+        region: 'rivendell',
         companions: [
-          "gandalf-the-grey",
-          "strider",
-          "boromir",
-          "legolas",
-          "gimli",
-          "meriadoc",
-          "peregrin"
+          'gandalf-the-grey',
+          'strider',
+          'boromir',
+          'legolas',
+          'gimli',
+          'meriadoc',
+          'peregrin',
         ],
-        guide: "gandalf-the-grey"
+        guide: 'gandalf-the-grey',
       },
       freePeopleTokens,
       shadowTokens,
       huntPool: this.huntPool(),
       characters: this.characters(),
       nations: [
-        { nation: "dwarves", active: false, politicalStep: 3 },
-        { nation: "elves", active: true, politicalStep: 3 },
-        { nation: "gondor", active: false, politicalStep: 2 },
-        { nation: "north", active: false, politicalStep: 3 },
-        { nation: "rohan", active: false, politicalStep: 3 },
-        { nation: "isengard", active: true, politicalStep: 1 },
-        { nation: "sauron", active: true, politicalStep: 1 },
-        { nation: "southrons", active: true, politicalStep: 2 }
+        { nation: 'dwarves', active: false, politicalStep: 3 },
+        { nation: 'elves', active: true, politicalStep: 3 },
+        { nation: 'gondor', active: false, politicalStep: 2 },
+        { nation: 'north', active: false, politicalStep: 3 },
+        { nation: 'rohan', active: false, politicalStep: 3 },
+        { nation: 'isengard', active: true, politicalStep: 1 },
+        { nation: 'sauron', active: true, politicalStep: 1 },
+        { nation: 'southrons', active: true, politicalStep: 2 },
       ],
-      inPlayCharacters: []
+      inPlayCharacters: [],
     };
   }
 
@@ -172,15 +180,15 @@ export class WotrSetupRules {
     const decks = this.cards.getCardDecks(options);
     return [
       {
-        front: "free-peoples",
+        front: 'free-peoples',
         characterDeck: arrayUtil.shuffle(decks.freePeoplesCharacterCardIds),
-        strategyDeck: arrayUtil.shuffle(decks.freePeoplesStrategyCardIds)
+        strategyDeck: arrayUtil.shuffle(decks.freePeoplesStrategyCardIds),
       },
       {
-        front: "shadow",
+        front: 'shadow',
         characterDeck: arrayUtil.shuffle(decks.shadowCharacterCardIds),
-        strategyDeck: arrayUtil.shuffle(decks.shadowStrategyCardIds)
-      }
+        strategyDeck: arrayUtil.shuffle(decks.shadowStrategyCardIds),
+      },
     ];
   }
 
@@ -190,7 +198,7 @@ export class WotrSetupRules {
     nRegulars: number,
     nElites: number,
     nLeaders: number,
-    ruler?: KomeSovereignId
+    ruler?: KomeSovereignId,
   ): WotrRegionSetup {
     const setup: WotrRegionSetup = {
       region,
@@ -199,7 +207,7 @@ export class WotrSetupRules {
       nElites,
       nLeaders,
       nNazgul: 0,
-      ruler: null
+      ruler: null,
     };
     if (this.gameStore.kome() && ruler) setup.ruler = ruler;
     return setup;
@@ -210,8 +218,16 @@ export class WotrSetupRules {
     nation: WotrNationId,
     nRegulars: number,
     nElites: number,
-    nNazgul: number
+    nNazgul: number,
   ): WotrRegionSetup {
-    return { region, nation, nRegulars, nElites, nLeaders: 0, nNazgul, ruler: null };
+    return {
+      region,
+      nation,
+      nRegulars,
+      nElites,
+      nLeaders: 0,
+      nNazgul,
+      ruler: null,
+    };
   }
 }

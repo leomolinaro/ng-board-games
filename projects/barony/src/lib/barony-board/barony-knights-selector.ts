@@ -1,9 +1,9 @@
-import { Component, OnChanges, input, output } from "@angular/core";
-import { SimpleChanges } from "@leobg/commons/utils";
-import { TuiIcon } from "@taiga-ui/core";
+import { Component, OnChanges, input, output } from '@angular/core';
+import { SimpleChanges } from '@leobg/commons/utils';
+import { TuiIcon } from '@taiga-ui/core';
 
 @Component({
-  selector: "barony-knights-selector",
+  selector: 'barony-knights-selector',
   imports: [TuiIcon],
   template: `
     <div class="b-knights-selector-container">
@@ -16,19 +16,22 @@ import { TuiIcon } from "@taiga-ui/core";
         <button
           (click)="onIncrease()"
           [class.is-active]="enableIncrease"
-          [class.is-disabled]="!enableIncrease">
+          [class.is-disabled]="!enableIncrease"
+        >
           <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
           [class.is-active]="enableDecrease"
-          [class.is-disabled]="!enableDecrease">
+          [class.is-disabled]="!enableDecrease"
+        >
           <tui-icon icon="chevron-down" />
         </button>
       </div>
       <button
         class="b-knights-confirm"
-        (click)="onConfirm()">
+        (click)="onConfirm()"
+      >
         <tui-icon icon="check" />
       </button>
     </div>
@@ -77,7 +80,7 @@ import { TuiIcon } from "@taiga-ui/core";
         height: 4vw;
       }
     }
-  `
+  `,
 })
 export class BaronyKnightsSelector implements OnChanges {
   constructor() {}

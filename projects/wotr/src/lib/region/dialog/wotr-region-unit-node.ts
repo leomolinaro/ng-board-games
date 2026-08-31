@@ -1,10 +1,13 @@
-import { WotrCharacterQuery } from "../../character/wotr-character-query";
-import { WotrFrontId } from "../../front/wotr-front-models";
-import { WotrGenericUnitType, WotrNationId } from "../../nation/wotr-nation-models";
+import { WotrCharacterQuery } from '../../character/wotr-character-query';
+import { WotrFrontId } from '../../front/wotr-front-models';
+import {
+  WotrGenericUnitType,
+  WotrNationId,
+} from '../../nation/wotr-nation-models';
 
 interface AUnitNode {
   id: string;
-  group: "army" | "underSiege" | "freeUnits" | "fellowship";
+  group: 'army' | 'underSiege' | 'freeUnits' | 'fellowship';
   nationId: WotrNationId | null;
   frontId: WotrFrontId;
   source: string;
@@ -18,11 +21,11 @@ interface AUnitNode {
 }
 
 export interface FellowshipNode extends AUnitNode {
-  type: "fellowship";
+  type: 'fellowship';
 }
 
 export interface CharacterNode extends AUnitNode {
-  type: "character";
+  type: 'character';
   character: WotrCharacterQuery;
 }
 

@@ -5,7 +5,9 @@ export interface BgReduxDevtoolsInstance {
 
 export class BgReduxDevtools {
   constructor() {
-    this.reduxDevtoolsExtension = window ? (window as any).__REDUX_DEVTOOLS_EXTENSION__ : null;
+    this.reduxDevtoolsExtension = window
+      ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
+      : null;
   }
 
   private reduxDevtoolsExtension: {

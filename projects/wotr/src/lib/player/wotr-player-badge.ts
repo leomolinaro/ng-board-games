@@ -1,18 +1,19 @@
-import { Component, input } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front-models";
+import { Component, input } from '@angular/core';
+import { WotrFrontId } from '../front/wotr-front-models';
 
 @Component({
-  selector: "wotr-player-badge",
+  selector: 'wotr-player-badge',
   template: `
     <div
       class="badge"
       [class]="{
         'free-peoples': playerId() === 'free-peoples',
-        'shadow': playerId() === 'shadow'
-      }">
+        shadow: playerId() === 'shadow',
+      }"
+    >
       <!-- @if (player (); as c) { {{ c.name }} } @else { - } -->
       @if (playerId(); as p) {
-        {{ p === "free-peoples" ? "F" : "S" }}
+        {{ p === 'free-peoples' ? 'F' : 'S' }}
       } @else {
         -
       }
@@ -20,7 +21,7 @@ import { WotrFrontId } from "../front/wotr-front-models";
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
       .badge {
         border-radius: 50%;
         width: 20px;
@@ -43,8 +44,8 @@ import { WotrFrontId } from "../front/wotr-front-models";
           background: wotr.$red;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrPlayerBadge {
   playerId = input.required<WotrFrontId | null>();

@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component, Signal, computed, inject, input } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrHuntState } from "./wotr-hunt-store";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Signal,
+  computed,
+  inject,
+  input,
+} from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrGameUi } from '../game/wotr-game-ui';
+import { WotrHuntState } from './wotr-hunt-store';
 
 interface WotrHuntDieNode {
   id: string;
@@ -19,7 +26,7 @@ const Y0 = 737;
 const NPERROW = 4;
 
 @Component({
-  selector: "[wotrHuntBox]",
+  selector: '[wotrHuntBox]',
   imports: [],
   template: `
     @for (huntDieNode of huntDieNodes(); track huntDieNode.id) {
@@ -27,11 +34,12 @@ const NPERROW = 4;
         transform="scale(0.8, 0.8)"
         [attr.x]="huntDieNode.svgX"
         [attr.y]="huntDieNode.svgY"
-        [attr.xlink:href]="huntDieNode.image" />
+        [attr.xlink:href]="huntDieNode.image"
+      />
       <svg:rect
         class="fill"
         [class]="{
-          selectable: eyeSelection()
+          selectable: eyeSelection(),
         }"
         transform="scale(0.8, 0.8)"
         [attr.x]="huntDieNode.svgX"
@@ -40,7 +48,8 @@ const NPERROW = 4;
         height="32"
         rx="3"
         ry="3"
-        (click)="selectEyeDie()" />
+        (click)="selectEyeDie()"
+      />
     }
   `,
   styles: `
@@ -52,7 +61,7 @@ const NPERROW = 4;
     }
   `,
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WotrHuntBox {
   private ui = inject(WotrGameUi);
@@ -77,19 +86,19 @@ export class WotrHuntBox {
     let index = 0;
     for (let i = 0; i < this.nHuntDice(); i++) {
       nodes.push({
-        id: "s" + index,
-        image: this.assets.actionDieImage("eye", "shadow"),
+        id: 's' + index,
+        image: this.assets.actionDieImage('eye', 'shadow'),
         svgX: this.getX(index),
-        svgY: this.getY(index)
+        svgY: this.getY(index),
       });
       index++;
     }
     for (let j = 0; j < this.nFreePeopleDice(); j++) {
       nodes.push({
-        id: "fp" + index,
-        image: this.assets.actionDieImage("character", "free-peoples"),
+        id: 'fp' + index,
+        image: this.assets.actionDieImage('character', 'free-peoples'),
         svgX: this.getX(index),
-        svgY: this.getY(index)
+        svgY: this.getY(index),
       });
       index++;
     }

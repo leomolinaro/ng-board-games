@@ -1,16 +1,16 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
-import { WotrBattleStore } from "../../../battle/wotr-battle-store";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrLogWriter } from "../../../log/wotr-log-writer";
-import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+import { WotrAbility } from '../../../ability/wotr-ability';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import { WotrBattleStore } from '../../../battle/wotr-battle-store';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrLogWriter } from '../../../log/wotr-log-writer';
+import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
 import {
   WotrRecruitmentConstraintsModifier,
-  WotrUnitModifiers
-} from "../../../unit/wotr-unit-modifiers";
-import { WotrCharacterHandler } from "../../wotr-character-handler";
-import { SovereingFateOf } from "./commons";
-import { KomeSovereignCard } from "./kome-sovereign-card";
+  WotrUnitModifiers,
+} from '../../../unit/wotr-unit-modifiers';
+import { WotrCharacterHandler } from '../../wotr-character-handler';
+import { SovereingFateOf } from './commons';
+import { KomeSovereignCard } from './kome-sovereign-card';
 
 // Thranduil - King of the Woodland Realm (Level 2, Leadership 1, Shadow Resistance 4)
 // If the Elves are active and Woodland Realm is unconquered, you may spend a Muster Action
@@ -38,15 +38,15 @@ export class Thranduil extends KomeSovereignCard {
   constructor(
     protected q: WotrGameQuery,
     protected characterHandler: WotrCharacterHandler,
-    protected logger: WotrLogWriter
+    protected logger: WotrLogWriter,
   ) {
     super();
   }
 
-  readonly sovereignId = "thranduil";
-  protected readonly nation = "elves";
-  protected readonly awakeningRegion = "woodland-realm";
-  protected readonly corruptionRegion = "woodland-realm";
+  readonly sovereignId = 'thranduil';
+  protected readonly nation = 'elves';
+  protected readonly awakeningRegion = 'woodland-realm';
+  protected readonly corruptionRegion = 'woodland-realm';
 }
 
 export class ThranduilElvenking implements WotrAbility<WotrRecruitmentConstraintsModifier> {
@@ -55,12 +55,15 @@ export class ThranduilElvenking implements WotrAbility<WotrRecruitmentConstraint
   modifier = this.unitModifiers.recruitmentConstraintsModifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
-    constraints.excludedRegionsForEliteUnits.add("woodland-realm");
+    constraints.excludedRegionsForEliteUnits.add('woodland-realm');
   }
 }
 
 export class FateOfMirkwood extends SovereingFateOf {
-  constructor(battleModifiers: WotrBattleModifiers, battleStore: WotrBattleStore) {
-    super("woodland-realm", battleModifiers, battleStore);
+  constructor(
+    battleModifiers: WotrBattleModifiers,
+    battleStore: WotrBattleStore,
+  ) {
+    super('woodland-realm', battleModifiers, battleStore);
   }
 }

@@ -1,7 +1,7 @@
-import { WotrActionDieModifiers } from "../../action-die/wotr-action-die-modifiers";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrRegion } from "../../region/wotr-region-models";
-import { AdvanceAnyDieAbility } from "./commons";
+import { WotrActionDieModifiers } from '../../action-die/wotr-action-die-modifiers';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrRegion } from '../../region/wotr-region-models';
+import { AdvanceAnyDieAbility } from './commons';
 
 // Boromir - Son of Denethor (Level 2, Leadership 1)
 // Captain of the West. If Boromir is in a battle, add one to the Combat Strength of the Free Peoples Army (you can still roll a maximum of 5 Combat dice).
@@ -11,17 +11,17 @@ import { AdvanceAnyDieAbility } from "./commons";
 export class HighWardenOfTheWhiteTowerAbility extends AdvanceAnyDieAbility {
   constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
     super(
-      "boromir",
-      "Advance Gondor (Boromir, High Warden of the White Tower)",
-      "gondor",
+      'boromir',
+      'Advance Gondor (Boromir, High Warden of the White Tower)',
+      'gondor',
       q,
-      actionDieModifiers
+      actionDieModifiers,
     );
   }
 
   protected override isValidRegion(region: WotrRegion): boolean {
-    if (region.nationId !== "gondor") return false;
-    return region.settlement === "city" || region.settlement === "stronghold";
+    if (region.nationId !== 'gondor') return false;
+    return region.settlement === 'city' || region.settlement === 'stronghold';
   }
 }
 
@@ -31,11 +31,17 @@ export class HighWardenOfTheWhiteTowerAbility extends AdvanceAnyDieAbility {
 
 export class DwarfOfEreborAbility extends AdvanceAnyDieAbility {
   constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
-    super("gimli", "Advance Dwarves (Gimli, Dwarf of Erebor)", "dwarves", q, actionDieModifiers);
+    super(
+      'gimli',
+      'Advance Dwarves (Gimli, Dwarf of Erebor)',
+      'dwarves',
+      q,
+      actionDieModifiers,
+    );
   }
 
   protected override isValidRegion(region: WotrRegion): boolean {
-    return region.id === "erebor";
+    return region.id === 'erebor';
   }
 }
 
@@ -45,10 +51,16 @@ export class DwarfOfEreborAbility extends AdvanceAnyDieAbility {
 
 export class PrinceOfMirkwoodAbility extends AdvanceAnyDieAbility {
   constructor(q: WotrGameQuery, actionDieModifiers: WotrActionDieModifiers) {
-    super("legolas", "Advance Elves (Legolas, Prince of Mirkwood)", "elves", q, actionDieModifiers);
+    super(
+      'legolas',
+      'Advance Elves (Legolas, Prince of Mirkwood)',
+      'elves',
+      q,
+      actionDieModifiers,
+    );
   }
 
   protected override isValidRegion(region: WotrRegion): boolean {
-    return region.settlement === "stronghold" && region.nationId === "elves";
+    return region.settlement === 'stronghold' && region.nationId === 'elves';
   }
 }

@@ -1,6 +1,6 @@
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrUnitComposer, WotrUnits } from "./wotr-unit-models";
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
+import { WotrUnitComposer, WotrUnits } from './wotr-unit-models';
 
 export type WotrUnitAction =
   | WotrArmyMovement
@@ -19,7 +19,7 @@ export type WotrUnitAction =
   | WotrNazgulElimination;
 
 export interface WotrArmyMovement {
-  type: "army-movement";
+  type: 'army-movement';
   fromRegion: WotrRegionId;
   toRegion: WotrRegionId;
   leftUnits?: WotrUnits;
@@ -28,9 +28,13 @@ export function moveArmy(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  leftUnits?: WotrUnits
+  leftUnits?: WotrUnits,
 ): WotrArmyMovement {
-  const movement: WotrArmyMovement = { type: "army-movement", fromRegion, toRegion };
+  const movement: WotrArmyMovement = {
+    type: 'army-movement',
+    fromRegion,
+    toRegion,
+  };
   if (leftUnits) {
     movement.leftUnits = leftUnits;
   }
@@ -41,7 +45,7 @@ export function leftUnits(...comp: WotrUnitComposer[]): WotrUnits {
 }
 
 export interface WotrNazgulMovement {
-  type: "nazgul-movement";
+  type: 'nazgul-movement';
   fromRegion: WotrRegionId;
   toRegion: WotrRegionId;
   nNazgul: number;
@@ -49,13 +53,13 @@ export interface WotrNazgulMovement {
 export function moveNazgul(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-  nNazgul: number = 1
+  nNazgul: number = 1,
 ): WotrNazgulMovement {
-  return { type: "nazgul-movement", fromRegion, toRegion, nNazgul };
+  return { type: 'nazgul-movement', fromRegion, toRegion, nNazgul };
 }
 
 export interface WotrRegularUnitRecruitment {
-  type: "regular-unit-recruitment";
+  type: 'regular-unit-recruitment';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -63,12 +67,12 @@ export interface WotrRegularUnitRecruitment {
 export function recruitRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrRegularUnitRecruitment {
-  return { type: "regular-unit-recruitment", region, nation, quantity };
+  return { type: 'regular-unit-recruitment', region, nation, quantity };
 }
 export interface WotrRegularUnitElimination {
-  type: "regular-unit-elimination";
+  type: 'regular-unit-elimination';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -76,13 +80,13 @@ export interface WotrRegularUnitElimination {
 export function eliminateRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrRegularUnitElimination {
-  return { type: "regular-unit-elimination", region, nation, quantity };
+  return { type: 'regular-unit-elimination', region, nation, quantity };
 }
 
 export interface WotrRegulardUnitUpgrade {
-  type: "regular-unit-upgrade";
+  type: 'regular-unit-upgrade';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -90,13 +94,13 @@ export interface WotrRegulardUnitUpgrade {
 export function upgradeRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrRegulardUnitUpgrade {
-  return { type: "regular-unit-upgrade", region, nation, quantity };
+  return { type: 'regular-unit-upgrade', region, nation, quantity };
 }
 
 export interface WotrRegularUnitDisband {
-  type: "regular-unit-disband";
+  type: 'regular-unit-disband';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -104,13 +108,13 @@ export interface WotrRegularUnitDisband {
 export function disbandRegularUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrRegularUnitDisband {
-  return { type: "regular-unit-disband", region, nation, quantity };
+  return { type: 'regular-unit-disband', region, nation, quantity };
 }
 
 export interface WotrEliteUnitRecruitment {
-  type: "elite-unit-recruitment";
+  type: 'elite-unit-recruitment';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -118,13 +122,13 @@ export interface WotrEliteUnitRecruitment {
 export function recruitEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrEliteUnitRecruitment {
-  return { type: "elite-unit-recruitment", region, nation, quantity };
+  return { type: 'elite-unit-recruitment', region, nation, quantity };
 }
 
 export interface WotrEliteUnitElimination {
-  type: "elite-unit-elimination";
+  type: 'elite-unit-elimination';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -132,13 +136,13 @@ export interface WotrEliteUnitElimination {
 export function eliminateEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrEliteUnitElimination {
-  return { type: "elite-unit-elimination", region, nation, quantity };
+  return { type: 'elite-unit-elimination', region, nation, quantity };
 }
 
 export interface WotrEliteUnitDowngrade {
-  type: "elite-unit-downgrade";
+  type: 'elite-unit-downgrade';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -146,13 +150,13 @@ export interface WotrEliteUnitDowngrade {
 export function downgradeEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrEliteUnitDowngrade {
-  return { type: "elite-unit-downgrade", region, nation, quantity };
+  return { type: 'elite-unit-downgrade', region, nation, quantity };
 }
 
 export interface WotrEliteUnitDisband {
-  type: "elite-unit-disband";
+  type: 'elite-unit-disband';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -160,13 +164,13 @@ export interface WotrEliteUnitDisband {
 export function disbandEliteUnit(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrEliteUnitDisband {
-  return { type: "elite-unit-disband", region, nation, quantity };
+  return { type: 'elite-unit-disband', region, nation, quantity };
 }
 
 export interface WotrLeaderRecruitment {
-  type: "leader-recruitment";
+  type: 'leader-recruitment';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -174,12 +178,12 @@ export interface WotrLeaderRecruitment {
 export function recruitLeader(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrLeaderRecruitment {
-  return { type: "leader-recruitment", region, nation, quantity };
+  return { type: 'leader-recruitment', region, nation, quantity };
 }
 export interface WotrLeaderElimination {
-  type: "leader-elimination";
+  type: 'leader-elimination';
   region: WotrRegionId;
   quantity: number;
   nation: WotrNationId;
@@ -187,24 +191,30 @@ export interface WotrLeaderElimination {
 export function eliminateLeader(
   region: WotrRegionId,
   nation: WotrNationId,
-  quantity: number = 1
+  quantity: number = 1,
 ): WotrLeaderElimination {
-  return { type: "leader-elimination", region, nation, quantity };
+  return { type: 'leader-elimination', region, nation, quantity };
 }
 
 export interface WotrNazgulRecruitment {
-  type: "nazgul-recruitment";
+  type: 'nazgul-recruitment';
   region: WotrRegionId;
   quantity: number;
 }
-export function recruitNazgul(region: WotrRegionId, quantity: number = 1): WotrNazgulRecruitment {
-  return { type: "nazgul-recruitment", region, quantity };
+export function recruitNazgul(
+  region: WotrRegionId,
+  quantity: number = 1,
+): WotrNazgulRecruitment {
+  return { type: 'nazgul-recruitment', region, quantity };
 }
 export interface WotrNazgulElimination {
-  type: "nazgul-elimination";
+  type: 'nazgul-elimination';
   region: WotrRegionId;
   quantity: number;
 }
-export function eliminateNazgul(region: WotrRegionId, quantity: number = 1): WotrNazgulElimination {
-  return { type: "nazgul-elimination", region, quantity };
+export function eliminateNazgul(
+  region: WotrRegionId,
+  quantity: number = 1,
+): WotrNazgulElimination {
+  return { type: 'nazgul-elimination', region, quantity };
 }

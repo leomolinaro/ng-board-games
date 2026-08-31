@@ -1,3 +1,3 @@
 export default {
-  projects: ["<rootDir>/projects/wotr"]
+  projects: ['<rootDir>/projects/wotr'],
 };

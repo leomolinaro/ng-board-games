@@ -1,18 +1,19 @@
-import { Component, OnDestroy, OnInit, inject } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { BgAccountButton, BgAuthService } from "@leobg/commons";
-import { SingleEvent, UntilDestroy } from "@leobg/commons/utils";
-import { TuiButton } from "@taiga-ui/core";
-import { TuiNavigation } from "@taiga-ui/layout";
-import { GAMES } from "../app-games";
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { BgAccountButton, BgAuthService } from '@leobg/commons';
+import { SingleEvent, UntilDestroy } from '@leobg/commons/utils';
+import { TuiButton } from '@taiga-ui/core';
+import { TuiNavigation } from '@taiga-ui/layout';
+import { GAMES } from '../app-games';
 
 @Component({
-  selector: "app-home-page",
+  selector: 'app-home-page',
   imports: [TuiNavigation, BgAccountButton, RouterLink, TuiButton],
   template: `
     <header
       class="app-header"
-      tuiNavigationHeader>
+      tuiNavigationHeader
+    >
       <bg-account-button></bg-account-button>
     </header>
     <main>
@@ -22,11 +23,13 @@ import { GAMES } from "../app-games";
           tuiButton
           appearance="secondary"
           size="l"
-          [routerLink]="game.routerLink">
+          [routerLink]="game.routerLink"
+        >
           <img
             class="game-image"
             [src]="game.imageSource"
-            [alt]="game.name" />
+            [alt]="game.name"
+          />
         </a>
       }
     </main>
@@ -57,7 +60,8 @@ import { GAMES } from "../app-games";
         padding: 0.75rem;
         border-radius: 1rem;
         text-decoration: none;
-        box-shadow: 0 0 0 1px color-mix(in srgb, var(--tui-border-normal) 70%, transparent);
+        box-shadow: 0 0 0 1px
+          color-mix(in srgb, var(--tui-border-normal) 70%, transparent);
         transition:
           transform 0.15s ease,
           box-shadow 0.15s ease,
@@ -78,8 +82,8 @@ import { GAMES } from "../app-games";
         object-fit: contain;
         border-radius: 0.75rem;
       }
-    `
-  ]
+    `,
+  ],
 })
 @UntilDestroy
 export class AppHomePage implements OnInit, OnDestroy {

@@ -1,9 +1,9 @@
-import { Component, inject, linkedSignal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { WotrGameUi } from "../game/wotr-game-ui";
+import { Component, inject, linkedSignal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { WotrGameUi } from '../game/wotr-game-ui';
 
 @Component({
-  selector: "wotr-options-panel",
+  selector: 'wotr-options-panel',
   imports: [FormsModule],
   template: `
     @if (ui.inputQuantitySelection(); as inputQuantity) {
@@ -14,7 +14,8 @@ import { WotrGameUi } from "../game/wotr-game-ui";
           name="inputField"
           placeholder="Enter the quantity"
           [min]="inputQuantity.min"
-          [max]="inputQuantity.max" />
+          [max]="inputQuantity.max"
+        />
         <button type="submit">Confirm</button>
       </form>
     }
@@ -22,14 +23,15 @@ import { WotrGameUi } from "../game/wotr-game-ui";
       <button
         [class]="{ disabled: !!option.disabled }"
         [disabled]="!!option.disabled"
-        (click)="!option.disabled && ui.option.emit(option)">
+        (click)="!option.disabled && ui.option.emit(option)"
+      >
         {{ option.label }}
       </button>
     }
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
 
       :host {
         display: flex;
@@ -41,8 +43,8 @@ import { WotrGameUi } from "../game/wotr-game-ui";
           @include wotr.button;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrOptionsPanel {
   protected ui = inject(WotrGameUi);
@@ -56,7 +58,12 @@ export class WotrOptionsPanel {
 
   onInputSumbit(quantity: number) {
     const inputQuantity = this.ui.inputQuantitySelection();
-    if (!inputQuantity || quantity < inputQuantity.min || quantity > inputQuantity.max) return;
+    if (
+      !inputQuantity ||
+      quantity < inputQuantity.min ||
+      quantity > inputQuantity.max
+    )
+      return;
     this.ui.inputQuantity.emit(quantity);
     this.quantity.set(0);
   }

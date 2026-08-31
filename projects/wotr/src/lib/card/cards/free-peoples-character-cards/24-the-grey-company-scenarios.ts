@@ -1,35 +1,38 @@
-import { separateCompanions } from "../../../fellowship/wotr-fellowship-actions";
-import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
-import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
+import { separateCompanions } from '../../../fellowship/wotr-fellowship-actions';
+import {
+  WotrScenario,
+  WotrScenarioGroup,
+} from '../../../scenario/wotr-scenario';
+import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
 
 export function theGreyCompany(): WotrScenarioGroup {
   return {
-    id: "the-grey-company",
-    name: "The Grey Company",
-    scenarios: [theGreyCompany01]
+    id: 'the-grey-company',
+    name: 'The Grey Company',
+    scenarios: [theGreyCompany01],
   };
 }
 
 const theGreyCompany01: WotrScenario = {
-  id: "the-grey-company-01",
-  name: "The Grey Company",
-  description: "When The Grey Company can be played",
+  id: 'the-grey-company-01',
+  name: 'The Grey Company',
+  description: 'When The Grey Company can be played',
   loadDefinition: () => ({
-    setup: setupBuilder =>
+    setup: (setupBuilder) =>
       setupBuilder
         .shuffledDecks()
-        .fellowshipCompanions("strider")
-        .fellowshipGuide("strider")
-        .region("bree", "north", { nRegulars: 2 })
+        .fellowshipCompanions('strider')
+        .fellowshipGuide('strider')
+        .region('bree', 'north', { nRegulars: 2 })
         .build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("The Grey Company"),
+      b.fpT().firstPhaseDraw('The Grey Company'),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
+      b.fpT().rollActionDice('character', 'character'),
       b.s().rollActionDice(),
-      b.fp().characterDie(separateCompanions("bree", "strider"))
-    ]
-  })
+      b.fp().characterDie(separateCompanions('bree', 'strider')),
+    ],
+  }),
 };

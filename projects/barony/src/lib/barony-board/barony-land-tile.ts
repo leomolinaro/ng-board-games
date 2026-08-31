@@ -1,14 +1,17 @@
-import { Component, OnChanges, computed, input, output } from "@angular/core";
-import { Loading, SimpleChanges, immutableUtil } from "@leobg/commons/utils";
-import { Observable } from "rxjs";
+import { Component, OnChanges, computed, input, output } from '@angular/core';
+import { Loading, SimpleChanges, immutableUtil } from '@leobg/commons/utils';
+import { Observable } from 'rxjs';
 import {
   BaronyColor,
   BaronyLandCoordinates,
   BaronyLandType,
   BaronyPawn,
-  BaronyPawnType
-} from "../barony-models";
-import { BaronyLandCoordinatesPipe, hexToCartesian } from "./barony-land-tile-coordinates.pipe";
+  BaronyPawnType,
+} from '../barony-models';
+import {
+  BaronyLandCoordinatesPipe,
+  hexToCartesian,
+} from './barony-land-tile-coordinates.pipe';
 
 interface BaronyPawnNode {
   type: BaronyPawnType;
@@ -22,18 +25,22 @@ interface BaronyPawnNode {
 }
 
 @Component({
-  selector: "[baronyLandTile]",
+  selector: '[baronyLandTile]',
   template: `
     <svg:g
       class="b-land-tile"
       [class.is-active]="active()"
       [class.is-disabled]="disabled()"
-      (click)="onLandTileClick()">
+      (click)="onLandTileClick()"
+    >
       <svg:polygon
         class="b-land-tile-polygon"
-        [attr.id]="coordinates().x + ' ' + coordinates().y + ' ' + coordinates().z"
+        [attr.id]="
+          coordinates().x + ' ' + coordinates().y + ' ' + coordinates().z
+        "
         [attr.points]="coordinates() | baronyLandTileCoordinates: 'hexagon'"
-        [attr.fill]="url()"></svg:polygon>
+        [attr.fill]="url()"
+      ></svg:polygon>
 
       @if (active()) {
         <svg:circle
@@ -43,26 +50,29 @@ interface BaronyPawnNode {
           [attr.r]="activeCircleRadius"
           stroke="black"
           stroke-width="0.03"
-          fill="transparent" />
+          fill="transparent"
+        />
       }
 
-      @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+      @for (pawnNode of pawnNodes; track pawnNode.color + '_' + pawnNode.type) {
         <svg:image
           [attr.width]="pawnWidth"
           [attr.height]="pawnHeight"
           preserveAspectRatio="none"
           [attr.xlink:href]="pawnNode.href"
           [attr.x]="pawnNode.x"
-          [attr.y]="pawnNode.y"></svg:image>
+          [attr.y]="pawnNode.y"
+        ></svg:image>
       }
 
-      @for (pawnNode of pawnNodes; track pawnNode.color + "_" + pawnNode.type) {
+      @for (pawnNode of pawnNodes; track pawnNode.color + '_' + pawnNode.type) {
         <ng-container>
           @if (pawnNode.quantity > 1) {
             <svg:text
               class="b-land-tile-pawn-quantity"
               [attr.x]="pawnNode.xText"
-              [attr.y]="pawnNode.yText">
+              [attr.y]="pawnNode.yText"
+            >
               {{ pawnNode.quantity }}
             </svg:text>
           }
@@ -71,7 +81,7 @@ interface BaronyPawnNode {
     </svg:g>
   `,
   styles: `
-    @use "bg-variables" as bg;
+    @use 'bg-variables' as bg;
 
     .b-land-tile {
       &.is-active {
@@ -113,7 +123,7 @@ interface BaronyPawnNode {
       }
     }
   `,
-  imports: [BaronyLandCoordinatesPipe]
+  imports: [BaronyLandCoordinatesPipe],
 })
 export class BaronyLandComponent implements OnChanges {
   constructor() {}
@@ -147,10 +157,10 @@ export class BaronyLandComponent implements OnChanges {
 
     if (changes.pawns) {
       this.pawnNodes = [];
-      this.pawns().forEach(pawn => {
+      this.pawns().forEach((pawn) => {
         this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
-          p => p.color === pawn.color && p.type === pawn.type,
-          p => ({ ...p, quantity: p.quantity + 1 }),
+          (p) => p.color === pawn.color && p.type === pawn.type,
+          (p) => ({ ...p, quantity: p.quantity + 1 }),
           () => ({
             type: pawn.type,
             color: pawn.color,
@@ -159,9 +169,9 @@ export class BaronyLandComponent implements OnChanges {
             x: 0,
             y: 0,
             xText: 0,
-            yText: 0
+            yText: 0,
           }),
-          this.pawnNodes
+          this.pawnNodes,
         );
       });
 
@@ -169,7 +179,7 @@ export class BaronyLandComponent implements OnChanges {
         if (a.type === b.type) {
           return 0;
         } else {
-          if (a.type === "knight") {
+          if (a.type === 'knight') {
             return 1;
           } else {
             return -1;
@@ -181,11 +191,13 @@ export class BaronyLandComponent implements OnChanges {
         pawnNode.x =
           this.hexCenter?.x -
           this.pawnWidth / 2.0 +
-          this.pawnPositionRadius * this.getPawnNodeDeltaX(index, this.pawnNodes.length);
+          this.pawnPositionRadius *
+            this.getPawnNodeDeltaX(index, this.pawnNodes.length);
         pawnNode.y =
           this.hexCenter?.y -
           this.pawnHeight / 2.0 +
-          this.pawnPositionRadius * this.getPawnNodeDeltaY(index, this.pawnNodes.length);
+          this.pawnPositionRadius *
+            this.getPawnNodeDeltaY(index, this.pawnNodes.length);
         pawnNode.xText = pawnNode.x + this.textXOffset;
         pawnNode.yText = pawnNode.y + this.textYOffset;
       });

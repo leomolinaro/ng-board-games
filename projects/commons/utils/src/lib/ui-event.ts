@@ -1,4 +1,4 @@
-import { firstValueFrom, Subject } from "rxjs";
+import { firstValueFrom, Subject } from 'rxjs';
 
 export class UiEvent<E> {
   private subject: Subject<E> | null = null;

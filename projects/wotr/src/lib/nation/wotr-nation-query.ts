@@ -1,13 +1,13 @@
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrNationId } from "./wotr-nation-models";
-import { WotrNationStore } from "./wotr-nation-store";
+import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrNationId } from './wotr-nation-models';
+import { WotrNationStore } from './wotr-nation-store';
 
 export class WotrNationQuery {
   constructor(
     private nationId: WotrNationId,
     private nationStore: WotrNationStore,
-    private regionStore: WotrRegionStore
+    private regionStore: WotrRegionStore,
   ) {}
 
   id() {
@@ -65,11 +65,15 @@ export class WotrNationQuery {
   strongholds(): WotrRegion[] {
     return this.regionStore
       .regions()
-      .filter(r => r.nationId === this.nationId && r.settlement === "stronghold");
+      .filter(
+        (r) => r.nationId === this.nationId && r.settlement === 'stronghold',
+      );
   }
 
   settlements(): WotrRegion[] {
-    return this.regionStore.regions().filter(r => r.nationId === this.nationId && r.settlement);
+    return this.regionStore
+      .regions()
+      .filter((r) => r.nationId === this.nationId && r.settlement);
   }
 
   recruitmentRegions(): WotrRegion[] {
@@ -77,10 +81,15 @@ export class WotrNationQuery {
   }
 
   canRecruit(regionId: WotrRegionId): boolean {
-    return this.regionStore.isRecruitmentRegion(this.regionStore.region(regionId), this.nation());
+    return this.regionStore.isRecruitmentRegion(
+      this.regionStore.region(regionId),
+      this.nation(),
+    );
   }
 
   settlementRegions(): WotrRegion[] {
-    return this.regionStore.regions().filter(r => r.nationId === this.nationId && r.settlement);
+    return this.regionStore
+      .regions()
+      .filter((r) => r.nationId === this.nationId && r.settlement);
   }
 }

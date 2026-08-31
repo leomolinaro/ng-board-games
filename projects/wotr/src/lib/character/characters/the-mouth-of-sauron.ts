@@ -1,19 +1,19 @@
-import { WotrAbility } from "../../ability/wotr-ability";
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
+import { WotrAbility } from '../../ability/wotr-ability';
+import { WotrActionDie } from '../../action-die/wotr-action-die-models';
 import {
   WotrActionDieChoiceModifier,
   WotrActionDieModifiers,
-  WotrAfterActionDieResolution
-} from "../../action-die/wotr-action-die-modifiers";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrFrontId } from "../../front/wotr-front-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrDieStory } from "../../game/wotr-story-models";
-import { WotrRegion } from "../../region/wotr-region-models";
-import { playCharacter } from "../wotr-character-actions";
-import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
+  WotrAfterActionDieResolution,
+} from '../../action-die/wotr-action-die-modifiers';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrFrontId } from '../../front/wotr-front-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrDieStory } from '../../game/wotr-story-models';
+import { WotrRegion } from '../../region/wotr-region-models';
+import { playCharacter } from '../wotr-character-actions';
+import { WotrPlayableCharacterCard } from './wotr-playable-character-card';
 
 // The Mouth of Sauron - Lieutenant of Barad-dûr (Level 3, Leadership 2, +1 Action Die)
 // If the Fellowship is on the Mordor Track or all the Free Peoples Nations are "At War," you may use one Muster action die result to place the Mouth of Sauron in
@@ -25,33 +25,34 @@ export class TheMouthOfSauron extends WotrPlayableCharacterCard {
     super();
   }
 
-  public readonly characterId = "the-mouth-of-sauron";
+  public readonly characterId = 'the-mouth-of-sauron';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
-      die === "muster" &&
-      (this.q.fellowship.isOnMordorTrack() || this.q.freePeoples.victoryPoints() > 0) &&
-      this.q.regions().some(r => this.isValidRegion(r.region()))
+      die === 'muster' &&
+      (this.q.fellowship.isOnMordorTrack() ||
+        this.q.freePeoples.victoryPoints() > 0) &&
+      this.q.regions().some((r) => this.isValidRegion(r.region()))
     );
   }
 
   override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
-      .filter(r => this.isValidRegion(r.region()))
-      .map(r => r.id());
+      .filter((r) => this.isValidRegion(r.region()))
+      .map((r) => r.id());
     const region = await ui.askRegion(
-      "Select a region to bring the Mouth of Sauron into play",
-      validRegions
+      'Select a region to bring the Mouth of Sauron into play',
+      validRegions,
     );
-    return playCharacter(region, "the-mouth-of-sauron");
+    return playCharacter(region, 'the-mouth-of-sauron');
   }
 
   private isValidRegion(r: WotrRegion): boolean {
     return (
-      r.nationId === "sauron" &&
+      r.nationId === 'sauron' &&
       this.q.region(r.id).isUnconquered() &&
-      r.settlement === "stronghold"
+      r.settlement === 'stronghold'
     );
   }
 }
@@ -60,39 +61,42 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
   constructor(
     private q: WotrGameQuery,
     private ui: WotrGameUiContext,
-    private actionDieModifiers: WotrActionDieModifiers
+    private actionDieModifiers: WotrActionDieModifiers,
   ) {}
 
   public modifier = this.actionDieModifiers.actionDieChoices;
-  public handler: WotrActionDieChoiceModifier = ({ dieResult, die, frontId }) => {
-    if (dieResult !== "muster") return [];
-    if (frontId !== "shadow") return [];
+  public handler: WotrActionDieChoiceModifier = ({
+    dieResult,
+    die,
+    frontId,
+  }) => {
+    if (dieResult !== 'muster') return [];
+    if (frontId !== 'shadow') return [];
     const messengerChoice: WotrUiCharacterChoice = {
-      label: () => "Messenger of the Dark Tower",
+      label: () => 'Messenger of the Dark Tower',
       isAvailable: () => !this.q.messengerOfTheDarkTowerUsed(),
-      character: "the-mouth-of-sauron",
-      actions: async () => (await this.ui.actionDieUi.resolveArmyResult(die, "shadow")).actions
+      character: 'the-mouth-of-sauron',
+      actions: async () =>
+        (await this.ui.actionDieUi.resolveArmyResult(die, 'shadow')).actions,
     };
     return [messengerChoice];
   };
 }
 
-export class MessengerOfTheDarkTowerSetUsedAbility
-  implements WotrAbility<WotrAfterActionDieResolution>
-{
+export class MessengerOfTheDarkTowerSetUsedAbility implements WotrAbility<WotrAfterActionDieResolution> {
   constructor(
     private q: WotrGameQuery,
-    private actionDieModifiers: WotrActionDieModifiers
+    private actionDieModifiers: WotrActionDieModifiers,
   ) {}
 
   public modifier = this.actionDieModifiers.afterActionDieResolution;
   public handler: WotrAfterActionDieResolution = async (
     story: WotrDieStory,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ) => {
-    if (frontId !== "shadow") return;
-    if (story.character !== "the-mouth-of-sauron") return;
-    if (story.die !== "muster") return;
+    if (frontId !== 'shadow') return;
+    if (story.character !== 'the-mouth-of-sauron') return;
+    if (story.die !== 'muster') return;
     this.q.setMessengerOfTheDarkTowerUsed();
   };
 }

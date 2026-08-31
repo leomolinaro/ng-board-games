@@ -1,13 +1,13 @@
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility } from '../../ability/wotr-ability';
 import {
   WotrActionDieChoiceModifier,
-  WotrActionDieModifiers
-} from "../../action-die/wotr-action-die-modifiers";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { hideFellowship } from "../../fellowship/wotr-fellowship-actions";
-import { WotrFellowshipStore } from "../../fellowship/wotr-fellowship-store";
-import { WotrUiCharacterChoice } from "../../game/wotr-game-ui";
-import { WotrCharacterId } from "../wotr-character-models";
+  WotrActionDieModifiers,
+} from '../../action-die/wotr-action-die-modifiers';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { hideFellowship } from '../../fellowship/wotr-fellowship-actions';
+import { WotrFellowshipStore } from '../../fellowship/wotr-fellowship-store';
+import { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
+import { WotrCharacterId } from '../wotr-character-models';
 
 // Strider - Ranger of the North (Level 3, Leadership 1)
 // Guide. You may use any of your Action die results to hide a revealed Fellowship.
@@ -17,14 +17,14 @@ import { WotrCharacterId } from "../wotr-character-models";
 export class StriderGuideAbility implements WotrAbility<WotrActionDieChoiceModifier> {
   constructor(
     private fellowshipStore: WotrFellowshipStore,
-    private actionDieModifiers: WotrActionDieModifiers
+    private actionDieModifiers: WotrActionDieModifiers,
   ) {}
 
   public modifier = this.actionDieModifiers.actionDieChoices;
 
   public handler: WotrActionDieChoiceModifier = ({ frontId }) => {
-    if (frontId !== "free-peoples") return [];
-    if (this.fellowshipStore.guide() !== "strider") return [];
+    if (frontId !== 'free-peoples') return [];
+    if (this.fellowshipStore.guide() !== 'strider') return [];
     const choice = new StriderHideChoice(this.fellowshipStore);
     return [choice];
   };
@@ -33,7 +33,7 @@ export class StriderGuideAbility implements WotrAbility<WotrActionDieChoiceModif
 class StriderHideChoice implements WotrUiCharacterChoice {
   constructor(private fellowshipStore: WotrFellowshipStore) {}
 
-  character: WotrCharacterId = "strider";
+  character: WotrCharacterId = 'strider';
   label(): string {
     return "Hide the Fellowship (Strider's guide ability)";
   }

@@ -1,53 +1,56 @@
 // import { withDevtools } from "@angular-architects/ngrx-toolkit";
-import { computed, inject, Injectable } from "@angular/core";
-import { BgUser } from "@leobg/commons";
-import { arrayUtil } from "@leobg/commons/utils";
-import { patchState, signalStore, withState } from "@ngrx/signals";
+import { computed, inject, Injectable } from '@angular/core';
+import { BgUser } from '@leobg/commons';
+import { arrayUtil } from '@leobg/commons/utils';
+import { patchState, signalStore, withState } from '@ngrx/signals';
 import {
   initialeState as battleInitialeState,
   WotrBattleState,
-  WotrBattleStore
-} from "../battle/wotr-battle-store";
+  WotrBattleStore,
+} from '../battle/wotr-battle-store';
 import {
   initialeState as characterInitialeState,
   WotrCharacterState,
-  WotrCharacterStore
-} from "../character/wotr-character-store";
-import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
+  WotrCharacterStore,
+} from '../character/wotr-character-store';
+import { WotrFellowship } from '../fellowship/wotr-fellowship-models';
 import {
   initialState as fellowshipInitialeState,
-  WotrFellowshipStore
-} from "../fellowship/wotr-fellowship-store";
-import { WotrFrontId } from "../front/wotr-front-models";
+  WotrFellowshipStore,
+} from '../fellowship/wotr-fellowship-store';
+import { WotrFrontId } from '../front/wotr-front-models';
 import {
   initialState as frontInitialState,
   WotrFrontState,
-  WotrFrontStore
-} from "../front/wotr-front-store";
+  WotrFrontStore,
+} from '../front/wotr-front-store';
 import {
   initialeState as huntInitialeState,
   WotrHuntState,
-  WotrHuntStore
-} from "../hunt/wotr-hunt-store";
-import { WotrLog } from "../log/wotr-log-models";
-import { initialeState as lognitialeState, WotrLogStore } from "../log/wotr-log-store";
+  WotrHuntStore,
+} from '../hunt/wotr-hunt-store';
+import { WotrLog } from '../log/wotr-log-models';
+import {
+  initialeState as lognitialeState,
+  WotrLogStore,
+} from '../log/wotr-log-store';
 import {
   initialeState as nationInitialeState,
   WotrNationState,
-  WotrNationStore
-} from "../nation/wotr-nation-store";
-import { WotrPlayerInfo } from "../player/wotr-player-info-models";
+  WotrNationStore,
+} from '../nation/wotr-nation-store';
+import { WotrPlayerInfo } from '../player/wotr-player-info-models';
 import {
   initialState as playerInitialStore,
   WotrPlayerInfoState,
-  WotrPlayerInfoStore
-} from "../player/wotr-player-info-store";
+  WotrPlayerInfoStore,
+} from '../player/wotr-player-info-store';
 import {
   initialeState as regionInitialeState,
   WotrRegionState,
-  WotrRegionStore
-} from "../region/wotr-region-store";
-import { WotrGameOptions } from "./options/wotr-game-options";
+  WotrRegionStore,
+} from '../region/wotr-region-store';
+import { WotrGameOptions } from './options/wotr-game-options';
 
 export interface WotrGameState {
   gameId: string;
@@ -67,12 +70,12 @@ export interface WotrGameState {
 
 function initialeState(): WotrGameState {
   return {
-    gameId: "",
+    gameId: '',
     gameOwner: null as any,
     gameOptions: {
       expansions: [],
       variants: [],
-      tokens: []
+      tokens: [],
     },
     players: playerInitialStore(),
     frontState: frontInitialState(),
@@ -83,7 +86,7 @@ function initialeState(): WotrGameState {
     hunt: huntInitialeState(),
     logs: lognitialeState(),
     battle: battleInitialeState(),
-    backupState: null
+    backupState: null,
   };
 }
 
@@ -91,7 +94,7 @@ function initialeState(): WotrGameState {
 export class WotrGameStore extends signalStore(
   { protectedState: false },
   // withDevtools("WotrGameStore"),
-  withState<WotrGameState>(initialeState())
+  withState<WotrGameState>(initialeState()),
 ) {
   constructor() {
     const frontStore = inject(WotrFrontStore);
@@ -106,31 +109,34 @@ export class WotrGameStore extends signalStore(
 
     super();
     playerInfoStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, players: updater(s.players) }));
+      patchState(this, (s) => ({ ...s, players: updater(s.players) }));
     playerInfoStore.state = this.players;
     frontStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, frontState: updater(s.frontState) }));
+      patchState(this, (s) => ({ ...s, frontState: updater(s.frontState) }));
     frontStore.state = this.frontState;
     regionStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, regionState: updater(s.regionState) }));
+      patchState(this, (s) => ({ ...s, regionState: updater(s.regionState) }));
     regionStore.state = this.regionState;
     nationStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, nationState: updater(s.nationState) }));
+      patchState(this, (s) => ({ ...s, nationState: updater(s.nationState) }));
     nationStore.state = this.nationState;
     characterStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, characterState: updater(s.characterState) }));
+      patchState(this, (s) => ({
+        ...s,
+        characterState: updater(s.characterState),
+      }));
     characterStore.state = this.characterState;
     fellowshipStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, fellowship: updater(s.fellowship) }));
+      patchState(this, (s) => ({ ...s, fellowship: updater(s.fellowship) }));
     fellowshipStore.state = this.fellowship;
     huntStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, hunt: updater(s.hunt) }));
+      patchState(this, (s) => ({ ...s, hunt: updater(s.hunt) }));
     huntStore.state = this.hunt;
     logStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, logs: updater(s.logs) }));
+      patchState(this, (s) => ({ ...s, logs: updater(s.logs) }));
     logStore.state = this.logs;
     battleStore.update = (actionName, updater) =>
-      patchState(this, s => ({ ...s, battle: updater(s.battle) }));
+      patchState(this, (s) => ({ ...s, battle: updater(s.battle) }));
     battleStore.state = this.battle;
   }
 
@@ -142,17 +148,20 @@ export class WotrGameStore extends signalStore(
     players: WotrPlayerInfo[],
     gameId: string,
     gameOwner: BgUser,
-    gameOptions: WotrGameOptions
+    gameOptions: WotrGameOptions,
   ) {
-    patchState(this, s => ({
+    patchState(this, (s) => ({
       ...s,
       gameId,
       gameOwner,
       gameOptions,
       players: {
-        map: arrayUtil.toMap(players, p => p.id) as Record<WotrFrontId, WotrPlayerInfo>,
-        ids: players.map(p => p.id)
-      }
+        map: arrayUtil.toMap(players, (p) => p.id) as Record<
+          WotrFrontId,
+          WotrPlayerInfo
+        >,
+        ids: players.map((p) => p.id),
+      },
     }));
   }
 
@@ -160,13 +169,13 @@ export class WotrGameStore extends signalStore(
     return !!this.backupState();
   }
   startTemporaryState() {
-    patchState(this, s => ({ ...s, backupState: s }));
+    patchState(this, (s) => ({ ...s, backupState: s }));
   }
   endTemporaryState() {
     if (this.backupState()) {
-      patchState(this, s => ({ ...s.backupState, backupState: null }));
+      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
     } else {
-      throw new Error("endTemporaryState without startTemporaryState");
+      throw new Error('endTemporaryState without startTemporaryState');
     }
   }
 
@@ -177,11 +186,11 @@ export class WotrGameStore extends signalStore(
     return this.gameOwner();
   }
 
-  kome = computed(() => this.gameOptions().expansions.includes("kome"));
+  kome = computed(() => this.gameOptions().expansions.includes('kome'));
   visibleCorruptionTiles = computed(() =>
-    this.gameOptions().variants.includes("visibleCorruptionTiles")
+    this.gameOptions().variants.includes('visibleCorruptionTiles'),
   );
   sequentialCorruptionDraw = computed(() =>
-    this.gameOptions().variants.includes("sequentialCorruptionDraw")
+    this.gameOptions().variants.includes('sequentialCorruptionDraw'),
   );
 }

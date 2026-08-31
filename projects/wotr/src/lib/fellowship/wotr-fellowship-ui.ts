@@ -1,12 +1,12 @@
-import { inject, Injectable } from "@angular/core";
-import { eliminateCharacter } from "../character/wotr-character-actions";
-import { WotrCharacterHandler } from "../character/wotr-character-handler";
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterQuery } from "../character/wotr-character-query";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrUiChoice, WotrUiOption } from "../game/wotr-game-ui";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
+import { inject, Injectable } from '@angular/core';
+import { eliminateCharacter } from '../character/wotr-character-actions';
+import { WotrCharacterHandler } from '../character/wotr-character-handler';
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { WotrCharacterQuery } from '../character/wotr-character-query';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrUiChoice, WotrUiOption } from '../game/wotr-game-ui';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
 import {
   changeGuide,
   declareFellowship,
@@ -14,11 +14,14 @@ import {
   hideFellowship,
   moveFelloswhip,
   separateCompanions,
-  WotrFellowshipGuide
-} from "./wotr-fellowship-actions";
-import { WotrFellowshipHandler } from "./wotr-fellowship-handler";
-import { WotrFellowshipRules, WotrSeparateCompanionsOptions } from "./wotr-fellowship-rules";
-import { WotrFellowshipStore } from "./wotr-fellowship-store";
+  WotrFellowshipGuide,
+} from './wotr-fellowship-actions';
+import { WotrFellowshipHandler } from './wotr-fellowship-handler';
+import {
+  WotrFellowshipRules,
+  WotrSeparateCompanionsOptions,
+} from './wotr-fellowship-rules';
+import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 @Injectable()
 export class WotrFellowshipUi {
@@ -32,47 +35,51 @@ export class WotrFellowshipUi {
   async fellowshipPhase(): Promise<WotrAction[]> {
     let continueAsking = true;
     const actions: WotrAction[] = [];
-    const validActions: WotrUiOption<"declare" | "guide" | "pass">[] = [
+    const validActions: WotrUiOption<'declare' | 'guide' | 'pass'>[] = [
       {
-        value: "declare",
-        label: "Declare Fellowship",
-        disabled: !this.fellowshipRules.canDeclareFellowship()
+        value: 'declare',
+        label: 'Declare Fellowship',
+        disabled: !this.fellowshipRules.canDeclareFellowship(),
       },
       {
-        value: "guide",
-        label: "Change Fellowship guide",
-        disabled: !this.fellowshipRules.canChangeGuide()
+        value: 'guide',
+        label: 'Change Fellowship guide',
+        disabled: !this.fellowshipRules.canChangeGuide(),
       },
-      { value: "pass", label: "Pass" }
+      { value: 'pass', label: 'Pass' },
     ];
     while (continueAsking) {
-      const a = await this.ui.askOption("Fellowship Phase: choose an action", validActions);
+      const a = await this.ui.askOption(
+        'Fellowship Phase: choose an action',
+        validActions,
+      );
       switch (a) {
-        case "declare": {
+        case 'declare': {
           validActions.splice(
-            validActions.findIndex(x => x.value === "declare"),
-            1
+            validActions.findIndex((x) => x.value === 'declare'),
+            1,
           );
-          const validRegions = this.fellowshipRules.validRegionsForDeclaration();
+          const validRegions =
+            this.fellowshipRules.validRegionsForDeclaration();
           const region = await this.ui.askRegion(
-            "Choose a region to declare the fellowship",
-            validRegions
+            'Choose a region to declare the fellowship',
+            validRegions,
           );
           this.fellowshipHandler.declare(region);
           actions.push(declareFellowship(region));
           break;
         }
-        case "guide": {
+        case 'guide': {
           validActions.splice(
-            validActions.findIndex(x => x.value === "guide"),
-            1
+            validActions.findIndex((x) => x.value === 'guide'),
+            1,
           );
           const action = await this.changeGuide();
           this.fellowshipHandler.changeGuide(action.companion);
           actions.push(action);
           break;
         }
-        case "pass":
+        case 'pass':
           continueAsking = false;
           break;
       }
@@ -82,49 +89,62 @@ export class WotrFellowshipUi {
 
   async eliminateCompanions(): Promise<WotrAction> {
     const fellowshipCompanions = this.fellowshipStore.companions();
-    const companions = await this.ui.askFellowshipCompanions("Select companions to eliminate", {
-      companions: fellowshipCompanions,
-      singleSelection: false
-    });
+    const companions = await this.ui.askFellowshipCompanions(
+      'Select companions to eliminate',
+      {
+        companions: fellowshipCompanions,
+        singleSelection: false,
+      },
+    );
     return eliminateCharacter(...companions);
   }
 
-  async separateCompanions(options?: WotrSeparateCompanionsOptions): Promise<WotrAction[]> {
+  async separateCompanions(
+    options?: WotrSeparateCompanionsOptions,
+  ): Promise<WotrAction[]> {
     const fellowshipCompanions = this.fellowshipStore.companions();
-    const companions = await this.ui.askFellowshipCompanions("Select companions to separate", {
-      companions: fellowshipCompanions,
-      singleSelection: false,
-      nCompanions: options?.nCompanions
-    });
+    const companions = await this.ui.askFellowshipCompanions(
+      'Select companions to separate',
+      {
+        companions: fellowshipCompanions,
+        singleSelection: false,
+        nCompanions: options?.nCompanions,
+      },
+    );
     return this.separateThoseCompanions(companions, options);
   }
 
   async separateThoseCompanions(
     companions: WotrCompanionId[],
-    options?: WotrSeparateCompanionsOptions
+    options?: WotrSeparateCompanionsOptions,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     if (this.q.fellowship.isOnMordorTrack()) {
       actions.push(eliminateCharacter(...companions));
       this.characterHandler.eliminateCharactersOnly(companions);
     } else {
-      const targetRegions = this.fellowshipRules.companionSeparationTargetRegions(
-        companions,
-        options
-      );
+      const targetRegions =
+        this.fellowshipRules.companionSeparationTargetRegions(
+          companions,
+          options,
+        );
       const targetRegion = await this.ui.askRegion(
-        "Select a region to move the separated companions",
-        targetRegions
+        'Select a region to move the separated companions',
+        targetRegions,
       );
       actions.push(separateCompanions(targetRegion, ...companions));
       this.fellowshipHandler.separateCompanions(companions, targetRegion);
     }
 
-    if (companions.some(c => this.fellowshipStore.guide() === c)) {
+    if (companions.some((c) => this.fellowshipStore.guide() === c)) {
       const fellowshipCompanions = this.fellowshipStore.companions();
-      const leftCompanionIds = fellowshipCompanions.filter(c => !companions.includes(c));
+      const leftCompanionIds = fellowshipCompanions.filter(
+        (c) => !companions.includes(c),
+      );
       if (leftCompanionIds.length > 0) {
-        const leftCompanions = leftCompanionIds.map(id => this.q.character(id));
+        const leftCompanions = leftCompanionIds.map((id) =>
+          this.q.character(id),
+        );
         const changeGuideAction = await this.changeGuideBetween(leftCompanions);
         actions.push(changeGuideAction);
       }
@@ -135,20 +155,27 @@ export class WotrFellowshipUi {
 
   async changeGuide(): Promise<WotrFellowshipGuide> {
     const companionIds = this.fellowshipStore.companions();
-    const companions = companionIds.map(id => this.q.character(id));
+    const companions = companionIds.map((id) => this.q.character(id));
     const action = await this.changeGuideBetween(companions);
     this.fellowshipHandler.changeGuide(action.companion);
     return action;
   }
 
-  private async changeGuideBetween(companions: WotrCharacterQuery[]): Promise<WotrFellowshipGuide> {
+  private async changeGuideBetween(
+    companions: WotrCharacterQuery[],
+  ): Promise<WotrFellowshipGuide> {
     const guide = this.fellowshipStore.guide();
     const maxLevel = companions.reduce((max, c) => Math.max(max, c.level), 0);
-    const targetCompanions = companions.filter(c => c.level === maxLevel && c.id !== guide);
-    const newGuide = await this.ui.askFellowshipCompanions("Select a new guide", {
-      companions: targetCompanions.map(c => c.id as WotrCompanionId),
-      singleSelection: true
-    });
+    const targetCompanions = companions.filter(
+      (c) => c.level === maxLevel && c.id !== guide,
+    );
+    const newGuide = await this.ui.askFellowshipCompanions(
+      'Select a new guide',
+      {
+        companions: targetCompanions.map((c) => c.id as WotrCompanionId),
+        singleSelection: true,
+      },
+    );
     return changeGuide(newGuide[0]);
   }
 
@@ -156,27 +183,27 @@ export class WotrFellowshipUi {
     const actions: WotrAction[] = [];
     const actualAmount = Math.min(amount, this.q.fellowship.corruption());
     if (actualAmount) {
-      await this.ui.askContinue("Heal the Fellowship");
+      await this.ui.askContinue('Heal the Fellowship');
       actions.push(healFellowship(actualAmount));
     }
     return actions;
   }
 
   progressChoice: WotrUiChoice = {
-    label: () => "Fellowship progress",
+    label: () => 'Fellowship progress',
     isAvailable: () => !this.fellowshipStore.isRevealed(),
-    actions: async () => [moveFelloswhip()]
+    actions: async () => [moveFelloswhip()],
   };
 
   hideFellowshipChoice: WotrUiChoice = {
-    label: () => "Hide the Fellowship",
+    label: () => 'Hide the Fellowship',
     isAvailable: () => this.fellowshipStore.isRevealed(),
-    actions: async () => [hideFellowship()]
+    actions: async () => [hideFellowship()],
   };
 
   separateCompanionsChoice: WotrUiChoice = {
-    label: () => "Separate companions",
+    label: () => 'Separate companions',
     isAvailable: () => this.fellowshipStore.numberOfCompanions() > 0,
-    actions: async () => this.separateCompanions()
+    actions: async () => this.separateCompanions(),
   };
 }

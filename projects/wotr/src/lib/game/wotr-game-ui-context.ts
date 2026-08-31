@@ -1,16 +1,16 @@
-import { Injectable } from "@angular/core";
-import { lazyInject } from "@leobg/commons/utils";
-import { WotrActionDieUi } from "../action-die/wotr-action-die-ui";
-import { WotrBattleUi } from "../battle/wotr-battle-ui";
-import { WotrCardDrawUi } from "../card/wotr-card-draw-ui";
-import { WotrCardPlayUi } from "../card/wotr-card-play-ui";
-import { WotrCharacterUi } from "../character/wotr-character-ui";
-import { WotrFellowshipUi } from "../fellowship/wotr-fellowship-ui";
-import { WotrFrontUi } from "../front/wotr-front-ui";
-import { WotrHuntUi } from "../hunt/wotr-hunt-ui";
-import { WotrNationUi } from "../nation/wotr-nation-ui";
-import { WotrUnitUi } from "../unit/wotr-unit-ui";
-import { WotrGameUi } from "./wotr-game-ui";
+import { Injectable } from '@angular/core';
+import { lazyInject } from '@leobg/commons/utils';
+import { WotrActionDieUi } from '../action-die/wotr-action-die-ui';
+import { WotrBattleUi } from '../battle/wotr-battle-ui';
+import { WotrCardDrawUi } from '../card/wotr-card-draw-ui';
+import { WotrCardPlayUi } from '../card/wotr-card-play-ui';
+import { WotrCharacterUi } from '../character/wotr-character-ui';
+import { WotrFellowshipUi } from '../fellowship/wotr-fellowship-ui';
+import { WotrFrontUi } from '../front/wotr-front-ui';
+import { WotrHuntUi } from '../hunt/wotr-hunt-ui';
+import { WotrNationUi } from '../nation/wotr-nation-ui';
+import { WotrUnitUi } from '../unit/wotr-unit-ui';
+import { WotrGameUi } from './wotr-game-ui';
 
 @Injectable()
 export class WotrGameUiContext {

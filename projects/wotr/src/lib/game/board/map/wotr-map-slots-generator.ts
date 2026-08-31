@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
-import { immutableUtil, randomUtil } from "@leobg/commons/utils";
-import { WotrRegion, WotrRegionId } from "../../../region/wotr-region-models";
-import { WotrMapPoint, WotrRegionSlots } from "./wotr-map.service";
+import { Injectable } from '@angular/core';
+import { immutableUtil, randomUtil } from '@leobg/commons/utils';
+import { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import { WotrMapPoint, WotrRegionSlots } from './wotr-map.service';
 
 interface WotrRegionPoints {
   innerPoints: WotrMapRegionPoint[];
@@ -28,17 +28,25 @@ export class WotrMapSlotsGenerator {
     { x: 1, y: 1 },
     { x: 1, y: 0 },
     { x: 1, y: -1 },
-    { x: 0, y: -1 }
+    { x: 0, y: -1 },
   ];
 
   generateSlots(
     regions: WotrRegion[],
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
   ): WotrRegionSlots {
-    const areaSlots: Record<WotrRegionId, Record<number, WotrMapPoint[]>> = {} as any;
-    const regionPointsById = this.generateRegionPoints(regions, xMax, yMax, coordinatesToAreaId);
+    const areaSlots: Record<
+      WotrRegionId,
+      Record<number, WotrMapPoint[]>
+    > = {} as any;
+    const regionPointsById = this.generateRegionPoints(
+      regions,
+      xMax,
+      yMax,
+      coordinatesToAreaId,
+    );
 
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
@@ -57,10 +65,13 @@ export class WotrMapSlotsGenerator {
     regions: WotrRegion[],
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
   ) {
     const regionPointsById: Record<WotrRegionId, WotrRegionPoints> = {} as any;
-    const regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>> = {};
+    const regionPointByYByX: Record<
+      number,
+      Record<number, WotrMapRegionPoint>
+    > = {};
 
     // Calcolo i punti interni e la mappa dei punti by coordinates.
     for (let x = 0; x < xMax; x++) {
@@ -72,7 +83,7 @@ export class WotrMapSlotsGenerator {
             regionId: areaId,
             neighbours: [],
             x: x,
-            y: y
+            y: y,
           };
           let regionPointByY = regionPointByYByX[x];
           if (!regionPointByY) {
@@ -84,7 +95,7 @@ export class WotrMapSlotsGenerator {
           if (!regionPoints) {
             regionPoints = {
               innerPoints: [],
-              outerBorderPoints: []
+              outerBorderPoints: [],
             };
             regionPointsById[areaId] = regionPoints;
           }
@@ -108,7 +119,11 @@ export class WotrMapSlotsGenerator {
         for (const neighbourDirection of this.neighbourDirections) {
           const nX = x + neighbourDirection.x;
           const nY = y + neighbourDirection.y;
-          const regionPoint = this.getRegionPointByCoordinates(nX, nY, regionPointByYByX);
+          const regionPoint = this.getRegionPointByCoordinates(
+            nX,
+            nY,
+            regionPointByYByX,
+          );
           let outerPoint: WotrMapPoint | null = null;
           if (regionPoint) {
             if (regionPoint.regionId === region.id) {
@@ -120,7 +135,7 @@ export class WotrMapSlotsGenerator {
             outerPoint = { x: nX, y: nY };
           }
           if (outerPoint) {
-            const key = outerPoint.x + "-" + outerPoint.y;
+            const key = outerPoint.x + '-' + outerPoint.y;
             if (!foundOuterPoints[key]) {
               outerPoints.push(outerPoint);
               foundOuterPoints[key] = true;
@@ -149,7 +164,7 @@ export class WotrMapSlotsGenerator {
   private getRegionPointByCoordinates(
     x: number,
     y: number,
-    regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>
+    regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
   ): WotrMapRegionPoint | null {
     const regionPointByY = regionPointByYByX[x];
     if (!regionPointByY) {
@@ -170,22 +185,29 @@ export class WotrMapSlotsGenerator {
     return 2 / this.quadDistance(innerPoint1, innerPoint2);
   }
 
-  private quadDistance(pointA: { x: number; y: number }, pointB: { x: number; y: number }) {
+  private quadDistance(
+    pointA: { x: number; y: number },
+    pointB: { x: number; y: number },
+  ) {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   }
 
   private generateRegionSlots(
     n: number,
     regionPoints: WotrRegionPoints,
-    regionId: WotrRegionId
+    regionId: WotrRegionId,
   ): WotrMapPoint[] {
     const scenario = new randomUtil.BgSimulatedAnnealing<WotrMapRegionPoint[]>(
-      state => this.energy(state),
-      state => this.randomNeighbor(state, regionPoints, regionId)
+      (state) => this.energy(state),
+      (state) => this.randomNeighbor(state, regionPoints, regionId),
     );
-    let slots = randomUtil.getRandomElements(n, n + 1, regionPoints.innerPoints);
+    let slots = randomUtil.getRandomElements(
+      n,
+      n + 1,
+      regionPoints.innerPoints,
+    );
     slots = scenario.run(slots, 0.1, 100);
-    return slots.map(s => ({ x: s.x, y: s.y }));
+    return slots.map((s) => ({ x: s.x, y: s.y }));
   }
 
   private energy(points: WotrMapRegionPoint[]) {
@@ -204,7 +226,7 @@ export class WotrMapSlotsGenerator {
   private randomNeighbor(
     points: WotrMapRegionPoint[],
     regionPoints: WotrRegionPoints,
-    regionId: WotrRegionId
+    regionId: WotrRegionId,
   ): WotrMapRegionPoint[] {
     const index = randomUtil.getRandomInteger(0, points.length);
     const oldPoint = points[index];
@@ -217,7 +239,7 @@ export class WotrMapSlotsGenerator {
         i++;
       } while (points.includes(newPoint) && i < limit);
       if (i >= limit) {
-        console.error("Loop!", regionId);
+        console.error('Loop!', regionId);
         newPoint = oldPoint;
       }
     } else {

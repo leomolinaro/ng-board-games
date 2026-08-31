@@ -1,26 +1,26 @@
-import { Injectable, inject } from "@angular/core";
-import { AgotData } from "../agot-services/agot-data";
-import { AgotCard } from "../agot.models";
+import { Injectable, inject } from '@angular/core';
+import { AgotData } from '../agot-services/agot-data';
+import { AgotCard } from '../agot.models';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class AgotDraftService {
   private dataService = inject(AgotData);
 
   private getTypeSort(type: string) {
     switch (type) {
-      case "agenda":
+      case 'agenda':
         return 1;
-      case "plot":
+      case 'plot':
         return 2;
-      case "character":
+      case 'character':
         return 3;
-      case "attachment":
+      case 'attachment':
         return 4;
-      case "location":
+      case 'location':
         return 5;
-      case "event":
+      case 'event':
         return 6;
       default:
         return 0;
@@ -32,7 +32,7 @@ export class AgotDraftService {
     types: string[],
     factions: string[],
     packs: string[],
-    duplicates: boolean
+    duplicates: boolean,
   ) {
     const poolCards = this.getPool(types, factions, packs);
     const draftCards = this.getRandom(poolCards, nCards, duplicates);
@@ -43,8 +43,8 @@ export class AgotDraftService {
       if (comparison !== 0) {
         return comparison;
       }
-      const goldA = a.type_code === "plot" ? a.income : a.cost;
-      const goldB = b.type_code === "plot" ? b.income : b.cost;
+      const goldA = a.type_code === 'plot' ? a.income : a.cost;
+      const goldB = b.type_code === 'plot' ? b.income : b.cost;
       comparison = goldA - goldB;
       if (comparison !== 0) {
         return comparison;
@@ -62,14 +62,18 @@ export class AgotDraftService {
     const typeIds: { [id: string]: boolean } = {};
     const factionIds: { [id: string]: boolean } = {};
     const packIds: { [id: string]: boolean } = {};
-    types.forEach(id => (typeIds[id] = true));
-    factions.forEach(id => (factionIds[id] = true));
-    packs.forEach(id => (packIds[id] = true));
+    types.forEach((id) => (typeIds[id] = true));
+    factions.forEach((id) => (factionIds[id] = true));
+    packs.forEach((id) => (packIds[id] = true));
     const poolCards: AgotCard[] = [];
     const cards = this.dataService.getCards();
     if (cards) {
       for (const card of cards) {
-        if (typeIds[card.type_code] && packIds[card.pack_code] && factionIds[card.faction_code]) {
+        if (
+          typeIds[card.type_code] &&
+          packIds[card.pack_code] &&
+          factionIds[card.faction_code]
+        ) {
           poolCards.push(card);
         }
       }
@@ -77,7 +81,11 @@ export class AgotDraftService {
     return poolCards;
   }
 
-  public getRandom<T>(array: T[], num: number, duplicates: boolean): T[] | null {
+  public getRandom<T>(
+    array: T[],
+    num: number,
+    duplicates: boolean,
+  ): T[] | null {
     if (num > array.length) {
       return null;
     }

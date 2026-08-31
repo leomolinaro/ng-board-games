@@ -1,20 +1,20 @@
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
-import { WotrAction } from "../../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
-import { WotrLogWriter } from "../../../log/wotr-log-writer";
-import { WotrNationId } from "../../../nation/wotr-nation-models";
-import { WotrRegionId } from "../../../region/wotr-region-models";
-import { WotrRegionQuery } from "../../../region/wotr-region-query";
-import { awakeSovereign, moveCharacters } from "../../wotr-character-actions";
-import { WotrCharacterHandler } from "../../wotr-character-handler";
-import { KomeSovereignId } from "../../wotr-character-models";
-import { validSovereignAwakeningDie } from "./commons";
+import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import { WotrAction } from '../../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import { WotrLogWriter } from '../../../log/wotr-log-writer';
+import { WotrNationId } from '../../../nation/wotr-nation-models';
+import { WotrRegionId } from '../../../region/wotr-region-models';
+import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import { awakeSovereign, moveCharacters } from '../../wotr-character-actions';
+import { WotrCharacterHandler } from '../../wotr-character-handler';
+import { KomeSovereignId } from '../../wotr-character-models';
+import { validSovereignAwakeningDie } from './commons';
 
 export abstract class KomeSovereignCard {
   public abstract sovereignId: KomeSovereignId;
   protected abstract nation: WotrNationId;
-  protected abstract awakeningRegion: WotrRegionId | "any";
+  protected abstract awakeningRegion: WotrRegionId | 'any';
   protected abstract corruptionRegion: WotrRegionId;
   protected abstract q: WotrGameQuery;
   protected abstract characterHandler: WotrCharacterHandler;
@@ -29,15 +29,22 @@ export abstract class KomeSovereignCard {
 
   private getValidAwakeningRegions(): WotrRegionQuery[] {
     const regions =
-      this.awakeningRegion === "any"
-        ? this.q.regions().filter(r => (r.isCity() || r.isStronghold()) && r.isFreePeoplesRegion())
+      this.awakeningRegion === 'any'
+        ? this.q
+            .regions()
+            .filter(
+              (r) =>
+                (r.isCity() || r.isStronghold()) && r.isFreePeoplesRegion(),
+            )
         : [this.q.region(this.awakeningRegion)];
 
     const sovereignRegion = this.q.sovereign(this.sovereignId).region();
     if (!sovereignRegion) return [];
     const sovereignLevel = this.q.sovereign(this.sovereignId).level;
     return regions.filter(
-      r => r.isUnconquered() && r.isWithinNRegionsOf(sovereignRegion.id, sovereignLevel)
+      (r) =>
+        r.isUnconquered() &&
+        r.isWithinNRegionsOf(sovereignRegion.id, sovereignLevel),
     );
   }
 
@@ -45,13 +52,13 @@ export abstract class KomeSovereignCard {
     const validRegions = this.getValidAwakeningRegions();
     if (validRegions.length === 0)
       throw new Error(
-        `Cannot awaken ${this.sovereignId} because there are no valid regions to awaken in.`
+        `Cannot awaken ${this.sovereignId} because there are no valid regions to awaken in.`,
       );
     let awakeningRegion: WotrRegionId;
     if (validRegions.length > 1) {
       awakeningRegion = await ui.askRegion(
         `Where do you want to awaken ${this.sovereignId}?`,
-        validRegions.map(r => r.id())
+        validRegions.map((r) => r.id()),
       );
     } else {
       awakeningRegion = validRegions[0].id();
@@ -68,9 +75,11 @@ export abstract class KomeSovereignCard {
       this.characterHandler.moveCharacters(
         [this.sovereignId],
         fromRegion.id,
-        this.corruptionRegion
+        this.corruptionRegion,
       );
-      this.logger.logEffect(moveCharacters(fromRegion.id, this.corruptionRegion, this.sovereignId));
+      this.logger.logEffect(
+        moveCharacters(fromRegion.id, this.corruptionRegion, this.sovereignId),
+      );
     }
   }
 }

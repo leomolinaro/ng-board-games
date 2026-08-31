@@ -1,19 +1,22 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { firstValueFrom } from "rxjs";
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
-import { WotrCardId } from "../card/wotr-card-models";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import {
+  WotrActionDie,
+  WotrActionToken,
+} from '../action-die/wotr-action-die-models';
+import { WotrCardId } from '../card/wotr-card-models';
 import {
   KomeSovereign,
   KomeSovereignId,
   WotrCharacter,
-  WotrCharacterId
-} from "../character/wotr-character-models";
-import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
-import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
+  WotrCharacterId,
+} from '../character/wotr-character-models';
+import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
 
-const BASE_PATH = "assets/wotr";
+const BASE_PATH = 'assets/wotr';
 
 export interface WotrUnitImage {
   source: string;
@@ -32,11 +35,14 @@ export interface WotrCardText {
   combatText: string;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class WotrAssetsStore {
   private readonly http = inject(HttpClient);
   private readonly cardTextCache = new Map<WotrCardId, WotrCardText | null>();
-  private readonly cardTextLoaders = new Map<WotrCardId, Promise<WotrCardText | null>>();
+  private readonly cardTextLoaders = new Map<
+    WotrCardId,
+    Promise<WotrCardText | null>
+  >();
 
   constructor() {
     this.init();
@@ -63,9 +69,9 @@ export class WotrAssetsStore {
   > = {} as any;
   armyUnitImage(type: WotrArmyUnitType, nationId: WotrNationId) {
     switch (type) {
-      case "regular":
+      case 'regular':
         return this.NATION_BY_ID[nationId].regular;
-      case "elite":
+      case 'elite':
         return this.NATION_BY_ID[nationId].elite;
     }
   }
@@ -74,45 +80,45 @@ export class WotrAssetsStore {
   }
   private initNations() {
     this.NATION_BY_ID.dwarves = {
-      regular: this.unitImage("dwarven-regular", 23, 34),
-      elite: this.unitImage("dwarven-elite", 27, 42),
-      leader: this.unitImage("dwarven-leader", 41, 43)
+      regular: this.unitImage('dwarven-regular', 23, 34),
+      elite: this.unitImage('dwarven-elite', 27, 42),
+      leader: this.unitImage('dwarven-leader', 41, 43),
     };
     this.NATION_BY_ID.elves = {
-      regular: this.unitImage("elven-regular", 19, 45),
-      elite: this.unitImage("elven-elite", 36, 46),
-      leader: this.unitImage("elven-leader", 29, 48)
+      regular: this.unitImage('elven-regular', 19, 45),
+      elite: this.unitImage('elven-elite', 36, 46),
+      leader: this.unitImage('elven-leader', 29, 48),
     };
     this.NATION_BY_ID.gondor = {
-      regular: this.unitImage("gondor-regular", 23, 48),
-      elite: this.unitImage("gondor-elite", 41, 48),
-      leader: this.unitImage("gondor-leader", 40, 46)
+      regular: this.unitImage('gondor-regular', 23, 48),
+      elite: this.unitImage('gondor-elite', 41, 48),
+      leader: this.unitImage('gondor-leader', 40, 46),
     };
     this.NATION_BY_ID.north = {
-      regular: this.unitImage("north-regular", 30, 40),
-      elite: this.unitImage("north-elite", 36, 54),
-      leader: this.unitImage("north-leader", 33, 44)
+      regular: this.unitImage('north-regular', 30, 40),
+      elite: this.unitImage('north-elite', 36, 54),
+      leader: this.unitImage('north-leader', 33, 44),
     };
     this.NATION_BY_ID.rohan = {
-      regular: this.unitImage("rohan-regular", 21, 48),
-      elite: this.unitImage("rohan-elite", 47, 45),
-      leader: this.unitImage("rohan-leader", 33, 44)
+      regular: this.unitImage('rohan-regular', 21, 48),
+      elite: this.unitImage('rohan-elite', 47, 45),
+      leader: this.unitImage('rohan-leader', 33, 44),
     };
     this.NATION_BY_ID.isengard = {
-      regular: this.unitImage("isengard-regular", 35, 43),
-      elite: this.unitImage("isengard-elite", 46, 46)
+      regular: this.unitImage('isengard-regular', 35, 43),
+      elite: this.unitImage('isengard-elite', 46, 46),
     };
     this.NATION_BY_ID.sauron = {
-      regular: this.unitImage("sauron-regular", 31, 40),
-      elite: this.unitImage("sauron-elite", 40, 44)
+      regular: this.unitImage('sauron-regular', 31, 40),
+      elite: this.unitImage('sauron-elite', 40, 44),
     };
     this.NATION_BY_ID.southrons = {
-      regular: this.unitImage("southron-regular", 31, 49),
-      elite: this.unitImage("southron-elite", 46, 46)
+      regular: this.unitImage('southron-regular', 31, 49),
+      elite: this.unitImage('southron-elite', 46, 46),
     };
   }
 
-  private NAZGUL: WotrUnitImage = this.unitImage("nazgul", 42, 67);
+  private NAZGUL: WotrUnitImage = this.unitImage('nazgul', 42, 67);
   nazgulImage() {
     return this.NAZGUL;
   }
@@ -122,93 +128,138 @@ export class WotrAssetsStore {
     return this.CHARACTER_BY_ID[characterId];
   }
   regionCharacterImage(character: WotrCharacter): WotrUnitImage {
-    if ("sovereignStatus" in character) {
+    if ('sovereignStatus' in character) {
       const sovereign = character as KomeSovereign;
       return this.SOVEREIGN_BY_ID[sovereign.id][sovereign.sovereignStatus];
     } else {
       return this.CHARACTER_BY_ID[character.id];
     }
   }
-  private initCharacterImage(fileName: string, width: number, height: number): WotrUnitImage {
+  private initCharacterImage(
+    fileName: string,
+    width: number,
+    height: number,
+  ): WotrUnitImage {
     return { source: `${BASE_PATH}/characters/${fileName}.png`, width, height };
   }
 
   private SOVEREIGN_BY_ID: Record<
     KomeSovereignId,
-    Record<KomeSovereign["sovereignStatus"], WotrUnitImage>
+    Record<KomeSovereign['sovereignStatus'], WotrUnitImage>
   > = {} as any;
   private initKomeSovereignImage(
     fileName: string,
     width: number,
-    height: number
-  ): Record<KomeSovereign["sovereignStatus"], WotrUnitImage> {
+    height: number,
+  ): Record<KomeSovereign['sovereignStatus'], WotrUnitImage> {
     return {
-      awakened: { source: `${BASE_PATH}/kome/characters/${fileName}-awakened.png`, width, height },
+      awakened: {
+        source: `${BASE_PATH}/kome/characters/${fileName}-awakened.png`,
+        width,
+        height,
+      },
       corrupted: {
         source: `${BASE_PATH}/kome/characters/${fileName}-corrupted.png`,
         width,
-        height
+        height,
       },
-      leader: { source: `${BASE_PATH}/kome/characters/${fileName}.png`, width, height }
+      leader: {
+        source: `${BASE_PATH}/kome/characters/${fileName}.png`,
+        width,
+        height,
+      },
     };
   }
 
-  private initKomeCharacterImage(fileName: string, width: number, height: number): WotrUnitImage {
-    return { source: `${BASE_PATH}/kome/characters/${fileName}.png`, width, height };
+  private initKomeCharacterImage(
+    fileName: string,
+    width: number,
+    height: number,
+  ): WotrUnitImage {
+    return {
+      source: `${BASE_PATH}/kome/characters/${fileName}.png`,
+      width,
+      height,
+    };
   }
 
   private initCharacters() {
-    this.CHARACTER_BY_ID["gandalf-the-grey"] = this.initCharacterImage("gandalf-the-grey", 31, 55);
-    this.CHARACTER_BY_ID.strider = this.initCharacterImage("strider", 31, 47);
-    this.CHARACTER_BY_ID.boromir = this.initCharacterImage("boromir", 30, 44);
-    this.CHARACTER_BY_ID.legolas = this.initCharacterImage("legolas", 28, 45);
-    this.CHARACTER_BY_ID.gimli = this.initCharacterImage("gimli", 33, 38);
-    this.CHARACTER_BY_ID.meriadoc = this.initCharacterImage("merry", 29, 33);
-    this.CHARACTER_BY_ID.peregrin = this.initCharacterImage("pippin", 30, 36);
-    this.CHARACTER_BY_ID.aragorn = this.initCharacterImage("aragorn", 30, 48);
-    this.CHARACTER_BY_ID["gandalf-the-white"] = this.initCharacterImage(
-      "gandalf-the-white",
+    this.CHARACTER_BY_ID['gandalf-the-grey'] = this.initCharacterImage(
+      'gandalf-the-grey',
       31,
-      55
+      55,
     );
-    this.CHARACTER_BY_ID.gollum = this.initCharacterImage("gollum", 28, 35);
-    this.CHARACTER_BY_ID.saruman = this.initCharacterImage("saruman", 53, 44);
-    this.CHARACTER_BY_ID["the-witch-king"] = this.initCharacterImage("witch-king", 57, 44);
-    this.CHARACTER_BY_ID["the-mouth-of-sauron"] = this.initCharacterImage("mouth", 43, 41);
-    // Kome
-    this.SOVEREIGN_BY_ID.brand = this.initKomeSovereignImage("brand", 37, 57);
-    this.CHARACTER_BY_ID.brand = this.SOVEREIGN_BY_ID.brand.leader;
-    this.SOVEREIGN_BY_ID.dain = this.initKomeSovereignImage("dain", 33, 45);
-    this.CHARACTER_BY_ID.dain = this.SOVEREIGN_BY_ID.dain.leader;
-    this.SOVEREIGN_BY_ID.denethor = this.initKomeSovereignImage("denethor", 38, 47);
-    this.CHARACTER_BY_ID.denethor = this.SOVEREIGN_BY_ID.denethor.leader;
-    this.SOVEREIGN_BY_ID.theoden = this.initKomeSovereignImage("theoden", 38, 47);
-    this.CHARACTER_BY_ID.theoden = this.SOVEREIGN_BY_ID.theoden.leader;
-    this.SOVEREIGN_BY_ID.thranduil = this.initKomeSovereignImage("thranduil", 38, 50);
-    this.CHARACTER_BY_ID.thranduil = this.SOVEREIGN_BY_ID.thranduil.leader;
-    this.CHARACTER_BY_ID["the-black-serpent"] = this.initKomeCharacterImage(
-      "the-black-serpent",
+    this.CHARACTER_BY_ID.strider = this.initCharacterImage('strider', 31, 47);
+    this.CHARACTER_BY_ID.boromir = this.initCharacterImage('boromir', 30, 44);
+    this.CHARACTER_BY_ID.legolas = this.initCharacterImage('legolas', 28, 45);
+    this.CHARACTER_BY_ID.gimli = this.initCharacterImage('gimli', 33, 38);
+    this.CHARACTER_BY_ID.meriadoc = this.initCharacterImage('merry', 29, 33);
+    this.CHARACTER_BY_ID.peregrin = this.initCharacterImage('pippin', 30, 36);
+    this.CHARACTER_BY_ID.aragorn = this.initCharacterImage('aragorn', 30, 48);
+    this.CHARACTER_BY_ID['gandalf-the-white'] = this.initCharacterImage(
+      'gandalf-the-white',
+      31,
+      55,
+    );
+    this.CHARACTER_BY_ID.gollum = this.initCharacterImage('gollum', 28, 35);
+    this.CHARACTER_BY_ID.saruman = this.initCharacterImage('saruman', 53, 44);
+    this.CHARACTER_BY_ID['the-witch-king'] = this.initCharacterImage(
+      'witch-king',
       57,
-      66
+      44,
     );
-    this.CHARACTER_BY_ID["the-shadow-of-mirkwood"] = this.initKomeCharacterImage(
-      "the-shadow-of-mirkwood",
-      39,
-      62
+    this.CHARACTER_BY_ID['the-mouth-of-sauron'] = this.initCharacterImage(
+      'mouth',
+      43,
+      41,
     );
-    this.CHARACTER_BY_ID.ugluk = this.initKomeCharacterImage("ugluk", 49, 57);
+    // Kome
+    this.SOVEREIGN_BY_ID.brand = this.initKomeSovereignImage('brand', 37, 57);
+    this.CHARACTER_BY_ID.brand = this.SOVEREIGN_BY_ID.brand.leader;
+    this.SOVEREIGN_BY_ID.dain = this.initKomeSovereignImage('dain', 33, 45);
+    this.CHARACTER_BY_ID.dain = this.SOVEREIGN_BY_ID.dain.leader;
+    this.SOVEREIGN_BY_ID.denethor = this.initKomeSovereignImage(
+      'denethor',
+      38,
+      47,
+    );
+    this.CHARACTER_BY_ID.denethor = this.SOVEREIGN_BY_ID.denethor.leader;
+    this.SOVEREIGN_BY_ID.theoden = this.initKomeSovereignImage(
+      'theoden',
+      38,
+      47,
+    );
+    this.CHARACTER_BY_ID.theoden = this.SOVEREIGN_BY_ID.theoden.leader;
+    this.SOVEREIGN_BY_ID.thranduil = this.initKomeSovereignImage(
+      'thranduil',
+      38,
+      50,
+    );
+    this.CHARACTER_BY_ID.thranduil = this.SOVEREIGN_BY_ID.thranduil.leader;
+    this.CHARACTER_BY_ID['the-black-serpent'] = this.initKomeCharacterImage(
+      'the-black-serpent',
+      57,
+      66,
+    );
+    this.CHARACTER_BY_ID['the-shadow-of-mirkwood'] =
+      this.initKomeCharacterImage('the-shadow-of-mirkwood', 39, 62);
+    this.CHARACTER_BY_ID.ugluk = this.initKomeCharacterImage('ugluk', 49, 57);
   }
 
   sovereignToken(sovereignId: KomeSovereignId, used: boolean) {
-    return `${BASE_PATH}/kome/sovereign-tokens/${sovereignId}${used ? "-used" : ""}.png`;
+    return `${BASE_PATH}/kome/sovereign-tokens/${sovereignId}${used ? '-used' : ''}.png`;
   }
 
   sovereignAvatar(sovereignId: KomeSovereignId) {
     return `${BASE_PATH}/kome/sovereign-avatars/${sovereignId}.png`;
   }
 
-  private FELLOWSHIP: WotrUnitImage = this.unitImage("fellowship", 31, 31);
-  private FELLOWSHIP_REVEALED: WotrUnitImage = this.unitImage("fellowship-revealed", 47, 47);
+  private FELLOWSHIP: WotrUnitImage = this.unitImage('fellowship', 31, 31);
+  private FELLOWSHIP_REVEALED: WotrUnitImage = this.unitImage(
+    'fellowship-revealed',
+    47,
+    47,
+  );
   fellowshipImage(revealed: boolean) {
     return revealed ? this.FELLOWSHIP_REVEALED : this.FELLOWSHIP;
   }
@@ -228,9 +279,9 @@ export class WotrAssetsStore {
     if (pending) return pending;
 
     const loadPromise = firstValueFrom(
-      this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`)
+      this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`),
     )
-      .then(cardText => {
+      .then((cardText) => {
         this.cardTextCache.set(cardId, cardText);
         return cardText;
       })
@@ -246,35 +297,40 @@ export class WotrAssetsStore {
     return loadPromise;
   }
 
-  private unitImage(fileName: string, width: number, height: number): WotrUnitImage {
+  private unitImage(
+    fileName: string,
+    width: number,
+    height: number,
+  ): WotrUnitImage {
     return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
   }
 
   actionDieImage(actionDie: WotrActionDie, front: WotrFrontId) {
-    if (typeof actionDie === "string") {
-      return `${BASE_PATH}/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie}.png`;
+    if (typeof actionDie === 'string') {
+      return `${BASE_PATH}/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie}.png`;
     } else {
       switch (actionDie.type) {
-        case "ruler":
-          return `${BASE_PATH}/kome/action-dice/${front === "free-peoples" ? "fp" : "s"}-${actionDie.result}.png`;
+        case 'ruler':
+          return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
       }
     }
   }
   actionTokenImage(actionToken: WotrActionToken, front: WotrFrontId) {
-    return `${BASE_PATH}/action-tokens/${front === "free-peoples" ? "fp" : "s"}-${actionToken}.png`;
+    return `${BASE_PATH}/action-tokens/${front === 'free-peoples' ? 'fp' : 's'}-${actionToken}.png`;
   }
   huntTileImage(huntTile: WotrHuntTileId) {
-    if (huntTile.endsWith("km")) return `${BASE_PATH}/kome/hunt-tiles/${huntTile}.png`;
+    if (huntTile.endsWith('km'))
+      return `${BASE_PATH}/kome/hunt-tiles/${huntTile}.png`;
     return `${BASE_PATH}/hunt-tiles/${huntTile}.png`;
   }
   huntTileBack() {
     return `${BASE_PATH}/hunt-tiles/back.png`;
   }
   politicalMarkerImage(nationId: WotrNationId, active: boolean) {
-    return `${BASE_PATH}/political-markers/${nationId}-${active ? "active" : "inactive"}.png`;
+    return `${BASE_PATH}/political-markers/${nationId}-${active ? 'active' : 'inactive'}.png`;
   }
   fellowshipProgressCounter(revealed: boolean) {
-    return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? "back" : "front"}.png`;
+    return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? 'back' : 'front'}.png`;
   }
   corruptionCounter() {
     return `${BASE_PATH}/fellowship-counters/corruption-counter.png`;

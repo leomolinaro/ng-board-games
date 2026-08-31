@@ -1,4 +1,10 @@
-import { Injector, OnDestroy, ProviderToken, inject, runInInjectionContext } from "@angular/core";
+import {
+  Injector,
+  OnDestroy,
+  ProviderToken,
+  inject,
+  runInInjectionContext,
+} from '@angular/core';
 import {
   BehaviorSubject,
   EMPTY,
@@ -15,16 +21,16 @@ import {
   mergeMap,
   of,
   switchMap,
-  takeUntil
-} from "rxjs";
+  takeUntil,
+} from 'rxjs';
 
-const destroyUsedSymbol = Symbol("__destroyUsed");
-const destroyObsSymbol = Symbol("__destroy$");
-const destorySubjectSymbol = Symbol("__$destroy");
-const loadingUsedSymbol = Symbol("__loadingUsed");
-const loadingObsSymbol = Symbol("__loading$");
-const loadingSubjectSymbol = Symbol("__$loading");
-const asyncEventSubjectSymbol = Symbol("__$ascynEvent");
+const destroyUsedSymbol = Symbol('__destroyUsed');
+const destroyObsSymbol = Symbol('__destroy$');
+const destorySubjectSymbol = Symbol('__$destroy');
+const loadingUsedSymbol = Symbol('__loadingUsed');
+const loadingObsSymbol = Symbol('__loading$');
+const loadingSubjectSymbol = Symbol('__$loading');
+const asyncEventSubjectSymbol = Symbol('__$ascynEvent');
 function asyncEventSubscribedSymbol(methodName: string) {
   return Symbol(`__$${methodName}Subscribed`);
 }
@@ -52,8 +58,8 @@ export function BooleanInput() {
         return this[rawBooleanKey];
       },
       set: function (value: any) {
-        this[rawBooleanKey] = value != null && `${value}` !== "false";
-      }
+        this[rawBooleanKey] = value != null && `${value}` !== 'false';
+      },
     });
   };
 }
@@ -70,13 +76,17 @@ export function NumberInput(fallbackValue?: number) {
       },
       set: function (value: any) {
         this[rawNumberKey] =
-          !isNaN(parseFloat(value)) && !isNaN(Number(value)) ? Number(value) : fallbackValue;
-      }
+          !isNaN(parseFloat(value)) && !isNaN(Number(value))
+            ? Number(value)
+            : fallbackValue;
+      },
     });
   };
 }
 
-export function UntilDestroy(constructor: new (...args: any[]) => OnDestroy): void {
+export function UntilDestroy(
+  constructor: new (...args: any[]) => OnDestroy,
+): void {
   const prot = constructor.prototype;
   const originalDestroy = prot.ngOnDestroy;
   if (!prot[destroyUsedSymbol]) {
@@ -91,7 +101,9 @@ export function UntilDestroy(constructor: new (...args: any[]) => OnDestroy): vo
   }
 }
 
-export const untilDestroy = <T>(component: OnDestroy): MonoTypeOperatorFunction<T> => {
+export const untilDestroy = <T>(
+  component: OnDestroy,
+): MonoTypeOperatorFunction<T> => {
   const c = component as any;
   const obs = c[destroyObsSymbol];
   if (!obs) {
@@ -100,21 +112,24 @@ export const untilDestroy = <T>(component: OnDestroy): MonoTypeOperatorFunction<
   }
   if (!c[destroyUsedSymbol]) {
     console.warn(
-      `Aggiungi il decoratore @TakeUntilDestroy nella classe [${c.constructor?.name}] dato che utilizza 'untilDestroy (this)'.`
+      `Aggiungi il decoratore @TakeUntilDestroy nella classe [${c.constructor?.name}] dato che utilizza 'untilDestroy (this)'.`,
     );
   }
   return takeUntil<T>(c[destroyObsSymbol]);
 };
 
 export function Loading() {
-  return <K extends string>(componentProt: Record<K, Observable<boolean>>, inputKey: K) => {
+  return <K extends string>(
+    componentProt: Record<K, Observable<boolean>>,
+    inputKey: K,
+  ) => {
     (componentProt as any)[loadingUsedSymbol] = true;
     Object.defineProperty(componentProt, inputKey, {
       get: function () {
         // Controllo l'esistenza ed istanzio se necessario il subject per il loading.
         initLoading(this);
         return this[loadingObsSymbol];
-      }
+      },
     });
   };
 }
@@ -123,7 +138,7 @@ function initLoading(componentInstance: any) {
   let loading$ = componentInstance[loadingObsSymbol];
   if (!loading$) {
     const $loading = new BehaviorSubject<number>(0);
-    loading$ = $loading.asObservable().pipe(map(l => l > 0));
+    loading$ = $loading.asObservable().pipe(map((l) => l > 0));
     componentInstance[loadingSubjectSymbol] = $loading;
     componentInstance[loadingObsSymbol] = loading$;
   }
@@ -133,7 +148,7 @@ export function ChangeListener() {
   return <V, O extends Observable<V>>(
     targetProt: OnDestroy,
     methodName: string,
-    methodDescriptor: TypedPropertyDescriptor<(...args: any) => O>
+    methodDescriptor: TypedPropertyDescriptor<(...args: any) => O>,
   ) => {
     const originalMethod = methodDescriptor.value;
     if (originalMethod) {
@@ -157,41 +172,46 @@ interface DebouncingEventConfig extends AsyncEventConfig {
 
 export function SingleEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
-    (origin$, asyncEffect$) => origin$.pipe(switchMap(args => asyncEffect$(args))),
+    (origin$, asyncEffect$) =>
+      origin$.pipe(switchMap((args) => asyncEffect$(args))),
     config,
-    false
+    false,
   );
 }
 
 export function SwitchingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
-    (origin$, asyncEffect$) => origin$.pipe(switchMap(args => asyncEffect$(args))),
+    (origin$, asyncEffect$) =>
+      origin$.pipe(switchMap((args) => asyncEffect$(args))),
     config,
-    false
+    false,
   );
 }
 
 export function MergingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
-    (origin$, asyncEffect$) => origin$.pipe(mergeMap(args => asyncEffect$(args))),
+    (origin$, asyncEffect$) =>
+      origin$.pipe(mergeMap((args) => asyncEffect$(args))),
     config,
-    false
+    false,
   );
 }
 
 export function ConcatingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
-    (origin$, asyncEffect$) => origin$.pipe(concatMap(args => asyncEffect$(args))),
+    (origin$, asyncEffect$) =>
+      origin$.pipe(concatMap((args) => asyncEffect$(args))),
     config,
-    true
+    true,
   );
 }
 
 export function ExhaustingEvent(config?: AsyncEventConfig) {
   return asyncEventDecorator(
-    (origin$, asyncEffect$) => origin$.pipe(exhaustMap(args => asyncEffect$(args))),
+    (origin$, asyncEffect$) =>
+      origin$.pipe(exhaustMap((args) => asyncEffect$(args))),
     config,
-    false
+    false,
   );
 }
 
@@ -200,32 +220,36 @@ export function DebouncingEvent(config?: DebouncingEventConfig) {
     (origin$, asyncEffect$) =>
       origin$.pipe(
         debounceTime(config?.dueTime || 150),
-        switchMap(args => asyncEffect$(args))
+        switchMap((args) => asyncEffect$(args)),
       ),
     config,
-    true
+    true,
   );
 }
 
 function asyncEventDecorator(
   generator$: (
     origin$: Observable<any>,
-    asyncEffect$: (args: any) => Observable<any>
+    asyncEffect$: (args: any) => Observable<any>,
   ) => Observable<any>,
   config: AsyncEventConfig | undefined,
-  copyNgOnChangesArg: boolean
+  copyNgOnChangesArg: boolean,
 ) {
   return (
     targetProt: OnDestroy,
     methodName: string,
-    methodDescriptor: TypedPropertyDescriptor<(...args: any) => Observable<any>>
+    methodDescriptor: TypedPropertyDescriptor<
+      (...args: any) => Observable<any>
+    >,
   ) => {
-    const copyArgs = copyNgOnChangesArg && methodName === "ngOnChanges";
-    const originalMethod: (...args: any) => Observable<any> | void = methodDescriptor.value!;
+    const copyArgs = copyNgOnChangesArg && methodName === 'ngOnChanges';
+    const originalMethod: (...args: any) => Observable<any> | void =
+      methodDescriptor.value!;
     const asyncEventSubscribed = asyncEventSubscribedSymbol(methodName);
     methodDescriptor.value = function (this: any, ...args: any): void {
       // Controllo l'esistenza e eventualmente istanzio il subject origine di tutti gli eventi asincroni.
-      let $origin: Subject<{ args: any[]; eventName: string }> = this[asyncEventSubjectSymbol];
+      let $origin: Subject<{ args: any[]; eventName: string }> =
+        this[asyncEventSubjectSymbol];
       if (!$origin) {
         $origin = new Subject<{ args: any[]; eventName: string }>();
         this[asyncEventSubjectSymbol] = $origin;
@@ -238,35 +262,44 @@ function asyncEventDecorator(
       }
       if (!this[asyncEventSubscribed]) {
         // Istanzio la funzione che dato l'observable originale, lo wrappa gestendo il catchError e il loading, se attivo.
-        const getWrappedObservable$: (originalObservable$: Observable<any>) => Observable<any> =
+        const getWrappedObservable$: (
+          originalObservable$: Observable<any>,
+        ) => Observable<any> =
           $loading && !config?.suppressLoading
-            ? originalObservable$ => {
+            ? (originalObservable$) => {
                 $loading.next($loading.getValue() + 1);
                 return originalObservable$.pipe(
-                  catchError(e => {
+                  catchError((e) => {
                     console.error(e);
                     return EMPTY;
                   }),
-                  finalize(() => $loading.next($loading.getValue() - 1))
+                  finalize(() => $loading.next($loading.getValue() - 1)),
                 );
               }
-            : originalObservable$ => {
+            : (originalObservable$) => {
                 return originalObservable$.pipe(
-                  catchError(e => {
+                  catchError((e) => {
                     console.error(e);
                     return EMPTY;
-                  })
+                  }),
                 );
               };
-        const asyncEffect$: (x: { args: any[]; eventName: string }) => Observable<any> = x => {
-          const originalObservable$: Observable<any> | void = originalMethod.apply(this, x.args);
+        const asyncEffect$: (x: {
+          args: any[];
+          eventName: string;
+        }) => Observable<any> = (x) => {
+          const originalObservable$: Observable<any> | void =
+            originalMethod.apply(this, x.args);
           if (originalObservable$) {
             return getWrappedObservable$(originalObservable$);
           } else {
             return of(void 0);
           }
         };
-        generator$($origin.pipe(filter(({ eventName }) => eventName === methodName)), asyncEffect$)
+        generator$(
+          $origin.pipe(filter(({ eventName }) => eventName === methodName)),
+          asyncEffect$,
+        )
           .pipe(untilDestroy(this))
           .subscribe();
         this[asyncEventSubscribed] = true;
@@ -304,6 +337,6 @@ export function lazyInject<T extends object>(token: ProviderToken<T>): T {
     },
     getOwnPropertyDescriptor(_, prop) {
       return Object.getOwnPropertyDescriptor(getInstance(), prop);
-    }
+    },
   });
 }

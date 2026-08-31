@@ -1,14 +1,17 @@
-import { WotrUiAbility } from "../ability/wotr-ability";
-import { WotrCombatCardAbility } from "../battle/combat-cards/wotr-combat-cards";
-import { WotrCombatRound } from "../battle/wotr-battle-models";
-import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrSeparateCompanionsOptions } from "../fellowship/wotr-fellowship-rules";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrStory } from "../game/wotr-story-models";
-import { WotrHuntEffectParams } from "../hunt/wotr-hunt-models";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrEliminateUnitsParams, WotrForfeitLeadershipParams } from "../unit/wotr-unit-models";
+import { WotrUiAbility } from '../ability/wotr-ability';
+import { WotrCombatCardAbility } from '../battle/combat-cards/wotr-combat-cards';
+import { WotrCombatRound } from '../battle/wotr-battle-models';
+import { WotrCardId } from '../card/wotr-card-models';
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrSeparateCompanionsOptions } from '../fellowship/wotr-fellowship-rules';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrStory } from '../game/wotr-story-models';
+import { WotrHuntEffectParams } from '../hunt/wotr-hunt-models';
+import { WotrRegionId } from '../region/wotr-region-models';
+import {
+  WotrEliminateUnitsParams,
+  WotrForfeitLeadershipParams,
+} from '../unit/wotr-unit-models';
 
 export interface WotrPlayerStoryService {
   firstPhaseDraw(frontId: WotrFrontId): Promise<WotrStory>;
@@ -26,16 +29,25 @@ export interface WotrPlayerStoryService {
 
   // changeGuide (): Promise<WotrGameStory>;
   actionResolution(frontId: WotrFrontId): Promise<WotrStory>;
-  activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory>;
-  activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory>;
+  activateTableCard(
+    ability: WotrUiAbility,
+    cardId: WotrCardId,
+  ): Promise<WotrStory>;
+  activateCombatCard(
+    ability: WotrCombatCardAbility,
+    cardId: WotrCardId,
+  ): Promise<WotrStory>;
   activateCharacterAbility(
     ability: WotrUiAbility,
-    characterId: WotrCharacterId
+    characterId: WotrCharacterId,
   ): Promise<WotrStory>;
   forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrStory>;
   wantRetreatIntoSiege(): Promise<WotrStory>;
   wantRetreat(): Promise<WotrStory>;
-  chooseCombatCard(frontId: WotrFrontId, combatRound: WotrCombatRound): Promise<WotrStory>;
+  chooseCombatCard(
+    frontId: WotrFrontId,
+    combatRound: WotrCombatRound,
+  ): Promise<WotrStory>;
   rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
   reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrStory>;
   rollShelobsLairDie(): Promise<WotrStory>;
@@ -43,12 +55,12 @@ export interface WotrPlayerStoryService {
     hitPoints: number,
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ): Promise<WotrStory>;
   eliminateArmy(
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ): Promise<WotrStory>;
   battleAdvance(frontId: WotrFrontId): Promise<WotrStory>;
   wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrStory>;
@@ -57,24 +69,27 @@ export interface WotrPlayerStoryService {
   eliminateUnits(
     params: WotrEliminateUnitsParams,
     cardId: WotrCardId,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ): Promise<WotrStory>;
   chooseRegion(
     regions: WotrRegionId[],
     cardId: WotrCardId,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ): Promise<WotrStory>;
   theEaglesAreComingEffect(
     nHits: number,
     region: WotrRegionId,
-    cardId: WotrCardId
+    cardId: WotrCardId,
   ): Promise<WotrStory>;
   faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory>;
-  deadMenOfDunharrowRecruit(regionId: string, cardId: string | null): Promise<WotrStory>;
+  deadMenOfDunharrowRecruit(
+    regionId: string,
+    cardId: string | null,
+  ): Promise<WotrStory>;
   deadMenOfDunharrowCasualties(
     nHits: number,
     regionId: string,
-    cardId: string | null
+    cardId: string | null,
   ): Promise<WotrStory>;
   chooseCorruptionTile(): Promise<WotrStory>;
   makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory>;

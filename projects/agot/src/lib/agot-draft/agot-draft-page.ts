@@ -1,20 +1,30 @@
-import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
-import { Component, inject, resource } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { TuiButton, TuiCheckbox, TuiExpand, TuiSlider, TuiTitle } from "@taiga-ui/core";
-import { TuiAccordion, TuiProgress } from "@taiga-ui/kit";
-import { TuiNavigation } from "@taiga-ui/layout";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { AgotData } from "../agot-services/agot-data";
-import { AgotCard, AgotFactionCode, AgotPackCode } from "../agot.models";
-import { AgotCardGrid } from "./agot-card-grid";
-import { AgotCheckboxList } from "./agot-checkbox-list";
-import { DEFAULT_FACTION_IDS, DEFAULT_PACK_IDS, DEFAULT_TYPE_IDS } from "./agot-draft-defaults";
-import { AgotDraftService } from "./agot-draft.service";
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Component, inject, resource } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  TuiButton,
+  TuiCheckbox,
+  TuiExpand,
+  TuiSlider,
+  TuiTitle,
+} from '@taiga-ui/core';
+import { TuiAccordion, TuiProgress } from '@taiga-ui/kit';
+import { TuiNavigation } from '@taiga-ui/layout';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AgotData } from '../agot-services/agot-data';
+import { AgotCard, AgotFactionCode, AgotPackCode } from '../agot.models';
+import { AgotCardGrid } from './agot-card-grid';
+import { AgotCheckboxList } from './agot-checkbox-list';
+import {
+  DEFAULT_FACTION_IDS,
+  DEFAULT_PACK_IDS,
+  DEFAULT_TYPE_IDS,
+} from './agot-draft-defaults';
+import { AgotDraftService } from './agot-draft.service';
 
 @Component({
-  selector: "agot-draft",
+  selector: 'agot-draft',
   imports: [
     FormsModule,
     AgotCardGrid,
@@ -26,9 +36,9 @@ import { AgotDraftService } from "./agot-draft.service";
     TuiNavigation,
     TuiProgress,
     TuiSlider,
-    TuiTitle
+    TuiTitle,
   ],
-  templateUrl: "./agot-draft-page.html",
+  templateUrl: './agot-draft-page.html',
   styles: `
     :host {
       display: flex;
@@ -120,7 +130,7 @@ import { AgotDraftService } from "./agot-draft.service";
       height: 100%;
       overflow: auto;
     }
-  `
+  `,
 })
 export class AgotDraftPage {
   private breakpointObserver = inject(BreakpointObserver);
@@ -140,10 +150,10 @@ export class AgotDraftPage {
 
   protected isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
-    .pipe(map(result => result.matches));
+    .pipe(map((result) => result.matches));
 
   private dataLoad = resource({
-    loader: () => this.data.load()
+    loader: () => this.data.load(),
   });
 
   protected loading = this.dataLoad.isLoading;
@@ -151,23 +161,23 @@ export class AgotDraftPage {
   protected toggleType(code: string, checked: boolean): void {
     this.selectedTypeIds = checked
       ? [...new Set([...this.selectedTypeIds, code])]
-      : this.selectedTypeIds.filter(value => value !== code);
+      : this.selectedTypeIds.filter((value) => value !== code);
   }
 
   protected toggleFaction(code: AgotFactionCode, checked: boolean): void {
     this.selectedFactionIds = checked
       ? [...new Set([...this.selectedFactionIds, code])]
-      : this.selectedFactionIds.filter(value => value !== code);
+      : this.selectedFactionIds.filter((value) => value !== code);
   }
 
   protected togglePack(code: AgotPackCode, checked: boolean): void {
     this.selectedPackIds = checked
       ? [...new Set([...this.selectedPackIds, code])]
-      : this.selectedPackIds.filter(value => value !== code);
+      : this.selectedPackIds.filter((value) => value !== code);
   }
 
   protected selectAllTypes(): void {
-    this.selectedTypeIds = this.types().map(type => type.code);
+    this.selectedTypeIds = this.types().map((type) => type.code);
   }
 
   protected deselectAllTypes(): void {
@@ -175,7 +185,7 @@ export class AgotDraftPage {
   }
 
   protected selectAllFactions(): void {
-    this.selectedFactionIds = this.factions().map(faction => faction.code);
+    this.selectedFactionIds = this.factions().map((faction) => faction.code);
   }
 
   protected deselectAllFactions(): void {
@@ -183,7 +193,7 @@ export class AgotDraftPage {
   }
 
   protected selectAllPacks(): void {
-    this.selectedPackIds = this.packs().map(pack => pack.code);
+    this.selectedPackIds = this.packs().map((pack) => pack.code);
   }
 
   protected deselectAllPacks(): void {
@@ -196,7 +206,7 @@ export class AgotDraftPage {
       this.selectedTypeIds,
       this.selectedFactionIds,
       this.selectedPackIds,
-      this.duplicates
+      this.duplicates,
     );
   }
 }

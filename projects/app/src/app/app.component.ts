@@ -1,10 +1,10 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
-import { TUI_DARK_MODE, TuiRoot } from "@taiga-ui/core";
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { TUI_DARK_MODE, TuiRoot } from '@taiga-ui/core';
 
 @Component({
   imports: [RouterOutlet, TuiRoot],
-  selector: "app-root",
+  selector: 'app-root',
   template: `
     <tui-root theme="dark">
       <router-outlet></router-outlet>
@@ -18,10 +18,10 @@ import { TUI_DARK_MODE, TuiRoot } from "@taiga-ui/core";
     .bg-app {
       min-height: 100%;
     }
-  `
+  `,
 })
 export class AppComponent implements OnInit {
-  title = "app";
+  title = 'app';
   protected readonly darkMode = inject(TUI_DARK_MODE);
   ngOnInit() {
     this.darkMode.set(true);

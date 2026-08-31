@@ -1,33 +1,42 @@
-import { moveFelloswhip } from "../../../fellowship/wotr-fellowship-actions";
-import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
-import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { playCardOnTable } from "../../wotr-card-actions";
+import { moveFelloswhip } from '../../../fellowship/wotr-fellowship-actions';
+import {
+  WotrScenario,
+  WotrScenarioGroup,
+} from '../../../scenario/wotr-scenario';
+import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
+import { playCardOnTable } from '../../wotr-card-actions';
 
 export function mithrilCoatAndStingScenarios(): WotrScenarioGroup {
   return {
-    id: "mithril-coat-and-sting",
-    name: "Mithril Coat and Sting",
-    scenarios: [mithrilCoatAndSting01]
+    id: 'mithril-coat-and-sting',
+    name: 'Mithril Coat and Sting',
+    scenarios: [mithrilCoatAndSting01],
   };
 }
 
 const mithrilCoatAndSting01: WotrScenario = {
-  id: "mithril-coat-and-sting-01",
-  name: "Mithril Coat and Sting",
-  description: "When a hunt tile is drawn after a standard hunt",
+  id: 'mithril-coat-and-sting-01',
+  name: 'Mithril Coat and Sting',
+  description: 'When a hunt tile is drawn after a standard hunt',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(0).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(0).build(),
     stories: (b: WotrStoriesBuilder) => [
-      b.fpT().firstPhaseDraw("Mithril Coat and Sting"),
+      b.fpT().firstPhaseDraw('Mithril Coat and Sting'),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
+      b.fpT().rollActionDice('character', 'character'),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Mithril Coat and Sting", playCardOnTable("Mithril Coat and Sting")),
+      b
+        .fp()
+        .characterDieCard(
+          'Mithril Coat and Sting',
+          playCardOnTable('Mithril Coat and Sting'),
+        ),
       b.fp().characterDie(moveFelloswhip()),
       b.s().rollHuntDice(6),
-      b.s().drawHuntTile("1")
-    ]
-  })
+      b.s().drawHuntTile('1'),
+    ],
+  }),
 };

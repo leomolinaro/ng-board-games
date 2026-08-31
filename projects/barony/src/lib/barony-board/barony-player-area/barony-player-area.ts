@@ -5,17 +5,20 @@ import {
   TrackByFunction,
   inject,
   input,
-  output
-} from "@angular/core";
-import { BgAuthService } from "@leobg/commons";
-import { TuiIcon } from "@taiga-ui/core";
-import { BARONY_PAWN_TYPES, BARONY_RESOURCE_TYPES } from "../../barony-constants";
+  output,
+} from '@angular/core';
+import { BgAuthService } from '@leobg/commons';
+import { TuiIcon } from '@taiga-ui/core';
+import {
+  BARONY_PAWN_TYPES,
+  BARONY_RESOURCE_TYPES,
+} from '../../barony-constants';
 import {
   BaronyBuilding,
   BaronyPawnType,
   BaronyPlayer,
-  BaronyResourceType
-} from "../../barony-models";
+  BaronyResourceType,
+} from '../../barony-models';
 
 interface BaronyPawnNode {
   source: string;
@@ -32,10 +35,10 @@ interface BaronyResourceNode {
 }
 
 @Component({
-  selector: "barony-player-area",
+  selector: 'barony-player-area',
   imports: [TuiIcon],
-  templateUrl: "./barony-player-area.html",
-  styleUrls: ["./barony-player-area.scss"]
+  templateUrl: './barony-player-area.html',
+  styleUrls: ['./barony-player-area.scss'],
 })
 export class BaronyPlayerArea implements OnChanges {
   private authService = inject(BgAuthService);
@@ -51,19 +54,23 @@ export class BaronyPlayerArea implements OnChanges {
   pawnNodes!: BaronyPawnNode[];
   resourceNodes!: BaronyResourceNode[];
 
-  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (index, pawnNode: BaronyPawnNode) => pawnNode.type;
+  pawnTrackBy: TrackByFunction<BaronyPawnNode> = (
+    index,
+    pawnNode: BaronyPawnNode,
+  ) => pawnNode.type;
   resourceTrackBy: TrackByFunction<BaronyResourceNode> = (
     index,
-    resourceNode: BaronyResourceNode
+    resourceNode: BaronyResourceNode,
   ) => resourceNode.type;
 
   ngOnChanges(changes: SimpleChanges): void {
     let refreshPawns = false;
     let refreshResources = false;
 
-    const playerChanges = changes["player"];
+    const playerChanges = changes['player'];
     if (playerChanges) {
-      const prevPlayer = playerChanges.previousValue as BaronyPlayer | undefined;
+      const prevPlayer = playerChanges.previousValue as
+        BaronyPlayer | undefined;
       const currPlayer = playerChanges.currentValue as BaronyPlayer;
       if (!prevPlayer || prevPlayer.pawns !== currPlayer.pawns) {
         refreshPawns = true;
@@ -72,40 +79,44 @@ export class BaronyPlayerArea implements OnChanges {
         refreshResources = true;
       }
     }
-    if (changes["validBuildings"]) refreshPawns = true;
-    if (changes["validResources"]) refreshResources = true;
+    if (changes['validBuildings']) refreshPawns = true;
+    if (changes['validResources']) refreshResources = true;
 
     if (refreshPawns) {
-      this.pawnNodes = BARONY_PAWN_TYPES.map(pt => {
+      this.pawnNodes = BARONY_PAWN_TYPES.map((pt) => {
         const validBuildings = this.validBuildings();
         return {
-          source: `assets/barony/pawns/${this["player"]().id}-${pt}.png`,
+          source: `assets/barony/pawns/${this['player']().id}-${pt}.png`,
           type: pt,
-          quantity: this["player"]().pawns[pt],
+          quantity: this['player']().pawns[pt],
           active:
-            validBuildings && (pt === "stronghold" || pt === "village")
+            validBuildings && (pt === 'stronghold' || pt === 'village')
               ? validBuildings.includes(pt)
-              : false
+              : false,
         };
       });
     }
 
     if (refreshResources) {
-      this.resourceNodes = BARONY_RESOURCE_TYPES.map(rt => {
+      this.resourceNodes = BARONY_RESOURCE_TYPES.map((rt) => {
         const validResources = this.validResources();
         return {
           source: `assets/barony/resources/${rt}.png`,
           type: rt,
-          quantity: this["player"]().resources[rt],
-          active: validResources ? validResources.includes(rt) : false
+          quantity: this['player']().resources[rt],
+          active: validResources ? validResources.includes(rt) : false,
         };
       });
     }
   }
 
   onCardClick() {
-    const player = this["player"]();
-    if (!player.isAi && this.authService.isUserId(player.controller.id) && !this.currentPlayer()) {
+    const player = this['player']();
+    if (
+      !player.isAi &&
+      this.authService.isUserId(player.controller.id) &&
+      !this.currentPlayer()
+    ) {
       this.selectPlayer.emit();
     }
   }

@@ -1,20 +1,20 @@
-import { WotrAbility } from "../../../ability/wotr-ability";
-import { WotrFrontId } from "../../../front/wotr-front-models";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrLogWriter } from "../../../log/wotr-log-writer";
-import { WotrRegionId } from "../../../region/wotr-region-models";
+import { WotrAbility } from '../../../ability/wotr-ability';
+import { WotrFrontId } from '../../../front/wotr-front-models';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrLogWriter } from '../../../log/wotr-log-writer';
+import { WotrRegionId } from '../../../region/wotr-region-models';
 import {
   WotrAfterRegionControlChange,
-  WotrRegionModifiers
-} from "../../../region/wotr-region-modifiers";
-import { WotrRegionStore } from "../../../region/wotr-region-store";
-import { WotrRecruitmentConstraints } from "../../../unit/wotr-unit-handler";
+  WotrRegionModifiers,
+} from '../../../region/wotr-region-modifiers';
+import { WotrRegionStore } from '../../../region/wotr-region-store';
+import { WotrRecruitmentConstraints } from '../../../unit/wotr-unit-handler';
 import {
   WotrRecruitmentConstraintsModifier,
-  WotrUnitModifiers
-} from "../../../unit/wotr-unit-modifiers";
-import { WotrCharacterHandler } from "../../wotr-character-handler";
-import { KomeSovereignCard } from "./kome-sovereign-card";
+  WotrUnitModifiers,
+} from '../../../unit/wotr-unit-modifiers';
+import { WotrCharacterHandler } from '../../wotr-character-handler';
+import { KomeSovereignCard } from './kome-sovereign-card';
 
 // Theoden - King of the Riddermark (Level 2, Leadership 1, Shadow Resistance 3)
 // If Rohan is active and Edoras is unconquered, you may spend a Muster Action die result,
@@ -39,15 +39,15 @@ export class Theoden extends KomeSovereignCard {
   constructor(
     protected q: WotrGameQuery,
     protected characterHandler: WotrCharacterHandler,
-    protected logger: WotrLogWriter
+    protected logger: WotrLogWriter,
   ) {
     super();
   }
 
-  readonly sovereignId = "theoden";
-  protected readonly nation = "rohan";
-  protected readonly awakeningRegion = "edoras";
-  protected readonly corruptionRegion = "edoras";
+  readonly sovereignId = 'theoden';
+  protected readonly nation = 'rohan';
+  protected readonly awakeningRegion = 'edoras';
+  protected readonly corruptionRegion = 'edoras';
 }
 
 export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
@@ -56,32 +56,32 @@ export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstrai
   modifier = this.unitModifiers.recruitmentConstraintsModifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
-    constraints.excludedNationsForEliteUnits.add("rohan");
-    constraints.excludedNationsForLeaderUnits.add("rohan");
+    constraints.excludedNationsForEliteUnits.add('rohan');
+    constraints.excludedNationsForLeaderUnits.add('rohan');
   }
 }
 
 export class MarkOfTheWhiteHand implements WotrAbility<WotrAfterRegionControlChange> {
   constructor(
     private regionModifiers: WotrRegionModifiers,
-    private regionStore: WotrRegionStore
+    private regionStore: WotrRegionStore,
   ) {}
 
   modifier = this.regionModifiers.afterRegionControlChange;
 
   handler(regionId: WotrRegionId, newController: WotrFrontId): void {
-    if (regionId === "helms-deep") {
-      if (newController === "free-peoples") {
-        this.regionStore.changeNation("helms-deep", "isengard");
+    if (regionId === 'helms-deep') {
+      if (newController === 'free-peoples') {
+        this.regionStore.changeNation('helms-deep', 'isengard');
       } else {
-        this.regionStore.changeNation("helms-deep", "rohan");
+        this.regionStore.changeNation('helms-deep', 'rohan');
       }
     }
   }
 
   destroy(): void {
-    if (this.regionStore.region("helms-deep").nationId === "isengard") {
-      this.regionStore.changeNation("helms-deep", "rohan");
+    if (this.regionStore.region('helms-deep').nationId === 'isengard') {
+      this.regionStore.changeNation('helms-deep', 'rohan');
     }
   }
 }

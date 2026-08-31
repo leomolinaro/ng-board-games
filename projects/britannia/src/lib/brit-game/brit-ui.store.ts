@@ -1,10 +1,10 @@
-import { Injectable, inject } from "@angular/core";
-import { BgStore } from "@leobg/commons/utils";
-import { Observable, Subject } from "rxjs";
-import { first, skip } from "rxjs/operators";
-import { BritAreaId, BritColor } from "../brit-components.models";
-import { BritAreaUnit } from "../brit-game-state.models";
-import { BritGameStore } from "./brit-game.store";
+import { Injectable, inject } from '@angular/core';
+import { BgStore } from '@leobg/commons/utils';
+import { Observable, Subject } from 'rxjs';
+import { first, skip } from 'rxjs/operators';
+import { BritAreaId, BritColor } from '../brit-components.models';
+import { BritAreaUnit } from '../brit-game-state.models';
+import { BritGameStore } from './brit-game.store';
 
 interface BritUiState {
   currentPlayer: BritColor | null;
@@ -32,7 +32,7 @@ export class BritUiStore extends BgStore<BritUiState> {
     super(
       {
         currentPlayer: null,
-        turnPlayer: "yellow",
+        turnPlayer: 'yellow',
         canCancel: false,
         message: null,
         validAreas: null,
@@ -42,9 +42,9 @@ export class BritUiStore extends BgStore<BritUiState> {
         // validBuildings: null,
         // validResources: null,
         canPass: false,
-        canConfirm: false
+        canConfirm: false,
       },
-      "Brit UI"
+      'Brit UI',
     );
   }
 
@@ -81,7 +81,9 @@ export class BritUiStore extends BgStore<BritUiState> {
   private $cancelChange = new Subject<void>();
   // actionChange$ () { return this.$actionChange.asObservable ().pipe (first ()); }
   areaChange$<T extends BritAreaId = BritAreaId>(): Observable<T> {
-    return (this.$areaChange as unknown as Subject<T>).asObservable().pipe(first());
+    return (this.$areaChange as unknown as Subject<T>)
+      .asObservable()
+      .pipe(first());
   }
   unitChange$(): Observable<BritAreaUnit> {
     return this.$unitChange.asObservable().pipe(first());
@@ -106,45 +108,45 @@ export class BritUiStore extends BgStore<BritUiState> {
   }
 
   selectValidAreas$() {
-    return this.select$(s => s.validAreas);
+    return this.select$((s) => s.validAreas);
   }
   selectValidUnits$() {
-    return this.select$(s => s.validUnits);
+    return this.select$((s) => s.validUnits);
   }
   selectSelectedUnits$() {
-    return this.select$(s => s.selectedUnits);
+    return this.select$((s) => s.selectedUnits);
   }
   // selectValidResources$ () { return this.select$ (s => s.validResources); }
   // selectValidActions$ () { return this.select$ (s => s.validActions); }
   // selectValidBuildings$ () { return this.select$ (s => s.validBuildings); }
   selectCanPass$() {
-    return this.select$(s => s.canPass);
+    return this.select$((s) => s.canPass);
   }
   selectCanContinue$() {
-    return this.select$(s => s.canConfirm);
+    return this.select$((s) => s.canConfirm);
   }
   selectCanCancel$() {
-    return this.select$(s => s.canCancel);
+    return this.select$((s) => s.canCancel);
   }
   // selectMaxNumberOfKnights$ () { return this.select$ (s => s.maxNumberOfKnights); }
   selectCurrentPlayerId$() {
-    return this.select$(s => s.currentPlayer);
+    return this.select$((s) => s.currentPlayer);
   }
   getCurrentPlayerId() {
-    return this.get(s => s.currentPlayer);
+    return this.get((s) => s.currentPlayer);
   }
   selectTurnPlayerId$() {
-    return this.select$(s => s.turnPlayer);
+    return this.select$((s) => s.turnPlayer);
   }
   selectMessage$() {
-    return this.select$(s => s.message);
+    return this.select$((s) => s.message);
   }
 
   selectCurrentPlayer$() {
     return this.game.select$(
       this.selectCurrentPlayerId$(),
       this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
     );
   }
 
@@ -152,7 +154,7 @@ export class BritUiStore extends BgStore<BritUiState> {
     return this.game.select$(
       this.selectTurnPlayerId$(),
       this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
     );
   }
 
@@ -180,7 +182,7 @@ export class BritUiStore extends BgStore<BritUiState> {
   updateUi<
     S extends BritUiState & {
       [K in keyof S]: K extends keyof BritUiState ? BritUiState[K] : never;
-    }
+    },
   >(actionName: string, updater: (state: BritUiState) => S) {
     this.update(actionName, updater);
   }
@@ -190,7 +192,7 @@ export class BritUiStore extends BgStore<BritUiState> {
       message: null,
       validAreas: null,
       validUnits: null,
-      selectedUnits: null
+      selectedUnits: null,
       // canPass: false,
       // canCancel: true,
       // maxNumberOfKnights: null,
@@ -209,9 +211,9 @@ export class BritUiStore extends BgStore<BritUiState> {
   // }
 
   setCurrentPlayer(playerId: BritColor | null) {
-    this.updateUi("Set current player", s => ({
+    this.updateUi('Set current player', (s) => ({
       ...s,
-      currentPlayer: playerId
+      currentPlayer: playerId,
     }));
   }
 }

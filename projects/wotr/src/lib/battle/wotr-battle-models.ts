@@ -1,10 +1,10 @@
-import { WotrCard, WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrPlayer } from "../player/wotr-player";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrArmy } from "../unit/wotr-unit-models";
-import { WotrArmyAttack } from "./wotr-battle-actions";
-import { WotrCombatDie } from "./wotr-combat-die-models";
+import { WotrCard, WotrCardId } from '../card/wotr-card-models';
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrPlayer } from '../player/wotr-player';
+import { WotrRegionId } from '../region/wotr-region-models';
+import { WotrArmy } from '../unit/wotr-unit-models';
+import { WotrArmyAttack } from './wotr-battle-actions';
+import { WotrCombatDie } from './wotr-combat-die-models';
 
 export interface WotrBattle {
   region: WotrRegionId;
@@ -24,7 +24,7 @@ export class WotrCombatFront {
     public player: WotrPlayer,
     public isAttacker: boolean,
     public army: () => WotrArmy,
-    public regionId: WotrRegionId
+    public regionId: WotrRegionId,
   ) {}
 
   frontId = this.player.frontId;
@@ -72,11 +72,21 @@ export class WotrCombatRound {
     defender: WotrPlayer,
     defendingArmy: () => WotrArmy,
     public siege: boolean,
-    public siegeAutoContinueBattle: boolean
+    public siegeAutoContinueBattle: boolean,
   ) {
-    this.attacker = new WotrCombatFront(attacker, true, attackingArmy, action.fromRegion);
-    this.defender = new WotrCombatFront(defender, false, defendingArmy, action.toRegion);
-    if (attacker.frontId === "shadow") {
+    this.attacker = new WotrCombatFront(
+      attacker,
+      true,
+      attackingArmy,
+      action.fromRegion,
+    );
+    this.defender = new WotrCombatFront(
+      defender,
+      false,
+      defendingArmy,
+      action.toRegion,
+    );
+    if (attacker.frontId === 'shadow') {
       this.shadow = this.attacker;
       this.freePeoples = this.defender;
     } else {

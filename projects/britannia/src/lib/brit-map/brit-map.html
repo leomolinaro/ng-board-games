@@ -1,7 +1,8 @@
 @if (isDevMode) {
 <button
   style="position: absolute"
-  (click)="calculateSlots()">
+  (click)="calculateSlots()"
+>
   Calculate slots
 </button>
 }
@@ -13,14 +14,17 @@
   width="100%"
   height="100%"
   [attr.viewBox]="viewBox"
-  preserveAspectratio="xMinYMin">
+  preserveAspectratio="xMinYMin"
+>
   <svg:g
     #britMap
-    [bgMapZoom]="{ translateX: 0, translateY: 50, scale: 1 }">
+    [bgMapZoom]="{ translateX: 0, translateY: 50, scale: 1 }"
+  >
     <image
       [attr.width]="mapWidth"
       preserveAspectRatio="xMinYMin"
-      xlink:href="assets/britannia/britannia-map.png"></image>
+      xlink:href="assets/britannia/britannia-map.png"
+    ></image>
     @for (areaNode of areaNodes; track areaTrackBy($index, areaNode)) {
     <svg:g>
       <svg:path
@@ -30,18 +34,21 @@
         class="brit-area-path"
         [attr.d]="areaNode.path"
         [tuiHint]="areaNode.tooltip"
-        (click)="onAreaClick(areaNode, $event)"></svg:path>
+        (click)="onAreaClick(areaNode, $event)"
+      ></svg:path>
       @for (point of testGridPoints; track point) {
       <svg:circle
         [attr.cx]="point.x"
         [attr.cy]="point.y"
         [attr.r]="3"
-        [attr.style]="'fill: ' + point.color"></svg:circle>
+        [attr.style]="'fill: ' + point.color"
+      ></svg:circle>
       }
     </svg:g>
     } @for (areaNode of areaNodes; track areaTrackBy($index, areaNode)) {
     <ng-container>
-      @for (unitNode of areaNode.unitNodes; track unitTrackBy($index, unitNode)) {
+      @for (unitNode of areaNode.unitNodes; track unitTrackBy($index, unitNode))
+      {
       <ng-container>
         <svg:svg
           class="brit-unit"
@@ -51,24 +58,28 @@
           [attr.y]="unitNode.svgY"
           [class.is-active]="isValidUnit && isValidUnit[unitNode.id]"
           [class.is-disabled]="isValidUnit && !isValidUnit[unitNode.id]"
-          (click)="onUnitClick(unitNode)">
+          (click)="onUnitClick(unitNode)"
+        >
           <svg:rect
             class="brit-unit-rect"
             x="2"
             y="2"
             width="30"
-            height="30"></svg:rect>
+            height="30"
+          ></svg:rect>
           <svg:image
             [tuiHint]="unitNode.tooltip"
             x="2"
             y="2"
             width="30"
-            [attr.xlink:href]="unitNode.imageSource" />
+            [attr.xlink:href]="unitNode.imageSource"
+          />
           @if (unitNode.quantity > 1) {
           <svg:text
             class="brit-unit-quantity"
             x="92%"
-            y="100%">
+            y="100%"
+          >
             @if (nSelectedUnits && nSelectedUnits[unitNode.id]; as nSelected) {
             <ng-container>{{ nSelected }}/</ng-container>
             } {{ unitNode.quantity }}
@@ -77,7 +88,8 @@
           <svg:text
             class="brit-unit-n-movements"
             x="92%"
-            y="0">
+            y="0"
+          >
             {{ unitNode.unit.nMovements }}
           </svg:text>
           } @if (isValidUnit && !isValidUnit[unitNode.id]) {
@@ -88,47 +100,55 @@
             y="0"
             width="34"
             height="34"
-            rx="2"></svg:rect>
+            rx="2"
+          ></svg:rect>
           }
         </svg:svg>
       </ng-container>
       }
     </ng-container>
-    } @for (populationNode of populationNodes; track populationTrackBy($index, populationNode)) {
+    } @for (populationNode of populationNodes; track populationTrackBy($index,
+    populationNode)) {
     <svg:g>
       <svg:path
         [attr.id]="'brit-population-track-' + populationNode.id"
         class="brit-population-track-path"
         [attr.d]="populationNode.path"
-        [tuiHint]="populationNode.tooltip"></svg:path>
-      @for ( nationNode of populationNode.nationNodes; track nationPopulationTrackBy(i, nationNode);
-      let i = $index ) {
+        [tuiHint]="populationNode.tooltip"
+      ></svg:path>
+      @for ( nationNode of populationNode.nationNodes; track
+      nationPopulationTrackBy(i, nationNode); let i = $index ) {
       <ng-container>
-        @let c = { x: nationNode | bgTransform: getNationPopulationNodeX : i : populationNode, y:
-        nationNode | bgTransform: getNationPopulationNodeY : i : populationNode };
+        @let c = { x: nationNode | bgTransform: getNationPopulationNodeX : i :
+        populationNode, y: nationNode | bgTransform: getNationPopulationNodeY :
+        i : populationNode };
         <svg:g>
           <svg:circle
             class="brit-population-circle"
             [attr.cx]="c.x + 10"
             [attr.cy]="c.y + 10"
-            r="10"></svg:circle>
+            r="10"
+          ></svg:circle>
           <svg:image
             [tuiHint]="nationNode.tooltip"
             [attr.x]="c.x"
             [attr.y]="c.y"
             width="20"
-            [attr.xlink:href]="nationNode.imageSource" />
+            [attr.xlink:href]="nationNode.imageSource"
+          />
         </svg:g>
       </ng-container>
       }
     </svg:g>
-    } @for (nationTurnNode of nationTurnNodes; track nationTurnTrackBy($index, nationTurnNode)) {
+    } @for (nationTurnNode of nationTurnNodes; track nationTurnTrackBy($index,
+    nationTurnNode)) {
     <svg:g>
       <svg:path
         [attr.id]="'brit-nation-turn-' + nationTurnNode.id"
         class="brit-nation-turn-path"
         [attr.d]="nationTurnNode.path"
-        [tuiHint]="nationTurnNode.tooltip"></svg:path>
+        [tuiHint]="nationTurnNode.tooltip"
+      ></svg:path>
     </svg:g>
     } @for (roundNode of roundNodes; track roundTrackBy($index, roundNode)) {
     <svg:g>
@@ -136,21 +156,25 @@
         [attr.id]="'brit-round-' + roundNode.id"
         class="brit-round-path"
         [attr.d]="roundNode.path"
-        [tuiHint]="roundNode.tooltip"></svg:path>
-      @for (eventNode of roundNode.eventNodes; track eventTrackBy($index, eventNode)) {
+        [tuiHint]="roundNode.tooltip"
+      ></svg:path>
+      @for (eventNode of roundNode.eventNodes; track eventTrackBy($index,
+      eventNode)) {
       <svg:g>
         <svg:path
           [attr.id]="'brit-event-' + roundNode.id + '-' + eventNode.id"
           class="brit-event-path"
           [attr.d]="eventNode.path"
-          [tuiHint]="eventNode.tooltip"></svg:path>
+          [tuiHint]="eventNode.tooltip"
+        ></svg:path>
       </svg:g>
       } @if (roundNode.scoringPath) {
       <svg:path
         [attr.id]="'brit-scoring-' + roundNode.id"
         class="brit-scoring-path"
         [attr.d]="roundNode.scoringPath"
-        tuiHint="Scoring Round"></svg:path>
+        tuiHint="Scoring Round"
+      ></svg:path>
       }
     </svg:g>
     }

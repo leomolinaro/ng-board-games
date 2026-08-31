@@ -1,30 +1,30 @@
-import { inject, Injectable } from "@angular/core";
-import { randomUtil } from "@leobg/commons/utils";
-import { getCard, WotrCardId } from "../card/wotr-card-models";
-import { eliminateCharacter } from "../character/wotr-character-actions";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrUiOption } from "../game/wotr-game-ui";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { WotrStory } from "../game/wotr-story-models";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
+import { inject, Injectable } from '@angular/core';
+import { randomUtil } from '@leobg/commons/utils';
+import { getCard, WotrCardId } from '../card/wotr-card-models';
+import { eliminateCharacter } from '../character/wotr-character-actions';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrUiOption } from '../game/wotr-game-ui';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import { WotrStory } from '../game/wotr-story-models';
+import { WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   downgradeEliteUnit,
   eliminateEliteUnit,
   eliminateLeader,
   eliminateNazgul,
-  eliminateRegularUnit
-} from "../unit/wotr-unit-actions";
-import { WotrUnits } from "../unit/wotr-unit-models";
-import { WotrUnitRules } from "../unit/wotr-unit-rules";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
+  eliminateRegularUnit,
+} from '../unit/wotr-unit-actions';
+import { WotrUnits } from '../unit/wotr-unit-models';
+import { WotrUnitRules } from '../unit/wotr-unit-rules';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
 import {
   WotrCombatCardAbility,
   WotrCombatCardParams,
-  WotrCombatCards
-} from "./combat-cards/wotr-combat-cards";
+  WotrCombatCards,
+} from './combat-cards/wotr-combat-cards';
 import {
   advanceArmy,
   ceaseBattle,
@@ -37,13 +37,13 @@ import {
   retreat,
   retreatIntoSiege,
   WotrCombatReRoll,
-  WotrCombatRoll
-} from "./wotr-battle-actions";
-import { WotrBattleHandler } from "./wotr-battle-handler";
-import { WotrCombatRound } from "./wotr-battle-models";
-import { WotrBattleModifiers } from "./wotr-battle-modifiers";
-import { WotrBattleStore } from "./wotr-battle-store";
-import { WotrCombatDie } from "./wotr-combat-die-models";
+  WotrCombatRoll,
+} from './wotr-battle-actions';
+import { WotrBattleHandler } from './wotr-battle-handler';
+import { WotrCombatRound } from './wotr-battle-models';
+import { WotrBattleModifiers } from './wotr-battle-modifiers';
+import { WotrBattleStore } from './wotr-battle-store';
+import { WotrCombatDie } from './wotr-combat-die-models';
 
 @Injectable()
 export class WotrBattleUi {
@@ -57,19 +57,25 @@ export class WotrBattleUi {
   private unitRules = inject(WotrUnitRules);
   private battleModifiers = inject(WotrBattleModifiers);
 
-  async rollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatRoll> {
+  async rollCombatDice(
+    nDice: number,
+    frontId: WotrFrontId,
+  ): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
     return {
-      type: "combat-roll",
-      dice: this.rollDice(nDice)
+      type: 'combat-roll',
+      dice: this.rollDice(nDice),
     };
   }
 
-  async reRollCombatDice(nDice: number, frontId: WotrFrontId): Promise<WotrCombatReRoll> {
+  async reRollCombatDice(
+    nDice: number,
+    frontId: WotrFrontId,
+  ): Promise<WotrCombatReRoll> {
     await this.ui.askContinue(`Re-roll ${nDice} combat dice`);
     return {
-      type: "combat-re-roll",
-      dice: this.rollDice(nDice)
+      type: 'combat-re-roll',
+      dice: this.rollDice(nDice),
     };
   }
 
@@ -84,27 +90,33 @@ export class WotrBattleUi {
   async chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    frontId: WotrFrontId
+    frontId: WotrFrontId,
   ): Promise<WotrAction[]> {
     const underSiege = this.q.region(regionId).isUnderSiege(frontId);
-    const units = await this.ui.askCasualtyUnits(`Choose casualties for ${hitPoints} hit points`, {
-      type: "chooseCasualties",
-      regionIds: [regionId],
-      underSiege,
-      hitPoints,
-      retroguard: null
-    });
+    const units = await this.ui.askCasualtyUnits(
+      `Choose casualties for ${hitPoints} hit points`,
+      {
+        type: 'chooseCasualties',
+        regionIds: [regionId],
+        underSiege,
+        hitPoints,
+        retroguard: null,
+      },
+    );
     return this.eliminateUnitActions(units, regionId);
   }
 
-  async eliminateArmy(regionId: WotrRegionId, frontId: WotrFrontId): Promise<WotrAction[]> {
+  async eliminateArmy(
+    regionId: WotrRegionId,
+    frontId: WotrFrontId,
+  ): Promise<WotrAction[]> {
     const underSiege = this.q.region(regionId).isUnderSiege(frontId);
-    const units = await this.ui.askCasualtyUnits("Eliminate the entire army", {
-      type: "chooseCasualties",
+    const units = await this.ui.askCasualtyUnits('Eliminate the entire army', {
+      type: 'chooseCasualties',
       regionIds: [regionId],
       underSiege,
-      hitPoints: "full",
-      retroguard: null
+      hitPoints: 'full',
+      retroguard: null,
     });
     return this.eliminateUnitActions(units, regionId);
   }
@@ -114,39 +126,44 @@ export class WotrBattleUi {
       downgrading: WotrUnits;
       removing: WotrUnits;
     },
-    regionId: WotrRegionId
+    regionId: WotrRegionId,
   ): WotrAction[] {
     const actions: WotrAction[] = [];
-    units.downgrading.elites?.forEach(unit =>
-      actions.push(downgradeEliteUnit(regionId, unit.nation, unit.quantity))
+    units.downgrading.elites?.forEach((unit) =>
+      actions.push(downgradeEliteUnit(regionId, unit.nation, unit.quantity)),
     );
-    units.removing.regulars?.forEach(unit =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity))
+    units.removing.regulars?.forEach((unit) =>
+      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity)),
     );
-    units.removing.elites?.forEach(unit =>
-      actions.push(eliminateEliteUnit(regionId, unit.nation, unit.quantity))
+    units.removing.elites?.forEach((unit) =>
+      actions.push(eliminateEliteUnit(regionId, unit.nation, unit.quantity)),
     );
-    units.removing.leaders?.forEach(unit =>
-      actions.push(eliminateLeader(regionId, unit.nation, unit.quantity))
+    units.removing.leaders?.forEach((unit) =>
+      actions.push(eliminateLeader(regionId, unit.nation, unit.quantity)),
     );
     if (units.removing.nNazgul) {
       actions.push(eliminateNazgul(regionId, units.removing.nNazgul));
     }
-    units.removing.characters?.forEach(unit => actions.push(eliminateCharacter(unit)));
+    units.removing.characters?.forEach((unit) =>
+      actions.push(eliminateCharacter(unit)),
+    );
     return actions;
   }
 
   async battleAdvance(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const fromRegion = this.regionStore.region(battle.action.fromRegion);
-    const movingUnits = await this.ui.askRegionUnits("Choose units to advance", {
-      type: "moveArmy",
-      regionIds: [fromRegion.id],
-      retroguard: battle.retroguard || null,
-      requiredUnits: [],
-      required: false,
-      doneMovements: []
-    });
+    const movingUnits = await this.ui.askRegionUnits(
+      'Choose units to advance',
+      {
+        type: 'moveArmy',
+        regionIds: [fromRegion.id],
+        retroguard: battle.retroguard || null,
+        requiredUnits: [],
+        required: false,
+        doneMovements: [],
+      },
+    );
     if (this.unitUtils.isEmptyArmy(movingUnits)) {
       return [notAdvanceArmy(fromRegion.id)];
     } else {
@@ -160,55 +177,80 @@ export class WotrBattleUi {
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
       `Do you want to retreat into siege in ${region.name}?`,
-      "Retreat into siege",
-      "Continue field battle"
+      'Retreat into siege',
+      'Continue field battle',
     );
     if (!confirm) return [notRetreatIntoSiege(region.id)];
     const actions: WotrAction[] = [retreatIntoSiege(region.id)];
     this.battleHandler.retreatIntoSiege(region.id);
-    actions.push(...(await this.ui.unitUi.checkStackingLimit(region.id, battle.defender.frontId)));
+    actions.push(
+      ...(await this.ui.unitUi.checkStackingLimit(
+        region.id,
+        battle.defender.frontId,
+      )),
+    );
     return actions;
   }
 
-  async wantContinueBattle(combatRound: WotrCombatRound): Promise<WotrAction[]> {
+  async wantContinueBattle(
+    combatRound: WotrCombatRound,
+  ): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const confirm = await this.ui.askConfirm(
       `Do you want to continue the battle in ${region.name}?`,
-      "Continue battle",
-      "Cease battle"
+      'Continue battle',
+      'Cease battle',
     );
     if (!confirm) return [ceaseBattle(region.id)];
     const actions: WotrAction[] = [];
     if (battle.siege) {
       if (combatRound.attacker.canRemoveRegularToContinueSiege) {
         const downgradeSelection = await this.ui.askRegionUnits(
-          "Choose an elite unit to downgrade or a regular unit to eliminate",
+          'Choose an elite unit to downgrade or a regular unit to eliminate',
           {
-            type: "downgradeUnit",
+            type: 'downgradeUnit',
             nEliteUnits: 1,
             allowRegularElimination: true,
-            regionIds: [region.id]
-          }
+            regionIds: [region.id],
+          },
         );
         if (downgradeSelection.elites?.length) {
-          actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites[0].nation, 1));
+          actions.push(
+            downgradeEliteUnit(
+              region.id,
+              downgradeSelection.elites[0].nation,
+              1,
+            ),
+          );
         } else if (downgradeSelection.regulars?.length) {
-          actions.push(eliminateRegularUnit(region.id, downgradeSelection.regulars[0].nation, 1));
+          actions.push(
+            eliminateRegularUnit(
+              region.id,
+              downgradeSelection.regulars[0].nation,
+              1,
+            ),
+          );
         } else {
-          throw new Error("Must select a unit to continue siege");
+          throw new Error('Must select a unit to continue siege');
         }
       } else {
         const downgradeSelection = await this.ui.askRegionUnits(
-          "Choose an elite unit to downgrade",
+          'Choose an elite unit to downgrade',
           {
-            type: "downgradeUnit",
+            type: 'downgradeUnit',
             nEliteUnits: 1,
             allowRegularElimination: false,
-            regionIds: [region.id]
-          }
+            regionIds: [region.id],
+          },
         );
-        actions.push(downgradeEliteUnit(region.id, downgradeSelection.elites![0].nation, 1));
+        actions.push(
+          downgradeEliteUnit(
+            region.id,
+            downgradeSelection.elites![0].nation,
+            1,
+          ),
+        );
       }
     }
     actions.push(continueBattle(region.id));
@@ -218,43 +260,53 @@ export class WotrBattleUi {
   async wantRetreat(): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
-    const options: WotrUiOption<"retreat-into-siege" | "retreat" | "not-retreat">[] = [];
-    if (region.settlement === "stronghold" && !region.underSiegeArmy) {
+    const options: WotrUiOption<
+      'retreat-into-siege' | 'retreat' | 'not-retreat'
+    >[] = [];
+    if (region.settlement === 'stronghold' && !region.underSiegeArmy) {
       options.push({
-        label: "Retreat into siege",
-        value: "retreat-into-siege"
+        label: 'Retreat into siege',
+        value: 'retreat-into-siege',
       });
     }
     options.push({
-      label: "Retreat",
-      value: "retreat"
+      label: 'Retreat',
+      value: 'retreat',
     });
     options.push({
-      label: "Not retreat",
-      value: "not-retreat"
+      label: 'Not retreat',
+      value: 'not-retreat',
     });
-    const option = await this.ui.askOption<"retreat-into-siege" | "retreat" | "not-retreat">(
-      "Do you want to retreat?",
-      options
-    );
-    if (option === "not-retreat") return [notRetreat()];
+    const option = await this.ui.askOption<
+      'retreat-into-siege' | 'retreat' | 'not-retreat'
+    >('Do you want to retreat?', options);
+    if (option === 'not-retreat') return [notRetreat()];
     const actions: WotrAction[] = [];
-    if (option === "retreat-into-siege") {
+    if (option === 'retreat-into-siege') {
       actions.push(retreatIntoSiege(region.id));
       this.battleHandler.retreatIntoSiege(region.id);
       actions.push(
-        ...(await this.ui.unitUi.checkStackingLimit(region.id, battle.defender.frontId))
+        ...(await this.ui.unitUi.checkStackingLimit(
+          region.id,
+          battle.defender.frontId,
+        )),
       );
-    } else if (option === "retreat") {
-      const retreatableRegions = this.unitRules.retreatableRegions(region, battle.defender.frontId);
+    } else if (option === 'retreat') {
+      const retreatableRegions = this.unitRules.retreatableRegions(
+        region,
+        battle.defender.frontId,
+      );
       const toRegionId = await this.ui.askRegion(
-        "Choose a region to retreat to",
-        retreatableRegions
+        'Choose a region to retreat to',
+        retreatableRegions,
       );
       actions.push(retreat(toRegionId));
       this.battleHandler.retreat(toRegionId);
       actions.push(
-        ...(await this.ui.unitUi.checkStackingLimit(toRegionId, battle.defender.frontId))
+        ...(await this.ui.unitUi.checkStackingLimit(
+          toRegionId,
+          battle.defender.frontId,
+        )),
       );
     }
     return actions;
@@ -262,29 +314,33 @@ export class WotrBattleUi {
 
   async chooseCombatCard(
     frontId: WotrFrontId,
-    combatRound: WotrCombatRound
+    combatRound: WotrCombatRound,
   ): Promise<WotrAction[]> {
     const doPlayCard = await this.ui.askConfirm(
-      "Do you want to play a combat card?",
-      "Choose combat card",
-      "Skip"
+      'Do you want to play a combat card?',
+      'Choose combat card',
+      'Skip',
     );
     if (!doPlayCard) return [noCombatCard()];
     const params = this.battleHandler.combatCardParams(frontId, combatRound);
-    const tableCombatCardId = await this.chooseTableCombatCard(frontId, combatRound, params);
+    const tableCombatCardId = await this.chooseTableCombatCard(
+      frontId,
+      combatRound,
+      params,
+    );
     if (tableCombatCardId) return [combatCardById(tableCombatCardId)];
     const playableCards = this.q
       .front(frontId)
       .handCards()
-      .filter(c => {
+      .filter((c) => {
         const card = getCard(c);
         return this.combatCards.canBePlayed(card.combatLabel, params);
       });
-    const cardId = await this.ui.askHandCard("Choose a combat card to play", {
+    const cardId = await this.ui.askHandCard('Choose a combat card to play', {
       nCards: 1,
       frontId,
-      message: "Choose a combat card to play",
-      cards: playableCards
+      message: 'Choose a combat card to play',
+      cards: playableCards,
     });
     return [combatCardById(cardId)];
   }
@@ -292,62 +348,83 @@ export class WotrBattleUi {
   private async chooseTableCombatCard(
     frontId: WotrFrontId,
     combatRound: WotrCombatRound,
-    params: WotrCombatCardParams
+    params: WotrCombatCardParams,
   ): Promise<WotrCardId | null> {
     const combatFront =
-      combatRound.attacker.frontId === frontId ? combatRound.attacker : combatRound.defender;
-    const tableCards = this.battleModifiers.getTableCombatCards(combatFront, combatRound);
-    const playableCards = tableCards.filter(c => {
+      combatRound.attacker.frontId === frontId
+        ? combatRound.attacker
+        : combatRound.defender;
+    const tableCards = this.battleModifiers.getTableCombatCards(
+      combatFront,
+      combatRound,
+    );
+    const playableCards = tableCards.filter((c) => {
       const card = getCard(c);
       return this.combatCards.canBePlayed(card.combatLabel, params);
     });
     if (!playableCards.length) return null;
     const confirm = await this.ui.askConfirm(
-      "Do you want to play a combat card from the table?",
-      "Choose table combat card",
-      "Skip"
+      'Do you want to play a combat card from the table?',
+      'Choose table combat card',
+      'Skip',
     );
     if (!confirm) return null;
-    const cardId = await this.ui.askTableCard("Choose a table combat card to play", {
-      nCards: 1,
-      frontId,
-      message: "Choose a table combat card to play",
-      cards: playableCards
-    });
+    const cardId = await this.ui.askTableCard(
+      'Choose a table combat card to play',
+      {
+        nCards: 1,
+        frontId,
+        message: 'Choose a table combat card to play',
+        cards: playableCards,
+      },
+    );
     return cardId;
   }
 
-  async activateCombatCard(ability: WotrCombatCardAbility, cardId: WotrCardId): Promise<WotrStory> {
+  async activateCombatCard(
+    ability: WotrCombatCardAbility,
+    cardId: WotrCardId,
+  ): Promise<WotrStory> {
     const card = getCard(cardId);
     const confirm = await this.ui.askConfirm(
       `Do you want to activate ${card.combatLabel} ability?`,
-      "Activate",
-      "Skip"
+      'Activate',
+      'Skip',
     );
     if (confirm) {
       return {
-        type: "combat-card-effect",
+        type: 'combat-card-effect',
         card: cardId,
-        actions: await ability.play(this.ui)
+        actions: await ability.play(this.ui),
       };
     } else {
-      return { type: "combat-card-effect-skip", card: cardId };
+      return { type: 'combat-card-effect-skip', card: cardId };
     }
   }
 
   async deadMenOfDunharrowCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId
+    cardId: WotrCardId,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
-    actions.push(...(await this.chooseCasualties(hitPoints, regionId, "shadow")));
+    actions.push(
+      ...(await this.chooseCasualties(hitPoints, regionId, 'shadow')),
+    );
     const region = this.regionStore.region(regionId);
-    const retreatableRegions = this.unitRules.retreatableRegions(region, "shadow");
-    const toRegionId = await this.ui.askRegion("Choose a region to retreat to", retreatableRegions);
+    const retreatableRegions = this.unitRules.retreatableRegions(
+      region,
+      'shadow',
+    );
+    const toRegionId = await this.ui.askRegion(
+      'Choose a region to retreat to',
+      retreatableRegions,
+    );
     actions.push(retreat(toRegionId));
     this.battleHandler.retreat(toRegionId);
-    actions.push(...(await this.ui.unitUi.checkStackingLimit(toRegionId, "shadow")));
+    actions.push(
+      ...(await this.ui.unitUi.checkStackingLimit(toRegionId, 'shadow')),
+    );
     return actions;
   }
 }

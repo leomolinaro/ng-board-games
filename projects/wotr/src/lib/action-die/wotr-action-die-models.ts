@@ -1,15 +1,15 @@
-import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
+import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 
 export type WotrActionDieResult =
-  | "character"
-  | "army"
-  | "muster"
-  | "event"
-  | "muster-army"
-  | "will-of-the-west"
-  | "eye";
+  | 'character'
+  | 'army'
+  | 'muster'
+  | 'event'
+  | 'muster-army'
+  | 'will-of-the-west'
+  | 'eye';
 
-export type WotrSpecialActionDieType = "ruler";
+export type WotrSpecialActionDieType = 'ruler';
 
 export interface WotrSpecialActionDie {
   type: WotrSpecialActionDieType;
@@ -19,14 +19,15 @@ export interface WotrSpecialActionDie {
 export type WotrActionDie = WotrActionDieResult | WotrSpecialActionDie;
 
 export type WotrActionChoice =
-  | { type: "die"; die: WotrActionDie }
-  | { type: "token"; token: WotrActionToken }
-  | { type: "elvenRing"; ring: WotrElvenRing }
-  | { type: "eye" };
+  | { type: 'die'; die: WotrActionDie }
+  | { type: 'token'; token: WotrActionToken }
+  | { type: 'elvenRing'; ring: WotrElvenRing }
+  | { type: 'eye' };
 
-export type WotrFreePeoplesActionToken = "political-advance" | "draw-card";
-export type WotrShadowActionToken = "political-advance" | "move-nazgul-minions";
-export type WotrActionToken = WotrFreePeoplesActionToken | WotrShadowActionToken;
+export type WotrFreePeoplesActionToken = 'political-advance' | 'draw-card';
+export type WotrShadowActionToken = 'political-advance' | 'move-nazgul-minions';
+export type WotrActionToken =
+  WotrFreePeoplesActionToken | WotrShadowActionToken;
 
 export interface WotrActionTokenOption {
   token: WotrActionToken;
@@ -34,27 +35,33 @@ export interface WotrActionTokenOption {
 }
 
 export const ACTION_TOKEN_OPTIONS: WotrActionTokenOption[] = [
-  { token: "draw-card", front: "free-peoples" },
-  { token: "move-nazgul-minions", front: "shadow" },
-  { token: "political-advance", front: "free-peoples" },
-  { token: "political-advance", front: "shadow" }
+  { token: 'draw-card', front: 'free-peoples' },
+  { token: 'move-nazgul-minions', front: 'shadow' },
+  { token: 'political-advance', front: 'free-peoples' },
+  { token: 'political-advance', front: 'shadow' },
 ];
 
-const ACTION_TOKENS: Record<WotrFrontId, Partial<Record<WotrActionToken, string>>> = {
-  "free-peoples": {
-    "political-advance": "Advance a Free People Nation on the Political track",
-    "draw-card": "Draw one Event Card"
+const ACTION_TOKENS: Record<
+  WotrFrontId,
+  Partial<Record<WotrActionToken, string>>
+> = {
+  'free-peoples': {
+    'political-advance': 'Advance a Free People Nation on the Political track',
+    'draw-card': 'Draw one Event Card',
   },
-  "shadow": {
-    "political-advance": "Advance a Shadow Nation on the Political track",
-    "move-nazgul-minions": "Move Nazgul and Minions"
-  }
+  shadow: {
+    'political-advance': 'Advance a Shadow Nation on the Political track',
+    'move-nazgul-minions': 'Move Nazgul and Minions',
+  },
 };
 
-export function getActionTokenName(token: WotrActionToken, front: WotrFrontId): string {
+export function getActionTokenName(
+  token: WotrActionToken,
+  front: WotrFrontId,
+): string {
   const frontTokens = ACTION_TOKENS[front];
-  if (!frontTokens) throw new Error("Unknown front " + front);
+  if (!frontTokens) throw new Error('Unknown front ' + front);
   const name = frontTokens[token];
-  if (!name) throw new Error("Unknown token " + token + " for front " + front);
+  if (!name) throw new Error('Unknown token ' + token + ' for front ' + front);
   return name;
 }

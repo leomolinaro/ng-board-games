@@ -1,11 +1,11 @@
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrRegionId } from "../../region/wotr-region-models";
-import { playCharacter } from "../wotr-character-actions";
-import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
+import { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import { WotrBattleModifiers } from '../../battle/wotr-battle-modifiers';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrRegionId } from '../../region/wotr-region-models';
+import { playCharacter } from '../wotr-character-actions';
+import { WotrPlayableCharacterCard } from './wotr-playable-character-card';
 
 // Aragorn - Heir to Isildur (Level 3, Leadership 2, +1 Action Die)
 // If Strider is in Minas Tirith, Dol Amroth, or Pelargir, and that Settlement is unconquered, you may use one Will of the West Action die result to replace Strider
@@ -15,40 +15,43 @@ import { WotrPlayableCharacterCard } from "./wotr-playable-character-card";
 export class WotrAragorn extends WotrPlayableCharacterCard {
   constructor(
     private q: WotrGameQuery,
-    protected battleModifiers: WotrBattleModifiers
+    protected battleModifiers: WotrBattleModifiers,
   ) {
     super();
   }
 
-  public readonly characterId = "aragorn";
+  public readonly characterId = 'aragorn';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (die !== "will-of-the-west") return false;
+    if (die !== 'will-of-the-west') return false;
     if (this.striderValidRegion()) return true;
     return false;
   }
 
   private striderValidRegion(): WotrRegionId | null {
-    if (this.striderInRegion("minas-tirith")) return "minas-tirith";
-    if (this.striderInRegion("dol-amroth")) return "dol-amroth";
-    if (this.striderInRegion("pelargir")) return "pelargir";
+    if (this.striderInRegion('minas-tirith')) return 'minas-tirith';
+    if (this.striderInRegion('dol-amroth')) return 'dol-amroth';
+    if (this.striderInRegion('pelargir')) return 'pelargir';
     return null;
   }
 
   private striderInRegion(regionId: WotrRegionId): boolean {
     const region = this.q.region(regionId).region();
-    if (region.army?.front === "free-peoples") {
-      return !!region.army.characters?.some(c => c === "strider");
-    } else if (region.underSiegeArmy?.front === "free-peoples") {
-      return !!region.underSiegeArmy.characters?.some(c => c === "strider");
+    if (region.army?.front === 'free-peoples') {
+      return !!region.army.characters?.some((c) => c === 'strider');
+    } else if (region.underSiegeArmy?.front === 'free-peoples') {
+      return !!region.underSiegeArmy.characters?.some((c) => c === 'strider');
     } else {
-      return !!region.freeUnits?.characters?.some(c => c === "strider");
+      return !!region.freeUnits?.characters?.some((c) => c === 'strider');
     }
   }
 
   override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const regionId = this.striderValidRegion();
-    if (!regionId) throw new Error("Strider is not in a valid region to bring Aragorn into play.");
-    return playCharacter(regionId, "aragorn");
+    if (!regionId)
+      throw new Error(
+        'Strider is not in a valid region to bring Aragorn into play.',
+      );
+    return playCharacter(regionId, 'aragorn');
   }
 }

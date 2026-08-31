@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   getAuth,
@@ -6,16 +6,16 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signOut,
-  User
-} from "firebase/auth";
-import { BehaviorSubject, from, Observable, of, throwError } from "rxjs";
-import { catchError, map, switchMap } from "rxjs/operators";
-import { BgCloudService } from "../cloud/bg-cloud-service";
+  User,
+} from 'firebase/auth';
+import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { BgCloudService } from '../cloud/bg-cloud-service';
 
-export type BgUserLoginType = "guest" | "google";
+export type BgUserLoginType = 'guest' | 'google';
 
-const LOCALSTORAGE_BG_LOGIN_TYPE_KEY = "bg:loginType";
-const LOCALSTORAGE_BG_PROVIDER_GUEST_KEY = "bg:guestId";
+const LOCALSTORAGE_BG_LOGIN_TYPE_KEY = 'bg:loginType';
+const LOCALSTORAGE_BG_PROVIDER_GUEST_KEY = 'bg:guestId';
 
 export interface BgUser {
   id: string;
@@ -31,7 +31,7 @@ interface IBgAuthProvider {
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BgAuthService {
   private googleProvider = inject(BgGoogleAuthProvider);
@@ -46,7 +46,7 @@ export class BgAuthService {
   }
 
   private users() {
-    return this.cloud.collection<BgUser>("users");
+    return this.cloud.collection<BgUser>('users');
   }
 
   getUser$() {
@@ -64,12 +64,12 @@ export class BgAuthService {
 
   autoSignIn$() {
     const loginType = localStorage.getItem(
-      LOCALSTORAGE_BG_LOGIN_TYPE_KEY
+      LOCALSTORAGE_BG_LOGIN_TYPE_KEY,
     ) as BgUserLoginType | null;
     if (loginType) {
       return this.provider(loginType)
         .autoSignIn$()
-        .pipe(switchMap(user => this.login$(user)));
+        .pipe(switchMap((user) => this.login$(user)));
     } else {
       return of(null);
     }
@@ -79,11 +79,11 @@ export class BgAuthService {
     return this.provider(type)
       .signIn$()
       .pipe(
-        switchMap(user => this.login$(user)),
-        catchError(e => {
+        switchMap((user) => this.login$(user)),
+        catchError((e) => {
           this.setUser(null);
           return throwError(e);
-        })
+        }),
       );
   }
 
@@ -101,7 +101,9 @@ export class BgAuthService {
   deleteUser$() {
     const user = this.$user.getValue();
     if (user) {
-      return this.signOut$().pipe(switchMap(() => this.cloud.delete$(user.id, this.users())));
+      return this.signOut$().pipe(
+        switchMap(() => this.cloud.delete$(user.id, this.users())),
+      );
     } else {
       return of(void 0);
     }
@@ -109,9 +111,9 @@ export class BgAuthService {
 
   private provider(type: BgUserLoginType): IBgAuthProvider {
     switch (type) {
-      case "google":
+      case 'google':
         return this.googleProvider;
-      case "guest":
+      case 'guest':
         return this.guestProvider;
       default:
         throw new Error(`Login type ${type} not implemented.`);
@@ -136,14 +138,14 @@ export class BgAuthService {
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 class BgGoogleAuthProvider implements IBgAuthProvider {
   private auth: Auth = getAuth();
 
   signIn$(): Observable<BgUser | null> {
     return from(signInWithPopup(this.auth, new GoogleAuthProvider())).pipe(
-      map(userCredential => this.googleUserToBgUser(userCredential.user))
+      map((userCredential) => this.googleUserToBgUser(userCredential.user)),
     );
   }
 
@@ -152,14 +154,14 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
   }
 
   autoSignIn$(): Observable<BgUser | null> {
-    return new Observable(subscriber => {
+    return new Observable((subscriber) => {
       const unsubscribe = onAuthStateChanged(
         this.auth,
-        authUser => {
+        (authUser) => {
           subscriber.next(this.googleUserToBgUser(authUser));
           subscriber.complete();
         },
-        error => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return unsubscribe;
@@ -170,16 +172,16 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
     return authUser
       ? {
           id: authUser.uid,
-          email: authUser.email || "",
-          displayName: authUser.displayName || authUser.email || "",
-          loginType: "google"
+          email: authUser.email || '',
+          displayName: authUser.displayName || authUser.email || '',
+          loginType: 'google',
         }
       : null;
   }
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 class BgGuestAuthProvider implements IBgAuthProvider {
   signIn$(): Observable<BgUser | null> {
@@ -207,10 +209,10 @@ class BgGuestAuthProvider implements IBgAuthProvider {
   private guestKeyToBgUser(guestKey: string): BgUser | null {
     return guestKey
       ? {
-          displayName: "Guest " + guestKey,
-          email: "",
+          displayName: 'Guest ' + guestKey,
+          email: '',
           id: guestKey,
-          loginType: "guest"
+          loginType: 'guest',
         }
       : null;
   }

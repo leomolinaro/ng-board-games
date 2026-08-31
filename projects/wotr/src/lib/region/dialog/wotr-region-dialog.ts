@@ -1,18 +1,28 @@
-import { Component, OnInit, computed, inject, signal } from "@angular/core";
-import { injectDialogContext } from "@leobg/commons";
-import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
-import { TuiHint } from "@taiga-ui/core";
-import { WotrAssetsStore, WotrUnitImage } from "../../assets/wotr-assets-store";
-import { WotrCharacter, WotrCharacterId } from "../../character/wotr-character-models";
-import { WotrFellowship } from "../../fellowship/wotr-fellowship-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrNation, WotrNationId, frontOfNation } from "../../nation/wotr-nation-models";
-import { WotrUnits } from "../../unit/wotr-unit-models";
-import { WotrUnitModifiers } from "../../unit/wotr-unit-modifiers";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { WotrRegion } from "../wotr-region-models";
-import { UnitNode } from "./wotr-region-unit-node";
-import { WotrRegionUnitSelection, selectionModeFactory } from "./wotr-region-unit-selection";
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { injectDialogContext } from '@leobg/commons';
+import { BgTransformFn, arrayUtil } from '@leobg/commons/utils';
+import { TuiHint } from '@taiga-ui/core';
+import { WotrAssetsStore, WotrUnitImage } from '../../assets/wotr-assets-store';
+import {
+  WotrCharacter,
+  WotrCharacterId,
+} from '../../character/wotr-character-models';
+import { WotrFellowship } from '../../fellowship/wotr-fellowship-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import {
+  WotrNation,
+  WotrNationId,
+  frontOfNation,
+} from '../../nation/wotr-nation-models';
+import { WotrUnits } from '../../unit/wotr-unit-models';
+import { WotrUnitModifiers } from '../../unit/wotr-unit-modifiers';
+import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
+import { WotrRegion } from '../wotr-region-models';
+import { UnitNode } from './wotr-region-unit-node';
+import {
+  WotrRegionUnitSelection,
+  selectionModeFactory,
+} from './wotr-region-unit-selection';
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -27,7 +37,7 @@ export type WotrRegionDialogResult =
   true | WotrUnits | { removing: WotrUnits; downgrading: WotrUnits };
 
 @Component({
-  selector: "wotr-region-dialog",
+  selector: 'wotr-region-dialog',
   imports: [TuiHint],
   template: `
     <div [class]="{ 'unit-selection-active': data.unitSelection }">
@@ -38,13 +48,14 @@ export type WotrRegionDialogResult =
             selectable: unitNode.selectable,
             selected: unitNode.selected,
             downgrading: unitNode.downgrading,
-            removing: unitNode.removing
+            removing: unitNode.removing,
           }"
           [src]="unitNode.source"
           [width]="unitNode.width"
           [height]="unitNode.height"
           [tuiHint]="unitNode.label"
-          (click)="onUnitClick(unitNode)" />
+          (click)="onUnitClick(unitNode)"
+        />
       }
     </div>
     @if (data.regionSelection || data.unitSelection) {
@@ -57,14 +68,15 @@ export type WotrRegionDialogResult =
         class="confirm-button"
         [disabled]="canConfirm() !== true"
         [class]="{ disabled: canConfirm() !== true }"
-        (click)="onConfirm()">
-        {{ data.regionSelection ? "Select region" : "Confirm units" }}
+        (click)="onConfirm()"
+      >
+        {{ data.regionSelection ? 'Select region' : 'Confirm units' }}
       </button>
     }
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
 
       :host {
         background-color: #151515;
@@ -95,11 +107,14 @@ export type WotrRegionDialogResult =
           cursor: pointer;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrRegionDialog implements OnInit {
-  readonly context = injectDialogContext<WotrRegionDialogData, WotrRegionDialogResult>();
+  readonly context = injectDialogContext<
+    WotrRegionDialogData,
+    WotrRegionDialogResult
+  >();
   protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
   private q = inject(WotrGameQuery);
@@ -110,44 +125,60 @@ export class WotrRegionDialog implements OnInit {
   private selectedNodes = signal<UnitNode[]>([]);
 
   private unitSelectionMode = this.data.unitSelection
-    ? selectionModeFactory(this.data.unitSelection, this.q, this.unitModifiers, this.unitUtils)
+    ? selectionModeFactory(
+        this.data.unitSelection,
+        this.q,
+        this.unitModifiers,
+        this.unitUtils,
+      )
     : null;
 
-  private casualtiesMode = this.data.unitSelection?.type === "chooseCasualties";
+  private casualtiesMode = this.data.unitSelection?.type === 'chooseCasualties';
 
   protected canConfirm = computed(() => {
     if (this.data.regionSelection) return true;
     if (this.unitSelectionMode)
-      return this.unitSelectionMode.canConfirm(this.selectedNodes(), this.data.region);
+      return this.unitSelectionMode.canConfirm(
+        this.selectedNodes(),
+        this.data.region,
+      );
     return false;
   });
 
   ngOnInit() {
     const region = this.data.region;
-    this.unitNodes = region.army ? this.unitsToUnitNodes(region.army, "army") : [];
+    this.unitNodes = region.army
+      ? this.unitsToUnitNodes(region.army, 'army')
+      : [];
     this.unitNodes = this.unitNodes.concat(
-      region.underSiegeArmy ? this.unitsToUnitNodes(region.underSiegeArmy, "underSiege") : []
+      region.underSiegeArmy
+        ? this.unitsToUnitNodes(region.underSiegeArmy, 'underSiege')
+        : [],
     );
     this.unitNodes = this.unitNodes.concat(
-      region.freeUnits ? this.unitsToUnitNodes(region.freeUnits, "freeUnits") : []
+      region.freeUnits
+        ? this.unitsToUnitNodes(region.freeUnits, 'freeUnits')
+        : [],
     );
     if (this.data.region.fellowship) {
-      const image = this.assets.fellowshipImage(this.data.fellowship.status === "revealed");
+      const image = this.assets.fellowshipImage(
+        this.data.fellowship.status === 'revealed',
+      );
       this.unitNodes.push({
-        id: "fellowship",
-        type: "fellowship",
-        group: "fellowship",
+        id: 'fellowship',
+        type: 'fellowship',
+        group: 'fellowship',
         nationId: null,
-        frontId: "free-peoples",
-        label: "Fellowship",
-        ...this.scale(image)
+        frontId: 'free-peoples',
+        label: 'Fellowship',
+        ...this.scale(image),
       });
     }
     if (this.unitSelectionMode) {
       this.unitSelectionMode.initialize(this.unitNodes, this.data.region);
       for (const unitNode of this.unitNodes) {
         if (unitNode.selected) {
-          this.selectedNodes.update(nodes => [...nodes, unitNode]);
+          this.selectedNodes.update((nodes) => [...nodes, unitNode]);
         }
       }
     }
@@ -155,49 +186,49 @@ export class WotrRegionDialog implements OnInit {
 
   private unitsToUnitNodes(
     units: WotrUnits,
-    group: "army" | "underSiege" | "freeUnits"
+    group: 'army' | 'underSiege' | 'freeUnits',
   ): UnitNode[] {
     const d = this.data;
     const unitNodes: UnitNode[] = [];
-    units.regulars?.forEach(armyUnit => {
-      const image = this.assets.armyUnitImage("regular", armyUnit.nation);
+    units.regulars?.forEach((armyUnit) => {
+      const image = this.assets.armyUnitImage('regular', armyUnit.nation);
       for (let i = 0; i < armyUnit.quantity; i++) {
         unitNodes.push({
-          id: armyUnit.nation + "_regular_" + i,
-          type: "regular",
+          id: armyUnit.nation + '_regular_' + i,
+          type: 'regular',
           group,
           nationId: armyUnit.nation,
           frontId: frontOfNation(armyUnit.nation),
           label: d.nationById[armyUnit.nation].regularLabel,
-          ...this.scale(image)
+          ...this.scale(image),
         });
       }
     });
-    units.elites?.forEach(armyUnit => {
-      const image = this.assets.armyUnitImage("elite", armyUnit.nation);
+    units.elites?.forEach((armyUnit) => {
+      const image = this.assets.armyUnitImage('elite', armyUnit.nation);
       for (let i = 0; i < armyUnit.quantity; i++) {
         unitNodes.push({
-          id: armyUnit.nation + "_elite_" + i,
-          type: "elite",
+          id: armyUnit.nation + '_elite_' + i,
+          type: 'elite',
           group,
           nationId: armyUnit.nation,
           frontId: frontOfNation(armyUnit.nation),
           label: d.nationById[armyUnit.nation].eliteLabel,
-          ...this.scale(image)
+          ...this.scale(image),
         });
       }
     });
-    units.leaders?.forEach(leader => {
+    units.leaders?.forEach((leader) => {
       const image = this.assets.leaderImage(leader.nation);
       for (let i = 0; i < leader.quantity; i++) {
         unitNodes.push({
-          id: leader.nation + "_leader_" + i,
-          type: "leader",
+          id: leader.nation + '_leader_' + i,
+          type: 'leader',
           group,
           nationId: leader.nation,
           frontId: frontOfNation(leader.nation),
           label: d.nationById[leader.nation].leaderLabel!,
-          ...this.scale(image)
+          ...this.scale(image),
         });
       }
     });
@@ -205,38 +236,42 @@ export class WotrRegionDialog implements OnInit {
       const image = this.assets.nazgulImage();
       for (let i = 0; i < units.nNazgul; i++) {
         unitNodes.push({
-          id: "nazgul_" + i,
-          type: "nazgul",
+          id: 'nazgul_' + i,
+          type: 'nazgul',
           group,
-          nationId: "sauron",
-          frontId: "shadow",
-          label: "Nazgul",
-          ...this.scale(image)
+          nationId: 'sauron',
+          frontId: 'shadow',
+          label: 'Nazgul',
+          ...this.scale(image),
         });
       }
     }
-    units.characters?.forEach(characterId => {
+    units.characters?.forEach((characterId) => {
       const character = this.q.character(characterId);
       const image = this.assets.regionCharacterImage(character.data());
       unitNodes.push({
         id: characterId,
-        type: "character",
+        type: 'character',
         character,
         group,
         nationId: null,
         frontId: character.frontId,
         label: d.characterById[characterId].name,
-        ...this.scale(image)
+        ...this.scale(image),
       });
     });
     return unitNodes;
   }
 
   private scale(image: WotrUnitImage): WotrUnitImage {
-    return { source: image.source, width: image.width * 1.5, height: image.height * 1.5 };
+    return {
+      source: image.source,
+      width: image.width * 1.5,
+      height: image.height * 1.5,
+    };
   }
 
-  protected range: BgTransformFn<number, number[]> = n => arrayUtil.range(n);
+  protected range: BgTransformFn<number, number[]> = (n) => arrayUtil.range(n);
 
   onConfirm() {
     if (!this.canConfirm()) return;
@@ -252,7 +287,10 @@ export class WotrRegionDialog implements OnInit {
             this.addNodeToUnits(unitNode, removedUnits);
           }
         }
-        this.context.complete({ removing: removedUnits, downgrading: downgradedUnits });
+        this.context.complete({
+          removing: removedUnits,
+          downgrading: downgradedUnits,
+        });
       } else {
         const selectedUnits: WotrUnits = {};
         for (const unitNode of this.unitNodes) {
@@ -269,51 +307,55 @@ export class WotrRegionDialog implements OnInit {
 
   private addNodeToUnits(unitNode: UnitNode, units: WotrUnits) {
     switch (unitNode.type) {
-      case "regular": {
+      case 'regular': {
         if (!units.regulars) units.regulars = [];
-        const regular = units.regulars.find(u => u.nation === unitNode.nationId);
+        const regular = units.regulars.find(
+          (u) => u.nation === unitNode.nationId,
+        );
         if (regular) {
           regular.quantity++;
         } else {
           units.regulars.push({
             nation: unitNode.nationId,
-            quantity: 1
+            quantity: 1,
           });
         }
         break;
       }
-      case "elite": {
+      case 'elite': {
         if (!units.elites) units.elites = [];
-        const elite = units.elites.find(u => u.nation === unitNode.nationId);
+        const elite = units.elites.find((u) => u.nation === unitNode.nationId);
         if (elite) {
           elite.quantity++;
         } else {
           units.elites.push({
             nation: unitNode.nationId,
-            quantity: 1
+            quantity: 1,
           });
         }
         break;
       }
-      case "leader": {
+      case 'leader': {
         if (!units.leaders) units.leaders = [];
-        const leader = units.leaders.find(u => u.nation === unitNode.nationId);
+        const leader = units.leaders.find(
+          (u) => u.nation === unitNode.nationId,
+        );
         if (leader) {
           leader.quantity++;
         } else {
           units.leaders.push({
             nation: unitNode.nationId,
-            quantity: 1
+            quantity: 1,
           });
         }
         break;
       }
-      case "nazgul": {
+      case 'nazgul': {
         if (!units.nNazgul) units.nNazgul = 0;
         units.nNazgul++;
         break;
       }
-      case "character": {
+      case 'character': {
         if (!units.characters) units.characters = [];
         units.characters.push(unitNode.id as WotrCharacterId);
         break;
@@ -326,26 +368,30 @@ export class WotrRegionDialog implements OnInit {
     if (this.casualtiesMode) {
       if (unitNode.removing) {
         unitNode.removing = false;
-        this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+        this.selectedNodes.update((nodes) =>
+          nodes.filter((n) => n.id !== unitNode.id),
+        );
       } else if (unitNode.downgrading) {
         unitNode.downgrading = false;
         unitNode.removing = true;
-        this.selectedNodes.update(nodes => [...nodes]);
+        this.selectedNodes.update((nodes) => [...nodes]);
       } else {
-        if (unitNode.type === "regular") {
+        if (unitNode.type === 'regular') {
           unitNode.removing = true;
-        } else if (unitNode.type === "elite") {
+        } else if (unitNode.type === 'elite') {
           unitNode.downgrading = true;
         }
-        this.selectedNodes.update(nodes => [...nodes, unitNode]);
+        this.selectedNodes.update((nodes) => [...nodes, unitNode]);
       }
     } else {
       if (unitNode.selected) {
         unitNode.selected = false;
-        this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+        this.selectedNodes.update((nodes) =>
+          nodes.filter((n) => n.id !== unitNode.id),
+        );
       } else {
         unitNode.selected = true;
-        this.selectedNodes.update(nodes => [...nodes, unitNode]);
+        this.selectedNodes.update((nodes) => [...nodes, unitNode]);
       }
     }
   }

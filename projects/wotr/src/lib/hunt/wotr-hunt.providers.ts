@@ -1,10 +1,10 @@
-import { Provider } from "@angular/core";
-import { WotrHuntFlow } from "./wotr-hunt-flow";
-import { WotrHuntHandler } from "./wotr-hunt-handler";
-import { WotrHuntModifiers } from "./wotr-hunt-modifiers";
-import { WotrHuntStore } from "./wotr-hunt-store";
-import { WotrHuntUi } from "./wotr-hunt-ui";
-import { KomeCorruptionFlow } from "./kome-corruption-flow";
+import { Provider } from '@angular/core';
+import { WotrHuntFlow } from './wotr-hunt-flow';
+import { WotrHuntHandler } from './wotr-hunt-handler';
+import { WotrHuntModifiers } from './wotr-hunt-modifiers';
+import { WotrHuntStore } from './wotr-hunt-store';
+import { WotrHuntUi } from './wotr-hunt-ui';
+import { KomeCorruptionFlow } from './kome-corruption-flow';
 
 export const huntProviders: Provider[] = [
   WotrHuntFlow,
@@ -12,5 +12,5 @@ export const huntProviders: Provider[] = [
   WotrHuntModifiers,
   WotrHuntStore,
   WotrHuntUi,
-  KomeCorruptionFlow
+  KomeCorruptionFlow,
 ];

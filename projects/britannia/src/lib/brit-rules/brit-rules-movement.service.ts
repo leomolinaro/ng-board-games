@@ -1,7 +1,7 @@
-import { Injectable, inject } from "@angular/core";
-import { BritAreaId, BritNationId } from "../brit-components.models";
-import { BritComponentsService } from "../brit-components.service";
-import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
+import { Injectable, inject } from '@angular/core';
+import { BritAreaId, BritNationId } from '../brit-components.models';
+import { BritComponentsService } from '../brit-components.service';
+import { BritAreaUnit, BritGameState } from '../brit-game-state.models';
 
 // interface BritMovingGroup {
 //   areaUnit: BritAreaUnit[];
@@ -9,15 +9,22 @@ import { BritAreaUnit, BritGameState } from "../brit-game-state.models";
 // }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BritRulesMovementService {
   private components = inject(BritComponentsService);
 
-  getValidUnitsForMovement(nationId: BritNationId, state: BritGameState): BritAreaUnit[] {
+  getValidUnitsForMovement(
+    nationId: BritNationId,
+    state: BritGameState,
+  ): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
-    this.components.AREA_IDS.forEach(areaId => {
-      const areaUnits = this.getValidUnitsByNationByArea(areaId, nationId, state);
+    this.components.AREA_IDS.forEach((areaId) => {
+      const areaUnits = this.getValidUnitsByNationByArea(
+        areaId,
+        nationId,
+        state,
+      );
       units.push(...areaUnits);
     });
     return units;
@@ -26,7 +33,7 @@ export class BritRulesMovementService {
   getValidUnitsByAreaForMovement(
     nationId: BritNationId,
     areaId: BritAreaId,
-    state: BritGameState
+    state: BritGameState,
   ): BritAreaUnit[] {
     return this.getValidUnitsByNationByArea(areaId, nationId, state);
   }
@@ -34,27 +41,31 @@ export class BritRulesMovementService {
   private getValidUnitsByNationByArea(
     areaId: BritAreaId,
     nationId: BritNationId,
-    state: BritGameState
+    state: BritGameState,
   ): BritAreaUnit[] {
     const areaState = state.areas[areaId];
-    const areaUnits = areaState.units.filter(u => u.nationId === nationId);
+    const areaUnits = areaState.units.filter((u) => u.nationId === nationId);
     const area = this.components.AREA[areaId];
     const validUnits: BritAreaUnit[] = [];
     for (const areaUnit of areaUnits) {
-      if (areaUnit.nMovements > 0 && area.type === "land" && area.difficultTerrain) {
+      if (
+        areaUnit.nMovements > 0 &&
+        area.type === 'land' &&
+        area.difficultTerrain
+      ) {
         continue;
       }
       // TODO molte regole...
 
-      if (areaUnit.type === "cavalry" || areaUnit.nationId === "romans") {
+      if (areaUnit.type === 'cavalry' || areaUnit.nationId === 'romans') {
         if (areaUnit.nMovements < 3) {
           validUnits.push(areaUnit);
         }
-      } else if (areaUnit.type === "infantry") {
+      } else if (areaUnit.type === 'infantry') {
         if (areaUnit.nMovements < 2) {
           validUnits.push(areaUnit);
         }
-      } else if (areaUnit.type === "leader") {
+      } else if (areaUnit.type === 'leader') {
       }
     }
     return validUnits;
@@ -63,14 +74,15 @@ export class BritRulesMovementService {
   getValidAreasForMovement(
     areaId: BritAreaId,
     nationId: BritNationId,
-    state: BritGameState
+    state: BritGameState,
   ): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
     const area = this.components.getArea(areaId);
-    area.neighbors.forEach(n => {
-      const { id: neiAreaId, strait } = typeof n === "object" ? n : { id: n, strait: false };
+    area.neighbors.forEach((n) => {
+      const { id: neiAreaId, strait } =
+        typeof n === 'object' ? n : { id: n, strait: false };
       const neiArea = this.components.getArea(neiAreaId);
-      if (neiArea.type === "land") {
+      if (neiArea.type === 'land') {
         validAreas.push(neiAreaId);
       }
     });

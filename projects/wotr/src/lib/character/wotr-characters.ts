@@ -1,75 +1,104 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../ability/wotr-ability";
-import { WotrActionDie } from "../action-die/wotr-action-die-models";
-import { WotrActionDieModifiers } from "../action-die/wotr-action-die-modifiers";
-import { WotrBattleModifiers } from "../battle/wotr-battle-modifiers";
-import { WotrBattleStore } from "../battle/wotr-battle-store";
-import { WotrBattleUi } from "../battle/wotr-battle-ui";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrGameStore } from "../game/wotr-game-store";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { WotrHuntModifiers } from "../hunt/wotr-hunt-modifiers";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrRegionModifiers } from "../region/wotr-region-modifiers";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrUnitModifiers } from "../unit/wotr-unit-modifiers";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrAragorn } from "./characters/aragorn";
+import { inject, Injectable } from '@angular/core';
+import { WotrAbility } from '../ability/wotr-ability';
+import { WotrActionDie } from '../action-die/wotr-action-die-models';
+import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
+import { WotrBattleModifiers } from '../battle/wotr-battle-modifiers';
+import { WotrBattleStore } from '../battle/wotr-battle-store';
+import { WotrBattleUi } from '../battle/wotr-battle-ui';
+import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrGameStore } from '../game/wotr-game-store';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import { WotrHuntModifiers } from '../hunt/wotr-hunt-modifiers';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrNationHandler } from '../nation/wotr-nation-handler';
+import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
+import { WotrShadowPlayer } from '../player/wotr-shadow-player';
+import { WotrRegionModifiers } from '../region/wotr-region-modifiers';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrUnitModifiers } from '../unit/wotr-unit-modifiers';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
+import { WotrAragorn } from './characters/aragorn';
 import {
   DwarfOfEreborAbility,
   HighWardenOfTheWhiteTowerAbility,
-  PrinceOfMirkwoodAbility
-} from "./characters/boromir-gimli-legolas";
-import { CaptainOfTheWestAbility } from "./characters/commons";
-import { GandalfGuideAbility } from "./characters/gandalf-the-grey";
+  PrinceOfMirkwoodAbility,
+} from './characters/boromir-gimli-legolas';
+import { CaptainOfTheWestAbility } from './characters/commons';
+import { GandalfGuideAbility } from './characters/gandalf-the-grey';
 import {
   ShadowfaxAbility,
   TheWhiteRiderAbility,
-  WotrGandalfTheWhite
-} from "./characters/gandalf-the-white";
-import { Brand, BrandCorruptedKing, ShadowInTheNorth } from "./characters/kome/brand";
-import { Dain, DainCorruptedKing, FateOfTheLonelyMountain } from "./characters/kome/dain";
+  WotrGandalfTheWhite,
+} from './characters/gandalf-the-white';
+import {
+  Brand,
+  BrandCorruptedKing,
+  ShadowInTheNorth,
+} from './characters/kome/brand';
+import {
+  Dain,
+  DainCorruptedKing,
+  FateOfTheLonelyMountain,
+} from './characters/kome/dain';
 import {
   Denethor,
   DenethorCorruptedSteward,
-  FateOfTheWhiteTower
-} from "./characters/kome/denethor";
-import { KomeSovereignCard } from "./characters/kome/kome-sovereign-card";
-import { RedWrath, TheBlackSerpent } from "./characters/kome/the-black-serpent";
-import { LordOfTheBats, TheShadowOfMirkwood } from "./characters/kome/the-shadow-of-mirkwood";
-import { MarkOfTheWhiteHand, Theoden, TheodenCorruptedKing } from "./characters/kome/theoden";
-import { FateOfMirkwood, Thranduil, ThranduilElvenking } from "./characters/kome/thranduil";
-import { ICommandAbility, Ugluk, WeMarchDayAndNightAbility } from "./characters/kome/ugluk";
-import { HobbitGuideAbility, TakeThemAliveAbility } from "./characters/meriadoc-peregrin";
+  FateOfTheWhiteTower,
+} from './characters/kome/denethor';
+import { KomeSovereignCard } from './characters/kome/kome-sovereign-card';
+import { RedWrath, TheBlackSerpent } from './characters/kome/the-black-serpent';
+import {
+  LordOfTheBats,
+  TheShadowOfMirkwood,
+} from './characters/kome/the-shadow-of-mirkwood';
+import {
+  MarkOfTheWhiteHand,
+  Theoden,
+  TheodenCorruptedKing,
+} from './characters/kome/theoden';
+import {
+  FateOfMirkwood,
+  Thranduil,
+  ThranduilElvenking,
+} from './characters/kome/thranduil';
+import {
+  ICommandAbility,
+  Ugluk,
+  WeMarchDayAndNightAbility,
+} from './characters/kome/ugluk';
+import {
+  HobbitGuideAbility,
+  TakeThemAliveAbility,
+} from './characters/meriadoc-peregrin';
 import {
   ServantsOfTheWhiteHandAbility,
   TheVoiceOfSarumanAbility,
-  WotrSaruman
-} from "./characters/saruman";
-import { StriderGuideAbility } from "./characters/strider";
+  WotrSaruman,
+} from './characters/saruman';
+import { StriderGuideAbility } from './characters/strider';
 import {
   MessengerOfTheDarkTowerAbility,
   MessengerOfTheDarkTowerSetUsedAbility,
-  TheMouthOfSauron
-} from "./characters/the-mouth-of-sauron";
-import { SorcererAbility, TheWitchKing } from "./characters/the-witch-king";
-import { WotrPlayableCharacterCard } from "./characters/wotr-playable-character-card";
-import { WotrCharacterHandler } from "./wotr-character-handler";
-import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
-import { WotrCharacterModifiers } from "./wotr-character-modifiers";
+  TheMouthOfSauron,
+} from './characters/the-mouth-of-sauron';
+import { SorcererAbility, TheWitchKing } from './characters/the-witch-king';
+import { WotrPlayableCharacterCard } from './characters/wotr-playable-character-card';
+import { WotrCharacterHandler } from './wotr-character-handler';
+import { KomeSovereignId, WotrCharacterId } from './wotr-character-models';
+import { WotrCharacterModifiers } from './wotr-character-modifiers';
 
 @Injectable()
 export class WotrCharacters {
-  private characters: Partial<Record<WotrCharacterId, WotrPlayableCharacterCard>> = {};
+  private characters: Partial<
+    Record<WotrCharacterId, WotrPlayableCharacterCard>
+  > = {};
   private sovereigns: Partial<Record<KomeSovereignId, KomeSovereignCard>> = {};
   private abilities: Partial<Record<WotrCharacterId, WotrAbility[]>> = {};
   private awakenAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> = {};
-  private corruptionAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> = {};
+  private corruptionAbilities: Partial<Record<KomeSovereignId, WotrAbility[]>> =
+    {};
 
   private battleModifiers = inject(WotrBattleModifiers);
   private actionDieModifiers = inject(WotrActionDieModifiers);
@@ -123,181 +152,246 @@ export class WotrCharacters {
 
   private createAbilities(characterId: WotrCharacterId): WotrAbility[] {
     switch (characterId) {
-      case "gandalf-the-white":
+      case 'gandalf-the-white':
         return [
           new ShadowfaxAbility(this.characterModifiers),
-          new TheWhiteRiderAbility(this.freePeoples, this.battleModifiers, this.unitUtils)
+          new TheWhiteRiderAbility(
+            this.freePeoples,
+            this.battleModifiers,
+            this.unitUtils,
+          ),
         ];
-      case "aragorn":
-        return [new CaptainOfTheWestAbility("aragorn", this.q, this.battleModifiers)];
-      case "saruman":
+      case 'aragorn':
         return [
-          new TheVoiceOfSarumanAbility(this.q, this.actionDieModifiers, this.ui),
-          new ServantsOfTheWhiteHandAbility(this.unitModifiers)
+          new CaptainOfTheWestAbility('aragorn', this.q, this.battleModifiers),
         ];
-      case "the-witch-king":
+      case 'saruman':
         return [
-          new SorcererAbility(this.battleStore, this.q, this.shadow, this.battleModifiers, this.ui)
+          new TheVoiceOfSarumanAbility(
+            this.q,
+            this.actionDieModifiers,
+            this.ui,
+          ),
+          new ServantsOfTheWhiteHandAbility(this.unitModifiers),
         ];
-      case "the-mouth-of-sauron":
+      case 'the-witch-king':
         return [
-          new MessengerOfTheDarkTowerAbility(this.q, this.ui, this.actionDieModifiers),
-          new MessengerOfTheDarkTowerSetUsedAbility(this.q, this.actionDieModifiers)
+          new SorcererAbility(
+            this.battleStore,
+            this.q,
+            this.shadow,
+            this.battleModifiers,
+            this.ui,
+          ),
         ];
-      case "brand":
+      case 'the-mouth-of-sauron':
+        return [
+          new MessengerOfTheDarkTowerAbility(
+            this.q,
+            this.ui,
+            this.actionDieModifiers,
+          ),
+          new MessengerOfTheDarkTowerSetUsedAbility(
+            this.q,
+            this.actionDieModifiers,
+          ),
+        ];
+      case 'brand':
         return []; // TODO KOME
-      case "dain":
+      case 'dain':
         return []; // TODO KOME
-      case "denethor":
+      case 'denethor':
         return []; // TODO KOME
-      case "theoden":
+      case 'theoden':
         return []; // TODO KOME
-      case "thranduil":
+      case 'thranduil':
         return []; // TODO KOME
-      case "the-black-serpent":
+      case 'the-black-serpent':
         return [new RedWrath(this.shadow, this.battleModifiers, this.battleUi)];
-      case "the-shadow-of-mirkwood":
+      case 'the-shadow-of-mirkwood':
         return [new LordOfTheBats(this.q, this.shadow, this.battleModifiers)];
-      case "ugluk":
+      case 'ugluk':
         return [
           new ICommandAbility(this.shadow, this.battleModifiers),
-          new WeMarchDayAndNightAbility(this.q, this.huntModifiers)
+          new WeMarchDayAndNightAbility(this.q, this.huntModifiers),
         ];
-      case "strider":
+      case 'strider':
         return [
-          new StriderGuideAbility(this.fellowshipStore, this.actionDieModifiers),
-          new CaptainOfTheWestAbility("strider", this.q, this.battleModifiers)
+          new StriderGuideAbility(
+            this.fellowshipStore,
+            this.actionDieModifiers,
+          ),
+          new CaptainOfTheWestAbility('strider', this.q, this.battleModifiers),
           // new HeirToIsildurAbility(null as any)
         ];
-      case "gandalf-the-grey":
+      case 'gandalf-the-grey':
         return [
-          new GandalfGuideAbility(this.actionDieModifiers, this.freePeoples, this.q, this.ui),
-          new CaptainOfTheWestAbility("gandalf-the-grey", this.q, this.battleModifiers)
+          new GandalfGuideAbility(
+            this.actionDieModifiers,
+            this.freePeoples,
+            this.q,
+            this.ui,
+          ),
+          new CaptainOfTheWestAbility(
+            'gandalf-the-grey',
+            this.q,
+            this.battleModifiers,
+          ),
           // new EmissaryFromTheWestAbility(null as any)
         ];
-      case "peregrin":
+      case 'peregrin':
         return [
-          new HobbitGuideAbility("peregrin", this.q, this.huntModifiers, this.ui),
+          new HobbitGuideAbility(
+            'peregrin',
+            this.q,
+            this.huntModifiers,
+            this.ui,
+          ),
           new TakeThemAliveAbility(
-            "peregrin",
+            'peregrin',
             this.q,
             this.characterModifiers,
             this.freePeoples,
-            this.ui
-          )
+            this.ui,
+          ),
         ];
-      case "meriadoc":
+      case 'meriadoc':
         return [
-          new HobbitGuideAbility("meriadoc", this.q, this.huntModifiers, this.ui),
+          new HobbitGuideAbility(
+            'meriadoc',
+            this.q,
+            this.huntModifiers,
+            this.ui,
+          ),
           new TakeThemAliveAbility(
-            "meriadoc",
+            'meriadoc',
             this.q,
             this.characterModifiers,
             this.freePeoples,
-            this.ui
-          )
+            this.ui,
+          ),
         ];
-      case "boromir":
+      case 'boromir':
         return [
-          new CaptainOfTheWestAbility("boromir", this.q, this.battleModifiers),
-          new HighWardenOfTheWhiteTowerAbility(this.q, this.actionDieModifiers)
+          new CaptainOfTheWestAbility('boromir', this.q, this.battleModifiers),
+          new HighWardenOfTheWhiteTowerAbility(this.q, this.actionDieModifiers),
         ];
-      case "legolas":
+      case 'legolas':
         return [
-          new CaptainOfTheWestAbility("legolas", this.q, this.battleModifiers),
-          new PrinceOfMirkwoodAbility(this.q, this.actionDieModifiers)
+          new CaptainOfTheWestAbility('legolas', this.q, this.battleModifiers),
+          new PrinceOfMirkwoodAbility(this.q, this.actionDieModifiers),
         ];
-      case "gimli":
+      case 'gimli':
         return [
-          new CaptainOfTheWestAbility("gimli", this.q, this.battleModifiers),
-          new DwarfOfEreborAbility(this.q, this.actionDieModifiers)
+          new CaptainOfTheWestAbility('gimli', this.q, this.battleModifiers),
+          new DwarfOfEreborAbility(this.q, this.actionDieModifiers),
         ];
-      case "gollum":
+      case 'gollum':
         return [];
     }
   }
 
   private createAwakenAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
     switch (sovereignId) {
-      case "thranduil":
+      case 'thranduil':
         return []; // TODO KOME
-      case "brand":
+      case 'brand':
         return []; // TODO KOME
-      case "dain":
+      case 'dain':
         return []; // TODO KOME
-      case "denethor":
+      case 'denethor':
         return []; // TODO KOME
-      case "theoden":
+      case 'theoden':
         return []; // TODO KOME
     }
   }
 
-  private createCorruptionAbilities(sovereignId: KomeSovereignId): WotrAbility[] {
+  private createCorruptionAbilities(
+    sovereignId: KomeSovereignId,
+  ): WotrAbility[] {
     switch (sovereignId) {
-      case "thranduil":
+      case 'thranduil':
         return [
           new ThranduilElvenking(this.unitModifiers),
-          new FateOfMirkwood(this.battleModifiers, this.battleStore)
+          new FateOfMirkwood(this.battleModifiers, this.battleStore),
         ];
-      case "brand":
+      case 'brand':
         return [
           new BrandCorruptedKing(this.unitModifiers),
-          new ShadowInTheNorth(this.battleModifiers, this.unitUtils, this.shadow)
+          new ShadowInTheNorth(
+            this.battleModifiers,
+            this.unitUtils,
+            this.shadow,
+          ),
         ];
-      case "dain":
+      case 'dain':
         return [
           new DainCorruptedKing(this.unitModifiers),
-          new FateOfTheLonelyMountain(this.battleModifiers, this.battleStore)
+          new FateOfTheLonelyMountain(this.battleModifiers, this.battleStore),
         ];
-      case "denethor":
+      case 'denethor':
         return [
           new DenethorCorruptedSteward(this.unitModifiers),
-          new FateOfTheWhiteTower(this.battleModifiers, this.battleStore)
+          new FateOfTheWhiteTower(this.battleModifiers, this.battleStore),
         ];
-      case "theoden":
+      case 'theoden':
         return [
           new TheodenCorruptedKing(this.unitModifiers),
-          new MarkOfTheWhiteHand(this.regionModifiers, this.regionStore)
+          new MarkOfTheWhiteHand(this.regionModifiers, this.regionStore),
         ];
     }
   }
 
-  private getPlayableCharacterCard(characterId: WotrCharacterId): WotrPlayableCharacterCard {
+  private getPlayableCharacterCard(
+    characterId: WotrCharacterId,
+  ): WotrPlayableCharacterCard {
     switch (characterId) {
-      case "gandalf-the-white":
-        if (!this.characters["gandalf-the-white"])
-          this.characters["gandalf-the-white"] = new WotrGandalfTheWhite(this.q);
-        return this.characters["gandalf-the-white"];
-      case "aragorn":
-        if (!this.characters["aragorn"])
-          this.characters["aragorn"] = new WotrAragorn(this.q, this.battleModifiers);
-        return this.characters["aragorn"];
-      case "saruman":
-        if (!this.characters["saruman"]) this.characters["saruman"] = new WotrSaruman(this.q);
-        return this.characters["saruman"];
-      case "the-witch-king":
-        if (!this.characters["the-witch-king"])
-          this.characters["the-witch-king"] = new TheWitchKing(this.q, this.nationHandler);
-        return this.characters["the-witch-king"];
-      case "the-mouth-of-sauron":
-        if (!this.characters["the-mouth-of-sauron"])
-          this.characters["the-mouth-of-sauron"] = new TheMouthOfSauron(this.q);
-        return this.characters["the-mouth-of-sauron"];
-      case "ugluk":
-        if (!this.characters["ugluk"])
-          this.characters["ugluk"] = new Ugluk(this.q, this.battleModifiers);
-        return this.characters["ugluk"];
-      case "the-shadow-of-mirkwood":
-        if (!this.characters["the-shadow-of-mirkwood"])
-          this.characters["the-shadow-of-mirkwood"] = new TheShadowOfMirkwood(
+      case 'gandalf-the-white':
+        if (!this.characters['gandalf-the-white'])
+          this.characters['gandalf-the-white'] = new WotrGandalfTheWhite(
             this.q,
-            this.battleModifiers
           );
-        return this.characters["the-shadow-of-mirkwood"];
-      case "the-black-serpent":
-        if (!this.characters["the-black-serpent"])
-          this.characters["the-black-serpent"] = new TheBlackSerpent(this.q, this.battleModifiers);
-        return this.characters["the-black-serpent"];
+        return this.characters['gandalf-the-white'];
+      case 'aragorn':
+        if (!this.characters['aragorn'])
+          this.characters['aragorn'] = new WotrAragorn(
+            this.q,
+            this.battleModifiers,
+          );
+        return this.characters['aragorn'];
+      case 'saruman':
+        if (!this.characters['saruman'])
+          this.characters['saruman'] = new WotrSaruman(this.q);
+        return this.characters['saruman'];
+      case 'the-witch-king':
+        if (!this.characters['the-witch-king'])
+          this.characters['the-witch-king'] = new TheWitchKing(
+            this.q,
+            this.nationHandler,
+          );
+        return this.characters['the-witch-king'];
+      case 'the-mouth-of-sauron':
+        if (!this.characters['the-mouth-of-sauron'])
+          this.characters['the-mouth-of-sauron'] = new TheMouthOfSauron(this.q);
+        return this.characters['the-mouth-of-sauron'];
+      case 'ugluk':
+        if (!this.characters['ugluk'])
+          this.characters['ugluk'] = new Ugluk(this.q, this.battleModifiers);
+        return this.characters['ugluk'];
+      case 'the-shadow-of-mirkwood':
+        if (!this.characters['the-shadow-of-mirkwood'])
+          this.characters['the-shadow-of-mirkwood'] = new TheShadowOfMirkwood(
+            this.q,
+            this.battleModifiers,
+          );
+        return this.characters['the-shadow-of-mirkwood'];
+      case 'the-black-serpent':
+        if (!this.characters['the-black-serpent'])
+          this.characters['the-black-serpent'] = new TheBlackSerpent(
+            this.q,
+            this.battleModifiers,
+          );
+        return this.characters['the-black-serpent'];
       default:
         throw new Error(`Unknown character ID: ${characterId}`);
     }
@@ -305,64 +399,98 @@ export class WotrCharacters {
 
   getSovereignCard(sovereignId: KomeSovereignId): KomeSovereignCard {
     switch (sovereignId) {
-      case "thranduil":
-        if (!this.sovereigns["thranduil"])
-          this.sovereigns["thranduil"] = new Thranduil(this.q, this.characterHandler, this.logger);
-        return this.sovereigns["thranduil"];
-      case "brand":
-        if (!this.sovereigns["brand"])
-          this.sovereigns["brand"] = new Brand(this.q, this.characterHandler, this.logger);
-        return this.sovereigns["brand"];
-      case "dain":
-        if (!this.sovereigns["dain"])
-          this.sovereigns["dain"] = new Dain(this.q, this.characterHandler, this.logger);
-        return this.sovereigns["dain"];
-      case "denethor":
-        if (!this.sovereigns["denethor"])
-          this.sovereigns["denethor"] = new Denethor(this.q, this.characterHandler, this.logger);
-        return this.sovereigns["denethor"];
-      case "theoden":
-        if (!this.sovereigns["theoden"])
-          this.sovereigns["theoden"] = new Theoden(this.q, this.characterHandler, this.logger);
-        return this.sovereigns["theoden"];
+      case 'thranduil':
+        if (!this.sovereigns['thranduil'])
+          this.sovereigns['thranduil'] = new Thranduil(
+            this.q,
+            this.characterHandler,
+            this.logger,
+          );
+        return this.sovereigns['thranduil'];
+      case 'brand':
+        if (!this.sovereigns['brand'])
+          this.sovereigns['brand'] = new Brand(
+            this.q,
+            this.characterHandler,
+            this.logger,
+          );
+        return this.sovereigns['brand'];
+      case 'dain':
+        if (!this.sovereigns['dain'])
+          this.sovereigns['dain'] = new Dain(
+            this.q,
+            this.characterHandler,
+            this.logger,
+          );
+        return this.sovereigns['dain'];
+      case 'denethor':
+        if (!this.sovereigns['denethor'])
+          this.sovereigns['denethor'] = new Denethor(
+            this.q,
+            this.characterHandler,
+            this.logger,
+          );
+        return this.sovereigns['denethor'];
+      case 'theoden':
+        if (!this.sovereigns['theoden'])
+          this.sovereigns['theoden'] = new Theoden(
+            this.q,
+            this.characterHandler,
+            this.logger,
+          );
+        return this.sovereigns['theoden'];
     }
   }
 
   private freePeoplesPlayableCharacters(): WotrCharacterId[] {
-    return ["gandalf-the-white", "aragorn"];
+    return ['gandalf-the-white', 'aragorn'];
   }
 
   private shadowPlayableCharacterIds(): WotrCharacterId[] {
-    const characterIds: WotrCharacterId[] = ["saruman", "the-witch-king", "the-mouth-of-sauron"];
+    const characterIds: WotrCharacterId[] = [
+      'saruman',
+      'the-witch-king',
+      'the-mouth-of-sauron',
+    ];
     if (this.q.kome()) {
-      characterIds.push("ugluk", "the-shadow-of-mirkwood", "the-black-serpent");
+      characterIds.push('ugluk', 'the-shadow-of-mirkwood', 'the-black-serpent');
     }
     return characterIds;
   }
 
   availableCharacterCards(frontId: WotrFrontId): WotrPlayableCharacterCard[] {
     const characterIds =
-      frontId === "free-peoples"
+      frontId === 'free-peoples'
         ? this.freePeoplesPlayableCharacters()
         : this.shadowPlayableCharacterIds();
     return characterIds
-      .filter(characterId => this.q.character(characterId).isAvailable())
-      .map(characterId => this.getPlayableCharacterCard(characterId));
+      .filter((characterId) => this.q.character(characterId).isAvailable())
+      .map((characterId) => this.getPlayableCharacterCard(characterId));
   }
 
   canBringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): boolean {
-    return this.availableCharacterCards(frontId).some(card => card.canBeBroughtIntoPlay(die));
+    return this.availableCharacterCards(frontId).some((card) =>
+      card.canBeBroughtIntoPlay(die),
+    );
   }
 
   availableSovereignCards(): KomeSovereignCard[] {
-    const sovereignIds: KomeSovereignId[] = ["thranduil", "brand", "dain", "denethor", "theoden"];
+    const sovereignIds: KomeSovereignId[] = [
+      'thranduil',
+      'brand',
+      'dain',
+      'denethor',
+      'theoden',
+    ];
     return sovereignIds
-      .filter(sovereignId => this.q.sovereign(sovereignId).isLeader())
-      .map(sovereignId => this.getSovereignCard(sovereignId));
+      .filter((sovereignId) => this.q.sovereign(sovereignId).isLeader())
+      .map((sovereignId) => this.getSovereignCard(sovereignId));
   }
 
   canAwakeSovereign(die: WotrActionDie): boolean {
-    return this.availableSovereignCards().some(card => card.canBeAwakened(die));
+    return this.availableSovereignCards().some((card) =>
+      card.canBeAwakened(die),
+    );
   }
 
   activateInPlayAbilities(characters: WotrCharacterId[]) {
@@ -370,14 +498,19 @@ export class WotrCharacters {
     for (const character of characters) {
       const abilities = this.getInPlayAbilities(character);
       for (const ability of abilities) {
-        if (!ability.modifier) console.error("Modifier is not defined for this ability", this);
+        if (!ability.modifier)
+          console.error('Modifier is not defined for this ability', this);
         ability.modifier.register(ability.handler);
       }
     }
   }
 
-  private isSovereignId(characterId: WotrCharacterId): characterId is KomeSovereignId {
-    return ["thranduil", "brand", "dain", "denethor", "theoden"].includes(characterId);
+  private isSovereignId(
+    characterId: WotrCharacterId,
+  ): characterId is KomeSovereignId {
+    return ['thranduil', 'brand', 'dain', 'denethor', 'theoden'].includes(
+      characterId,
+    );
   }
 
   deactivateAbilities(characterId: WotrCharacterId) {

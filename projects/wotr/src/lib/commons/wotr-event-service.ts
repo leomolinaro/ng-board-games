@@ -1,11 +1,14 @@
-import { Injectable } from "@angular/core";
-import { WotrEvent, WotrEventConsumer } from "./wotr-event-models";
+import { Injectable } from '@angular/core';
+import { WotrEvent, WotrEventConsumer } from './wotr-event-models';
 
 @Injectable()
 export class WotrEventService {
   private registrations: Record<string, WotrEventConsumer<WotrEvent>[]> = {};
 
-  register<E extends WotrEvent>(eventType: E["type"], consumer: WotrEventConsumer<E>) {
+  register<E extends WotrEvent>(
+    eventType: E['type'],
+    consumer: WotrEventConsumer<E>,
+  ) {
     let eventConsumers = this.registrations[eventType];
     if (!eventConsumers) {
       eventConsumers = [];
@@ -14,9 +17,12 @@ export class WotrEventService {
     eventConsumers.push(consumer as any);
   }
 
-  deregister<E extends WotrEvent>(eventType: E["type"], consumer: WotrEventConsumer<E>) {
+  deregister<E extends WotrEvent>(
+    eventType: E['type'],
+    consumer: WotrEventConsumer<E>,
+  ) {
     const eventConsumers = this.registrations[eventType];
-    const index = eventConsumers.findIndex(c => c === consumer);
+    const index = eventConsumers.findIndex((c) => c === consumer);
     eventConsumers.splice(index, 1);
   }
 

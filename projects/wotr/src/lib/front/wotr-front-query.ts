@@ -3,17 +3,17 @@ import {
   isCharacterCard,
   isStrategyCard,
   WotrCardId,
-  WotrCardType
-} from "../card/wotr-card-models";
-import { WotrCharacterStore } from "../character/wotr-character-store";
-import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
-import { WotrFrontStore } from "./wotr-front-store";
+  WotrCardType,
+} from '../card/wotr-card-models';
+import { WotrCharacterStore } from '../character/wotr-character-store';
+import { WotrElvenRing, WotrFrontId } from './wotr-front-models';
+import { WotrFrontStore } from './wotr-front-store';
 
 export class WotrFrontQuery {
   constructor(
     private frontId: WotrFrontId,
     private frontStore: WotrFrontStore,
-    private characterStore: WotrCharacterStore
+    private characterStore: WotrCharacterStore,
   ) {}
 
   id() {
@@ -33,7 +33,9 @@ export class WotrFrontQuery {
   }
 
   hasRulerDie() {
-    return !!this.data().actionDice.some(die => typeof die !== "string" && die.type === "ruler");
+    return !!this.data().actionDice.some(
+      (die) => typeof die !== 'string' && die.type === 'ruler',
+    );
   }
 
   canSkipTokens() {
@@ -45,15 +47,15 @@ export class WotrFrontQuery {
   }
 
   hasUnusedCharacterActionDice(): boolean {
-    return this.data().actionDice.includes("character");
+    return this.data().actionDice.includes('character');
   }
 
   actionDiceBonus(): number {
     let actionDiceBonus = 0;
     for (const character of this.characterStore.characters()) {
       if (character.front !== this.frontId) continue;
-      if (character.dieBonus !== "actionDie") continue;
-      if (character.status !== "inPlay") continue;
+      if (character.dieBonus !== 'actionDie') continue;
+      if (character.status !== 'inPlay') continue;
       actionDiceBonus += 1;
     }
     return actionDiceBonus;
@@ -84,19 +86,19 @@ export class WotrFrontQuery {
   }
 
   hasCharacterHandCards() {
-    return this.handCards().some(cardId => isCharacterCard(cardId));
+    return this.handCards().some((cardId) => isCharacterCard(cardId));
   }
 
   hasStrategyHandCards() {
-    return this.handCards().some(cardId => isStrategyCard(cardId));
+    return this.handCards().some((cardId) => isStrategyCard(cardId));
   }
 
   characterHandCards() {
-    return this.handCards().filter(cardId => isCharacterCard(cardId));
+    return this.handCards().filter((cardId) => isCharacterCard(cardId));
   }
 
   strategyHandCards() {
-    return this.handCards().filter(cardId => isStrategyCard(cardId));
+    return this.handCards().filter((cardId) => isStrategyCard(cardId));
   }
 
   hasExcessCards(): boolean {
@@ -130,19 +132,19 @@ export class WotrFrontQuery {
   }
 
   hasCharacterTableCards() {
-    return this.data().tableCards.some(cardId => isCharacterCard(cardId));
+    return this.data().tableCards.some((cardId) => isCharacterCard(cardId));
   }
 
   hasStrategyTableCards() {
-    return this.data().tableCards.some(cardId => isStrategyCard(cardId));
+    return this.data().tableCards.some((cardId) => isStrategyCard(cardId));
   }
 
   characterTableCards() {
-    return this.data().tableCards.filter(cardId => isCharacterCard(cardId));
+    return this.data().tableCards.filter((cardId) => isCharacterCard(cardId));
   }
 
   strategyTableCards() {
-    return this.data().tableCards.filter(cardId => isStrategyCard(cardId));
+    return this.data().tableCards.filter((cardId) => isStrategyCard(cardId));
   }
 
   hasCardsOnTable() {
@@ -150,11 +152,13 @@ export class WotrFrontQuery {
   }
 
   handCardsOfType(cardType: WotrCardType) {
-    return this.handCards().filter(cardId => getCard(cardId).type === cardType);
+    return this.handCards().filter(
+      (cardId) => getCard(cardId).type === cardType,
+    );
   }
 
   hasHandCardOfType(cardType: WotrCardType): boolean {
-    return this.handCards().some(cardId => getCard(cardId).type === cardType);
+    return this.handCards().some((cardId) => getCard(cardId).type === cardType);
   }
 
   elvenRings(): WotrElvenRing[] {

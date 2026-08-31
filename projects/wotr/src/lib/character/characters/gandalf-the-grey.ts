@@ -1,14 +1,17 @@
-import { WotrUiAbility } from "../../ability/wotr-ability";
+import { WotrUiAbility } from '../../ability/wotr-ability';
 import {
   WotrActionDieModifiers,
-  WotrAfterActionDieCardResolution
-} from "../../action-die/wotr-action-die-modifiers";
-import { isFreePeopleCharacterCard, WotrCardId } from "../../card/wotr-card-models";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { activateCharacterAbility } from "./wotr-playable-character-card";
+  WotrAfterActionDieCardResolution,
+} from '../../action-die/wotr-action-die-modifiers';
+import {
+  isFreePeopleCharacterCard,
+  WotrCardId,
+} from '../../card/wotr-card-models';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import { activateCharacterAbility } from './wotr-playable-character-card';
 
 // Gandalf the Grey - The Grey Wanderer (Level 3, Leadership 1)
 // Guide. After you use an Event Action Die to play an Event card, you may immediately draw an Event card from the deck matching the type of that card.
@@ -21,7 +24,7 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
     private actionDieModifiers: WotrActionDieModifiers,
     private freePeoples: WotrFreePeoplesPlayer,
     private q: WotrGameQuery,
-    private ui: WotrGameUiContext
+    private ui: WotrGameUiContext,
   ) {}
 
   modifier = this.actionDieModifiers.afterActionDieCardResolution;
@@ -29,19 +32,23 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
   private playedCard: WotrCardId | null = null;
 
   handler: WotrAfterActionDieCardResolution = async (story, frontId) => {
-    if (frontId !== "free-peoples") return;
-    if (!this.q.fellowship.guideIs("gandalf-the-grey")) return;
-    if (story.die === "event" || story.die === "will-of-the-west") {
+    if (frontId !== 'free-peoples') return;
+    if (!this.q.fellowship.guideIs('gandalf-the-grey')) return;
+    if (story.die === 'event' || story.die === 'will-of-the-west') {
       this.playedCard = story.card;
-      await activateCharacterAbility(this, "gandalf-the-grey", this.freePeoples);
+      await activateCharacterAbility(
+        this,
+        'gandalf-the-grey',
+        this.freePeoples,
+      );
     }
   };
 
   play: () => Promise<WotrAction[]> = async () => {
-    if (!this.playedCard) throw new Error("Unexpected state");
+    if (!this.playedCard) throw new Error('Unexpected state');
     const action = isFreePeopleCharacterCard(this.playedCard)
-      ? await this.ui.cardDrawUi.drawCards(1, "character", "free-peoples")
-      : await this.ui.cardDrawUi.drawCards(1, "strategy", "free-peoples");
+      ? await this.ui.cardDrawUi.drawCards(1, 'character', 'free-peoples')
+      : await this.ui.cardDrawUi.drawCards(1, 'strategy', 'free-peoples');
     return [action];
   };
 }

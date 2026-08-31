@@ -1,24 +1,26 @@
-import { Component, OnChanges, input, output } from "@angular/core";
-import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
-import { BARONY_ACTIONS } from "../barony-constants";
-import { BaronyAction } from "../barony-models";
+import { Component, OnChanges, input, output } from '@angular/core';
+import { SimpleChanges, arrayUtil } from '@leobg/commons/utils';
+import { BARONY_ACTIONS } from '../barony-constants';
+import { BaronyAction } from '../barony-models';
 
 @Component({
-  selector: "barony-actions-area",
+  selector: 'barony-actions-area',
   template: `
     <div class="b-actions">
       <button
         class="b-action b-cancel"
         [class.is-active]="canCancel()"
         [class.is-disabled]="!canCancel()"
-        (click)="onCancelClick()">
+        (click)="onCancelClick()"
+      >
         {{ labels.cancel }}
       </button>
       <button
         class="b-action b-pass"
         [class.is-active]="canPass()"
         [class.is-disabled]="!canPass()"
-        (click)="onPassClick()">
+        (click)="onPassClick()"
+      >
         {{ labels.pass }}
       </button>
       @for (action of actions; track action) {
@@ -26,14 +28,15 @@ import { BaronyAction } from "../barony-models";
           class="b-action"
           [class.is-active]="isValid ? isValid[action] : false"
           [class.is-disabled]="isValid ? !isValid[action] : true"
-          (click)="onActionClick(action)">
+          (click)="onActionClick(action)"
+        >
           {{ $any(labels)[action] }}
         </button>
       }
     </div>
   `,
   styles: `
-    @use "barony-variables" as barony;
+    @use 'barony-variables' as barony;
 
     .b-actions {
       display: grid;
@@ -63,7 +66,7 @@ import { BaronyAction } from "../barony-models";
         }
       }
     }
-  `
+  `,
 })
 export class BaronyActionsArea implements OnChanges {
   constructor() {}
@@ -78,14 +81,14 @@ export class BaronyActionsArea implements OnChanges {
   actions = BARONY_ACTIONS;
 
   labels = {
-    recruitment: "Recruitment",
-    movement: "Movement",
-    construction: "Construction",
-    newCity: "New city",
-    expedition: "Expedition",
-    nobleTitle: "Noble title",
-    pass: "Pass",
-    cancel: "Cancel"
+    recruitment: 'Recruitment',
+    movement: 'Movement',
+    construction: 'Construction',
+    newCity: 'New city',
+    expedition: 'Expedition',
+    nobleTitle: 'Noble title',
+    pass: 'Pass',
+    cancel: 'Cancel',
   };
 
   isValid: { [action: string]: boolean } | null = null;
@@ -96,8 +99,8 @@ export class BaronyActionsArea implements OnChanges {
       if (validActions) {
         this.isValid = arrayUtil.toMap(
           validActions,
-          a => a,
-          () => true
+          (a) => a,
+          () => true,
         ) as any;
       } else {
         this.isValid = null;

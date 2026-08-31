@@ -1,12 +1,12 @@
-import { Component, OnInit, computed, inject, signal } from "@angular/core";
-import { injectDialogContext } from "@leobg/commons";
-import { BgTransformFn, arrayUtil } from "@leobg/commons/utils";
-import { TuiHint } from "@taiga-ui/core";
-import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrFellowshipCompanionSelection } from "../game/wotr-game-ui";
-import { WotrFellowshipStore } from "./wotr-fellowship-store";
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { injectDialogContext } from '@leobg/commons';
+import { BgTransformFn, arrayUtil } from '@leobg/commons/utils';
+import { TuiHint } from '@taiga-ui/core';
+import { WotrAssetsStore, WotrUnitImage } from '../assets/wotr-assets-store';
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrFellowshipCompanionSelection } from '../game/wotr-game-ui';
+import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export interface WotrFellowshipDialogData {
   selection: WotrFellowshipCompanionSelection | null;
@@ -26,7 +26,7 @@ export interface CompanionNode {
 }
 
 @Component({
-  selector: "wotr-fellowship-dialog",
+  selector: 'wotr-fellowship-dialog',
   imports: [TuiHint],
   template: `
     <div>
@@ -40,7 +40,8 @@ export interface CompanionNode {
           [width]="unitNode.width"
           [height]="unitNode.height"
           [tuiHint]="unitNode.label"
-          (click)="onUnitClick(unitNode)" />
+          (click)="onUnitClick(unitNode)"
+        />
       }
     </div>
     @if (data.selection) {
@@ -53,14 +54,15 @@ export interface CompanionNode {
         class="confirm-button"
         [disabled]="canConfirm() !== true"
         [class.disabled]="canConfirm() !== true"
-        (click)="onConfirm()">
+        (click)="onConfirm()"
+      >
         Confirm companions
       </button>
     }
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
 
       :host {
         background-color: #151515;
@@ -86,11 +88,14 @@ export interface CompanionNode {
           cursor: not-allowed;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrFellowshipDialog implements OnInit {
-  readonly context = injectDialogContext<WotrFellowshipDialogData, WotrFellowshipDialogResult>();
+  readonly context = injectDialogContext<
+    WotrFellowshipDialogData,
+    WotrFellowshipDialogResult
+  >();
   protected data = this.context.data;
   private assets = inject(WotrAssetsStore);
   private fellowshipStore = inject(WotrFellowshipStore);
@@ -101,12 +106,13 @@ export class WotrFellowshipDialog implements OnInit {
 
   protected canConfirm = computed<true | string>(() => {
     const selection = this.data.selection;
-    if (!selection) throw new Error("No selection data provided");
+    if (!selection) throw new Error('No selection data provided');
     const selectedCount = this.selectedNodes().length;
-    if (selection.singleSelection && selectedCount > 1) return "Select only one companion";
+    if (selection.singleSelection && selectedCount > 1)
+      return 'Select only one companion';
     if (selection.nCompanions && selectedCount !== selection.nCompanions)
-      return `Select exactly ${selection.nCompanions} companion${selectedCount === 1 ? "" : "s"}`;
-    if (!selectedCount) return "Select at least one companion";
+      return `Select exactly ${selection.nCompanions} companion${selectedCount === 1 ? '' : 's'}`;
+    if (!selectedCount) return 'Select at least one companion';
     return true;
   });
 
@@ -114,7 +120,7 @@ export class WotrFellowshipDialog implements OnInit {
     this.unitNodes = this.unitsToUnitNodes(this.fellowshipStore.companions());
     const companionSelection = this.data.selection;
     if (companionSelection) {
-      this.unitNodes.forEach(unitNode => {
+      this.unitNodes.forEach((unitNode) => {
         if (companionSelection.companions.includes(unitNode.id)) {
           unitNode.selectable = true;
           unitNode.disabled = false;
@@ -128,22 +134,26 @@ export class WotrFellowshipDialog implements OnInit {
 
   private unitsToUnitNodes(companionIds: WotrCompanionId[]): CompanionNode[] {
     const unitNodes: CompanionNode[] = [];
-    companionIds.forEach(companionId => {
+    companionIds.forEach((companionId) => {
       const image = this.assets.frontCharacterImage(companionId);
       unitNodes.push({
         id: companionId,
         label: this.q.character(companionId).name,
-        ...this.scale(image)
+        ...this.scale(image),
       });
     });
     return unitNodes;
   }
 
   private scale(image: WotrUnitImage): WotrUnitImage {
-    return { source: image.source, width: image.width * 1.5, height: image.height * 1.5 };
+    return {
+      source: image.source,
+      width: image.width * 1.5,
+      height: image.height * 1.5,
+    };
   }
 
-  protected range: BgTransformFn<number, number[]> = n => arrayUtil.range(n);
+  protected range: BgTransformFn<number, number[]> = (n) => arrayUtil.range(n);
 
   onConfirm() {
     if (!this.canConfirm()) return;
@@ -162,10 +172,12 @@ export class WotrFellowshipDialog implements OnInit {
     if (unitNode.disabled || !unitNode.selectable) return;
     if (unitNode.selected) {
       unitNode.selected = false;
-      this.selectedNodes.update(nodes => nodes.filter(n => n.id !== unitNode.id));
+      this.selectedNodes.update((nodes) =>
+        nodes.filter((n) => n.id !== unitNode.id),
+      );
     } else {
       unitNode.selected = true;
-      this.selectedNodes.update(nodes => [...nodes, unitNode]);
+      this.selectedNodes.update((nodes) => [...nodes, unitNode]);
     }
   }
 }

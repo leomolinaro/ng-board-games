@@ -1,14 +1,14 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrUiAbility } from "../ability/wotr-ability";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { WotrStory } from "../game/wotr-story-models";
-import { WotrCards } from "./cards/wotr-cards";
-import { playCardId } from "./wotr-card-actions";
-import { getCard, WotrCardId, WotrCardType } from "./wotr-card-models";
+import { inject, Injectable } from '@angular/core';
+import { WotrUiAbility } from '../ability/wotr-ability';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrUiChoice } from '../game/wotr-game-ui';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import { WotrStory } from '../game/wotr-story-models';
+import { WotrCards } from './cards/wotr-cards';
+import { playCardId } from './wotr-card-actions';
+import { getCard, WotrCardId, WotrCardType } from './wotr-card-models';
 
 @Injectable()
 export class WotrCardPlayUi {
@@ -16,72 +16,87 @@ export class WotrCardPlayUi {
   private cards = inject(WotrCards);
   private ui = inject(WotrGameUiContext);
 
-  async playCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<WotrAction[]> {
+  async playCard(
+    cardId: WotrCardId,
+    frontId: WotrFrontId,
+  ): Promise<WotrAction[]> {
     this.frontStore.discardCards([cardId], frontId);
     return this.cards.playCard(cardId, this.ui);
   }
 
-  playEventCardChoice(cartTypes: WotrCardType[] | "any"): WotrUiChoice {
+  playEventCardChoice(cartTypes: WotrCardType[] | 'any'): WotrUiChoice {
     let chosenCardId: WotrCardId | null = null;
     return {
-      label: () => "Play an event card",
-      isAvailable: frontId => this.hasPlayableCards(cartTypes, frontId),
-      actions: async frontId => {
+      label: () => 'Play an event card',
+      isAvailable: (frontId) => this.hasPlayableCards(cartTypes, frontId),
+      actions: async (frontId) => {
         const playableCards = this.cards.playableCards(cartTypes, frontId);
-        const cardId = await this.ui.askHandCard("Select an event card to play", {
-          nCards: 1,
-          cards: playableCards,
-          frontId,
-          message: "Confirm"
-        });
+        const cardId = await this.ui.askHandCard(
+          'Select an event card to play',
+          {
+            nCards: 1,
+            cards: playableCards,
+            frontId,
+            message: 'Confirm',
+          },
+        );
         chosenCardId = cardId;
         return this.playCard(cardId, frontId);
       },
-      card: () => chosenCardId!
+      card: () => chosenCardId!,
     };
   }
 
-  private hasPlayableCards(cartTypes: WotrCardType[] | "any", frontId: WotrFrontId) {
+  private hasPlayableCards(
+    cartTypes: WotrCardType[] | 'any',
+    frontId: WotrFrontId,
+  ) {
     return this.frontStore
       .front(frontId)
-      .handCards.some(cardId => this.cards.isPlayableCard(cardId, frontId));
+      .handCards.some((cardId) => this.cards.isPlayableCard(cardId, frontId));
   }
 
   async playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrAction[]> {
     const doPlay = await this.ui.askConfirm(
-      "Do you want to play a character card?",
-      "Play",
-      "Skip"
+      'Do you want to play a character card?',
+      'Play',
+      'Skip',
     );
     if (!doPlay) return [];
-    const playableCards = this.cards.playableCards(["character"], frontId);
+    const playableCards = this.cards.playableCards(['character'], frontId);
     const actions: WotrAction[] = [];
-    const cardId = await this.ui.askHandCard("Choose a character card to play", {
-      nCards: 1,
-      frontId,
-      message: "Play character card",
-      cards: playableCards
-    });
+    const cardId = await this.ui.askHandCard(
+      'Choose a character card to play',
+      {
+        nCards: 1,
+        frontId,
+        message: 'Play character card',
+        cards: playableCards,
+      },
+    );
     actions.push(playCardId(cardId));
     actions.push(...(await this.playCard(cardId, frontId)));
     return actions;
   }
 
-  async activateTableCard(ability: WotrUiAbility, cardId: WotrCardId): Promise<WotrStory> {
+  async activateTableCard(
+    ability: WotrUiAbility,
+    cardId: WotrCardId,
+  ): Promise<WotrStory> {
     const card = getCard(cardId);
     const confirm = await this.ui.askConfirm(
       `Do you want to activate ${card.label} ability?`,
-      "Activate",
-      "Skip"
+      'Activate',
+      'Skip',
     );
     if (confirm) {
       return {
-        type: "card-effect",
+        type: 'card-effect',
         card: cardId,
-        actions: await ability.play(this.ui)
+        actions: await ability.play(this.ui),
       };
     } else {
-      return { type: "card-effect-skip", card: cardId };
+      return { type: 'card-effect-skip', card: cardId };
     }
   }
 }

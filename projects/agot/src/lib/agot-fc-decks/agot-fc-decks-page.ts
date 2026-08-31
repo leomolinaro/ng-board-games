@@ -1,15 +1,15 @@
-import { Component, inject, resource } from "@angular/core";
-import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { TuiTabBar } from "@taiga-ui/addon-mobile";
-import { TuiTable, TuiTableControl } from "@taiga-ui/addon-table";
-import { TuiDropdown, TuiTitle } from "@taiga-ui/core";
-import { TuiCell } from "@taiga-ui/core/components/cell";
-import { TuiItemsWithMore, TuiProgress } from "@taiga-ui/kit";
-import { AgotData } from "../agot-services/agot-data";
-import { AgotFcDeck, DECKS } from "./agot-fc-decks";
+import { Component, inject, resource } from '@angular/core';
+import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import { TuiTabBar } from '@taiga-ui/addon-mobile';
+import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
+import { TuiDropdown, TuiTitle } from '@taiga-ui/core';
+import { TuiCell } from '@taiga-ui/core/components/cell';
+import { TuiItemsWithMore, TuiProgress } from '@taiga-ui/kit';
+import { AgotData } from '../agot-services/agot-data';
+import { AgotFcDeck, DECKS } from './agot-fc-decks';
 
 @Component({
-  selector: "agot-fc-decks",
+  selector: 'agot-fc-decks',
   imports: [
     BgTransformPipe,
     TuiCell,
@@ -20,13 +20,14 @@ import { AgotFcDeck, DECKS } from "./agot-fc-decks";
     TuiTabBar,
     TuiTable,
     TuiTableControl,
-    TuiTitle
+    TuiTitle,
   ],
   template: `
     <table
       tuiTable
       size="m"
-      class="agot-fc-table">
+      class="agot-fc-table"
+    >
       <tbody tuiTbody>
         @for (deck of loading() ? [] : decks; track deck.name) {
           <tr>
@@ -35,11 +36,13 @@ import { AgotFcDeck, DECKS } from "./agot-fc-decks";
                 <img
                   class="agot-fc-card-image"
                   [src]="deck | bgTransform: getDeckFactionImage"
-                  width="50" />
+                  width="50"
+                />
                 <img
                   class="agot-fc-card-image"
                   [src]="deck | bgTransform: getDeckAgendaImage"
-                  width="50" />
+                  width="50"
+                />
               </div>
             </td>
             <td tuiTd>
@@ -55,7 +58,8 @@ import { AgotFcDeck, DECKS } from "./agot-fc-decks";
                   <a
                     [href]="deck.link"
                     target="_blank"
-                    rel="noopener noreferrer">
+                    rel="noopener noreferrer"
+                  >
                     View on ThronesDB
                   </a>
                 } @else {
@@ -72,23 +76,23 @@ import { AgotFcDeck, DECKS } from "./agot-fc-decks";
     .agot-fc-table {
       width: 100%;
     }
-  `
+  `,
 })
 export class AgotFcDecksPage {
   private data = inject(AgotData);
 
   protected decks = DECKS;
 
-  protected getDeckFactionImage: BgTransformFn<AgotFcDeck, string> = deck => {
+  protected getDeckFactionImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
     return `assets/agot/factions/${deck.faction}.png`;
   };
-  protected getDeckAgendaImage: BgTransformFn<AgotFcDeck, string> = deck => {
+  protected getDeckAgendaImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
     const card = this.data.getCard(deck.agenda);
     return card?.image_url;
   };
 
   private dataLoad = resource({
-    loader: () => this.data.load()
+    loader: () => this.data.load(),
   });
 
   protected loading = this.dataLoad.isLoading;

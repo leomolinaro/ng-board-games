@@ -1,53 +1,62 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrAbility } from "../../../ability/wotr-ability";
+import { inject, Injectable } from '@angular/core';
+import { WotrAbility } from '../../../ability/wotr-ability';
 import {
   WotrActionDieChoiceModifier,
-  WotrActionDieModifiers
-} from "../../../action-die/wotr-action-die-modifiers";
-import { attack, WotrCombatRoll } from "../../../battle/wotr-battle-actions";
-import { WotrCombatFront, WotrCombatRound } from "../../../battle/wotr-battle-models";
-import { WotrBattleModifiers } from "../../../battle/wotr-battle-modifiers";
-import { WotrAction } from "../../../commons/wotr-action-models";
+  WotrActionDieModifiers,
+} from '../../../action-die/wotr-action-die-modifiers';
+import { attack, WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+import {
+  WotrCombatFront,
+  WotrCombatRound,
+} from '../../../battle/wotr-battle-models';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import { WotrAction } from '../../../commons/wotr-action-models';
 import {
   WotrAfterFellowshipDeclaration,
-  WotrFellowshipModifiers
-} from "../../../fellowship/wotr-fellowship-modifiers";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrUiChoice } from "../../../game/wotr-game-ui";
-import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
-import { assertAction } from "../../../game/wotr-story-models";
+  WotrFellowshipModifiers,
+} from '../../../fellowship/wotr-fellowship-modifiers';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrUiChoice } from '../../../game/wotr-game-ui';
+import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import { assertAction } from '../../../game/wotr-story-models';
 import {
   WotrAfterFellowshipReveal,
   WotrFellowshipProgressDieAddedToHuntBoxPrevented,
-  WotrHuntModifiers
-} from "../../../hunt/wotr-hunt-modifiers";
-import { activateNation, advanceNation } from "../../../nation/wotr-nation-actions";
-import { WotrNationHandler } from "../../../nation/wotr-nation-handler";
-import { WotrFreePeoplesPlayer } from "../../../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
-import { targetRegion, WotrRegionChoose } from "../../../region/wotr-region-actions";
-import { WotrRegionId } from "../../../region/wotr-region-models";
-import { WotrRegionQuery } from "../../../region/wotr-region-query";
+  WotrHuntModifiers,
+} from '../../../hunt/wotr-hunt-modifiers';
+import {
+  activateNation,
+  advanceNation,
+} from '../../../nation/wotr-nation-actions';
+import { WotrNationHandler } from '../../../nation/wotr-nation-handler';
+import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
+import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import {
+  targetRegion,
+  WotrRegionChoose,
+} from '../../../region/wotr-region-actions';
+import { WotrRegionId } from '../../../region/wotr-region-models';
+import { WotrRegionQuery } from '../../../region/wotr-region-query';
 import {
   WotrCanAttackRegionModifier,
   WotrCanMoveIntoRegionModifier,
-  WotrUnitModifiers
-} from "../../../unit/wotr-unit-modifiers";
-import { WotrUnitRules } from "../../../unit/wotr-unit-rules";
-import { WotrUnitUtils } from "../../../unit/wotr-unit-utils";
+  WotrUnitModifiers,
+} from '../../../unit/wotr-unit-modifiers';
+import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
+import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
 import {
   discardCardFromTableById,
   discardCardIds,
-  playCardOnTableId
-} from "../../wotr-card-actions";
-import { WotrCardHandler } from "../../wotr-card-handler";
+  playCardOnTableId,
+} from '../../wotr-card-actions';
+import { WotrCardHandler } from '../../wotr-card-handler';
 import {
   getCard,
   WotrCard,
   WotrCardId,
-  WotrFreePeoplesStrategyCardId
-} from "../../wotr-card-models";
-import { WotrEventCard } from "../wotr-cards";
+  WotrFreePeoplesStrategyCardId,
+} from '../../wotr-card-models';
+import { WotrEventCard } from '../wotr-cards';
 
 @Injectable()
 export class WotrFreePeoplesStrategyCards {
@@ -71,35 +80,45 @@ export class WotrFreePeoplesStrategyCards {
       // Play on the table if Aragorn is with a Free Peoples Army in a region outside of a Free Peoples Nation.
       // While this card is in play, Action dice used to move the Fellowship are not added to the Hunt Box.
       // You must discard this card from the table as soon as the Fellowship is declared or revealed.
-      case "fpstr01":
+      case 'fpstr01':
         return {
           canBePlayed: () => {
-            const aragorn = this.q.character("aragorn");
+            const aragorn = this.q.character('aragorn');
             if (!aragorn.isInPlay()) return false;
             const aragornRegion = aragorn.region();
             if (!aragornRegion) return false;
             const region = this.q.region(aragornRegion.id);
-            if (!region.hasArmy("free-peoples")) return false;
-            if (region.isFront("free-peoples")) return false;
+            if (!region.hasArmy('free-peoples')) return false;
+            if (region.isFront('free-peoples')) return false;
             return true;
           },
-          play: async ui => [playCardOnTableId("fpstr01")],
+          play: async (ui) => [playCardOnTableId('fpstr01')],
           onTableAbilities: () => {
             const huntBoxPreventedAbility: WotrAbility<WotrFellowshipProgressDieAddedToHuntBoxPrevented> =
               {
-                modifier: this.huntModifiers.fellowshipProgressDieAddedToHuntBoxPrevented,
-                handler: async () => true
+                modifier:
+                  this.huntModifiers
+                    .fellowshipProgressDieAddedToHuntBoxPrevented,
+                handler: async () => true,
               };
-            const discardByDeclarationAbility: WotrAbility<WotrAfterFellowshipDeclaration> = {
-              modifier: this.fellowshipModifiers.afterDeclaration,
-              handler: async params => this.cardHandler.discardCardFromTableEffect("fpstr01")
-            };
-            const discardByRevealAbility: WotrAbility<WotrAfterFellowshipReveal> = {
-              modifier: this.huntModifiers.afterFellowshipReveal,
-              handler: async params => this.cardHandler.discardCardFromTableEffect("fpstr01")
-            };
-            return [huntBoxPreventedAbility, discardByDeclarationAbility, discardByRevealAbility];
-          }
+            const discardByDeclarationAbility: WotrAbility<WotrAfterFellowshipDeclaration> =
+              {
+                modifier: this.fellowshipModifiers.afterDeclaration,
+                handler: async (params) =>
+                  this.cardHandler.discardCardFromTableEffect('fpstr01'),
+              };
+            const discardByRevealAbility: WotrAbility<WotrAfterFellowshipReveal> =
+              {
+                modifier: this.huntModifiers.afterFellowshipReveal,
+                handler: async (params) =>
+                  this.cardHandler.discardCardFromTableEffect('fpstr01'),
+              };
+            return [
+              huntBoxPreventedAbility,
+              discardByDeclarationAbility,
+              discardByRevealAbility,
+            ];
+          },
         };
       // A Power too Great
       // Play on the table.
@@ -107,23 +126,30 @@ export class WotrFreePeoplesStrategyCards {
       // While this card is in play, the Shadow player cannot move an Army into or attack (either in a field battle or in a siege) Lórien, Rivendell or The Grey Havens.
       // The Shadow player can force "A Power too Great" to be discarded by using any one Action die result and discarding one Army Event card and one Character Event card
       // from his hand.
-      case "fpstr02":
+      case 'fpstr02':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(playCardOnTableId("fpstr02"));
-            const advanceAction = await ui.nationUi.advanceNation("elves", "card-ability");
+            actions.push(playCardOnTableId('fpstr02'));
+            const advanceAction = await ui.nationUi.advanceNation(
+              'elves',
+              'card-ability',
+            );
             if (advanceAction) actions.push(advanceAction);
             return actions;
           },
           onTableAbilities: () => {
-            const regions: WotrRegionId[] = ["lorien", "rivendell", "grey-havens"];
+            const regions: WotrRegionId[] = [
+              'lorien',
+              'rivendell',
+              'grey-havens',
+            ];
             return [
               this.cannotMoveIntoRegionAbility(regions),
               this.cannotAttackRegionAbility(regions),
-              this.discardTableCardAbility("fpstr02")
+              this.discardTableCardAbility('fpstr02'),
             ];
-          }
+          },
         };
       // The Power of Tom Bombadil
       // Play on the table.
@@ -131,484 +157,664 @@ export class WotrFreePeoplesStrategyCards {
       // While this card is in play, the Shadow player cannot move an Army into or attack The Old Forest, The Shire or Buckland.
       // The Shadow player can force 'The Power of Tom Bombadil" to be discarded by using any one Action die result and discarding one Army Event card and one Character
       // Event card from his hand.
-      case "fpstr03":
+      case 'fpstr03':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(playCardOnTableId("fpstr03"));
-            this.cardHandler.playCardOnTable("fpstr03", "free-peoples");
-            const advanceAction = await ui.nationUi.advanceNation("north", "card-ability");
+            actions.push(playCardOnTableId('fpstr03'));
+            this.cardHandler.playCardOnTable('fpstr03', 'free-peoples');
+            const advanceAction = await ui.nationUi.advanceNation(
+              'north',
+              'card-ability',
+            );
             if (advanceAction) actions.push(advanceAction);
             return actions;
           },
           onTableAbilities: () => {
-            const regions: WotrRegionId[] = ["old-forest", "the-shire", "buckland"];
+            const regions: WotrRegionId[] = [
+              'old-forest',
+              'the-shire',
+              'buckland',
+            ];
             return [
               this.cannotMoveIntoRegionAbility(regions),
               this.cannotAttackRegionAbility(regions),
-              this.discardTableCardAbility("fpstr03")
+              this.discardTableCardAbility('fpstr03'),
             ];
-          }
+          },
         };
       // Book of Mazarbul
       // Move any or all Companions who are not in the Fellowship.
       // Then, if a Companion is in Erebor or Ered Luin, activate the Dwarven Nation and move it directly to the "At War" step.
-      case "fpstr04":
+      case 'fpstr04':
         return {
-          play: async ui => ui.characterUi.moveCompanions(),
-          effect: async params => {
+          play: async (ui) => ui.characterUi.moveCompanions(),
+          effect: async (params) => {
             if (
-              this.q.region("erebor").hasCompanions() ||
-              this.q.region("ered-luin").hasCompanions()
+              this.q.region('erebor').hasCompanions() ||
+              this.q.region('ered-luin').hasCompanions()
             ) {
               if (!this.q.dwarves.isActive())
-                this.nationHandler.activateNationEffect("dwarves", "card-ability");
+                this.nationHandler.activateNationEffect(
+                  'dwarves',
+                  'card-ability',
+                );
               if (!this.q.dwarves.isAtWar())
-                this.nationHandler.advanceAtWar("dwarves", "card-ability");
+                this.nationHandler.advanceAtWar('dwarves', 'card-ability');
             }
-          }
+          },
         };
       // The Spirit of Mordor
       // Choose a Shadow Army anywhere on the board that is composed of Army units from at least two different Shadow Nations.
       // Roll five dice and score one hit against this Army for each result of 5+.
-      case "fpstr05":
+      case 'fpstr05':
         return {
-          play: async ui => {
-            const regions = this.q.regions().filter(r => {
-              const shadowArmy = r.army("shadow");
+          play: async (ui) => {
+            const regions = this.q.regions().filter((r) => {
+              const shadowArmy = r.army('shadow');
               if (!shadowArmy) return false;
               return this.unitUtils.hasArmyUnitsOfDifferentNations(shadowArmy);
             });
             if (!regions.length) return [];
             const regionId = await ui.askRegion(
-              "Choose a region with a Shadow Army of different nations",
-              regions.map(r => r.id())
+              'Choose a region with a Shadow Army of different nations',
+              regions.map((r) => r.id()),
             );
             const actions: WotrAction[] = [];
             actions.push(targetRegion(regionId));
-            const combatRoll = await ui.battleUi.rollCombatDice(5, "free-peoples");
+            const combatRoll = await ui.battleUi.rollCombatDice(
+              5,
+              'free-peoples',
+            );
             actions.push(combatRoll);
             return actions;
           },
-          effect: async params => {
-            const chooseRegion = assertAction<WotrRegionChoose>(params.story, "region-choose");
-            const diceRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
-            const nHits = diceRoll.dice.filter(r => r >= 5).length;
-            const shadowArmy = this.q.region(chooseRegion.region).army("shadow")!;
+          effect: async (params) => {
+            const chooseRegion = assertAction<WotrRegionChoose>(
+              params.story,
+              'region-choose',
+            );
+            const diceRoll = assertAction<WotrCombatRoll>(
+              params.story,
+              'combat-roll',
+            );
+            const nHits = diceRoll.dice.filter((r) => r >= 5).length;
+            const shadowArmy = this.q
+              .region(chooseRegion.region)
+              .army('shadow')!;
             const shadowHitPoints = this.unitUtils.nHits(shadowArmy);
             if (nHits >= shadowHitPoints) {
-              await this.shadow.eliminateArmy(chooseRegion.region, params.cardId);
+              await this.shadow.eliminateArmy(
+                chooseRegion.region,
+                params.cardId,
+              );
             } else {
-              await this.shadow.chooseCasualties(nHits, chooseRegion.region, params.cardId);
+              await this.shadow.chooseCasualties(
+                nHits,
+                chooseRegion.region,
+                params.cardId,
+              );
             }
-          }
+          },
         };
       // Faramir's Rangers
       // Choose a Shadow Army in Osgiliath or South Ithilien or North Ithilien.
       // Roll three dice and score one hit against this Army for each result of 5+.
       // Then, if there is a Free Peoples Army in Osgiliath, recruit one Gondor unit (Regular or Elite) and one Gondor Leader there.
-      case "fpstr06":
+      case 'fpstr06':
         return {
-          play: async ui => {
+          play: async (ui) => {
             let regions = [
-              this.q.region("osgiliath"),
-              this.q.region("south-ithilien"),
-              this.q.region("north-ithilien")
+              this.q.region('osgiliath'),
+              this.q.region('south-ithilien'),
+              this.q.region('north-ithilien'),
             ];
-            regions = regions.filter(r => r.hasArmy("shadow"));
+            regions = regions.filter((r) => r.hasArmy('shadow'));
             if (!regions.length) return [];
             const regionId = await ui.askRegion(
-              "Choose a region with a Shadow Army",
-              regions.map(r => r.id())
+              'Choose a region with a Shadow Army',
+              regions.map((r) => r.id()),
             );
             const actions: WotrAction[] = [];
             actions.push(targetRegion(regionId));
-            const combatRoll = await ui.battleUi.rollCombatDice(3, "free-peoples");
+            const combatRoll = await ui.battleUi.rollCombatDice(
+              3,
+              'free-peoples',
+            );
             actions.push(combatRoll);
             return actions;
           },
-          effect: async params => {
-            const chooseRegion = assertAction<WotrRegionChoose>(params.story, "region-choose");
-            const diceRoll = assertAction<WotrCombatRoll>(params.story, "combat-roll");
-            const nHits = diceRoll.dice.filter(r => r >= 5).length;
-            const shadowArmy = this.q.region(chooseRegion.region).army("shadow")!;
+          effect: async (params) => {
+            const chooseRegion = assertAction<WotrRegionChoose>(
+              params.story,
+              'region-choose',
+            );
+            const diceRoll = assertAction<WotrCombatRoll>(
+              params.story,
+              'combat-roll',
+            );
+            const nHits = diceRoll.dice.filter((r) => r >= 5).length;
+            const shadowArmy = this.q
+              .region(chooseRegion.region)
+              .army('shadow')!;
             const shadowHitPoints = this.unitUtils.nHits(shadowArmy);
             if (nHits >= shadowHitPoints) {
-              await this.shadow.eliminateArmy(chooseRegion.region, params.cardId);
+              await this.shadow.eliminateArmy(
+                chooseRegion.region,
+                params.cardId,
+              );
             } else {
-              await this.shadow.chooseCasualties(nHits, chooseRegion.region, params.cardId);
+              await this.shadow.chooseCasualties(
+                nHits,
+                chooseRegion.region,
+                params.cardId,
+              );
             }
-            if (this.q.region("osgiliath").hasArmy("free-peoples")) {
+            if (this.q.region('osgiliath').hasArmy('free-peoples')) {
               this.freePeoples.faramirsRangersRecruit(params.cardId);
             }
-          }
+          },
         };
       // Fear! Fire! Foes!
       // Move any or all Companions who are not in the Fellowship.
       // Then, if a Companion is in The Shire or Bree, activate the North Nation and move it directly to the "At War" step.
-      case "fpstr07":
+      case 'fpstr07':
         return {
-          play: async ui => ui.characterUi.moveCompanions(),
-          effect: async params => {
+          play: async (ui) => ui.characterUi.moveCompanions(),
+          effect: async (params) => {
             if (
-              this.q.region("the-shire").hasCompanions() ||
-              this.q.region("bree").hasCompanions()
+              this.q.region('the-shire').hasCompanions() ||
+              this.q.region('bree').hasCompanions()
             ) {
               if (!this.q.north.isActive())
-                this.nationHandler.activateNationEffect("north", "card-ability");
-              if (!this.q.north.isAtWar()) this.nationHandler.advanceAtWar("north", "card-ability");
+                this.nationHandler.activateNationEffect(
+                  'north',
+                  'card-ability',
+                );
+              if (!this.q.north.isAtWar())
+                this.nationHandler.advanceAtWar('north', 'card-ability');
             }
-          }
+          },
         };
       // Wisdom of Elrond
       // Activate one Free Peoples Nation of your choice and advance that Nation one step on the Political Track.
-      case "fpstr08":
+      case 'fpstr08':
         return {
-          play: async ui => {
-            const nations = this.q.freePeoplesNations.filter(n => !n.isAtWar()).map(n => n.id());
+          play: async (ui) => {
+            const nations = this.q.freePeoplesNations
+              .filter((n) => !n.isAtWar())
+              .map((n) => n.id());
             if (!nations.length) return [];
-            const nationId = await ui.askNation("Choose a nation to activate and advance", nations);
+            const nationId = await ui.askNation(
+              'Choose a nation to activate and advance',
+              nations,
+            );
             const actions: WotrAction[] = [];
-            if (!this.q.nation(nationId).isActive()) actions.push(activateNation(nationId));
+            if (!this.q.nation(nationId).isActive())
+              actions.push(activateNation(nationId));
             actions.push(advanceNation(nationId));
             return actions;
-          }
+          },
         };
       // The Red Arrow
       // Play if the Gondor Nation is active.
       // Advance the Rohan Nation one step on the Political Track.
       // Then, recruit one Rohan unit (Regular or Elite) and one Rohan Leader in Edoras.
-      case "fpstr09":
+      case 'fpstr09':
         return {
           canBePlayed: () => this.q.gondor.isActive(),
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            const advanceAction = await ui.nationUi.advanceNation("rohan", "card-ability");
+            const advanceAction = await ui.nationUi.advanceNation(
+              'rohan',
+              'card-ability',
+            );
             if (advanceAction) actions.push(advanceAction);
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("edoras", "rohan")));
-            actions.push(...(await ui.unitUi.recruitLeaderByCard("edoras", "rohan")));
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'edoras',
+                'rohan',
+              )),
+            );
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard('edoras', 'rohan')),
+            );
             return actions;
-          }
+          },
         };
       // Help Unlooked For
       // Attack a Shadow Army besieging a Stronghold with a Free Peoples Army in an adjacent region.
       // For this entire battle, the Shadow player rolls one die less during the Combat roll
       // for each Free Peoples unit in the besieged Stronghold (to a minimum of one).
-      case "fpstr10":
+      case 'fpstr10':
         return {
           canBePlayed: () => true,
-          play: async ui => {
+          play: async (ui) => {
             const candidateRegions: WotrRegionId[] = [];
             for (const stronghold of this.q.strongholdRegions()) {
-              if (!stronghold.isBesiegedBy("shadow")) continue;
+              if (!stronghold.isBesiegedBy('shadow')) continue;
               for (const region of stronghold.adjacentRegions()) {
-                if (region.hasArmy("free-peoples")) {
+                if (region.hasArmy('free-peoples')) {
                   candidateRegions.push(region.id());
                 }
               }
             }
             const attackingRegion = await ui.askRegion(
-              "Choose a region with an army adjacent to a besieged stronghold",
-              candidateRegions
+              'Choose a region with an army adjacent to a besieged stronghold',
+              candidateRegions,
             );
             const candidateStrongholds = this.q
               .region(attackingRegion)
               .adjacentRegions()
-              .filter(r => r.isBesiegedBy("shadow"));
+              .filter((r) => r.isBesiegedBy('shadow'));
             const strongholdRegion = await ui.askRegion(
-              "Choose a besieged stronghold to attack",
-              candidateStrongholds.map(r => r.id())
+              'Choose a besieged stronghold to attack',
+              candidateStrongholds.map((r) => r.id()),
             );
-            const attackingUnits = await ui.askRegionUnits("Select units to attack", {
-              type: "attack",
-              regionIds: [attackingRegion],
-              requiredUnits: [],
-              frontId: "free-peoples"
-            });
-            const attackingArmy = this.q.region(attackingRegion).army("free-peoples")!;
-            const retroguard = this.unitUtils.splitUnits(attackingArmy, attackingUnits);
+            const attackingUnits = await ui.askRegionUnits(
+              'Select units to attack',
+              {
+                type: 'attack',
+                regionIds: [attackingRegion],
+                requiredUnits: [],
+                frontId: 'free-peoples',
+              },
+            );
+            const attackingArmy = this.q
+              .region(attackingRegion)
+              .army('free-peoples')!;
+            const retroguard = this.unitUtils.splitUnits(
+              attackingArmy,
+              attackingUnits,
+            );
             return [attack(attackingRegion, strongholdRegion, retroguard)];
           },
           onBattleAbilities: () => {
             return [
               {
                 modifier: this.battleModifiers.cardLessCombatDiceModifier,
-                handler: (combatFront: WotrCombatFront, combatRound: WotrCombatRound) => {
-                  if (combatFront.frontId !== "shadow") return 0;
+                handler: (
+                  combatFront: WotrCombatFront,
+                  combatRound: WotrCombatRound,
+                ) => {
+                  if (combatFront.frontId !== 'shadow') return 0;
                   const besiegedStronghold = combatRound.action.toRegion;
-                  const besiegedArmy = this.q.region(besiegedStronghold).army("free-peoples");
+                  const besiegedArmy = this.q
+                    .region(besiegedStronghold)
+                    .army('free-peoples');
                   if (!besiegedArmy)
-                    throw new Error("Besieged army not found in besieged stronghold");
-                  const nBesiegedUnits = this.unitRules.getArmyUnitCount(besiegedArmy);
+                    throw new Error(
+                      'Besieged army not found in besieged stronghold',
+                    );
+                  const nBesiegedUnits =
+                    this.unitRules.getArmyUnitCount(besiegedArmy);
                   return nBesiegedUnits;
-                }
-              }
+                },
+              },
             ];
-          }
+          },
         };
       // Paths of the Woses
       // Play if the Rohan Nation is "At War."
       // Move a Free Peoples Army from any one Rohan region (including a Stronghold under siege) directly to Minas Tirith.
       // If the Shadow player controls or is besieging Minas Tirith, move the Army to a region adjacent to Minas Tirith instead. The destination region must be free for the
       // purposes of army movement.
-      case "fpstr11":
+      case 'fpstr11':
         return {
           canBePlayed: () => this.q.rohan.isAtWar(),
-          play: async ui => {
+          play: async (ui) => {
             const fromRegions = this.q
               .regions()
-              .filter(r => r.isNation("rohan") && r.hasArmy("free-peoples"));
+              .filter((r) => r.isNation('rohan') && r.hasArmy('free-peoples'));
             if (!fromRegions.length) return [];
-            const minasTirith = this.q.region("minas-tirith");
+            const minasTirith = this.q.region('minas-tirith');
             const toRegions: WotrRegionQuery[] = [];
-            if (minasTirith.isControlledBy("shadow") || minasTirith.isUnderSiege("free-peoples")) {
+            if (
+              minasTirith.isControlledBy('shadow') ||
+              minasTirith.isUnderSiege('free-peoples')
+            ) {
               toRegions.push(
                 ...minasTirith
                   .adjacentRegions()
-                  .filter(r => r.isFreeForArmyMovement("free-peoples"))
+                  .filter((r) => r.isFreeForArmyMovement('free-peoples')),
               );
             } else {
               toRegions.push(minasTirith);
             }
             if (!toRegions.length) return [];
-            const movingUnits = await ui.askRegionUnits("Choose an army to move", {
-              type: "moveArmy",
-              regionIds: fromRegions.map(r => r.id()),
-              doneMovements: [],
-              required: true,
-              retroguard: null,
-              requiredUnits: []
-            });
-            const toRegion = await ui.askRegion(
-              "Choose a region to move the army to",
-              toRegions.map(r => r.id())
+            const movingUnits = await ui.askRegionUnits(
+              'Choose an army to move',
+              {
+                type: 'moveArmy',
+                regionIds: fromRegions.map((r) => r.id()),
+                doneMovements: [],
+                required: true,
+                retroguard: null,
+                requiredUnits: [],
+              },
             );
-            return ui.unitUi.moveThisArmyTo(movingUnits, "free-peoples", toRegion);
-          }
+            const toRegion = await ui.askRegion(
+              'Choose a region to move the army to',
+              toRegions.map((r) => r.id()),
+            );
+            return ui.unitUi.moveThisArmyTo(
+              movingUnits,
+              'free-peoples',
+              toRegion,
+            );
+          },
         };
       // Through a Day and a Night
       // Play on a Free Peoples Army containing a Companion.
       // Move the Army containing the Companion(s) up to two regions. The regions must be free for the purposes of Army movement, and no Free Peoples units may be
       // picked up or dropped off along the way (other than, possibly, splitting the Army initially).
-      case "fpstr12":
+      case 'fpstr12':
         return {
-          canBePlayed: () => this.q.regions().some(r => this.isThroughDayNightRegion(r)),
-          play: async ui => {
-            const regions = this.q.regions().filter(r => this.isThroughDayNightRegion(r));
-            const units = await ui.askRegionUnits("Choose an army to move", {
-              type: "moveArmy",
-              regionIds: regions.map(r => r.id()),
+          canBePlayed: () =>
+            this.q.regions().some((r) => this.isThroughDayNightRegion(r)),
+          play: async (ui) => {
+            const regions = this.q
+              .regions()
+              .filter((r) => this.isThroughDayNightRegion(r));
+            const units = await ui.askRegionUnits('Choose an army to move', {
+              type: 'moveArmy',
+              regionIds: regions.map((r) => r.id()),
               doneMovements: [],
               required: true,
               retroguard: null,
-              requiredUnits: ["anyCharacter"]
+              requiredUnits: ['anyCharacter'],
             });
             const fromRegion = units.regionId;
             const targetRegions = this.q
               .region(fromRegion)
-              .reachableRegions(2, region => region.isFreeForArmyMovement("free-peoples"));
+              .reachableRegions(2, (region) =>
+                region.isFreeForArmyMovement('free-peoples'),
+              );
             if (!targetRegions.length) {
-              await ui.askContinue("No valid target regions available for movement");
+              await ui.askContinue(
+                'No valid target regions available for movement',
+              );
               return [];
             }
             const toRegionId = await ui.askRegion(
-              "Select a region to move the army to",
-              targetRegions.map(region => region.id())
+              'Select a region to move the army to',
+              targetRegions.map((region) => region.id()),
             );
-            return ui.unitUi.moveThisArmyTo(units, "free-peoples", toRegionId);
-          }
+            return ui.unitUi.moveThisArmyTo(units, 'free-peoples', toRegionId);
+          },
         };
       // Cirdan's Ships
       // Play if the Elves are "At War."
       // Recruit two Elven units (Regular or Elite) in a coastal region containing a Free Peoples Army.
-      case "fpstr13":
+      case 'fpstr13':
         return {
           canBePlayed: () => this.q.elves.isAtWar(),
-          play: async ui => {
+          play: async (ui) => {
             const coastalRegions = this.q
               .regions()
-              .filter(r => r.isCoastal() && r.hasArmy("free-peoples"));
+              .filter((r) => r.isCoastal() && r.hasArmy('free-peoples'));
             if (!coastalRegions.length) return [];
             const regionId = await ui.askRegion(
-              "Choose a region to recruit in",
-              coastalRegions.map(r => r.id())
+              'Choose a region to recruit in',
+              coastalRegions.map((r) => r.id()),
             );
-            return ui.unitUi.recruitRegularsOrElitesByCard(regionId, "elves", 2);
-          }
+            return ui.unitUi.recruitRegularsOrElitesByCard(
+              regionId,
+              'elves',
+              2,
+            );
+          },
         };
       // Guards of the Citadel
       // Recruit one Gondor unit (Regular or Elite) and one Gondor Leader in Minas Tirith.
-      case "fpstr14":
+      case 'fpstr14':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await ui.unitUi.recruitRegularsOrElitesByCard("minas-tirith", "gondor"))
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'minas-tirith',
+                'gondor',
+              )),
             );
-            actions.push(...(await ui.unitUi.recruitLeaderByCard("minas-tirith", "gondor")));
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard(
+                'minas-tirith',
+                'gondor',
+              )),
+            );
             return actions;
-          }
+          },
         };
       // Celeborn's Galadhrim
       // Recruit one Elven unit (Regular or Elite) in Lórien.
       // Then, draw one Strategy Event card.
-      case "fpstr15":
+      case 'fpstr15':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("lorien", "elves")));
-            const drawA = await ui.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'lorien',
+                'elves',
+              )),
+            );
+            const drawA =
+              await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawA) actions.push(drawA);
             return actions;
-          }
+          },
         };
       // Riders of Théoden
       // Recruit one Rohan unit (Regular or Elite) and one Rohan Leader either in Edoras or in a Rohan region containing a Companion.
-      case "fpstr16":
+      case 'fpstr16':
         return {
-          play: async ui => {
-            const regions = this.q.regions().filter(r => {
-              if (r.id() !== "edoras" && !(r.isNation("rohan") && r.hasCompanions())) return false;
-              return r.isFreeForRecruitmentByCard("free-peoples");
+          play: async (ui) => {
+            const regions = this.q.regions().filter((r) => {
+              if (
+                r.id() !== 'edoras' &&
+                !(r.isNation('rohan') && r.hasCompanions())
+              )
+                return false;
+              return r.isFreeForRecruitmentByCard('free-peoples');
             });
             if (!regions.length) return [];
             const region = await ui.askRegion(
-              "Choose a region to recruit in",
-              regions.map(r => r.id())
+              'Choose a region to recruit in',
+              regions.map((r) => r.id()),
             );
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard(region, "rohan")));
-            actions.push(...(await ui.unitUi.recruitLeaderByCard(region, "rohan")));
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                region,
+                'rohan',
+              )),
+            );
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard(region, 'rohan')),
+            );
             return actions;
-          }
+          },
         };
       // Grimbeorn the Old, Son of Beorn
       // Recruit one North unit (Regular or Elite) and one North Leader in Carrock.
-      case "fpstr17":
+      case 'fpstr17':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("carrock", "north")));
-            actions.push(...(await ui.unitUi.recruitLeaderByCard("carrock", "north")));
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'carrock',
+                'north',
+              )),
+            );
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard('carrock', 'north')),
+            );
             return actions;
-          }
+          },
         };
       // Imrahil of Dol Amroth
       // Recruit one Gondor unit (Regular or Elite) and one Gondor Leader in Dol Amroth.
-      case "fpstr18":
+      case 'fpstr18':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await ui.unitUi.recruitRegularsOrElitesByCard("dol-amroth", "gondor"))
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'dol-amroth',
+                'gondor',
+              )),
             );
-            actions.push(...(await ui.unitUi.recruitLeaderByCard("dol-amroth", "gondor")));
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard('dol-amroth', 'gondor')),
+            );
             return actions;
-          }
+          },
         };
       // King Brand's Men
       // Recruit two North Regular units in Dale.
       // Then, draw one Strategy Event card.
-      case "fpstr19":
+      case 'fpstr19':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            const recruitUnitAction1 = await ui.unitUi.recruitRegularByCard("dale", "north");
+            const recruitUnitAction1 = await ui.unitUi.recruitRegularByCard(
+              'dale',
+              'north',
+            );
             if (recruitUnitAction1) actions.push(recruitUnitAction1);
-            const recruitUnitAction2 = await ui.unitUi.recruitRegularByCard("dale", "north");
+            const recruitUnitAction2 = await ui.unitUi.recruitRegularByCard(
+              'dale',
+              'north',
+            );
             if (recruitUnitAction2) actions.push(recruitUnitAction2);
-            const drawAction = await ui.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
+            const drawAction =
+              await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
             return actions;
-          }
+          },
         };
       // Swords of Eriador
       // Recruit one North unit (Regular or Elite) in The Shire and one Dwarven unit (Regular or Elite) in Ered Luin.
       // Then, draw one Strategy Event card.
-      case "fpstr20":
+      case 'fpstr20':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("the-shire", "north")));
             actions.push(
-              ...(await ui.unitUi.recruitRegularsOrElitesByCard("ered-luin", "dwarves"))
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'the-shire',
+                'north',
+              )),
             );
-            const drawAction = await ui.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'ered-luin',
+                'dwarves',
+              )),
+            );
+            const drawAction =
+              await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
             return actions;
-          }
+          },
         };
       // Kindred of Glorfindel
       // Recruit one Elven unit (Regular or Elite) in Rivendell.
       // Then, draw one Strategy Event card.
-      case "fpstr21":
+      case 'fpstr21':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("rivendell", "elves")));
-            const drawAction = await ui.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'rivendell',
+                'elves',
+              )),
+            );
+            const drawAction =
+              await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
             return actions;
-          }
+          },
         };
       // Dain Ironfoot's Guard
       // Recruit one Dwarven unit (Regular or Elite) and one Dwarven Leader in Erebor
-      case "fpstr22":
+      case 'fpstr22':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard("erebor", "dwarves")));
-            actions.push(...(await ui.unitUi.recruitLeaderByCard("erebor", "dwarves")));
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'erebor',
+                'dwarves',
+              )),
+            );
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard('erebor', 'dwarves')),
+            );
             return actions;
-          }
+          },
         };
       // Éomer, Son of Éomund
       // Recruit one Rohan unit (Regular or Elite) and one Rohan Leader in a free Rohan region containing a Settlement.
-      case "fpstr23":
+      case 'fpstr23':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const availableRegions = this.q.rohan
               .settlementRegions()
-              .filter(r => this.q.rohan.canRecruit(r.id))
-              .map(r => r.id);
+              .filter((r) => this.q.rohan.canRecruit(r.id))
+              .map((r) => r.id);
             if (!availableRegions.length) {
-              await ui.askContinue("No free Rohan region with a settlement");
+              await ui.askContinue('No free Rohan region with a settlement');
               return [];
             }
             const regionId = await ui.askRegion(
-              "Choose a region to recruit units",
-              availableRegions
+              'Choose a region to recruit units',
+              availableRegions,
             );
             const actions: WotrAction[] = [];
-            actions.push(...(await ui.unitUi.recruitRegularsOrElitesByCard(regionId, "rohan")));
-            actions.push(...(await ui.unitUi.recruitLeaderByCard(regionId, "rohan")));
+            actions.push(
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                regionId,
+                'rohan',
+              )),
+            );
+            actions.push(
+              ...(await ui.unitUi.recruitLeaderByCard(regionId, 'rohan')),
+            );
             return actions;
-          }
+          },
         };
       // Thranduil's Archers
       // Recruit one Elven unit (Regular or Elite) in Woodland Realm.
       // Then, draw one Strategy Event card.
-      case "fpstr24":
+      case 'fpstr24':
         return {
-          play: async ui => {
+          play: async (ui) => {
             const actions: WotrAction[] = [];
             actions.push(
-              ...(await ui.unitUi.recruitRegularsOrElitesByCard("woodland-realm", "elves"))
+              ...(await ui.unitUi.recruitRegularsOrElitesByCard(
+                'woodland-realm',
+                'elves',
+              )),
             );
-            const drawAction = await ui.cardDrawUi.drawStrategyEventCardByCard("free-peoples");
+            const drawAction =
+              await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
             return actions;
-          }
+          },
         };
       // KOME
       // Wisdom of Elrond
       // Either activate one Free Peoples Nation of your choice and advance that Nation one step on the Political Track,
       // or look at the Corruption tiles on a non-Corrupted Sovereign, then you may choose one
       // of them and return it to the Hunt Pool.
-      case "fpstr08km": // TODO KOME
+      case 'fpstr08km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // Riders of Théoden
       // If Théoden, Corrupted Rules, is in play, remove him from play.
@@ -617,10 +823,10 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Théoden,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr16km": // TODO KOME
+      case 'fpstr16km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // King Brand's Men
       // If Brand, Corrupted Ruler, is in play, remove him from play.
@@ -628,10 +834,10 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Brand,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr19km": // TODO KOME
+      case 'fpstr19km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // Dain Ironfoot's Guard
       // If Dáin, Corrupted Ruler, is in play, remove him from play.
@@ -639,10 +845,10 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Dáin,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr22km": // TODO KOME
+      case 'fpstr22km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // Thranduil's Archers
       // If Thranduil, Corrupted Ruler, is in play, remove him from play.
@@ -650,94 +856,105 @@ export class WotrFreePeoplesStrategyCards {
       // or randomly discard one hidden Corruption tile from Thranduil,
       // returning it to the Hunt Pool;
       // then, draw one Strategy Event card.
-      case "fpstr24km": // TODO KOME
+      case 'fpstr24km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // Evet at Your Service
       // Choose a non-Corrupted Sovereign.
       // Recruit one unit (Regular or Elite) of that Sovereign's Nation in the region with the Sovereign.
       // Then, if that Sovereign has one or more hidden Corruption tiles on him,
       // randomly discard one of them, returning it to the Hunt Pool.
-      case "fpstr25km": // TODO KOME
+      case 'fpstr25km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
       // Men of Little Villages
       // Recruit one Regular unit or Leader in each of four different Free Peoples Nations,
       // in a free region containing a Settlment.
-      case "fpstr26km": // TODO KOME
+      case 'fpstr26km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async ui => []
+          play: async (ui) => [],
         };
     }
   }
 
   private cannotMoveIntoRegionAbility(
-    regionIds: WotrRegionId[]
+    regionIds: WotrRegionId[],
   ): WotrAbility<WotrCanMoveIntoRegionModifier> {
     return {
       modifier: this.unitModifiers.canMoveIntoRegionModifier,
       handler: (regionId, frontId) => {
-        if (frontId !== "shadow") return true;
+        if (frontId !== 'shadow') return true;
         return !regionIds.includes(regionId);
-      }
+      },
     };
   }
 
   private cannotAttackRegionAbility(
-    regionIds: WotrRegionId[]
+    regionIds: WotrRegionId[],
   ): WotrAbility<WotrCanAttackRegionModifier> {
     return {
       modifier: this.unitModifiers.canAttackRegionModifier,
       handler: (regionId, frontId) => {
-        if (frontId !== "shadow") return true;
+        if (frontId !== 'shadow') return true;
         return !regionIds.includes(regionId);
-      }
+      },
     };
   }
 
-  private discardTableCardAbility(cardId: WotrCardId): WotrAbility<WotrActionDieChoiceModifier> {
+  private discardTableCardAbility(
+    cardId: WotrCardId,
+  ): WotrAbility<WotrActionDieChoiceModifier> {
     const card: WotrCard = getCard(cardId);
     return {
       modifier: this.actionDieModifiers.actionDieChoices,
       handler: ({ frontId }) => {
-        if (frontId !== "shadow") return [];
+        if (frontId !== 'shadow') return [];
         const choice: WotrUiChoice = {
           label: () => `Discard '${card.label}'`,
           isAvailable: () => {
-            if (!this.q.shadow.hasHandCardOfType("army")) return false;
-            if (!this.q.shadow.hasHandCardOfType("character")) return false;
+            if (!this.q.shadow.hasHandCardOfType('army')) return false;
+            if (!this.q.shadow.hasHandCardOfType('character')) return false;
             return true;
           },
           actions: async (params, ui) => {
-            const armyCard = await ui.askHandCard("Choose an Army Event card to discard", {
-              nCards: 1,
-              cards: this.q.shadow.handCardsOfType("army"),
-              frontId: "shadow",
-              message: "Select an Army Event card to discard"
-            });
-            this.cardHandler.discardCards([armyCard], "shadow");
-            const characterCard = await ui.askHandCard("Choose a Character Event card to discard", {
-              nCards: 1,
-              cards: this.q.shadow.handCardsOfType("character"),
-              frontId: "shadow",
-              message: "Select a Character Event card to discard"
-            });
-            this.cardHandler.discardCards([characterCard], "shadow");
-            return [discardCardIds(armyCard, characterCard), discardCardFromTableById(card.id)];
-          }
+            const armyCard = await ui.askHandCard(
+              'Choose an Army Event card to discard',
+              {
+                nCards: 1,
+                cards: this.q.shadow.handCardsOfType('army'),
+                frontId: 'shadow',
+                message: 'Select an Army Event card to discard',
+              },
+            );
+            this.cardHandler.discardCards([armyCard], 'shadow');
+            const characterCard = await ui.askHandCard(
+              'Choose a Character Event card to discard',
+              {
+                nCards: 1,
+                cards: this.q.shadow.handCardsOfType('character'),
+                frontId: 'shadow',
+                message: 'Select a Character Event card to discard',
+              },
+            );
+            this.cardHandler.discardCards([characterCard], 'shadow');
+            return [
+              discardCardIds(armyCard, characterCard),
+              discardCardFromTableById(card.id),
+            ];
+          },
         };
         return [choice];
-      }
+      },
     };
   }
 
   private isThroughDayNightRegion(region: WotrRegionQuery): boolean {
-    const fpArmy = region.army("free-peoples");
+    const fpArmy = region.army('free-peoples');
     return fpArmy ? this.unitUtils.hasCompanions(fpArmy) : false;
   }
 }

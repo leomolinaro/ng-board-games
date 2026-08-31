@@ -1,10 +1,10 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrCharacterRules } from "../character/wotr-character-rules";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrFellowshipStore } from "./wotr-fellowship-store";
+import { inject, Injectable } from '@angular/core';
+import { WotrCardId } from '../card/wotr-card-models';
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { WotrCharacterRules } from '../character/wotr-character-rules';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export interface WotrSeparateCompanionsOptions {
   extraMovements?: number;
@@ -30,36 +30,50 @@ export class WotrFellowshipRules {
   canChangeGuide(): boolean {
     const companions = this.fellowshipStore.companions();
     const maxLevel = this.characterRules.maxLevel(companions);
-    const maxLevelCompanions = companions.filter(c => this.q.character(c).level === maxLevel);
+    const maxLevelCompanions = companions.filter(
+      (c) => this.q.character(c).level === maxLevel,
+    );
     return maxLevelCompanions.length > 1;
   }
 
   validRegionsForDeclaration() {
     const startingRegion = this.regionStore.fellowshipRegion();
     const progress = this.fellowshipStore.progress();
-    const reachableRegions = this.regionStore.reachableRegions(startingRegion, progress);
+    const reachableRegions = this.regionStore.reachableRegions(
+      startingRegion,
+      progress,
+    );
     return reachableRegions;
   }
 
   companionSeparationTargetRegions(
     companions: WotrCompanionId[],
-    options?: WotrSeparateCompanionsOptions
+    options?: WotrSeparateCompanionsOptions,
   ) {
-    const totalMovement = this.companionSeparationTotalMovement(companions, options);
+    const totalMovement = this.companionSeparationTotalMovement(
+      companions,
+      options,
+    );
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     const targetRegions = this.regionStore.reachableRegions(
       fellowshipRegion,
       totalMovement,
       (region, distance) =>
-        this.characterRules.characterCanEnterRegion(region, "free-peoples", distance, options),
-      (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
+        this.characterRules.characterCanEnterRegion(
+          region,
+          'free-peoples',
+          distance,
+          options,
+        ),
+      (region, distance) =>
+        this.characterRules.companionCanLeaveRegion(region, distance),
     );
     return targetRegions;
   }
 
   private companionSeparationTotalMovement(
     companions: WotrCompanionId[],
-    options?: WotrSeparateCompanionsOptions
+    options?: WotrSeparateCompanionsOptions,
   ): number {
     if (options?.asLevel) return options.asLevel;
     const groupLevel = this.characterRules.characterGroupLevel(companions);

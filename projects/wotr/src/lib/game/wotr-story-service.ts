@@ -1,18 +1,18 @@
-import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService, getStoryId } from "@leobg/commons";
-import { Subject, firstValueFrom, from } from "rxjs";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrPlayerAi } from "../player/wotr-player-ai";
-import { WotrPlayerInfo } from "../player/wotr-player-info-models";
-import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
-import { WotrPlayerStoryService } from "../player/wotr-player-story-service";
-import { WotrPlayerUi } from "../player/wotr-player-ui";
-import { WotrRemoteService } from "../remote/wotr-remote";
-import { WotrGameStore } from "./wotr-game-store";
-import { WotrGameUi } from "./wotr-game-ui";
-import { WotrStory, WotrStoryDoc } from "./wotr-story-models";
+import { Injectable, inject } from '@angular/core';
+import { ABgGameService, BgAuthService, getStoryId } from '@leobg/commons';
+import { Subject, firstValueFrom, from } from 'rxjs';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrPlayerAi } from '../player/wotr-player-ai';
+import { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
+import { WotrPlayerStoryService } from '../player/wotr-player-story-service';
+import { WotrPlayerUi } from '../player/wotr-player-ui';
+import { WotrRemoteService } from '../remote/wotr-remote';
+import { WotrGameStore } from './wotr-game-store';
+import { WotrGameUi } from './wotr-game-ui';
+import { WotrStory, WotrStoryDoc } from './wotr-story-models';
 
 export interface WotrStoryTask {
   playerId: WotrFrontId;
@@ -60,7 +60,11 @@ export class WotrStoryService extends ABgGameService<
   protected override endTemporaryState() {
     this.store.endTemporaryState();
   }
-  protected override insertStoryDoc$(storyId: string, story: WotrStoryDoc, gameId: string) {
+  protected override insertStoryDoc$(
+    storyId: string,
+    story: WotrStoryDoc,
+    gameId: string,
+  ) {
     return this.remote.insertStory$(storyId, story, gameId);
   }
   protected override selectStoryDoc$(storyId: string, gameId: string) {
@@ -94,10 +98,10 @@ export class WotrStoryService extends ABgGameService<
 
   private async executeTask2(
     playerId: WotrFrontId,
-    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>,
   ): Promise<WotrStory> {
     await this.replayCall();
-    return super.executeTask(playerId, p => task(p));
+    return super.executeTask(playerId, (p) => task(p));
   }
 
   private async executeTasks2(tasks: WotrStoryTask[]): Promise<WotrStory[]> {
@@ -114,7 +118,7 @@ export class WotrStoryService extends ABgGameService<
       this.nReplayStories = 0;
       this.replayToLastStory = false;
     }
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       setTimeout(resolve, 1);
     });
     this.nReplayStories--;
@@ -125,12 +129,15 @@ export class WotrStoryService extends ABgGameService<
       this.nReplayStories = nReplayStories;
       this.$replayCall.next();
     } else if (nReplayStories < 0) {
-      throw new Error("Not implemented: negative replay stories");
+      throw new Error('Not implemented: negative replay stories');
     }
   }
 
   eraseLast() {
-    this.remote.deleteStory$(getStoryId(this.storyTime, "free-peoples"), this.getGameId());
+    this.remote.deleteStory$(
+      getStoryId(this.storyTime, 'free-peoples'),
+      this.getGameId(),
+    );
   }
 
   lastReplay() {
@@ -143,10 +150,14 @@ export class WotrStoryService extends ABgGameService<
   }
 
   async parallelStories(
-    getTask: (front: WotrFrontId) => (playerService: WotrPlayerStoryService) => Promise<WotrStory>
+    getTask: (
+      front: WotrFrontId,
+    ) => (playerService: WotrPlayerStoryService) => Promise<WotrStory>,
   ) {
     const stories = await this.executeTasks2(
-      this.frontStore.frontIds().map(front => ({ playerId: front, task: getTask(front) }))
+      this.frontStore
+        .frontIds()
+        .map((front) => ({ playerId: front, task: getTask(front) })),
     );
     let index = 0;
     const toReturn: Record<WotrFrontId, WotrStory> = {} as any;
@@ -160,7 +171,7 @@ export class WotrStoryService extends ABgGameService<
 
   async story(
     front: WotrFrontId,
-    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>
+    task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>,
   ) {
     const story = await this.executeTask2(front, task);
     await this.applyStory(story, front);

@@ -9,9 +9,9 @@ import {
   map,
   of,
   race,
-  tap
-} from "rxjs";
-import { BgAuthService, BgUser } from "../authentication/bg-auth.service";
+  tap,
+} from 'rxjs';
+import { BgAuthService, BgUser } from '../authentication/bg-auth.service';
 
 interface ABgPlayer<Id extends string> {
   id: Id;
@@ -44,11 +44,16 @@ export interface BgStoryTask<Pid extends string, St, PlSrv> {
 }
 
 export function unexpectedStory<St>(actualStoryDoc: St, expected: string) {
-  console.error("Unexpected story", actualStoryDoc, " Expected: ", expected);
-  return new Error("Unexpected story");
+  console.error('Unexpected story', actualStoryDoc, ' Expected: ', expected);
+  return new Error('Unexpected story');
 }
 
-export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid>, St, PlSrv> {
+export abstract class ABgGameService<
+  Pid extends string,
+  Pl extends BgPlayer<Pid>,
+  St,
+  PlSrv,
+> {
   constructor() {}
 
   protected abstract auth: BgAuthService;
@@ -78,11 +83,11 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   protected abstract insertStoryDoc$(
     storyId: string,
     storyDoc: BgStoryDoc<Pid, St>,
-    gameId: string
+    gameId: string,
   ): Observable<unknown>;
   protected abstract selectStoryDoc$(
     storyId: string,
-    gameId: string
+    gameId: string,
   ): Observable<BgStoryDoc<Pid, St> | undefined>;
 
   private isRemotePlayer(playerId: string) {
@@ -133,7 +138,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   private async getLocalStory<R extends St>(
     time: number,
     playerId: Pid,
-    task: () => Promise<R>
+    task: () => Promise<R>,
   ): Promise<R | null> {
     this.startTemporaryState();
     const story = await task();
@@ -145,26 +150,28 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   private async insertStory(story: St, time: number, playerId: Pid) {
     const storyDoc: BgStoryDoc<Pid, St> = { ...story, time, playerId };
     const storyId = getStoryId(storyDoc.time, playerId);
-    await firstValueFrom(this.insertStoryDoc$(storyId, storyDoc, this.getGameId()));
+    await firstValueFrom(
+      this.insertStoryDoc$(storyId, storyDoc, this.getGameId()),
+    );
     return storyDoc;
   }
 
   private getRemoteStory$<R extends St>(
     time: number,
-    playerId: Pid
+    playerId: Pid,
   ): Observable<BgStoryDoc<Pid, R>> {
     const storyId = getStoryId(time, playerId);
     return this.selectStoryDoc$(storyId, this.getGameId()).pipe(
-      filter(storyDoc => !!storyDoc),
-      map(story => story as BgStoryDoc<Pid, R>),
-      first()
+      filter((storyDoc) => !!storyDoc),
+      map((story) => story as BgStoryDoc<Pid, R>),
+      first(),
     );
   }
 
   private getLocalStoryWrap$<R extends St>(
     time: number,
     playerId: Pid,
-    task: (playerService: PlSrv) => Promise<R>
+    task: (playerService: PlSrv) => Promise<R>,
   ): Observable<R | null> {
     const playerService = this.getPlayerService(playerId);
     if (playerService) {
@@ -173,8 +180,8 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
         this.currentPlayerChange$().pipe(map(() => null)),
         this.cancelChange$().pipe(
           tap(() => this.endTemporaryState()),
-          map(() => null)
-        )
+          map(() => null),
+        ),
       );
     } else {
       return this.currentPlayerChange$().pipe(map(() => null));
@@ -184,7 +191,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
   private getStoryWrap$<R extends St>(
     time: number,
     playerId: Pid,
-    task: (playerService: PlSrv) => Promise<R>
+    task: (playerService: PlSrv) => Promise<R>,
   ): Observable<R> {
     if (this.isRemotePlayer(playerId)) {
       this.resetUi(playerId);
@@ -192,27 +199,27 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     } else {
       this.resetUi(playerId);
       return this.getLocalStoryWrap$(time, playerId, task).pipe(
-        expand(storyDoc => {
+        expand((storyDoc) => {
           if (storyDoc) return EMPTY;
           this.resetUi(playerId);
           return this.getLocalStoryWrap$(time, playerId, task);
         }),
         last(),
-        map(story => story!)
+        map((story) => story!),
       );
     }
   }
 
   protected executeTask<R extends St>(
     playerId: Pid,
-    task: (playerService: PlSrv) => Promise<R>
+    task: (playerService: PlSrv) => Promise<R>,
   ): Promise<R> {
-    return firstValueFrom(this.executeTask$(playerId, p => task(p)));
+    return firstValueFrom(this.executeTask$(playerId, (p) => task(p)));
   }
 
   private executeTask$<R extends St>(
     playerId: Pid,
-    task: (playerService: PlSrv) => Promise<R>
+    task: (playerService: PlSrv) => Promise<R>,
   ): Observable<R> {
     const time = this.storyTime + 1;
     this.autoRefreshCurrentPlayer(playerId);
@@ -227,10 +234,14 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
       }
       return of(storyDoc as R);
     }
-    return this.getStoryWrap$(time, playerId, task).pipe(tap(() => (this.storyTime = time)));
+    return this.getStoryWrap$(time, playerId, task).pipe(
+      tap(() => (this.storyTime = time)),
+    );
   }
 
-  protected async executeTasks(tasks: BgStoryTask<Pid, St, PlSrv>[]): Promise<St[]> {
+  protected async executeTasks(
+    tasks: BgStoryTask<Pid, St, PlSrv>[],
+  ): Promise<St[]> {
     const time = this.storyTime + 1;
 
     const storyDocByPlayer = new Map<Pid, St>();
@@ -266,7 +277,10 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 
     if (pastStoryDocByPlayer.size) {
       const next = pastStoryDocByPlayer.values().next();
-      throw unexpectedStory(next, `player be ${tasks.map(t => t.playerId).join(" or ")}`);
+      throw unexpectedStory(
+        next,
+        `player be ${tasks.map((t) => t.playerId).join(' or ')}`,
+      );
     }
 
     for (const aiTask of aiTasks) {
@@ -280,7 +294,7 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
     while (localTasks.length) {
       let playerId = this.getCurrentPlayerId();
       let task: BgStoryTask<Pid, St, PlSrv>;
-      const taskIndex = localTasks.findIndex(t => t.playerId === playerId);
+      const taskIndex = localTasks.findIndex((t) => t.playerId === playerId);
       if (taskIndex >= 0) {
         task = localTasks.splice(taskIndex, 1)[0];
       } else {
@@ -296,9 +310,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
           this.currentPlayerChange$().pipe(map(() => null)),
           this.cancelChange$().pipe(
             tap(() => this.endTemporaryState()),
-            map(() => null)
-          )
-        )
+            map(() => null),
+          ),
+        ),
       );
       if (story) {
         storyDocByPlayer.set(task.playerId, story);
@@ -309,7 +323,9 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 
     for (const remoteTask of remoteTasks) {
       this.resetUi(remoteTask.playerId);
-      const story = await firstValueFrom(this.getRemoteStory$(time, remoteTask.playerId));
+      const story = await firstValueFrom(
+        this.getRemoteStory$(time, remoteTask.playerId),
+      );
       storyDocByPlayer.set(remoteTask.playerId, story);
     }
 
@@ -327,5 +343,5 @@ export abstract class ABgGameService<Pid extends string, Pl extends BgPlayer<Pid
 export function getStoryId(time: number, playerId: string) {
   const timeString = time.toString();
   const zerosToAdd = 4 - timeString.length;
-  return `${"0".repeat(zerosToAdd)}${timeString}.${playerId}`;
+  return `${'0'.repeat(zerosToAdd)}${timeString}.${playerId}`;
 }

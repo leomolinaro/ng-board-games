@@ -1,15 +1,16 @@
-import { Component, OnChanges, input, output } from "@angular/core";
-import { SimpleChanges } from "@leobg/commons/utils";
-import { TuiIcon } from "@taiga-ui/core";
+import { Component, OnChanges, input, output } from '@angular/core';
+import { SimpleChanges } from '@leobg/commons/utils';
+import { TuiIcon } from '@taiga-ui/core';
 
 @Component({
-  selector: "brit-units-selector",
+  selector: 'brit-units-selector',
   imports: [TuiIcon],
   template: `
     <div class="brit-unit-selector-container">
       <img
         class="brit-nation-unit-image"
-        [src]="imageSource()" />
+        [src]="imageSource()"
+      />
       <div class="brit-units">
         <span class="brit-unit-number">{{ this.number() }}</span>
         <span class="brit-unit-fraction-sign">/</span>
@@ -19,24 +20,27 @@ import { TuiIcon } from "@taiga-ui/core";
         <button
           (click)="onIncrease()"
           [class.is-active]="enableIncrease"
-          [class.is-disabled]="!enableIncrease">
+          [class.is-disabled]="!enableIncrease"
+        >
           <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
           [class.is-active]="enableDecrease"
-          [class.is-disabled]="!enableDecrease">
+          [class.is-disabled]="!enableDecrease"
+        >
           <tui-icon icon="chevron-down" />
         </button>
       </div>
       <button
         class="brit-unit-confirm"
-        (click)="onConfirm()">
+        (click)="onConfirm()"
+      >
         <tui-icon icon="check" />
       </button>
     </div>
   `,
-  styleUrls: ["./brit-units-selector.scss"]
+  styleUrls: ['./brit-units-selector.scss'],
 })
 export class BritUnitsSelector implements OnChanges {
   readonly number = input.required<number>();

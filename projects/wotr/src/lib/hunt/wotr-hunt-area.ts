@@ -1,84 +1,98 @@
-import { Component, computed, inject, input, linkedSignal } from "@angular/core";
-import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { TuiButton, tuiButtonOptionsProvider } from "@taiga-ui/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrGameStore } from "../game/wotr-game-store";
-import { KomeCorruptionBoard } from "./kome-corruption-board";
-import { WotrHuntTileId } from "./wotr-hunt-models";
-import { WotrHuntState } from "./wotr-hunt-store";
+import {
+  Component,
+  computed,
+  inject,
+  input,
+  linkedSignal,
+} from '@angular/core';
+import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import { TuiButton, tuiButtonOptionsProvider } from '@taiga-ui/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrGameStore } from '../game/wotr-game-store';
+import { KomeCorruptionBoard } from './kome-corruption-board';
+import { WotrHuntTileId } from './wotr-hunt-models';
+import { WotrHuntState } from './wotr-hunt-store';
 
-export type HuntTabId = "pool" | "drawn" | "removed" | "kings-corruption";
+export type HuntTabId = 'pool' | 'drawn' | 'removed' | 'kings-corruption';
 
 @Component({
-  selector: "wotr-hunt-area",
+  selector: 'wotr-hunt-area',
   imports: [BgTransformPipe, KomeCorruptionBoard, TuiButton],
-  providers: [tuiButtonOptionsProvider({ appearance: "flat", size: "xs" })],
+  providers: [tuiButtonOptionsProvider({ appearance: 'flat', size: 'xs' })],
   template: `
     <header>
       @if (showPool()) {
         <button
           tuiButton
           [class.is-active]="activeTabId() === 'pool'"
-          (click)="activeTabId.set('pool')">
+          (click)="activeTabId.set('pool')"
+        >
           Pool
         </button>
       }
       <button
         tuiButton
         [class.is-active]="activeTabId() === 'drawn'"
-        (click)="activeTabId.set('drawn')">
+        (click)="activeTabId.set('drawn')"
+      >
         Drawn
       </button>
       <button
         tuiButton
         [class.is-active]="activeTabId() === 'removed'"
-        (click)="activeTabId.set('removed')">
+        (click)="activeTabId.set('removed')"
+      >
         Removed
       </button>
       @if (kome()) {
         <button
           tuiButton
           [class.is-active]="activeTabId() === 'kings-corruption'"
-          (click)="activeTabId.set('kings-corruption')">
+          (click)="activeTabId.set('kings-corruption')"
+        >
           Kings' Corruption
         </button>
       }
     </header>
     <main>
       @switch (activeTabId()) {
-        @case ("pool") {
+        @case ('pool') {
           <div class="tiles">
             @for (tile of hunt().huntPool; track $index) {
               <img
                 class="tile-image"
-                [src]="tile | bgTransform: tileImage" />
+                [src]="tile | bgTransform: tileImage"
+              />
             }
             @for (tile of hunt().huntReady; track $index) {
               <img
                 class="tile-image disabled"
-                [src]="tile | bgTransform: tileImage" />
+                [src]="tile | bgTransform: tileImage"
+              />
             }
           </div>
         }
-        @case ("drawn") {
+        @case ('drawn') {
           <div class="tiles">
             @for (tile of hunt().huntDrawn; track $index) {
               <img
                 class="tile-image"
-                [src]="tile | bgTransform: tileImage" />
+                [src]="tile | bgTransform: tileImage"
+              />
             }
           </div>
         }
-        @case ("removed") {
+        @case ('removed') {
           <div class="tiles">
             @for (tile of hunt().huntRemoved; track $index) {
               <img
                 class="tile-image"
-                [src]="tile | bgTransform: tileImage" />
+                [src]="tile | bgTransform: tileImage"
+              />
             }
           </div>
         }
-        @case ("kings-corruption") {
+        @case ('kings-corruption') {
           <kome-corruption-board></kome-corruption-board>
         }
       }
@@ -138,8 +152,8 @@ export type HuntTabId = "pool" | "drawn" | "removed" | "kings-corruption";
           }
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrHuntArea {
   protected assets = inject(WotrAssetsStore);
@@ -148,13 +162,17 @@ export class WotrHuntArea {
   hunt = input.required<WotrHuntState>();
   selectedHuntTabIndex = input<number | undefined>(undefined);
 
-  protected activeTabId = linkedSignal<HuntTabId>(() => (this.showPool() ? "pool" : "drawn"));
+  protected activeTabId = linkedSignal<HuntTabId>(() =>
+    this.showPool() ? 'pool' : 'drawn',
+  );
 
   protected kome = this.gameStore.kome;
   private visibleCorruptionTiles = this.gameStore.visibleCorruptionTiles;
 
-  protected showPool = computed(() => !this.kome() || this.visibleCorruptionTiles());
+  protected showPool = computed(
+    () => !this.kome() || this.visibleCorruptionTiles(),
+  );
 
-  protected tileImage: BgTransformFn<WotrHuntTileId, string> = huntTile =>
+  protected tileImage: BgTransformFn<WotrHuntTileId, string> = (huntTile) =>
     this.assets.huntTileImage(huntTile);
 }

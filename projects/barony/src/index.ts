@@ -1,1 +1,1 @@
-export * from "./lib/barony.routes";
+export * from './lib/barony.routes';

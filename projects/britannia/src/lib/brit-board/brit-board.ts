@@ -1,37 +1,51 @@
-import { Component, TrackByFunction, inject, input, output } from "@angular/core";
-import { BgMapZoomButtons } from "@leobg/commons";
-import { immutableUtil } from "@leobg/commons/utils";
-import { TuiSheetDialogService } from "@taiga-ui/addon-mobile";
-import { TuiIcon } from "@taiga-ui/core";
-import { PolymorpheusComponent } from "@taiga-ui/polymorpheus";
-import { Observable } from "rxjs";
-import { BritAreaId, BritNationId } from "../brit-components.models";
+import {
+  Component,
+  TrackByFunction,
+  inject,
+  input,
+  output,
+} from '@angular/core';
+import { BgMapZoomButtons } from '@leobg/commons';
+import { immutableUtil } from '@leobg/commons/utils';
+import { TuiSheetDialogService } from '@taiga-ui/addon-mobile';
+import { TuiIcon } from '@taiga-ui/core';
+import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { Observable } from 'rxjs';
+import { BritAreaId, BritNationId } from '../brit-components.models';
 import {
   BritAreaLeader,
   BritAreaState,
   BritAreaUnit,
   BritLog,
   BritNationState,
-  BritPlayer
-} from "../brit-game-state.models";
-import { BritMap } from "../brit-map/brit-map";
-import { BritPlayerComponent } from "../brit-player/brit-player-area";
-import { BritActionsComponent } from "./brit-actions-area";
-import { BritLogs } from "./brit-logs";
-import { BritNationCardSheet } from "./brit-nation-card-sheet";
-import { BritUnitsSelectorSheet } from "./brit-units-selector-sheet";
+  BritPlayer,
+} from '../brit-game-state.models';
+import { BritMap } from '../brit-map/brit-map';
+import { BritPlayerComponent } from '../brit-player/brit-player-area';
+import { BritActionsComponent } from './brit-actions-area';
+import { BritLogs } from './brit-logs';
+import { BritNationCardSheet } from './brit-nation-card-sheet';
+import { BritUnitsSelectorSheet } from './brit-units-selector-sheet';
 
 @Component({
-  selector: "brit-board",
-  templateUrl: "./brit-board.html",
-  styleUrls: ["./brit-board.scss"],
-  imports: [BritMap, BritActionsComponent, BritPlayerComponent, BgMapZoomButtons, BritLogs, TuiIcon]
+  selector: 'brit-board',
+  templateUrl: './brit-board.html',
+  styleUrls: ['./brit-board.scss'],
+  imports: [
+    BritMap,
+    BritActionsComponent,
+    BritPlayerComponent,
+    BgMapZoomButtons,
+    BritLogs,
+    TuiIcon,
+  ],
 })
 export class BritBoardComponent {
   private readonly sheets = inject(TuiSheetDialogService);
 
   readonly areaStates = input.required<Record<BritAreaId, BritAreaState>>();
-  readonly nationStates = input.required<Record<BritNationId, BritNationState>>();
+  readonly nationStates =
+    input.required<Record<BritNationId, BritNationState>>();
   readonly players = input.required<BritPlayer[]>();
   readonly logs = input.required<BritLog[]>();
   readonly turnPlayer = input<BritPlayer | null>(null);
@@ -87,14 +101,15 @@ export class BritBoardComponent {
   // }
   // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
 
-  private lastBottomSheet: "nation-card" | "unit-number-selection" | null = null;
+  private lastBottomSheet: 'nation-card' | 'unit-number-selection' | null =
+    null;
 
   onPlayerNationClick(nationId: BritNationId) {
     const nationState = this.nationStates()[nationId];
-    this.lastBottomSheet = "nation-card";
+    this.lastBottomSheet = 'nation-card';
     this.sheets
       .open<void>(new PolymorpheusComponent(BritNationCardSheet), {
-        data: [nationId, nationState]
+        data: [nationId, nationState],
       })
       .subscribe();
   }
@@ -103,24 +118,29 @@ export class BritBoardComponent {
     const selectedUnits = this.selectedUnits();
     if (selectedUnits) {
       const unitId = this.getUnitNodeId(unit);
-      const selectedIndex = selectedUnits.findIndex(u => this.getUnitNodeId(u) === unitId);
-      const selectedUnit = selectedIndex >= 0 ? selectedUnits[selectedIndex] : null;
+      const selectedIndex = selectedUnits.findIndex(
+        (u) => this.getUnitNodeId(u) === unitId,
+      );
+      const selectedUnit =
+        selectedIndex >= 0 ? selectedUnits[selectedIndex] : null;
       const newSelectedUnits =
         selectedIndex >= 0
           ? immutableUtil.listRemoveByIndex(selectedIndex, selectedUnits)
           : [...selectedUnits];
-      if (unit.type === "leader" || unit.quantity === 1) {
+      if (unit.type === 'leader' || unit.quantity === 1) {
         if (!selectedUnit) {
           newSelectedUnits.push(unit);
         }
         this.selectedUnitsChange.emit(newSelectedUnits);
       } else {
-        this.lastBottomSheet = "unit-number-selection";
+        this.lastBottomSheet = 'unit-number-selection';
         this.nSelectedUnits$(
           unit,
-          selectedUnit ? (selectedUnit as Exclude<BritAreaUnit, BritAreaLeader>).quantity : 1,
-          unit.quantity
-        ).subscribe(quantity => {
+          selectedUnit
+            ? (selectedUnit as Exclude<BritAreaUnit, BritAreaLeader>).quantity
+            : 1,
+          unit.quantity,
+        ).subscribe((quantity) => {
           if (quantity != null) {
             if (quantity > 0) {
               newSelectedUnits.push({ ...unit, quantity });
@@ -135,17 +155,22 @@ export class BritBoardComponent {
   }
 
   private getUnitNodeId(unit: BritAreaUnit) {
-    return unit.type === "leader" ? unit.leaderId : `${unit.nationId}-${unit.type}-${unit.areaId}`;
+    return unit.type === 'leader'
+      ? unit.leaderId
+      : `${unit.nationId}-${unit.type}-${unit.areaId}`;
   }
 
   private nSelectedUnits$(
     unit: BritAreaUnit,
     quantity: number,
-    maxQuantity: number
+    maxQuantity: number,
   ): Observable<number | undefined> {
-    this.lastBottomSheet = "unit-number-selection";
-    return this.sheets.open<number | undefined>(new PolymorpheusComponent(BritUnitsSelectorSheet), {
-      data: { unit, quantity, maxQuantity }
-    });
+    this.lastBottomSheet = 'unit-number-selection';
+    return this.sheets.open<number | undefined>(
+      new PolymorpheusComponent(BritUnitsSelectorSheet),
+      {
+        data: { unit, quantity, maxQuantity },
+      },
+    );
   }
 }

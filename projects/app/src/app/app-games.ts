@@ -1,9 +1,9 @@
 export const GAME_PATH = {
-  barony: "barony",
-  britannia: "britannia",
-  wort: "war-of-the-ring-2",
-  agotLcg2: "a-game-of-thrones-lcg-2",
-  talisman: "talisman"
+  barony: 'barony',
+  britannia: 'britannia',
+  wort: 'war-of-the-ring-2',
+  agotLcg2: 'a-game-of-thrones-lcg-2',
+  talisman: 'talisman',
 };
 
 export interface Game {
@@ -13,21 +13,29 @@ export interface Game {
 }
 
 export const GAMES: Game[] = [
-  { name: "Barony", routerLink: GAME_PATH.barony, imageSource: "assets/barony/game-image.jpg" },
   {
-    name: "Britannia",
+    name: 'Barony',
+    routerLink: GAME_PATH.barony,
+    imageSource: 'assets/barony/game-image.jpg',
+  },
+  {
+    name: 'Britannia',
     routerLink: GAME_PATH.britannia,
-    imageSource: "assets/britannia/game-image.jpg"
+    imageSource: 'assets/britannia/game-image.jpg',
   },
   {
-    name: "A Game of Thrones LCG 2.0",
+    name: 'A Game of Thrones LCG 2.0',
     routerLink: GAME_PATH.agotLcg2,
-    imageSource: "assets/agot/game-image.jpg"
+    imageSource: 'assets/agot/game-image.jpg',
   },
   {
-    name: "Talisman",
+    name: 'Talisman',
     routerLink: GAME_PATH.talisman,
-    imageSource: "assets/talisman/game-image.jpg"
+    imageSource: 'assets/talisman/game-image.jpg',
   },
-  { name: "War of the Ring", routerLink: GAME_PATH.wort, imageSource: "assets/wotr/game-image.png" }
+  {
+    name: 'War of the Ring',
+    routerLink: GAME_PATH.wort,
+    imageSource: 'assets/wotr/game-image.png',
+  },
 ];

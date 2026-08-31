@@ -6,7 +6,8 @@
     iconStart="settings"
     title="Settings"
     type="button"
-    (click)="openSettings()"></button>
+    (click)="openSettings()"
+  ></button>
 </header>
 <main class="dashboard">
   @for (dragon of store.dragons(); track dragon.id) {
@@ -14,11 +15,13 @@
     class="dragon"
     [class]="dragon.id"
     [dragon]="dragon"
-    (scaleDiscard)="discardScale(dragon.id)" />
+    (scaleDiscard)="discardScale(dragon.id)"
+  />
   }
   <div
     tuiCardLarge
-    class="logs">
+    class="logs"
+  >
     <header tuiHeader>
       <h1 tuiTitle>Logs</h1>
     </header>
@@ -27,7 +30,8 @@
       <div>
         <img
           [src]="log.tokenSource"
-          alt="token" />
+          alt="token"
+        />
         <span>{{ log.message }}</span>
       </div>
       }
@@ -35,7 +39,8 @@
   </div>
   <div
     tuiCardLarge
-    class="pool">
+    class="pool"
+  >
     <header tuiHeader>
       <h1 tuiTitle>Pool</h1>
       <span tuiAccessories>
@@ -45,7 +50,8 @@
           iconStart="coins"
           (click)="drawToken()"
           size="m"
-          title="Draw token">
+          title="Draw token"
+        >
           Draw token
         </button>
       </span>
@@ -62,5 +68,6 @@
     tuiIconButton
     iconStart="play"
     (click)="newRound()"
-    title="New round"></button>
+    title="New round"
+  ></button>
 </main>

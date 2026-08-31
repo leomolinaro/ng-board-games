@@ -1,9 +1,22 @@
-import { Component, booleanAttribute, computed, inject, input, model } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { TuiButton, TuiCheckbox, TuiInput, TuiLabel, TuiTextfield } from "@taiga-ui/core";
-import { TuiForm } from "@taiga-ui/layout";
-import { BgAuthService, BgUser } from "../../authentication";
-import { BgProtoPlayer, BgProtoPlayerType } from "../bg-proto-game-service";
+import {
+  Component,
+  booleanAttribute,
+  computed,
+  inject,
+  input,
+  model,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  TuiButton,
+  TuiCheckbox,
+  TuiInput,
+  TuiLabel,
+  TuiTextfield,
+} from '@taiga-ui/core';
+import { TuiForm } from '@taiga-ui/layout';
+import { BgAuthService, BgUser } from '../../authentication';
+import { BgProtoPlayer, BgProtoPlayerType } from '../bg-proto-game-service';
 
 interface PlayerType {
   type: BgProtoPlayerType;
@@ -12,8 +25,16 @@ interface PlayerType {
 }
 
 @Component({
-  selector: "bg-player-form",
-  imports: [FormsModule, TuiButton, TuiForm, TuiTextfield, TuiInput, TuiLabel, TuiCheckbox],
+  selector: 'bg-player-form',
+  imports: [
+    FormsModule,
+    TuiButton,
+    TuiForm,
+    TuiTextfield,
+    TuiInput,
+    TuiLabel,
+    TuiCheckbox,
+  ],
   template: `
     <div tuiForm>
       @let type = playerType();
@@ -21,9 +42,10 @@ interface PlayerType {
         tuiIconButton
         [disabled]="!(player().type === 'open' || isOwner() || isPlayer())"
         [iconStart]="type.icon"
-        (click)="setNextPlayerType()"></button>
+        (click)="setNextPlayerType()"
+      ></button>
       <span>{{ type.label }}</span>
-      @if (player().type === "user" || player().type === "ai") {
+      @if (player().type === 'user' || player().type === 'ai') {
         <tui-textfield>
           <label tuiLabel>Player name</label>
           @let editableName = editablePlayerName();
@@ -34,16 +56,18 @@ interface PlayerType {
             [disabled]="!editableName"
             autocomplete="off"
             [ngModel]="player().name"
-            (ngModelChange)="changeName($event)" />
+            (ngModelChange)="changeName($event)"
+          />
         </tui-textfield>
-        @if (onlineGame() && player().type === "user") {
+        @if (onlineGame() && player().type === 'user') {
           <label tuiLabel>
             <input
               tuiCheckbox
               type="checkbox"
               [disabled]="!isPlayer()"
               [ngModel]="player().ready"
-              (ngModelChange)="changeReady($event)" />
+              (ngModelChange)="changeReady($event)"
+            />
             Ready
           </label>
         } @else {
@@ -68,14 +92,18 @@ interface PlayerType {
         }
 
         --tui-background-accent-1: var(--bg-player-color);
-        --tui-background-accent-1-hover: color-mix(in srgb, var(--bg-player-color), white 15%);
+        --tui-background-accent-1-hover: color-mix(
+          in srgb,
+          var(--bg-player-color),
+          white 15%
+        );
 
         // tui-textfield {
         //   flex: 1;
         // }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BgPlayerForm {
   private authService = inject(BgAuthService);
@@ -88,24 +116,28 @@ export class BgPlayerForm {
   protected playerType = computed<PlayerType>(() => {
     const type = this.player().type;
     switch (type) {
-      case "closed":
-        return { type, icon: "circle-slash", label: "Closed" };
-      case "user":
-        return { type, icon: "circle-user-round", label: this.isPlayer() ? "Me" : "Player" };
-      case "ai":
-        return { type, icon: "bot", label: "Bot" };
-      case "open":
-        return { type, icon: "circle-question-mark", label: "Open" };
+      case 'closed':
+        return { type, icon: 'circle-slash', label: 'Closed' };
+      case 'user':
+        return {
+          type,
+          icon: 'circle-user-round',
+          label: this.isPlayer() ? 'Me' : 'Player',
+        };
+      case 'ai':
+        return { type, icon: 'bot', label: 'Bot' };
+      case 'open':
+        return { type, icon: 'circle-question-mark', label: 'Open' };
     }
   });
 
   protected editablePlayerName = computed(() => {
     const player = this.player();
-    return (player.type === "ai" && this.isOwner()) || this.isPlayer();
+    return (player.type === 'ai' && this.isOwner()) || this.isPlayer();
   });
 
   protected playerNameActive = (player: BgProtoPlayer) => {
-    return (player.type === "ai" && this.isOwner()) || this.isPlayer();
+    return (player.type === 'ai' && this.isOwner()) || this.isPlayer();
   };
 
   protected changeName(name: string) {
@@ -118,11 +150,11 @@ export class BgPlayerForm {
 
   protected setNextPlayerType() {
     const controllerPatch: { controller?: BgUser | null } = {};
-    const namePatch: { name?: string | "" } = {};
+    const namePatch: { name?: string | '' } = {};
     const readyPatch: { ready?: boolean } = {};
     const nextPlayerType = this.getNextPlayerType(this.player().type);
     switch (nextPlayerType) {
-      case "user": {
+      case 'user': {
         controllerPatch.controller = this.authService.getUser();
         namePatch.name = this.authService.getUser().displayName;
         if (!this.onlineGame()) {
@@ -130,21 +162,21 @@ export class BgPlayerForm {
         }
         break;
       }
-      case "closed": {
+      case 'closed': {
         controllerPatch.controller = null;
-        namePatch.name = "";
+        namePatch.name = '';
         readyPatch.ready = false;
         break;
       }
-      case "open": {
+      case 'open': {
         controllerPatch.controller = null;
-        namePatch.name = "";
+        namePatch.name = '';
         readyPatch.ready = false;
         break;
       }
-      case "ai": {
+      case 'ai': {
         controllerPatch.controller = null;
-        namePatch.name = "AI";
+        namePatch.name = 'AI';
         readyPatch.ready = true;
         break;
       }
@@ -154,32 +186,32 @@ export class BgPlayerForm {
       type: nextPlayerType,
       ...controllerPatch,
       ...namePatch,
-      ...readyPatch
+      ...readyPatch,
     });
   }
 
   private getNextPlayerType(currentType: BgProtoPlayerType): BgProtoPlayerType {
     if (this.isOwner()) {
       switch (currentType) {
-        case "closed":
-          return "user";
-        case "user":
-          return this.onlineGame() ? "open" : "ai";
-        case "open":
-          return "ai";
-        case "ai":
-          return "closed";
+        case 'closed':
+          return 'user';
+        case 'user':
+          return this.onlineGame() ? 'open' : 'ai';
+        case 'open':
+          return 'ai';
+        case 'ai':
+          return 'closed';
       }
     } else {
       switch (currentType) {
-        case "closed":
-          return "closed";
-        case "user":
-          return "open";
-        case "open":
-          return "user";
-        case "ai":
-          return "ai";
+        case 'closed':
+          return 'closed';
+        case 'user':
+          return 'open';
+        case 'open':
+          return 'user';
+        case 'ai':
+          return 'ai';
       }
     }
   }

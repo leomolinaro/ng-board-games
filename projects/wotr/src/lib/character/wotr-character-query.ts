@@ -1,21 +1,21 @@
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
+import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   KomeSovereign,
   KomeSovereignId,
   WotrCharacter,
-  WotrCharacterId
-} from "./wotr-character-models";
-import { WotrCharacterStore } from "./wotr-character-store";
+  WotrCharacterId,
+} from './wotr-character-models';
+import { WotrCharacterStore } from './wotr-character-store';
 
 export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   constructor(
     public readonly id: ID,
     protected characterStore: WotrCharacterStore,
     protected regionStore: WotrRegionStore,
-    protected fellowshipStore: WotrFellowshipStore
+    protected fellowshipStore: WotrFellowshipStore,
   ) {}
 
   data(): WotrCharacter {
@@ -42,7 +42,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     return this.data().leadership;
   }
 
-  get activationNation(): WotrNationId | "all" | undefined {
+  get activationNation(): WotrNationId | 'all' | undefined {
     return this.data().activationNation;
   }
 
@@ -51,11 +51,11 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   }
 
   isInPlay(): boolean {
-    return this.data().status === "inPlay";
+    return this.data().status === 'inPlay';
   }
 
   isEliminated(): boolean {
-    return this.data().status === "eliminated";
+    return this.data().status === 'eliminated';
   }
 
   isMinionForGandalfTheWhite(): boolean {
@@ -63,11 +63,11 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   }
 
   isAvailable(): boolean {
-    return this.data().status === "available";
+    return this.data().status === 'available';
   }
 
   isInFellowship(): boolean {
-    return this.data().status === "inFellowship";
+    return this.data().status === 'inFellowship';
   }
 
   isGuide(): boolean {
@@ -82,7 +82,8 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     if (!this.isInPlay()) return false;
     const region = this.region();
     return (
-      region?.army?.front === "free-peoples" || region?.underSiegeArmy?.front === "free-peoples"
+      region?.army?.front === 'free-peoples' ||
+      region?.underSiegeArmy?.front === 'free-peoples'
     );
   }
 
@@ -94,7 +95,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
 
   canMove(): unknown {
     const character = this.data();
-    if (character.status !== "inPlay") return false;
+    if (character.status !== 'inPlay') return false;
     if (character.level === 0) return false;
     if (character.flying) {
       if (this.isUnderSiege()) return false;
@@ -103,7 +104,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   }
 
   isUnderSiege(): boolean {
-    return this.regionStore.regions().some(region => {
+    return this.regionStore.regions().some((region) => {
       return !region.underSiegeArmy?.characters?.includes(this.id);
     });
   }
@@ -118,7 +119,7 @@ export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
     id: KomeSovereignId,
     characterStore: WotrCharacterStore,
     regionStore: WotrRegionStore,
-    fellowshipStore: WotrFellowshipStore
+    fellowshipStore: WotrFellowshipStore,
   ) {
     super(id, characterStore, regionStore, fellowshipStore);
   }
@@ -132,14 +133,14 @@ export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
   }
 
   isLeader(): boolean {
-    return this.data().sovereignStatus === "leader";
+    return this.data().sovereignStatus === 'leader';
   }
 
   isAwakened(): boolean {
-    return this.rulerStatus === "awakened";
+    return this.rulerStatus === 'awakened';
   }
 
   isCorrupted(): boolean {
-    return this.rulerStatus === "corrupted";
+    return this.rulerStatus === 'corrupted';
   }
 }

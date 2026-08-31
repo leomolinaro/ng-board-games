@@ -1,22 +1,22 @@
-import { AsyncPipe } from "@angular/common";
-import { Component, OnInit, inject } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { BaronyBoard } from "../barony-board/barony-board";
+import { AsyncPipe } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { BaronyBoard } from '../barony-board/barony-board';
 import {
   BaronyAction,
   BaronyBuilding,
   BaronyLand,
   BaronyPlayer,
-  BaronyResourceType
-} from "../barony-models";
-import { BaronyGameService } from "./barony-game.service";
-import { BaronyGameStore } from "./barony-game.store";
-import { BaronyPlayerAiService } from "./barony-player-ai.service";
-import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import { BaronyUiStore } from "./barony-ui.store";
+  BaronyResourceType,
+} from '../barony-models';
+import { BaronyGameService } from './barony-game.service';
+import { BaronyGameStore } from './barony-game.store';
+import { BaronyPlayerAiService } from './barony-player-ai.service';
+import { BaronyPlayerLocalService } from './barony-player-local.service';
+import { BaronyUiStore } from './barony-ui.store';
 
 @Component({
-  selector: "barony-game-page",
+  selector: 'barony-game-page',
   imports: [BaronyBoard, AsyncPipe],
   template: `
     <barony-board
@@ -41,7 +41,8 @@ import { BaronyUiStore } from "./barony-ui.store";
       (passClick)="onPassClick()"
       (cancelClick)="onCancelClick()"
       (knightsConfirm)="onKnightsConfirm($event)"
-      (resourceSelect)="onResourceSelect($event)">
+      (resourceSelect)="onResourceSelect($event)"
+    >
     </barony-board>
   `,
   providers: [
@@ -49,8 +50,8 @@ import { BaronyUiStore } from "./barony-ui.store";
     BaronyUiStore,
     BaronyPlayerAiService,
     BaronyPlayerLocalService,
-    BaronyGameService
-  ]
+    BaronyGameService,
+  ],
 })
 export class BaronyGamePage implements OnInit {
   private game = inject(BaronyGameStore);
@@ -58,7 +59,7 @@ export class BaronyGamePage implements OnInit {
   private route = inject(ActivatedRoute);
   private gameService = inject(BaronyGameService);
 
-  private gameId = this.route.snapshot.paramMap.get("gameId") as string;
+  private gameId = this.route.snapshot.paramMap.get('gameId') as string;
 
   lands$ = this.game.selectLands$();
   logs$ = this.game.selectLogs$();

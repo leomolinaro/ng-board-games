@@ -1,13 +1,13 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrBattleStore } from "../battle/wotr-battle-store";
-import { WotrCardId } from "../card/wotr-card-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrElvenRingAction, WotrStory } from "../game/wotr-story-models";
-import { WotrHuntStore } from "../hunt/wotr-hunt-store";
-import { WotrLog, WotrLogFragment } from "./wotr-log-models";
-import { WotrLogStore } from "./wotr-log-store";
+import { inject, Injectable } from '@angular/core';
+import { WotrBattleStore } from '../battle/wotr-battle-store';
+import { WotrCardId } from '../card/wotr-card-models';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrPhase } from '../game-turn/wotr-phase-models';
+import { WotrElvenRingAction, WotrStory } from '../game/wotr-story-models';
+import { WotrHuntStore } from '../hunt/wotr-hunt-store';
+import { WotrLog, WotrLogFragment } from './wotr-log-models';
+import { WotrLogStore } from './wotr-log-store';
 
 @Injectable()
 export class WotrLogWriter {
@@ -16,85 +16,104 @@ export class WotrLogWriter {
   private huntStore = inject(WotrHuntStore);
 
   private addLog(actionName: string, log: WotrLog) {
-    return this.logStore.update(actionName, s => [...s, log]);
+    return this.logStore.update(actionName, (s) => [...s, log]);
   }
 
   logSetup() {
-    this.addLog("logSetup", { type: "setup" });
+    this.addLog('logSetup', { type: 'setup' });
   }
 
   logRound(roundNumber: number) {
-    this.addLog("logRound", { type: "round", roundNumber });
+    this.addLog('logRound', { type: 'round', roundNumber });
   }
 
   logPhase(phase: WotrPhase) {
-    this.addLog("logPhase", { type: "phase", phase: phase });
+    this.addLog('logPhase', { type: 'phase', phase: phase });
   }
 
   logBattleResolution() {
-    this.addLog("logBattleResolution", { type: "battle-resolution" });
+    this.addLog('logBattleResolution', { type: 'battle-resolution' });
   }
 
   logHuntResolution() {
-    this.addLog("logHuntResolution", { type: "hunt-resolution" });
+    this.addLog('logHuntResolution', { type: 'hunt-resolution' });
   }
 
   logRevealInMordor() {
-    this.addLog("logRevealInMordor", { type: "reveal-in-mordor" });
+    this.addLog('logRevealInMordor', { type: 'reveal-in-mordor' });
   }
 
   logMoveInMordor() {
-    this.addLog("logMoveInMordor", { type: "move-in-mordor" });
+    this.addLog('logMoveInMordor', { type: 'move-in-mordor' });
   }
 
   logCombatCard(card: WotrCardId, front: WotrFrontId) {
-    this.addLog("logCombatCard", { type: "combat-card", card, front, during: "battle" });
+    this.addLog('logCombatCard', {
+      type: 'combat-card',
+      card,
+      front,
+      during: 'battle',
+    });
   }
 
   logAction(action: WotrAction, story: WotrStory, front: WotrFrontId) {
     this.addLog(`logAction [${action.type}]`, {
-      type: "action",
+      type: 'action',
       action,
       story,
       front,
-      during: this.during()
+      during: this.during(),
     });
   }
 
   logNoActions(story: WotrStory, front: WotrFrontId) {
-    this.addLog("logNoActions", { type: "no-actions", story, front, during: this.during() });
+    this.addLog('logNoActions', {
+      type: 'no-actions',
+      story,
+      front,
+      during: this.during(),
+    });
   }
 
   logElvenRingUse(elvenRing: WotrElvenRingAction, front: WotrFrontId) {
-    this.addLog("logElvenRingUse", {
-      type: "elven-ring",
+    this.addLog('logElvenRingUse', {
+      type: 'elven-ring',
       ...elvenRing,
       front,
-      during: this.during()
+      during: this.during(),
     });
   }
 
   logEffect(effect: WotrAction) {
     // TODO WOTR make log effect direct; maybe remove action logs and add them to each action resolution
-    this.addLog(`logEffect [${effect.type}]`, { type: "effect", effect, during: this.during() });
+    this.addLog(`logEffect [${effect.type}]`, {
+      type: 'effect',
+      effect,
+      during: this.during(),
+    });
   }
 
   logStory(story: WotrStory, front: WotrFrontId) {
-    this.addLog("logStory", { type: "story", story, front, during: this.during() });
+    this.addLog('logStory', {
+      type: 'story',
+      story,
+      front,
+      during: this.during(),
+    });
   }
 
   logV2(...fragments: (string | WotrLogFragment)[]) {
-    this.addLog("logV2", { type: "v2", fragments });
+    this.addLog('logV2', { type: 'v2', fragments });
   }
 
   logEndGame() {
-    this.addLog("logEndGame", { type: "endGame" });
+    this.addLog('logEndGame', { type: 'endGame' });
   }
 
   private during() {
-    let during: "battle" | "hunt" | undefined;
-    if (this.battleStore.battleInProgress()) during = "battle";
-    if (this.huntStore.inProgress()) during = "hunt";
+    let during: 'battle' | 'hunt' | undefined;
+    if (this.battleStore.battleInProgress()) during = 'battle';
+    if (this.huntStore.inProgress()) during = 'hunt';
     return during;
   }
 

@@ -1,1 +1,1 @@
-export * from "./bg-dialog.service";
+export * from './bg-dialog.service';

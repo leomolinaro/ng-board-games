@@ -1,7 +1,14 @@
-import { Component, Signal, computed, inject, input, output } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrFellowship } from "./wotr-fellowship-models";
+import {
+  Component,
+  Signal,
+  computed,
+  inject,
+  input,
+  output,
+} from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrFellowship } from './wotr-fellowship-models';
 
 interface WotrCompanionNode {
   id: string;
@@ -26,7 +33,7 @@ const BOXWIDTH = 168;
 const BOXHEIGHT = 164;
 
 @Component({
-  selector: "[wotrFellowshipBox]",
+  selector: '[wotrFellowshipBox]',
   imports: [],
   template: `
     @for (companionNode of companionNodes(); track companionNode.id) {
@@ -34,13 +41,15 @@ const BOXHEIGHT = 164;
         transform="scale(0.8, 0.8)"
         [attr.x]="companionNode.svgX"
         [attr.y]="companionNode.svgY"
-        [attr.xlink:href]="companionNode.image" />
+        [attr.xlink:href]="companionNode.image"
+      />
     }
     <svg:image
       transform="scale(0.8, 0.8)"
       [attr.x]="guideNode().svgX"
       [attr.y]="guideNode().svgY"
-      [attr.xlink:href]="guideNode().image" />
+      [attr.xlink:href]="guideNode().image"
+    />
     <svg:rect
       (click)="boxClick.emit()"
       transform="scale(0.8, 0.8)"
@@ -48,7 +57,8 @@ const BOXHEIGHT = 164;
       [attr.y]="boxY"
       [attr.width]="boxWidth"
       [attr.height]="boxHeight"
-      class="wotr-fellowship-box"></svg:rect>
+      class="wotr-fellowship-box"
+    ></svg:rect>
   `,
   styles: `
     .wotr-fellowship-box {
@@ -58,7 +68,7 @@ const BOXHEIGHT = 164;
         fill: black;
       }
     }
-  `
+  `,
 })
 export class WotrFellowshipBox {
   fellowship = input.required<WotrFellowship>();
@@ -95,7 +105,7 @@ export class WotrFellowshipBox {
         image: unitImage.source,
         tooltip: this.q.character(companion).name,
         svgX: this.getX(index),
-        svgY: this.getY(index) - unitImage.height
+        svgY: this.getY(index) - unitImage.height,
       });
       index++;
     }
@@ -110,7 +120,7 @@ export class WotrFellowshipBox {
       image: unitImage.source,
       tooltip: this.q.character(guide).name,
       svgX: GUIDE_X,
-      svgY: GUIDE_Y - unitImage.height
+      svgY: GUIDE_Y - unitImage.height,
     };
   });
 }

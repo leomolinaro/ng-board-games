@@ -1,13 +1,13 @@
-import { BgUser } from "@leobg/commons";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameOptions } from "../game/options/wotr-game-options";
+import { BgUser } from '@leobg/commons';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameOptions } from '../game/options/wotr-game-options';
 
 export interface WotrGameDoc {
   id: string;
   name: string;
   owner: BgUser;
   online: boolean;
-  state: "open" | "closed";
+  state: 'open' | 'closed';
   options?: WotrGameOptions;
 }
 

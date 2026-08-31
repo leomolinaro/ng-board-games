@@ -1,6 +1,6 @@
-import { Component, Signal, computed, inject, input } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFellowship } from "./wotr-fellowship-models";
+import { Component, Signal, computed, inject, input } from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrFellowship } from './wotr-fellowship-models';
 
 interface WotrFellowshipMarkerNode {
   id: string;
@@ -16,20 +16,22 @@ const PROGRESS_Y = 15;
 const CORRUPTION_Y = 25;
 
 @Component({
-  selector: "[wotrFellowshipTrack]",
+  selector: '[wotrFellowshipTrack]',
   imports: [],
   template: `
     <svg:image
       transform="scale(0.8, 0.8)"
       [attr.x]="progressNode().svgX"
       [attr.y]="progressNode().svgY"
-      [attr.xlink:href]="progressNode().image" />
+      [attr.xlink:href]="progressNode().image"
+    />
     <svg:image
       transform="scale(0.8, 0.8)"
       [attr.x]="corruptionNode().svgX"
       [attr.y]="corruptionNode().svgY"
-      [attr.xlink:href]="corruptionNode().image" />
-  `
+      [attr.xlink:href]="corruptionNode().image"
+    />
+  `,
 })
 export class WotrFellowshipTrack {
   fellowship = input.required<WotrFellowship>();
@@ -42,19 +44,21 @@ export class WotrFellowshipTrack {
 
   progressNode: Signal<WotrFellowshipMarkerNode> = computed(() => {
     return {
-      id: "progress",
-      image: this.assets.fellowshipProgressCounter(this.status() === "revealed"),
+      id: 'progress',
+      image: this.assets.fellowshipProgressCounter(
+        this.status() === 'revealed',
+      ),
       svgX: this.getX(this.progress()),
-      svgY: PROGRESS_Y
+      svgY: PROGRESS_Y,
     };
   });
 
   corruptionNode: Signal<WotrFellowshipMarkerNode> = computed(() => {
     return {
-      id: "corruption",
+      id: 'corruption',
       image: this.assets.corruptionCounter(),
       svgX: this.getX(this.corruption()),
-      svgY: CORRUPTION_Y
+      svgY: CORRUPTION_Y,
     };
   });
 

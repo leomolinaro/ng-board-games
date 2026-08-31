@@ -1,9 +1,12 @@
-import { Component, computed, inject, input, Signal } from "@angular/core";
-import { BgDialogService } from "@leobg/commons";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { isFreePeoplesCard, WotrCardId } from "../card/wotr-card-models";
-import { WotrCardsDialog, WotrCardsDialogData } from "../card/wotr-cards-dialog";
-import { WotrFront } from "./wotr-front-models";
+import { Component, computed, inject, input, Signal } from '@angular/core';
+import { BgDialogService } from '@leobg/commons';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { isFreePeoplesCard, WotrCardId } from '../card/wotr-card-models';
+import {
+  WotrCardsDialog,
+  WotrCardsDialogData,
+} from '../card/wotr-cards-dialog';
+import { WotrFront } from './wotr-front-models';
 
 interface WotrTableCardNode {
   id: WotrCardId;
@@ -17,7 +20,7 @@ const Y0 = 407;
 const YSTEP = 47;
 
 @Component({
-  selector: "[wotrTableCards]",
+  selector: '[wotrTableCards]',
   imports: [],
   template: `
     @for (tableCardNode of tableCardNodes(); track tableCardNode.id) {
@@ -27,7 +30,8 @@ const YSTEP = 47;
         [attr.x]="tableCardNode.svgX"
         [attr.y]="tableCardNode.svgY"
         [attr.xlink:href]="tableCardNode.image"
-        (click)="openCardsDialog(tableCardNode.id)"></svg:image>
+        (click)="openCardsDialog(tableCardNode.id)"
+      ></svg:image>
     }
   `,
   styles: [
@@ -35,8 +39,8 @@ const YSTEP = 47;
       .card-counters {
         fill: white;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrTableCardsComponent {
   private readonly dialogs = inject(BgDialogService);
@@ -49,11 +53,11 @@ export class WotrTableCardsComponent {
   tableCardNodes: Signal<WotrTableCardNode[]> = computed(() => {
     const nodes: WotrTableCardNode[] = [];
     let index = 0;
-    this.freePeoples().tableCards.forEach(c => {
+    this.freePeoples().tableCards.forEach((c) => {
       nodes.push(this.cardToNode(c, index));
       index++;
     });
-    this.shadow().tableCards.forEach(c => {
+    this.shadow().tableCards.forEach((c) => {
       nodes.push(this.cardToNode(c, index));
       index++;
     });
@@ -65,7 +69,7 @@ export class WotrTableCardsComponent {
       id: card,
       image: this.assets.cardPreviewImage(card),
       svgX: X0,
-      svgY: Y0 + index * YSTEP
+      svgY: Y0 + index * YSTEP,
     };
   }
 
@@ -75,12 +79,14 @@ export class WotrTableCardsComponent {
       .open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
         data: {
           focusedCardId: cardId,
-          cardIds: isFreePeoples ? this.freePeoples().tableCards : this.shadow().tableCards,
-          selectableCards: null
+          cardIds: isFreePeoples
+            ? this.freePeoples().tableCards
+            : this.shadow().tableCards,
+          selectableCards: null,
         },
-        size: "l",
+        size: 'l',
         closable: false,
-        appearance: "wotr-cards-dialog"
+        appearance: 'wotr-cards-dialog',
       })
       .then();
   }

@@ -1,21 +1,24 @@
-import { WotrUiAbility } from "../../ability/wotr-ability";
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrCombatRound } from "../../battle/wotr-battle-models";
-import { WotrAfterCombatRound, WotrBattleModifiers } from "../../battle/wotr-battle-modifiers";
-import { WotrBattleStore } from "../../battle/wotr-battle-store";
-import { WotrCard } from "../../card/wotr-card-models";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrNationHandler } from "../../nation/wotr-nation-handler";
-import { WotrShadowPlayer } from "../../player/wotr-shadow-player";
-import { WotrRegion } from "../../region/wotr-region-models";
-import { playCharacter } from "../wotr-character-actions";
-import { WotrCharacterId } from "../wotr-character-models";
+import { WotrUiAbility } from '../../ability/wotr-ability';
+import { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import { WotrCombatRound } from '../../battle/wotr-battle-models';
+import {
+  WotrAfterCombatRound,
+  WotrBattleModifiers,
+} from '../../battle/wotr-battle-modifiers';
+import { WotrBattleStore } from '../../battle/wotr-battle-store';
+import { WotrCard } from '../../card/wotr-card-models';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrNationHandler } from '../../nation/wotr-nation-handler';
+import { WotrShadowPlayer } from '../../player/wotr-shadow-player';
+import { WotrRegion } from '../../region/wotr-region-models';
+import { playCharacter } from '../wotr-character-actions';
+import { WotrCharacterId } from '../wotr-character-models';
 import {
   activateCharacterAbility,
-  WotrPlayableCharacterCard
-} from "./wotr-playable-character-card";
+  WotrPlayableCharacterCard,
+} from './wotr-playable-character-card';
 
 // The Witch-king - The Black Captain (Level ∞, Leadership 2, +1 Action Die)
 // If Sauron and at least one Free Peoples Nation are "At War," you may use one Muster Action die result to place the Witch-king in any region with a Shadow
@@ -27,44 +30,44 @@ import {
 export class TheWitchKing extends WotrPlayableCharacterCard {
   constructor(
     private q: WotrGameQuery,
-    private nationHandler: WotrNationHandler
+    private nationHandler: WotrNationHandler,
   ) {
     super();
   }
 
-  public readonly characterId = "the-witch-king";
+  public readonly characterId = 'the-witch-king';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     return (
-      die === "muster" &&
+      die === 'muster' &&
       this.q.sauron.isAtWar() &&
-      this.q.freePeoplesNations.some(n => n.isAtWar()) &&
-      this.q.regions().some(r => this.isValidRegion(r.region()))
+      this.q.freePeoplesNations.some((n) => n.isAtWar()) &&
+      this.q.regions().some((r) => this.isValidRegion(r.region()))
     );
   }
 
   override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
-      .filter(r => this.isValidRegion(r.region()))
-      .map(r => r.id());
+      .filter((r) => this.isValidRegion(r.region()))
+      .map((r) => r.id());
     const region = await ui.askRegion(
-      "Select a region to bring the Witch-King into play",
-      validRegions
+      'Select a region to bring the Witch-King into play',
+      validRegions,
     );
-    return playCharacter(region, "the-witch-king");
+    return playCharacter(region, 'the-witch-king');
   }
 
   override resolveBringIntoPlayEffect(): void {
-    this.nationHandler.activateAllFreePeoplesNations("minion-ability");
+    this.nationHandler.activateAllFreePeoplesNations('minion-ability');
   }
 
   private isValidRegion(region: WotrRegion): boolean {
     if (!region.army) return false;
-    if (region.army.front !== "shadow") return false;
+    if (region.army.front !== 'shadow') return false;
     return (
-      region.army.regulars?.some(u => u.nation === "sauron") ||
-      region.army.elites?.some(c => c.nation === "sauron") ||
+      region.army.regulars?.some((u) => u.nation === 'sauron') ||
+      region.army.elites?.some((c) => c.nation === 'sauron') ||
       false
     );
   }
@@ -76,38 +79,43 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
     private q: WotrGameQuery,
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
-    private ui: WotrGameUiContext
+    private ui: WotrGameUiContext,
   ) {}
 
   public modifier = this.battleModifiers.afterCombatRound;
 
   private lastCombatCard: WotrCard | null = null;
 
-  public handler: WotrAfterCombatRound = async (combatRound: WotrCombatRound) => {
+  public handler: WotrAfterCombatRound = async (
+    combatRound: WotrCombatRound,
+  ) => {
     if (
-      this.isCharacterInBattle("the-witch-king", combatRound) &&
+      this.isCharacterInBattle('the-witch-king', combatRound) &&
       combatRound.round === 1 &&
       combatRound.shadow.combatCard
     ) {
       this.lastCombatCard = combatRound.shadow.combatCard;
-      await activateCharacterAbility(this, "the-witch-king", this.shadow);
+      await activateCharacterAbility(this, 'the-witch-king', this.shadow);
     }
   };
 
   play: () => Promise<WotrAction[]> = async () => {
-    const characterCard = this.lastCombatCard!.type === "character";
+    const characterCard = this.lastCombatCard!.type === 'character';
     const actions: WotrAction[] = [];
     actions.push(
       await this.ui.cardDrawUi.drawCards(
         1,
-        characterCard ? "character" : "strategy",
-        this.shadow.frontId
-      )
+        characterCard ? 'character' : 'strategy',
+        this.shadow.frontId,
+      ),
     );
     return actions;
   };
 
-  private isCharacterInBattle(character: WotrCharacterId, combatRound: WotrCombatRound) {
+  private isCharacterInBattle(
+    character: WotrCharacterId,
+    combatRound: WotrCombatRound,
+  ) {
     if (this.battleStore.isCharacterInRetroguard(character)) {
       return false;
     }

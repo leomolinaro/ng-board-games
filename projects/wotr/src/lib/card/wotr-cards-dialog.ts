@@ -1,10 +1,16 @@
-import { Component, computed, HostListener, inject, signal } from "@angular/core";
-import { BgTransformFn, BgTransformPipe } from "@leobg/commons/utils";
-import { injectDialogContext } from "../../../../commons/src";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrCardSelection } from "../game/wotr-game-ui";
-import { WotrCardId } from "./wotr-card-models";
-import { WotrCardTooltipService } from "./wotr-card-tooltip.service";
+import {
+  Component,
+  computed,
+  HostListener,
+  inject,
+  signal,
+} from '@angular/core';
+import { BgTransformFn, BgTransformPipe } from '@leobg/commons/utils';
+import { injectDialogContext } from '../../../../commons/src';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrCardSelection } from '../game/wotr-game-ui';
+import { WotrCardId } from './wotr-card-models';
+import { WotrCardTooltipService } from './wotr-card-tooltip.service';
 
 export interface WotrCardsDialogData {
   focusedCardId: WotrCardId | null;
@@ -13,7 +19,7 @@ export interface WotrCardsDialogData {
 }
 
 @Component({
-  selector: "wotr-cards-dialog",
+  selector: 'wotr-cards-dialog',
   imports: [BgTransformPipe],
   template: `
     <div class="cards-container">
@@ -26,10 +32,11 @@ export interface WotrCardsDialogData {
           [class]="{
             focused: cardId === focusedCardId,
             selected: data.selectableCards && selectedCards().includes(cardId),
-            disabled: cardId | bgTransform: isDisabled
+            disabled: cardId | bgTransform: isDisabled,
           }"
           (mouseenter)="cardTooltip.preload(cardId)"
-          (click)="onCardClick(cardId)" />
+          (click)="onCardClick(cardId)"
+        />
       }
     </div>
     <div class="toolbar">
@@ -37,7 +44,8 @@ export interface WotrCardsDialogData {
         <button
           class="confirm-button"
           [disabled]="!canConfirm()"
-          (click)="onConfirm()">
+          (click)="onConfirm()"
+        >
           {{ data.selectableCards.message }}
         </button>
       }
@@ -45,10 +53,10 @@ export interface WotrCardsDialogData {
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
 
       ::ng-deep {
-        [data-appearance="wotr-cards-dialog"] {
+        [data-appearance='wotr-cards-dialog'] {
           width: 100%;
           background-color: transparent;
           overflow: visible;
@@ -111,8 +119,8 @@ export interface WotrCardsDialogData {
       .confirm-button {
         @include wotr.button;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrCardsDialog {
   readonly context = injectDialogContext<WotrCardsDialogData, WotrCardId[]>();
@@ -128,11 +136,12 @@ export class WotrCardsDialog {
 
   protected cardIds: WotrCardId[];
   protected focusedCardId: WotrCardId | null = this.data.focusedCardId;
-  protected cardImage: BgTransformFn<WotrCardId, string> = cardId => this.assets.cardImage(cardId);
+  protected cardImage: BgTransformFn<WotrCardId, string> = (cardId) =>
+    this.assets.cardImage(cardId);
 
   protected selectedCards = signal<WotrCardId[]>([]);
 
-  isDisabled: BgTransformFn<WotrCardId, boolean> = cardId => {
+  isDisabled: BgTransformFn<WotrCardId, boolean> = (cardId) => {
     if (!this.data.selectableCards) return false;
     if (!this.data.selectableCards.cards) return false;
     return !this.data.selectableCards.cards.includes(cardId);
@@ -147,7 +156,7 @@ export class WotrCardsDialog {
     this.context.complete(this.selectedCards());
   }
 
-  @HostListener("mouseover", ["$event"])
+  @HostListener('mouseover', ['$event'])
   onMouseHover(event: MouseEvent) {
     this.focusedCardId = null;
   }
@@ -155,12 +164,12 @@ export class WotrCardsDialog {
   onCardClick(cardId: WotrCardId) {
     if (this.data.selectableCards) {
       if (this.selectedCards().includes(cardId)) {
-        this.selectedCards.update(cards => cards.filter(c => c !== cardId));
+        this.selectedCards.update((cards) => cards.filter((c) => c !== cardId));
       } else {
         if (this.data.selectableCards.nCards === 1) {
           this.selectedCards.set([cardId]);
         } else {
-          this.selectedCards.update(cards => [...cards, cardId]);
+          this.selectedCards.update((cards) => [...cards, cardId]);
         }
       }
     }

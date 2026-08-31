@@ -1,23 +1,23 @@
-import { WotrScenario, WotrScenarioGroup } from "../scenario/wotr-scenario";
-import { WotrStoriesBuilder } from "../scenario/wotr-story-builder";
+import { WotrScenario, WotrScenarioGroup } from '../scenario/wotr-scenario';
+import { WotrStoriesBuilder } from '../scenario/wotr-story-builder';
 
 export function unitScenarios(): WotrScenarioGroup {
   return {
-    id: "unit-scenarios",
-    name: "Unit Scenarios",
-    scenarios: [unitsMovement01]
+    id: 'unit-scenarios',
+    name: 'Unit Scenarios',
+    scenarios: [unitsMovement01],
   };
 }
 
 const unitsMovement01: WotrScenario = {
-  id: "units-movement-01",
-  name: "Units Movement",
-  description: "When a hunt tile is drawn after a standard hunt",
+  id: 'units-movement-01',
+  name: 'Units Movement',
+  description: 'When a hunt tile is drawn after a standard hunt',
   loadDefinition: () => ({
-    setup: setupBuilder =>
+    setup: (setupBuilder) =>
       setupBuilder
-        .region("noman-lands", "sauron", { nRegulars: 2 })
-        .region("eastern-emyn-muil", "sauron", { nRegulars: 2 })
+        .region('noman-lands', 'sauron', { nRegulars: 2 })
+        .region('eastern-emyn-muil', 'sauron', { nRegulars: 2 })
         .build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw(),
@@ -25,7 +25,7 @@ const unitsMovement01: WotrScenario = {
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
       b.fpT().rollActionDice(),
-      b.s().rollActionDice("army")
-    ]
-  })
+      b.s().rollActionDice('army'),
+    ],
+  }),
 };

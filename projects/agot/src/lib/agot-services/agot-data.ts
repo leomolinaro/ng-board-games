@@ -1,9 +1,15 @@
-import { inject, Injectable, signal } from "@angular/core";
-import { AgotCard, AgotFaction, AgotPack, AgotPackCode, AgotType } from "../agot.models";
-import { AgotHttp } from "./agot-http";
+import { inject, Injectable, signal } from '@angular/core';
+import {
+  AgotCard,
+  AgotFaction,
+  AgotPack,
+  AgotPackCode,
+  AgotType,
+} from '../agot.models';
+import { AgotHttp } from './agot-http';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class AgotData {
   private http = inject(AgotHttp);
@@ -56,7 +62,7 @@ export class AgotData {
     PoS: true,
     BtRK: true,
     TB: true,
-    LMHR: true
+    LMHR: true,
   };
 
   readonly factions = signal<AgotFaction[]>([]);
@@ -79,7 +85,7 @@ export class AgotData {
   private filterCards(cards: AgotCard[], options?: { onlyOfficial: boolean }) {
     if (options) {
       if (options.onlyOfficial) {
-        return cards.filter(c => this.officialPackCodes[c.pack_code]);
+        return cards.filter((c) => this.officialPackCodes[c.pack_code]);
       }
     }
     return cards;
@@ -88,21 +94,24 @@ export class AgotData {
   private filterPacks(packs: AgotPack[], options?: { onlyOfficial: boolean }) {
     if (options) {
       if (options.onlyOfficial) {
-        return packs.filter(p => this.officialPackCodes[p.code]);
+        return packs.filter((p) => this.officialPackCodes[p.code]);
       }
     }
     return packs;
   }
 
   async load(): Promise<boolean> {
-    const [packs, cards] = await Promise.all([this.http.getPacks(), this.http.getCards()]);
+    const [packs, cards] = await Promise.all([
+      this.http.getPacks(),
+      this.http.getCards(),
+    ]);
     this.packs.set(packs);
 
     const factions: AgotFaction[] = [];
     const factionIds: { [code: string]: boolean } = {};
     const types: AgotType[] = [];
     const typeIds: { [code: string]: boolean } = {};
-    cards.forEach(card => {
+    cards.forEach((card) => {
       const factionCode = card.faction_code;
       if (!factionIds[factionCode]) {
         factionIds[factionCode] = true;

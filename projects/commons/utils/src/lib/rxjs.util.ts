@@ -1,15 +1,27 @@
-import { concat, EMPTY, Observable, ObservableInput, ObservedValuesFromArray, of } from "rxjs";
-import { expand, last, toArray } from "rxjs/operators";
+import {
+  concat,
+  EMPTY,
+  Observable,
+  ObservableInput,
+  ObservedValuesFromArray,
+  of,
+} from 'rxjs';
+import { expand, last, toArray } from 'rxjs/operators';
 
 export function concatJoin<A>(sources: [ObservableInput<A>]): Observable<[A]>;
 export function concatJoin<A, B>(
-  sources: [ObservableInput<A>, ObservableInput<B>]
+  sources: [ObservableInput<A>, ObservableInput<B>],
 ): Observable<[A, B]>;
 export function concatJoin<A, B, C>(
-  sources: [ObservableInput<A>, ObservableInput<B>, ObservableInput<C>]
+  sources: [ObservableInput<A>, ObservableInput<B>, ObservableInput<C>],
 ): Observable<[A, B, C]>;
 export function concatJoin<A, B, C, D>(
-  sources: [ObservableInput<A>, ObservableInput<B>, ObservableInput<C>, ObservableInput<D>]
+  sources: [
+    ObservableInput<A>,
+    ObservableInput<B>,
+    ObservableInput<C>,
+    ObservableInput<D>,
+  ],
 ): Observable<[A, B, C, D]>;
 export function concatJoin<A, B, C, D, E>(
   sources: [
@@ -17,8 +29,8 @@ export function concatJoin<A, B, C, D, E>(
     ObservableInput<B>,
     ObservableInput<C>,
     ObservableInput<D>,
-    ObservableInput<E>
-  ]
+    ObservableInput<E>,
+  ],
 ): Observable<[A, B, C, D, E]>;
 export function concatJoin<A, B, C, D, E, F>(
   sources: [
@@ -27,18 +39,21 @@ export function concatJoin<A, B, C, D, E, F>(
     ObservableInput<C>,
     ObservableInput<D>,
     ObservableInput<E>,
-    ObservableInput<F>
-  ]
+    ObservableInput<F>,
+  ],
 ): Observable<[A, B, C, D, E, F]>;
 export function concatJoin<O>(sources: ObservableInput<O>[]): Observable<O[]>;
 export function concatJoin(sources: ObservableInput<any>[]): Observable<any[]>;
 export function concatJoin<A extends ObservableInput<any>[]>(
-  sources: A
+  sources: A,
 ): Observable<ObservedValuesFromArray<A>[]> {
   return concat(...sources).pipe(toArray());
 }
 
-export function forN(n: number, forFn: (index: number) => Observable<void>): Observable<void> {
+export function forN(
+  n: number,
+  forFn: (index: number) => Observable<void>,
+): Observable<void> {
   if (n <= 0) {
     return of(void 0);
   }
@@ -52,13 +67,13 @@ export function forN(n: number, forFn: (index: number) => Observable<void>): Obs
         return EMPTY;
       }
     }),
-    last()
+    last(),
   );
 }
 
 export function forEach<T>(
   array: T[],
-  forEachFn: (value: T) => Observable<void>
+  forEachFn: (value: T) => Observable<void>,
 ): Observable<void> {
   if (!array.length) {
     return of(void 0);
@@ -73,6 +88,6 @@ export function forEach<T>(
         return EMPTY;
       }
     }),
-    last()
+    last(),
   );
 }

@@ -1,10 +1,10 @@
-import { TlsmDragonId, TlsmStore } from "../tlsm-store";
-import { TlsmMessageService } from "./tlsm-message.service";
+import { TlsmDragonId, TlsmStore } from '../tlsm-store';
+import { TlsmMessageService } from './tlsm-message.service';
 
 abstract class TokenResolver {
   constructor(
     protected store: TlsmStore,
-    protected messager: TlsmMessageService
+    protected messager: TlsmMessageService,
   ) {}
 
   abstract drawSlumber(player: string): void;
@@ -24,15 +24,15 @@ abstract class TokenResolver {
     const x = Math.floor(Math.random() * poolSize);
     let limit = pool.scales.varthrax;
     if (x < limit) {
-      this.drawScale("varthrax", player);
+      this.drawScale('varthrax', player);
     } else {
       limit += pool.scales.cadorus;
       if (x < limit) {
-        this.drawScale("cadorus", player);
+        this.drawScale('cadorus', player);
       } else {
         limit += pool.scales.grilipus;
         if (x < limit) {
-          this.drawScale("grilipus", player);
+          this.drawScale('grilipus', player);
         } else {
           limit += pool.rages;
           if (x < limit) {
@@ -57,25 +57,37 @@ abstract class TokenResolver {
 export class CompleteTokenResolver extends TokenResolver {
   drawSlumber(player: string): void {
     this.store.drawSlumber();
-    this.store.addLog(player + " draws a slumber token", "../assets/talisman/slumber-token.png");
-    this.messager.alert(player + " draws a slumber token", "../assets/talisman/slumber-token.png");
+    this.store.addLog(
+      player + ' draws a slumber token',
+      '../assets/talisman/slumber-token.png',
+    );
+    this.messager.alert(
+      player + ' draws a slumber token',
+      '../assets/talisman/slumber-token.png',
+    );
   }
 
   drawRage(player: string): void {
     this.store.drawRage();
-    this.store.addLog(player + " draws a rage token", "../assets/talisman/rage-token.png");
+    this.store.addLog(
+      player + ' draws a rage token',
+      '../assets/talisman/rage-token.png',
+    );
     const king = this.store.king();
     if (king) {
       this.messager.alert(
-        player + " suffers " + king.name + "'s rage",
-        "../assets/talisman/rage-token.png"
+        player + ' suffers ' + king.name + "'s rage",
+        '../assets/talisman/rage-token.png',
       );
     }
   }
 
   drawStrike(player: string): void {
     this.store.drawStrike();
-    this.store.addLog(player + " draws a strike token", "../assets/talisman/strike-token.png");
+    this.store.addLog(
+      player + ' draws a strike token',
+      '../assets/talisman/strike-token.png',
+    );
     this.drawToken(player);
     this.drawToken(player);
   }
@@ -84,7 +96,10 @@ export class CompleteTokenResolver extends TokenResolver {
     const dragon = this.store.dragon(dragonId);
     const settings = this.store.settings();
     this.store.drawScale(dragonId, true);
-    this.store.addLog(player + " draws a " + dragon.name + " scale", dragon.tokenSource);
+    this.store.addLog(
+      player + ' draws a ' + dragon.name + ' scale',
+      dragon.tokenSource,
+    );
     if (dragon.nScales >= settings.scalesPerCrown) {
       this.store.resetScale(dragonId);
       const oldKing = this.store.king();
@@ -92,7 +107,10 @@ export class CompleteTokenResolver extends TokenResolver {
         this.store.crown(oldKing.id, false);
       }
       this.store.crown(dragonId, true);
-      this.messager.alert(player + " generates a " + dragon.name + "'s scale", dragon.tokenSource);
+      this.messager.alert(
+        player + ' generates a ' + dragon.name + "'s scale",
+        dragon.tokenSource,
+      );
     }
   }
 }
@@ -100,7 +118,10 @@ export class CompleteTokenResolver extends TokenResolver {
 export class AskTokenResolver extends TokenResolver {
   drawSlumber(player: string): void {
     this.store.drawSlumber();
-    this.messager.alert(player + " draws a slumber token", "../assets/talisman/slumber-token.png");
+    this.messager.alert(
+      player + ' draws a slumber token',
+      '../assets/talisman/slumber-token.png',
+    );
   }
 
   async drawRage(player: string): Promise<void> {
@@ -108,27 +129,30 @@ export class AskTokenResolver extends TokenResolver {
     const king = this.store.king();
     if (king) {
       const confirm = await this.messager.confirm(
-        player + " draws a rage token",
-        "../assets/talisman/rage-token.png",
-        "Has the token to be resolved?"
+        player + ' draws a rage token',
+        '../assets/talisman/rage-token.png',
+        'Has the token to be resolved?',
       );
       if (confirm) {
         this.messager.alert(
-          player + " suffers " + king.name + "'s rage.",
-          "../assets/talisman/rage-token.png"
+          player + ' suffers ' + king.name + "'s rage.",
+          '../assets/talisman/rage-token.png',
         );
       }
     } else {
-      this.messager.alert(player + " draws a rage token", "../assets/talisman/rage-token.png");
+      this.messager.alert(
+        player + ' draws a rage token',
+        '../assets/talisman/rage-token.png',
+      );
     }
   }
 
   async drawStrike(player: string): Promise<void> {
     this.store.drawStrike();
     const confirm = await this.messager.confirm(
-      player + " draws a strike token",
-      "../assets/talisman/strike-token.png",
-      "Has the token to be resolved?"
+      player + ' draws a strike token',
+      '../assets/talisman/strike-token.png',
+      'Has the token to be resolved?',
     );
     if (confirm) {
       this.drawToken(player);
@@ -140,9 +164,9 @@ export class AskTokenResolver extends TokenResolver {
     const dragon = this.store.dragon(dragonId);
     const settings = this.store.settings();
     const confirm = await this.messager.confirm(
-      player + " draws a " + dragon.name + " token",
+      player + ' draws a ' + dragon.name + ' token',
       dragon.tokenSource,
-      "Has the token to be resolved?"
+      'Has the token to be resolved?',
     );
     this.store.drawScale(dragonId, confirm);
     if (confirm) {
@@ -152,8 +176,8 @@ export class AskTokenResolver extends TokenResolver {
         if (oldKing) this.store.crown(oldKing.id, false);
         this.store.crown(dragonId, true);
         this.messager.alert(
-          player + " generates a " + dragon.name + "'s scale",
-          dragon.tokenSource
+          player + ' generates a ' + dragon.name + "'s scale",
+          dragon.tokenSource,
         );
       }
     }

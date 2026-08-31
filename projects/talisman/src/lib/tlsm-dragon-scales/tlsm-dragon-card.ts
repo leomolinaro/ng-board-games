@@ -1,24 +1,28 @@
-import { Component, computed, input, output } from "@angular/core";
-import { TuiAvatar } from "@taiga-ui/kit";
-import { TuiCardLarge, TuiHeader } from "@taiga-ui/layout";
-import { Dragon } from "./tlsm-store";
+import { Component, computed, input, output } from '@angular/core';
+import { TuiAvatar } from '@taiga-ui/kit';
+import { TuiCardLarge, TuiHeader } from '@taiga-ui/layout';
+import { Dragon } from './tlsm-store';
 
 @Component({
-  selector: "tlsm-dragon-card",
+  selector: 'tlsm-dragon-card',
   imports: [TuiCardLarge, TuiHeader, TuiAvatar],
   template: `
     @let d = dragon();
     <div
       tuiCardLarge
       [class.is-crowned]="d.crowned"
-      [style.background]="'url(' + d.imageSource + ') no-repeat top right / 100%'">
+      [style.background]="
+        'url(' + d.imageSource + ') no-repeat top right / 100%'
+      "
+    >
       <header tuiHeader>
         <section>
           @for (x of scales(); track $index) {
             <img
               [src]="d.tokenSource"
               [alt]="d.id"
-              (click)="scaleDiscard.emit()" />
+              (click)="scaleDiscard.emit()"
+            />
           }
         </section>
         <img
@@ -26,7 +30,8 @@ import { Dragon } from "./tlsm-store";
           class="crown"
           [style.visibility]="d.crowned ? 'visible' : 'hidden'"
           src="../assets/talisman/crown-token.png"
-          alt="crown" />
+          alt="crown"
+        />
       </header>
     </div>
   `,
@@ -51,7 +56,7 @@ import { Dragon } from "./tlsm-store";
     img {
       width: 10vmin;
     }
-  `
+  `,
 })
 export class TlsmDragonCard {
   dragon = input.required<Dragon>();

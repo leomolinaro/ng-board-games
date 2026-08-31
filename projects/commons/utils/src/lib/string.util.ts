@@ -3,5 +3,5 @@ export function toLowerCase(string: string) {
 }
 
 export function toDashCase(string: string) {
-  return string.replace(" ", "-");
+  return string.replace(' ', '-');
 }

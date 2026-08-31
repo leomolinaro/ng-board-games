@@ -1,19 +1,19 @@
-import { Injectable } from "@angular/core";
-import { combatCardScenarios } from "../battle/combat-cards/wotr-combat-card-scenarios";
-import { battleScenarios } from "../battle/wotr-battle-scenarios";
-import { cardScenarios } from "../card/wotr-card-scenarios";
-import { characterScenarios } from "../character/wotr-character-scenarios";
-import { huntScenarios } from "../hunt/wotr-hunt-scenarios";
-import { fullGameScenarios } from "./full-games/wotr-full-game-scenarios";
+import { Injectable } from '@angular/core';
+import { combatCardScenarios } from '../battle/combat-cards/wotr-combat-card-scenarios';
+import { battleScenarios } from '../battle/wotr-battle-scenarios';
+import { cardScenarios } from '../card/wotr-card-scenarios';
+import { characterScenarios } from '../character/wotr-character-scenarios';
+import { huntScenarios } from '../hunt/wotr-hunt-scenarios';
+import { fullGameScenarios } from './full-games/wotr-full-game-scenarios';
 import {
   WotrScenario,
   WotrScenarioGroup,
   WotrScenarioGroupInfo,
-  WotrScenarioInfo
-} from "./wotr-scenario";
-import { unitScenarios } from "../unit/wotr-unit-scenarios";
+  WotrScenarioInfo,
+} from './wotr-scenario';
+import { unitScenarios } from '../unit/wotr-unit-scenarios';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class WotrScenarios {
   private infos: WotrScenarioGroupInfo[];
   private map: Record<string, WotrScenario>;
@@ -32,18 +32,18 @@ export class WotrScenarios {
 
   private addScenarioGroup(
     group: WotrScenarioGroup,
-    groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[]
+    groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[],
   ) {
     const scenarioGroupInfo: WotrScenarioGroupInfo = {
       id: group.id,
-      type: "group",
+      type: 'group',
       name: group.name,
       scenarios: [],
-      leafGroup: false
+      leafGroup: false,
     };
     groupInfos.push(scenarioGroupInfo);
     for (const scenario of group.scenarios) {
-      if ("scenarios" in scenario) {
+      if ('scenarios' in scenario) {
         this.addScenarioGroup(scenario, scenarioGroupInfo.scenarios);
       } else {
         scenarioGroupInfo.leafGroup = true;
@@ -54,15 +54,15 @@ export class WotrScenarios {
 
   private addScenarios(
     scenarios: WotrScenario[],
-    groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[]
+    groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[],
   ) {
     for (const scenario of scenarios) {
       this.map[scenario.id] = scenario;
       const scenarioInfo: WotrScenarioInfo = {
         id: scenario.id,
-        type: "scenario",
+        type: 'scenario',
         name: scenario.name,
-        description: scenario.description
+        description: scenario.description,
       };
       groupInfos.push(scenarioInfo);
     }

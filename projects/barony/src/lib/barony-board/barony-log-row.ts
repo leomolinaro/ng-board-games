@@ -1,58 +1,66 @@
-import { Component, computed, inject, input } from "@angular/core";
-import { BaronyGameStore } from "../barony-game/barony-game.store";
+import { Component, computed, inject, input } from '@angular/core';
+import { BaronyGameStore } from '../barony-game/barony-game.store';
 import {
   BaronyColor,
   BaronyLand,
   BaronyLandCoordinates,
   BaronyLog,
   BaronyPawnType,
-  BaronyPlayer
-} from "../barony-models";
+  BaronyPlayer,
+} from '../barony-models';
 
 interface BaronyLogStringFragment {
-  type: "string";
+  type: 'string';
   label: string;
 }
 
 interface BaronyLogPlayerFragment {
-  type: "player";
+  type: 'player';
   label: string;
   player: BaronyPlayer;
 }
 
 interface BaronyLogLandFragment {
-  type: "land";
+  type: 'land';
   label: string;
   land: BaronyLand;
 }
 
 interface BaronyLogPawnFragment {
-  type: "pawn";
+  type: 'pawn';
   label: string;
   pawn: BaronyPawnType;
 }
 
 type BaronyLogFragment =
-  BaronyLogStringFragment | BaronyLogPlayerFragment | BaronyLogLandFragment | BaronyLogPawnFragment;
+  | BaronyLogStringFragment
+  | BaronyLogPlayerFragment
+  | BaronyLogLandFragment
+  | BaronyLogPawnFragment;
 
 @Component({
-  selector: "barony-log-row",
+  selector: 'barony-log-row',
   template: `
     <div
       class="b-log"
-      [class.b-log-title]="log().type === 'setup' || log().type === 'turn'">
+      [class.b-log-title]="log().type === 'setup' || log().type === 'turn'"
+    >
       @for (fragment of fragments(); track fragment) {
         @switch (fragment.type) {
-          @case ("string") {
+          @case ('string') {
             <span>{{ fragment.label }}</span>
           }
-          @case ("player") {
-            <a [class]="'is-' + $any(fragment).player.color">{{ fragment.label }}</a>
+          @case ('player') {
+            <a [class]="'is-' + $any(fragment).player.color">{{
+              fragment.label
+            }}</a>
           }
-          @case ("land") {
-            <a [class]="'is-' + $any(fragment).land.type">{{ fragment.label }}</a>
+          @case ('land') {
+            <a [class]="'is-' + $any(fragment).land.type">{{
+              fragment.label
+            }}</a>
           }
-          @case ("pawn") {
+          @case ('pawn') {
             <a>{{ fragment.label }}</a>
           }
         }
@@ -61,7 +69,7 @@ type BaronyLogFragment =
   `,
   styles: [
     `
-      @use "barony-variables" as *;
+      @use 'barony-variables' as *;
 
       .b-log {
         &.b-log-title {
@@ -100,8 +108,8 @@ type BaronyLogFragment =
           color: $color-fields;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BaronyLogRow {
   private game = inject(BaronyGameStore);
@@ -111,117 +119,120 @@ export class BaronyLogRow {
   protected fragments = computed<BaronyLogFragment[]>(() => {
     const l = this.log();
     switch (l.type) {
-      case "setup":
-        return [this.string("Setup")];
-      case "turn":
+      case 'setup':
+        return [this.string('Setup')];
+      case 'turn':
         return [this.player(l.player), this.string("'s turn")];
-      case "recruitment":
+      case 'recruitment':
         return [
           this.player(l.player),
-          this.string(" recruits a knight in "),
+          this.string(' recruits a knight in '),
           this.land(l.land),
-          this.string(".")
+          this.string('.'),
         ];
-      case "movement":
+      case 'movement':
         return [
           this.player(l.player),
-          this.string(" moves a knight from "),
+          this.string(' moves a knight from '),
           this.land(l.movement.fromLand),
-          this.string(" to "),
+          this.string(' to '),
           this.land(l.movement.toLand),
-          this.string(".")
+          this.string('.'),
         ];
-      case "construction":
+      case 'construction':
         return [
           this.player(l.player),
-          this.string(" builds a "),
+          this.string(' builds a '),
           this.pawn(l.construction.building),
-          this.string(" in "),
+          this.string(' in '),
           this.land(l.construction.land),
-          this.string(".")
+          this.string('.'),
         ];
-      case "expedition":
+      case 'expedition':
         return [
           this.player(l.player),
-          this.string(" makes an expedition to "),
+          this.string(' makes an expedition to '),
           this.land(l.land),
-          this.string(".")
+          this.string('.'),
         ];
-      case "newCity":
+      case 'newCity':
         return [
           this.player(l.player),
-          this.string(" builds a new city in "),
+          this.string(' builds a new city in '),
           this.land(l.land),
-          this.string(".")
+          this.string('.'),
         ];
-      case "nobleTitle":
-        return [this.player(l.player), this.string(" earns a new noble title.")];
-      case "setupPlacement":
+      case 'nobleTitle':
         return [
           this.player(l.player),
-          this.string(" places a knight in "),
+          this.string(' earns a new noble title.'),
+        ];
+      case 'setupPlacement':
+        return [
+          this.player(l.player),
+          this.string(' places a knight in '),
           this.land(l.land),
-          this.string(".")
+          this.string('.'),
         ];
     }
   });
 
   private string(label: string): BaronyLogStringFragment {
-    return { type: "string", label: label };
+    return { type: 'string', label: label };
   }
 
   private player(playerId: BaronyColor): BaronyLogPlayerFragment {
     const player = this.game.getPlayer(playerId);
-    return { type: "player", label: player.name, player: player };
+    return { type: 'player', label: player.name, player: player };
   }
 
   private land(landId: BaronyLandCoordinates): BaronyLogLandFragment {
     const land = this.game.getLand(landId);
-    let label: string = "";
+    let label: string = '';
     switch (land.type) {
-      case "fields":
-        label = "fields";
+      case 'fields':
+        label = 'fields';
         break;
-      case "plain":
-        label = "plain";
+      case 'plain':
+        label = 'plain';
         break;
-      case "mountain":
-        label = "mountain";
+      case 'mountain':
+        label = 'mountain';
         break;
-      case "forest":
-        label = "forest";
+      case 'forest':
+        label = 'forest';
         break;
-      case "lake":
-        label = "lake";
+      case 'lake':
+        label = 'lake';
         break;
     }
     return {
-      type: "land",
+      type: 'land',
       label: label,
-      land: land
+      land: land,
     };
   }
 
   private pawn(pawnType: BaronyPawnType): BaronyLogPawnFragment {
     let label: string;
     switch (pawnType) {
-      case "city":
-        label = "city";
+      case 'city':
+        label = 'city';
         break;
-      case "knight":
-        label = "knight";
+      case 'knight':
+        label = 'knight';
         break;
-      case "stronghold":
-        label = "stronghold";
+      case 'stronghold':
+        label = 'stronghold';
         break;
-      case "village":
-        label = "village";
+      case 'village':
+        label = 'village';
         break;
     }
     return {
-      type: "pawn",
+      type: 'pawn',
       label: label,
-      pawn: pawnType
+      pawn: pawnType,
     };
   }
 }

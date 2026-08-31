@@ -1,11 +1,14 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrRegionAction } from "./wotr-region-actions";
-import { WotrRegionId } from "./wotr-region-models";
-import { WotrRegionModifiers } from "./wotr-region-modifiers";
-import { WotrRegionStore } from "./wotr-region-store";
+import { Injectable, inject } from '@angular/core';
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+} from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrRegionAction } from './wotr-region-actions';
+import { WotrRegionId } from './wotr-region-models';
+import { WotrRegionModifiers } from './wotr-region-modifiers';
+import { WotrRegionStore } from './wotr-region-store';
 
 @Injectable()
 export class WotrRegionHandler {
@@ -20,15 +23,19 @@ export class WotrRegionHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrRegionAction> {
     return {
-      "region-choose": (action, front) => {
+      'region-choose': (action, front) => {
         /*empty*/
-      }
+      },
     };
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrRegionAction> {
     return {
-      "region-choose": (action, front, f) => [f.player(front), " chooses ", f.region(action.region)]
+      'region-choose': (action, front, f) => [
+        f.player(front),
+        ' chooses ',
+        f.region(action.region),
+      ],
     };
   }
 

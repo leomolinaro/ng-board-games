@@ -1,16 +1,19 @@
 import {
   declareFellowship,
   moveFelloswhip,
-  revealFellowship
-} from "../../../fellowship/wotr-fellowship-actions";
-import { rollHuntDice } from "../../../hunt/wotr-hunt-actions";
-import { WotrScenario, WotrScenarioGroup } from "../../../scenario/wotr-scenario";
-import { WotrStoriesBuilder } from "../../../scenario/wotr-story-builder";
-import { playCardOnTable } from "../../wotr-card-actions";
+  revealFellowship,
+} from '../../../fellowship/wotr-fellowship-actions';
+import { rollHuntDice } from '../../../hunt/wotr-hunt-actions';
+import {
+  WotrScenario,
+  WotrScenarioGroup,
+} from '../../../scenario/wotr-scenario';
+import { WotrStoriesBuilder } from '../../../scenario/wotr-story-builder';
+import { playCardOnTable } from '../../wotr-card-actions';
 
 export function wizardsStaff(): WotrScenarioGroup {
   return {
-    id: "wizards-staff",
+    id: 'wizards-staff',
     name: "Wizard's Staff",
     scenarios: [
       wizardsStaff01,
@@ -20,175 +23,207 @@ export function wizardsStaff(): WotrScenarioGroup {
       wizardsStaff05,
       wizardsStaff06,
       wizardsStaff07,
-      wizardsStaff08
-    ]
+      wizardsStaff08,
+    ],
   };
 }
 
 const wizardsStaff01: WotrScenario = {
-  id: "wizards-staff-01",
+  id: 'wizards-staff-01',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn after a standard hunt in a region",
+  description:
+    'When a hunt tile is being drawn after a standard hunt in a region',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().build(),
+    setup: (setupBuilder) => setupBuilder.shuffledDecks().build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
+      b.fpT().rollActionDice('character', 'character'),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
       b.fp().characterDie(moveFelloswhip()),
-      b.s().huntStory(rollHuntDice(6))
-    ]
-  })
+      b.s().huntStory(rollHuntDice(6)),
+    ],
+  }),
 };
 
 const wizardsStaff02: WotrScenario = {
-  id: "wizards-staff-02",
+  id: 'wizards-staff-02',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn after a hunt in Mordor",
+  description: 'When a hunt tile is being drawn after a hunt in Mordor',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(10).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(10).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
-      b.fp().fellowshipPhase(declareFellowship("morannon")),
+      b.fp().fellowshipPhase(declareFellowship('morannon')),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
+      b.fpT().rollActionDice('character', 'character'),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
-      b.fp().characterDie(moveFelloswhip())
-    ]
-  })
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b.fp().characterDie(moveFelloswhip()),
+    ],
+  }),
 };
 
 const wizardsStaff03: WotrScenario = {
-  id: "wizards-staff-03",
+  id: 'wizards-staff-03',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn after the Fellowship is revealed in a Stronghold",
+  description:
+    'When a hunt tile is being drawn after the Fellowship is revealed in a Stronghold',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(4).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(4).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw(),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
+      b.fpT().rollActionDice('character', 'character'),
       b.s().rollActionDice(),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
       b.fp().characterDie(moveFelloswhip()),
       b.s().huntStory(rollHuntDice(6)),
       b.fp().skipCardReaction("Wizard's Staff"),
-      b.s().drawHuntTile("0r"),
-      b.fp().huntStory(revealFellowship("parth-celebrant"))
-    ]
-  })
+      b.s().drawHuntTile('0r'),
+      b.fp().huntStory(revealFellowship('parth-celebrant')),
+    ],
+  }),
 };
 
 const wizardsStaff04: WotrScenario = {
-  id: "wizards-staff-04",
+  id: 'wizards-staff-04',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn due to Orc Patrol",
+  description: 'When a hunt tile is being drawn due to Orc Patrol',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
-      b.s().firstPhaseDraw("Orc Patrol"),
-      b.fp().fellowshipPhase(declareFellowship("fords-of-bruinen")),
+      b.s().firstPhaseDraw('Orc Patrol'),
+      b.fp().fellowshipPhase(declareFellowship('fords-of-bruinen')),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character"),
-      b.s().rollActionDice("character"),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
-      b.s().characterDieCard("Orc Patrol")
-    ]
-  })
+      b.fpT().rollActionDice('character'),
+      b.s().rollActionDice('character'),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b.s().characterDieCard('Orc Patrol'),
+    ],
+  }),
 };
 
 const wizardsStaff05: WotrScenario = {
-  id: "wizards-staff-05",
+  id: 'wizards-staff-05',
   name: "Wizard's Staff",
   description: "When a hunt tile is being drawn due to Isildur's Bane",
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
       b.s().firstPhaseDraw("Isildur's Bane"),
-      b.fp().fellowshipPhase(declareFellowship("fords-of-bruinen")),
+      b.fp().fellowshipPhase(declareFellowship('fords-of-bruinen')),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character"),
-      b.s().rollActionDice("character"),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
-      b.s().characterDieCard("Isildur's Bane")
-    ]
-  })
+      b.fpT().rollActionDice('character'),
+      b.s().rollActionDice('character'),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b.s().characterDieCard("Isildur's Bane"),
+    ],
+  }),
 };
 
 const wizardsStaff06: WotrScenario = {
-  id: "wizards-staff-06",
+  id: 'wizards-staff-06',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn due to Foul Thing from the Deep",
+  description:
+    'When a hunt tile is being drawn due to Foul Thing from the Deep',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(1).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
-      b.s().firstPhaseDraw("Foul Thing from the Deep"),
-      b.fp().fellowshipPhase(declareFellowship("fords-of-bruinen")),
+      b.s().firstPhaseDraw('Foul Thing from the Deep'),
+      b.fp().fellowshipPhase(declareFellowship('fords-of-bruinen')),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character"),
-      b.s().rollActionDice("character"),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
-      b.s().characterDieCard("Foul Thing from the Deep")
-    ]
-  })
+      b.fpT().rollActionDice('character'),
+      b.s().rollActionDice('character'),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b.s().characterDieCard('Foul Thing from the Deep'),
+    ],
+  }),
 };
 
 const wizardsStaff07: WotrScenario = {
-  id: "wizards-staff-07",
+  id: 'wizards-staff-07',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn due to The Breaking of the Fellowship",
+  description:
+    'When a hunt tile is being drawn due to The Breaking of the Fellowship',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(0).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(0).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
-      b.s().firstPhaseDraw("The Breaking of the Fellowship"),
-      b.fp().fellowshipPhase(declareFellowship("fords-of-bruinen")),
+      b.s().firstPhaseDraw('The Breaking of the Fellowship'),
+      b.fp().fellowshipPhase(declareFellowship('fords-of-bruinen')),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
-      b.s().rollActionDice("character"),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b.fpT().rollActionDice('character', 'character'),
+      b.s().rollActionDice('character'),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
       b.s().pass(),
       b.fp().characterDie(moveFelloswhip()),
       b.s().rollHuntDice(6),
       b.fp().skipCardReaction("Wizard's Staff"),
-      b.s().drawHuntTile("0r"),
-      b.fp().huntStory(revealFellowship("fords-of-bruinen")),
-      b.s().characterDieCard("The Breaking of the Fellowship")
-    ]
-  })
+      b.s().drawHuntTile('0r'),
+      b.fp().huntStory(revealFellowship('fords-of-bruinen')),
+      b.s().characterDieCard('The Breaking of the Fellowship'),
+    ],
+  }),
 };
 
 const wizardsStaff08: WotrScenario = {
-  id: "wizards-staff-08",
+  id: 'wizards-staff-08',
   name: "Wizard's Staff",
-  description: "When a hunt tile is being drawn due to Balrog of Moria",
+  description: 'When a hunt tile is being drawn due to Balrog of Moria',
   loadDefinition: () => ({
-    setup: setupBuilder => setupBuilder.shuffledDecks().fellowshipProgress(2).build(),
+    setup: (setupBuilder) =>
+      setupBuilder.shuffledDecks().fellowshipProgress(2).build(),
     stories: (b: WotrStoriesBuilder) => [
       b.fpT().firstPhaseDraw("Wizard's Staff"),
-      b.s().firstPhaseDraw("Balrog of Moria"),
+      b.s().firstPhaseDraw('Balrog of Moria'),
       b.fp().fellowshipPhase(),
       b.s().huntAllocation(1),
-      b.fpT().rollActionDice("character", "character"),
-      b.s().rollActionDice("character"),
-      b.fp().characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
-      b.s().characterDieCard("Balrog of Moria", playCardOnTable("Balrog of Moria")),
+      b.fpT().rollActionDice('character', 'character'),
+      b.s().rollActionDice('character'),
+      b
+        .fp()
+        .characterDieCard("Wizard's Staff", playCardOnTable("Wizard's Staff")),
+      b
+        .s()
+        .characterDieCard(
+          'Balrog of Moria',
+          playCardOnTable('Balrog of Moria'),
+        ),
       b.fp().characterDie(moveFelloswhip()),
       b.s().rollHuntDice(6),
       b.fp().skipCardReaction("Wizard's Staff"),
-      b.s().drawHuntTile("0r"),
-      b.fp().huntStory(revealFellowship("moria"))
-    ]
-  })
+      b.s().drawHuntTile('0r'),
+      b.fp().huntStory(revealFellowship('moria')),
+    ],
+  }),
 };

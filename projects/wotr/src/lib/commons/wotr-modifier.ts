@@ -6,7 +6,7 @@ export class WotrModifier<V> {
     this.modifiers.push(modifier);
   }
   unregister(modifier: V): void {
-    this.modifiers = this.modifiers.filter(m => m !== modifier);
+    this.modifiers = this.modifiers.filter((m) => m !== modifier);
   }
   clear(): void {
     this.modifiers = [];

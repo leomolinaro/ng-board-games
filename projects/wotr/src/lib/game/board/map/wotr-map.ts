@@ -6,34 +6,37 @@ import {
   inject,
   input,
   isDevMode,
-  output
-} from "@angular/core";
-import { BgMapZoom, BgSvg } from "@leobg/commons";
-import { downloadUtil } from "@leobg/commons/utils";
-import { WotrCurrentDieBox } from "../../../action-die/wotr-current-die-box";
-import { WotrAssetsStore } from "../../../assets/wotr-assets-store";
-import { WotrCharacter, WotrCharacterId } from "../../../character/wotr-character-models";
-import { WotrFellowshipBox } from "../../../fellowship/wotr-fellowship-box";
-import { WotrFellowship } from "../../../fellowship/wotr-fellowship-models";
-import { WotrFellowshipTrack } from "../../../fellowship/wotr-fellowship-track";
-import { WotrDeckBoxes } from "../../../front/wotr-deck-boxes";
-import { WotrElvenRingsBox } from "../../../front/wotr-elven-rings-box";
-import { WotrFront } from "../../../front/wotr-front-models";
-import { WotrTableCardsComponent } from "../../../front/wotr-table-card-boxes";
-import { WotrVictoryPointsTrack } from "../../../front/wotr-victory-points-track";
-import { WotrHuntBox } from "../../../hunt/wotr-hunt-box";
-import { WotrHuntState } from "../../../hunt/wotr-hunt-store";
-import { WotrPoliticalTrack } from "../../../nation/wotr-political-track";
-import { WotrRegionAreas } from "../../../region/wotr-region-areas";
-import { WotrRegion, WotrRegionId } from "../../../region/wotr-region-models";
-import { WotrGameUi } from "../../wotr-game-ui";
-import { WotrMapSlotsGenerator } from "./wotr-map-slots-generator";
-import { WotrMapService } from "./wotr-map.service";
+  output,
+} from '@angular/core';
+import { BgMapZoom, BgSvg } from '@leobg/commons';
+import { downloadUtil } from '@leobg/commons/utils';
+import { WotrCurrentDieBox } from '../../../action-die/wotr-current-die-box';
+import { WotrAssetsStore } from '../../../assets/wotr-assets-store';
+import {
+  WotrCharacter,
+  WotrCharacterId,
+} from '../../../character/wotr-character-models';
+import { WotrFellowshipBox } from '../../../fellowship/wotr-fellowship-box';
+import { WotrFellowship } from '../../../fellowship/wotr-fellowship-models';
+import { WotrFellowshipTrack } from '../../../fellowship/wotr-fellowship-track';
+import { WotrDeckBoxes } from '../../../front/wotr-deck-boxes';
+import { WotrElvenRingsBox } from '../../../front/wotr-elven-rings-box';
+import { WotrFront } from '../../../front/wotr-front-models';
+import { WotrTableCardsComponent } from '../../../front/wotr-table-card-boxes';
+import { WotrVictoryPointsTrack } from '../../../front/wotr-victory-points-track';
+import { WotrHuntBox } from '../../../hunt/wotr-hunt-box';
+import { WotrHuntState } from '../../../hunt/wotr-hunt-store';
+import { WotrPoliticalTrack } from '../../../nation/wotr-political-track';
+import { WotrRegionAreas } from '../../../region/wotr-region-areas';
+import { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import { WotrGameUi } from '../../wotr-game-ui';
+import { WotrMapSlotsGenerator } from './wotr-map-slots-generator';
+import { WotrMapService } from './wotr-map.service';
 
 const GRID_STEP = 10;
 
 @Component({
-  selector: "wotr-map",
+  selector: 'wotr-map',
   imports: [
     BgSvg,
     BgMapZoom,
@@ -46,7 +49,7 @@ const GRID_STEP = 10;
     WotrPoliticalTrack,
     WotrRegionAreas,
     WotrTableCardsComponent,
-    WotrVictoryPointsTrack
+    WotrVictoryPointsTrack,
   ],
   template: `
     <svg:svg
@@ -57,52 +60,63 @@ const GRID_STEP = 10;
       width="100%"
       height="100%"
       [attr.viewBox]="viewBox"
-      preserveAspectRatio="xMidYMin">
+      preserveAspectRatio="xMidYMin"
+    >
       <svg:g
         #wotrMap
-        [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }">
+        [bgMapZoom]="{ translateX: 0, translateY: 0, scale: 1 }"
+      >
         <image
           [attr.width]="mapWidth"
-          [attr.xlink:href]="mapImageSource"></image>
+          [attr.xlink:href]="mapImageSource"
+        ></image>
         <svg:g
           wotrRegions
           [regions]="regions()"
           [fellowship]="fellowship()"
           [characterById]="characterById()"
-          (regionClick)="regionClick.emit($event)"></svg:g>
+          (regionClick)="regionClick.emit($event)"
+        ></svg:g>
         <svg:g wotrPoliticalTrack></svg:g>
         <svg:g
           wotrHuntBox
-          [hunt]="hunt()"></svg:g>
+          [hunt]="hunt()"
+        ></svg:g>
         <svg:g wotrCurrentDieBox></svg:g>
         <svg:g
           wotrFellowshipTrack
-          [fellowship]="fellowship()"></svg:g>
+          [fellowship]="fellowship()"
+        ></svg:g>
         <svg:g
           wotrFellowshipBox
           [fellowship]="fellowship()"
-          (boxClick)="fellowshipBoxClick.emit()"></svg:g>
+          (boxClick)="fellowshipBoxClick.emit()"
+        ></svg:g>
         <svg:g
           wotrElvenRingsBox
           [freePeoplesElvenRings]="freePeoples().elvenRings"
-          [shadowElvenRings]="shadow().elvenRings"></svg:g>
+          [shadowElvenRings]="shadow().elvenRings"
+        ></svg:g>
         <svg:g
           wotrDeckBoxes
           [freePeoples]="freePeoples()"
-          [shadow]="shadow()"></svg:g>
+          [shadow]="shadow()"
+        ></svg:g>
         <svg:g
           wotrTableCards
           [freePeoples]="freePeoples()"
-          [shadow]="shadow()"></svg:g>
+          [shadow]="shadow()"
+        ></svg:g>
         <svg:g
           wotrVictoryPointsTrack
-          [fronts]="fronts()"></svg:g>
+          [fronts]="fronts()"
+        ></svg:g>
       </svg:g>
     </svg:svg>
     <!-- @if (isDevMode) {
       <button style="position: absolute; bottom: 0; left: 0;" (click)="calculateSlots ()">Calculate slots</button>
     } -->
-  `
+  `,
 })
 export class WotrMap {
   private mapService = inject(WotrMapService);
@@ -127,7 +141,7 @@ export class WotrMap {
   protected testGridPoints: { x: number; y: number; color: string }[] = [];
 
   @ViewChild(BgSvg) bgSvg!: BgSvg;
-  @ViewChild("wotrMap") mapElementRef!: ElementRef<SVGGElement>;
+  @ViewChild('wotrMap') mapElementRef!: ElementRef<SVGGElement>;
   @ViewChild(BgMapZoom, { static: true }) bgMapZoom!: BgMapZoom;
 
   protected isDevMode = isDevMode();
@@ -139,7 +153,7 @@ export class WotrMap {
   //     this.unitClick.emit (unitNode.unit);
 
   calculateSlots() {
-    const splittedViewBox = this.viewBox.split(" ");
+    const splittedViewBox = this.viewBox.split(' ');
     const width = +splittedViewBox[2];
     const height = +splittedViewBox[3];
     const screenCTM = this.mapElementRef.nativeElement.getScreenCTM()!;
@@ -149,8 +163,11 @@ export class WotrMap {
       pt.y = y * GRID_STEP;
       // this.testGridPoints.push ({ x: pt.x, y: pt.y, color: "black" });
       const clientP = pt.matrixTransform(screenCTM);
-      const elementId: string | undefined = document.elementFromPoint(clientP.x, clientP.y)?.id;
-      if (elementId && elementId.startsWith("wotr-region-")) {
+      const elementId: string | undefined = document.elementFromPoint(
+        clientP.x,
+        clientP.y,
+      )?.id;
+      if (elementId && elementId.startsWith('wotr-region-')) {
         return elementId.slice(12) as WotrRegionId;
       } else {
         return null;
@@ -162,8 +179,8 @@ export class WotrMap {
       this.regions(),
       xMax,
       yMax,
-      coordinatesToAreaId
+      coordinatesToAreaId,
     );
-    downloadUtil.downloadJson(slots, "wotr-map-slots.json");
+    downloadUtil.downloadJson(slots, 'wotr-map-slots.json');
   }
 }

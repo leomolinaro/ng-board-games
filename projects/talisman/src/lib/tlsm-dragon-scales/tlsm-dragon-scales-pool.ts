@@ -1,5 +1,5 @@
-import { Component, computed, input } from "@angular/core";
-import { Pool } from "./tlsm-store";
+import { Component, computed, input } from '@angular/core';
+import { Pool } from './tlsm-store';
 
 interface Scale {
   height: number;
@@ -9,14 +9,15 @@ interface Scale {
 }
 
 @Component({
-  selector: "tlsm-dragon-scales-pool",
+  selector: 'tlsm-dragon-scales-pool',
   template: `
     @for (scale of scales(); track $index) {
       <div class="scale">
         <img
           [height]="scale.height"
           [src]="scale.src"
-          [alt]="scale.alt" />
+          [alt]="scale.alt"
+        />
         <span>&nbsp;{{ scale.value }}</span>
       </div>
     }
@@ -39,7 +40,7 @@ interface Scale {
       width: 10vmin;
       height: 10vmin;
     }
-  `
+  `,
 })
 export class TlsmDragonScalesPool {
   pool = input.required<Pool>();
@@ -47,34 +48,39 @@ export class TlsmDragonScalesPool {
   protected scales = computed<Scale[]>(() => [
     {
       height: 65,
-      src: "../assets/talisman/varthrax-token.png",
-      alt: "varthrax",
-      value: this.pool().scales.varthrax
+      src: '../assets/talisman/varthrax-token.png',
+      alt: 'varthrax',
+      value: this.pool().scales.varthrax,
     },
     {
       height: 60,
-      src: "../assets/talisman/strike-token.png",
-      alt: "strike",
-      value: this.pool().strikes
+      src: '../assets/talisman/strike-token.png',
+      alt: 'strike',
+      value: this.pool().strikes,
     },
     {
       height: 65,
-      src: "../assets/talisman/cadorus-token.png",
-      alt: "cadorus",
-      value: this.pool().scales.cadorus
-    },
-    { height: 60, src: "../assets/talisman/rage-token.png", alt: "rage", value: this.pool().rages },
-    {
-      height: 65,
-      src: "../assets/talisman/grilipus-token.png",
-      alt: "grilipus",
-      value: this.pool().scales.grilipus
+      src: '../assets/talisman/cadorus-token.png',
+      alt: 'cadorus',
+      value: this.pool().scales.cadorus,
     },
     {
       height: 60,
-      src: "../assets/talisman/slumber-token.png",
-      alt: "slumber",
-      value: this.pool().slumbers
-    }
+      src: '../assets/talisman/rage-token.png',
+      alt: 'rage',
+      value: this.pool().rages,
+    },
+    {
+      height: 65,
+      src: '../assets/talisman/grilipus-token.png',
+      alt: 'grilipus',
+      value: this.pool().scales.grilipus,
+    },
+    {
+      height: 60,
+      src: '../assets/talisman/slumber-token.png',
+      alt: 'slumber',
+      value: this.pool().slumbers,
+    },
   ]);
 }

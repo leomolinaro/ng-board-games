@@ -1,8 +1,8 @@
-import { WotrActionDie } from "../action-die/wotr-action-die-models";
-import { WotrCombatDie } from "../battle/wotr-combat-die-models";
-import { KomeSovereignId } from "../character/wotr-character-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrHuntTileId } from "./wotr-hunt-models";
+import { WotrActionDie } from '../action-die/wotr-action-die-models';
+import { WotrCombatDie } from '../battle/wotr-combat-die-models';
+import { KomeSovereignId } from '../character/wotr-character-models';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrHuntTileId } from './wotr-hunt-models';
 
 export type WotrHuntAction =
   | WotrHuntAllocation
@@ -19,105 +19,115 @@ export type WotrHuntAction =
   | KomeCorruptSovereign;
 
 export interface WotrHuntAllocation {
-  type: "hunt-allocation";
+  type: 'hunt-allocation';
   quantity: number;
 }
 export function allocateHuntDice(quantity: number): WotrHuntAllocation {
-  return { type: "hunt-allocation", quantity };
+  return { type: 'hunt-allocation', quantity };
 }
 
 export interface WotrHuntLidlessEyeDieChange {
-  type: "hunt-lidless-eye-die-change";
+  type: 'hunt-lidless-eye-die-change';
   dice: WotrActionDie[];
 }
-export function lidlessEye(...dice: WotrActionDie[]): WotrHuntLidlessEyeDieChange {
-  return { type: "hunt-lidless-eye-die-change", dice };
+export function lidlessEye(
+  ...dice: WotrActionDie[]
+): WotrHuntLidlessEyeDieChange {
+  return { type: 'hunt-lidless-eye-die-change', dice };
 }
 
 export interface WotrHuntRoll {
-  type: "hunt-roll";
+  type: 'hunt-roll';
   dice: WotrCombatDie[];
 }
 export function rollHuntDice(...dice: WotrCombatDie[]): WotrHuntRoll {
-  return { type: "hunt-roll", dice };
+  return { type: 'hunt-roll', dice };
 }
 export interface WotrHuntReRoll {
-  type: "hunt-re-roll";
+  type: 'hunt-re-roll';
   dice: WotrCombatDie[];
 }
 export function reRollHuntDice(...dice: WotrCombatDie[]): WotrHuntReRoll {
-  return { type: "hunt-re-roll", dice };
+  return { type: 'hunt-re-roll', dice };
 }
 
 export interface WotrHuntShelobsLairRoll {
-  type: "hunt-shelobs-lair-roll";
+  type: 'hunt-shelobs-lair-roll';
   die: WotrCombatDie;
 }
-export function rollShelobsLairDie(die: WotrCombatDie): WotrHuntShelobsLairRoll {
-  return { type: "hunt-shelobs-lair-roll", die };
+export function rollShelobsLairDie(
+  die: WotrCombatDie,
+): WotrHuntShelobsLairRoll {
+  return { type: 'hunt-shelobs-lair-roll', die };
 }
 
 export interface WotrHuntTileDraw {
-  type: "hunt-tile-draw";
+  type: 'hunt-tile-draw';
   tiles: WotrHuntTileId[];
 }
 export function drawHuntTile(...tiles: WotrHuntTileId[]): WotrHuntTileDraw {
-  return { type: "hunt-tile-draw", tiles };
+  return { type: 'hunt-tile-draw', tiles };
 }
 
 export interface WotrHuntTileAdd {
-  type: "hunt-tile-add";
+  type: 'hunt-tile-add';
   tile: WotrHuntTileId;
 }
 export function addHuntTile(tile: WotrHuntTileId): WotrHuntTileAdd {
-  return { type: "hunt-tile-add", tile };
+  return { type: 'hunt-tile-add', tile };
 }
 
 export interface WotrHuntTileReturn {
-  type: "hunt-tile-return";
+  type: 'hunt-tile-return';
   tile: WotrHuntTileId;
 }
 export function returnHuntTile(tile: WotrHuntTileId): WotrHuntTileReturn {
-  return { type: "hunt-tile-return", tile };
+  return { type: 'hunt-tile-return', tile };
 }
 
 export interface WotrHuntEffect {
-  type: "hunt-effect";
+  type: 'hunt-effect';
   actions: WotrAction[];
 }
 
 export interface KomeCorruptionStartAttempt {
-  type: "corruption-start-attempt";
+  type: 'corruption-start-attempt';
   tile: WotrHuntTileId;
   sovereign: KomeSovereignId;
 }
 export function startCorruptionAttempt(
   sovereign: KomeSovereignId,
-  tile: WotrHuntTileId
+  tile: WotrHuntTileId,
 ): KomeCorruptionStartAttempt {
-  return { type: "corruption-start-attempt", tile, sovereign };
+  return { type: 'corruption-start-attempt', tile, sovereign };
 }
 
 export interface KomeCorruptionContinueAttempt {
-  type: "corruption-continue-attempt";
+  type: 'corruption-continue-attempt';
   tile: WotrHuntTileId;
 }
-export function continueCorruptionAttempt(tile: WotrHuntTileId): KomeCorruptionContinueAttempt {
-  return { type: "corruption-continue-attempt", tile };
+export function continueCorruptionAttempt(
+  tile: WotrHuntTileId,
+): KomeCorruptionContinueAttempt {
+  return { type: 'corruption-continue-attempt', tile };
 }
 
 export interface KomeCorruptionStopAttempt {
-  type: "corruption-stop-attempt";
+  type: 'corruption-stop-attempt';
   tile: WotrHuntTileId;
 }
-export function stopCorruptionAttempt(chosenTile: WotrHuntTileId): KomeCorruptionStopAttempt {
-  return { type: "corruption-stop-attempt", tile: chosenTile };
+export function stopCorruptionAttempt(
+  chosenTile: WotrHuntTileId,
+): KomeCorruptionStopAttempt {
+  return { type: 'corruption-stop-attempt', tile: chosenTile };
 }
 
 export interface KomeCorruptSovereign {
-  type: "corrupt-sovereign";
+  type: 'corrupt-sovereign';
   sovereign: KomeSovereignId;
 }
-export function corruptSovereign(sovereign: KomeSovereignId): KomeCorruptSovereign {
-  return { type: "corrupt-sovereign", sovereign };
+export function corruptSovereign(
+  sovereign: KomeSovereignId,
+): KomeCorruptSovereign {
+  return { type: 'corrupt-sovereign', sovereign };
 }

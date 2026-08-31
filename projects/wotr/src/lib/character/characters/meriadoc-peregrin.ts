@@ -1,19 +1,22 @@
-import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrUiChoice } from "../../game/wotr-game-ui";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrHuntEffectParams } from "../../hunt/wotr-hunt-models";
-import { WotrHuntEffectChoiceModifier, WotrHuntModifiers } from "../../hunt/wotr-hunt-modifiers";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { eliminateCharacter } from "../wotr-character-actions";
-import { WotrCompanionId } from "../wotr-character-models";
+import { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrUiChoice } from '../../game/wotr-game-ui';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrHuntEffectParams } from '../../hunt/wotr-hunt-models';
+import {
+  WotrHuntEffectChoiceModifier,
+  WotrHuntModifiers,
+} from '../../hunt/wotr-hunt-modifiers';
+import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import { eliminateCharacter } from '../wotr-character-actions';
+import { WotrCompanionId } from '../wotr-character-models';
 import {
   WotrBeforeCharacterElimination,
   WotrCharacterEliminationParams,
-  WotrCharacterModifiers
-} from "../wotr-character-modifiers";
-import { activateCharacterAbility } from "./wotr-playable-character-card";
+  WotrCharacterModifiers,
+} from '../wotr-character-modifiers';
+import { activateCharacterAbility } from './wotr-playable-character-card';
 
 // Meriadoc Brandybuck - Hobbit Companion (Level 1, Leadership 1)
 // Guide. During the Hunt, if the Hunt damage is one or more, separate Meriadoc from the Fellowship to reduce the Hunt damage by one.
@@ -30,27 +33,27 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
     private characterId: WotrCompanionId,
     private q: WotrGameQuery,
     private huntModifiers: WotrHuntModifiers,
-    private ui: WotrGameUiContext
+    private ui: WotrGameUiContext,
   ) {}
 
   modifier = this.huntModifiers.huntEffectChoices;
 
-  public handler: WotrHuntEffectChoiceModifier = params => {
+  public handler: WotrHuntEffectChoiceModifier = (params) => {
     const character = this.q.character(this.characterId);
     if (!character.isInFellowship()) return [];
     if (!this.q.fellowship.guideIs(this.characterId)) return [];
     if (params.damage < 1) return [];
     const choice: WotrUiChoice<WotrHuntEffectParams> = {
       character: this.characterId,
-      actions: async p => {
+      actions: async (p) => {
         // P.S.: very risky, this is set only from ui player
         p.guideSpecialAbilityAbsorption = {
           companionId: this.characterId,
-          amount: 1
+          amount: 1,
         };
         return this.ui.fellowshipUi.separateThoseCompanions([this.characterId]);
       },
-      label: () => `Separate ${character.name} (Guide ability)`
+      label: () => `Separate ${character.name} (Guide ability)`,
     };
     return [choice];
   };
@@ -62,20 +65,26 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
     private q: WotrGameQuery,
     private characterModifiers: WotrCharacterModifiers,
     private freePeoples: WotrFreePeoplesPlayer,
-    private ui: WotrGameUiContext
+    private ui: WotrGameUiContext,
   ) {}
 
   modifier = this.characterModifiers.beforeCharacterElimination;
 
-  handler: WotrBeforeCharacterElimination = async (params: WotrCharacterEliminationParams) => {
+  handler: WotrBeforeCharacterElimination = async (
+    params: WotrCharacterEliminationParams,
+  ) => {
     if (params.characterId !== this.characterId) return true;
     if (!this.q.character(this.characterId).isInFellowship()) return true;
-    if (await activateCharacterAbility(this, this.characterId, this.freePeoples)) return false;
+    if (
+      await activateCharacterAbility(this, this.characterId, this.freePeoples)
+    )
+      return false;
     return true;
   };
 
   play: () => Promise<WotrAction[]> = async () => {
-    if (this.q.fellowship.isOnMordorTrack()) return [eliminateCharacter(this.characterId)];
+    if (this.q.fellowship.isOnMordorTrack())
+      return [eliminateCharacter(this.characterId)];
     return this.ui.fellowshipUi.separateThoseCompanions([this.characterId]);
   };
 }

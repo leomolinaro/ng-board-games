@@ -1,20 +1,23 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontId, oppositeFront } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrFreePeoplesPlayer } from "../player/wotr-free-peoples-player";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { WotrCards } from "./cards/wotr-cards";
+import { Injectable, inject } from '@angular/core';
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+} from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFrontId, oppositeFront } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
+import { WotrShadowPlayer } from '../player/wotr-shadow-player';
+import { WotrCards } from './cards/wotr-cards';
 import {
   WotrCardAction,
   WotrCardDiscardFromTable,
   discardCardFromTableById,
-  drawCardIds
-} from "./wotr-card-actions";
-import { WotrCardId, cardToLabel, isFreePeoplesCard } from "./wotr-card-models";
+  drawCardIds,
+} from './wotr-card-actions';
+import { WotrCardId, cardToLabel, isFreePeoplesCard } from './wotr-card-models';
 
 @Injectable()
 export class WotrCardHandler {
@@ -31,57 +34,66 @@ export class WotrCardHandler {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
     this.actionRegistry.registerEffectLogger<WotrCardDiscardFromTable>(
-      "card-discard-from-table",
-      (effect, f) => [`"${cardToLabel(effect.card)}" is discarded from table`]
+      'card-discard-from-table',
+      (effect, f) => [`"${cardToLabel(effect.card)}" is discarded from table`],
     );
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrCardAction> {
     return {
-      "card-discard": (action, front) => this.discardCards(action.cards, front),
-      "card-discard-from-table": (action, front) => this.discardCardFromTable(action.card),
-      "card-draw": (action, front) => this.drawCards(action.cards, front),
-      "card-play-on-table": (action, front) => this.playCardOnTable(action.card, front),
-      "card-play": (action, front) => this.frontStore.discardCards([action.card], front),
-      "card-random-discard": (action, front) =>
-        this.frontStore.discardCards([action.card], oppositeFront(front))
+      'card-discard': (action, front) => this.discardCards(action.cards, front),
+      'card-discard-from-table': (action, front) =>
+        this.discardCardFromTable(action.card),
+      'card-draw': (action, front) => this.drawCards(action.cards, front),
+      'card-play-on-table': (action, front) =>
+        this.playCardOnTable(action.card, front),
+      'card-play': (action, front) =>
+        this.frontStore.discardCards([action.card], front),
+      'card-random-discard': (action, front) =>
+        this.frontStore.discardCards([action.card], oppositeFront(front)),
     };
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrCardAction> {
     return {
-      "card-discard": (action, front, f) => [
+      'card-discard': (action, front, f) => [
         f.player(front),
-        ` discards ${this.nCards(action.cards)}`
+        ` discards ${this.nCards(action.cards)}`,
       ],
-      "card-discard-from-table": (action, front, f) => [
+      'card-discard-from-table': (action, front, f) => [
         f.player(front),
-        ` discards "${cardToLabel(action.card)}" from table`
+        ` discards "${cardToLabel(action.card)}" from table`,
       ],
-      "card-draw": (action, front, f) => [f.player(front), ` draws ${this.nCards(action.cards)}`],
-      "card-play-on-table": (action, front, f) => [
+      'card-draw': (action, front, f) => [
         f.player(front),
-        ` plays "${cardToLabel(action.card)}" on table`
+        ` draws ${this.nCards(action.cards)}`,
       ],
-      "card-play": (action, front, f) => [f.player(front), ` plays "${cardToLabel(action.card)}"`],
-      "card-random-discard": (action, front, f) => [
+      'card-play-on-table': (action, front, f) => [
         f.player(front),
-        " random discards 1 card from ",
+        ` plays "${cardToLabel(action.card)}" on table`,
+      ],
+      'card-play': (action, front, f) => [
+        f.player(front),
+        ` plays "${cardToLabel(action.card)}"`,
+      ],
+      'card-random-discard': (action, front, f) => [
+        f.player(front),
+        ' random discards 1 card from ',
         f.player(oppositeFront(front)),
-        " hand"
-      ]
+        ' hand',
+      ],
     };
   }
 
   private nCards(cards: WotrCardId[]) {
-    return `${cards.length} ${cards.length === 1 ? "card" : "cards"}`;
+    return `${cards.length} ${cards.length === 1 ? 'card' : 'cards'}`;
   }
 
   private async drawCards(cards: WotrCardId[], frontId: WotrFrontId) {
     this.frontStore.drawCards(cards, frontId);
     if (this.q.front(frontId).hasExcessCards()) {
       if (this.frontStore.shouldSkipDiscardExcessCards()) return;
-      if (frontId === "free-peoples") {
+      if (frontId === 'free-peoples') {
         await this.freePeoples.discardExcessCards();
       } else {
         await this.shadow.discardExcessCards();
@@ -96,7 +108,7 @@ export class WotrCardHandler {
   discardCardFromTable(cardId: WotrCardId) {
     this.frontStore.discardCardFromTable(
       cardId,
-      isFreePeoplesCard(cardId) ? "free-peoples" : "shadow"
+      isFreePeoplesCard(cardId) ? 'free-peoples' : 'shadow',
     );
     this.cards.deactivateTableAbilities(cardId);
   }

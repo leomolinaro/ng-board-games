@@ -1,1 +1,1 @@
-export * from "./lib/brit.routes";
+export * from './lib/brit.routes';

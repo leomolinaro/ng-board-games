@@ -1,13 +1,16 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrActionApplierMap, WotrActionLoggerMap } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrElvenRingAction } from "../game/wotr-story-models";
-import { WotrHuntStore } from "../hunt/wotr-hunt-store";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrFrontAction } from "./wotr-front-actions";
-import { WotrElvenRing, WotrFrontId } from "./wotr-front-models";
-import { WotrFrontStore } from "./wotr-front-store";
+import { inject, Injectable } from '@angular/core';
+import {
+  WotrActionApplierMap,
+  WotrActionLoggerMap,
+} from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrElvenRingAction } from '../game/wotr-story-models';
+import { WotrHuntStore } from '../hunt/wotr-hunt-store';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrFrontAction } from './wotr-front-actions';
+import { WotrElvenRing, WotrFrontId } from './wotr-front-models';
+import { WotrFrontStore } from './wotr-front-store';
 
 @Injectable()
 export class WotrFrontHandler {
@@ -24,50 +27,60 @@ export class WotrFrontHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrFrontAction> {
     return {
-      "elven-ring-use": (story, front) => this.useElvenRing(story.elvenRing, front)
+      'elven-ring-use': (story, front) =>
+        this.useElvenRing(story.elvenRing, front),
     };
   }
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFrontAction> {
     return {
-      "elven-ring-use": (action, front, f) => [f.player(front), " uses the Elven Ring"]
+      'elven-ring-use': (action, front, f) => [
+        f.player(front),
+        ' uses the Elven Ring',
+      ],
     };
   }
 
   refreshVictoryPoints() {
     const points: Record<WotrFrontId, number> = {
-      "free-peoples": 0,
-      "shadow": 0
+      'free-peoples': 0,
+      shadow: 0,
     };
 
     for (const region of this.regionStore.regions()) {
-      if (region.settlement === "stronghold" || region.settlement === "city") {
-        if (region.frontId && region.controlledBy && region.controlledBy !== region.frontId) {
-          points[region.controlledBy] += region.settlement === "stronghold" ? 2 : 1;
+      if (region.settlement === 'stronghold' || region.settlement === 'city') {
+        if (
+          region.frontId &&
+          region.controlledBy &&
+          region.controlledBy !== region.frontId
+        ) {
+          points[region.controlledBy] +=
+            region.settlement === 'stronghold' ? 2 : 1;
         }
       }
     }
-    this.frontStore.setVictoryPoints(points["free-peoples"], "free-peoples");
-    this.frontStore.setVictoryPoints(points.shadow, "shadow");
+    this.frontStore.setVictoryPoints(points['free-peoples'], 'free-peoples');
+    this.frontStore.setVictoryPoints(points.shadow, 'shadow');
   }
 
   private useElvenRing(elvenRing: WotrElvenRing, front: WotrFrontId) {
     this.frontStore.removeElvenRing(elvenRing, front);
-    if (front === "free-peoples") {
-      this.frontStore.addElvenRing(elvenRing, "shadow");
+    if (front === 'free-peoples') {
+      this.frontStore.addElvenRing(elvenRing, 'shadow');
     }
   }
 
   convertDieWithElvenRing(elvenRing: WotrElvenRingAction, front: WotrFrontId) {
     this.logger.logElvenRingUse(elvenRing, front);
     this.frontStore.removeActionDie(elvenRing.fromDie, front);
-    if (elvenRing.toDie === "eye") {
+    if (elvenRing.toDie === 'eye') {
       this.huntStore.addHuntDice(1);
     } else {
       this.frontStore.addActionDie(elvenRing.toDie, front);
     }
     this.frontStore.removeElvenRing(elvenRing.ring, front);
-    if (front === "free-peoples") this.frontStore.addElvenRing(elvenRing.ring, "shadow");
+    if (front === 'free-peoples')
+      this.frontStore.addElvenRing(elvenRing.ring, 'shadow');
     this.frontStore.setElvenRingUsed(front);
   }
 }

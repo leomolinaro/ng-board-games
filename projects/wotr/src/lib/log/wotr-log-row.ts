@@ -7,61 +7,68 @@ import {
   isDevMode,
   OnInit,
   Output,
-  Signal
-} from "@angular/core";
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { cardToLabel, combatCardToLabel } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFragmentCreator } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { elvenRingLabel, WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
-import { WotrPhase } from "../game-turn/wotr-phase-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNation, WotrNationId } from "../nation/wotr-nation-models";
-import { WotrNationStore } from "../nation/wotr-nation-store";
-import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
+  Signal,
+} from '@angular/core';
+import {
+  WotrActionDie,
+  WotrActionToken,
+} from '../action-die/wotr-action-die-models';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { cardToLabel, combatCardToLabel } from '../card/wotr-card-models';
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrFragmentCreator } from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import {
+  elvenRingLabel,
+  WotrElvenRing,
+  WotrFrontId,
+} from '../front/wotr-front-models';
+import { WotrPhase } from '../game-turn/wotr-phase-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { WotrNation, WotrNationId } from '../nation/wotr-nation-models';
+import { WotrNationStore } from '../nation/wotr-nation-store';
+import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
+import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   WotrLog,
   WotrLogCardFragment,
   WotrLogFragment,
-  WotrLogStringFragment
-} from "./wotr-log-models";
+  WotrLogStringFragment,
+} from './wotr-log-models';
 
 export interface WotrLogParsedStringFragment {
-  type: "string";
+  type: 'string';
   label: string;
 }
 export interface WotrLogParsedCardFragment {
-  type: "card";
+  type: 'card';
   label: string;
 }
 export interface WotrLogParsedPlayerFragment {
-  type: "player";
+  type: 'player';
   label: string;
   front: WotrFrontId;
 }
 export interface WotrLogParsedRegionFragment {
-  type: "region";
+  type: 'region';
   region: WotrRegion;
 }
 export interface WotrLogParsedNationFragment {
-  type: "nation";
+  type: 'nation';
   nation: WotrNation;
 }
 export interface WotrLogParsedDieFragment {
-  type: "die";
+  type: 'die';
   dieImage: string;
 }
 export interface WotrLogParsedTokenFragment {
-  type: "token";
+  type: 'token';
   tokenImage: string;
 }
 export interface WotrLogParsedHuntTileFragment {
-  type: "hunt-tile";
+  type: 'hunt-tile';
   tileImage: string;
 }
 
@@ -76,55 +83,62 @@ export type WotrLogParsedFragment =
   | WotrLogParsedHuntTileFragment;
 
 @Component({
-  selector: "wotr-log-row",
+  selector: 'wotr-log-row',
   template: `
     <div
       class="log"
       [class]="{
-        'log-h0': log().type === 'setup' || log().type === 'round' || log().type === 'endGame',
+        'log-h0':
+          log().type === 'setup' ||
+          log().type === 'round' ||
+          log().type === 'endGame',
         'log-h1': log().type === 'phase',
         'battle-h2': log().type === 'battle-resolution',
         'hunt-h2': log().type === 'hunt-resolution',
         'battle-log': battleLog(),
         'hunt-log': huntLog(),
-        'breakpoint': debugBreakpoint()
+        breakpoint: debugBreakpoint(),
       }"
-      (click)="logClick.next()">
+      (click)="logClick.next()"
+    >
       @for (fragment of fragments(); track $index) {
         @switch (fragment.type) {
-          @case ("string") {
+          @case ('string') {
             <span>{{ fragment.label }}</span>
           }
-          @case ("card") {
+          @case ('card') {
             <span>
               <i>{{ fragment.label }}</i>
             </span>
           }
-          @case ("player") {
+          @case ('player') {
             <span [class]="fragment.front === 'shadow' ? 'is-red' : 'is-blue'">
               {{ fragment.label }}
             </span>
           }
-          @case ("region") {
+          @case ('region') {
             <span>{{ fragment.region.name }}</span>
           }
-          @case ("nation") {
+          @case ('nation') {
             <span>{{ fragment.nation.name }}</span>
           }
-          @case ("die") {
+          @case ('die') {
             <img
               class="action-die"
-              [src]="fragment.dieImage" />
+              [src]="fragment.dieImage"
+            />
           }
-          @case ("token") {
+          @case ('token') {
             <img
               class="action-token"
-              [src]="fragment.tokenImage" />
+              [src]="fragment.tokenImage"
+            />
           }
-          @case ("hunt-tile") {
+          @case ('hunt-tile') {
             <img
               class="hunt-tile"
-              [src]="fragment.tileImage" />
+              [src]="fragment.tileImage"
+            />
           }
         }
       }
@@ -132,7 +146,7 @@ export type WotrLogParsedFragment =
   `,
   styles: [
     `
-      @use "wotr-variables" as *;
+      @use 'wotr-variables' as *;
 
       .log {
         margin-left: 1.5vw;
@@ -166,7 +180,7 @@ export type WotrLogParsedFragment =
         }
 
         &.breakpoint::before {
-          content: "";
+          content: '';
           display: inline-block;
           width: 10px;
           height: 10px;
@@ -181,10 +195,12 @@ export type WotrLogParsedFragment =
         vertical-align: text-bottom;
         height: 16px;
       }
-    `
-  ]
+    `,
+  ],
 })
-export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFragment> {
+export class WotrLogRow
+  implements OnInit, WotrFragmentCreator<WotrLogParsedFragment>
+{
   private actionRegistry = inject(WotrActionRegistry);
   private assets = inject(WotrAssetsStore);
   private nationStore = inject(WotrNationStore);
@@ -198,12 +214,12 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
 
   protected battleLog = computed(() => {
     const log = this.log();
-    return "during" in log && log.during === "battle";
+    return 'during' in log && log.during === 'battle';
   });
 
   protected huntLog = computed(() => {
     const log = this.log();
-    return "during" in log && log.during === "hunt";
+    return 'during' in log && log.during === 'hunt';
   });
 
   ngOnInit() {
@@ -216,10 +232,10 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
   protected fragments: Signal<WotrLogParsedFragment[]> = computed(() => {
     const l = this.log();
     switch (l.type) {
-      case "v2": {
+      case 'v2': {
         const parsed: WotrLogParsedFragment[] = [];
         for (const f of l.fragments) {
-          if (typeof f === "string") {
+          if (typeof f === 'string') {
             parsed.push(this.string(f));
           } else {
             parsed.push(this.parseFragment(f));
@@ -227,122 +243,133 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
         }
         return parsed;
       }
-      case "setup":
-        return [this.string("Setup")];
-      case "endGame":
-        return [this.string("End Game")];
-      case "round":
+      case 'setup':
+        return [this.string('Setup')];
+      case 'endGame':
+        return [this.string('End Game')];
+      case 'round':
         return [this.string(`Round ${l.roundNumber}`)];
-      case "phase":
+      case 'phase':
         return [this.string(this.getPhaseLabel(l.phase))];
-      case "battle-resolution":
-        return [this.string("Battle Resolution")];
-      case "hunt-resolution":
-        return [this.string("Hunt Resolution")];
-      case "action": {
-        const fragments = this.actionRegistry.getActionLogFragments<WotrLogParsedFragment>(
-          l.action,
-          l.front,
-          this
-        );
+      case 'battle-resolution':
+        return [this.string('Battle Resolution')];
+      case 'hunt-resolution':
+        return [this.string('Hunt Resolution')];
+      case 'action': {
+        const fragments =
+          this.actionRegistry.getActionLogFragments<WotrLogParsedFragment>(
+            l.action,
+            l.front,
+            this,
+          );
         const parsed: WotrLogParsedFragment[] = [];
         for (const f of fragments) {
-          if (typeof f === "string") {
+          if (typeof f === 'string') {
             parsed.push(this.string(f));
           } else {
             parsed.push(f);
           }
         }
-        if ("card" in l.story) {
+        if ('card' in l.story) {
           // TODO WOTR combat card label
-          parsed.push(this.string(", using "), this.card(cardToLabel(l.story.card)));
-        }
-        if ("character" in l.story && l.story.character) {
           parsed.push(
-            this.string(", using "),
-            this.character(l.story.character),
-            this.string("'s ability")
+            this.string(', using '),
+            this.card(cardToLabel(l.story.card)),
           );
         }
-        if ("die" in l.story) {
-          parsed.push(this.string(" "), this.die(l.story.die, l.front));
+        if ('character' in l.story && l.story.character) {
+          parsed.push(
+            this.string(', using '),
+            this.character(l.story.character),
+            this.string("'s ability"),
+          );
         }
-        if ("token" in l.story) {
-          parsed.push(this.string(" "), this.token(l.story.token, l.front));
+        if ('die' in l.story) {
+          parsed.push(this.string(' '), this.die(l.story.die, l.front));
+        }
+        if ('token' in l.story) {
+          parsed.push(this.string(' '), this.token(l.story.token, l.front));
         }
         return parsed;
       }
-      case "no-actions": {
+      case 'no-actions': {
         const parsed: WotrLogParsedFragment[] = [
           this.player(l.front),
-          this.string("performs no actions")
+          this.string('performs no actions'),
         ];
-        if ("card" in l.story) {
-          parsed.push(this.string(", using "), this.card(cardToLabel(l.story.card)));
-        }
-        if ("character" in l.story && l.story.character) {
+        if ('card' in l.story) {
           parsed.push(
-            this.string(", using "),
-            this.character(l.story.character),
-            this.string("'s ability")
+            this.string(', using '),
+            this.card(cardToLabel(l.story.card)),
           );
         }
-        if ("die" in l.story) {
-          parsed.push(this.string(" "), this.die(l.story.die, l.front));
+        if ('character' in l.story && l.story.character) {
+          parsed.push(
+            this.string(', using '),
+            this.character(l.story.character),
+            this.string("'s ability"),
+          );
         }
-        if ("token" in l.story) {
-          parsed.push(this.string(" "), this.token(l.story.token, l.front));
+        if ('die' in l.story) {
+          parsed.push(this.string(' '), this.die(l.story.die, l.front));
+        }
+        if ('token' in l.story) {
+          parsed.push(this.string(' '), this.token(l.story.token, l.front));
         }
         return parsed;
       }
-      case "story": {
+      case 'story': {
         switch (l.story.type) {
-          case "die-pass":
-            return [this.player(l.front), this.string(" passes")];
-          case "token-skip":
-            return [this.player(l.front), this.string(" skips remaining tokens")];
-          case "card-effect-skip":
+          case 'die-pass':
+            return [this.player(l.front), this.string(' passes')];
+          case 'token-skip':
             return [
               this.player(l.front),
-              this.string(" skip "),
-              this.card(cardToLabel(l.story.card))
+              this.string(' skips remaining tokens'),
             ];
-          case "character-effect-skip":
+          case 'card-effect-skip':
+            return [
+              this.player(l.front),
+              this.string(' skip '),
+              this.card(cardToLabel(l.story.card)),
+            ];
+          case 'character-effect-skip':
             return [
               this.player(l.front),
               this.string(
-                " skip character reaction"
-              ) /* , this.card (combatCardToLabel (l.story.character)) */
+                ' skip character reaction',
+              ) /* , this.card (combatCardToLabel (l.story.character)) */,
             ];
-          case "combat-card-effect-skip":
+          case 'combat-card-effect-skip':
             return [
               this.player(l.front),
-              this.string(" skip "),
-              this.card(combatCardToLabel(l.story.card))
+              this.string(' skip '),
+              this.card(combatCardToLabel(l.story.card)),
             ];
           default:
             throw new Error(`Unknown log type ${(l as any).type}`);
         }
       }
-      case "elven-ring": {
+      case 'elven-ring': {
         return [
           this.player(l.front),
-          this.string(" uses the "),
+          this.string(' uses the '),
           this.elvenRing(l.ring),
-          this.string(" Elven Ring to change "),
+          this.string(' Elven Ring to change '),
           this.die(l.fromDie, l.front),
-          this.string(" into "),
-          this.die(l.toDie, l.front)
+          this.string(' into '),
+          this.die(l.toDie, l.front),
         ];
       }
-      case "effect": {
-        const fragments = this.actionRegistry.getEffectLogFragments<WotrLogParsedFragment>(
-          l.effect,
-          this
-        );
+      case 'effect': {
+        const fragments =
+          this.actionRegistry.getEffectLogFragments<WotrLogParsedFragment>(
+            l.effect,
+            this,
+          );
         const parsed: WotrLogParsedFragment[] = [];
         for (const f of fragments) {
-          if (typeof f === "string") {
+          if (typeof f === 'string') {
             parsed.push(this.string(f));
           } else {
             parsed.push(f);
@@ -350,37 +377,41 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
         }
         return parsed;
       }
-      case "combat-card":
-        return [this.player(l.front), this.string(" plays "), this.card(combatCardToLabel(l.card))];
-      case "reveal-in-mordor":
-        return [this.string("The fellowship is revealed on the Mordor Track")];
-      case "move-in-mordor":
-        return [this.string("The fellowship moves on the Mordor Track")];
+      case 'combat-card':
+        return [
+          this.player(l.front),
+          this.string(' plays '),
+          this.card(combatCardToLabel(l.card)),
+        ];
+      case 'reveal-in-mordor':
+        return [this.string('The fellowship is revealed on the Mordor Track')];
+      case 'move-in-mordor':
+        return [this.string('The fellowship moves on the Mordor Track')];
       default:
         throw new Error(`Unknown log type ${(l as any).type}`);
     }
   });
 
   private parseFragment(f: WotrLogFragment): WotrLogParsedFragment {
-    if (typeof f === "string") {
+    if (typeof f === 'string') {
       return this.string(f);
     } else {
       switch (f.type) {
-        case "card":
+        case 'card':
           return this.card(f.label);
-        case "die":
+        case 'die':
           return this.die(f.die, f.front);
-        case "hunt-tile":
+        case 'hunt-tile':
           return this.huntTile(f.tile);
-        case "nation":
+        case 'nation':
           return this.nation(f.nation);
-        case "player":
+        case 'player':
           return this.player(f.front);
-        case "region":
+        case 'region':
           return this.region(f.region);
-        case "string":
+        case 'string':
           return this.string(f.label);
-        case "token":
+        case 'token':
           return this.token(f.token, f.front);
         default:
           throw new Error(`Unknown fragment type ${(f as any).type}`);
@@ -389,63 +420,69 @@ export class WotrLogRow implements OnInit, WotrFragmentCreator<WotrLogParsedFrag
   }
 
   private string(label: string): WotrLogStringFragment {
-    return { type: "string", label };
+    return { type: 'string', label };
   }
 
   private card(label: string): WotrLogCardFragment {
-    return { type: "card", label };
+    return { type: 'card', label };
   }
 
   private getPhaseLabel(phase: WotrPhase): string {
     switch (phase) {
       case 1:
-        return "Recover Action Dice and Draw Event Cards";
+        return 'Recover Action Dice and Draw Event Cards';
       case 2:
-        return "Fellowship Phase";
+        return 'Fellowship Phase';
       case 3:
-        return "Hunt Allocation";
+        return 'Hunt Allocation';
       case 4:
-        return "Action Roll";
+        return 'Action Roll';
       case 5:
-        return "Action Resolution";
+        return 'Action Resolution';
       case 6:
-        return "Victory Check";
+        return 'Victory Check';
     }
   }
 
   elvenRing(ring: WotrElvenRing): WotrLogParsedStringFragment {
-    return { type: "string", label: elvenRingLabel(ring) };
+    return { type: 'string', label: elvenRingLabel(ring) };
   }
 
   character(characterId: WotrCharacterId): WotrLogParsedStringFragment {
     const companion = this.q.character(characterId);
-    return { type: "string", label: companion.name };
+    return { type: 'string', label: companion.name };
   }
 
   player(front: WotrFrontId): WotrLogParsedPlayerFragment {
     const player = this.playerInfoStore.player(front);
-    return { type: "player", label: player.name, front };
+    return { type: 'player', label: player.name, front };
   }
 
   region(regionId: WotrRegionId): WotrLogParsedRegionFragment {
     const region = this.regionStore.region(regionId);
-    return { type: "region", region };
+    return { type: 'region', region };
   }
 
   nation(nationId: WotrNationId): WotrLogParsedNationFragment {
     const nation = this.nationStore.nation(nationId);
-    return { type: "nation", nation };
+    return { type: 'nation', nation };
   }
 
   die(die: WotrActionDie, frontId: WotrFrontId): WotrLogParsedDieFragment {
-    return { type: "die", dieImage: this.assets.actionDieImage(die, frontId) };
+    return { type: 'die', dieImage: this.assets.actionDieImage(die, frontId) };
   }
 
-  token(token: WotrActionToken, frontId: WotrFrontId): WotrLogParsedTokenFragment {
-    return { type: "token", tokenImage: this.assets.actionTokenImage(token, frontId) };
+  token(
+    token: WotrActionToken,
+    frontId: WotrFrontId,
+  ): WotrLogParsedTokenFragment {
+    return {
+      type: 'token',
+      tokenImage: this.assets.actionTokenImage(token, frontId),
+    };
   }
 
   huntTile(tile: WotrHuntTileId): WotrLogParsedHuntTileFragment {
-    return { type: "hunt-tile", tileImage: this.assets.huntTileImage(tile) };
+    return { type: 'hunt-tile', tileImage: this.assets.huntTileImage(tile) };
   }
 }

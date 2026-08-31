@@ -1,5672 +1,5756 @@
-import { WotrScenarioDefinition } from "../wotr-scenario";
-import { WotrStoriesBuilder } from "../wotr-story-builder";
+import { WotrScenarioDefinition } from '../wotr-scenario';
+import { WotrStoriesBuilder } from '../wotr-story-builder';
 
 export const scenario: WotrScenarioDefinition = {
   options: {
     tokens: [],
     expansions: [],
-    variants: []
+    variants: [],
   },
   stories: (b: WotrStoriesBuilder) => [
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha10", "fpstr05"],
-          type: "card-draw"
-        }
+          cards: ['fpcha10', 'fpstr05'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "free-peoples",
-      time: 1
+      playerId: 'free-peoples',
+      time: 1,
     },
     {
       time: 1,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          cards: ["scha21", "sstr20"],
-          type: "card-draw"
-        }
+          cards: ['scha21', 'sstr20'],
+          type: 'card-draw',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 2,
-      type: "base",
-      actions: []
+      type: 'base',
+      actions: [],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 0,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 3
+      playerId: 'shadow',
+      time: 3,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 4,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "action-roll",
-          dice: ["character", "character", "muster-army", "character"]
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "action-roll",
-          dice: ["muster", "eye", "muster-army", "army", "army", "eye", "event"]
-        }
+          type: 'action-roll',
+          dice: ['character', 'character', 'muster-army', 'character'],
+        },
       ],
-      playerId: "shadow",
-      time: 4
     },
     {
-      playerId: "free-peoples",
+      type: 'base',
+      actions: [
+        {
+          type: 'action-roll',
+          dice: [
+            'muster',
+            'eye',
+            'muster-army',
+            'army',
+            'army',
+            'eye',
+            'event',
+          ],
+        },
+      ],
+      playerId: 'shadow',
+      time: 4,
+    },
+    {
+      playerId: 'free-peoples',
       time: 5,
-      type: "die-pass"
+      type: 'die-pass',
     },
     {
       time: 6,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "isengard"
-        }
+          type: 'political-advance',
+          nation: 'isengard',
+        },
       ],
-      type: "die",
-      die: "muster"
+      type: 'die',
+      die: 'muster',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 7,
-      die: "character"
+      die: 'character',
     },
     {
       time: 8,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [6, 3],
-          type: "hunt-roll"
-        }
+          type: 'hunt-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 9,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["3"]
-        }
+          type: 'hunt-tile-draw',
+          tiles: ['3'],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 10,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          characters: ["gandalf-the-grey"],
-          type: "character-elimination"
+          characters: ['gandalf-the-grey'],
+          type: 'character-elimination',
         },
         {
-          companion: "strider",
-          type: "fellowship-guide"
-        }
-      ]
+          companion: 'strider',
+          type: 'fellowship-guide',
+        },
+      ],
     },
     {
       time: 11,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          fromRegion: "north-dunland",
-          type: "army-movement",
-          toRegion: "moria"
+          fromRegion: 'north-dunland',
+          type: 'army-movement',
+          toRegion: 'moria',
         },
         {
-          fromRegion: "dol-guldur",
-          type: "army-movement",
-          toRegion: "south-anduin-vale"
-        }
+          fromRegion: 'dol-guldur',
+          type: 'army-movement',
+          toRegion: 'south-anduin-vale',
+        },
       ],
-      type: "die",
-      die: "army"
+      type: 'die',
+      die: 'army',
     },
     {
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 12,
-      playerId: "free-peoples",
-      die: "character"
+      playerId: 'free-peoples',
+      die: 'character',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 13,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [1, 4]
-        }
-      ]
+          type: 'hunt-roll',
+          dice: [1, 4],
+        },
+      ],
     },
     {
-      die: "muster-army",
-      playerId: "shadow",
+      die: 'muster-army',
+      playerId: 'shadow',
       time: 14,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "orthanc",
-          characters: ["saruman"],
-          type: "character-play"
-        }
-      ]
+          region: 'orthanc',
+          characters: ['saruman'],
+          type: 'character-play',
+        },
+      ],
     },
     {
-      die: "muster-army",
+      die: 'muster-army',
       actions: [
         {
-          toRegion: "old-forest-road",
-          type: "army-movement",
-          fromRegion: "carrock"
+          toRegion: 'old-forest-road',
+          type: 'army-movement',
+          fromRegion: 'carrock',
         },
         {
-          fromRegion: "edoras",
-          toRegion: "westemnet",
-          type: "army-movement"
-        }
+          fromRegion: 'edoras',
+          toRegion: 'westemnet',
+          type: 'army-movement',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 15,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      die: "event",
-      card: "scha21",
-      playerId: "shadow",
+      die: 'event',
+      card: 'scha21',
+      playerId: 'shadow',
       time: 16,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          card: "scha21",
-          type: "card-play-on-table"
-        }
-      ]
+          card: 'scha21',
+          type: 'card-play-on-table',
+        },
+      ],
     },
     {
-      die: "character",
-      type: "die",
+      die: 'character',
+      type: 'die',
       actions: [
         {
-          card: "scha21",
-          type: "card-discard-from-table"
+          card: 'scha21',
+          type: 'card-discard-from-table',
         },
         {
-          elvenRing: "vilya",
-          type: "elven-ring-use"
-        }
+          elvenRing: 'vilya',
+          type: 'elven-ring-use',
+        },
       ],
-      playerId: "free-peoples",
-      time: 17
+      playerId: 'free-peoples',
+      time: 17,
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "south-anduin-vale",
-          type: "army-movement",
-          toRegion: "dimrill-dale"
+          fromRegion: 'south-anduin-vale',
+          type: 'army-movement',
+          toRegion: 'dimrill-dale',
         },
         {
-          fromRegion: "moria",
-          toRegion: "dimrill-dale",
-          type: "army-movement"
-        }
+          fromRegion: 'moria',
+          toRegion: 'dimrill-dale',
+          type: 'army-movement',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 18,
-      die: "army"
+      die: 'army',
     },
     {
       actions: [
         {
-          cards: ["fpcha01", "fpstr22"],
-          type: "card-draw"
-        }
+          cards: ['fpcha01', 'fpstr22'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 19,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 19,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["scha03", "sstr07"],
-          type: "card-draw"
-        }
-      ]
+          cards: ['scha03', 'sstr07'],
+          type: 'card-draw',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 20,
-      type: "base",
-      actions: []
+      type: 'base',
+      actions: [],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 21,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 2,
-          type: "hunt-allocation"
-        }
-      ]
-    },
-    {
-      time: 22,
-      playerId: "free-peoples",
-      actions: [
-        {
-          dice: ["event", "muster", "will-of-the-west", "character"],
-          type: "action-roll"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      type: "base"
     },
     {
-      playerId: "shadow",
       time: 22,
-      type: "base",
+      playerId: 'free-peoples',
       actions: [
         {
-          dice: ["muster", "army", "event", "event", "army", "eye"],
-          type: "action-roll"
-        }
-      ]
+          dice: ['event', 'muster', 'will-of-the-west', 'character'],
+          type: 'action-roll',
+        },
+      ],
+      type: 'base',
     },
     {
-      die: "will-of-the-west",
+      playerId: 'shadow',
+      time: 22,
+      type: 'base',
+      actions: [
+        {
+          dice: ['muster', 'army', 'event', 'event', 'army', 'eye'],
+          type: 'action-roll',
+        },
+      ],
+    },
+    {
+      die: 'will-of-the-west',
       time: 23,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "character-play",
-          region: "fangorn",
-          characters: ["gandalf-the-white"]
-        }
+          type: 'character-play',
+          region: 'fangorn',
+          characters: ['gandalf-the-white'],
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
-      die: "muster",
+      die: 'muster',
       time: 24,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          nation: "sauron",
-          type: "political-advance",
-          quantity: 1
-        }
+          nation: 'sauron',
+          type: 'political-advance',
+          quantity: 1,
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 25,
-      type: "die-pass"
+      type: 'die-pass',
     },
     {
       actions: [
         {
-          toRegion: "gorgoroth",
-          type: "army-movement",
-          fromRegion: "barad-dur"
+          toRegion: 'gorgoroth',
+          type: 'army-movement',
+          fromRegion: 'barad-dur',
         },
         {
-          type: "army-movement",
-          toRegion: "gorgoroth",
-          fromRegion: "nurn"
-        }
+          type: 'army-movement',
+          toRegion: 'gorgoroth',
+          fromRegion: 'nurn',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 26,
-      playerId: "shadow",
-      die: "army"
+      playerId: 'shadow',
+      die: 'army',
     },
     {
-      die: "character",
-      type: "die",
+      die: 'character',
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      playerId: "free-peoples",
-      time: 27
+      playerId: 'free-peoples',
+      time: 27,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 28,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [5, 1, 1]
-        }
-      ]
+          type: 'hunt-roll',
+          dice: [5, 1, 1],
+        },
+      ],
     },
     {
       time: 29,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          nation: "sauron",
-          type: "regular-unit-recruitment",
+          nation: 'sauron',
+          type: 'regular-unit-recruitment',
           quantity: 3,
-          region: "dol-guldur"
+          region: 'dol-guldur',
         },
         {
-          region: "mount-gundabad",
-          nation: "sauron",
-          type: "regular-unit-recruitment",
-          quantity: 3
-        }
+          region: 'mount-gundabad',
+          nation: 'sauron',
+          type: 'regular-unit-recruitment',
+          quantity: 3,
+        },
       ],
-      type: "die-card",
-      die: "event",
-      card: "sstr20"
+      type: 'die-card',
+      die: 'event',
+      card: 'sstr20',
     },
     {
-      die: "event",
-      card: "fpcha01",
+      die: 'event',
+      card: 'fpcha01',
       actions: [
         {
-          tile: "b0",
-          type: "hunt-tile-add"
-        }
+          tile: 'b0',
+          type: 'hunt-tile-add',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 30,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 31,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          tile: "r3s",
-          type: "hunt-tile-add"
-        }
+          tile: 'r3s',
+          type: 'hunt-tile-add',
+        },
       ],
-      type: "die-card",
-      card: "scha03",
-      die: "event"
+      type: 'die-card',
+      card: 'scha03',
+      die: 'event',
     },
     {
       actions: [
         {
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "dwarves",
-          region: "erebor"
+          type: 'elite-unit-recruitment',
+          nation: 'dwarves',
+          region: 'erebor',
         },
         {
-          region: "erebor",
-          type: "leader-recruitment",
+          region: 'erebor',
+          type: 'leader-recruitment',
           quantity: 1,
-          nation: "dwarves"
-        }
+          nation: 'dwarves',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 32,
-      playerId: "free-peoples",
-      die: "muster",
-      card: "fpstr22"
+      playerId: 'free-peoples',
+      die: 'muster',
+      card: 'fpstr22',
     },
     {
       actions: [
         {
-          fromRegion: "gorgoroth",
+          fromRegion: 'gorgoroth',
           leftUnits: {
             regulars: [
               {
-                nation: "sauron",
-                quantity: 5
-              }
+                nation: 'sauron',
+                quantity: 5,
+              },
             ],
-            front: "shadow",
+            front: 'shadow',
             nNazgul: 0,
-            elites: []
+            elites: [],
           },
-          type: "army-movement",
-          toRegion: "morannon"
+          type: 'army-movement',
+          toRegion: 'morannon',
         },
         {
-          fromRegion: "gorgoroth",
-          toRegion: "minas-morgul",
-          type: "army-movement"
-        }
+          fromRegion: 'gorgoroth',
+          toRegion: 'minas-morgul',
+          type: 'army-movement',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 33,
-      playerId: "shadow",
-      die: "army"
+      playerId: 'shadow',
+      die: 'army',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 34,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha23", "fpstr11"],
-          type: "card-draw"
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          cards: ["scha24", "sstr01"],
-          type: "card-draw"
-        }
+          cards: ['fpcha23', 'fpstr11'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 34
     },
     {
-      playerId: "free-peoples",
+      type: 'base',
+      actions: [
+        {
+          cards: ['scha24', 'sstr01'],
+          type: 'card-draw',
+        },
+      ],
+      playerId: 'shadow',
+      time: 34,
+    },
+    {
+      playerId: 'free-peoples',
       time: 35,
-      type: "base",
-      actions: []
+      type: 'base',
+      actions: [],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 36,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 2,
-          type: "hunt-allocation"
-        }
-      ]
+          type: 'hunt-allocation',
+        },
+      ],
     },
     {
       time: 37,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          dice: ["character", "character", "event", "event", "will-of-the-west"],
-          type: "action-roll"
-        }
+          dice: [
+            'character',
+            'character',
+            'event',
+            'event',
+            'will-of-the-west',
+          ],
+          type: 'action-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 37,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          dice: ["eye", "eye", "army", "eye", "muster", "army"],
-          type: "action-roll"
-        }
-      ]
+          dice: ['eye', 'eye', 'army', 'eye', 'muster', 'army'],
+          type: 'action-roll',
+        },
+      ],
     },
     {
-      die: "character",
-      type: "die",
+      die: 'character',
+      type: 'die',
       actions: [
         {
-          type: "companion-separation",
-          toRegion: "druwaith-iaur",
-          companions: ["strider", "boromir"]
+          type: 'companion-separation',
+          toRegion: 'druwaith-iaur',
+          companions: ['strider', 'boromir'],
         },
         {
-          type: "fellowship-guide",
-          companion: "legolas"
-        }
+          type: 'fellowship-guide',
+          companion: 'legolas',
+        },
       ],
-      playerId: "free-peoples",
-      time: 38
+      playerId: 'free-peoples',
+      time: 38,
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "morannon",
-          toRegion: "dagorlad",
-          type: "army-movement"
+          fromRegion: 'morannon',
+          toRegion: 'dagorlad',
+          type: 'army-movement',
         },
         {
-          fromRegion: "minas-morgul",
-          type: "army-movement",
-          toRegion: "north-ithilien"
-        }
+          fromRegion: 'minas-morgul',
+          type: 'army-movement',
+          toRegion: 'north-ithilien',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 39,
-      die: "army"
+      die: 'army',
     },
     {
-      die: "character",
-      playerId: "free-peoples",
+      die: 'character',
+      playerId: 'free-peoples',
       time: 40,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          toRegion: "dol-amroth",
-          type: "character-movement",
-          fromRegion: "druwaith-iaur",
-          characters: ["strider", "boromir"]
+          toRegion: 'dol-amroth',
+          type: 'character-movement',
+          fromRegion: 'druwaith-iaur',
+          characters: ['strider', 'boromir'],
         },
         {
-          toRegion: "edoras",
-          type: "character-movement",
-          fromRegion: "fangorn",
-          characters: ["gandalf-the-white"]
-        }
-      ]
+          toRegion: 'edoras',
+          type: 'character-movement',
+          fromRegion: 'fangorn',
+          characters: ['gandalf-the-white'],
+        },
+      ],
     },
     {
-      type: "die-pass",
+      type: 'die-pass',
       time: 41,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "character-play",
-          characters: ["aragorn"],
-          region: "dol-amroth"
-        }
+          type: 'character-play',
+          characters: ['aragorn'],
+          region: 'dol-amroth',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 42,
-      playerId: "free-peoples",
-      die: "will-of-the-west"
+      playerId: 'free-peoples',
+      die: 'will-of-the-west',
     },
     {
-      die: "muster",
+      die: 'muster',
       time: 43,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "political-advance",
+          type: 'political-advance',
           quantity: 1,
-          nation: "southrons"
-        }
+          nation: 'southrons',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 44,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          region: "dol-amroth",
-          type: "elite-unit-recruitment",
+          region: 'dol-amroth',
+          type: 'elite-unit-recruitment',
           quantity: 1,
-          nation: "gondor"
+          nation: 'gondor',
         },
         {
-          cards: ["fpstr06", "fpstr20"],
-          type: "card-draw"
-        }
+          cards: ['fpstr06', 'fpstr20'],
+          type: 'card-draw',
+        },
       ],
-      card: "fpcha23",
-      die: "event"
+      card: 'fpcha23',
+      die: 'event',
     },
     {
-      die: "army",
-      card: "sstr07",
+      die: 'army',
+      card: 'sstr07',
       actions: [
         {
-          fromRegion: "dagorlad",
-          toRegion: "dol-guldur",
-          type: "army-movement",
+          fromRegion: 'dagorlad',
+          toRegion: 'dol-guldur',
+          type: 'army-movement',
           leftUnits: {
             elites: [],
             nNazgul: 0,
-            front: "shadow",
+            front: 'shadow',
             regulars: [
               {
                 quantity: 3,
-                nation: "sauron"
-              }
-            ]
-          }
-        }
+                nation: 'sauron',
+              },
+            ],
+          },
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 45,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 46,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          type: "region-choose",
-          region: "dimrill-dale"
+          type: 'region-choose',
+          region: 'dimrill-dale',
         },
         {
-          type: "combat-roll",
-          dice: [2, 6, 6, 3, 2]
-        }
+          type: 'combat-roll',
+          dice: [2, 6, 6, 3, 2],
+        },
       ],
-      die: "event",
-      card: "fpstr05"
+      die: 'event',
+      card: 'fpstr05',
     },
     {
       time: 47,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          region: "dimrill-dale",
-          nation: "sauron",
+          region: 'dimrill-dale',
+          nation: 'sauron',
           quantity: 2,
-          type: "regular-unit-elimination"
-        }
+          type: 'regular-unit-elimination',
+        },
       ],
-      type: "card-effect",
-      card: "fpstr05"
+      type: 'card-effect',
+      card: 'fpstr05',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 48,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha05", "fpstr03"],
-          type: "card-draw"
-        }
-      ]
+          cards: ['fpcha05', 'fpstr03'],
+          type: 'card-draw',
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["scha01", "sstr17"],
-          type: "card-draw"
-        }
+          cards: ['scha01', 'sstr17'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 48
+      playerId: 'shadow',
+      time: 48,
     },
     {
       time: 49,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 50,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
-      ]
+          type: 'hunt-allocation',
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "action-roll",
-          dice: ["event", "will-of-the-west", "muster", "character", "will-of-the-west", "event"]
-        }
+          type: 'action-roll',
+          dice: [
+            'event',
+            'will-of-the-west',
+            'muster',
+            'character',
+            'will-of-the-west',
+            'event',
+          ],
+        },
       ],
-      playerId: "free-peoples",
-      time: 51
+      playerId: 'free-peoples',
+      time: 51,
     },
     {
       time: 51,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          dice: ["muster-army", "muster-army", "muster", "muster-army", "event", "event", "muster"],
-          type: "action-roll"
-        }
+          dice: [
+            'muster-army',
+            'muster-army',
+            'muster',
+            'muster-army',
+            'event',
+            'event',
+            'muster',
+          ],
+          type: 'action-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      die: "will-of-the-west",
-      playerId: "free-peoples",
+      die: 'will-of-the-west',
+      playerId: 'free-peoples',
       time: 52,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
-      ]
+          type: 'fellowship-progress',
+        },
+      ],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 53,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [3]
-        }
-      ]
+          type: 'hunt-roll',
+          dice: [3],
+        },
+      ],
     },
     {
-      die: "muster",
-      playerId: "shadow",
+      die: 'muster',
+      playerId: 'shadow',
       time: 54,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "political-advance",
+          type: 'political-advance',
           quantity: 1,
-          nation: "southrons"
-        }
-      ]
+          nation: 'southrons',
+        },
+      ],
     },
     {
       time: 55,
-      playerId: "free-peoples",
-      type: "die-pass"
+      playerId: 'free-peoples',
+      type: 'die-pass',
     },
     {
-      die: "event",
-      card: "sstr17",
+      die: 'event',
+      card: 'sstr17',
       actions: [
         {
-          region: "north-rhun",
-          type: "regular-unit-recruitment",
+          region: 'north-rhun',
+          type: 'regular-unit-recruitment',
           quantity: 2,
-          nation: "southrons"
+          nation: 'southrons',
         },
         {
-          region: "south-rhun",
-          nation: "southrons",
+          region: 'south-rhun',
+          nation: 'southrons',
           quantity: 2,
-          type: "regular-unit-recruitment"
+          type: 'regular-unit-recruitment',
         },
         {
           quantity: 2,
-          type: "regular-unit-recruitment",
-          nation: "southrons",
-          region: "umbar"
-        }
+          type: 'regular-unit-recruitment',
+          nation: 'southrons',
+          region: 'umbar',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 56,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      card: "fpcha05",
-      die: "event",
+      card: 'fpcha05',
+      die: 'event',
       actions: [
         {
-          card: "fpcha05",
-          type: "card-play-on-table"
-        }
+          card: 'fpcha05',
+          type: 'card-play-on-table',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 57,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 58,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          toRegion: "east-rhun",
-          type: "army-movement",
-          fromRegion: "south-rhun"
+          toRegion: 'east-rhun',
+          type: 'army-movement',
+          fromRegion: 'south-rhun',
         },
         {
-          fromRegion: "dol-guldur",
-          type: "army-movement",
-          toRegion: "narrows-of-the-forest"
-        }
+          fromRegion: 'dol-guldur',
+          type: 'army-movement',
+          toRegion: 'narrows-of-the-forest',
+        },
       ],
-      type: "die",
-      die: "muster-army"
+      type: 'die',
+      die: 'muster-army',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 59,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          card: "fpstr03",
-          type: "card-play-on-table"
+          card: 'fpstr03',
+          type: 'card-play-on-table',
         },
         {
-          nation: "north",
-          type: "political-advance",
-          quantity: 1
-        }
+          nation: 'north',
+          type: 'political-advance',
+          quantity: 1,
+        },
       ],
-      die: "event",
-      card: "fpstr03"
+      die: 'event',
+      card: 'fpstr03',
     },
     {
-      die: "muster-army",
-      playerId: "shadow",
+      die: 'muster-army',
+      playerId: 'shadow',
       time: 60,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "army-movement",
-          toRegion: "vale-of-the-carnen",
-          fromRegion: "east-rhun"
+          type: 'army-movement',
+          toRegion: 'vale-of-the-carnen',
+          fromRegion: 'east-rhun',
         },
         {
-          toRegion: "vale-of-the-carnen",
-          type: "army-movement",
-          fromRegion: "north-rhun"
-        }
-      ]
+          toRegion: 'vale-of-the-carnen',
+          type: 'army-movement',
+          fromRegion: 'north-rhun',
+        },
+      ],
     },
     {
-      die: "muster",
+      die: 'muster',
       time: 61,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "north"
-        }
+          type: 'political-advance',
+          nation: 'north',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       actions: [
         {
-          toRegion: "dale",
-          type: "army-attack",
-          fromRegion: "vale-of-the-carnen"
-        }
+          toRegion: 'dale',
+          type: 'army-attack',
+          fromRegion: 'vale-of-the-carnen',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 62,
-      playerId: "shadow",
-      die: "muster-army"
+      playerId: 'shadow',
+      die: 'muster-army',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 63,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 64,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 65,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [3]
-        }
-      ]
+          type: 'combat-roll',
+          dice: [3],
+        },
+      ],
     },
     {
       time: 65,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "combat-roll",
-          dice: [4, 5, 4, 2, 5]
-        }
+          type: 'combat-roll',
+          dice: [4, 5, 4, 2, 5],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 66,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [1]
-        }
+          type: 'combat-re-roll',
+          dice: [1],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 67,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "battle-continue",
-          region: "dale"
-        }
+          type: 'battle-continue',
+          region: 'dale',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 68,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "army-retreat",
-          toRegion: "woodland-realm"
-        }
-      ]
+          type: 'army-retreat',
+          toRegion: 'woodland-realm',
+        },
+      ],
     },
     {
       time: 69,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      die: "will-of-the-west",
-      playerId: "free-peoples",
+      die: 'will-of-the-west',
+      playerId: 'free-peoples',
       time: 70,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "carrock",
-          nation: "north",
-          type: "elite-unit-recruitment",
-          quantity: 1
-        }
-      ]
-    },
-    {
-      actions: [
-        {
-          type: "character-play",
-          characters: ["the-witch-king"],
-          region: "narrows-of-the-forest"
-        }
-      ],
-      type: "die",
-      time: 71,
-      playerId: "shadow",
-      die: "muster"
-    },
-    {
-      actions: [
-        {
-          nation: "gondor",
+          region: 'carrock',
+          nation: 'north',
+          type: 'elite-unit-recruitment',
           quantity: 1,
-          type: "political-advance"
-        }
+        },
       ],
-      type: "die",
+    },
+    {
+      actions: [
+        {
+          type: 'character-play',
+          characters: ['the-witch-king'],
+          region: 'narrows-of-the-forest',
+        },
+      ],
+      type: 'die',
+      time: 71,
+      playerId: 'shadow',
+      die: 'muster',
+    },
+    {
+      actions: [
+        {
+          nation: 'gondor',
+          quantity: 1,
+          type: 'political-advance',
+        },
+      ],
+      type: 'die',
       time: 72,
-      playerId: "free-peoples",
-      character: "boromir",
-      die: "character"
+      playerId: 'free-peoples',
+      character: 'boromir',
+      die: 'character',
     },
     {
       actions: [
         {
           quantity: 2,
-          type: "nazgul-recruitment",
-          region: "narrows-of-the-forest"
+          type: 'nazgul-recruitment',
+          region: 'narrows-of-the-forest',
         },
         {
-          type: "army-attack",
-          toRegion: "old-forest-road",
-          fromRegion: "narrows-of-the-forest"
-        }
+          type: 'army-attack',
+          toRegion: 'old-forest-road',
+          fromRegion: 'narrows-of-the-forest',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 73,
-      playerId: "shadow",
-      card: "scha24",
-      die: "event"
+      playerId: 'shadow',
+      card: 'scha24',
+      die: 'event',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 74,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 75,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [2]
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      playerId: "free-peoples",
-      time: 76
     },
     {
-      playerId: "shadow",
-      time: 76,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [5, 5, 3, 3, 5]
-        }
-      ]
+          type: 'combat-roll',
+          dice: [2],
+        },
+      ],
+      playerId: 'free-peoples',
+      time: 76,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'shadow',
+      time: 76,
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-roll',
+          dice: [5, 5, 3, 3, 5],
+        },
+      ],
+    },
+    {
+      playerId: 'free-peoples',
       time: 77,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "regular-unit-elimination",
-          nation: "north",
-          region: "old-forest-road"
-        }
-      ]
+          type: 'regular-unit-elimination',
+          nation: 'north',
+          region: 'old-forest-road',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 78,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 79,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha07", "fpstr21"],
-          type: "card-draw"
-        }
-      ]
-    },
-    {
-      actions: [
-        {
-          cards: ["scha17", "sstr13"],
-          type: "card-draw"
-        }
+          cards: ['fpcha07', 'fpstr21'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+    },
+    {
+      actions: [
+        {
+          cards: ['scha17', 'sstr13'],
+          type: 'card-draw',
+        },
+      ],
+      type: 'base',
       time: 79,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 80,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "fellowship-declare",
-          region: "dimrill-dale"
-        }
+          type: 'fellowship-declare',
+          region: 'dimrill-dale',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 81
+      playerId: 'shadow',
+      time: 81,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 82,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "action-roll",
+          type: 'action-roll',
           dice: [
-            "muster",
-            "will-of-the-west",
-            "character",
-            "muster",
-            "character",
-            "will-of-the-west"
-          ]
-        }
-      ]
+            'muster',
+            'will-of-the-west',
+            'character',
+            'muster',
+            'character',
+            'will-of-the-west',
+          ],
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "action-roll",
-          dice: ["army", "eye", "event", "event", "muster", "army", "eye", "event"]
-        }
+          type: 'action-roll',
+          dice: [
+            'army',
+            'eye',
+            'event',
+            'event',
+            'muster',
+            'army',
+            'eye',
+            'event',
+          ],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 82,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      die: "muster",
-      playerId: "free-peoples",
+      die: 'muster',
+      playerId: 'free-peoples',
       time: 83,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "carrock",
+          region: 'carrock',
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "north"
-        }
-      ]
+          type: 'elite-unit-recruitment',
+          nation: 'north',
+        },
+      ],
     },
     {
-      die: "army",
+      die: 'army',
       actions: [
         {
-          type: "army-attack",
-          toRegion: "carrock",
-          fromRegion: "old-forest-road"
-        }
+          type: 'army-attack',
+          toRegion: 'carrock',
+          fromRegion: 'old-forest-road',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 84,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 85,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          card: "sstr01",
-          type: "combat-card-choose"
-        }
+          card: 'sstr01',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
-          card: "fpstr20",
-          type: "combat-card-choose"
-        }
+          card: 'fpstr20',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 86,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 87,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-roll",
-          dice: [4, 3]
-        }
+          type: 'combat-roll',
+          dice: [4, 3],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
           dice: [2, 1, 2, 2, 3],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 87,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 88,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [4, 2, 6, 6, 4]
-        }
-      ]
+          type: 'combat-re-roll',
+          dice: [4, 2, 6, 6, 4],
+        },
+      ],
     },
     {
       actions: [
         {
-          region: "old-forest-road",
+          region: 'old-forest-road',
           quantity: 2,
-          type: "regular-unit-elimination",
-          nation: "sauron"
-        }
+          type: 'regular-unit-elimination',
+          nation: 'sauron',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 89,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          region: "carrock",
-          nation: "north",
+          region: 'carrock',
+          nation: 'north',
           quantity: 2,
-          type: "elite-unit-elimination"
-        }
+          type: 'elite-unit-elimination',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 90,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 91,
-      type: "base",
+      type: 'base',
       actions: [
         {
           leftUnits: {
             regulars: [
               {
-                nation: "sauron",
-                quantity: 6
-              }
+                nation: 'sauron',
+                quantity: 6,
+              },
             ],
             nNazgul: 4,
-            characters: ["the-witch-king"],
+            characters: ['the-witch-king'],
             elites: [
               {
-                nation: "sauron",
-                quantity: 1
-              }
+                nation: 'sauron',
+                quantity: 1,
+              },
             ],
-            front: "shadow"
+            front: 'shadow',
           },
-          type: "army-advance"
-        }
-      ]
+          type: 'army-advance',
+        },
+      ],
     },
     {
-      type: "character-effect",
+      type: 'character-effect',
       actions: [
         {
-          cards: ["sstr22"],
-          type: "card-draw"
-        }
+          cards: ['sstr22'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 92,
-      character: "the-witch-king"
+      character: 'the-witch-king',
     },
     {
       time: 93,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "elves"
-        }
+          type: 'political-advance',
+          nation: 'elves',
+        },
       ],
-      type: "die",
-      die: "muster"
+      type: 'die',
+      die: 'muster',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 94,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "dimrill-dale",
-          type: "army-attack",
+          fromRegion: 'dimrill-dale',
+          type: 'army-attack',
           retroguard: {
             elites: [],
-            front: "shadow",
+            front: 'shadow',
             nNazgul: 1,
             regulars: [
               {
                 quantity: 1,
-                nation: "sauron"
-              }
-            ]
+                nation: 'sauron',
+              },
+            ],
           },
-          toRegion: "lorien"
-        }
+          toRegion: 'lorien',
+        },
       ],
-      die: "army"
+      die: 'army',
     },
     {
       time: 95,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          region: "lorien",
-          type: "army-retreat-into-siege"
-        }
+          region: 'lorien',
+          type: 'army-retreat-into-siege',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           leftUnits: {
             nNazgul: 1,
-            front: "shadow",
+            front: 'shadow',
             elites: [],
             regulars: [
               {
-                nation: "sauron",
-                quantity: 1
-              }
-            ]
+                nation: 'sauron',
+                quantity: 1,
+              },
+            ],
           },
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      playerId: "shadow",
-      time: 96
+      playerId: 'shadow',
+      time: 96,
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "elves"
-        }
+          type: 'political-advance',
+          nation: 'elves',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 97,
-      die: "will-of-the-west"
+      die: 'will-of-the-west',
     },
     {
-      die: "character",
+      die: 'character',
       elvenRing: {
-        toDie: "character",
-        fromDie: "event",
-        ring: "vilya"
+        toDie: 'character',
+        fromDie: 'event',
+        ring: 'vilya',
       },
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 98,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "old-forest-road",
-          type: "army-attack",
-          toRegion: "woodland-realm"
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "army-retreat-into-siege",
-          region: "woodland-realm"
-        }
+          fromRegion: 'old-forest-road',
+          type: 'army-attack',
+          toRegion: 'woodland-realm',
+        },
       ],
-      playerId: "free-peoples",
-      time: 99
     },
     {
-      playerId: "shadow",
+      type: 'base',
+      actions: [
+        {
+          type: 'army-retreat-into-siege',
+          region: 'woodland-realm',
+        },
+      ],
+      playerId: 'free-peoples',
+      time: 99,
+    },
+    {
+      playerId: 'shadow',
       time: 100,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "army-advance"
-        }
-      ]
+          type: 'army-advance',
+        },
+      ],
     },
     {
-      die: "character",
+      die: 'character',
       time: 101,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       time: 102,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [5, 2, 4]
-        }
+          type: 'hunt-roll',
+          dice: [5, 2, 4],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [4, 6],
-          type: "hunt-re-roll"
-        }
+          type: 'hunt-re-roll',
+        },
       ],
-      playerId: "shadow",
-      time: 103
+      playerId: 'shadow',
+      time: 103,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 104,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          tiles: ["0r"],
-          type: "hunt-tile-draw"
-        }
-      ]
+          tiles: ['0r'],
+          type: 'hunt-tile-draw',
+        },
+      ],
     },
     {
       time: 105,
-      playerId: "free-peoples",
-      type: "card-effect-skip",
-      card: "fpcha05"
+      playerId: 'free-peoples',
+      type: 'card-effect-skip',
+      card: 'fpcha05',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "south-anduin-vale",
-          type: "fellowship-reveal"
-        }
+          region: 'south-anduin-vale',
+          type: 'fellowship-reveal',
+        },
       ],
-      playerId: "free-peoples",
-      time: 106
+      playerId: 'free-peoples',
+      time: 106,
     },
     {
-      card: "sstr13",
-      die: "event",
-      playerId: "shadow",
+      card: 'sstr13',
+      die: 'event',
+      playerId: 'shadow',
       time: 107,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "isengard",
-          region: "lorien"
-        }
-      ]
+          type: 'elite-unit-recruitment',
+          nation: 'isengard',
+          region: 'lorien',
+        },
+      ],
     },
     {
-      die: "character",
+      die: 'character',
       actions: [
         {
-          type: "fellowship-hide"
-        }
+          type: 'fellowship-hide',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 108,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          tile: "rds",
-          type: "hunt-tile-add"
-        }
+          tile: 'rds',
+          type: 'hunt-tile-add',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 109,
-      die: "event",
-      card: "scha01"
+      die: 'event',
+      card: 'scha01',
     },
     {
       time: 110,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "region-choose",
-          region: "north-ithilien"
+          type: 'region-choose',
+          region: 'north-ithilien',
         },
         {
-          type: "combat-roll",
-          dice: [1, 2, 5]
-        }
+          type: 'combat-roll',
+          dice: [1, 2, 5],
+        },
       ],
-      type: "die-card",
-      die: "will-of-the-west",
-      card: "fpstr06"
+      type: 'die-card',
+      die: 'will-of-the-west',
+      card: 'fpstr06',
     },
     {
-      card: "fpstr06",
-      type: "card-effect",
+      card: 'fpstr06',
+      type: 'card-effect',
       actions: [
         {
-          type: "regular-unit-elimination",
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "sauron",
-          region: "north-ithilien"
-        }
+          nation: 'sauron',
+          region: 'north-ithilien',
+        },
       ],
-      playerId: "shadow",
-      time: 111
+      playerId: 'shadow',
+      time: 111,
     },
     {
-      card: "fpstr06",
+      card: 'fpstr06',
       actions: [
         {
-          region: "osgiliath",
-          nation: "gondor",
-          type: "elite-unit-recruitment",
-          quantity: 1
+          region: 'osgiliath',
+          nation: 'gondor',
+          type: 'elite-unit-recruitment',
+          quantity: 1,
         },
         {
-          nation: "gondor",
-          type: "leader-recruitment",
+          nation: 'gondor',
+          type: 'leader-recruitment',
           quantity: 1,
-          region: "osgiliath"
-        }
+          region: 'osgiliath',
+        },
       ],
-      type: "card-effect",
+      type: 'card-effect',
       time: 112,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      card: "sstr22",
-      die: "muster",
+      card: 'sstr22',
+      die: 'muster',
       actions: [
         {
-          region: "angmar",
-          nation: "sauron",
-          type: "regular-unit-recruitment",
-          quantity: 1
-        },
-        {
-          region: "ettenmoors",
-          type: "regular-unit-recruitment",
+          region: 'angmar',
+          nation: 'sauron',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          nation: "sauron"
+        },
+        {
+          region: 'ettenmoors',
+          type: 'regular-unit-recruitment',
+          quantity: 1,
+          nation: 'sauron',
         },
         {
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "sauron",
-          region: "weather-hills"
+          type: 'regular-unit-recruitment',
+          nation: 'sauron',
+          region: 'weather-hills',
         },
         {
-          region: "troll-shaws",
-          nation: "sauron",
-          type: "elite-unit-recruitment",
-          quantity: 1
-        }
+          region: 'troll-shaws',
+          nation: 'sauron',
+          type: 'elite-unit-recruitment',
+          quantity: 1,
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 113,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          cards: ["fpcha04", "fpstr15"],
-          type: "card-draw"
-        }
+          cards: ['fpcha04', 'fpstr15'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 114,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["scha07", "sstr02"],
-          type: "card-draw"
-        }
+          cards: ['scha07', 'sstr02'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 114
+      playerId: 'shadow',
+      time: 114,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [],
-      playerId: "free-peoples",
-      time: 115
+      playerId: 'free-peoples',
+      time: 115,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 116
+      playerId: 'shadow',
+      time: 116,
     },
     {
       actions: [
         {
           dice: [
-            "muster",
-            "muster",
-            "character",
-            "will-of-the-west",
-            "character",
-            "will-of-the-west"
+            'muster',
+            'muster',
+            'character',
+            'will-of-the-west',
+            'character',
+            'will-of-the-west',
           ],
-          type: "action-roll"
-        }
+          type: 'action-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 117,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "action-roll",
-          dice: ["character", "eye", "army", "eye", "event", "event", "muster", "army"]
-        }
+          type: 'action-roll',
+          dice: [
+            'character',
+            'eye',
+            'army',
+            'eye',
+            'event',
+            'event',
+            'muster',
+            'army',
+          ],
+        },
       ],
-      playerId: "shadow",
-      time: 117
+      playerId: 'shadow',
+      time: 117,
     },
     {
-      card: "fpstr15",
-      die: "will-of-the-west",
-      type: "die-card",
+      card: 'fpstr15',
+      die: 'will-of-the-west',
+      type: 'die-card',
       actions: [
         {
-          region: "lorien",
+          region: 'lorien',
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "elves"
+          type: 'elite-unit-recruitment',
+          nation: 'elves',
         },
         {
-          cards: ["fpstr13"],
-          type: "card-draw"
-        }
+          cards: ['fpstr13'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "free-peoples",
-      time: 118
+      playerId: 'free-peoples',
+      time: 118,
     },
     {
       time: 119,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          tiles: ["0r"],
-          type: "hunt-tile-draw"
-        }
+          tiles: ['0r'],
+          type: 'hunt-tile-draw',
+        },
       ],
-      type: "die-card",
-      die: "event",
-      card: "scha07"
+      type: 'die-card',
+      die: 'event',
+      card: 'scha07',
     },
     {
       actions: [
         {
-          region: "south-anduin-vale",
-          type: "fellowship-reveal"
-        }
+          region: 'south-anduin-vale',
+          type: 'fellowship-reveal',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 120,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      die: "character",
-      playerId: "free-peoples",
+      die: 'character',
+      playerId: 'free-peoples',
       time: 121,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-hide"
-        }
-      ]
-    },
-    {
-      die: "army",
-      type: "die",
-      actions: [
-        {
-          toRegion: "woodland-realm",
-          type: "army-attack",
-          fromRegion: "woodland-realm"
-        }
+          type: 'fellowship-hide',
+        },
       ],
-      playerId: "shadow",
-      time: 122
     },
     {
-      playerId: "shadow",
+      die: 'army',
+      type: 'die',
+      actions: [
+        {
+          toRegion: 'woodland-realm',
+          type: 'army-attack',
+          fromRegion: 'woodland-realm',
+        },
+      ],
+      playerId: 'shadow',
+      time: 122,
+    },
+    {
+      playerId: 'shadow',
       time: 123,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "sstr02",
-          type: "combat-card-choose"
-        }
-      ]
+          card: 'sstr02',
+          type: 'combat-card-choose',
+        },
+      ],
     },
     {
       actions: [
         {
-          card: "fpstr11",
-          type: "combat-card-choose"
-        }
+          card: 'fpstr11',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 124,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 125,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-roll",
-          dice: [2, 3]
-        }
+          type: 'combat-roll',
+          dice: [2, 3],
+        },
       ],
-      type: "combat-card-effect",
-      card: "fpstr11"
+      type: 'combat-card-effect',
+      card: 'fpstr11',
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [6, 2, 1]
-        }
+          type: 'combat-roll',
+          dice: [6, 2, 1],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 126,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [6, 4, 6, 5, 4]
-        }
+          type: 'combat-roll',
+          dice: [6, 4, 6, 5, 4],
+        },
       ],
-      playerId: "shadow",
-      time: 126
+      playerId: 'shadow',
+      time: 126,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [6, 5]
-        }
+          type: 'combat-re-roll',
+          dice: [6, 5],
+        },
       ],
-      playerId: "free-peoples",
-      time: 127
+      playerId: 'free-peoples',
+      time: 127,
     },
     {
       time: 127,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [4, 2, 6]
-        }
+          type: 'combat-re-roll',
+          dice: [4, 2, 6],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 128,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "elite-unit-downgrade",
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          nation: "sauron",
-          region: "woodland-realm"
+          nation: 'sauron',
+          region: 'woodland-realm',
         },
         {
-          region: "woodland-realm",
-          type: "regular-unit-elimination",
+          region: 'woodland-realm',
+          type: 'regular-unit-elimination',
           quantity: 2,
-          nation: "sauron"
-        }
+          nation: 'sauron',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 129,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "woodland-realm",
-          nation: "elves",
-          type: "regular-unit-elimination",
-          quantity: 1
+          region: 'woodland-realm',
+          nation: 'elves',
+          type: 'regular-unit-elimination',
+          quantity: 1,
         },
         {
-          nation: "elves",
-          type: "elite-unit-elimination",
+          nation: 'elves',
+          type: 'elite-unit-elimination',
           quantity: 1,
-          region: "woodland-realm"
-        }
-      ]
+          region: 'woodland-realm',
+        },
+      ],
     },
     {
-      card: "sstr02",
-      type: "combat-card-effect",
+      card: 'sstr02',
+      type: 'combat-card-effect',
       actions: [
         {
-          nation: "sauron",
-          type: "regular-unit-elimination",
+          nation: 'sauron',
+          type: 'regular-unit-elimination',
           quantity: 2,
-          region: "woodland-realm"
-        }
+          region: 'woodland-realm',
+        },
       ],
-      playerId: "shadow",
-      time: 130
+      playerId: 'shadow',
+      time: 130,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [2, 2]
-        }
+          type: 'combat-roll',
+          dice: [2, 2],
+        },
       ],
-      playerId: "shadow",
-      time: 131
+      playerId: 'shadow',
+      time: 131,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 132,
-      type: "character-effect",
+      type: 'character-effect',
       actions: [
         {
-          cards: ["sstr21"],
-          type: "card-draw"
-        }
+          cards: ['sstr21'],
+          type: 'card-draw',
+        },
       ],
-      character: "the-witch-king"
+      character: 'the-witch-king',
     },
     {
-      die: "muster",
+      die: 'muster',
       time: 133,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          nation: "dwarves",
+          nation: 'dwarves',
           quantity: 1,
-          type: "political-advance"
-        }
+          type: 'political-advance',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
-      die: "army",
-      playerId: "shadow",
+      die: 'army',
+      playerId: 'shadow',
       time: 134,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "woodland-realm",
-          type: "army-attack",
-          toRegion: "woodland-realm"
-        }
-      ]
+          fromRegion: 'woodland-realm',
+          type: 'army-attack',
+          toRegion: 'woodland-realm',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 135,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 136,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 137,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [6]
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [4, 1, 5]
-        }
+          type: 'combat-roll',
+          dice: [6],
+        },
       ],
-      playerId: "shadow",
-      time: 137
     },
     {
-      playerId: "shadow",
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-roll',
+          dice: [4, 1, 5],
+        },
+      ],
+      playerId: 'shadow',
+      time: 137,
+    },
+    {
+      playerId: 'shadow',
       time: 138,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [5, 2, 2],
-          type: "combat-re-roll"
-        }
-      ]
+          type: 'combat-re-roll',
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "woodland-realm",
-          nation: "sauron",
+          region: 'woodland-realm',
+          nation: 'sauron',
           quantity: 1,
-          type: "regular-unit-elimination"
-        }
+          type: 'regular-unit-elimination',
+        },
       ],
-      playerId: "shadow",
-      time: 139
+      playerId: 'shadow',
+      time: 139,
     },
     {
       time: 140,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
-      die: "character"
+      type: 'die',
+      die: 'character',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 141,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [1, 2, 4]
-        }
-      ]
+          type: 'hunt-roll',
+          dice: [1, 2, 4],
+        },
+      ],
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          cards: ["sstr06"],
-          type: "card-draw"
-        }
+          cards: ['sstr06'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 142,
-      die: "event"
+      die: 'event',
     },
     {
-      die: "muster",
-      card: "fpstr21",
-      playerId: "free-peoples",
+      die: 'muster',
+      card: 'fpstr21',
+      playerId: 'free-peoples',
       time: 143,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          nation: "elves",
-          type: "elite-unit-recruitment",
+          nation: 'elves',
+          type: 'elite-unit-recruitment',
           quantity: 1,
-          region: "rivendell"
+          region: 'rivendell',
         },
         {
-          cards: ["fpstr14"],
-          type: "card-draw"
-        }
-      ]
+          cards: ['fpstr14'],
+          type: 'card-draw',
+        },
+      ],
     },
     {
-      character: "saruman",
-      die: "muster",
+      character: 'saruman',
+      die: 'muster',
       time: 144,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          region: "orthanc",
-          nation: "isengard",
-          type: "regular-unit-upgrade",
-          quantity: 2
-        }
+          region: 'orthanc',
+          nation: 'isengard',
+          type: 'regular-unit-upgrade',
+          quantity: 2,
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       actions: [
         {
-          tile: "b-1",
-          type: "hunt-tile-add"
-        }
+          tile: 'b-1',
+          type: 'hunt-tile-add',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 145,
-      playerId: "free-peoples",
-      die: "will-of-the-west",
-      card: "fpcha04"
+      playerId: 'free-peoples',
+      die: 'will-of-the-west',
+      card: 'fpcha04',
     },
     {
-      die: "character",
+      die: 'character',
       actions: [
         {
-          toRegion: "western-brown-lands",
+          toRegion: 'western-brown-lands',
           nNazgul: 1,
-          type: "nazgul-movement",
-          fromRegion: "dimrill-dale"
+          type: 'nazgul-movement',
+          fromRegion: 'dimrill-dale',
         },
         {
-          fromRegion: "north-ithilien",
-          type: "nazgul-movement",
+          fromRegion: 'north-ithilien',
+          type: 'nazgul-movement',
           nNazgul: 1,
-          toRegion: "western-emyn-muil"
+          toRegion: 'western-emyn-muil',
         },
         {
-          fromRegion: "woodland-realm",
-          type: "nazgul-movement",
-          toRegion: "eastern-brown-lands",
-          nNazgul: 1
+          fromRegion: 'woodland-realm',
+          type: 'nazgul-movement',
+          toRegion: 'eastern-brown-lands',
+          nNazgul: 1,
         },
         {
-          fromRegion: "woodland-realm",
-          type: "nazgul-movement",
-          toRegion: "dale",
-          nNazgul: 3
+          fromRegion: 'woodland-realm',
+          type: 'nazgul-movement',
+          toRegion: 'dale',
+          nNazgul: 3,
         },
         {
-          fromRegion: "woodland-realm",
-          characters: ["the-witch-king"],
-          type: "character-movement",
-          toRegion: "dale"
-        }
+          fromRegion: 'woodland-realm',
+          characters: ['the-witch-king'],
+          type: 'character-movement',
+          toRegion: 'dale',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 146,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 147,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          cards: ["fpcha06", "fpstr19"],
-          type: "card-draw"
-        }
+          cards: ['fpcha06', 'fpstr19'],
+          type: 'card-draw',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["scha10", "sstr09"],
-          type: "card-draw"
-        }
+          cards: ['scha10', 'sstr09'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 147
+      playerId: 'shadow',
+      time: 147,
     },
     {
       actions: [],
-      type: "base",
+      type: 'base',
       time: 148,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 149
+      playerId: 'shadow',
+      time: 149,
     },
     {
       actions: [
         {
           dice: [
-            "character",
-            "will-of-the-west",
-            "muster",
-            "muster-army",
-            "will-of-the-west",
-            "muster-army"
+            'character',
+            'will-of-the-west',
+            'muster',
+            'muster-army',
+            'will-of-the-west',
+            'muster-army',
           ],
-          type: "action-roll"
-        }
+          type: 'action-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 150,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 150,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "action-roll",
+          type: 'action-roll',
           dice: [
-            "muster-army",
-            "muster-army",
-            "muster-army",
-            "event",
-            "character",
-            "event",
-            "muster-army",
-            "army"
-          ]
-        }
-      ]
+            'muster-army',
+            'muster-army',
+            'muster-army',
+            'event',
+            'character',
+            'event',
+            'muster-army',
+            'army',
+          ],
+        },
+      ],
     },
     {
-      card: "fpcha06",
-      die: "will-of-the-west",
-      playerId: "free-peoples",
+      card: 'fpcha06',
+      die: 'will-of-the-west',
+      playerId: 'free-peoples',
       time: 151,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          card: "fpcha06",
-          type: "card-play-on-table"
-        }
-      ]
+          card: 'fpcha06',
+          type: 'card-play-on-table',
+        },
+      ],
     },
     {
-      character: "saruman",
-      die: "muster-army",
-      playerId: "shadow",
+      character: 'saruman',
+      die: 'muster-army',
+      playerId: 'shadow',
       time: 152,
-      type: "die",
+      type: 'die',
       actions: [
         {
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "isengard",
-          region: "north-dunland"
+          type: 'regular-unit-recruitment',
+          nation: 'isengard',
+          region: 'north-dunland',
         },
         {
-          nation: "isengard",
-          type: "regular-unit-recruitment",
+          nation: 'isengard',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          region: "south-dunland"
+          region: 'south-dunland',
         },
         {
-          nation: "isengard",
+          nation: 'isengard',
           quantity: 1,
-          type: "regular-unit-recruitment",
-          region: "orthanc"
-        }
-      ]
+          type: 'regular-unit-recruitment',
+          region: 'orthanc',
+        },
+      ],
     },
     {
-      die: "muster",
-      type: "die",
+      die: 'muster',
+      type: 'die',
       actions: [
         {
-          nation: "dwarves",
+          nation: 'dwarves',
           quantity: 1,
-          type: "political-advance"
-        }
+          type: 'political-advance',
+        },
       ],
-      playerId: "free-peoples",
-      time: 153
+      playerId: 'free-peoples',
+      time: 153,
     },
     {
       actions: [
         {
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "isengard",
-          region: "north-dunland"
+          type: 'regular-unit-recruitment',
+          nation: 'isengard',
+          region: 'north-dunland',
         },
         {
-          nation: "isengard",
-          type: "regular-unit-recruitment",
+          nation: 'isengard',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          region: "south-dunland"
+          region: 'south-dunland',
         },
         {
-          nation: "isengard",
+          nation: 'isengard',
           quantity: 1,
-          type: "regular-unit-recruitment",
-          region: "orthanc"
-        }
+          type: 'regular-unit-recruitment',
+          region: 'orthanc',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 154,
-      playerId: "shadow",
-      character: "saruman",
-      die: "muster-army"
+      playerId: 'shadow',
+      character: 'saruman',
+      die: 'muster-army',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 155,
-      type: "die-pass"
+      type: 'die-pass',
     },
     {
       time: 156,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           quantity: 2,
-          type: "regular-unit-upgrade",
-          nation: "isengard",
-          region: "orthanc"
-        }
+          type: 'regular-unit-upgrade',
+          nation: 'isengard',
+          region: 'orthanc',
+        },
       ],
-      type: "die",
-      character: "saruman",
-      die: "muster-army"
+      type: 'die',
+      character: 'saruman',
+      die: 'muster-army',
     },
     {
-      type: "die-pass",
-      playerId: "free-peoples",
-      time: 157
+      type: 'die-pass',
+      playerId: 'free-peoples',
+      time: 157,
     },
     {
-      character: "saruman",
-      die: "muster-army",
+      character: 'saruman',
+      die: 'muster-army',
       actions: [
         {
-          region: "north-dunland",
-          nation: "isengard",
+          region: 'north-dunland',
+          nation: 'isengard',
           quantity: 1,
-          type: "regular-unit-recruitment"
+          type: 'regular-unit-recruitment',
         },
         {
-          nation: "isengard",
+          nation: 'isengard',
           quantity: 1,
-          type: "regular-unit-recruitment",
-          region: "south-dunland"
+          type: 'regular-unit-recruitment',
+          region: 'south-dunland',
         },
         {
-          region: "orthanc",
+          region: 'orthanc',
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "isengard"
-        }
+          type: 'regular-unit-recruitment',
+          nation: 'isengard',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 158,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      die: "character",
+      die: 'character',
       time: 159,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       actions: [
         {
-          type: "hunt-roll",
-          dice: [4]
-        }
+          type: 'hunt-roll',
+          dice: [4],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 160,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 161,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          fromRegion: "dale",
-          toRegion: "woodland-realm",
+          fromRegion: 'dale',
+          toRegion: 'woodland-realm',
           leftUnits: {
             nNazgul: 3,
             regulars: [
               {
                 quantity: 7,
-                nation: "southrons"
-              }
+                nation: 'southrons',
+              },
             ],
-            front: "shadow",
+            front: 'shadow',
             elites: [],
-            characters: []
+            characters: [],
           },
-          type: "army-movement"
+          type: 'army-movement',
         },
         {
-          fromRegion: "mount-gundabad",
-          type: "army-movement",
-          toRegion: "mount-gram"
+          fromRegion: 'mount-gundabad',
+          type: 'army-movement',
+          toRegion: 'mount-gram',
         },
         {
-          toRegion: "moria",
-          type: "army-movement",
-          fromRegion: "north-dunland"
+          toRegion: 'moria',
+          type: 'army-movement',
+          fromRegion: 'north-dunland',
         },
         {
-          fromRegion: "angmar",
-          toRegion: "ettenmoors",
-          type: "army-movement"
-        }
+          fromRegion: 'angmar',
+          toRegion: 'ettenmoors',
+          type: 'army-movement',
+        },
       ],
-      card: "sstr09",
-      die: "event"
+      card: 'sstr09',
+      die: 'event',
     },
     {
-      die: "muster-army",
-      playerId: "free-peoples",
+      die: 'muster-army',
+      playerId: 'free-peoples',
       time: 162,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          nation: "dwarves",
-          type: "political-advance",
-          quantity: 1
-        }
-      ]
-    },
-    {
-      die: "character",
-      playerId: "shadow",
-      time: 163,
-      type: "die",
-      actions: [
-        {
-          type: "army-attack",
-          toRegion: "woodland-realm",
-          fromRegion: "woodland-realm"
-        }
-      ]
-    },
-    {
-      playerId: "shadow",
-      time: 164,
-      type: "base",
-      actions: [
-        {
-          type: "combat-card-choose-not"
-        }
-      ]
-    },
-    {
-      playerId: "free-peoples",
-      time: 165,
-      type: "base",
-      actions: [
-        {
-          type: "combat-card-choose-not"
-        }
-      ]
-    },
-    {
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [5]
-        }
+          nation: 'dwarves',
+          type: 'political-advance',
+          quantity: 1,
+        },
       ],
-      type: "base",
+    },
+    {
+      die: 'character',
+      playerId: 'shadow',
+      time: 163,
+      type: 'die',
+      actions: [
+        {
+          type: 'army-attack',
+          toRegion: 'woodland-realm',
+          fromRegion: 'woodland-realm',
+        },
+      ],
+    },
+    {
+      playerId: 'shadow',
+      time: 164,
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-card-choose-not',
+        },
+      ],
+    },
+    {
+      playerId: 'free-peoples',
+      time: 165,
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-card-choose-not',
+        },
+      ],
+    },
+    {
+      actions: [
+        {
+          type: 'combat-roll',
+          dice: [5],
+        },
+      ],
+      type: 'base',
       time: 166,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 166,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [3, 1, 2, 6, 3],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 167,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          region: "woodland-realm",
+          region: 'woodland-realm',
           quantity: 1,
-          type: "regular-unit-elimination",
-          nation: "southrons"
-        }
+          type: 'regular-unit-elimination',
+          nation: 'southrons',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 168,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "woodland-realm",
-          type: "regular-unit-elimination",
+          region: 'woodland-realm',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "north"
+          nation: 'north',
         },
         {
           quantity: 1,
-          type: "leader-elimination",
-          nation: "elves",
-          region: "woodland-realm"
+          type: 'leader-elimination',
+          nation: 'elves',
+          region: 'woodland-realm',
         },
         {
-          region: "woodland-realm",
+          region: 'woodland-realm',
           quantity: 1,
-          type: "leader-elimination",
-          nation: "north"
-        }
-      ]
+          type: 'leader-elimination',
+          nation: 'north',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 169,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          nation: "rohan",
+          nation: 'rohan',
           quantity: 1,
-          type: "political-advance"
-        }
+          type: 'political-advance',
+        },
       ],
-      die: "muster-army"
+      die: 'muster-army',
     },
     {
       time: 170,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          nation: "rohan",
+          nation: 'rohan',
           quantity: 1,
-          type: "political-recede"
-        }
+          type: 'political-recede',
+        },
       ],
-      type: "die-card",
-      die: "event",
-      card: "sstr06"
+      type: 'die-card',
+      die: 'event',
+      card: 'sstr06',
     },
     {
-      type: "card-effect",
+      type: 'card-effect',
       actions: [
         {
           quantity: 1,
-          type: "leader-elimination",
-          nation: "rohan",
-          region: "fords-of-isen"
+          type: 'leader-elimination',
+          nation: 'rohan',
+          region: 'fords-of-isen',
         },
         {
-          region: "westemnet",
+          region: 'westemnet',
           quantity: 1,
-          type: "elite-unit-elimination",
-          nation: "rohan"
-        }
+          type: 'elite-unit-elimination',
+          nation: 'rohan',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 171,
-      card: "sstr06"
+      card: 'sstr06',
     },
     {
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 172,
-      playerId: "free-peoples",
-      die: "will-of-the-west"
+      playerId: 'free-peoples',
+      die: 'will-of-the-west',
     },
     {
       actions: [
         {
           dice: [6],
-          type: "hunt-roll"
-        }
+          type: 'hunt-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 173,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 174,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["er"]
-        }
+          type: 'hunt-tile-draw',
+          tiles: ['er'],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      card: "fpcha05",
-      playerId: "free-peoples",
+      card: 'fpcha05',
+      playerId: 'free-peoples',
       time: 175,
-      type: "card-effect-skip"
+      type: 'card-effect-skip',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 176,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "fpcha06",
-          type: "card-discard-from-table"
-        }
-      ]
+          card: 'fpcha06',
+          type: 'card-discard-from-table',
+        },
+      ],
     },
     {
       time: 177,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          region: "noman-lands",
-          type: "fellowship-reveal"
-        }
+          region: 'noman-lands',
+          type: 'fellowship-reveal',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      die: "army",
-      type: "die",
+      die: 'army',
+      type: 'die',
       actions: [
         {
-          type: "army-movement",
-          toRegion: "ettenmoors",
-          fromRegion: "mount-gram"
+          type: 'army-movement',
+          toRegion: 'ettenmoors',
+          fromRegion: 'mount-gram',
         },
         {
-          fromRegion: "moria",
-          toRegion: "dimrill-dale",
-          type: "army-movement"
-        }
+          fromRegion: 'moria',
+          toRegion: 'dimrill-dale',
+          type: 'army-movement',
+        },
       ],
-      playerId: "shadow",
-      time: 178
+      playerId: 'shadow',
+      time: 178,
     },
     {
       actions: [
         {
-          cards: ["fpcha22", "fpstr09"],
-          type: "card-draw"
-        }
+          cards: ['fpcha22', 'fpstr09'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 179,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          cards: ["scha05", "sstr16"],
-          type: "card-draw"
-        }
+          cards: ['scha05', 'sstr16'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 179,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 180,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha07"],
-          type: "card-discard"
-        }
-      ]
+          cards: ['fpcha07'],
+          type: 'card-discard',
+        },
+      ],
     },
     {
       time: 181,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 182,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 2,
-          type: "hunt-allocation"
-        }
-      ]
-    },
-    {
-      actions: [
-        {
-          type: "action-roll",
-          dice: ["will-of-the-west", "character", "event", "character", "event", "event"]
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      type: "base",
-      time: 183,
-      playerId: "free-peoples"
     },
     {
-      playerId: "shadow",
-      time: 183,
-      type: "base",
       actions: [
         {
-          dice: ["eye", "army", "character", "eye", "eye", "character", "army"],
-          type: "action-roll"
-        }
-      ]
-    },
-    {
-      type: "die",
-      actions: [
-        {
-          type: "fellowship-hide"
-        }
+          type: 'action-roll',
+          dice: [
+            'will-of-the-west',
+            'character',
+            'event',
+            'character',
+            'event',
+            'event',
+          ],
+        },
       ],
-      playerId: "free-peoples",
+      type: 'base',
+      time: 183,
+      playerId: 'free-peoples',
+    },
+    {
+      playerId: 'shadow',
+      time: 183,
+      type: 'base',
+      actions: [
+        {
+          dice: ['eye', 'army', 'character', 'eye', 'eye', 'character', 'army'],
+          type: 'action-roll',
+        },
+      ],
+    },
+    {
+      type: 'die',
+      actions: [
+        {
+          type: 'fellowship-hide',
+        },
+      ],
+      playerId: 'free-peoples',
       time: 184,
-      die: "character"
+      die: 'character',
     },
     {
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["2"]
-        }
+          type: 'hunt-tile-draw',
+          tiles: ['2'],
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 185,
-      card: "scha05",
-      die: "character"
+      card: 'scha05',
+      die: 'character',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          companions: ["peregrin"],
-          type: "companion-random"
-        }
+          companions: ['peregrin'],
+          type: 'companion-random',
+        },
       ],
-      playerId: "free-peoples",
-      time: 186
+      playerId: 'free-peoples',
+      time: 186,
     },
     {
-      character: "peregrin",
-      playerId: "free-peoples",
+      character: 'peregrin',
+      playerId: 'free-peoples',
       time: 187,
-      type: "character-effect",
+      type: 'character-effect',
       actions: [
         {
-          companions: ["peregrin"],
-          type: "companion-separation",
-          toRegion: "eastern-emyn-muil"
-        }
-      ]
+          companions: ['peregrin'],
+          type: 'companion-separation',
+          toRegion: 'eastern-emyn-muil',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 188,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "fellowship-corruption"
-        }
-      ]
+          type: 'fellowship-corruption',
+        },
+      ],
     },
     {
-      die: "event",
-      card: "fpstr09",
+      die: 'event',
+      card: 'fpstr09',
       time: 189,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "rohan"
+          type: 'political-advance',
+          nation: 'rohan',
         },
         {
-          region: "edoras",
-          nation: "rohan",
+          region: 'edoras',
+          nation: 'rohan',
           quantity: 1,
-          type: "elite-unit-recruitment"
+          type: 'elite-unit-recruitment',
         },
         {
           quantity: 1,
-          type: "leader-recruitment",
-          nation: "rohan",
-          region: "edoras"
-        }
+          type: 'leader-recruitment',
+          nation: 'rohan',
+          region: 'edoras',
+        },
       ],
-      type: "die-card"
+      type: 'die-card',
     },
     {
-      type: "die-pass",
-      playerId: "shadow",
-      time: 190
+      type: 'die-pass',
+      playerId: 'shadow',
+      time: 190,
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 191,
-      die: "character"
+      die: 'character',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 192,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [2, 3, 4, 4, 6]
-        }
-      ]
-    },
-    {
-      actions: [
-        {
-          tiles: ["er"],
-          type: "hunt-tile-draw"
-        }
+          type: 'hunt-roll',
+          dice: [2, 3, 4, 4, 6],
+        },
       ],
-      type: "base",
-      time: 193,
-      playerId: "shadow"
     },
     {
-      card: "fpcha05",
-      type: "card-effect-skip",
+      actions: [
+        {
+          tiles: ['er'],
+          type: 'hunt-tile-draw',
+        },
+      ],
+      type: 'base',
+      time: 193,
+      playerId: 'shadow',
+    },
+    {
+      card: 'fpcha05',
+      type: 'card-effect-skip',
       time: 194,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 195,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          companions: ["gimli"],
-          type: "companion-random"
-        }
+          companions: ['gimli'],
+          type: 'companion-random',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          characters: ["gimli"],
-          type: "character-elimination"
-        }
+          characters: ['gimli'],
+          type: 'character-elimination',
+        },
       ],
-      playerId: "free-peoples",
-      time: 196
+      playerId: 'free-peoples',
+      time: 196,
     },
     {
       actions: [
         {
-          region: "dagorlad",
-          type: "fellowship-reveal"
-        }
+          region: 'dagorlad',
+          type: 'fellowship-reveal',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 197,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 198,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          toRegion: "lorien",
+          toRegion: 'lorien',
           leftUnits: {
             elites: [],
             nNazgul: 0,
-            front: "shadow",
+            front: 'shadow',
             regulars: [
               {
                 quantity: 1,
-                nation: "sauron"
-              }
-            ]
+                nation: 'sauron',
+              },
+            ],
           },
-          type: "army-movement",
-          fromRegion: "dimrill-dale"
+          type: 'army-movement',
+          fromRegion: 'dimrill-dale',
         },
         {
-          fromRegion: "ettenmoors",
-          toRegion: "troll-shaws",
-          type: "army-movement"
-        }
+          fromRegion: 'ettenmoors',
+          toRegion: 'troll-shaws',
+          type: 'army-movement',
+        },
       ],
-      die: "army"
+      die: 'army',
     },
     {
-      die: "will-of-the-west",
+      die: 'will-of-the-west',
       actions: [
         {
-          type: "elite-unit-recruitment",
+          type: 'elite-unit-recruitment',
           quantity: 1,
-          nation: "elves",
-          region: "rivendell"
-        }
+          nation: 'elves',
+          region: 'rivendell',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 199,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      die: "character",
-      type: "die",
+      die: 'character',
+      type: 'die',
       actions: [
         {
-          fromRegion: "woodland-realm",
-          characters: ["the-witch-king"],
-          type: "character-movement",
-          toRegion: "lorien"
+          fromRegion: 'woodland-realm',
+          characters: ['the-witch-king'],
+          type: 'character-movement',
+          toRegion: 'lorien',
         },
         {
-          type: "nazgul-movement",
+          type: 'nazgul-movement',
           nNazgul: 3,
-          toRegion: "lorien",
-          fromRegion: "dale"
+          toRegion: 'lorien',
+          fromRegion: 'dale',
         },
         {
           nNazgul: 1,
-          toRegion: "lorien",
-          type: "nazgul-movement",
-          fromRegion: "eastern-brown-lands"
+          toRegion: 'lorien',
+          type: 'nazgul-movement',
+          fromRegion: 'eastern-brown-lands',
         },
         {
-          fromRegion: "western-brown-lands",
-          type: "nazgul-movement",
-          toRegion: "troll-shaws",
-          nNazgul: 1
-        },
-        {
-          fromRegion: "western-emyn-muil",
-          toRegion: "dagorlad",
+          fromRegion: 'western-brown-lands',
+          type: 'nazgul-movement',
+          toRegion: 'troll-shaws',
           nNazgul: 1,
-          type: "nazgul-movement"
-        }
+        },
+        {
+          fromRegion: 'western-emyn-muil',
+          toRegion: 'dagorlad',
+          nNazgul: 1,
+          type: 'nazgul-movement',
+        },
       ],
-      playerId: "shadow",
-      time: 200
+      playerId: 'shadow',
+      time: 200,
     },
     {
       actions: [
         {
-          region: "rivendell",
+          region: 'rivendell',
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "elves"
-        }
+          type: 'elite-unit-recruitment',
+          nation: 'elves',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 201,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       elvenRing: {
-        ring: "nenya",
-        fromDie: "event",
-        toDie: "muster-army"
+        ring: 'nenya',
+        fromDie: 'event',
+        toDie: 'muster-army',
       },
-      die: "muster-army"
+      die: 'muster-army',
     },
     {
-      die: "army",
-      type: "die",
+      die: 'army',
+      type: 'die',
       actions: [
         {
-          type: "army-attack",
-          toRegion: "lorien",
-          fromRegion: "lorien"
-        }
+          type: 'army-attack',
+          toRegion: 'lorien',
+          fromRegion: 'lorien',
+        },
       ],
-      playerId: "shadow",
-      time: 202
+      playerId: 'shadow',
+      time: 202,
     },
     {
       time: 203,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          card: "scha17",
-          type: "combat-card-choose"
-        }
+          card: 'scha17',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 204,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "fpstr19",
-          type: "combat-card-choose"
-        }
-      ]
+          card: 'fpstr19',
+          type: 'combat-card-choose',
+        },
+      ],
     },
     {
       time: 205,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "combat-roll",
-          dice: [3, 6, 1]
-        }
+          type: 'combat-roll',
+          dice: [3, 6, 1],
+        },
       ],
-      type: "combat-card-effect",
-      card: "scha17"
+      type: 'combat-card-effect',
+      card: 'scha17',
     },
     {
-      type: "combat-card-effect",
+      type: 'combat-card-effect',
       actions: [
         {
-          nation: "elves",
+          nation: 'elves',
           quantity: 1,
-          type: "elite-unit-downgrade",
-          region: "lorien"
-        }
+          type: 'elite-unit-downgrade',
+          region: 'lorien',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 206,
-      card: "scha17"
+      card: 'scha17',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 207,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [6, 2, 1, 1],
-          type: "combat-roll"
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [6, 3, 6, 5, 1]
-        }
+          type: 'combat-roll',
+        },
       ],
-      playerId: "shadow",
-      time: 207
     },
     {
-      playerId: "free-peoples",
-      time: 208,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [5]
-        }
-      ]
+          type: 'combat-roll',
+          dice: [6, 3, 6, 5, 1],
+        },
+      ],
+      playerId: 'shadow',
+      time: 207,
     },
     {
-      playerId: "shadow",
+      playerId: 'free-peoples',
       time: 208,
-      type: "base",
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-re-roll',
+          dice: [5],
+        },
+      ],
+    },
+    {
+      playerId: 'shadow',
+      time: 208,
+      type: 'base',
       actions: [
         {
           dice: [2, 4, 5],
-          type: "combat-re-roll"
-        }
-      ]
+          type: 'combat-re-roll',
+        },
+      ],
     },
     {
       time: 209,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          nation: "sauron",
+          nation: 'sauron',
           quantity: 1,
-          type: "regular-unit-elimination",
-          region: "lorien"
+          type: 'regular-unit-elimination',
+          region: 'lorien',
         },
         {
-          region: "lorien",
-          type: "regular-unit-elimination",
+          region: 'lorien',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "isengard"
-        }
+          nation: 'isengard',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 210,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "elite-unit-downgrade",
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          nation: "elves",
-          region: "lorien"
-        }
+          nation: 'elves',
+          region: 'lorien',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 211,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "battle-cease",
-          region: "lorien"
-        }
+          type: 'battle-cease',
+          region: 'lorien',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 212,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          cards: ["scha15"],
-          type: "card-draw"
-        }
+          cards: ['scha15'],
+          type: 'card-draw',
+        },
       ],
-      type: "character-effect",
-      character: "the-witch-king"
+      type: 'character-effect',
+      character: 'the-witch-king',
     },
     {
-      die: "event",
-      card: "fpstr14",
-      playerId: "free-peoples",
+      die: 'event',
+      card: 'fpstr14',
+      playerId: 'free-peoples',
       time: 213,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "gondor",
-          region: "minas-tirith"
+          type: 'elite-unit-recruitment',
+          nation: 'gondor',
+          region: 'minas-tirith',
         },
         {
-          region: "minas-tirith",
-          type: "leader-recruitment",
+          region: 'minas-tirith',
+          type: 'leader-recruitment',
           quantity: 1,
-          nation: "gondor"
-        }
-      ]
-    },
-    {
-      playerId: "free-peoples",
-      time: 214,
-      type: "base",
-      actions: [
-        {
-          cards: ["fpcha02", "fpstr16"],
-          type: "card-draw"
-        }
-      ]
-    },
-    {
-      time: 214,
-      playerId: "shadow",
-      actions: [
-        {
-          cards: ["scha14", "sstr08"],
-          type: "card-draw"
-        }
+          nation: 'gondor',
+        },
       ],
-      type: "base"
     },
     {
-      type: "base",
+      playerId: 'free-peoples',
+      time: 214,
+      type: 'base',
+      actions: [
+        {
+          cards: ['fpcha02', 'fpstr16'],
+          type: 'card-draw',
+        },
+      ],
+    },
+    {
+      time: 214,
+      playerId: 'shadow',
+      actions: [
+        {
+          cards: ['scha14', 'sstr08'],
+          type: 'card-draw',
+        },
+      ],
+      type: 'base',
+    },
+    {
+      type: 'base',
       actions: [],
-      playerId: "free-peoples",
-      time: 215
+      playerId: 'free-peoples',
+      time: 215,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 216,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 2,
-          type: "hunt-allocation"
-        }
-      ]
+          type: 'hunt-allocation',
+        },
+      ],
     },
     {
       time: 217,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           dice: [
-            "muster-army",
-            "muster-army",
-            "muster-army",
-            "muster-army",
-            "will-of-the-west",
-            "event"
+            'muster-army',
+            'muster-army',
+            'muster-army',
+            'muster-army',
+            'will-of-the-west',
+            'event',
           ],
-          type: "action-roll"
-        }
+          type: 'action-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 217,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          dice: ["army", "army", "event", "event", "eye", "event", "muster-army"],
-          type: "action-roll"
-        }
-      ]
+          dice: [
+            'army',
+            'army',
+            'event',
+            'event',
+            'eye',
+            'event',
+            'muster-army',
+          ],
+          type: 'action-roll',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "fellowship-hide"
-        }
+          type: 'fellowship-hide',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 218,
-      playerId: "free-peoples",
-      die: "will-of-the-west"
+      playerId: 'free-peoples',
+      die: 'will-of-the-west',
     },
     {
-      die: "army",
+      die: 'army',
       time: 219,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          fromRegion: "lorien",
-          type: "army-attack",
-          toRegion: "lorien"
-        }
+          fromRegion: 'lorien',
+          type: 'army-attack',
+          toRegion: 'lorien',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       actions: [
         {
-          card: "sstr21",
-          type: "combat-card-choose"
-        }
+          card: 'sstr21',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 220,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 221,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 222,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-roll",
-          dice: [6, 3, 1, 5]
-        }
+          type: 'combat-roll',
+          dice: [6, 3, 1, 5],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [6, 3, 4, 6, 5]
-        }
+          type: 'combat-roll',
+          dice: [6, 3, 4, 6, 5],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 222,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 223,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [3],
-          type: "combat-re-roll"
-        }
-      ]
+          type: 'combat-re-roll',
+        },
+      ],
     },
     {
       actions: [
         {
           dice: [6],
-          type: "combat-re-roll"
-        }
+          type: 'combat-re-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 223,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          region: "lorien",
-          nation: "isengard",
+          region: 'lorien',
+          nation: 'isengard',
           quantity: 1,
-          type: "elite-unit-downgrade"
+          type: 'elite-unit-downgrade',
         },
         {
-          type: "regular-unit-elimination",
+          type: 'regular-unit-elimination',
           quantity: 3,
-          nation: "isengard",
-          region: "lorien"
-        }
+          nation: 'isengard',
+          region: 'lorien',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 224,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          nation: "elves",
-          type: "regular-unit-elimination",
+          nation: 'elves',
+          type: 'regular-unit-elimination',
           quantity: 3,
-          region: "lorien"
+          region: 'lorien',
         },
         {
-          type: "elite-unit-elimination",
+          type: 'elite-unit-elimination',
           quantity: 1,
-          nation: "elves",
-          region: "lorien"
+          nation: 'elves',
+          region: 'lorien',
         },
         {
-          region: "lorien",
-          type: "leader-elimination",
+          region: 'lorien',
+          type: 'leader-elimination',
           quantity: 1,
-          nation: "elves"
-        }
+          nation: 'elves',
+        },
       ],
-      playerId: "free-peoples",
-      time: 225
+      playerId: 'free-peoples',
+      time: 225,
     },
     {
-      character: "the-witch-king",
-      type: "character-effect",
+      character: 'the-witch-king',
+      type: 'character-effect',
       actions: [
         {
-          cards: ["sstr04"],
-          type: "card-draw"
-        }
+          cards: ['sstr04'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 226
+      playerId: 'shadow',
+      time: 226,
     },
     {
       actions: [
         {
-          region: "edoras",
-          nation: "rohan",
+          region: 'edoras',
+          nation: 'rohan',
           quantity: 1,
-          type: "elite-unit-recruitment"
+          type: 'elite-unit-recruitment',
         },
         {
           quantity: 1,
-          type: "leader-recruitment",
-          nation: "rohan",
-          region: "edoras"
-        }
+          type: 'leader-recruitment',
+          nation: 'rohan',
+          region: 'edoras',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 227,
-      playerId: "free-peoples",
-      card: "fpstr16",
-      die: "muster-army"
+      playerId: 'free-peoples',
+      card: 'fpstr16',
+      die: 'muster-army',
     },
     {
-      card: "sstr16",
-      die: "event",
+      card: 'sstr16',
+      die: 'event',
       time: 228,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          nation: "isengard",
+          nation: 'isengard',
           quantity: 2,
-          type: "regular-unit-recruitment",
-          region: "orthanc"
+          type: 'regular-unit-recruitment',
+          region: 'orthanc',
         },
         {
-          region: "south-dunland",
-          nation: "isengard",
+          region: 'south-dunland',
+          nation: 'isengard',
           quantity: 2,
-          type: "regular-unit-recruitment"
-        }
+          type: 'regular-unit-recruitment',
+        },
       ],
-      type: "die-card"
+      type: 'die-card',
     },
     {
-      die: "muster-army",
-      type: "die",
+      die: 'muster-army',
+      type: 'die',
       actions: [
         {
-          toRegion: "westemnet",
-          type: "army-movement",
-          fromRegion: "edoras"
+          toRegion: 'westemnet',
+          type: 'army-movement',
+          fromRegion: 'edoras',
         },
         {
-          toRegion: "erebor",
-          type: "army-movement",
-          fromRegion: "iron-hills"
-        }
+          toRegion: 'erebor',
+          type: 'army-movement',
+          fromRegion: 'iron-hills',
+        },
       ],
-      playerId: "free-peoples",
-      time: 229
+      playerId: 'free-peoples',
+      time: 229,
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "weather-hills",
-          toRegion: "troll-shaws",
-          type: "army-movement"
+          fromRegion: 'weather-hills',
+          toRegion: 'troll-shaws',
+          type: 'army-movement',
         },
         {
-          type: "army-movement",
-          toRegion: "gap-of-rohan",
-          fromRegion: "south-dunland"
-        }
+          type: 'army-movement',
+          toRegion: 'gap-of-rohan',
+          fromRegion: 'south-dunland',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 230,
-      die: "army"
+      die: 'army',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
           quantity: 1,
-          type: "political-advance",
-          nation: "rohan"
-        }
+          type: 'political-advance',
+          nation: 'rohan',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 231,
-      die: "muster-army"
+      die: 'muster-army',
     },
     {
       actions: [
         {
-          cards: ["sstr04", "scha15"],
-          type: "card-discard"
+          cards: ['sstr04', 'scha15'],
+          type: 'card-discard',
         },
         {
-          card: "fpstr03",
-          type: "card-discard-from-table"
-        }
+          card: 'fpstr03',
+          type: 'card-discard-from-table',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 232,
-      playerId: "shadow",
-      die: "event"
+      playerId: 'shadow',
+      die: 'event',
     },
     {
-      die: "character",
+      die: 'character',
       elvenRing: {
-        ring: "narya",
-        toDie: "character",
-        fromDie: "event"
+        ring: 'narya',
+        toDie: 'character',
+        fromDie: 'event',
       },
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 233,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
-      ]
+          type: 'fellowship-progress',
+        },
+      ],
     },
     {
       time: 234,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [4, 3, 2],
-          type: "hunt-roll"
-        }
+          type: 'hunt-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 235,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [2, 5],
-          type: "hunt-re-roll"
-        }
-      ]
-    },
-    {
-      die: "event",
-      card: "scha10",
-      time: 236,
-      playerId: "shadow",
-      actions: [
-        {
-          region: "eastern-emyn-muil",
-          type: "fellowship-push"
-        }
+          type: 'hunt-re-roll',
+        },
       ],
-      type: "die-card"
+    },
+    {
+      die: 'event',
+      card: 'scha10',
+      time: 236,
+      playerId: 'shadow',
+      actions: [
+        {
+          region: 'eastern-emyn-muil',
+          type: 'fellowship-push',
+        },
+      ],
+      type: 'die-card',
     },
     {
       actions: [
         {
-          fromRegion: "westemnet",
-          type: "army-movement",
-          toRegion: "fords-of-isen"
+          fromRegion: 'westemnet',
+          type: 'army-movement',
+          toRegion: 'fords-of-isen',
         },
         {
-          toRegion: "bree",
-          type: "army-movement",
-          fromRegion: "north-downs"
-        }
+          toRegion: 'bree',
+          type: 'army-movement',
+          fromRegion: 'north-downs',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 237,
-      playerId: "free-peoples",
-      die: "muster-army"
+      playerId: 'free-peoples',
+      die: 'muster-army',
     },
     {
-      die: "muster-army",
+      die: 'muster-army',
       time: 238,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "army-attack",
-          toRegion: "fords-of-isen",
-          fromRegion: "orthanc"
-        }
+          type: 'army-attack',
+          toRegion: 'fords-of-isen',
+          fromRegion: 'orthanc',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       time: 239,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 240,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          card: "fpcha22",
-          type: "combat-card-choose"
-        }
+          card: 'fpcha22',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
           dice: [3, 3, 4],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "combat-card-effect",
+      type: 'combat-card-effect',
       time: 241,
-      playerId: "free-peoples",
-      card: "fpcha22"
+      playerId: 'free-peoples',
+      card: 'fpcha22',
     },
     {
       actions: [
         {
           dice: [6, 1, 4, 2, 1],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 242,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 242,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [4, 2, 2, 3, 4],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [5, 5, 2]
-        }
+          type: 'combat-re-roll',
+          dice: [5, 5, 2],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 243,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [3, 5, 2, 5, 6]
-        }
+          type: 'combat-re-roll',
+          dice: [3, 5, 2, 5, 6],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 243,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          region: "orthanc",
-          nation: "isengard",
-          type: "regular-unit-elimination",
-          quantity: 3
-        }
+          region: 'orthanc',
+          nation: 'isengard',
+          type: 'regular-unit-elimination',
+          quantity: 3,
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 244,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "fords-of-isen",
+          region: 'fords-of-isen',
           quantity: 1,
-          type: "regular-unit-elimination",
-          nation: "rohan"
-        }
+          type: 'regular-unit-elimination',
+          nation: 'rohan',
+        },
       ],
-      playerId: "free-peoples",
-      time: 245
+      playerId: 'free-peoples',
+      time: 245,
     },
     {
       time: 246,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "battle-continue",
-          region: "fords-of-isen"
-        }
+          type: 'battle-continue',
+          region: 'fords-of-isen',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          toRegion: "helms-deep",
-          type: "army-retreat"
-        }
+          toRegion: 'helms-deep',
+          type: 'army-retreat',
+        },
       ],
-      playerId: "free-peoples",
-      time: 247
+      playerId: 'free-peoples',
+      time: 247,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           leftUnits: {
-            characters: ["saruman"],
+            characters: ['saruman'],
             regulars: [
               {
                 quantity: 2,
-                nation: "isengard"
-              }
+                nation: 'isengard',
+              },
             ],
             elites: [],
-            front: "shadow"
+            front: 'shadow',
           },
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      playerId: "shadow",
-      time: 248
+      playerId: 'shadow',
+      time: 248,
     },
     {
       actions: [
         {
-          cards: ["fpcha12", "fpstr18"],
-          type: "card-draw"
-        }
+          cards: ['fpcha12', 'fpstr18'],
+          type: 'card-draw',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 249,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 249,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          cards: ["scha22", "sstr14"],
-          type: "card-draw"
-        }
+          cards: ['scha22', 'sstr14'],
+          type: 'card-draw',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [],
-      playerId: "free-peoples",
-      time: 250
+      playerId: 'free-peoples',
+      time: 250,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 251
+      playerId: 'shadow',
+      time: 251,
     },
     {
       time: 252,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          dice: ["event", "muster", "muster", "character", "will-of-the-west", "character"],
-          type: "action-roll"
-        }
+          dice: [
+            'event',
+            'muster',
+            'muster',
+            'character',
+            'will-of-the-west',
+            'character',
+          ],
+          type: 'action-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
-          dice: ["event", "eye", "event", "character", "army", "muster-army", "army", "eye"],
-          type: "action-roll"
-        }
+          dice: [
+            'event',
+            'eye',
+            'event',
+            'character',
+            'army',
+            'muster-army',
+            'army',
+            'eye',
+          ],
+          type: 'action-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 252,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 253,
-      type: "die",
+      type: 'die',
       actions: [
         {
           quantity: 1,
-          type: "leader-recruitment",
-          nation: "rohan",
-          region: "helms-deep"
+          type: 'leader-recruitment',
+          nation: 'rohan',
+          region: 'helms-deep',
         },
         {
-          nation: "rohan",
-          type: "regular-unit-recruitment",
+          nation: 'rohan',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          region: "westemnet"
-        }
+          region: 'westemnet',
+        },
       ],
-      die: "muster"
+      die: 'muster',
     },
     {
       actions: [
         {
-          fromRegion: "fords-of-isen",
-          toRegion: "helms-deep",
-          type: "army-attack"
-        }
+          fromRegion: 'fords-of-isen',
+          toRegion: 'helms-deep',
+          type: 'army-attack',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 254,
-      playerId: "shadow",
-      die: "character"
+      playerId: 'shadow',
+      die: 'character',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "army-retreat-into-siege",
-          region: "helms-deep"
-        }
+          type: 'army-retreat-into-siege',
+          region: 'helms-deep',
+        },
       ],
-      playerId: "free-peoples",
-      time: 255
+      playerId: 'free-peoples',
+      time: 255,
     },
     {
       time: 256,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "westemnet",
+          region: 'westemnet',
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "rohan"
+          type: 'regular-unit-recruitment',
+          nation: 'rohan',
         },
         {
-          type: "regular-unit-recruitment",
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          nation: "north",
-          region: "the-shire"
-        }
+          nation: 'north',
+          region: 'the-shire',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 257,
-      die: "muster"
+      die: 'muster',
     },
     {
-      die: "event",
-      card: "sstr08",
+      die: 'event',
+      card: 'sstr08',
       time: 258,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          fromRegion: "gap-of-rohan",
-          toRegion: "helms-deep",
-          type: "army-movement",
+          fromRegion: 'gap-of-rohan',
+          toRegion: 'helms-deep',
+          type: 'army-movement',
           leftUnits: {
             regulars: [
               {
                 quantity: 1,
-                nation: "isengard"
-              }
+                nation: 'isengard',
+              },
             ],
-            front: "shadow"
-          }
+            front: 'shadow',
+          },
         },
         {
-          fromRegion: "carrock",
-          toRegion: "dale",
-          type: "army-movement"
-        }
+          fromRegion: 'carrock',
+          toRegion: 'dale',
+          type: 'army-movement',
+        },
       ],
-      type: "die-card"
+      type: 'die-card',
     },
     {
-      die: "will-of-the-west",
+      die: 'will-of-the-west',
       time: 259,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          nation: "rohan",
-          type: "regular-unit-recruitment",
+          nation: 'rohan',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          region: "westemnet"
+          region: 'westemnet',
         },
         {
-          region: "the-shire",
-          nation: "north",
-          type: "regular-unit-recruitment",
-          quantity: 1
-        }
+          region: 'the-shire',
+          nation: 'north',
+          type: 'regular-unit-recruitment',
+          quantity: 1,
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
-      die: "army",
-      playerId: "shadow",
+      die: 'army',
+      playerId: 'shadow',
       time: 260,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "helms-deep",
-          toRegion: "helms-deep",
-          type: "army-attack"
-        }
-      ]
+          fromRegion: 'helms-deep',
+          toRegion: 'helms-deep',
+          type: 'army-attack',
+        },
+      ],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 261,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "sstr14",
-          type: "combat-card-choose"
-        }
-      ]
+          card: 'sstr14',
+          type: 'combat-card-choose',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 262,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "fpstr18",
-          type: "combat-card-choose"
-        }
-      ]
-    },
-    {
-      time: 263,
-      playerId: "free-peoples",
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [1, 1, 3, 3, 5]
-        }
+          card: 'fpstr18',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base"
     },
     {
-      playerId: "shadow",
       time: 263,
-      type: "base",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-roll",
-          dice: [2, 1, 3, 6, 5]
-        }
-      ]
+          type: 'combat-roll',
+          dice: [1, 1, 3, 3, 5],
+        },
+      ],
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'shadow',
+      time: 263,
+      type: 'base',
+      actions: [
+        {
+          type: 'combat-roll',
+          dice: [2, 1, 3, 6, 5],
+        },
+      ],
+    },
+    {
+      playerId: 'free-peoples',
       time: 264,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [4, 5, 2, 1]
-        }
-      ]
-    },
-    {
-      type: "base",
-      actions: [
-        {
-          type: "combat-re-roll",
-          dice: [5, 5, 1, 6]
-        }
+          type: 'combat-re-roll',
+          dice: [4, 5, 2, 1],
+        },
       ],
-      playerId: "shadow",
-      time: 264
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          nation: "isengard",
-          type: "regular-unit-elimination",
+          type: 'combat-re-roll',
+          dice: [5, 5, 1, 6],
+        },
+      ],
+      playerId: 'shadow',
+      time: 264,
+    },
+    {
+      type: 'base',
+      actions: [
+        {
+          nation: 'isengard',
+          type: 'regular-unit-elimination',
           quantity: 2,
-          region: "helms-deep"
-        }
+          region: 'helms-deep',
+        },
       ],
-      playerId: "shadow",
-      time: 265
+      playerId: 'shadow',
+      time: 265,
     },
     {
       time: 266,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          region: "helms-deep",
-          type: "elite-unit-downgrade",
+          region: 'helms-deep',
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          nation: "rohan"
-        }
+          nation: 'rohan',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      card: "sstr14",
+      card: 'sstr14',
       time: 267,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [4, 5, 2, 5, 2],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "combat-card-effect"
+      type: 'combat-card-effect',
     },
     {
       time: 268,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           quantity: 1,
-          type: "elite-unit-elimination",
-          nation: "rohan",
-          region: "helms-deep"
-        }
+          type: 'elite-unit-elimination',
+          nation: 'rohan',
+          region: 'helms-deep',
+        },
       ],
-      type: "combat-card-effect",
-      card: "sstr14"
+      type: 'combat-card-effect',
+      card: 'sstr14',
     },
     {
       actions: [
         {
-          region: "helms-deep",
-          type: "battle-cease"
-        }
+          region: 'helms-deep',
+          type: 'battle-cease',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 269,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 270,
-      playerId: "free-peoples",
-      die: "character"
+      playerId: 'free-peoples',
+      die: 'character',
     },
     {
       time: 271,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "hunt-roll",
-          dice: [3, 3, 4]
-        }
+          type: 'hunt-roll',
+          dice: [3, 3, 4],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      die: "army",
+      die: 'army',
       time: 272,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          fromRegion: "helms-deep",
-          type: "army-attack",
-          toRegion: "helms-deep"
-        }
+          fromRegion: 'helms-deep',
+          type: 'army-attack',
+          toRegion: 'helms-deep',
+        },
       ],
-      type: "die"
+      type: 'die',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 273,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 274,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
           dice: [4, 2, 5, 5],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 275,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 275,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [1, 6, 5, 1, 3],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 276,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [6, 1]
-        }
-      ]
+          type: 'combat-re-roll',
+          dice: [6, 1],
+        },
+      ],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 276,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [5, 3, 5, 3],
-          type: "combat-re-roll"
-        }
-      ]
+          type: 'combat-re-roll',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "regular-unit-elimination",
+          type: 'regular-unit-elimination',
           quantity: 3,
-          nation: "isengard",
-          region: "helms-deep"
-        }
+          nation: 'isengard',
+          region: 'helms-deep',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 277,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          nation: "rohan",
-          type: "regular-unit-elimination",
+          nation: 'rohan',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          region: "helms-deep"
-        }
+          region: 'helms-deep',
+        },
       ],
-      playerId: "free-peoples",
-      time: 278
+      playerId: 'free-peoples',
+      time: 278,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 279,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "helms-deep",
-          type: "battle-cease"
-        }
-      ]
+          region: 'helms-deep',
+          type: 'battle-cease',
+        },
+      ],
     },
     {
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          tile: "b0",
-          type: "hunt-tile-add"
-        }
+          tile: 'b0',
+          type: 'hunt-tile-add',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 280,
-      die: "character",
-      card: "fpcha02"
+      die: 'character',
+      card: 'fpcha02',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "helms-deep",
-          type: "army-attack",
-          toRegion: "helms-deep"
-        }
+          fromRegion: 'helms-deep',
+          type: 'army-attack',
+          toRegion: 'helms-deep',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 281,
-      die: "muster-army"
+      die: 'muster-army',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 282,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
-      ]
+          type: 'combat-card-choose-not',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 283,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [4, 4, 6]
-        }
+          type: 'combat-roll',
+          dice: [4, 4, 6],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 284,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 284,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [2, 4, 1, 4, 5],
-          type: "combat-roll"
-        }
-      ]
+          type: 'combat-roll',
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [2, 5]
-        }
+          type: 'combat-re-roll',
+          dice: [2, 5],
+        },
       ],
-      playerId: "free-peoples",
-      time: 285
+      playerId: 'free-peoples',
+      time: 285,
     },
     {
       time: 285,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
           dice: [2, 1, 6, 1, 4],
-          type: "combat-re-roll"
-        }
+          type: 'combat-re-roll',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "helms-deep",
+          region: 'helms-deep',
           quantity: 1,
-          type: "elite-unit-elimination",
-          nation: "isengard"
-        }
+          type: 'elite-unit-elimination',
+          nation: 'isengard',
+        },
       ],
-      playerId: "shadow",
-      time: 286
+      playerId: 'shadow',
+      time: 286,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "helms-deep",
-          nation: "rohan",
-          type: "regular-unit-elimination",
-          quantity: 1
-        }
+          region: 'helms-deep',
+          nation: 'rohan',
+          type: 'regular-unit-elimination',
+          quantity: 1,
+        },
       ],
-      playerId: "free-peoples",
-      time: 287
+      playerId: 'free-peoples',
+      time: 287,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "elite-unit-downgrade",
-          nation: "isengard",
-          region: "helms-deep"
+          type: 'elite-unit-downgrade',
+          nation: 'isengard',
+          region: 'helms-deep',
         },
         {
-          region: "helms-deep",
-          type: "battle-continue"
-        }
+          region: 'helms-deep',
+          type: 'battle-continue',
+        },
       ],
-      playerId: "shadow",
-      time: 288
+      playerId: 'shadow',
+      time: 288,
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 289,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 290,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
-      ]
+          type: 'combat-card-choose-not',
+        },
+      ],
     },
     {
       time: 291,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "combat-roll",
-          dice: [5, 1]
-        }
+          type: 'combat-roll',
+          dice: [5, 1],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [5, 1, 1, 4]
-        }
+          type: 'combat-roll',
+          dice: [5, 1, 1, 4],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 291,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
           dice: [2],
-          type: "combat-re-roll"
-        }
+          type: 'combat-re-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 292,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 292,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [1, 5, 6]
-        }
-      ]
+          type: 'combat-re-roll',
+          dice: [1, 5, 6],
+        },
+      ],
     },
     {
       actions: [
         {
-          region: "helms-deep",
-          type: "regular-unit-elimination",
+          region: 'helms-deep',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "isengard"
-        }
+          nation: 'isengard',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 293,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          region: "helms-deep",
-          type: "regular-unit-elimination",
+          region: 'helms-deep',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "rohan"
-        }
+          nation: 'rohan',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 294,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          region: "helms-deep",
-          nation: "isengard",
-          type: "elite-unit-downgrade",
-          quantity: 1
+          region: 'helms-deep',
+          nation: 'isengard',
+          type: 'elite-unit-downgrade',
+          quantity: 1,
         },
         {
-          region: "helms-deep",
-          type: "battle-continue"
-        }
+          region: 'helms-deep',
+          type: 'battle-continue',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 295,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 296,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 297,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "fpcha10",
-          type: "combat-card-choose"
-        }
-      ]
+          card: 'fpcha10',
+          type: 'combat-card-choose',
+        },
+      ],
     },
     {
       actions: [
         {
           dice: [1],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 298,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 298,
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [2, 5, 5],
-          type: "combat-roll"
-        }
-      ]
+          type: 'combat-roll',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 299,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [6]
-        }
-      ]
+          type: 'combat-re-roll',
+          dice: [6],
+        },
+      ],
     },
     {
       actions: [
         {
           dice: [6, 5],
-          type: "combat-re-roll"
-        }
+          type: 'combat-re-roll',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 299,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 300,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          region: "helms-deep",
-          nation: "rohan",
-          type: "leader-elimination",
-          quantity: 1
-        }
+          region: 'helms-deep',
+          nation: 'rohan',
+          type: 'leader-elimination',
+          quantity: 1,
+        },
       ],
-      type: "combat-card-effect",
-      card: "fpcha10"
+      type: 'combat-card-effect',
+      card: 'fpcha10',
     },
     {
       actions: [
         {
-          nation: "isengard",
-          type: "elite-unit-downgrade",
+          nation: 'isengard',
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          region: "helms-deep"
-        }
+          region: 'helms-deep',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 301,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          nation: "isengard",
-          type: "elite-unit-downgrade",
+          nation: 'isengard',
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          region: "helms-deep"
+          region: 'helms-deep',
         },
         {
-          type: "battle-continue",
-          region: "helms-deep"
-        }
+          type: 'battle-continue',
+          region: 'helms-deep',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 302,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      playerId: "shadow",
-      time: 303
+      playerId: 'shadow',
+      time: 303,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      playerId: "free-peoples",
-      time: 304
+      playerId: 'free-peoples',
+      time: 304,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [1],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      playerId: "free-peoples",
-      time: 305
-    },
-    {
-      actions: [
-        {
-          type: "combat-roll",
-          dice: [4, 6, 3]
-        }
-      ],
-      type: "base",
+      playerId: 'free-peoples',
       time: 305,
-      playerId: "shadow"
     },
     {
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [1]
-        }
+          type: 'combat-roll',
+          dice: [4, 6, 3],
+        },
       ],
-      type: "base",
+      type: 'base',
+      time: 305,
+      playerId: 'shadow',
+    },
+    {
+      actions: [
+        {
+          type: 'combat-re-roll',
+          dice: [1],
+        },
+      ],
+      type: 'base',
       time: 306,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 307,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "regular-unit-elimination",
-          nation: "rohan",
-          region: "helms-deep"
+          type: 'regular-unit-elimination',
+          nation: 'rohan',
+          region: 'helms-deep',
         },
         {
-          region: "helms-deep",
-          nation: "rohan",
-          type: "leader-elimination",
-          quantity: 2
+          region: 'helms-deep',
+          nation: 'rohan',
+          type: 'leader-elimination',
+          quantity: 2,
         },
         {
-          characters: ["gandalf-the-white"],
-          type: "character-elimination"
-        }
-      ]
+          characters: ['gandalf-the-white'],
+          type: 'character-elimination',
+        },
+      ],
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 308,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          cards: ["fpcha08"],
-          type: "card-draw"
-        }
+          cards: ['fpcha08'],
+          type: 'card-draw',
+        },
       ],
-      die: "event"
+      die: 'event',
     },
     {
-      die: "event",
-      type: "die",
+      die: 'event',
+      type: 'die',
       actions: [
         {
-          cards: ["sstr10"],
-          type: "card-draw"
-        }
+          cards: ['sstr10'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 309
+      playerId: 'shadow',
+      time: 309,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha03", "fpstr10"],
-          type: "card-draw"
-        }
+          cards: ['fpcha03', 'fpstr10'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "free-peoples",
-      time: 310
-    },
-    {
-      actions: [
-        {
-          cards: ["scha18", "sstr19"],
-          type: "card-draw"
-        }
-      ],
-      type: "base",
+      playerId: 'free-peoples',
       time: 310,
-      playerId: "shadow"
     },
     {
-      playerId: "free-peoples",
+      actions: [
+        {
+          cards: ['scha18', 'sstr19'],
+          type: 'card-draw',
+        },
+      ],
+      type: 'base',
+      time: 310,
+      playerId: 'shadow',
+    },
+    {
+      playerId: 'free-peoples',
       time: 311,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "fellowship-declare",
-          region: "morannon"
-        }
-      ]
+          type: 'fellowship-declare',
+          region: 'morannon',
+        },
+      ],
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 312,
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 2,
-          type: "hunt-allocation"
-        }
-      ]
+          type: 'hunt-allocation',
+        },
+      ],
     },
     {
       time: 313,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          type: "action-roll",
-          dice: ["character", "muster", "muster", "character", "character"]
-        }
+          type: 'action-roll',
+          dice: ['character', 'muster', 'muster', 'character', 'character'],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
       time: 313,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "action-roll",
-          dice: ["eye", "event", "army", "muster", "muster", "muster", "event"]
-        }
+          type: 'action-roll',
+          dice: ['eye', 'event', 'army', 'muster', 'muster', 'muster', 'event'],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      die: "muster",
-      type: "die",
+      die: 'muster',
+      type: 'die',
       actions: [
         {
-          type: "regular-unit-recruitment",
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          nation: "rohan",
-          region: "westemnet"
+          nation: 'rohan',
+          region: 'westemnet',
         },
         {
-          region: "erebor",
+          region: 'erebor',
           quantity: 1,
-          type: "leader-recruitment",
-          nation: "dwarves"
-        }
+          type: 'leader-recruitment',
+          nation: 'dwarves',
+        },
       ],
-      playerId: "free-peoples",
-      time: 314
+      playerId: 'free-peoples',
+      time: 314,
     },
     {
-      die: "muster",
-      type: "die",
+      die: 'muster',
+      type: 'die',
       actions: [
         {
-          characters: ["the-mouth-of-sauron"],
-          region: "moria",
-          type: "character-play"
-        }
+          characters: ['the-mouth-of-sauron'],
+          region: 'moria',
+          type: 'character-play',
+        },
       ],
-      playerId: "shadow",
-      time: 315
+      playerId: 'shadow',
+      time: 315,
     },
     {
-      die: "character",
+      die: 'character',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 316,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          tiles: ["er"],
-          type: "hunt-tile-draw"
-        }
+          tiles: ['er'],
+          type: 'hunt-tile-draw',
+        },
       ],
-      playerId: "shadow",
-      time: 317
+      playerId: 'shadow',
+      time: 317,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 318,
-      type: "card-effect-skip",
-      card: "fpcha05"
+      type: 'card-effect-skip',
+      card: 'fpcha05',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          characters: ["legolas"],
-          type: "character-elimination"
+          characters: ['legolas'],
+          type: 'character-elimination',
         },
         {
-          companion: "meriadoc",
-          type: "fellowship-guide"
+          companion: 'meriadoc',
+          type: 'fellowship-guide',
         },
         {
-          type: "character-elimination",
-          characters: ["meriadoc"]
-        }
+          type: 'character-elimination',
+          characters: ['meriadoc'],
+        },
       ],
-      playerId: "free-peoples",
-      time: 319
+      playerId: 'free-peoples',
+      time: 319,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 320,
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          type: "elite-unit-recruitment",
+          type: 'elite-unit-recruitment',
           quantity: 2,
-          nation: "sauron",
-          region: "moria"
+          nation: 'sauron',
+          region: 'moria',
         },
         {
-          region: "moria",
+          region: 'moria',
           quantity: 1,
-          type: "nazgul-recruitment"
-        }
+          type: 'nazgul-recruitment',
+        },
       ],
-      card: "sstr19",
-      die: "event"
+      card: 'sstr19',
+      die: 'event',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 321,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-hide"
-        }
+          type: 'fellowship-hide',
+        },
       ],
-      die: "character"
+      die: 'character',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 322,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "moria",
-          type: "army-movement",
-          toRegion: "hollin"
+          fromRegion: 'moria',
+          type: 'army-movement',
+          toRegion: 'hollin',
         },
         {
-          type: "army-movement",
-          toRegion: "parth-celebrant",
-          fromRegion: "lorien"
-        }
+          type: 'army-movement',
+          toRegion: 'parth-celebrant',
+          fromRegion: 'lorien',
+        },
       ],
-      die: "army"
+      die: 'army',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 323,
-      type: "die-pass"
+      type: 'die-pass',
     },
     {
-      character: "the-mouth-of-sauron",
-      die: "muster",
+      character: 'the-mouth-of-sauron',
+      die: 'muster',
       actions: [
         {
-          fromRegion: "hollin",
-          type: "army-movement",
-          toRegion: "troll-shaws"
+          fromRegion: 'hollin',
+          type: 'army-movement',
+          toRegion: 'troll-shaws',
         },
         {
-          nation: "sauron",
-          type: "regular-unit-disband",
+          nation: 'sauron',
+          type: 'regular-unit-disband',
           quantity: 1,
-          region: "troll-shaws"
+          region: 'troll-shaws',
         },
         {
-          toRegion: "eastemnet",
-          type: "army-movement",
-          fromRegion: "parth-celebrant"
-        }
+          toRegion: 'eastemnet',
+          type: 'army-movement',
+          fromRegion: 'parth-celebrant',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 324,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 325,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          region: "folde",
-          nation: "rohan",
-          type: "regular-unit-recruitment",
-          quantity: 1
+          region: 'folde',
+          nation: 'rohan',
+          type: 'regular-unit-recruitment',
+          quantity: 1,
         },
         {
-          region: "edoras",
-          nation: "rohan",
+          region: 'edoras',
+          nation: 'rohan',
           quantity: 1,
-          type: "regular-unit-recruitment"
-        }
+          type: 'regular-unit-recruitment',
+        },
       ],
-      type: "die",
-      die: "muster"
+      type: 'die',
+      die: 'muster',
     },
     {
-      die: "event",
-      playerId: "shadow",
+      die: 'event',
+      playerId: 'shadow',
       time: 326,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          cards: ["sstr24"],
-          type: "card-draw"
-        }
-      ]
+          cards: ['sstr24'],
+          type: 'card-draw',
+        },
+      ],
     },
     {
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 327,
-      playerId: "free-peoples",
-      die: "character"
+      playerId: 'free-peoples',
+      die: 'character',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["1"]
-        }
+          type: 'hunt-tile-draw',
+          tiles: ['1'],
+        },
       ],
-      playerId: "shadow",
-      time: 328
+      playerId: 'shadow',
+      time: 328,
     },
     {
-      card: "fpcha05",
-      type: "card-effect-skip",
+      card: 'fpcha05',
+      type: 'card-effect-skip',
       time: 329,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 330,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
           quantity: 1,
-          type: "fellowship-corruption"
-        }
+          type: 'fellowship-corruption',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 331,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          toRegion: "folde",
-          type: "army-attack",
-          fromRegion: "eastemnet"
-        }
+          toRegion: 'folde',
+          type: 'army-attack',
+          fromRegion: 'eastemnet',
+        },
       ],
-      die: "army",
+      die: 'army',
       elvenRing: {
-        ring: "nenya",
-        toDie: "army",
-        fromDie: "muster"
-      }
+        ring: 'nenya',
+        toDie: 'army',
+        fromDie: 'muster',
+      },
     },
     {
       time: 332,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-card-choose-not"
-        }
+          type: 'combat-card-choose-not',
+        },
       ],
-      playerId: "free-peoples",
-      time: 333
+      playerId: 'free-peoples',
+      time: 333,
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [6]
-        }
+          type: 'combat-roll',
+          dice: [6],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 334,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          type: "combat-roll",
-          dice: [4, 3, 4, 5, 4]
-        }
+          type: 'combat-roll',
+          dice: [4, 3, 4, 5, 4],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 334,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "eastemnet",
-          type: "regular-unit-elimination",
+          region: 'eastemnet',
+          type: 'regular-unit-elimination',
           quantity: 1,
-          nation: "sauron"
-        }
+          nation: 'sauron',
+        },
       ],
-      playerId: "shadow",
-      time: 335
+      playerId: 'shadow',
+      time: 335,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "folde",
+          region: 'folde',
           quantity: 1,
-          type: "regular-unit-elimination",
-          nation: "rohan"
-        }
+          type: 'regular-unit-elimination',
+          nation: 'rohan',
+        },
       ],
-      playerId: "free-peoples",
-      time: 336
+      playerId: 'free-peoples',
+      time: 336,
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 337,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "army-advance"
-        }
-      ]
-    },
-    {
-      playerId: "free-peoples",
-      time: 338,
-      type: "base",
-      actions: [
-        {
-          cards: ["fpcha19", "fpstr04"],
-          type: "card-draw"
-        }
-      ]
-    },
-    {
-      time: 338,
-      playerId: "shadow",
-      actions: [
-        {
-          cards: ["scha11", "sstr18"],
-          type: "card-draw"
-        }
+          type: 'army-advance',
+        },
       ],
-      type: "base"
     },
     {
-      type: "base",
+      playerId: 'free-peoples',
+      time: 338,
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha08"],
-          type: "card-discard"
-        }
+          cards: ['fpcha19', 'fpstr04'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "free-peoples",
-      time: 339
+    },
+    {
+      time: 338,
+      playerId: 'shadow',
+      actions: [
+        {
+          cards: ['scha11', 'sstr18'],
+          type: 'card-draw',
+        },
+      ],
+      type: 'base',
+    },
+    {
+      type: 'base',
+      actions: [
+        {
+          cards: ['fpcha08'],
+          type: 'card-discard',
+        },
+      ],
+      playerId: 'free-peoples',
+      time: 339,
     },
     {
       time: 339,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          cards: ["scha22"],
-          type: "card-discard"
-        }
+          cards: ['scha22'],
+          type: 'card-discard',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [],
-      playerId: "free-peoples",
-      time: 340
+      playerId: 'free-peoples',
+      time: 340,
     },
     {
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 341,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          type: "action-roll",
-          dice: ["character", "character", "muster", "event", "muster-army"]
-        }
+          type: 'action-roll',
+          dice: ['character', 'character', 'muster', 'event', 'muster-army'],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 342,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       actions: [
         {
-          type: "action-roll",
+          type: 'action-roll',
           dice: [
-            "character",
-            "army",
-            "character",
-            "character",
-            "eye",
-            "event",
-            "muster",
-            "event",
-            "muster-army"
-          ]
-        }
+            'character',
+            'army',
+            'character',
+            'character',
+            'eye',
+            'event',
+            'muster',
+            'event',
+            'muster-army',
+          ],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 342,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      die: "muster-army",
-      playerId: "free-peoples",
+      die: 'muster-army',
+      playerId: 'free-peoples',
       time: 343,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "westemnet",
-          type: "army-movement",
-          toRegion: "edoras"
+          fromRegion: 'westemnet',
+          type: 'army-movement',
+          toRegion: 'edoras',
         },
         {
-          fromRegion: "osgiliath",
-          toRegion: "druadan-forest",
-          type: "army-movement"
-        }
-      ]
+          fromRegion: 'osgiliath',
+          toRegion: 'druadan-forest',
+          type: 'army-movement',
+        },
+      ],
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "troll-shaws",
-          toRegion: "rivendell",
-          type: "army-attack"
-        }
+          fromRegion: 'troll-shaws',
+          toRegion: 'rivendell',
+          type: 'army-attack',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 344,
-      die: "character"
+      die: 'character',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          region: "rivendell",
-          type: "army-retreat-into-siege"
-        }
+          region: 'rivendell',
+          type: 'army-retreat-into-siege',
+        },
       ],
-      playerId: "free-peoples",
-      time: 345
+      playerId: 'free-peoples',
+      time: 345,
     },
     {
       time: 346,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "army-advance"
-        }
+          type: 'army-advance',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "edoras",
+          region: 'edoras',
           quantity: 1,
-          type: "elite-unit-recruitment",
-          nation: "rohan"
-        }
+          type: 'elite-unit-recruitment',
+          nation: 'rohan',
+        },
       ],
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 347,
-      die: "muster"
+      die: 'muster',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 348,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "folde",
-          type: "nazgul-movement",
-          toRegion: "rivendell",
-          nNazgul: 1
-        },
-        {
-          type: "character-movement",
-          toRegion: "rivendell",
-          characters: ["the-witch-king"],
-          fromRegion: "folde"
-        },
-        {
-          fromRegion: "dagorlad",
+          fromRegion: 'folde',
+          type: 'nazgul-movement',
+          toRegion: 'rivendell',
           nNazgul: 1,
-          toRegion: "folde",
-          type: "nazgul-movement"
-        }
+        },
+        {
+          type: 'character-movement',
+          toRegion: 'rivendell',
+          characters: ['the-witch-king'],
+          fromRegion: 'folde',
+        },
+        {
+          fromRegion: 'dagorlad',
+          nNazgul: 1,
+          toRegion: 'folde',
+          type: 'nazgul-movement',
+        },
       ],
-      die: "character"
+      die: 'character',
     },
     {
       time: 349,
-      playerId: "free-peoples",
-      type: "die-pass"
+      playerId: 'free-peoples',
+      type: 'die-pass',
     },
     {
-      die: "character",
+      die: 'character',
       actions: [
         {
-          fromRegion: "rivendell",
-          toRegion: "rivendell",
-          type: "army-attack"
-        }
+          fromRegion: 'rivendell',
+          toRegion: 'rivendell',
+          type: 'army-attack',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 350,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 351,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          card: "scha11",
-          type: "combat-card-choose"
-        }
+          card: 'scha11',
+          type: 'combat-card-choose',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          card: "fpstr13",
-          type: "combat-card-choose"
-        }
+          card: 'fpstr13',
+          type: 'combat-card-choose',
+        },
       ],
-      playerId: "free-peoples",
-      time: 352
+      playerId: 'free-peoples',
+      time: 352,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [5, 6, 5, 1, 2],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      playerId: "free-peoples",
-      time: 353
+      playerId: 'free-peoples',
+      time: 353,
     },
     {
-      type: "combat-card-effect",
+      type: 'combat-card-effect',
       actions: [
         {
-          nation: "sauron",
+          nation: 'sauron',
           quantity: 3,
-          type: "regular-unit-elimination",
-          region: "rivendell"
-        }
+          type: 'regular-unit-elimination',
+          region: 'rivendell',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 354,
-      card: "fpstr13"
+      card: 'fpstr13',
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 355,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-roll",
-          dice: [6, 6, 5, 6, 4]
-        }
-      ]
+          type: 'combat-roll',
+          dice: [6, 6, 5, 6, 4],
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [5, 2, 2, 5, 4],
-          type: "combat-roll"
-        }
+          type: 'combat-roll',
+        },
       ],
-      playerId: "shadow",
-      time: 355
+      playerId: 'shadow',
+      time: 355,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 356,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "combat-re-roll",
-          dice: [5]
-        }
-      ]
+          type: 'combat-re-roll',
+          dice: [5],
+        },
+      ],
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [5, 4, 6, 5, 1],
-          type: "combat-re-roll"
-        }
+          type: 'combat-re-roll',
+        },
       ],
-      playerId: "shadow",
-      time: 356
+      playerId: 'shadow',
+      time: 356,
     },
     {
-      card: "scha11",
+      card: 'scha11',
       actions: [
         {
           quantity: 1,
-          type: "leader-elimination",
-          nation: "elves",
-          region: "rivendell"
-        }
+          type: 'leader-elimination',
+          nation: 'elves',
+          region: 'rivendell',
+        },
       ],
-      type: "combat-card-effect",
+      type: 'combat-card-effect',
       time: 357,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       actions: [
         {
-          region: "rivendell",
-          type: "elite-unit-downgrade",
+          region: 'rivendell',
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          nation: "sauron"
+          nation: 'sauron',
         },
         {
-          nation: "sauron",
+          nation: 'sauron',
           quantity: 2,
-          type: "elite-unit-elimination",
-          region: "rivendell"
-        }
+          type: 'elite-unit-elimination',
+          region: 'rivendell',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 358,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
       time: 359,
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       actions: [
         {
-          nation: "elves",
-          type: "elite-unit-downgrade",
+          nation: 'elves',
+          type: 'elite-unit-downgrade',
           quantity: 1,
-          region: "rivendell"
-        }
+          region: 'rivendell',
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      character: "the-witch-king",
+      character: 'the-witch-king',
       actions: [
         {
-          cards: ["scha04"],
-          type: "card-draw"
-        }
+          cards: ['scha04'],
+          type: 'card-draw',
+        },
       ],
-      type: "character-effect",
+      type: 'character-effect',
       time: 360,
-      playerId: "shadow"
+      playerId: 'shadow',
     },
     {
-      type: "die-pass",
-      playerId: "free-peoples",
-      time: 361
+      type: 'die-pass',
+      playerId: 'free-peoples',
+      time: 361,
     },
     {
-      card: "scha04",
-      die: "event",
+      card: 'scha04',
+      die: 'event',
       time: 362,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          tile: "r1rs",
-          type: "hunt-tile-add"
-        }
+          tile: 'r1rs',
+          type: 'hunt-tile-add',
+        },
       ],
-      type: "die-card"
+      type: 'die-card',
     },
     {
-      type: "die-pass",
-      playerId: "free-peoples",
-      time: 363
+      type: 'die-pass',
+      playerId: 'free-peoples',
+      time: 363,
     },
     {
-      type: "die-card",
+      type: 'die-card',
       actions: [
         {
-          type: "regular-unit-recruitment",
+          type: 'regular-unit-recruitment',
           quantity: 2,
-          nation: "sauron",
-          region: "moria"
+          nation: 'sauron',
+          region: 'moria',
         },
         {
           quantity: 2,
-          type: "regular-unit-recruitment",
-          nation: "sauron",
-          region: "mount-gundabad"
+          type: 'regular-unit-recruitment',
+          nation: 'sauron',
+          region: 'mount-gundabad',
         },
         {
-          type: "regular-unit-recruitment",
+          type: 'regular-unit-recruitment',
           quantity: 2,
-          nation: "sauron",
-          region: "minas-morgul"
-        }
+          nation: 'sauron',
+          region: 'minas-morgul',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 364,
-      die: "event",
-      card: "sstr24"
+      die: 'event',
+      card: 'sstr24',
     },
     {
-      die: "event",
-      card: "fpcha03",
+      die: 'event',
+      card: 'fpcha03',
       actions: [
         {
-          tile: "b-2",
-          type: "hunt-tile-add"
-        }
+          tile: 'b-2',
+          type: 'hunt-tile-add',
+        },
       ],
-      type: "die-card",
+      type: 'die-card',
       time: 365,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      character: "saruman",
-      die: "muster",
-      playerId: "shadow",
+      character: 'saruman',
+      die: 'muster',
+      playerId: 'shadow',
       time: 366,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          region: "north-dunland",
-          type: "regular-unit-recruitment",
+          region: 'north-dunland',
+          type: 'regular-unit-recruitment',
           quantity: 1,
-          nation: "isengard"
+          nation: 'isengard',
         },
         {
           quantity: 1,
-          type: "regular-unit-recruitment",
-          nation: "isengard",
-          region: "south-dunland"
+          type: 'regular-unit-recruitment',
+          nation: 'isengard',
+          region: 'south-dunland',
         },
         {
-          region: "orthanc",
-          nation: "isengard",
+          region: 'orthanc',
+          nation: 'isengard',
           quantity: 1,
-          type: "regular-unit-recruitment"
-        }
-      ]
+          type: 'regular-unit-recruitment',
+        },
+      ],
     },
     {
-      die: "character",
+      die: 'character',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 367,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
       time: 368,
-      playerId: "shadow",
+      playerId: 'shadow',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["b-1"]
-        }
+          type: 'hunt-tile-draw',
+          tiles: ['b-1'],
+        },
       ],
-      type: "base"
+      type: 'base',
     },
     {
-      card: "fpcha05",
+      card: 'fpcha05',
       time: 369,
-      playerId: "free-peoples",
-      type: "card-effect-skip"
+      playerId: 'free-peoples',
+      type: 'card-effect-skip',
     },
     {
-      die: "muster-army",
-      type: "die",
+      die: 'muster-army',
+      type: 'die',
       actions: [
         {
-          nation: "sauron",
-          type: "elite-unit-recruitment",
+          nation: 'sauron',
+          type: 'elite-unit-recruitment',
           quantity: 1,
-          region: "moria"
-        }
+          region: 'moria',
+        },
       ],
-      playerId: "shadow",
-      time: 370
+      playerId: 'shadow',
+      time: 370,
     },
     {
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      type: "die",
+      type: 'die',
       time: 371,
-      playerId: "free-peoples",
-      die: "character"
+      playerId: 'free-peoples',
+      die: 'character',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 372,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["b0"]
-        }
-      ]
+          type: 'hunt-tile-draw',
+          tiles: ['b0'],
+        },
+      ],
     },
     {
-      card: "fpcha05",
-      type: "card-effect-skip",
+      card: 'fpcha05',
+      type: 'card-effect-skip',
       time: 373,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "die",
+      type: 'die',
       actions: [
         {
-          fromRegion: "moria",
-          toRegion: "hollin",
-          type: "army-movement"
+          fromRegion: 'moria',
+          toRegion: 'hollin',
+          type: 'army-movement',
         },
         {
-          fromRegion: "north-dunland",
-          toRegion: "hollin",
-          type: "army-movement"
-        }
+          fromRegion: 'north-dunland',
+          toRegion: 'hollin',
+          type: 'army-movement',
+        },
       ],
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 374,
-      die: "army"
+      die: 'army',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
-          cards: ["fpcha21", "fpstr17"],
-          type: "card-draw"
-        }
+          cards: ['fpcha21', 'fpstr17'],
+          type: 'card-draw',
+        },
       ],
-      playerId: "free-peoples",
-      time: 375
-    },
-    {
-      actions: [
-        {
-          cards: ["scha09", "sstr11"],
-          type: "card-draw"
-        }
-      ],
-      type: "base",
+      playerId: 'free-peoples',
       time: 375,
-      playerId: "shadow"
     },
     {
-      type: "base",
+      actions: [
+        {
+          cards: ['scha09', 'sstr11'],
+          type: 'card-draw',
+        },
+      ],
+      type: 'base',
+      time: 375,
+      playerId: 'shadow',
+    },
+    {
+      type: 'base',
       actions: [],
-      playerId: "free-peoples",
-      time: 376
+      playerId: 'free-peoples',
+      time: 376,
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           quantity: 1,
-          type: "hunt-allocation"
-        }
+          type: 'hunt-allocation',
+        },
       ],
-      playerId: "shadow",
-      time: 377
+      playerId: 'shadow',
+      time: 377,
     },
     {
       actions: [
         {
-          type: "action-roll",
-          dice: ["muster-army", "muster", "will-of-the-west", "will-of-the-west", "muster-army"]
-        }
+          type: 'action-roll',
+          dice: [
+            'muster-army',
+            'muster',
+            'will-of-the-west',
+            'will-of-the-west',
+            'muster-army',
+          ],
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 378,
-      playerId: "free-peoples"
+      playerId: 'free-peoples',
     },
     {
-      type: "base",
+      type: 'base',
       actions: [
         {
           dice: [
-            "eye",
-            "eye",
-            "event",
-            "muster",
-            "character",
-            "character",
-            "character",
-            "event",
-            "eye"
+            'eye',
+            'eye',
+            'event',
+            'muster',
+            'character',
+            'character',
+            'character',
+            'event',
+            'eye',
           ],
-          type: "action-roll"
-        }
+          type: 'action-roll',
+        },
       ],
-      playerId: "shadow",
-      time: 378
+      playerId: 'shadow',
+      time: 378,
     },
     {
-      playerId: "free-peoples",
+      playerId: 'free-peoples',
       time: 379,
-      type: "die",
+      type: 'die',
       actions: [
         {
-          type: "fellowship-progress"
-        }
+          type: 'fellowship-progress',
+        },
       ],
-      die: "will-of-the-west"
+      die: 'will-of-the-west',
     },
     {
-      playerId: "shadow",
+      playerId: 'shadow',
       time: 380,
-      type: "base",
+      type: 'base',
       actions: [
         {
-          type: "hunt-tile-draw",
-          tiles: ["er"]
-        }
-      ]
+          type: 'hunt-tile-draw',
+          tiles: ['er'],
+        },
+      ],
     },
     {
       time: 381,
-      playerId: "free-peoples",
-      type: "card-effect-skip",
-      card: "fpcha05"
+      playerId: 'free-peoples',
+      type: 'card-effect-skip',
+      card: 'fpcha05',
     },
     {
       actions: [
         {
           quantity: 4,
-          type: "fellowship-corruption"
-        }
+          type: 'fellowship-corruption',
+        },
       ],
-      type: "base",
+      type: 'base',
       time: 382,
-      playerId: "free-peoples"
-    }
-  ]
+      playerId: 'free-peoples',
+    },
+  ],
 };

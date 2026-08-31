@@ -1,8 +1,11 @@
-import { Key } from "./types.util";
+import { Key } from './types.util';
 
-export function range<T = number>(length: number, supplier?: (index: number) => T): T[] {
+export function range<T = number>(
+  length: number,
+  supplier?: (index: number) => T,
+): T[] {
   if (!supplier) {
-    supplier = index => index as unknown as T;
+    supplier = (index) => index as unknown as T;
   }
   const array: T[] = [];
   for (let i = 0; i < length; i++) {
@@ -19,7 +22,9 @@ export function isNotEmpty<T>(array: T[]): boolean {
   return !!(array && array.length);
 }
 
-export function sortComparatorByKey(key: string): (val1: object, val2: object) => number {
+export function sortComparatorByKey(
+  key: string,
+): (val1: object, val2: object) => number {
   return (val1: { [key: string]: any }, val2: { [key: string]: any }) => {
     return val1[key] < val2[key] ? -1 : val1[key] === val2[key] ? 0 : 1;
   };
@@ -46,9 +51,9 @@ export function translate<T>(firstIndex: number, array: T[]): T[] {
 export function toMap<T, K extends Key, V>(
   array: T[],
   keyGetter: (e: T, index: number) => K,
-  valueGetter?: (e: T, key: K, index: number) => V
+  valueGetter?: (e: T, key: K, index: number) => V,
 ): { [key: string]: V } {
-  const vG = valueGetter || (e => e as unknown as V);
+  const vG = valueGetter || ((e) => e as unknown as V);
   const map: { [key: string]: V } = {};
   array?.forEach((e, index) => {
     const key = keyGetter(e, index);
@@ -63,11 +68,11 @@ export function safeArray<T>(array: T[]): T[] {
 
 export function mapToDistinct<T, V extends string | number>(
   array: T[],
-  valueGetter: (e: T) => V
+  valueGetter: (e: T) => V,
 ): V[] {
   const toReturn: V[] = [];
   const set: { [key: string]: boolean } = {};
-  array.forEach(e => {
+  array.forEach((e) => {
     const value = valueGetter(e);
     if (!set[value]) {
       set[value] = true;
@@ -86,7 +91,7 @@ export function entitiesToNodes<E, N>(
   oldMap: Record<string | number, N>,
   getEntityId: (entity: E) => string | number,
   isEntityUnchanged: (entity: E, node: N) => boolean,
-  entityToNode: (entity: E, index: number, oldNode: N | null) => N
+  entityToNode: (entity: E, index: number, oldNode: N | null) => N,
 ): { nodes: N[]; map: Record<string | number, N> } {
   const map: Record<string | number, N> = {};
   const nodes: N[] = [];
@@ -112,13 +117,13 @@ export function entitiesToNodes<E, N>(
 export function group<T, K extends number | string, V = T>(
   array: T[],
   getKey: (e: T) => K,
-  getValue?: (e: T) => V
+  getValue?: (e: T) => V,
 ): Record<K, V[]> {
   if (!getValue) {
-    getValue = e => e as unknown as V;
+    getValue = (e) => e as unknown as V;
   }
   const map = {} as Record<K, V[]>;
-  array?.forEach(e => {
+  array?.forEach((e) => {
     const key = getKey(e);
     let groupList = map[key];
     if (!groupList) {

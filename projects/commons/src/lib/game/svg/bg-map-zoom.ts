@@ -7,8 +7,8 @@ import {
   HostListener,
   OnInit,
   inject,
-  input
-} from "@angular/core";
+  input,
+} from '@angular/core';
 
 const MOVE_STEP = 30;
 const ZOOM_STEP = 0.2;
@@ -23,8 +23,8 @@ interface BgMapZoomRefreshParams {
 }
 
 @Component({
-  selector: "svg[bgSvg]",
-  template: "<ng-content></ng-content>"
+  selector: 'svg[bgSvg]',
+  template: '<ng-content></ng-content>',
 })
 export class BgSvg {
   elementRef = inject<ElementRef<SVGSVGElement>>(ElementRef);
@@ -37,7 +37,7 @@ export class BgSvg {
   }
 }
 
-@Directive({ selector: "[bgMapZoom]" })
+@Directive({ selector: '[bgMapZoom]' })
 export class BgMapZoom implements OnInit {
   private bgSvg = inject(BgSvg);
   private cd = inject(ChangeDetectorRef);
@@ -49,9 +49,9 @@ export class BgMapZoom implements OnInit {
     scale?: number;
     zoomStep?: number;
     translateStep?: number;
-  }>({ alias: "bgMapZoom" });
+  }>({ alias: 'bgMapZoom' });
 
-  @HostBinding("attr.transform")
+  @HostBinding('attr.transform')
   transform!: string;
 
   private scale!: number;
@@ -77,7 +77,7 @@ export class BgMapZoom implements OnInit {
     this.translateStep = this.config().translateStep || 15;
   }
 
-  @HostListener("mousedown", ["$event"])
+  @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent) {
     if (event.button === 0) {
       this.grabbing = true;
@@ -89,21 +89,21 @@ export class BgMapZoom implements OnInit {
     }
   }
 
-  @HostListener("mouseup", ["$event"])
+  @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     if (event.button === 0) {
       this.endGrabbing();
     }
   }
 
-  @HostListener("mouseleave", ["$event"])
+  @HostListener('mouseleave', ['$event'])
   onMouseLeave(event: MouseEvent) {
     if (this.grabbing) {
       this.endGrabbing();
     }
   }
 
-  @HostListener("mousemove", ["$event"])
+  @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     if (this.grabbing) {
       const xt = event.clientX - this.grabbingX!;
@@ -116,7 +116,7 @@ export class BgMapZoom implements OnInit {
         y0: 0,
         xt: xt,
         yt: yt,
-        reset: false
+        reset: false,
       });
     }
   }
@@ -134,7 +134,7 @@ export class BgMapZoom implements OnInit {
         y0: 0,
         xt: xt,
         yt: yt,
-        reset: false
+        reset: false,
       });
     } else {
       setTimeout(() => {
@@ -192,12 +192,26 @@ export class BgMapZoom implements OnInit {
   }
 
   private move(xt: number, yt: number) {
-    this.refreshTransform({ zoom: 1, x0: 0, y0: 0, xt: xt, yt: yt, reset: false });
+    this.refreshTransform({
+      zoom: 1,
+      x0: 0,
+      y0: 0,
+      xt: xt,
+      yt: yt,
+      reset: false,
+    });
     this.cd.markForCheck();
   }
 
   private zoom(zoom: number) {
-    this.refreshTransform({ zoom: zoom, x0: 0, y0: 0, xt: 0, yt: 0, reset: false });
+    this.refreshTransform({
+      zoom: zoom,
+      x0: 0,
+      y0: 0,
+      xt: 0,
+      yt: 0,
+      reset: false,
+    });
     this.cd.markForCheck();
   }
 
@@ -207,7 +221,7 @@ export class BgMapZoom implements OnInit {
     this.grabbingY = null;
   }
 
-  @HostListener("mousewheel", ["$event"])
+  @HostListener('mousewheel', ['$event'])
   onMouseWheel(event: MouseEvent | any) {
     /* if (event.ctrlKey) { */
     event.preventDefault();
@@ -222,7 +236,7 @@ export class BgMapZoom implements OnInit {
       y0: zoomOrigin.y,
       xt: 0,
       yt: 0,
-      reset: false
+      reset: false,
     });
     /* } else if (event.shiftKey) {
       event.preventDefault ();
@@ -242,19 +256,19 @@ export class BgMapZoom implements OnInit {
       y0: 0,
       xt: 0,
       yt: 0,
-      reset: false
+      reset: false,
     };
     switch (event.key) {
-      case "d":
+      case 'd':
         refreshParams.xt = -1 * this.translateStep;
         break;
-      case "w":
+      case 'w':
         refreshParams.yt = this.translateStep;
         break;
-      case "a":
+      case 'a':
         refreshParams.xt = this.translateStep;
         break;
-      case "s":
+      case 's':
         refreshParams.yt = -1 * this.translateStep;
         break;
       default:

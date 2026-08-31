@@ -1,9 +1,9 @@
-import { Component, OnInit, inject } from "@angular/core";
-import { TuiDialogContext } from "@taiga-ui/core";
-import { injectContext } from "@taiga-ui/polymorpheus";
-import { BritAssetsService } from "../brit-assets.service";
-import { BritAreaUnit } from "../brit-game-state.models";
-import { BritUnitsSelector } from "../brit-units-selector/brit-units-selector";
+import { Component, OnInit, inject } from '@angular/core';
+import { TuiDialogContext } from '@taiga-ui/core';
+import { injectContext } from '@taiga-ui/polymorpheus';
+import { BritAssetsService } from '../brit-assets.service';
+import { BritAreaUnit } from '../brit-game-state.models';
+import { BritUnitsSelector } from '../brit-units-selector/brit-units-selector';
 
 export interface BritUnitsSelectorSheetInput {
   unit: BritAreaUnit;
@@ -12,7 +12,7 @@ export interface BritUnitsSelectorSheetInput {
 }
 
 @Component({
-  selector: "brit-unit-number-selection-sheet",
+  selector: 'brit-unit-number-selection-sheet',
   imports: [BritUnitsSelector],
   template: `
     <brit-units-selector
@@ -20,14 +20,17 @@ export interface BritUnitsSelectorSheetInput {
       [(number)]="quantity"
       [max]="data.maxQuantity"
       min="0"
-      (confirm)="onConfirm()">
+      (confirm)="onConfirm()"
+    >
     </brit-units-selector>
   `,
-  styles: []
+  styles: [],
 })
 export class BritUnitsSelectorSheet implements OnInit {
   private readonly context =
-    injectContext<TuiDialogContext<number | undefined, BritUnitsSelectorSheetInput>>();
+    injectContext<
+      TuiDialogContext<number | undefined, BritUnitsSelectorSheetInput>
+    >();
   data = this.context.data;
   private assetsService = inject(BritAssetsService);
 
@@ -38,7 +41,7 @@ export class BritUnitsSelectorSheet implements OnInit {
     this.quantity = this.data.quantity;
     this.imageSource = this.assetsService.getUnitImageSourceByType(
       this.data.unit.type,
-      this.data.unit.nationId
+      this.data.unit.nationId,
     );
   }
 

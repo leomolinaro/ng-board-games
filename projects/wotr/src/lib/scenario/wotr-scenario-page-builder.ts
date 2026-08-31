@@ -1,7 +1,7 @@
-import { TestBed } from "@angular/core/testing";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
-import { ActivatedRoute } from "@angular/router";
-import { WotrScenarioPage } from "./wotr-scenario-page";
+import { TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
+import { WotrScenarioPage } from './wotr-scenario-page';
 
 export class WotrScenarioPageBuilder {
   private scenarioId: string | undefined;
@@ -18,10 +18,12 @@ export class WotrScenarioPageBuilder {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: new Map([["scenarioId", this.scenarioId || "empty"]]) }
-          }
-        }
-      ]
+            snapshot: {
+              paramMap: new Map([['scenarioId', this.scenarioId || 'empty']]),
+            },
+          },
+        },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(WotrScenarioPage);

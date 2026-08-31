@@ -1,1 +1,1 @@
-export * from "./bg-cloud-service";
+export * from './bg-cloud-service';

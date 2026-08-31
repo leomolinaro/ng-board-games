@@ -1,5 +1,5 @@
-import { WotrRegionId } from "../region/wotr-region-models";
-import { KomeSovereignId, WotrCharacterId } from "./wotr-character-models";
+import { WotrRegionId } from '../region/wotr-region-models';
+import { KomeSovereignId, WotrCharacterId } from './wotr-character-models';
 
 export type WotrCharacterAction =
   | WotrCharacterMovement
@@ -10,7 +10,7 @@ export type WotrCharacterAction =
   | KomeSovereignAwake;
 
 export interface WotrCharacterMovement {
-  type: "character-movement";
+  type: 'character-movement';
   characters: WotrCharacterId[];
   fromRegion: WotrRegionId;
   toRegion: WotrRegionId;
@@ -20,10 +20,10 @@ export function moveCharacters(
   toRegion: WotrRegionId,
   ...characters: WotrCharacterId[]
 ): WotrCharacterMovement {
-  return { type: "character-movement", characters, fromRegion, toRegion };
+  return { type: 'character-movement', characters, fromRegion, toRegion };
 }
 export interface WotrCharacterPlay {
-  type: "character-play";
+  type: 'character-play';
   characters: WotrCharacterId[];
   region: WotrRegionId;
 }
@@ -31,39 +31,43 @@ export function playCharacter(
   region: WotrRegionId,
   ...characters: WotrCharacterId[]
 ): WotrCharacterPlay {
-  return { type: "character-play", region, characters };
+  return { type: 'character-play', region, characters };
 }
 export interface WotrCharacterElimination {
-  type: "character-elimination";
+  type: 'character-elimination';
   characters: WotrCharacterId[];
 }
-export function eliminateCharacter(...characters: WotrCharacterId[]): WotrCharacterElimination {
-  return { type: "character-elimination", characters };
+export function eliminateCharacter(
+  ...characters: WotrCharacterId[]
+): WotrCharacterElimination {
+  return { type: 'character-elimination', characters };
 }
 
 export interface WotrGollumEnterFellowship {
-  type: "gollum-enter-fellowship";
+  type: 'gollum-enter-fellowship';
 }
 export function gollumEnterFellowship(): WotrGollumEnterFellowship {
-  return { type: "gollum-enter-fellowship" };
+  return { type: 'gollum-enter-fellowship' };
 }
 
 export interface WotrCharacterChoose {
-  type: "character-choose";
+  type: 'character-choose';
   characters: WotrCharacterId[];
 }
-export function chooseCharacter(...characters: WotrCharacterId[]): WotrCharacterChoose {
-  return { type: "character-choose", characters };
+export function chooseCharacter(
+  ...characters: WotrCharacterId[]
+): WotrCharacterChoose {
+  return { type: 'character-choose', characters };
 }
 
 export interface KomeSovereignAwake {
-  type: "sovereign-awake";
+  type: 'sovereign-awake';
   sovereignId: KomeSovereignId;
   regionId: WotrRegionId;
 }
 export function awakeSovereign(
   sovereignId: KomeSovereignId,
-  regionId: WotrRegionId
+  regionId: WotrRegionId,
 ): KomeSovereignAwake {
-  return { type: "sovereign-awake", sovereignId, regionId };
+  return { type: 'sovereign-awake', sovereignId, regionId };
 }

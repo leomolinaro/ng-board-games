@@ -1,11 +1,15 @@
-import { Component, OnChanges, ViewChild, input, output } from "@angular/core";
-import { BgMapZoom, BgSvg } from "@leobg/commons";
-import { SimpleChanges, arrayUtil } from "@leobg/commons/utils";
-import { BaronyLand, BaronyLandCoordinates, landCoordinatesToId } from "../barony-models";
-import { BaronyLandComponent } from "./barony-land-tile";
+import { Component, OnChanges, ViewChild, input, output } from '@angular/core';
+import { BgMapZoom, BgSvg } from '@leobg/commons';
+import { SimpleChanges, arrayUtil } from '@leobg/commons/utils';
+import {
+  BaronyLand,
+  BaronyLandCoordinates,
+  landCoordinatesToId,
+} from '../barony-models';
+import { BaronyLandComponent } from './barony-land-tile';
 
 @Component({
-  selector: "barony-map",
+  selector: 'barony-map',
   imports: [BgSvg, BgMapZoom, BaronyLandComponent],
   template: `
     <svg
@@ -16,70 +20,82 @@ import { BaronyLandComponent } from "./barony-land-tile";
       width="100%"
       height="100%"
       viewBox="0 0 1000 500"
-      preserveAspectratio="xMinYMin">
+      preserveAspectratio="xMinYMin"
+    >
       <defs>
         <pattern
           id="mountain"
           height="100%"
           width="100%"
-          patternContentUnits="objectBoundingBox">
+          patternContentUnits="objectBoundingBox"
+        >
           <image
             width="1"
             height="1"
             preserveAspectRatio="none"
-            xlink:href="assets/barony/land-tiles/mountain.png"></image>
+            xlink:href="assets/barony/land-tiles/mountain.png"
+          ></image>
         </pattern>
         <pattern
           id="lake"
           height="100%"
           width="100%"
-          patternContentUnits="objectBoundingBox">
+          patternContentUnits="objectBoundingBox"
+        >
           <image
             width="1"
             height="1"
             preserveAspectRatio="none"
-            xlink:href="assets/barony/land-tiles/lake.png"></image>
+            xlink:href="assets/barony/land-tiles/lake.png"
+          ></image>
         </pattern>
         <pattern
           id="plain"
           height="100%"
           width="100%"
-          patternContentUnits="objectBoundingBox">
+          patternContentUnits="objectBoundingBox"
+        >
           <image
             width="1"
             height="1"
             preserveAspectRatio="none"
-            xlink:href="assets/barony/land-tiles/plain.png"></image>
+            xlink:href="assets/barony/land-tiles/plain.png"
+          ></image>
         </pattern>
         <pattern
           id="fields"
           height="100%"
           width="100%"
-          patternContentUnits="objectBoundingBox">
+          patternContentUnits="objectBoundingBox"
+        >
           <image
             width="1"
             height="1"
             preserveAspectRatio="none"
-            xlink:href="assets/barony/land-tiles/fields.png"></image>
+            xlink:href="assets/barony/land-tiles/fields.png"
+          ></image>
         </pattern>
         <pattern
           id="forest"
           height="100%"
           width="100%"
-          patternContentUnits="objectBoundingBox">
+          patternContentUnits="objectBoundingBox"
+        >
           <image
             width="1"
             height="1"
             preserveAspectRatio="none"
-            xlink:href="assets/barony/land-tiles/forest.png"></image>
+            xlink:href="assets/barony/land-tiles/forest.png"
+          ></image>
         </pattern>
       </defs>
       <svg:g
         [bgMapZoom]="{
           translateX: 500,
           translateY: 200,
-          scale: 20
-        }">
+          scale: 20,
+        }"
+      >
         @for (land of lands(); track land.id) {
           <svg:g
             baronyLandTile
@@ -88,11 +104,12 @@ import { BaronyLandComponent } from "./barony-land-tile";
             [pawns]="land.pawns"
             [active]="isValid ? isValid[land.id] : false"
             [disabled]="isValid ? !isValid[land.id] : false"
-            (landTileClick)="onLandTileClick(land)"></svg:g>
+            (landTileClick)="onLandTileClick(land)"
+          ></svg:g>
         }
       </svg:g>
     </svg>
-  `
+  `,
 })
 export class BaronyMap implements OnChanges {
   constructor() {}
@@ -112,8 +129,8 @@ export class BaronyMap implements OnChanges {
       if (validLands) {
         this.isValid = arrayUtil.toMap(
           validLands,
-          lt => landCoordinatesToId(lt),
-          () => true
+          (lt) => landCoordinatesToId(lt),
+          () => true,
         );
       } else {
         this.isValid = null;

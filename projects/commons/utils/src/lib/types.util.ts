@@ -8,10 +8,10 @@ export function isArray<T>(value: any): value is T[] {
   return Array.isArray(value);
 }
 export function isString(value: any): value is string {
-  return typeof value === "string";
+  return typeof value === 'string';
 }
 export function isArrayOfStrings(value: any[]): value is string[] {
-  return !value || !value.length || value.every(v => isString(v));
+  return !value || !value.length || value.every((v) => isString(v));
 }
 
 export type KeyOfType<T, TProp> = {

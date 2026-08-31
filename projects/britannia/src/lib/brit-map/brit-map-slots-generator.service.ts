@@ -1,13 +1,13 @@
-import { Injectable, inject } from "@angular/core";
-import { immutableUtil, randomUtil } from "@leobg/commons/utils";
+import { Injectable, inject } from '@angular/core';
+import { immutableUtil, randomUtil } from '@leobg/commons/utils';
 import {
   BritAreaId,
   BritLandAreaId,
   BritSeaAreaId,
-  isBritLandAreaId
-} from "../brit-components.models";
-import { BritComponentsService } from "../brit-components.service";
-import { BritAreaSlots, BritMapPoint } from "./brit-map.service";
+  isBritLandAreaId,
+} from '../brit-components.models';
+import { BritComponentsService } from '../brit-components.service';
+import { BritAreaSlots, BritMapPoint } from './brit-map.service';
 
 interface BritLandPoints {
   innerPoints: BritMapLandPoint[];
@@ -24,17 +24,20 @@ interface BritMapLandPoint {
 
 export type BritMapSeaPoint = BritMapPoint;
 
-const BRIT_SEA_GRID: Record<BritSeaAreaId, { startX: number; startY: number; width: number }> = {
-  "atlantic-ocean": { startX: 5, startY: 41, width: 6 },
-  "english-channel": { startX: 23, startY: 57, width: 8 },
-  "frisian-sea": { startX: 30, startY: 37, width: 6 },
-  "icelandic-sea": { startX: 22, startY: 5, width: 5 },
-  "irish-sea": { startX: 1, startY: 23, width: 5 },
-  "north-sea": { startX: 25, startY: 20, width: 6 }
+const BRIT_SEA_GRID: Record<
+  BritSeaAreaId,
+  { startX: number; startY: number; width: number }
+> = {
+  'atlantic-ocean': { startX: 5, startY: 41, width: 6 },
+  'english-channel': { startX: 23, startY: 57, width: 8 },
+  'frisian-sea': { startX: 30, startY: 37, width: 6 },
+  'icelandic-sea': { startX: 22, startY: 5, width: 5 },
+  'irish-sea': { startX: 1, startY: 23, width: 5 },
+  'north-sea': { startX: 25, startY: 20, width: 6 },
 };
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BritMapSlotsGeneratorService {
   private components = inject(BritComponentsService);
@@ -47,16 +50,23 @@ export class BritMapSlotsGeneratorService {
     { x: 1, y: 1 },
     { x: 1, y: 0 },
     { x: 1, y: -1 },
-    { x: 0, y: -1 }
+    { x: 0, y: -1 },
   ];
 
   generateSlots(
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null
+    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
   ): BritAreaSlots {
-    const areaSlots: Record<BritAreaId, Record<number, BritMapPoint[]>> = {} as any;
-    const landPointsById = this.generateLandPoints(xMax, yMax, coordinatesToAreaId);
+    const areaSlots: Record<
+      BritAreaId,
+      Record<number, BritMapPoint[]>
+    > = {} as any;
+    const landPointsById = this.generateLandPoints(
+      xMax,
+      yMax,
+      coordinatesToAreaId,
+    );
 
     for (const landId of this.components.LAND_AREA_IDS) {
       const landPoints = landPointsById[landId];
@@ -83,10 +93,13 @@ export class BritMapSlotsGeneratorService {
   private generateLandPoints(
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null
+    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
   ) {
     const landPointsById: Record<BritLandAreaId, BritLandPoints> = {} as any;
-    const landPointByYByX: Record<number, Record<number, BritMapLandPoint>> = {};
+    const landPointByYByX: Record<
+      number,
+      Record<number, BritMapLandPoint>
+    > = {};
 
     // Calcolo i punti interni e la mappa dei punti by coordinates.
     for (let x = 0; x < xMax; x++) {
@@ -98,7 +111,7 @@ export class BritMapSlotsGeneratorService {
             landId: areaId,
             neighbours: [],
             x: x,
-            y: y
+            y: y,
           };
           let landPointByY = landPointByYByX[x];
           if (!landPointByY) {
@@ -110,7 +123,7 @@ export class BritMapSlotsGeneratorService {
           if (!landPoints) {
             landPoints = {
               innerPoints: [],
-              outerBorderPoints: []
+              outerBorderPoints: [],
             };
             landPointsById[areaId] = landPoints;
           }
@@ -131,7 +144,11 @@ export class BritMapSlotsGeneratorService {
         for (const neighbourDirection of this.neighbourDirections) {
           const nX = x + neighbourDirection.x;
           const nY = y + neighbourDirection.y;
-          const landPoint = this.getLandPointByCoordinates(nX, nY, landPointByYByX);
+          const landPoint = this.getLandPointByCoordinates(
+            nX,
+            nY,
+            landPointByYByX,
+          );
           let outerPoint: BritMapPoint | null = null;
           if (landPoint) {
             if (landPoint.landId === landId) {
@@ -143,7 +160,7 @@ export class BritMapSlotsGeneratorService {
             outerPoint = { x: nX, y: nY };
           }
           if (outerPoint) {
-            const key = outerPoint.x + "-" + outerPoint.y;
+            const key = outerPoint.x + '-' + outerPoint.y;
             if (!foundOuterPoints[key]) {
               outerPoints.push(outerPoint);
               foundOuterPoints[key] = true;
@@ -172,7 +189,7 @@ export class BritMapSlotsGeneratorService {
   private getLandPointByCoordinates(
     x: number,
     y: number,
-    landPointByYByX: Record<number, Record<number, BritMapLandPoint>>
+    landPointByYByX: Record<number, Record<number, BritMapLandPoint>>,
   ): BritMapLandPoint | null {
     const landPointByY = landPointByYByX[x];
     if (!landPointByY) {
@@ -193,11 +210,17 @@ export class BritMapSlotsGeneratorService {
     return 2 / this.quadDistance(innerPoint1, innerPoint2);
   }
 
-  private quadDistance(pointA: { x: number; y: number }, pointB: { x: number; y: number }) {
+  private quadDistance(
+    pointA: { x: number; y: number },
+    pointB: { x: number; y: number },
+  ) {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   }
 
-  private generateSeaSlots(n: number, seaAreaId: BritSeaAreaId): BritMapPoint[] {
+  private generateSeaSlots(
+    n: number,
+    seaAreaId: BritSeaAreaId,
+  ): BritMapPoint[] {
     const seaGrid = BRIT_SEA_GRID[seaAreaId];
     const slots: BritMapPoint[] = [];
     for (let i = 0; i < n; i++) {
@@ -211,15 +234,15 @@ export class BritMapSlotsGeneratorService {
   private generateLandSlots(
     n: number,
     landPoints: BritLandPoints,
-    landId: BritLandAreaId
+    landId: BritLandAreaId,
   ): BritMapPoint[] {
     const simulation = new randomUtil.BgSimulatedAnnealing<BritMapLandPoint[]>(
-      state => this.energy(state),
-      state => this.randomNeighbor(state, landPoints, landId)
+      (state) => this.energy(state),
+      (state) => this.randomNeighbor(state, landPoints, landId),
     );
     let slots = randomUtil.getRandomElements(n, n + 1, landPoints.innerPoints);
     slots = simulation.run(slots, 0.1, 100);
-    return slots.map(s => ({ x: s.x, y: s.y }));
+    return slots.map((s) => ({ x: s.x, y: s.y }));
   }
 
   private energy(points: BritMapLandPoint[]) {
@@ -238,7 +261,7 @@ export class BritMapSlotsGeneratorService {
   private randomNeighbor(
     points: BritMapLandPoint[],
     landPoints: BritLandPoints,
-    landId: BritLandAreaId
+    landId: BritLandAreaId,
   ): BritMapLandPoint[] {
     const index = randomUtil.getRandomInteger(0, points.length);
     const oldPoint = points[index];
@@ -250,7 +273,7 @@ export class BritMapSlotsGeneratorService {
         i++;
       } while (points.includes(newPoint) && i < 100);
       if (i >= 100) {
-        console.error("Loop!", landId);
+        console.error('Loop!', landId);
         newPoint = oldPoint;
       }
     } else {

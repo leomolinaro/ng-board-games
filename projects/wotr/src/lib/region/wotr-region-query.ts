@@ -1,16 +1,16 @@
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrArmy } from "../unit/wotr-unit-models";
-import { WotrUnitUtils } from "../unit/wotr-unit-utils";
-import { WotrRegionId } from "./wotr-region-models";
-import { WotrRegionStore } from "./wotr-region-store";
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrArmy } from '../unit/wotr-unit-models';
+import { WotrUnitUtils } from '../unit/wotr-unit-utils';
+import { WotrRegionId } from './wotr-region-models';
+import { WotrRegionStore } from './wotr-region-store';
 
 export class WotrRegionQuery {
   constructor(
     private regionId: WotrRegionId,
     private regionStore: WotrRegionStore,
-    private unitUtils: WotrUnitUtils
+    private unitUtils: WotrUnitUtils,
   ) {}
 
   private query(regionId: WotrRegionId) {
@@ -43,44 +43,51 @@ export class WotrRegionQuery {
 
   isAdjacentTo(otherRegionId: WotrRegionId): boolean {
     const region = this.regionStore.region(this.regionId);
-    return region.neighbors.some(n => n.id === otherRegionId && !n.impassable);
+    return region.neighbors.some(
+      (n) => n.id === otherRegionId && !n.impassable,
+    );
   }
 
   isWithinNRegionsOf(regionId: WotrRegionId, maxDistance: number): boolean {
-    const reachable = this.regionStore.reachableRegions(this.regionId, maxDistance);
+    const reachable = this.regionStore.reachableRegions(
+      this.regionId,
+      maxDistance,
+    );
     return reachable.includes(regionId);
   }
 
   adjacentRegions(): WotrRegionQuery[] {
     const region = this.regionStore.region(this.regionId);
-    return region.neighbors.filter(n => !n.impassable).map(n => this.query(n.id));
+    return region.neighbors
+      .filter((n) => !n.impassable)
+      .map((n) => this.query(n.id));
   }
 
   reachableRegions(
     progress: number,
     canEnter?: (region: WotrRegionQuery, distance: number) => boolean,
-    canLeave?: (region: WotrRegionQuery, distance: number) => boolean
+    canLeave?: (region: WotrRegionQuery, distance: number) => boolean,
   ): WotrRegionQuery[] {
     return this.regionStore
       .reachableRegions(
         this.regionId,
         progress,
-        canEnter ? r => canEnter(this.query(r.id), progress) : undefined,
-        canLeave ? r => canLeave(this.query(r.id), progress) : undefined
+        canEnter ? (r) => canEnter(this.query(r.id), progress) : undefined,
+        canLeave ? (r) => canLeave(this.query(r.id), progress) : undefined,
       )
-      .map(r => this.query(r));
+      .map((r) => this.query(r));
   }
 
   isStronghold() {
-    return this.region().settlement === "stronghold";
+    return this.region().settlement === 'stronghold';
   }
 
   isCity() {
-    return this.region().settlement === "city";
+    return this.region().settlement === 'city';
   }
 
   isFreePeoplesRegion() {
-    return this.region().frontId === "free-peoples";
+    return this.region().frontId === 'free-peoples';
   }
 
   isFreeForRecruitment(frontId: WotrFrontId): boolean {
@@ -128,9 +135,13 @@ export class WotrRegionQuery {
   hasRegularUnitsOfNation(nationId: WotrNationId) {
     const region = this.regionStore.region(this.regionId);
     return (
-      (region.army && this.unitUtils.hasRegularUnitsOfNation(nationId, region.army)) ||
+      (region.army &&
+        this.unitUtils.hasRegularUnitsOfNation(nationId, region.army)) ||
       (region.underSiegeArmy &&
-        this.unitUtils.hasRegularUnitsOfNation(nationId, region.underSiegeArmy)) ||
+        this.unitUtils.hasRegularUnitsOfNation(
+          nationId,
+          region.underSiegeArmy,
+        )) ||
       false
     );
   }
@@ -138,9 +149,13 @@ export class WotrRegionQuery {
   hasEliteUnitsOfNation(nationId: WotrNationId) {
     const region = this.regionStore.region(this.regionId);
     return (
-      (region.army && this.unitUtils.hasEliteUnitsOfNation(nationId, region.army)) ||
+      (region.army &&
+        this.unitUtils.hasEliteUnitsOfNation(nationId, region.army)) ||
       (region.underSiegeArmy &&
-        this.unitUtils.hasEliteUnitsOfNation(nationId, region.underSiegeArmy)) ||
+        this.unitUtils.hasEliteUnitsOfNation(
+          nationId,
+          region.underSiegeArmy,
+        )) ||
       false
     );
   }
@@ -148,7 +163,8 @@ export class WotrRegionQuery {
   hasArmyUnitsOfNation(nationId: WotrNationId) {
     const region = this.regionStore.region(this.regionId);
     return (
-      (region.army && this.unitUtils.hasArmyUnitsOfNation(nationId, region.army)) ||
+      (region.army &&
+        this.unitUtils.hasArmyUnitsOfNation(nationId, region.army)) ||
       (region.underSiegeArmy &&
         this.unitUtils.hasArmyUnitsOfNation(nationId, region.underSiegeArmy)) ||
       false
@@ -159,7 +175,8 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasUnitsOfNation(nationId, region.army)) ||
-      (region.underSiegeArmy && this.unitUtils.hasUnitsOfNation(nationId, region.underSiegeArmy)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasUnitsOfNation(nationId, region.underSiegeArmy)) ||
       false
     );
   }
@@ -168,7 +185,8 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasNazgul(region.army)) ||
-      (region.underSiegeArmy && this.unitUtils.hasNazgul(region.underSiegeArmy)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasNazgul(region.underSiegeArmy)) ||
       (region.freeUnits && this.unitUtils.hasNazgul(region.freeUnits)) ||
       false
     );
@@ -178,7 +196,8 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasCompanions(region.army)) ||
-      (region.underSiegeArmy && this.unitUtils.hasCompanions(region.underSiegeArmy)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasCompanions(region.underSiegeArmy)) ||
       (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits)) ||
       false
     );
@@ -188,7 +207,10 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     if (region.army && this.unitUtils.hasCompanions(region.army))
       return this.unitUtils.getCompanions(region.army);
-    if (region.underSiegeArmy && this.unitUtils.hasCompanions(region.underSiegeArmy))
+    if (
+      region.underSiegeArmy &&
+      this.unitUtils.hasCompanions(region.underSiegeArmy)
+    )
       return this.unitUtils.getCompanions(region.underSiegeArmy);
     if (region.freeUnits && this.unitUtils.hasCompanions(region.freeUnits))
       return this.unitUtils.getCompanions(region.freeUnits);
@@ -199,7 +221,8 @@ export class WotrRegionQuery {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasMinions(region.army)) ||
-      (region.underSiegeArmy && this.unitUtils.hasMinions(region.underSiegeArmy)) ||
+      (region.underSiegeArmy &&
+        this.unitUtils.hasMinions(region.underSiegeArmy)) ||
       (region.freeUnits && this.unitUtils.hasMinions(region.freeUnits)) ||
       false
     );

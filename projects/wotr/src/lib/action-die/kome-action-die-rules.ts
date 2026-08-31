@@ -1,13 +1,13 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
+import { inject, Injectable } from '@angular/core';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
 
 @Injectable()
 export class KomeActionDieRules {
   private q = inject(WotrGameQuery);
 
   canInitiateCorruptionAttempt(frontId: WotrFrontId): boolean {
-    if (frontId !== "shadow") return false;
+    if (frontId !== 'shadow') return false;
     // The Free Peoples has at least one unused Action die
     if (!this.q.freePeoples.nActionDice()) return false;
     // There is more than one Eye die in the Hunt Box

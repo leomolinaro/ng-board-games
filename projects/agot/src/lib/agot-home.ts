@@ -1,10 +1,10 @@
-import { Component } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { TuiButton, TuiTitle } from "@taiga-ui/core";
-import { AGOT_FEATURES } from "./agot-features";
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TuiButton, TuiTitle } from '@taiga-ui/core';
+import { AGOT_FEATURES } from './agot-features';
 
 @Component({
-  selector: "agot-home",
+  selector: 'agot-home',
   template: `
     <header class="agot-header">
       <span tuiTitle>A Game of Thrones LCG 2.0</span>
@@ -17,7 +17,8 @@ import { AGOT_FEATURES } from "./agot-features";
           tuiButton
           appearance="primary"
           size="l"
-          [routerLink]="feature.routerLink">
+          [routerLink]="feature.routerLink"
+        >
           {{ feature.name }}
         </a>
       }
@@ -56,7 +57,7 @@ import { AGOT_FEATURES } from "./agot-features";
       filter: brightness(1.04);
     }
   `,
-  imports: [RouterLink, TuiButton, TuiTitle]
+  imports: [RouterLink, TuiButton, TuiTitle],
 })
 export class AgotHome {
   protected features = AGOT_FEATURES;

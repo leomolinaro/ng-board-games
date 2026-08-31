@@ -4,7 +4,8 @@
   [class.is-ai]="player().isAi"
   [class.is-remote]="player().isRemote"
   [class.is-local]="player().isLocal"
-  (click)="onCardClick()">
+  (click)="onCardClick()"
+>
   <div class="b-player-header">
     <tui-icon
       class="b-player-type-icon"
@@ -16,11 +17,13 @@
             : currentPlayer()
               ? 'user-round-check'
               : 'user-round'
-      " />
+      "
+    />
     <div class="b-player-name">{{ player().name }}</div>
     <tui-icon
       class="b-player-score-icon"
-      icon="star" />
+      icon="star"
+    />
     <div class="b-player-score">{{ player().score }}</div>
   </div>
   <div class="b-player-content">
@@ -28,19 +31,25 @@
     <div
       class="b-player-pawn-image"
       [class.is-active]="pawnNode.active"
-      (click)="onPawnClick(pawnNode)">
+      (click)="onPawnClick(pawnNode)"
+    >
       <img [src]="pawnNode.source" />
     </div>
-    } @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
+    } @for (resourceNode of resourceNodes; track resourceTrackBy($index,
+    resourceNode)) {
     <div
       class="b-player-resource-image"
       [class.is-active]="resourceNode.active"
-      (click)="onResourceClick(resourceNode)">
+      (click)="onResourceClick(resourceNode)"
+    >
       <img [src]="resourceNode.source" />
     </div>
     } @for (pawnNode of pawnNodes; track pawnTrackBy($index, pawnNode)) {
-    <div class="b-player-pawn-quantity">{{ $any(player().pawns)[pawnNode.type] }}</div>
-    } @for (resourceNode of resourceNodes; track resourceTrackBy($index, resourceNode)) {
+    <div class="b-player-pawn-quantity">
+      {{ $any(player().pawns)[pawnNode.type] }}
+    </div>
+    } @for (resourceNode of resourceNodes; track resourceTrackBy($index,
+    resourceNode)) {
     <div class="b-player-resource-quantity">{{ resourceNode.quantity }}</div>
     }
   </div>

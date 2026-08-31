@@ -1,68 +1,68 @@
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrFellowshipDeclare {
-  type: "fellowship-declare";
+  type: 'fellowship-declare';
   region: WotrRegionId;
 }
 export function declareFellowship(region: WotrRegionId): WotrFellowshipDeclare {
-  return { type: "fellowship-declare", region };
+  return { type: 'fellowship-declare', region };
 }
 export interface WotrFellowshipProgress {
-  type: "fellowship-progress";
+  type: 'fellowship-progress';
 }
 export function moveFelloswhip(): WotrFellowshipProgress {
-  return { type: "fellowship-progress" };
+  return { type: 'fellowship-progress' };
 }
 export interface WotrFellowshipCorruption {
-  type: "fellowship-corruption";
+  type: 'fellowship-corruption';
   quantity: number;
 }
 export function corruptFellowship(quantity: number): WotrFellowshipCorruption {
-  return { type: "fellowship-corruption", quantity };
+  return { type: 'fellowship-corruption', quantity };
 }
 export interface WotrFellowshipHeal {
-  type: "fellowship-heal";
+  type: 'fellowship-heal';
   quantity: number;
 }
 export function healFellowship(quantity: number): WotrFellowshipHeal {
-  return { type: "fellowship-heal", quantity };
+  return { type: 'fellowship-heal', quantity };
 }
 export interface WotrFellowshipHide {
-  type: "fellowship-hide";
+  type: 'fellowship-hide';
 }
 export function hideFellowship(): WotrFellowshipHide {
-  return { type: "fellowship-hide" };
+  return { type: 'fellowship-hide' };
 }
 export interface WotrFellowshipReveal {
-  type: "fellowship-reveal";
+  type: 'fellowship-reveal';
   region: WotrRegionId;
 }
 export function revealFellowship(region: WotrRegionId): WotrFellowshipReveal {
-  return { type: "fellowship-reveal", region };
+  return { type: 'fellowship-reveal', region };
 }
 export interface WotrFellowshipRevealInMordor {
-  type: "fellowship-reveal-in-mordor";
+  type: 'fellowship-reveal-in-mordor';
 }
 export function revealFellowshipInMordor(): WotrFellowshipRevealInMordor {
-  return { type: "fellowship-reveal-in-mordor" };
+  return { type: 'fellowship-reveal-in-mordor' };
 }
 export interface WotrFellowshipPush {
-  type: "fellowship-push";
+  type: 'fellowship-push';
   region: WotrRegionId;
 }
 export function pushFellowship(region: WotrRegionId): WotrFellowshipPush {
-  return { type: "fellowship-push", region };
+  return { type: 'fellowship-push', region };
 }
 export interface WotrFellowshipGuide {
-  type: "fellowship-guide";
+  type: 'fellowship-guide';
   companion: WotrCompanionId;
 }
 export function changeGuide(companion: WotrCompanionId): WotrFellowshipGuide {
-  return { type: "fellowship-guide", companion };
+  return { type: 'fellowship-guide', companion };
 }
 export interface WotrCompanionSeparation {
-  type: "companion-separation";
+  type: 'companion-separation';
   companions: WotrCompanionId[];
   toRegion: WotrRegionId;
 }
@@ -70,14 +70,16 @@ export function separateCompanions(
   toRegion: WotrRegionId,
   ...companions: WotrCompanionId[]
 ): WotrCompanionSeparation {
-  return { type: "companion-separation", companions, toRegion };
+  return { type: 'companion-separation', companions, toRegion };
 }
 export interface WotrCompanionRandom {
-  type: "companion-random";
+  type: 'companion-random';
   companions: WotrCompanionId[];
 }
-export function chooseRandomCompanion(...companions: WotrCompanionId[]): WotrCompanionRandom {
-  return { type: "companion-random", companions };
+export function chooseRandomCompanion(
+  ...companions: WotrCompanionId[]
+): WotrCompanionRandom {
+  return { type: 'companion-random', companions };
 }
 
 export type WotrFellowshipAction =

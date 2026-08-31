@@ -1,9 +1,13 @@
-import { Injectable } from "@angular/core";
-import { BritLeaderId, BritNationId, BritUnitType } from "./brit-components.models";
-import { BritAreaUnit } from "./brit-game-state.models";
+import { Injectable } from '@angular/core';
+import {
+  BritLeaderId,
+  BritNationId,
+  BritUnitType,
+} from './brit-components.models';
+import { BritAreaUnit } from './brit-game-state.models';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BritAssetsService {
   constructor() {}
@@ -20,15 +24,15 @@ export class BritAssetsService {
 
   getUnitImageSource(unit: BritAreaUnit) {
     switch (unit.type) {
-      case "infantry":
+      case 'infantry':
         return `assets/britannia/infantries/${unit.nationId}.png`;
-      case "cavalry":
+      case 'cavalry':
         return `assets/britannia/cavalries/${unit.nationId}.png`;
-      case "roman-fort":
-        return "assets/britannia/buildings/roman-fort.png";
-      case "saxon-buhr":
-        return "assets/britannia/buildings/saxon-buhr.png";
-      case "leader":
+      case 'roman-fort':
+        return 'assets/britannia/buildings/roman-fort.png';
+      case 'saxon-buhr':
+        return 'assets/britannia/buildings/saxon-buhr.png';
+      case 'leader':
         return `assets/britannia/leaders/${unit.leaderId}.png`;
     }
   }
@@ -36,18 +40,18 @@ export class BritAssetsService {
   getUnitImageSourceByType(
     unitType: BritUnitType,
     nationId: BritNationId,
-    leaderId?: BritLeaderId
+    leaderId?: BritLeaderId,
   ) {
     switch (unitType) {
-      case "infantry":
+      case 'infantry':
         return `assets/britannia/infantries/${nationId}.png`;
-      case "cavalry":
+      case 'cavalry':
         return `assets/britannia/cavalries/${nationId}.png`;
-      case "roman-fort":
-        return "assets/britannia/buildings/roman-fort.png";
-      case "saxon-buhr":
-        return "assets/britannia/buildings/saxon-buhr.png";
-      case "leader":
+      case 'roman-fort':
+        return 'assets/britannia/buildings/roman-fort.png';
+      case 'saxon-buhr':
+        return 'assets/britannia/buildings/saxon-buhr.png';
+      case 'leader':
         return `assets/britannia/leaders/${leaderId}.png`;
     }
   }

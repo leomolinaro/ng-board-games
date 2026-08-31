@@ -1,6 +1,6 @@
 export const AGOT_FEATURE_PATHS = {
-  draft: "draft",
-  fcDecks: "full-collection-decks"
+  draft: 'draft',
+  fcDecks: 'full-collection-decks',
 };
 
 export interface AgotFeature {
@@ -9,6 +9,6 @@ export interface AgotFeature {
 }
 
 export const AGOT_FEATURES: AgotFeature[] = [
-  { name: "Draft", routerLink: AGOT_FEATURE_PATHS.draft },
-  { name: "Full collection decks", routerLink: AGOT_FEATURE_PATHS.fcDecks }
+  { name: 'Draft', routerLink: AGOT_FEATURE_PATHS.draft },
+  { name: 'Full collection decks', routerLink: AGOT_FEATURE_PATHS.fcDecks },
 ];

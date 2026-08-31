@@ -4,10 +4,10 @@ import {
   combineLatest,
   MonoTypeOperatorFunction,
   Observable,
-  Subscription
-} from "rxjs";
-import { distinctUntilChanged, map } from "rxjs/operators";
-import { bgReduxDevtools, BgReduxDevtoolsInstance } from "./redux-devtools";
+  Subscription,
+} from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { bgReduxDevtools, BgReduxDevtoolsInstance } from './redux-devtools';
 
 export type Exactly<S, T> = {
   [K in keyof S]: K extends keyof T ? T[K] : never;
@@ -18,7 +18,7 @@ export type Exactly<S, T> = {
 export class BgStore<S extends object> {
   constructor(
     private defaultState: S,
-    private name: string
+    private name: string,
   ) {
     this.devtoolsInstance = bgReduxDevtools.connect(name);
     if (this.devtoolsInstance) {
@@ -46,35 +46,37 @@ export class BgStore<S extends object> {
   select$<R, S1, S2>(
     s1: Observable<S1>,
     s2: Observable<S2>,
-    projector: (s1: S1, s2: S2) => R
+    projector: (s1: S1, s2: S2) => R,
   ): Observable<R>;
   select$<R, S1, S2, S3>(
     s1: Observable<S1>,
     s2: Observable<S2>,
     s3: Observable<S3>,
-    projector: (s1: S1, s2: S2, s3: S3) => R
+    projector: (s1: S1, s2: S2, s3: S3) => R,
   ): Observable<R>;
   select$<R, S1, S2, S3, S4>(
     s1: Observable<S1>,
     s2: Observable<S2>,
     s3: Observable<S3>,
     s4: Observable<S4>,
-    projector: (s1: S1, s2: S2, s3: S3, s4: S4) => R
+    projector: (s1: S1, s2: S2, s3: S3, s4: S4) => R,
   ): Observable<R>;
   select$<A extends (Observable<unknown> | P)[], R, P = (...a: any[]) => R>(
     ...args: A
   ): Observable<R> | Observable<S> {
     if (args && args.length) {
-      const { observables, projector } = this.processSelectorArgs<A, R, P>(args);
+      const { observables, projector } = this.processSelectorArgs<A, R, P>(
+        args,
+      );
 
       let observable$: Observable<R>;
 
       if (observables.length) {
         observable$ = combineLatest(observables).pipe(
-          map(projectorArgs => (projector as any)(...projectorArgs))
+          map((projectorArgs) => (projector as any)(...projectorArgs)),
         );
       } else {
-        observable$ = this.$state.pipe(map(s => (projector as any)(s)));
+        observable$ = this.$state.pipe(map((s) => (projector as any)(s)));
       }
 
       return observable$.pipe(distinctUntilChanged());
@@ -83,8 +85,12 @@ export class BgStore<S extends object> {
     }
   }
 
-  private processSelectorArgs<A extends (Observable<unknown> | P)[], R, P = (...a: unknown[]) => R>(
-    args: A
+  private processSelectorArgs<
+    A extends (Observable<unknown> | P)[],
+    R,
+    P = (...a: unknown[]) => R,
+  >(
+    args: A,
   ): {
     observables: Observable<unknown>[];
     projector: P;
@@ -94,7 +100,7 @@ export class BgStore<S extends object> {
     const observables = selectorArgs as Observable<unknown>[];
     return {
       observables,
-      projector
+      projector,
     };
   }
 
@@ -108,10 +114,13 @@ export class BgStore<S extends object> {
   //   return (this.componentStore as any).select (...args);
   // }
 
-  update(actionName: string, updaterFnOrPatch: ((state: S) => S) | Partial<S>): void {
+  update(
+    actionName: string,
+    updaterFnOrPatch: ((state: S) => S) | Partial<S>,
+  ): void {
     const state = this.$state.getValue();
     let newState: S;
-    if (typeof updaterFnOrPatch === "function") {
+    if (typeof updaterFnOrPatch === 'function') {
       newState = updaterFnOrPatch(state);
     } else {
       newState = { ...state, ...updaterFnOrPatch };
@@ -124,8 +133,8 @@ export class BgStore<S extends object> {
 }
 
 export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
-  return source =>
-    new Observable<T>(observer => {
+  return (source) =>
+    new Observable<T>((observer) => {
       let actionSubscription: Subscription | undefined;
       let actionValue: T | undefined;
       const rootSubscription = new Subscription();
@@ -138,10 +147,10 @@ export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
             }
             observer.complete();
           },
-          error: error => {
+          error: (error) => {
             observer.error(error);
           },
-          next: value => {
+          next: (value) => {
             actionValue = value;
             if (!actionSubscription) {
               actionSubscription = asapScheduler.schedule(() => {
@@ -150,8 +159,8 @@ export function debounceSync<T>(): MonoTypeOperatorFunction<T> {
               });
               rootSubscription.add(actionSubscription);
             }
-          }
-        })
+          },
+        }),
       );
       return rootSubscription;
     });

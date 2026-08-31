@@ -1,28 +1,32 @@
-import { Injectable, computed, inject } from "@angular/core";
-import { lazyInject, uiEvent } from "@leobg/commons/utils";
-import { patchState, signalStore, withState } from "@ngrx/signals";
+import { Injectable, computed, inject } from '@angular/core';
+import { lazyInject, uiEvent } from '@leobg/commons/utils';
+import { patchState, signalStore, withState } from '@ngrx/signals';
 import {
   WotrActionChoice,
   WotrActionDie,
   WotrActionToken,
-  WotrSpecialActionDieType
-} from "../action-die/wotr-action-die-models";
-import { WotrCardId } from "../card/wotr-card-models";
+  WotrSpecialActionDieType,
+} from '../action-die/wotr-action-die-models';
+import { WotrCardId } from '../card/wotr-card-models';
 import {
   KomeSovereignId,
   WotrCharacterId,
-  WotrCompanionId
-} from "../character/wotr-character-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrElvenRing, WotrFrontId } from "../front/wotr-front-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrPlayerInfo } from "../player/wotr-player-info-models";
-import { WotrPlayerInfoStore } from "../player/wotr-player-info-store";
-import { WotrRegionUnitSelection } from "../region/dialog/wotr-region-unit-selection";
-import { WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionUnits, WotrReinforcementUnit, WotrUnits } from "../unit/wotr-unit-models";
-import { WotrGameUiContext } from "./wotr-game-ui-context";
-import { WotrDieCardStory, WotrDieStory } from "./wotr-story-models";
+  WotrCompanionId,
+} from '../character/wotr-character-models';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrPlayerInfo } from '../player/wotr-player-info-models';
+import { WotrPlayerInfoStore } from '../player/wotr-player-info-store';
+import { WotrRegionUnitSelection } from '../region/dialog/wotr-region-unit-selection';
+import { WotrRegionId } from '../region/wotr-region-models';
+import {
+  WotrRegionUnits,
+  WotrReinforcementUnit,
+  WotrUnits,
+} from '../unit/wotr-unit-models';
+import { WotrGameUiContext } from './wotr-game-ui-context';
+import { WotrDieCardStory, WotrDieStory } from './wotr-story-models';
 
 interface WotrGameUiState {
   currentPlayerId: WotrFrontId | null;
@@ -74,7 +78,9 @@ export interface WotrCardSelection {
   cards?: WotrCardId[];
 }
 
-export interface WotrReinforcementUnitSelection<CanPass extends boolean = boolean> {
+export interface WotrReinforcementUnitSelection<
+  CanPass extends boolean = boolean,
+> {
   units: WotrReinforcementUnit[];
   frontId: WotrFrontId;
   canPass: CanPass;
@@ -110,7 +116,7 @@ export const initialState: WotrGameUiState = {
   tableCardSelection: null,
   inputQuantitySelection: false,
   fellowshipCompanionsSelection: null,
-  sovereignSelection: null
+  sovereignSelection: null,
 };
 
 export interface WotrUiOption<O = unknown> {
@@ -134,7 +140,7 @@ export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
 @Injectable()
 export class WotrGameUi extends signalStore(
   { protectedState: false },
-  withState<WotrGameUiState>(initialState)
+  withState<WotrGameUiState>(initialState),
 ) {
   private playerInfoStore = inject(WotrPlayerInfoStore);
   private ui = lazyInject(WotrGameUiContext);
@@ -157,8 +163,10 @@ export class WotrGameUi extends signalStore(
 
   private updateUi<
     S extends WotrGameUiState & {
-      [K in keyof S]: K extends keyof WotrGameUiState ? WotrGameUiState[K] : never;
-    }
+      [K in keyof S]: K extends keyof WotrGameUiState
+        ? WotrGameUiState[K]
+        : never;
+    },
   >(updater: (state: WotrGameUiState) => S) {
     patchState(this, updater);
   }
@@ -167,67 +175,132 @@ export class WotrGameUi extends signalStore(
     await this.askOption<null>(message, [{ value: null, label: message }]);
   }
 
-  async askConfirm(message: string, yesLabel: string, noLabel: string): Promise<boolean> {
+  async askConfirm(
+    message: string,
+    yesLabel: string,
+    noLabel: string,
+  ): Promise<boolean> {
     return this.askOption<boolean>(message, [
       { value: true, label: yesLabel },
-      { value: false, label: noLabel }
+      { value: false, label: noLabel },
     ]);
   }
 
   inputQuantity = uiEvent<number>();
-  async askQuantity(message: string, selection: WotrInputQuantitySelection): Promise<number> {
-    this.updateUi(s => ({ ...s, message, inputQuantitySelection: selection }));
+  async askQuantity(
+    message: string,
+    selection: WotrInputQuantitySelection,
+  ): Promise<number> {
+    this.updateUi((s) => ({
+      ...s,
+      message,
+      inputQuantitySelection: selection,
+    }));
     const quantity = await this.inputQuantity.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, inputQuantitySelection: false }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      inputQuantitySelection: false,
+    }));
     return quantity;
   }
 
   region = uiEvent<WotrRegionId>();
-  async askRegion(message: string, regionSelection: WotrRegionId[]): Promise<WotrRegionId> {
-    this.updateUi(s => ({ ...s, message, regionSelection }));
+  async askRegion(
+    message: string,
+    regionSelection: WotrRegionId[],
+  ): Promise<WotrRegionId> {
+    this.updateUi((s) => ({ ...s, message, regionSelection }));
     const region = await this.region.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, regionSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      regionSelection: null,
+    }));
     return region;
   }
 
   handCards = uiEvent<WotrCardId[]>();
-  async askHandCards(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId[]> {
-    this.updateUi(s => ({ ...s, message, handCardSelection: cardSelection }));
+  async askHandCards(
+    message: string,
+    cardSelection: WotrCardSelection,
+  ): Promise<WotrCardId[]> {
+    this.updateUi((s) => ({ ...s, message, handCardSelection: cardSelection }));
     const cards = await this.handCards.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, handCardSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      handCardSelection: null,
+    }));
     return cards;
   }
-  async askHandCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
-    this.updateUi(s => ({ ...s, message, handCardSelection: cardSelection }));
+  async askHandCard(
+    message: string,
+    cardSelection: WotrCardSelection,
+  ): Promise<WotrCardId> {
+    this.updateUi((s) => ({ ...s, message, handCardSelection: cardSelection }));
     const cards = await this.handCards.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, handCardSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      handCardSelection: null,
+    }));
     return cards[0];
   }
 
   tableCard = uiEvent<WotrCardId>();
-  async askTableCard(message: string, cardSelection: WotrCardSelection): Promise<WotrCardId> {
-    this.updateUi(s => ({ ...s, message, tableCardSelection: cardSelection }));
+  async askTableCard(
+    message: string,
+    cardSelection: WotrCardSelection,
+  ): Promise<WotrCardId> {
+    this.updateUi((s) => ({
+      ...s,
+      message,
+      tableCardSelection: cardSelection,
+    }));
     const card = await this.tableCard.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, tableCardSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      tableCardSelection: null,
+    }));
     return card;
   }
 
   nation = uiEvent<WotrNationId>();
-  async askNation(message: string, nationSelection: WotrNationId[]): Promise<WotrNationId> {
-    this.updateUi(s => ({ ...s, message, nationSelection }));
+  async askNation(
+    message: string,
+    nationSelection: WotrNationId[],
+  ): Promise<WotrNationId> {
+    this.updateUi((s) => ({ ...s, message, nationSelection }));
     const nation = await this.nation.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, nationSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      nationSelection: null,
+    }));
     return nation;
   }
 
   elvenRing = uiEvent<WotrElvenRing>();
   async askElvenRing(
     message: string,
-    elvenRingSelection: WotrElvenRingSelection
+    elvenRingSelection: WotrElvenRingSelection,
   ): Promise<WotrElvenRing> {
-    this.updateUi(s => ({ ...s, message, elvenRingSelection }));
+    this.updateUi((s) => ({ ...s, message, elvenRingSelection }));
     const elvenRing = await this.elvenRing.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, elvenRingSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      elvenRingSelection: null,
+    }));
     return elvenRing;
   }
 
@@ -235,60 +308,72 @@ export class WotrGameUi extends signalStore(
   actionTokenChoice = uiEvent<WotrActionToken>();
   eyeChoice = uiEvent<void>();
 
-  async askActionDie(message: string, params: WotrActionDieSelection): Promise<WotrActionDie> {
+  async askActionDie(
+    message: string,
+    params: WotrActionDieSelection,
+  ): Promise<WotrActionDie> {
     const actionBoxSelection: WotrActionBoxSelection = {
       frontId: params.frontId,
       tokens: [],
-      specialDice: params.specialDice ?? []
+      specialDice: params.specialDice ?? [],
     };
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
-      actionBoxSelection
+      actionBoxSelection,
     }));
     const actionDie = await this.actionDieChoice.get();
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
-      actionBoxSelection: null
+      actionBoxSelection: null,
     }));
     return actionDie;
   }
 
   async askActionResolution(
     message: string,
-    params: WotrActionResolutionSelection
+    params: WotrActionResolutionSelection,
   ): Promise<WotrActionChoice> {
     const actionBoxSelection: WotrActionBoxSelection = {
       frontId: params.frontId,
       tokens: params.tokens ?? [],
-      specialDice: params.specialDice ?? []
+      specialDice: params.specialDice ?? [],
     };
-    this.updateUi(s => {
+    this.updateUi((s) => {
       s = {
         ...s,
         message,
-        actionBoxSelection
+        actionBoxSelection,
       };
       if (params.elvenRings)
-        s.elvenRingSelection = { frontId: params.frontId, rings: params.elvenRings };
+        s.elvenRingSelection = {
+          frontId: params.frontId,
+          rings: params.elvenRings,
+        };
       if (params.eyes) s.eyeSelection = true;
       return s;
     });
     const actionDieOrTokenOrElvenRing = await Promise.race([
-      this.actionDieChoice.get().then<WotrActionChoice>(die => ({ type: "die", die })),
-      this.actionTokenChoice.get().then<WotrActionChoice>(token => ({ type: "token", token })),
-      this.elvenRing.get().then<WotrActionChoice>(ring => ({ type: "elvenRing", ring })),
-      this.eyeChoice.get().then<WotrActionChoice>(() => ({ type: "eye" }))
+      this.actionDieChoice
+        .get()
+        .then<WotrActionChoice>((die) => ({ type: 'die', die })),
+      this.actionTokenChoice
+        .get()
+        .then<WotrActionChoice>((token) => ({ type: 'token', token })),
+      this.elvenRing
+        .get()
+        .then<WotrActionChoice>((ring) => ({ type: 'elvenRing', ring })),
+      this.eyeChoice.get().then<WotrActionChoice>(() => ({ type: 'eye' })),
     ]);
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
       actionBoxSelection: null,
       elvenRingSelection: null,
-      eyeSelection: false
+      eyeSelection: false,
     }));
     return actionDieOrTokenOrElvenRing;
   }
@@ -296,71 +381,91 @@ export class WotrGameUi extends signalStore(
   async askActionDieOrStop(
     message: string,
     stopMessage: string,
-    actionDieSelection: WotrActionDieSelection
-  ): Promise<WotrActionDie | "stop"> {
+    actionDieSelection: WotrActionDieSelection,
+  ): Promise<WotrActionDie | 'stop'> {
     const actionBoxSelection: WotrActionBoxSelection = {
       frontId: actionDieSelection.frontId,
       tokens: [],
-      specialDice: actionDieSelection.specialDice ?? []
+      specialDice: actionDieSelection.specialDice ?? [],
     };
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
       actionBoxSelection,
-      options: [{ value: "stop", label: stopMessage }]
+      options: [{ value: 'stop', label: stopMessage }],
     }));
     const actionDieOrStop = await Promise.race([
-      this.actionDieChoice.get().then<WotrActionChoice>(die => ({ type: "die", die })),
-      this.option.get()
+      this.actionDieChoice
+        .get()
+        .then<WotrActionChoice>((die) => ({ type: 'die', die })),
+      this.option.get(),
     ]);
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
       actionBoxSelection: null,
-      options: null
+      options: null,
     }));
-    if ("type" in actionDieOrStop && actionDieOrStop.type === "die") {
+    if ('type' in actionDieOrStop && actionDieOrStop.type === 'die') {
       return actionDieOrStop.die;
-    } else if ("value" in actionDieOrStop && actionDieOrStop.value === "stop") {
-      return "stop";
+    } else if ('value' in actionDieOrStop && actionDieOrStop.value === 'stop') {
+      return 'stop';
     } else {
-      throw new Error("Invalid action die or stop selection");
+      throw new Error('Invalid action die or stop selection');
     }
   }
 
   sovereign = uiEvent<KomeSovereignId>();
-  async askSovereign(message: string, sovereigns: KomeSovereignId[]): Promise<KomeSovereignId> {
-    this.updateUi(s => ({ ...s, message, sovereignSelection: sovereigns }));
+  async askSovereign(
+    message: string,
+    sovereigns: KomeSovereignId[],
+  ): Promise<KomeSovereignId> {
+    this.updateUi((s) => ({ ...s, message, sovereignSelection: sovereigns }));
     const sovereign = await this.sovereign.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, sovereignSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      sovereignSelection: null,
+    }));
     return sovereign;
   }
 
   option = uiEvent<WotrUiOption>();
   async askOption<O>(message: string, options: WotrUiOption<O>[]): Promise<O> {
-    this.updateUi(s => ({ ...s, message, options: options }));
+    this.updateUi((s) => ({ ...s, message, options: options }));
     const option = await this.option.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, options: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      options: null,
+    }));
     return option.value as O;
   }
 
   async askOptionOrElvenRing<O>(
     message: string,
     options: WotrUiOption<O>[],
-    elvenRingSelection: WotrElvenRingSelection | null
+    elvenRingSelection: WotrElvenRingSelection | null,
   ): Promise<O | WotrElvenRing> {
-    this.updateUi(s => ({ ...s, message, options: options, elvenRingSelection }));
+    this.updateUi((s) => ({
+      ...s,
+      message,
+      options: options,
+      elvenRingSelection,
+    }));
     const optionOrElvenRing = await Promise.race([
-      this.option.get().then(o => o.value as O),
-      this.elvenRing.get()
+      this.option.get().then((o) => o.value as O),
+      this.elvenRing.get(),
     ]);
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
       options: null,
-      elvenRingSelection: null
+      elvenRingSelection: null,
     }));
     return optionOrElvenRing;
   }
@@ -368,46 +473,49 @@ export class WotrGameUi extends signalStore(
   reinforcementUnit = uiEvent<WotrReinforcementUnit>();
   async askReinforcementUnit<CanPass extends boolean = boolean>(
     message: string,
-    reinforcementUnitSelection: WotrReinforcementUnitSelection<CanPass>
+    reinforcementUnitSelection: WotrReinforcementUnitSelection<CanPass>,
   ): Promise<WotrReinforcementUnit | (CanPass extends true ? false : never)> {
     const options: WotrUiOption<boolean>[] = [];
     if (reinforcementUnitSelection.canPass) {
-      options.push({ value: false, label: "Pass" });
+      options.push({ value: false, label: 'Pass' });
     }
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
       reinforcementUnitSelection,
-      options: options?.length ? options : null
+      options: options?.length ? options : null,
     }));
-    const choice = await Promise.race([this.reinforcementUnit.get(), this.option.get()]);
-    this.updateUi(s => ({
+    const choice = await Promise.race([
+      this.reinforcementUnit.get(),
+      this.option.get(),
+    ]);
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
       reinforcementUnitSelection: null,
-      options: null
+      options: null,
     }));
-    return "value" in choice ? (false as any) : choice;
+    return 'value' in choice ? (false as any) : choice;
   }
 
   regionUnits = uiEvent<WotrRegionUnits>();
   async askRegionUnits(
     message: string,
-    unitSelection: WotrRegionUnitSelection
+    unitSelection: WotrRegionUnitSelection,
   ): Promise<WotrRegionUnits> {
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
-      regionUnitSelection: unitSelection
+      regionUnitSelection: unitSelection,
     }));
     const regionUnits = await this.regionUnits.get();
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
       regionUnitSelection: null,
-      regionSelection: null
+      regionSelection: null,
     }));
     return regionUnits;
   }
@@ -415,34 +523,39 @@ export class WotrGameUi extends signalStore(
   casualtyUnits = uiEvent<{ downgrading: WotrUnits; removing: WotrUnits }>();
   async askCasualtyUnits(
     message: string,
-    unitSelection: WotrRegionUnitSelection
+    unitSelection: WotrRegionUnitSelection,
   ): Promise<{ downgrading: WotrUnits; removing: WotrUnits }> {
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
-      regionUnitSelection: unitSelection
+      regionUnitSelection: unitSelection,
     }));
     const casualtyUnits = await this.casualtyUnits.get();
-    this.updateUi(s => ({ ...s, message: null, canCancel: true, regionUnitSelection: null }));
+    this.updateUi((s) => ({
+      ...s,
+      message: null,
+      canCancel: true,
+      regionUnitSelection: null,
+    }));
     return casualtyUnits;
   }
 
   fellowshipCompanions = uiEvent<WotrCompanionId[]>();
   async askFellowshipCompanions(
     message: string,
-    fellowshipCompanionsSelection: WotrFellowshipCompanionSelection
+    fellowshipCompanionsSelection: WotrFellowshipCompanionSelection,
   ): Promise<WotrCompanionId[]> {
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message,
-      fellowshipCompanionsSelection
+      fellowshipCompanionsSelection,
     }));
     const companions = await this.fellowshipCompanions.get();
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...s,
       message: null,
       canCancel: true,
-      fellowshipCompanionsSelection: null
+      fellowshipCompanionsSelection: null,
     }));
     return companions;
   }
@@ -450,15 +563,15 @@ export class WotrGameUi extends signalStore(
   async askChoice<P = WotrFrontId>(
     message: string,
     choices: WotrUiChoice<P>[],
-    params: P
+    params: P,
   ): Promise<WotrAction[]> {
     const choice = await this.askOption<WotrUiChoice<P>>(
       message,
-      choices.map(c => ({
+      choices.map((c) => ({
         value: c,
         label: c.label(),
-        disabled: c.isAvailable ? !c.isAvailable(params) : false
-      }))
+        disabled: c.isAvailable ? !c.isAvailable(params) : false,
+      })),
     );
     return choice.actions(params, this.ui);
   }
@@ -467,31 +580,31 @@ export class WotrGameUi extends signalStore(
     die: WotrActionDie,
     message: string,
     choices: WotrUiChoice<P>[],
-    params: P
+    params: P,
   ): Promise<WotrDieStory | WotrDieCardStory> {
     const choice = await this.askOption<WotrUiChoice<P>>(
       message,
-      choices.map(c => ({
+      choices.map((c) => ({
         value: c,
         label: c.label(),
-        disabled: c.isAvailable ? !c.isAvailable(params) : false
-      }))
+        disabled: c.isAvailable ? !c.isAvailable(params) : false,
+      })),
     );
     const actions = await choice.actions(params, this.ui);
     const card = choice.card ? choice.card() : null;
     if (card) {
       const story: WotrDieCardStory = {
-        type: "die-card",
+        type: 'die-card',
         die,
         actions,
-        card
+        card,
       };
       return story;
     } else {
       const story: WotrDieStory = {
-        type: "die",
+        type: 'die',
         die,
-        actions
+        actions,
       };
       if (choice.character) story.character = choice.character;
       return story;
@@ -499,11 +612,11 @@ export class WotrGameUi extends signalStore(
   }
 
   resetUi(turnPlayer: WotrFrontId) {
-    this.updateUi(s => ({
+    this.updateUi((s) => ({
       ...initialState,
       message: `${this.playerInfoStore.player(turnPlayer).name} is thinking...`,
       canCancel: false,
-      currentPlayerId: s.currentPlayerId
+      currentPlayerId: s.currentPlayerId,
     }));
   }
 

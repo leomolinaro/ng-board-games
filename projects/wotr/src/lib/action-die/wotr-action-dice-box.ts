@@ -1,9 +1,9 @@
-import { Component, computed, inject } from "@angular/core";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrFront, WotrFrontId } from "../front/wotr-front-models";
-import { WotrFrontStore } from "../front/wotr-front-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrActionDie, WotrActionToken } from "./wotr-action-die-models";
+import { Component, computed, inject } from '@angular/core';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrFront, WotrFrontId } from '../front/wotr-front-models';
+import { WotrFrontStore } from '../front/wotr-front-store';
+import { WotrGameUi } from '../game/wotr-game-ui';
+import { WotrActionDie, WotrActionToken } from './wotr-action-die-models';
 
 interface FrontNode {
   id: WotrFrontId;
@@ -27,7 +27,7 @@ interface ActionTokendNode {
 }
 
 @Component({
-  selector: "wotr-action-dice-box",
+  selector: 'wotr-action-dice-box',
   template: `
     @for (frontNode of frontNodes(); track frontNode.id) {
       <div class="wotr-action-dice">
@@ -36,18 +36,20 @@ interface ActionTokendNode {
             [src]="actionDieNode.imageSource"
             [class]="{
               selectable: actionDieNode.selectable,
-              disabled: actionDieNode.disabled
+              disabled: actionDieNode.disabled,
             }"
-            (click)="onActionDieClick(actionDieNode)" />
+            (click)="onActionDieClick(actionDieNode)"
+          />
         }
         @for (actionTokenNode of frontNode.actionTokenNodes; track $index) {
           <img
             [src]="actionTokenNode.imageSource"
             [class]="{
               selectable: actionTokenNode.selectable,
-              disabled: actionTokenNode.disabled
+              disabled: actionTokenNode.disabled,
             }"
-            (click)="onActionTokenClick(actionTokenNode)" />
+            (click)="onActionTokenClick(actionTokenNode)"
+          />
         }
       </div>
     }
@@ -62,7 +64,7 @@ interface ActionTokendNode {
         opacity: 0.5;
       }
     }
-  `
+  `,
 })
 export class WotrActionDiceBox {
   protected assets = inject(WotrAssetsStore);
@@ -73,43 +75,47 @@ export class WotrActionDiceBox {
 
   protected frontNodes = computed<FrontNode[]>(() => {
     const selection = this.ui.actionBoxSelection();
-    return this.fronts().map<FrontNode>(front => ({
+    return this.fronts().map<FrontNode>((front) => ({
       id: front.id,
       front,
       // selectable: dieSelection === front.id,
       // disabled: !!dieSelection && dieSelection !== front.id,
-      actionDieNodes: front.actionDice.map<ActionDieNode>(actionDie => {
+      actionDieNodes: front.actionDice.map<ActionDieNode>((actionDie) => {
         const actionNode: ActionDieNode = {
           id: actionDie,
           imageSource: this.assets.actionDieImage(actionDie, front.id),
           selectable: false,
-          disabled: false
+          disabled: false,
         };
         if (selection) {
           const selectable =
-            typeof actionDie === "string"
+            typeof actionDie === 'string'
               ? selection.frontId === front.id
-              : selection.frontId === front.id && selection.specialDice.includes(actionDie.type);
+              : selection.frontId === front.id &&
+                selection.specialDice.includes(actionDie.type);
           actionNode.selectable = selectable;
           actionNode.disabled = !!selection && !selectable;
         }
         return actionNode;
       }),
-      actionTokenNodes: front.actionTokens.map<ActionTokendNode>(actionToken => {
-        const actionTokenNode: ActionTokendNode = {
-          id: actionToken,
-          imageSource: this.assets.actionTokenImage(actionToken, front.id),
-          selectable: false,
-          disabled: false
-        };
-        if (selection) {
-          const selectable =
-            selection.frontId === front.id && selection.tokens.includes(actionToken);
-          actionTokenNode.selectable = selectable;
-          actionTokenNode.disabled = !!selection && !selectable;
-        }
-        return actionTokenNode;
-      })
+      actionTokenNodes: front.actionTokens.map<ActionTokendNode>(
+        (actionToken) => {
+          const actionTokenNode: ActionTokendNode = {
+            id: actionToken,
+            imageSource: this.assets.actionTokenImage(actionToken, front.id),
+            selectable: false,
+            disabled: false,
+          };
+          if (selection) {
+            const selectable =
+              selection.frontId === front.id &&
+              selection.tokens.includes(actionToken);
+            actionTokenNode.selectable = selectable;
+            actionTokenNode.disabled = !!selection && !selectable;
+          }
+          return actionTokenNode;
+        },
+      ),
     }));
   });
 

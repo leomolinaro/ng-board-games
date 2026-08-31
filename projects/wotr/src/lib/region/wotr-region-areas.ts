@@ -1,18 +1,21 @@
-import { Component, computed, inject, input, output } from "@angular/core";
-import { arrayUtil } from "../../../../commons/utils/src";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrCharacter, WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFellowship } from "../fellowship/wotr-fellowship-models";
-import { WotrMapService } from "../game/board/map/wotr-map.service";
-import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrMordorTrack } from "./wotr-mordor-track";
-import { WotrRegionArea } from "./wotr-region-area";
-import { WotrRegion, WotrRegionId } from "./wotr-region-models";
-import { WotrRegionStore } from "./wotr-region-store";
-import { WotrStrongholdBox } from "./wotr-stronghold-box";
+import { Component, computed, inject, input, output } from '@angular/core';
+import { arrayUtil } from '../../../../commons/utils/src';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import {
+  WotrCharacter,
+  WotrCharacterId,
+} from '../character/wotr-character-models';
+import { WotrFellowship } from '../fellowship/wotr-fellowship-models';
+import { WotrMapService } from '../game/board/map/wotr-map.service';
+import { WotrGameUi } from '../game/wotr-game-ui';
+import { WotrMordorTrack } from './wotr-mordor-track';
+import { WotrRegionArea } from './wotr-region-area';
+import { WotrRegion, WotrRegionId } from './wotr-region-models';
+import { WotrRegionStore } from './wotr-region-store';
+import { WotrStrongholdBox } from './wotr-stronghold-box';
 
 @Component({
-  selector: "[wotrRegions]",
+  selector: '[wotrRegions]',
   imports: [WotrRegionArea, WotrMordorTrack, WotrStrongholdBox],
   template: `
     @for (point of testGridPoints; track point) {
@@ -20,14 +23,16 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         [attr.cx]="point.x"
         [attr.cy]="point.y"
         [attr.r]="1"
-        [attr.style]="'fill: ' + point.color"></svg:circle>
+        [attr.style]="'fill: ' + point.color"
+      ></svg:circle>
     }
     @if (helmsDeepIsengardOverlay(); as overlay) {
       <svg:image
         [attr.x]="481"
         [attr.y]="401"
         width="40"
-        [attr.xlink:href]="overlay.image"></svg:image>
+        [attr.xlink:href]="overlay.image"
+      ></svg:image>
     }
     @for (region of regions(); track region.id) {
       <svg:g
@@ -36,22 +41,25 @@ import { WotrStrongholdBox } from "./wotr-stronghold-box";
         [fellowship]="region.fellowship ? fellowship() : null"
         [characterById]="characterById()"
         [valid]="(!validRegions() || validRegionById()[region.id]) ?? false"
-        (regionClick)="onRegionClick(region)"></svg:g>
-      @if (region.settlement === "stronghold") {
+        (regionClick)="onRegionClick(region)"
+      ></svg:g>
+      @if (region.settlement === 'stronghold') {
         <svg:g
           wotrStronghold
           [region]="region"
           [army]="region.underSiegeArmy"
           [characterById]="characterById()"
-          (regionClick)="onStrongholdClick(region)"></svg:g>
+          (regionClick)="onStrongholdClick(region)"
+        ></svg:g>
       }
     }
     @if (fellowship().mordorTrack != null) {
       <svg:g
         wotrMordorTrack
-        [fellowship]="fellowship()"></svg:g>
+        [fellowship]="fellowship()"
+      ></svg:g>
     }
-  `
+  `,
 })
 export class WotrRegionAreas {
   private mapService = inject(WotrMapService);
@@ -69,13 +77,15 @@ export class WotrRegionAreas {
     if (unitSelection) return unitSelection.regionIds;
     return null;
   });
-  protected validRegionById = computed<Partial<Record<WotrRegionId, boolean>>>(() => {
-    return arrayUtil.toMap(
-      this.validRegions() ?? [],
-      region => region,
-      () => true
-    );
-  });
+  protected validRegionById = computed<Partial<Record<WotrRegionId, boolean>>>(
+    () => {
+      return arrayUtil.toMap(
+        this.validRegions() ?? [],
+        (region) => region,
+        () => true,
+      );
+    },
+  );
 
   regionClick = output<WotrRegion>();
 
@@ -89,8 +99,8 @@ export class WotrRegionAreas {
   nSelectedUnits: Record<string, number> | null = null;
 
   protected helmsDeepIsengardOverlay = computed(() => {
-    const region = this.regionStore.region("helms-deep");
-    return region.nationId === "isengard"
+    const region = this.regionStore.region('helms-deep');
+    return region.nationId === 'isengard'
       ? { image: this.assets.helmsDeepIsengardOverlay() }
       : null;
   });

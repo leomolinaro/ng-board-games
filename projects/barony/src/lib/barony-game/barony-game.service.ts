@@ -1,6 +1,6 @@
-import { Injectable, inject } from "@angular/core";
-import { ABgGameService, BgAuthService, BgUser } from "@leobg/commons";
-import { from } from "rxjs";
+import { Injectable, inject } from '@angular/core';
+import { ABgGameService, BgAuthService, BgUser } from '@leobg/commons';
+import { from } from 'rxjs';
 import {
   ABaronyPlayer,
   BaronyColor,
@@ -12,14 +12,18 @@ import {
   BaronySetupPlacement,
   BaronyStory,
   BaronyTurn,
-  landCoordinatesToId
-} from "../barony-models";
-import { BaronyPlayerDoc, BaronyRemoteService, BaronyStoryDoc } from "../barony-remote.service";
-import { BaronyGameStore } from "./barony-game.store";
-import { BaronyPlayerAiService } from "./barony-player-ai.service";
-import { BaronyPlayerLocalService } from "./barony-player-local.service";
-import * as baronyRules from "./barony-rules";
-import { BaronyUiStore } from "./barony-ui.store";
+  landCoordinatesToId,
+} from '../barony-models';
+import {
+  BaronyPlayerDoc,
+  BaronyRemoteService,
+  BaronyStoryDoc,
+} from '../barony-remote.service';
+import { BaronyGameStore } from './barony-game.store';
+import { BaronyPlayerAiService } from './barony-player-ai.service';
+import { BaronyPlayerLocalService } from './barony-player-local.service';
+import * as baronyRules from './barony-rules';
+import { BaronyUiStore } from './barony-ui.store';
 
 interface ABaronyPlayerService {
   setupPlacement(playerId: BaronyColor): Promise<BaronySetupPlacement>;
@@ -59,10 +63,10 @@ export class BaronyGameService extends ABgGameService<
       const roundNumber = prevRoundOutput.roundNumber + 1;
       prevRoundOutput = await this.round(roundNumber);
     }
-    this.ui.updateUi("End game", s => ({
+    this.ui.updateUi('End game', (s) => ({
       ...s,
       ...this.ui.resetUi(),
-      canCancel: false
+      canCancel: false,
     }));
     this.gameEnd();
   }
@@ -92,31 +96,36 @@ export class BaronyGameService extends ABgGameService<
   }
 
   private async setupPlacement(player: BaronyColor) {
-    const result = await this.executeTask(player, p => p.setupPlacement(player));
+    const result = await this.executeTask(player, (p) =>
+      p.setupPlacement(player),
+    );
     this.gameStore.applySetup(result.land, player);
     this.gameStore.logSetupPlacement(result.land, player);
   }
 
-  private async turn(player: BaronyColor, lastRound: boolean): Promise<BaronyTurnOutput> {
+  private async turn(
+    player: BaronyColor,
+    lastRound: boolean,
+  ): Promise<BaronyTurnOutput> {
     this.gameStore.logTurn(player);
-    const result = await this.executeTask(player, p => p.turn(player));
+    const result = await this.executeTask(player, (p) => p.turn(player));
     switch (result.action) {
-      case "recruitment":
+      case 'recruitment':
         this.recruitment(result.numberOfKnights, result.land, player);
         break;
-      case "construction":
+      case 'construction':
         this.construction(result.constructions, player);
         break;
-      case "expedition":
+      case 'expedition':
         this.expedition(result.land, player);
         break;
-      case "movement":
+      case 'movement':
         this.movement(result.movements, player);
         break;
-      case "newCity":
+      case 'newCity':
         this.newCity(result.land, player);
         break;
-      case "nobleTitle":
+      case 'nobleTitle':
         this.nobleTitle(result.discardedResources, player);
         break;
     }
@@ -132,7 +141,7 @@ export class BaronyGameService extends ABgGameService<
   private recruitment(
     numberOfKnights: number,
     landTileCoordinates: BaronyLandCoordinates,
-    player: BaronyColor
+    player: BaronyColor,
   ) {
     for (let i = 0; i < numberOfKnights; i++) {
       this.gameStore.applyRecruitment(landTileCoordinates, player);
@@ -140,8 +149,11 @@ export class BaronyGameService extends ABgGameService<
     }
   }
 
-  private construction(constructions: BaronyConstruction[], player: BaronyColor) {
-    constructions.forEach(construction => {
+  private construction(
+    constructions: BaronyConstruction[],
+    player: BaronyColor,
+  ) {
+    constructions.forEach((construction) => {
       this.gameStore.applyConstruction(construction, player);
       this.gameStore.logConstruction(construction, player);
     });
@@ -153,7 +165,7 @@ export class BaronyGameService extends ABgGameService<
   }
 
   private movement(movements: BaronyMovement[], player: BaronyColor) {
-    movements.forEach(movement => {
+    movements.forEach((movement) => {
       this.gameStore.applyMovement(movement, player);
       this.gameStore.logMovement(movement, player);
     });
@@ -190,7 +202,11 @@ export class BaronyGameService extends ABgGameService<
     this.gameStore.endTemporaryState();
   }
 
-  protected insertStoryDoc$(storyId: string, story: BaronyStoryDoc, gameId: string) {
+  protected insertStoryDoc$(
+    storyId: string,
+    story: BaronyStoryDoc,
+    gameId: string,
+  ) {
     return this.remote.insertStory$(storyId, story, gameId);
   }
   protected selectStoryDoc$(storyId: string, gameId: string) {
@@ -211,27 +227,31 @@ export class BaronyGameService extends ABgGameService<
   }
 
   protected resetUi(player: BaronyColor) {
-    this.ui.updateUi("Reset UI", s => ({
+    this.ui.updateUi('Reset UI', (s) => ({
       ...s,
       turnPlayer: player,
       ...this.ui.resetUi(),
       canCancel: false,
-      message: `${this.gameStore.getPlayer(player).name} is thinking...`
+      message: `${this.gameStore.getPlayer(player).name} is thinking...`,
     }));
   }
 
   async loadGame(gameId: string) {
     const [game, players, baronyMap, stories] = await Promise.all([
       this.remote.getGame(gameId),
-      this.remote.getPlayers(gameId, ref => ref.orderBy("sort")),
+      this.remote.getPlayers(gameId, (ref) => ref.orderBy('sort')),
       this.remote.getMap(gameId),
-      this.remote.getStories(gameId, ref => ref.orderBy("time").orderBy("playerId"))
+      this.remote.getStories(gameId, (ref) =>
+        ref.orderBy('time').orderBy('playerId'),
+      ),
     ]);
     if (game && baronyMap) {
       const user = this.auth.getUser();
       this.gameStore.setInitialState(
-        players.map(p => this.playerDocToPlayerInit(p, user, game.owner.id === user.id)),
-        baronyMap.lands.map(l => {
+        players.map((p) =>
+          this.playerDocToPlayerInit(p, user, game.owner.id === user.id),
+        ),
+        baronyMap.lands.map((l) => {
           const x = l.x;
           const y = l.y;
           const z = -1 * (x + y);
@@ -240,11 +260,11 @@ export class BaronyGameService extends ABgGameService<
             id: landCoordinatesToId(coordinates),
             coordinates: coordinates,
             type: l.type,
-            pawns: []
+            pawns: [],
           };
         }),
         gameId,
-        game.owner
+        game.owner,
       );
     }
     return stories;
@@ -253,14 +273,14 @@ export class BaronyGameService extends ABgGameService<
   private playerDocToPlayerInit(
     playerDoc: BaronyPlayerDoc,
     user: BgUser,
-    isOwner: boolean
+    isOwner: boolean,
   ): BaronyPlayer {
     if (playerDoc.isAi) {
       return {
         ...this.playerDocToAPlayerInit(playerDoc),
         isAi: true,
         isLocal: isOwner,
-        isRemote: !isOwner
+        isRemote: !isOwner,
       };
     } else {
       return {
@@ -268,7 +288,7 @@ export class BaronyGameService extends ABgGameService<
         isAi: false,
         controller: playerDoc.controller,
         isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id
+        isRemote: user.id !== playerDoc.controller.id,
       };
     }
   }
@@ -282,16 +302,16 @@ export class BaronyGameService extends ABgGameService<
         city: 5,
         stronghold: 2,
         knight: 7,
-        village: 14
+        village: 14,
       },
       resources: {
         forest: 0,
         mountain: 0,
         plain: 0,
-        fields: 0
+        fields: 0,
       },
       victoryPoints: 0,
-      winner: false
+      winner: false,
     };
   }
 }

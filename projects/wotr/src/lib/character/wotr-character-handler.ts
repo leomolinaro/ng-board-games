@@ -1,41 +1,41 @@
-import { inject, Injectable } from "@angular/core";
-import { WotrUiAbility } from "../ability/wotr-ability";
-import { WotrCardId } from "../card/wotr-card-models";
+import { inject, Injectable } from '@angular/core';
+import { WotrUiAbility } from '../ability/wotr-ability';
+import { WotrCardId } from '../card/wotr-card-models';
 import {
   WotrActionApplierMap,
   WotrActionLoggerMap,
-  WotrStoryApplier
-} from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFellowshipStore } from "../fellowship/wotr-fellowship-store";
-import { WotrGameQuery } from "../game/wotr-game-query";
+  WotrStoryApplier,
+} from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import { WotrGameQuery } from '../game/wotr-game-query';
 import {
   WotrCharacterEffectStory,
   WotrSkipCharacterEffectStory,
-  WotrStory
-} from "../game/wotr-story-models";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrNationHandler } from "../nation/wotr-nation-handler";
-import { WotrPlayer } from "../player/wotr-player";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
+  WotrStory,
+} from '../game/wotr-story-models';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrNationHandler } from '../nation/wotr-nation-handler';
+import { WotrPlayer } from '../player/wotr-player';
+import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
 import {
   eliminateCharacter,
   gollumEnterFellowship,
   WotrCharacterAction,
   WotrCharacterElimination,
   WotrCharacterMovement,
-  WotrGollumEnterFellowship
-} from "./wotr-character-actions";
+  WotrGollumEnterFellowship,
+} from './wotr-character-actions';
 import {
   KomeSovereignId,
   WotrCharacter,
   WotrCharacterId,
-  WotrCompanionId
-} from "./wotr-character-models";
-import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrCharacterStore } from "./wotr-character-store";
-import { WotrCharacters } from "./wotr-characters";
+  WotrCompanionId,
+} from './wotr-character-models';
+import { WotrCharacterModifiers } from './wotr-character-modifiers';
+import { WotrCharacterStore } from './wotr-character-store';
+import { WotrCharacters } from './wotr-characters';
 
 @Injectable()
 export class WotrCharacterHandler {
@@ -54,50 +54,62 @@ export class WotrCharacterHandler {
     this.actionRegistry.registerActions(this.getActionAppliers() as any);
     this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
     this.actionRegistry.registerEffectLogger<WotrGollumEnterFellowship>(
-      "gollum-enter-fellowship",
-      (effect, f) => [f.character("gollum"), " enters the Fellowship as Guide"]
+      'gollum-enter-fellowship',
+      (effect, f) => [f.character('gollum'), ' enters the Fellowship as Guide'],
     );
     this.actionRegistry.registerEffectLogger<WotrCharacterElimination>(
-      "character-elimination",
-      (effect, f) => [f.character(effect.characters[0]), " is eliminated"]
+      'character-elimination',
+      (effect, f) => [f.character(effect.characters[0]), ' is eliminated'],
     );
     this.actionRegistry.registerEffectLogger<WotrCharacterMovement>(
-      "character-movement",
+      'character-movement',
       (effect, f) => [
         f.character(effect.characters[0]),
-        " is moved from ",
+        ' is moved from ',
         f.region(effect.fromRegion),
-        " to ",
-        f.region(effect.toRegion)
-      ]
+        ' to ',
+        f.region(effect.toRegion),
+      ],
     );
-    this.actionRegistry.registerStory("character-effect", this.reactionCharacter);
-    this.actionRegistry.registerStory("character-effect-skip", this.reactionCharacterSkip);
+    this.actionRegistry.registerStory(
+      'character-effect',
+      this.reactionCharacter,
+    );
+    this.actionRegistry.registerStory(
+      'character-effect-skip',
+      this.reactionCharacterSkip,
+    );
   }
 
-  private reactionCharacter: WotrStoryApplier<WotrCharacterEffectStory> = async (story, front) => {
-    for (const action of story.actions) {
-      this.logger.logAction(action, story, front);
-      await this.actionRegistry.applyAction(action, front);
-    }
-  };
+  private reactionCharacter: WotrStoryApplier<WotrCharacterEffectStory> =
+    async (story, front) => {
+      for (const action of story.actions) {
+        this.logger.logAction(action, story, front);
+        await this.actionRegistry.applyAction(action, front);
+      }
+    };
 
-  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterEffectStory> = async (
-    story,
-    front
-  ) => {
-    this.logger.logStory(story, front);
-  };
+  private reactionCharacterSkip: WotrStoryApplier<WotrSkipCharacterEffectStory> =
+    async (story, front) => {
+      this.logger.logStory(story, front);
+    };
 
   getActionAppliers(): WotrActionApplierMap<WotrCharacterAction> {
     return {
-      "character-play": (action, front) => this.playCharacters(action.characters, action.region),
-      "character-movement": (action, front) =>
-        this.moveCharacters(action.characters, action.fromRegion, action.toRegion),
-      "character-elimination": (action, front) => this.eliminateCharacters(action.characters),
-      "gollum-enter-fellowship": (action, front) => {},
-      "character-choose": (action, front) => {},
-      "sovereign-awake": (action, front) => this.awakeSovereign(action.sovereignId, action.regionId)
+      'character-play': (action, front) =>
+        this.playCharacters(action.characters, action.region),
+      'character-movement': (action, front) =>
+        this.moveCharacters(
+          action.characters,
+          action.fromRegion,
+          action.toRegion,
+        ),
+      'character-elimination': (action, front) =>
+        this.eliminateCharacters(action.characters),
+      'gollum-enter-fellowship': (action, front) => {},
+      'character-choose': (action, front) => {},
+      'sovereign-awake': (action, front) =>
+        this.awakeSovereign(action.sovereignId, action.regionId),
     };
   }
 
@@ -106,14 +118,14 @@ export class WotrCharacterHandler {
     const removingCharacters: WotrCharacterId[] = [];
     for (const characterId of characters) {
       switch (characterId) {
-        case "aragorn": {
-          removingCharacters.push("strider");
+        case 'aragorn': {
+          removingCharacters.push('strider');
           break;
         }
-        case "gandalf-the-white": {
-          const gandalf = this.characterStore.character("gandalf-the-grey");
-          if (gandalf.status === "inPlay") {
-            removingCharacters.push("gandalf-the-grey");
+        case 'gandalf-the-white': {
+          const gandalf = this.characterStore.character('gandalf-the-grey');
+          if (gandalf.status === 'inPlay') {
+            removingCharacters.push('gandalf-the-grey');
           }
           break;
         }
@@ -148,15 +160,15 @@ export class WotrCharacterHandler {
   async eliminateCharacters(characters: WotrCharacterId[]): Promise<void> {
     for (const characterId of characters) {
       const character = this.characterStore.character(characterId);
-      const fromFellowship = character.status === "inFellowship";
+      const fromFellowship = character.status === 'inFellowship';
       this.removeCharacter(characterId);
       await this.characterModifiers.onAfterCharacterElimination({
         characterId,
-        fromTheFellowship: fromFellowship
+        fromTheFellowship: fromFellowship,
       });
       if (fromFellowship) {
         await this.characterModifiers.onAfterCompanionLeavingTheFellowship(
-          characterId as WotrCompanionId
+          characterId as WotrCompanionId,
         );
       }
     }
@@ -173,16 +185,16 @@ export class WotrCharacterHandler {
   async checkGollumEnterPlay() {
     if (this.q.fellowship.hasCompanions()) return;
     if (!this.q.gollum.isAvailable()) return;
-    this.fellowshipStore.setGuide("gollum");
-    this.characterStore.setInFellowship("gollum");
+    this.fellowshipStore.setGuide('gollum');
+    this.characterStore.setInFellowship('gollum');
     this.logger.logEffect(gollumEnterFellowship());
   }
 
   private removeCharacter(characterId: WotrCharacterId): void {
     const character = this.characterStore.character(characterId);
-    if (character.status === "inFellowship") {
+    if (character.status === 'inFellowship') {
       this.fellowshipStore.removeCompanion(characterId);
-    } else if (character.status === "inPlay") {
+    } else if (character.status === 'inPlay') {
       const region = this.regionStore.characterRegion(characterId);
       if (region) this.removeCharacterFromRegion(character, region);
     }
@@ -193,7 +205,7 @@ export class WotrCharacterHandler {
   moveCharacters(
     characters: WotrCharacterId[],
     fromRegionId: WotrRegionId,
-    toRegionId: WotrRegionId
+    toRegionId: WotrRegionId,
   ): void {
     const fromRegion = this.regionStore.region(fromRegionId);
     const toRegion = this.regionStore.region(toRegionId);
@@ -202,7 +214,10 @@ export class WotrCharacterHandler {
       this.removeCharacterFromRegion(character, fromRegion);
       this.addCharacterToRegion(character, toRegion);
     }
-    this.nationHandler.checkNationActivationByCharacters(toRegionId, characters);
+    this.nationHandler.checkNationActivationByCharacters(
+      toRegionId,
+      characters,
+    );
   }
 
   addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
@@ -215,11 +230,17 @@ export class WotrCharacterHandler {
     }
   }
 
-  private removeCharacterFromRegion(character: WotrCharacter, region: WotrRegion) {
+  private removeCharacterFromRegion(
+    character: WotrCharacter,
+    region: WotrRegion,
+  ) {
     if (region.army?.front === character.front) {
       this.regionStore.removeCharacterFromArmy(character.id, region.id);
     } else if (region.underSiegeArmy?.front === character.front) {
-      this.regionStore.removeCharacterFromUnderSiegeArmy(character.id, region.id);
+      this.regionStore.removeCharacterFromUnderSiegeArmy(
+        character.id,
+        region.id,
+      );
     } else {
       this.regionStore.removeCharacterFromFreeUnits(character.id, region.id);
     }
@@ -228,14 +249,17 @@ export class WotrCharacterHandler {
   async activateTableCard(
     ability: WotrUiAbility,
     cardId: WotrCardId,
-    player: WotrPlayer
+    player: WotrPlayer,
   ): Promise<WotrStory> {
     return player.activateTableCard(ability, cardId);
   }
 
-  async awakeSovereign(sovereignId: KomeSovereignId, regionId: WotrRegionId): Promise<void> {
+  async awakeSovereign(
+    sovereignId: KomeSovereignId,
+    regionId: WotrRegionId,
+  ): Promise<void> {
     const fromRegion = this.q.sovereign(sovereignId).region();
-    if (!fromRegion) throw new Error("Sovereign is not in a region");
+    if (!fromRegion) throw new Error('Sovereign is not in a region');
     this.moveCharacters([sovereignId], fromRegion.id, regionId);
     this.characterStore.awakeSovereign(sovereignId);
     this.characterAbilities.activateAwakenAbilities(sovereignId);
@@ -243,42 +267,44 @@ export class WotrCharacterHandler {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrCharacterAction> {
     return {
-      "character-elimination": (action, front, f) => [
+      'character-elimination': (action, front, f) => [
         f.player(front),
-        " removes ",
-        this.charactersLog(action.characters)
-      ],
-      "character-movement": (action, front, f) => [
-        f.player(front),
-        " moves ",
+        ' removes ',
         this.charactersLog(action.characters),
-        " to ",
-        f.region(action.toRegion)
       ],
-      "character-play": (action, front, f) => [
+      'character-movement': (action, front, f) => [
         f.player(front),
-        " plays ",
+        ' moves ',
         this.charactersLog(action.characters),
-        " in ",
-        f.region(action.region)
+        ' to ',
+        f.region(action.toRegion),
       ],
-      "gollum-enter-fellowship": (action, front, f) => [],
-      "character-choose": (action, front, f) => [
+      'character-play': (action, front, f) => [
         f.player(front),
-        " chooses ",
-        this.charactersLog(action.characters)
+        ' plays ',
+        this.charactersLog(action.characters),
+        ' in ',
+        f.region(action.region),
       ],
-      "sovereign-awake": (action, front, f) => [
+      'gollum-enter-fellowship': (action, front, f) => [],
+      'character-choose': (action, front, f) => [
         f.player(front),
-        " awakes ",
+        ' chooses ',
+        this.charactersLog(action.characters),
+      ],
+      'sovereign-awake': (action, front, f) => [
+        f.player(front),
+        ' awakes ',
         f.character(action.sovereignId),
-        " in ",
-        f.region(action.regionId)
-      ]
+        ' in ',
+        f.region(action.regionId),
+      ],
     };
   }
 
   private charactersLog(characters: WotrCharacterId[]) {
-    return characters.map(c => this.characterStore.character(c).name).join(", ");
+    return characters
+      .map((c) => this.characterStore.character(c).name)
+      .join(', ');
   }
 }

@@ -1,6 +1,6 @@
-import { Injectable, inject } from "@angular/core";
-import { objectUtil } from "@leobg/commons/utils";
-import { WotrFrontId } from "../front/wotr-front-models";
+import { Injectable, inject } from '@angular/core';
+import { objectUtil } from '@leobg/commons/utils';
+import { WotrFrontId } from '../front/wotr-front-models';
 import {
   WotrAction,
   WotrActionApplier,
@@ -8,15 +8,16 @@ import {
   WotrEffectLogger,
   WotrFragmentCreator,
   WotrStory,
-  WotrStoryApplier
-} from "./wotr-action-models";
-import { WotrEventService } from "./wotr-event-service";
+  WotrStoryApplier,
+} from './wotr-action-models';
+import { WotrEventService } from './wotr-event-service';
 
 @Injectable()
 export class WotrActionRegistry {
   private eventService = inject(WotrEventService);
 
-  private actionAppliers: Map<string, WotrActionApplier<WotrAction>> = new Map();
+  private actionAppliers: Map<string, WotrActionApplier<WotrAction>> =
+    new Map();
   private storyAppliers: Map<string, WotrStoryApplier<WotrStory>> = new Map();
   private actionLoggers: Map<string, WotrActionLogger<WotrAction>> = new Map();
   private effectLoggers: Map<string, WotrEffectLogger<WotrAction>> = new Map();
@@ -28,16 +29,18 @@ export class WotrActionRegistry {
     this.effectLoggers.clear();
   }
 
-  registerActions(actionAppliers: Record<string, WotrActionApplier<WotrAction>>) {
+  registerActions(
+    actionAppliers: Record<string, WotrActionApplier<WotrAction>>,
+  ) {
     objectUtil.forEachProp(actionAppliers, (actionType, actionApplier) =>
-      this.actionAppliers.set(actionType, actionApplier)
+      this.actionAppliers.set(actionType, actionApplier),
     );
   }
 
   registerAction<A extends WotrAction>(
-    actionType: A["type"],
+    actionType: A['type'],
     actionApplier: WotrActionApplier<A>,
-    actionLogger?: WotrActionLogger<A>
+    actionLogger?: WotrActionLogger<A>,
   ) {
     this.actionAppliers.set(actionType, actionApplier as any);
     if (actionLogger) {
@@ -51,7 +54,10 @@ export class WotrActionRegistry {
     await this.eventService.publish(action);
   }
 
-  registerStory<S extends WotrStory>(storyType: S["type"], storyApplier: WotrStoryApplier<S>) {
+  registerStory<S extends WotrStory>(
+    storyType: S['type'],
+    storyApplier: WotrStoryApplier<S>,
+  ) {
     this.storyAppliers.set(storyType, storyApplier as any);
   }
 
@@ -61,16 +67,18 @@ export class WotrActionRegistry {
     await storyApplier(story, frontId);
   }
 
-  registerActionLoggers(actionLoggers: Record<string, WotrActionLogger<WotrAction>>) {
+  registerActionLoggers(
+    actionLoggers: Record<string, WotrActionLogger<WotrAction>>,
+  ) {
     objectUtil.forEachProp(actionLoggers, (actionType, actionLogger) =>
-      this.actionLoggers.set(actionType, actionLogger)
+      this.actionLoggers.set(actionType, actionLogger),
     );
   }
 
   getActionLogFragments<F>(
     action: WotrAction,
     front: WotrFrontId,
-    fragmentCreator: WotrFragmentCreator<F>
+    fragmentCreator: WotrFragmentCreator<F>,
   ): (F | string)[] {
     const actionLogger = this.actionLoggers.get(action.type);
     if (!actionLogger) throw new Error(`Unknown action log ${action.type}`);
@@ -78,15 +86,15 @@ export class WotrActionRegistry {
   }
 
   registerEffectLogger<A extends WotrAction>(
-    effectType: A["type"],
-    effectLogger: WotrEffectLogger<A>
+    effectType: A['type'],
+    effectLogger: WotrEffectLogger<A>,
   ) {
     this.effectLoggers.set(effectType, effectLogger as any);
   }
 
   getEffectLogFragments<F>(
     effect: WotrAction,
-    fragmentCreator: WotrFragmentCreator<F>
+    fragmentCreator: WotrFragmentCreator<F>,
   ): (F | string)[] {
     const effectLogger = this.effectLoggers.get(effect.type);
     if (!effectLogger) throw new Error(`Unknown effect log ${effect.type}`);

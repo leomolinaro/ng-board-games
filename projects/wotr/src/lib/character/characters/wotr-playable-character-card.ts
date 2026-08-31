@@ -1,10 +1,10 @@
-import { unexpectedStory } from "../../../../../commons/src";
-import { WotrUiAbility } from "../../ability/wotr-ability";
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrPlayer } from "../../player/wotr-player";
-import { WotrCharacterId } from "../wotr-character-models";
+import { unexpectedStory } from '../../../../../commons/src';
+import { WotrUiAbility } from '../../ability/wotr-ability';
+import { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrPlayer } from '../../player/wotr-player';
+import { WotrCharacterId } from '../wotr-character-models';
 
 export abstract class WotrPlayableCharacterCard {
   public abstract characterId: WotrCharacterId;
@@ -18,15 +18,15 @@ export abstract class WotrPlayableCharacterCard {
 export async function activateCharacterAbility(
   ability: WotrUiAbility,
   characterId: WotrCharacterId,
-  player: WotrPlayer
+  player: WotrPlayer,
 ): Promise<false | WotrAction[]> {
   const story = await player.activateCharacterAbility(ability, characterId);
   switch (story.type) {
-    case "character-effect":
+    case 'character-effect':
       return story.actions;
-    case "character-effect-skip":
+    case 'character-effect-skip':
       return false;
     default:
-      throw unexpectedStory(story, "character activation or not");
+      throw unexpectedStory(story, 'character activation or not');
   }
 }

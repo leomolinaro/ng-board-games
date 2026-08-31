@@ -1,32 +1,38 @@
-import { Injectable, Signal } from "@angular/core";
-import { immutableUtil } from "@leobg/commons/utils";
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrFellowship, WotrMordorTrack } from "./wotr-fellowship-models";
+import { Injectable, Signal } from '@angular/core';
+import { immutableUtil } from '@leobg/commons/utils';
+import {
+  WotrCharacterId,
+  WotrCompanionId,
+} from '../character/wotr-character-models';
+import { WotrFellowship, WotrMordorTrack } from './wotr-fellowship-models';
 
 export function initialState(): WotrFellowship {
   return {
-    status: "hidden",
+    status: 'hidden',
     companions: [],
     progress: 0,
     corruption: 0,
-    guide: "gandalf-the-grey",
-    moveOrHideAttempt: false
+    guide: 'gandalf-the-grey',
+    moveOrHideAttempt: false,
   };
 }
 
 @Injectable()
 export class WotrFellowshipStore {
-  update!: (actionName: string, updater: (a: WotrFellowship) => WotrFellowship) => void;
+  update!: (
+    actionName: string,
+    updater: (a: WotrFellowship) => WotrFellowship,
+  ) => void;
   state!: Signal<WotrFellowship>;
 
   corruption() {
     return this.state().corruption;
   }
   isRevealed() {
-    return this.state().status === "revealed";
+    return this.state().status === 'revealed';
   }
   isHidden() {
-    return this.state().status === "hidden";
+    return this.state().status === 'hidden';
   }
   guide() {
     return this.state().guide;
@@ -51,47 +57,72 @@ export class WotrFellowshipStore {
   }
 
   setCompanions(companions: WotrCompanionId[]) {
-    this.update("setCompanions", state => ({ ...state, companions }));
+    this.update('setCompanions', (state) => ({ ...state, companions }));
   }
   setGuide(guide: WotrCompanionId) {
-    this.update("setGuide", state => ({ ...state, guide }));
+    this.update('setGuide', (state) => ({ ...state, guide }));
   }
   setProgress(progress: number) {
-    this.update("setProgress", state => ({ ...state, progress }));
+    this.update('setProgress', (state) => ({ ...state, progress }));
   }
   increaseProgress() {
-    this.update("increaseProgress", state => ({ ...state, progress: state.progress + 1 }));
+    this.update('increaseProgress', (state) => ({
+      ...state,
+      progress: state.progress + 1,
+    }));
   }
   corrupt(delta: number) {
-    this.update("changeCorruption", state => ({ ...state, corruption: state.corruption + delta }));
+    this.update('changeCorruption', (state) => ({
+      ...state,
+      corruption: state.corruption + delta,
+    }));
   }
   hide() {
-    this.update("hide", state => ({ ...state, status: "hidden" }));
+    this.update('hide', (state) => ({ ...state, status: 'hidden' }));
   }
   reveal() {
-    this.update("reveal", state => ({ ...state, status: "revealed", progress: 0 }));
+    this.update('reveal', (state) => ({
+      ...state,
+      status: 'revealed',
+      progress: 0,
+    }));
   }
   removeCompanion(companionId: WotrCharacterId) {
-    this.update("removeCompanion", state => ({
+    this.update('removeCompanion', (state) => ({
       ...state,
-      companions: immutableUtil.listRemoveFirst(c => c === companionId, state.companions)
+      companions: immutableUtil.listRemoveFirst(
+        (c) => c === companionId,
+        state.companions,
+      ),
     }));
   }
 
   moveOnMordorTrack() {
-    this.update("moveOnMordorTrack", state => ({
+    this.update('moveOnMordorTrack', (state) => ({
       ...state,
-      mordorTrack: state.mordorTrack == null ? 0 : ((state.mordorTrack + 1) as WotrMordorTrack)
+      mordorTrack:
+        state.mordorTrack == null
+          ? 0
+          : ((state.mordorTrack + 1) as WotrMordorTrack),
     }));
   }
 
   setMoveAttempt() {
-    this.update("setMoveAttempt", state => ({ ...state, moveOrHideAttempt: true }));
+    this.update('setMoveAttempt', (state) => ({
+      ...state,
+      moveOrHideAttempt: true,
+    }));
   }
   setHideAttempt() {
-    this.update("setHideAttempt", state => ({ ...state, moveOrHideAttempt: true }));
+    this.update('setHideAttempt', (state) => ({
+      ...state,
+      moveOrHideAttempt: true,
+    }));
   }
   resetMoveOrHideAttempt() {
-    this.update("resetMoveOrHideAttempt", state => ({ ...state, moveOrHideAttempt: false }));
+    this.update('resetMoveOrHideAttempt', (state) => ({
+      ...state,
+      moveOrHideAttempt: false,
+    }));
   }
 }

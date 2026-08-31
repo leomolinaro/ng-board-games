@@ -1,24 +1,27 @@
-import { WotrAbility, WotrUiAbility } from "../../ability/wotr-ability";
-import { WotrActionDie } from "../../action-die/wotr-action-die-models";
-import { forfeitLeadership } from "../../battle/wotr-battle-actions";
-import { WotrCombatRound } from "../../battle/wotr-battle-models";
-import { WotrBattleModifiers, WotrBeforeCombatRound } from "../../battle/wotr-battle-modifiers";
-import { WotrAction } from "../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../game/wotr-game-ui-context";
-import { WotrFreePeoplesPlayer } from "../../player/wotr-free-peoples-player";
-import { WotrRegionId } from "../../region/wotr-region-models";
-import { character } from "../../unit/wotr-unit-models";
-import { WotrUnitUtils } from "../../unit/wotr-unit-utils";
-import { playCharacter } from "../wotr-character-actions";
+import { WotrAbility, WotrUiAbility } from '../../ability/wotr-ability';
+import { WotrActionDie } from '../../action-die/wotr-action-die-models';
+import { forfeitLeadership } from '../../battle/wotr-battle-actions';
+import { WotrCombatRound } from '../../battle/wotr-battle-models';
+import {
+  WotrBattleModifiers,
+  WotrBeforeCombatRound,
+} from '../../battle/wotr-battle-modifiers';
+import { WotrAction } from '../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../game/wotr-game-ui-context';
+import { WotrFreePeoplesPlayer } from '../../player/wotr-free-peoples-player';
+import { WotrRegionId } from '../../region/wotr-region-models';
+import { character } from '../../unit/wotr-unit-models';
+import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
+import { playCharacter } from '../wotr-character-actions';
 import {
   WotrCharacterModifiers,
-  WotrCharacterMovementLevelModifier
-} from "../wotr-character-modifiers";
+  WotrCharacterMovementLevelModifier,
+} from '../wotr-character-modifiers';
 import {
   activateCharacterAbility,
-  WotrPlayableCharacterCard
-} from "./wotr-playable-character-card";
+  WotrPlayableCharacterCard,
+} from './wotr-playable-character-card';
 
 // Gandalf the White - Emissary from the West (Level 3, Leadership 1, +1 Action Die)
 // If Gandalf the Grey has been eliminated or has left the Fellowship, and any Minion is (or has been) in play, you may use one Will of the West Action die result to
@@ -33,14 +36,15 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
     super();
   }
 
-  public readonly characterId = "gandalf-the-white";
+  public readonly characterId = 'gandalf-the-white';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (die !== "will-of-the-west") return false;
+    if (die !== 'will-of-the-west') return false;
     const gandalf = this.q.gandalfTheGrey;
     if (!gandalf.isInPlay() && !gandalf.isEliminated()) return false;
     return this.q.minions.some(
-      c => c.isMinionForGandalfTheWhite() && (c.isInPlay() || c.isEliminated())
+      (c) =>
+        c.isMinionForGandalfTheWhite() && (c.isInPlay() || c.isEliminated()),
     );
   }
 
@@ -48,26 +52,27 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
     const gandalf = this.q.gandalfTheGrey;
     if (gandalf.isInPlay()) {
       const gandalfRegion = gandalf.region()!;
-      return playCharacter(gandalfRegion.id, "gandalf-the-white");
+      return playCharacter(gandalfRegion.id, 'gandalf-the-white');
     } else if (gandalf.isEliminated()) {
       const elvenStrongholds: WotrRegionId[] = [
-        "rivendell",
-        "lorien",
-        "woodland-realm",
-        "grey-havens"
+        'rivendell',
+        'lorien',
+        'woodland-realm',
+        'grey-havens',
       ];
-      const targetRegions: WotrRegionId[] = ["fangorn"];
+      const targetRegions: WotrRegionId[] = ['fangorn'];
       for (const regionId of elvenStrongholds) {
-        if (this.q.region(regionId).isUnconquered()) targetRegions.push(regionId);
+        if (this.q.region(regionId).isUnconquered())
+          targetRegions.push(regionId);
       }
       const region = await ui.askRegion(
-        "Select a region to bring Gandalf the White into play",
-        targetRegions
+        'Select a region to bring Gandalf the White into play',
+        targetRegions,
       );
-      return playCharacter(region, "gandalf-the-white");
+      return playCharacter(region, 'gandalf-the-white');
     }
     throw new Error(
-      "Gandalf the Grey is not in a valid state to bring Gandalf the White into play."
+      'Gandalf the Grey is not in a valid state to bring Gandalf the White into play.',
     );
   }
 }
@@ -77,12 +82,18 @@ export class ShadowfaxAbility implements WotrAbility<WotrCharacterMovementLevelM
 
   public modifier = this.characterModifiers.characterMovementLevelModifier;
 
-  public handler: WotrCharacterMovementLevelModifier = (characters, originalLevel) => {
-    if (!characters.includes("gandalf-the-white")) return originalLevel;
+  public handler: WotrCharacterMovementLevelModifier = (
+    characters,
+    originalLevel,
+  ) => {
+    if (!characters.includes('gandalf-the-white')) return originalLevel;
     if (characters.length === 1) return 4;
     if (characters.length > 2) return originalLevel;
-    const otherCharacter = characters.filter(c => c !== "gandalf-the-white")[0];
-    if (otherCharacter === "peregrin" || otherCharacter === "meriadoc") return 4;
+    const otherCharacter = characters.filter(
+      (c) => c !== 'gandalf-the-white',
+    )[0];
+    if (otherCharacter === 'peregrin' || otherCharacter === 'meriadoc')
+      return 4;
     return originalLevel;
   };
 }
@@ -91,19 +102,27 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
   constructor(
     private freePeoples: WotrFreePeoplesPlayer,
     private battleModifiers: WotrBattleModifiers,
-    private unitUtils: WotrUnitUtils
+    private unitUtils: WotrUnitUtils,
   ) {}
 
   public modifier = this.battleModifiers.beforeCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
-    if (!round.freePeoples.isCharacterActiveInBattle("gandalf-the-white")) return;
+    if (!round.freePeoples.isCharacterActiveInBattle('gandalf-the-white'))
+      return;
     if (!this.unitUtils.hasNazgul(round.shadow.army())) return;
-    if (!(await activateCharacterAbility(this, "gandalf-the-white", this.freePeoples))) return;
+    if (
+      !(await activateCharacterAbility(
+        this,
+        'gandalf-the-white',
+        this.freePeoples,
+      ))
+    )
+      return;
     round.shadow.negateNazgulLeadership = true;
   };
 
   async play() {
-    return [forfeitLeadership(character("gandalf-the-white"))];
+    return [forfeitLeadership(character('gandalf-the-white'))];
   }
 }

@@ -1,26 +1,32 @@
-import { Component, inject } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
-import { BgHome, BgHomeConfig, BgProtoGame, BgProtoPlayer, BgUser } from "@leobg/commons";
-import { concatJoin } from "@leobg/commons/utils";
-import { Observable, forkJoin, from } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import { BritColor } from "./brit-components.models";
-import { BritComponentsService } from "./brit-components.service";
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  BgHome,
+  BgHomeConfig,
+  BgProtoGame,
+  BgProtoPlayer,
+  BgUser,
+} from '@leobg/commons';
+import { concatJoin } from '@leobg/commons/utils';
+import { Observable, forkJoin, from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { BritColor } from './brit-components.models';
+import { BritComponentsService } from './brit-components.service';
 import {
   ABritPlayerDoc,
   BritAiPlayerDoc,
   BritPlayerDoc,
   BritReadPlayerDoc,
-  BritRemoteService
-} from "./brit-remote.service";
+  BritRemoteService,
+} from './brit-remote.service';
 
 @Component({
-  selector: "brit-home",
+  selector: 'brit-home',
   imports: [BgHome],
   template: ` <bg-home [config]="config"></bg-home> `,
   styles: [
     `
-      @use "brit-variables" as *;
+      @use 'brit-variables' as *;
 
       ::ng-deep {
         .brit-player-blue {
@@ -36,8 +42,8 @@ import {
           --bg-player-color: #{$yellow};
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BritHome {
   private router = inject(Router);
@@ -46,53 +52,67 @@ export class BritHome {
   private components = inject(BritComponentsService);
 
   config: BgHomeConfig<BritColor> = {
-    boardGame: "britannia",
-    boardGameName: "Britannia",
+    boardGame: 'britannia',
+    boardGameName: 'Britannia',
     startGame$: (gameId: string) =>
-      from(this.router.navigate(["game", gameId], { relativeTo: this.activatedRoute })),
+      from(
+        this.router.navigate(['game', gameId], {
+          relativeTo: this.activatedRoute,
+        }),
+      ),
     deleteGame$: (gameId: string) =>
       concatJoin([
         this.gameService.deleteStories$(gameId),
         this.gameService.deletePlayers$(gameId),
-        this.gameService.deleteGame$(gameId)
+        this.gameService.deleteGame$(gameId),
       ]),
-    createGame$: (protoGame, protoPlayers) => this.createGame$(protoGame, protoPlayers),
+    createGame$: (protoGame, protoPlayers) =>
+      this.createGame$(protoGame, protoPlayers),
     playerIds: () => this.components.COLORS,
     playerIdCssClass: (color: BritColor) => {
       switch (color) {
-        case "blue":
-          return "brit-player-blue";
-        case "green":
-          return "brit-player-green";
-        case "red":
-          return "brit-player-red";
-        case "yellow":
-          return "brit-player-yellow";
+        case 'blue':
+          return 'brit-player-blue';
+        case 'green':
+          return 'brit-player-green';
+        case 'red':
+          return 'brit-player-red';
+        case 'yellow':
+          return 'brit-player-yellow';
       }
-    }
+    },
   };
 
-  private createGame$(protoGame: BgProtoGame, protoPlayers: BgProtoPlayer<BritColor>[]) {
+  private createGame$(
+    protoGame: BgProtoGame,
+    protoPlayers: BgProtoPlayer<BritColor>[],
+  ) {
     return this.gameService
       .insertGame$({
         id: protoGame.id,
         owner: protoGame.owner,
         name: protoGame.name,
         online: protoGame.online,
-        state: "open"
+        state: 'open',
       })
       .pipe(
-        switchMap(game =>
+        switchMap((game) =>
           forkJoin([
             ...protoPlayers.map((p, index) => {
-              if (p.type === "ai") {
+              if (p.type === 'ai') {
                 return this.insertAiPlayer$(p.id, p.name, index + 1, game.id);
               } else {
-                return this.insertRealPlayer$(p.id, p.name, index + 1, p.controller!, game.id);
+                return this.insertRealPlayer$(
+                  p.id,
+                  p.name,
+                  index + 1,
+                  p.controller!,
+                  game.id,
+                );
               }
-            })
-          ])
-        )
+            }),
+          ]),
+        ),
       );
   }
 
@@ -100,11 +120,11 @@ export class BritHome {
     playerId: BritColor,
     name: string,
     sort: number,
-    gameId: string
+    gameId: string,
   ): Observable<BritPlayerDoc> {
     const player: BritAiPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
-      isAi: true
+      isAi: true,
     };
     return this.gameService.insertPlayer$(player, gameId);
   }
@@ -114,17 +134,21 @@ export class BritHome {
     name: string,
     sort: number,
     controller: BgUser,
-    gameId: string
+    gameId: string,
   ): Observable<BritPlayerDoc> {
     const player: BritReadPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: false,
-      controller: controller
+      controller: controller,
     };
     return this.gameService.insertPlayer$(player, gameId);
   }
 
-  private aPlayerDoc(playerId: BritColor, name: string, sort: number): ABritPlayerDoc {
+  private aPlayerDoc(
+    playerId: BritColor,
+    name: string,
+    sort: number,
+  ): ABritPlayerDoc {
     return { id: playerId, name: name, sort: sort };
   }
 }

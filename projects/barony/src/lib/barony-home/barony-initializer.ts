@@ -1,10 +1,14 @@
-import { randomUtil } from "@leobg/commons/utils";
+import { randomUtil } from '@leobg/commons/utils';
 import {
   BARONY_LAND_PIECES,
   BARONY_LAND_TYPES,
-  BARONY_NUMBER_OF_LAND_TILES
-} from "../barony-constants";
-import { BaronyLandCoordinates, BaronyLandPiece, BaronyLandType } from "../barony-models";
+  BARONY_NUMBER_OF_LAND_TILES,
+} from '../barony-constants';
+import {
+  BaronyLandCoordinates,
+  BaronyLandPiece,
+  BaronyLandType,
+} from '../barony-models';
 
 export function getRandomLands(nPlayers: number): {
   coordinates: BaronyLandCoordinates;
@@ -22,7 +26,7 @@ export function getRandomLands(nPlayers: number): {
   return coordinatess.map((coordinates, index) => {
     return {
       coordinates: coordinates,
-      type: landTypes[index]
+      type: landTypes[index],
     };
   });
 
@@ -39,7 +43,7 @@ function generateExhagonalMap(nTiles: number): BaronyLandCoordinates[] {
     { x: 1, y: 0, z: -1 },
     { x: 0, y: 1, z: -1 },
     { x: -1, y: 1, z: 0 },
-    { x: -1, y: 0, z: 1 }
+    { x: -1, y: 0, z: 1 },
   ];
   let i = 0;
   let side = 5;
@@ -81,7 +85,7 @@ function generateRectangularMap(nPieces: number): {
     mountain: 0,
     forest: 0,
     lake: 0,
-    plain: 0
+    plain: 0,
   };
   for (const piece of BARONY_LAND_PIECES) {
     for (let i = 0; i < piece.quantity; i++) {
@@ -91,7 +95,7 @@ function generateRectangularMap(nPieces: number): {
       piecesPool.push(piece);
     }
   }
-  console.log("map", map);
+  console.log('map', map);
 
   const choosenPieces = [];
   for (let i = 0; i < nPieces; i++) {
@@ -117,11 +121,11 @@ function generateRectangularMap(nPieces: number): {
       toReturn.push({ coordinates: { x, y, z }, type: piece[1] });
       toReturn.push({
         coordinates: { x: x, y: y + 1, z: z - 1 },
-        type: piece[2]
+        type: piece[2],
       });
       toReturn.push({
         coordinates: { x: x - 1, y: y + 1, z: z },
-        type: piece[3]
+        type: piece[3],
       });
     } else {
       x += ((pIndex - 1) / 2) * 3 + 1;
@@ -129,11 +133,11 @@ function generateRectangularMap(nPieces: number): {
       toReturn.push({ coordinates: { x, y, z }, type: piece[1] });
       toReturn.push({
         coordinates: { x: x + 1, y: y, z: z - 1 },
-        type: piece[2]
+        type: piece[2],
       });
       toReturn.push({
         coordinates: { x: x, y: y + 1, z: z - 1 },
-        type: piece[3]
+        type: piece[3],
       });
     }
 

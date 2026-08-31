@@ -1,16 +1,16 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrActionDieHandler } from "../action-die/wotr-action-die-handler";
-import { WotrStoryApplier } from "../commons/wotr-action-models";
-import { WotrActionRegistry } from "../commons/wotr-action-registry";
-import { WotrFrontHandler } from "../front/wotr-front-handler";
-import { WotrFrontStore } from "../front/wotr-front-store";
+import { Injectable, inject } from '@angular/core';
+import { WotrActionDieHandler } from '../action-die/wotr-action-die-handler';
+import { WotrStoryApplier } from '../commons/wotr-action-models';
+import { WotrActionRegistry } from '../commons/wotr-action-registry';
+import { WotrFrontHandler } from '../front/wotr-front-handler';
+import { WotrFrontStore } from '../front/wotr-front-store';
 import {
   WotrCardEffectStory,
   WotrDieCardStory,
-  WotrSkipCardEffectStory
-} from "../game/wotr-story-models";
-import { WotrLogWriter } from "../log/wotr-log-writer";
-import { WotrCards } from "./cards/wotr-cards";
+  WotrSkipCardEffectStory,
+} from '../game/wotr-story-models';
+import { WotrLogWriter } from '../log/wotr-log-writer';
+import { WotrCards } from './cards/wotr-cards';
 
 @Injectable()
 export class WotrCardStoryHandler {
@@ -23,13 +23,20 @@ export class WotrCardStoryHandler {
   private cards = inject(WotrCards);
 
   init() {
-    this.actionRegistry.registerStory("die-card", this.dieCard);
-    this.actionRegistry.registerStory("card-effect", this.reactionCard);
-    this.actionRegistry.registerStory("card-effect-skip", this.reactionCardSkip);
+    this.actionRegistry.registerStory('die-card', this.dieCard);
+    this.actionRegistry.registerStory('card-effect', this.reactionCard);
+    this.actionRegistry.registerStory(
+      'card-effect-skip',
+      this.reactionCardSkip,
+    );
   }
 
-  private dieCard: WotrStoryApplier<WotrDieCardStory> = async (story, front) => {
-    if (story.elvenRing) this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
+  private dieCard: WotrStoryApplier<WotrDieCardStory> = async (
+    story,
+    front,
+  ) => {
+    if (story.elvenRing)
+      this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     this.actionDieHandler.setCurrentActionDie(story.die, front);
     this.frontStore.setCurrentCard(story.card);
     this.frontStore.discardCards([story.card], front);
@@ -46,14 +53,20 @@ export class WotrCardStoryHandler {
     this.frontStore.clearCurrentCard();
   };
 
-  private reactionCard: WotrStoryApplier<WotrCardEffectStory> = async (story, front) => {
+  private reactionCard: WotrStoryApplier<WotrCardEffectStory> = async (
+    story,
+    front,
+  ) => {
     for (const action of story.actions) {
       this.logger.logAction(action, story, front);
       await this.actionRegistry.applyAction(action, front);
     }
   };
 
-  private reactionCardSkip: WotrStoryApplier<WotrSkipCardEffectStory> = async (story, front) => {
+  private reactionCardSkip: WotrStoryApplier<WotrSkipCardEffectStory> = async (
+    story,
+    front,
+  ) => {
     this.logger.logStory(story, front);
   };
 }

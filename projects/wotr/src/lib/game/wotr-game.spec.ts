@@ -1,17 +1,19 @@
-import { Observable } from "rxjs";
-import { WotrLog } from "../log/wotr-log-models";
-import { WotrScenarioPageBuilder } from "../scenario/wotr-scenario-page-builder";
-import { WotrGamePage } from "./wotr-game-page";
+import { Observable } from 'rxjs';
+import { WotrLog } from '../log/wotr-log-models';
+import { WotrScenarioPageBuilder } from '../scenario/wotr-scenario-page-builder';
+import { WotrGamePage } from './wotr-game-page';
 
-describe("WotrGameComponent", () => {
+describe('WotrGameComponent', () => {
   let component: WotrGamePage;
   let logs$: Observable<WotrLog[]>;
 
   beforeEach(async () => {
-    component = await new WotrScenarioPageBuilder().setGameId("very-late-minions").build();
+    component = await new WotrScenarioPageBuilder()
+      .setGameId('very-late-minions')
+      .build();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 

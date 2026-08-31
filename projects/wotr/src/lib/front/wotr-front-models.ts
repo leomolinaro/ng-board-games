@@ -1,8 +1,15 @@
-import { WotrActionDie, WotrActionToken } from "../action-die/wotr-action-die-models";
-import { WotrCardId, WotrCharacterCardId, WotrStrategyCardId } from "../card/wotr-card-models";
+import {
+  WotrActionDie,
+  WotrActionToken,
+} from '../action-die/wotr-action-die-models';
+import {
+  WotrCardId,
+  WotrCharacterCardId,
+  WotrStrategyCardId,
+} from '../card/wotr-card-models';
 
-export type WotrFrontId = "free-peoples" | "shadow";
-export type WotrElvenRing = "vilya" | "nenya" | "narya";
+export type WotrFrontId = 'free-peoples' | 'shadow';
+export type WotrElvenRing = 'vilya' | 'nenya' | 'narya';
 
 export interface WotrFront {
   id: WotrFrontId;
@@ -24,20 +31,20 @@ export interface WotrFront {
 
 export function oppositeFront(front: WotrFrontId): WotrFrontId {
   switch (front) {
-    case "free-peoples":
-      return "shadow";
-    case "shadow":
-      return "free-peoples";
+    case 'free-peoples':
+      return 'shadow';
+    case 'shadow':
+      return 'free-peoples';
   }
 }
 
 export function elvenRingLabel(ring: WotrElvenRing): string {
   switch (ring) {
-    case "vilya":
-      return "Vilya";
-    case "nenya":
-      return "Nenya";
-    case "narya":
-      return "Narya";
+    case 'vilya':
+      return 'Vilya';
+    case 'nenya':
+      return 'Nenya';
+    case 'narya':
+      return 'Narya';
   }
 }

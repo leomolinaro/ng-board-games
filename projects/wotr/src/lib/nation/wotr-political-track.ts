@@ -1,9 +1,13 @@
-import { Component, Signal, computed, inject } from "@angular/core";
-import { arrayUtil } from "@leobg/commons/utils";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrGameUi } from "../game/wotr-game-ui";
-import { WotrNation, WotrNationId, WotrPoliticalStep } from "./wotr-nation-models";
-import { WotrNationStore } from "./wotr-nation-store";
+import { Component, Signal, computed, inject } from '@angular/core';
+import { arrayUtil } from '@leobg/commons/utils';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrGameUi } from '../game/wotr-game-ui';
+import {
+  WotrNation,
+  WotrNationId,
+  WotrPoliticalStep,
+} from './wotr-nation-models';
+import { WotrNationStore } from './wotr-nation-store';
 
 interface WotrPoliticalNode {
   id: WotrNationId;
@@ -31,7 +35,7 @@ const PSTEP1 = PSTEP2 + PSTEP;
 const PSTEPWAR = PSTEP1 + PSTEP;
 
 @Component({
-  selector: "[wotrPoliticalTrack]",
+  selector: '[wotrPoliticalTrack]',
   template: `
     @for (politicalNode of politicalNodes(); track politicalNode.id) {
       @let selectable = validNationMap()?.[politicalNode.id];
@@ -39,7 +43,8 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         transform="scale(0.8, 0.8)"
         [attr.x]="politicalNode.svgX"
         [attr.y]="politicalNode.svgY"
-        [attr.xlink:href]="politicalNode.image" />
+        [attr.xlink:href]="politicalNode.image"
+      />
       <svg:rect
         class="political-marker-rect"
         [attr.transform]="
@@ -55,7 +60,8 @@ const PSTEPWAR = PSTEP1 + PSTEP;
         [attr.height]="24"
         [class.disabled]="validNationMap() && !selectable"
         [class.selectable]="validNationMap() && selectable"
-        (click)="onNationClick(politicalNode.id)"></svg:rect>
+        (click)="onNationClick(politicalNode.id)"
+      ></svg:rect>
     }
   `,
   styles: [
@@ -71,8 +77,8 @@ const PSTEPWAR = PSTEP1 + PSTEP;
           fill: black; // does not work for image
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrPoliticalTrack {
   private assets = inject(WotrAssetsStore);
@@ -82,15 +88,17 @@ export class WotrPoliticalTrack {
   protected nations = this.nationStore.nations;
   private validNations = this.ui.nationSelection;
   private politicalNodeMap!: Record<WotrNationId, WotrPoliticalNode>;
-  protected validNationMap: Signal<Partial<Record<WotrNationId, boolean>> | null> = computed(() => {
+  protected validNationMap: Signal<Partial<
+    Record<WotrNationId, boolean>
+  > | null> = computed(() => {
     const validNations = this.validNations();
     if (!validNations) {
       return null;
     }
     return arrayUtil.toMap(
       validNations,
-      n => n,
-      n => true // true if the nation is valid, false otherwise
+      (n) => n,
+      (n) => true, // true if the nation is valid, false otherwise
     );
   });
 
@@ -98,9 +106,9 @@ export class WotrPoliticalTrack {
     const { nodes, map } = arrayUtil.entitiesToNodes(
       this.nations(),
       this.politicalNodeMap || {},
-      nation => nation.id,
+      (nation) => nation.id,
       (nation, node) => nation === node?.nation,
-      (nation, index, oldNode) => this.nationToPoliticalNode(nation, oldNode)
+      (nation, index, oldNode) => this.nationToPoliticalNode(nation, oldNode),
     );
     this.politicalNodeMap = map;
     return nodes;
@@ -108,7 +116,7 @@ export class WotrPoliticalTrack {
 
   private nationToPoliticalNode(
     nation: WotrNation,
-    oldNode: WotrPoliticalNode | null
+    oldNode: WotrPoliticalNode | null,
   ): WotrPoliticalNode {
     const node: WotrPoliticalNode = {
       id: nation.id,
@@ -116,7 +124,7 @@ export class WotrPoliticalTrack {
       tooltip: nation.name,
       svgX: this.getPoliticalMakerX(nation.id, nation.politicalStep),
       svgY: this.getPoliticalMakerY(nation.id, nation.politicalStep),
-      image: this.assets.politicalMarkerImage(nation.id, nation.active)
+      image: this.assets.politicalMarkerImage(nation.id, nation.active),
     };
     return node;
   }
@@ -129,50 +137,50 @@ export class WotrPoliticalTrack {
       3: { x: PX1, y: PY1 + PSTEP3 },
       2: { x: PX1, y: PY1 + PSTEP2 },
       1: { x: PX1, y: PY1 + PSTEP1 },
-      atWar: { x: PX1, y: PY1 + PSTEPWAR }
+      atWar: { x: PX1, y: PY1 + PSTEPWAR },
     },
     elves: {
       3: { x: PX1, y: PY3 + PSTEP3 },
       2: { x: PX1, y: PY3 + PSTEP2 },
       1: { x: PX1, y: PY3 + PSTEP1 },
-      atWar: { x: PX1, y: PY3 + PSTEPWAR }
+      atWar: { x: PX1, y: PY3 + PSTEPWAR },
     },
     gondor: {
       3: { x: PX2, y: PY1 + PSTEP3 },
       2: { x: PX2, y: PY1 + PSTEP2 },
       1: { x: PX1, y: PY2 + PSTEP1 },
-      atWar: { x: PX1, y: PY2 + PSTEPWAR }
+      atWar: { x: PX1, y: PY2 + PSTEPWAR },
     },
     southrons: {
       3: { x: PX2, y: PY3 + PSTEP3 },
       2: { x: PX2, y: PY3 + PSTEP2 },
       1: { x: PX3, y: PY2 + PSTEP1 },
-      atWar: { x: PX3, y: PY2 + PSTEPWAR }
+      atWar: { x: PX3, y: PY2 + PSTEPWAR },
     },
     isengard: {
       3: { x: PX1, y: PY2 + PSTEP3 },
       2: { x: PX1, y: PY2 + PSTEP2 },
       1: { x: PX2, y: PY1 + PSTEP1 },
-      atWar: { x: PX2, y: PY1 + PSTEPWAR }
+      atWar: { x: PX2, y: PY1 + PSTEPWAR },
     },
     sauron: {
       3: { x: PX3, y: PY2 + PSTEP3 },
       2: { x: PX3, y: PY2 + PSTEP2 },
       1: { x: PX2, y: PY3 + PSTEP1 },
-      atWar: { x: PX2, y: PY3 + PSTEPWAR }
+      atWar: { x: PX2, y: PY3 + PSTEPWAR },
     },
     north: {
       3: { x: PX3, y: PY1 + PSTEP3 },
       2: { x: PX3, y: PY1 + PSTEP2 },
       1: { x: PX3, y: PY1 + PSTEP1 },
-      atWar: { x: PX3, y: PY1 + PSTEPWAR }
+      atWar: { x: PX3, y: PY1 + PSTEPWAR },
     },
     rohan: {
       3: { x: PX3, y: PY3 + PSTEP3 },
       2: { x: PX3, y: PY3 + PSTEP2 },
       1: { x: PX3, y: PY3 + PSTEP1 },
-      atWar: { x: PX3, y: PY3 + PSTEPWAR }
-    }
+      atWar: { x: PX3, y: PY3 + PSTEPWAR },
+    },
   };
 
   private getPoliticalMakerX(nationId: WotrNationId, step: WotrPoliticalStep) {

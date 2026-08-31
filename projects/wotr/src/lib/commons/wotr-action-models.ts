@@ -1,8 +1,8 @@
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrHuntTileId } from "../hunt/wotr-hunt-models";
-import { WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { WotrNationId } from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrAction {
   type: string;
@@ -10,18 +10,18 @@ export interface WotrAction {
 
 export function findAction<A extends WotrAction>(
   actions: WotrAction[],
-  ...actionTypes: A["type"][]
+  ...actionTypes: A['type'][]
 ): A | undefined {
-  const foundAction = actions.find(a => actionTypes.includes(a.type)) as A;
+  const foundAction = actions.find((a) => actionTypes.includes(a.type)) as A;
   if (foundAction) return foundAction;
   return undefined;
 }
 
 export function findActions<A extends WotrAction>(
   actions: WotrAction[],
-  ...actionTypes: A["type"][]
+  ...actionTypes: A['type'][]
 ): A[] {
-  return actions.filter(a => actionTypes.includes(a.type)) as A[];
+  return actions.filter((a) => actionTypes.includes(a.type)) as A[];
 }
 
 export interface WotrFragmentCreator<F> {
@@ -35,28 +35,34 @@ export interface WotrFragmentCreator<F> {
 export type WotrActionLogger<A, F = any> = (
   action: A,
   front: WotrFrontId,
-  f: WotrFragmentCreator<F>
+  f: WotrFragmentCreator<F>,
 ) => F[];
 export type WotrActionLoggerMap<A extends WotrAction> = {
-  [key in A["type"]]: WotrActionLogger<{ type: key } & A>;
+  [key in A['type']]: WotrActionLogger<{ type: key } & A>;
 };
 
-export type WotrEffectLogger<E, F = any> = (effect: E, f: WotrFragmentCreator<F>) => F[];
+export type WotrEffectLogger<E, F = any> = (
+  effect: E,
+  f: WotrFragmentCreator<F>,
+) => F[];
 export type WotrEffectLoggerMap<E extends WotrAction> = {
-  [key in E["type"]]: WotrEffectLogger<{ type: key } & E>;
+  [key in E['type']]: WotrEffectLogger<{ type: key } & E>;
 };
 
 export type WotrActionApplier<A extends WotrAction> = (
   action: A,
-  front: WotrFrontId
+  front: WotrFrontId,
 ) => void | Promise<void>;
 export type WotrActionApplierMap<A extends WotrAction> = {
-  [key in A["type"]]: WotrActionApplier<{ type: key } & A>;
+  [key in A['type']]: WotrActionApplier<{ type: key } & A>;
 };
 
-export type WotrStoryApplier<S extends WotrStory> = (story: S, front: WotrFrontId) => Promise<void>;
+export type WotrStoryApplier<S extends WotrStory> = (
+  story: S,
+  front: WotrFrontId,
+) => Promise<void>;
 export type WotrStoryApplierMap<S extends WotrStory> = {
-  [key in S["type"]]: WotrStoryApplier<{ type: key } & S>;
+  [key in S['type']]: WotrStoryApplier<{ type: key } & S>;
 };
 
 export interface WotrStory {

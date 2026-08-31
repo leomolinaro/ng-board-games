@@ -1,5 +1,5 @@
 export class BgAuthServiceMock {
   getUser() {
-    return { id: "me" };
+    return { id: 'me' };
   }
 }

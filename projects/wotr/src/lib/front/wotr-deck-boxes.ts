@@ -1,5 +1,5 @@
-import { Component, Signal, computed, input } from "@angular/core";
-import { WotrFront } from "./wotr-front-models";
+import { Component, Signal, computed, input } from '@angular/core';
+import { WotrFront } from './wotr-front-models';
 
 interface WotrDeckBoxNode {
   id: string;
@@ -19,7 +19,7 @@ const S_STR_X = S_CHA_X + XSTEP;
 const S_Y = 808;
 
 @Component({
-  selector: "[wotrDeckBoxes]",
+  selector: '[wotrDeckBoxes]',
   imports: [],
   template: `
     @for (deckBoxNode of deckBoxNodes(); track deckBoxNode.id) {
@@ -27,7 +27,8 @@ const S_Y = 808;
         class="card-counters"
         transform="scale(0.8, 0.8)"
         [attr.x]="deckBoxNode.svgX"
-        [attr.y]="deckBoxNode.svgY">
+        [attr.y]="deckBoxNode.svgY"
+      >
         {{ deckBoxNode.nCards }}
       </svg:text>
     }
@@ -37,8 +38,8 @@ const S_Y = 808;
       .card-counters {
         fill: white;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrDeckBoxes {
   freePeoples = input.required<WotrFront>();
@@ -46,10 +47,30 @@ export class WotrDeckBoxes {
 
   deckBoxNodes: Signal<WotrDeckBoxNode[]> = computed(() => {
     return [
-      { id: "fpCha", nCards: this.freePeoples().characterDeck.length, svgX: FP_CHA_X, svgY: FP_Y },
-      { id: "fpStr", nCards: this.freePeoples().strategyDeck.length, svgX: FP_STR_X, svgY: FP_Y },
-      { id: "sCha", nCards: this.shadow().characterDeck.length, svgX: S_CHA_X, svgY: S_Y },
-      { id: "sStr", nCards: this.shadow().strategyDeck.length, svgX: S_STR_X, svgY: S_Y }
+      {
+        id: 'fpCha',
+        nCards: this.freePeoples().characterDeck.length,
+        svgX: FP_CHA_X,
+        svgY: FP_Y,
+      },
+      {
+        id: 'fpStr',
+        nCards: this.freePeoples().strategyDeck.length,
+        svgX: FP_STR_X,
+        svgY: FP_Y,
+      },
+      {
+        id: 'sCha',
+        nCards: this.shadow().characterDeck.length,
+        svgX: S_CHA_X,
+        svgY: S_Y,
+      },
+      {
+        id: 'sStr',
+        nCards: this.shadow().strategyDeck.length,
+        svgX: S_STR_X,
+        svgY: S_Y,
+      },
     ];
   });
 }

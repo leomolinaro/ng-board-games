@@ -1,21 +1,24 @@
-import { Injectable, inject } from "@angular/core";
-import { WotrUiAbility } from "../ability/wotr-ability";
-import { WotrActionDie } from "../action-die/wotr-action-die-models";
-import { WotrAction } from "../commons/wotr-action-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGameQuery } from "../game/wotr-game-query";
-import { WotrUiChoice } from "../game/wotr-game-ui";
-import { WotrGameUiContext } from "../game/wotr-game-ui-context";
-import { WotrStory } from "../game/wotr-story-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrNazgulMovement, moveNazgul } from "../unit/wotr-unit-actions";
-import { WotrUnitHandler } from "../unit/wotr-unit-handler";
-import { WotrCharacterMovement, moveCharacters } from "./wotr-character-actions";
-import { WotrCharacterHandler } from "./wotr-character-handler";
-import { WotrCharacterId } from "./wotr-character-models";
-import { WotrCharacterModifiers } from "./wotr-character-modifiers";
-import { WotrCharacterRules } from "./wotr-character-rules";
-import { WotrCharacters } from "./wotr-characters";
+import { Injectable, inject } from '@angular/core';
+import { WotrUiAbility } from '../ability/wotr-ability';
+import { WotrActionDie } from '../action-die/wotr-action-die-models';
+import { WotrAction } from '../commons/wotr-action-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
+import { WotrUiChoice } from '../game/wotr-game-ui';
+import { WotrGameUiContext } from '../game/wotr-game-ui-context';
+import { WotrStory } from '../game/wotr-story-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrNazgulMovement, moveNazgul } from '../unit/wotr-unit-actions';
+import { WotrUnitHandler } from '../unit/wotr-unit-handler';
+import {
+  WotrCharacterMovement,
+  moveCharacters,
+} from './wotr-character-actions';
+import { WotrCharacterHandler } from './wotr-character-handler';
+import { WotrCharacterId } from './wotr-character-models';
+import { WotrCharacterModifiers } from './wotr-character-modifiers';
+import { WotrCharacterRules } from './wotr-character-rules';
+import { WotrCharacters } from './wotr-characters';
 
 export interface WotrCharacterMovementOptions {
   extraMovements?: number;
@@ -35,46 +38,63 @@ export class WotrCharacterUi {
   private q = inject(WotrGameQuery);
   private ui = inject(WotrGameUiContext);
 
-  bringCharacterIntoPlay(die: WotrActionDie, frontId: WotrFrontId): Promise<WotrAction[]> {
-    const availableCharacters = this.characterAbilities.availableCharacterCards(frontId);
+  bringCharacterIntoPlay(
+    die: WotrActionDie,
+    frontId: WotrFrontId,
+  ): Promise<WotrAction[]> {
+    const availableCharacters =
+      this.characterAbilities.availableCharacterCards(frontId);
     return this.ui.askChoice(
-      "Choose character to bring into play",
-      availableCharacters.map<WotrUiChoice>(characterCard => ({
+      'Choose character to bring into play',
+      availableCharacters.map<WotrUiChoice>((characterCard) => ({
         label: () => this.q.character(characterCard.characterId).name,
         isAvailable: () => characterCard.canBeBroughtIntoPlay(die),
-        actions: async () => [await characterCard.bringIntoPlay(this.ui)]
+        actions: async () => [await characterCard.bringIntoPlay(this.ui)],
       })),
-      frontId
+      frontId,
     );
   }
 
   awakeSovereign(die: WotrActionDie): Promise<WotrAction[]> {
-    const availableSovereigns = this.characterAbilities.availableSovereignCards();
+    const availableSovereigns =
+      this.characterAbilities.availableSovereignCards();
     return this.ui.askChoice(
-      "Choose sovereign to awake",
-      availableSovereigns.map<WotrUiChoice>(sovereignCard => ({
+      'Choose sovereign to awake',
+      availableSovereigns.map<WotrUiChoice>((sovereignCard) => ({
         label: () => this.q.sovereign(sovereignCard.sovereignId).name,
         isAvailable: () => sovereignCard.canBeAwakened(die),
-        actions: async () => [await sovereignCard.awake(this.ui)]
+        actions: async () => [await sovereignCard.awake(this.ui)],
       })),
-      "free-peoples"
+      'free-peoples',
     );
   }
 
-  async moveCompanions(options?: WotrCharacterMovementOptions): Promise<WotrAction[]> {
-    const movableCompanions = new Set(this.q.companions.filter(c => c.canMove()).map(c => c.id));
+  async moveCompanions(
+    options?: WotrCharacterMovementOptions,
+  ): Promise<WotrAction[]> {
+    const movableCompanions = new Set(
+      this.q.companions.filter((c) => c.canMove()).map((c) => c.id),
+    );
     const actions: WotrAction[] = [];
     let continueMoving = movableCompanions.size > 0;
     while (continueMoving) {
-      const action = await this.moveCharacterGroup(movableCompanions, "free-peoples", options);
-      this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
+      const action = await this.moveCharacterGroup(
+        movableCompanions,
+        'free-peoples',
+        options,
+      );
+      this.characterHandler.moveCharacters(
+        action.characters,
+        action.fromRegion,
+        action.toRegion,
+      );
       actions.push(action);
-      action.characters.forEach(c => movableCompanions.delete(c));
+      action.characters.forEach((c) => movableCompanions.delete(c));
       if (movableCompanions.size > 0 && !options?.onlyOneGroup) {
         continueMoving = await this.ui.askConfirm(
-          "Do you want to move more companions?",
-          "Move more",
-          "Stop moving"
+          'Do you want to move more companions?',
+          'Move more',
+          'Stop moving',
         );
       } else {
         continueMoving = false;
@@ -85,36 +105,49 @@ export class WotrCharacterUi {
 
   async moveNazgulAndMinions(): Promise<WotrAction[]> {
     const moveableNonFlyingMinions = new Set(
-      this.q.minions.filter(c => !c.flying && c.canMove()).map(c => c.id)
+      this.q.minions.filter((c) => !c.flying && c.canMove()).map((c) => c.id),
     );
-    const hasNazgul = this.characterRules.canMoveStandardNazgul() || this.q.theWitchKing.canMove();
+    const hasNazgul =
+      this.characterRules.canMoveStandardNazgul() ||
+      this.q.theWitchKing.canMove();
     const actions: WotrAction[] = [];
     let continueMoving = true;
     do {
       let moveNonFlyingMinions = moveableNonFlyingMinions.size > 0;
       if (moveNonFlyingMinions && hasNazgul) {
         moveNonFlyingMinions = await this.ui.askConfirm(
-          "Do you want to move non-flying minions or Nazgul?",
-          "Move non-flying minions",
-          "Move Nazgul"
+          'Do you want to move non-flying minions or Nazgul?',
+          'Move non-flying minions',
+          'Move Nazgul',
         );
       }
 
       if (moveNonFlyingMinions) {
-        const action = await this.moveCharacterGroup(moveableNonFlyingMinions, "shadow");
-        this.characterHandler.moveCharacters(action.characters, action.fromRegion, action.toRegion);
+        const action = await this.moveCharacterGroup(
+          moveableNonFlyingMinions,
+          'shadow',
+        );
+        this.characterHandler.moveCharacters(
+          action.characters,
+          action.fromRegion,
+          action.toRegion,
+        );
         actions.push(action);
-        action.characters.forEach(c => moveableNonFlyingMinions.delete(c));
+        action.characters.forEach((c) => moveableNonFlyingMinions.delete(c));
       } else {
         const moveNazgulActions = await this.moveNazgul();
         for (const action of moveNazgulActions) {
-          if (action.type === "nazgul-movement") {
-            this.unitHandler.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion);
+          if (action.type === 'nazgul-movement') {
+            this.unitHandler.moveNazgul(
+              action.nNazgul,
+              action.fromRegion,
+              action.toRegion,
+            );
           } else {
             this.characterHandler.moveCharacters(
               action.characters,
               action.fromRegion,
-              action.toRegion
+              action.toRegion,
             );
           }
           actions.push(action);
@@ -123,9 +156,9 @@ export class WotrCharacterUi {
 
       if (hasNazgul || moveableNonFlyingMinions.size > 0) {
         continueMoving = await this.ui.askConfirm(
-          "Do you want to move more minions?",
-          "Move more",
-          "Stop moving"
+          'Do you want to move more minions?',
+          'Move more',
+          'Stop moving',
         );
       } else {
         continueMoving = false;
@@ -135,9 +168,11 @@ export class WotrCharacterUi {
   }
 
   async moveAnyOrAllNazgul(): Promise<WotrAction[]> {
-    const hasNazgul = this.characterRules.canMoveStandardNazgul() || this.q.theWitchKing.canMove();
+    const hasNazgul =
+      this.characterRules.canMoveStandardNazgul() ||
+      this.q.theWitchKing.canMove();
     if (!hasNazgul) {
-      await this.ui.askContinue("No Nazgul to move");
+      await this.ui.askContinue('No Nazgul to move');
       return [];
     }
     const actions: WotrAction[] = [];
@@ -145,54 +180,60 @@ export class WotrCharacterUi {
     do {
       const moveNazgulActions = await this.moveNazgul();
       for (const action of moveNazgulActions) {
-        if (action.type === "nazgul-movement") {
-          this.unitHandler.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion);
+        if (action.type === 'nazgul-movement') {
+          this.unitHandler.moveNazgul(
+            action.nNazgul,
+            action.fromRegion,
+            action.toRegion,
+          );
         } else {
           this.characterHandler.moveCharacters(
             action.characters,
             action.fromRegion,
-            action.toRegion
+            action.toRegion,
           );
         }
         actions.push(action);
       }
       continueMoving = await this.ui.askConfirm(
-        "Do you want to move more Nazgul?",
-        "Move more",
-        "Stop moving"
+        'Do you want to move more Nazgul?',
+        'Move more',
+        'Stop moving',
       );
     } while (continueMoving);
     return actions;
   }
 
-  private async moveNazgul(): Promise<(WotrNazgulMovement | WotrCharacterMovement)[]> {
+  private async moveNazgul(): Promise<
+    (WotrNazgulMovement | WotrCharacterMovement)[]
+  > {
     const fromRegions = this.regionStore
       .regions()
-      .filter(region => this.characterRules.hasNazgul(region));
-    const movingNazgul = await this.ui.askRegionUnits("Select Nazgul to move", {
-      type: "moveNazgul",
-      regionIds: fromRegions.map(r => r.id)
+      .filter((region) => this.characterRules.hasNazgul(region));
+    const movingNazgul = await this.ui.askRegionUnits('Select Nazgul to move', {
+      type: 'moveNazgul',
+      regionIds: fromRegions.map((r) => r.id),
     });
     const fromRegion = movingNazgul.regionId;
-    const targetRegions = this.regionStore.regions().filter(region => {
+    const targetRegions = this.regionStore.regions().filter((region) => {
       if (
-        region.settlement === "stronghold" &&
-        region.controlledBy === "free-peoples" &&
+        region.settlement === 'stronghold' &&
+        region.controlledBy === 'free-peoples' &&
         !region.underSiegeArmy
       )
         return false;
       return true;
     });
     const targetRegion = await this.ui.askRegion(
-      "Select a region to move Nazgul",
-      targetRegions.map(r => r.id)
+      'Select a region to move Nazgul',
+      targetRegions.map((r) => r.id),
     );
     const actions: (WotrNazgulMovement | WotrCharacterMovement)[] = [];
     if (movingNazgul.nNazgul) {
       actions.push(moveNazgul(fromRegion, targetRegion, movingNazgul.nNazgul));
     }
-    if (movingNazgul.characters?.includes("the-witch-king")) {
-      actions.push(moveCharacters(fromRegion, targetRegion, "the-witch-king"));
+    if (movingNazgul.characters?.includes('the-witch-king')) {
+      actions.push(moveCharacters(fromRegion, targetRegion, 'the-witch-king'));
     }
     return actions;
   }
@@ -200,87 +241,104 @@ export class WotrCharacterUi {
   private async moveCharacterGroup(
     moveableCharacters: Set<WotrCharacterId>,
     frontId: WotrFrontId,
-    options?: WotrCharacterMovementOptions
+    options?: WotrCharacterMovementOptions,
   ): Promise<WotrCharacterMovement> {
-    const fromRegions = this.regionStore.regions().filter(region => {
-      if (region.army?.characters?.some(c => moveableCharacters.has(c))) return true;
-      if (region.freeUnits?.characters?.some(c => moveableCharacters.has(c))) return true;
+    const fromRegions = this.regionStore.regions().filter((region) => {
+      if (region.army?.characters?.some((c) => moveableCharacters.has(c)))
+        return true;
+      if (region.freeUnits?.characters?.some((c) => moveableCharacters.has(c)))
+        return true;
       return false;
     });
-    const movingUnits = await this.ui.askRegionUnits("Choose characters to move", {
-      type: "moveCharacters",
-      regionIds: fromRegions.map(r => r.id),
-      characters: Array.from(moveableCharacters),
-      requiredCharacters: []
-    });
+    const movingUnits = await this.ui.askRegionUnits(
+      'Choose characters to move',
+      {
+        type: 'moveCharacters',
+        regionIds: fromRegions.map((r) => r.id),
+        characters: Array.from(moveableCharacters),
+        requiredCharacters: [],
+      },
+    );
     const movingCharacters = movingUnits.characters!;
     const fromRegion = movingUnits.regionId;
     let totalMovements =
-      options?.asLevel ?? this.characterRules.characterGroupLevel(movingCharacters);
+      options?.asLevel ??
+      this.characterRules.characterGroupLevel(movingCharacters);
     totalMovements = this.characterModifiers.getCharacterMovementLevel(
       movingCharacters,
-      totalMovements
+      totalMovements,
     );
     if (options?.extraMovements) totalMovements += options.extraMovements;
     const targetRegions = this.regionStore.reachableRegions(
       fromRegion,
       totalMovements,
       (region, distance) =>
-        this.characterRules.characterCanEnterRegion(region, frontId, distance, options),
-      (region, distance) => this.characterRules.companionCanLeaveRegion(region, distance)
+        this.characterRules.characterCanEnterRegion(
+          region,
+          frontId,
+          distance,
+          options,
+        ),
+      (region, distance) =>
+        this.characterRules.companionCanLeaveRegion(region, distance),
     );
-    const toRegion = await this.ui.askRegion("Select a region to move companions", targetRegions);
+    const toRegion = await this.ui.askRegion(
+      'Select a region to move companions',
+      targetRegions,
+    );
 
     return moveCharacters(fromRegion, toRegion, ...movingCharacters);
   }
 
   bringCharacterIntoPlayChoice(die: WotrActionDie): WotrUiChoice {
     return {
-      label: () => "Bring character into play",
+      label: () => 'Bring character into play',
       isAvailable: (frontId: WotrFrontId) =>
         this.characterAbilities.canBringCharacterIntoPlay(die, frontId),
-      actions: (frontId: WotrFrontId) => this.bringCharacterIntoPlay(die, frontId)
+      actions: (frontId: WotrFrontId) =>
+        this.bringCharacterIntoPlay(die, frontId),
     };
   }
 
   awakeSovereignChoice(die: WotrActionDie): WotrUiChoice {
     return {
-      label: () => "Awake a sovereign",
-      isAvailable: (frontId: WotrFrontId) => this.characterAbilities.canAwakeSovereign(die),
-      actions: (frontId: WotrFrontId) => this.awakeSovereign(die)
+      label: () => 'Awake a sovereign',
+      isAvailable: (frontId: WotrFrontId) =>
+        this.characterAbilities.canAwakeSovereign(die),
+      actions: (frontId: WotrFrontId) => this.awakeSovereign(die),
     };
   }
 
   async activateCharacterAbility(
     ability: WotrUiAbility,
-    characterId: WotrCharacterId
+    characterId: WotrCharacterId,
   ): Promise<WotrStory> {
     const character = this.q.character(characterId);
     const confirm = await this.ui.askConfirm(
       `Do you want to activate ${character.name + "'s ability?"}`,
-      "Activate",
-      "Skip"
+      'Activate',
+      'Skip',
     );
     if (confirm) {
       return {
-        type: "character-effect",
+        type: 'character-effect',
         character: characterId,
-        actions: await ability.play(this.ui)
+        actions: await ability.play(this.ui),
       };
     } else {
-      return { type: "character-effect-skip", character: characterId };
+      return { type: 'character-effect-skip', character: characterId };
     }
   }
 
   moveCompanionsChoice: WotrUiChoice = {
-    label: () => "Move companions",
+    label: () => 'Move companions',
     isAvailable: () => this.characterRules.canMoveCompanions(),
-    actions: () => this.moveCompanions()
+    actions: () => this.moveCompanions(),
   };
 
   moveMinionsChoice: WotrUiChoice = {
-    label: () => "Move minions",
+    label: () => 'Move minions',
     isAvailable: () => this.characterRules.canMoveNazgulOrMinions(),
-    actions: () => this.moveNazgulAndMinions()
+    actions: () => this.moveNazgulAndMinions(),
   };
 }

@@ -1,6 +1,6 @@
-import { Component, input, model } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { TuiButton, TuiCheckbox } from "@taiga-ui/core";
+import { Component, input, model } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TuiButton, TuiCheckbox } from '@taiga-ui/core';
 
 export interface AgotCheckboxListItem {
   code: string;
@@ -8,7 +8,7 @@ export interface AgotCheckboxListItem {
 }
 
 @Component({
-  selector: "agot-checkbox-list",
+  selector: 'agot-checkbox-list',
   standalone: true,
   imports: [FormsModule, TuiButton, TuiCheckbox],
   template: `
@@ -19,7 +19,8 @@ export interface AgotCheckboxListItem {
           type="button"
           size="s"
           appearance="outline"
-          (click)="selectAll()">
+          (click)="selectAll()"
+        >
           All
         </button>
         <button
@@ -27,7 +28,8 @@ export interface AgotCheckboxListItem {
           type="button"
           size="s"
           appearance="outline"
-          (click)="deselectAll()">
+          (click)="deselectAll()"
+        >
           None
         </button>
       </div>
@@ -40,7 +42,8 @@ export interface AgotCheckboxListItem {
             tuiCheckbox
             type="checkbox"
             [ngModel]="isSelected(item.code)"
-            (ngModelChange)="toggleItem(item.code, $event)" />
+            (ngModelChange)="toggleItem(item.code, $event)"
+          />
           <span>{{ item.name }}</span>
         </label>
       }
@@ -73,7 +76,7 @@ export interface AgotCheckboxListItem {
       align-items: center;
       gap: 0.5rem;
     }
-  `
+  `,
 })
 export class AgotCheckboxList {
   items = input.required<AgotCheckboxListItem[]>();
@@ -86,13 +89,13 @@ export class AgotCheckboxList {
   public toggleItem(code: string, checked: boolean): void {
     const next = checked
       ? [...new Set([...this.selected(), code])]
-      : this.selected().filter(value => value !== code);
+      : this.selected().filter((value) => value !== code);
 
     this.selected.set(next);
   }
 
   public selectAll(): void {
-    const next = this.items().map(item => item.code);
+    const next = this.items().map((item) => item.code);
     this.selected.set(next);
   }
 

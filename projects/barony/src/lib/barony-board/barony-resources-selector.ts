@@ -1,14 +1,15 @@
-import { Component, OnChanges, input, output } from "@angular/core";
-import { BaronyResourceType } from "../barony-models";
+import { Component, OnChanges, input, output } from '@angular/core';
+import { BaronyResourceType } from '../barony-models';
 
 @Component({
-  selector: "barony-resources-selector",
+  selector: 'barony-resources-selector',
   template: `
     <div class="b-resources-selector-container">
       @for (resource of resources(); track resource) {
         <div
           class="b-resource-image"
-          (click)="onResourceClick(resource)">
+          (click)="onResourceClick(resource)"
+        >
           <img [src]="'assets/barony/resources/' + resource + '.png'" />
         </div>
       }
@@ -33,7 +34,7 @@ import { BaronyResourceType } from "../barony-models";
       }
     }
   `,
-  imports: []
+  imports: [],
 })
 export class BaronyResourcesSelector implements OnChanges {
   constructor() {}

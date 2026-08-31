@@ -1,15 +1,27 @@
-import { Component, computed, EventEmitter, inject, input, Output, Signal } from "@angular/core";
-import { WotrAssetsStore, WotrUnitImage } from "../assets/wotr-assets-store";
+import {
+  Component,
+  computed,
+  EventEmitter,
+  inject,
+  input,
+  Output,
+  Signal,
+} from '@angular/core';
+import { WotrAssetsStore, WotrUnitImage } from '../assets/wotr-assets-store';
 import {
   WotrCharacter,
   WotrCharacterId,
   WotrCompanionId,
-  WotrMinionId
-} from "../character/wotr-character-models";
-import { WotrMapService } from "../game/board/map/wotr-map.service";
-import { frontOfNation, WotrArmyUnitType, WotrNationId } from "../nation/wotr-nation-models";
-import { WotrArmy } from "../unit/wotr-unit-models";
-import { WotrRegion, WotrRegionId } from "./wotr-region-models";
+  WotrMinionId,
+} from '../character/wotr-character-models';
+import { WotrMapService } from '../game/board/map/wotr-map.service';
+import {
+  frontOfNation,
+  WotrArmyUnitType,
+  WotrNationId,
+} from '../nation/wotr-nation-models';
+import { WotrArmy } from '../unit/wotr-unit-models';
+import { WotrRegion, WotrRegionId } from './wotr-region-models';
 
 interface WotrRegionNode {
   id: WotrRegionId;
@@ -46,7 +58,7 @@ interface WotrArmyUnitNode {
   svgY: number;
 }
 
-export type WotrLeaderUnitType = "leader" | "character" | "nazgul";
+export type WotrLeaderUnitType = 'leader' | 'character' | 'nazgul';
 
 interface WotrLeaderUnitNode {
   unitType: WotrLeaderUnitType;
@@ -58,35 +70,39 @@ interface WotrLeaderUnitNode {
 }
 
 const SORTED_COMPANIONS: WotrCompanionId[] = [
-  "aragorn",
-  "gandalf-the-white",
-  "gandalf-the-grey",
-  "strider",
-  "legolas",
-  "gimli",
-  "boromir",
-  "meriadoc",
-  "peregrin"
+  'aragorn',
+  'gandalf-the-white',
+  'gandalf-the-grey',
+  'strider',
+  'legolas',
+  'gimli',
+  'boromir',
+  'meriadoc',
+  'peregrin',
 ];
-const SORTED_MINIONS: WotrMinionId[] = ["the-witch-king", "saruman", "the-mouth-of-sauron"];
+const SORTED_MINIONS: WotrMinionId[] = [
+  'the-witch-king',
+  'saruman',
+  'the-mouth-of-sauron',
+];
 
 const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
-  "erebor": [0, 0],
-  "grey-havens": [1, 0],
-  "rivendell": [2, 0],
-  "woodland-realm": [3, 0],
-  "lorien": [4, 0],
-  "helms-deep": [5, 0],
-  "minas-tirith": [6, 0],
-  "dol-amroth": [7, 0],
-  "mount-gundabad": [0, 1],
-  "moria": [1, 1],
-  "dol-guldur": [2, 1],
-  "orthanc": [3, 1],
-  "morannon": [4, 1],
-  "barad-dur": [5, 1],
-  "minas-morgul": [6, 1],
-  "umbar": [7, 1]
+  erebor: [0, 0],
+  'grey-havens': [1, 0],
+  rivendell: [2, 0],
+  'woodland-realm': [3, 0],
+  lorien: [4, 0],
+  'helms-deep': [5, 0],
+  'minas-tirith': [6, 0],
+  'dol-amroth': [7, 0],
+  'mount-gundabad': [0, 1],
+  moria: [1, 1],
+  'dol-guldur': [2, 1],
+  orthanc: [3, 1],
+  morannon: [4, 1],
+  'barad-dur': [5, 1],
+  'minas-morgul': [6, 1],
+  umbar: [7, 1],
 };
 
 function svgX(regionId: WotrRegionId) {
@@ -98,7 +114,7 @@ function svgY(regionId: WotrRegionId) {
 }
 
 @Component({
-  selector: "[wotrStronghold]",
+  selector: '[wotrStronghold]',
   template: `
     <svg:g>
       @if (regionNode().shadowFrame; as shadowFrame) {
@@ -107,13 +123,15 @@ function svgY(regionId: WotrRegionId) {
           [attr.y]="shadowFrame.svgY"
           width="45"
           height="45"
-          [attr.xlink:href]="shadowFrame.image"></svg:image>
+          [attr.xlink:href]="shadowFrame.image"
+        ></svg:image>
       }
       @if (regionNode().army; as army) {
         <svg:svg
           style="overflow: visible;"
           [attr.x]="army.svgX"
-          [attr.y]="army.svgY">
+          [attr.y]="army.svgY"
+        >
           @for (armyUnit of army.armyUnits; track $index) {
             <svg:image
               [attr.width]="armyUnit.image.width"
@@ -121,7 +139,8 @@ function svgY(regionId: WotrRegionId) {
               [attr.x]="armyUnit.svgX"
               [attr.y]="armyUnit.svgY"
               transform="scale(0.8, 0.8)"
-              [attr.xlink:href]="armyUnit.image.source" />
+              [attr.xlink:href]="armyUnit.image.source"
+            />
           }
           @for (leaderUnit of army.leaderUnits; track $index) {
             <svg:image
@@ -130,26 +149,33 @@ function svgY(regionId: WotrRegionId) {
               [attr.x]="leaderUnit.svgX"
               [attr.y]="leaderUnit.svgY"
               transform="scale(0.8, 0.8)"
-              [attr.xlink:href]="leaderUnit.image.source" />
+              [attr.xlink:href]="leaderUnit.image.source"
+            />
           }
           <svg:text
             class="wotr-army-counters"
             [attr.x]="army.counters.svgX"
             [attr.y]="army.counters.svgY"
-            transform="scale(0.8, 0.8)">
-            {{ army.counters.nRegulars }}/{{ army.counters.nElites }}/{{ army.counters.leadership }}
+            transform="scale(0.8, 0.8)"
+          >
+            {{ army.counters.nRegulars }}/{{ army.counters.nElites }}/{{
+              army.counters.leadership
+            }}
           </svg:text>
         </svg:svg>
       }
       <svg:path
         [class]="{
           'is-active': isValidRegion ? isValidRegion[regionNode().id] : false,
-          'is-disabled': isValidRegion ? !isValidRegion[regionNode().id] : false
+          'is-disabled': isValidRegion
+            ? !isValidRegion[regionNode().id]
+            : false,
         }"
         [attr.id]="'wotr-region-' + regionNode().id"
         class="wotr-region-path"
         [attr.d]="regionNode().path"
-        (click)="regionClick.next()"></svg:path>
+        (click)="regionClick.next()"
+      ></svg:path>
     </svg:g>
   `,
   styles: [
@@ -222,8 +248,8 @@ function svgY(regionId: WotrRegionId) {
       .wotr-army-counters {
         fill: white;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrStrongholdBox {
   private mapService = inject(WotrMapService);
@@ -243,7 +269,8 @@ export class WotrStrongholdBox {
     const region = this.region();
     const path = this.mapService.getStrongholdPath(region.id)!;
     const shadowFrame =
-      region.frontId === "free-peoples" && frontOfNation(region.nationId!) === "shadow";
+      region.frontId === 'free-peoples' &&
+      frontOfNation(region.nationId!) === 'shadow';
     const army = this.army();
     const node: WotrRegionNode = {
       id: region.id,
@@ -255,9 +282,9 @@ export class WotrStrongholdBox {
         ? {
             image: this.assets.strongholdShadowFrame(),
             svgX: svgX(region.id) - 22,
-            svgY: svgY(region.id) - 15
+            svgY: svgY(region.id) - 15,
           }
-        : null
+        : null,
     };
     this.setNodeCoordinates(region.id, node);
     return node;
@@ -306,10 +333,11 @@ export class WotrStrongholdBox {
     let leaderUnits: WotrLeaderUnitNode[];
     let leadership: number;
     switch (armyFront) {
-      case "free-peoples":
-        [leaderUnits, leadership] = this.regionToFreePeopleLeaderUnitNodes(army);
+      case 'free-peoples':
+        [leaderUnits, leadership] =
+          this.regionToFreePeopleLeaderUnitNodes(army);
         break;
-      case "shadow":
+      case 'shadow':
         [leaderUnits, leadership] = this.regionToShadowLeaderUnitNodes(army);
         break;
     }
@@ -320,63 +348,70 @@ export class WotrStrongholdBox {
         nElites,
         leadership,
         svgX: 0,
-        svgY: 0
+        svgY: 0,
       },
       armyUnits,
       leaderUnits,
       svgX: 0,
-      svgY: 0
+      svgY: 0,
     };
   }
 
-  private regionToArmyUnitNodes(army: WotrArmy): [WotrArmyUnitNode[], number, number] {
-    const nRegulars = army.regulars?.reduce((n, unit) => n + unit.quantity, 0) || 0;
+  private regionToArmyUnitNodes(
+    army: WotrArmy,
+  ): [WotrArmyUnitNode[], number, number] {
+    const nRegulars =
+      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) || 0;
     const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) || 0;
 
     const unitNodes: WotrArmyUnitNode[] = [];
     const nEliteNodes = army.elites ? Math.min(2, army.elites.length) : 0;
-    const nRegularNodes = army.regulars ? Math.min(2 - nEliteNodes, army.regulars.length) : 0;
+    const nRegularNodes = army.regulars
+      ? Math.min(2 - nEliteNodes, army.regulars.length)
+      : 0;
 
     for (let i = 0; i < nEliteNodes; i++) {
       const nationId = army.elites![i].nation;
       unitNodes.push({
-        unitType: "elite",
+        unitType: 'elite',
         nationId: nationId,
-        image: this.assets.armyUnitImage("elite", nationId),
+        image: this.assets.armyUnitImage('elite', nationId),
         svgX: 0,
-        svgY: 0
+        svgY: 0,
       });
     }
 
     for (let i = 0; i < nRegularNodes; i++) {
       const nationId = army.regulars![i].nation;
       unitNodes.push({
-        unitType: "regular",
+        unitType: 'regular',
         nationId: nationId,
-        image: this.assets.armyUnitImage("regular", nationId),
+        image: this.assets.armyUnitImage('regular', nationId),
         svgX: 0,
-        svgY: 0
+        svgY: 0,
       });
     }
 
     return [unitNodes, nRegulars, nElites];
   }
 
-  private regionToFreePeopleLeaderUnitNodes(army: WotrArmy): [WotrLeaderUnitNode[], number] {
+  private regionToFreePeopleLeaderUnitNodes(
+    army: WotrArmy,
+  ): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
     const leaders: (WotrCharacter | WotrNationId)[] = [];
 
     if (army.leaders) {
-      army.leaders.forEach(leader => {
+      army.leaders.forEach((leader) => {
         leadership += leader.quantity;
         leaders.push(leader.nation);
       });
     }
 
     if (army.characters) {
-      army.characters.forEach(characterId => {
+      army.characters.forEach((characterId) => {
         const character = this.characterById()[characterId];
-        if (character.front === "free-peoples") {
+        if (character.front === 'free-peoples') {
           leadership += character.leadership;
           leaders.push(character);
         }
@@ -384,63 +419,65 @@ export class WotrStrongholdBox {
     }
 
     leaders.sort((a, b) => this.compareFreePeopleLeaders(a, b));
-    const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>(leader => {
-      if (typeof leader === "string") {
+    const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
+      if (typeof leader === 'string') {
         return {
-          unitType: "leader",
+          unitType: 'leader',
           character: null,
           nationId: leader,
           image: this.assets.leaderImage(leader),
           svgX: 0,
-          svgY: 0
+          svgY: 0,
         };
       } else {
         return {
-          unitType: "character",
+          unitType: 'character',
           character: leader.id,
           nationId: null,
           image: this.assets.regionCharacterImage(leader),
           svgX: 0,
-          svgY: 0
+          svgY: 0,
         };
       }
     });
     return [unitNodes, leadership];
   }
 
-  private regionToShadowLeaderUnitNodes(army: WotrArmy): [WotrLeaderUnitNode[], number] {
+  private regionToShadowLeaderUnitNodes(
+    army: WotrArmy,
+  ): [WotrLeaderUnitNode[], number] {
     let leadership = 0;
-    const leaders: (WotrCharacter | "nazgul")[] = [];
+    const leaders: (WotrCharacter | 'nazgul')[] = [];
     if (army.nNazgul) {
       leadership += army.nNazgul;
-      leaders.push("nazgul");
+      leaders.push('nazgul');
     }
     if (army.characters) {
-      army.characters.forEach(characterId => {
+      army.characters.forEach((characterId) => {
         const character = this.characterById()[characterId];
         leadership += character.leadership;
         leaders.push(character);
       });
     }
     leaders.sort((a, b) => this.compareShadowLeaders(a, b));
-    const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>(leader => {
-      if (leader === "nazgul") {
+    const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
+      if (leader === 'nazgul') {
         return {
-          unitType: "nazgul",
+          unitType: 'nazgul',
           character: null,
           nationId: null,
           image: this.assets.nazgulImage(),
           svgX: 0,
-          svgY: 0
+          svgY: 0,
         };
       } else {
         return {
-          unitType: "character",
+          unitType: 'character',
           character: leader.id,
           nationId: null,
           image: this.assets.regionCharacterImage(leader),
           svgX: 0,
-          svgY: 0
+          svgY: 0,
         };
       }
     });
@@ -449,12 +486,12 @@ export class WotrStrongholdBox {
 
   private compareFreePeopleLeaders(
     a: WotrCharacter | WotrNationId,
-    b: WotrCharacter | WotrNationId
+    b: WotrCharacter | WotrNationId,
   ) {
-    if (typeof a === "string") {
-      return typeof b === "string" ? (a < b ? -1 : a === b ? 0 : 1) : 1;
+    if (typeof a === 'string') {
+      return typeof b === 'string' ? (a < b ? -1 : a === b ? 0 : 1) : 1;
     }
-    if (typeof b === "string") {
+    if (typeof b === 'string') {
       return -1;
     }
     for (const c of SORTED_COMPANIONS) {
@@ -468,11 +505,14 @@ export class WotrStrongholdBox {
     return 0;
   }
 
-  private compareShadowLeaders(a: WotrCharacter | "nazgul", b: WotrCharacter | "nazgul") {
-    if (a === "nazgul") {
-      return b === "nazgul" ? 0 : 1;
+  private compareShadowLeaders(
+    a: WotrCharacter | 'nazgul',
+    b: WotrCharacter | 'nazgul',
+  ) {
+    if (a === 'nazgul') {
+      return b === 'nazgul' ? 0 : 1;
     }
-    if (b === "nazgul") {
+    if (b === 'nazgul') {
       return -1;
     }
     for (const m of SORTED_MINIONS) {

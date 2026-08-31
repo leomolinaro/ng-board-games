@@ -1,16 +1,16 @@
-import { Injectable, inject } from "@angular/core";
-import { toObservable } from "@angular/core/rxjs-interop";
-import { uiEvent } from "@leobg/commons/utils";
-import { patchState, signalStore, withState } from "@ngrx/signals";
-import { first, skip } from "rxjs";
+import { Injectable, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { uiEvent } from '@leobg/commons/utils';
+import { patchState, signalStore, withState } from '@ngrx/signals';
+import { first, skip } from 'rxjs';
 import {
   BaronyAction,
   BaronyColor,
   BaronyLand,
   BaronyLandCoordinates,
-  BaronyResourceType
-} from "../barony-models";
-import { BaronyGameStore } from "./barony-game.store";
+  BaronyResourceType,
+} from '../barony-models';
+import { BaronyGameStore } from './barony-game.store';
 
 interface BaronyUiState {
   currentPlayer: BaronyColor | null;
@@ -23,7 +23,7 @@ interface BaronyUiState {
     resources: BaronyResourceType[];
   } | null;
   validActions: BaronyAction[] | null;
-  validBuildings: ("stronghold" | "village")[] | null;
+  validBuildings: ('stronghold' | 'village')[] | null;
   canPass: boolean;
   maxNumberOfKnights: number | null;
 }
@@ -33,7 +33,7 @@ export class BaronyUiStore extends signalStore(
   { protectedState: false },
   withState<BaronyUiState>({
     currentPlayer: null,
-    turnPlayer: "blue",
+    turnPlayer: 'blue',
     canCancel: false,
     message: null,
     validLands: null,
@@ -41,8 +41,8 @@ export class BaronyUiStore extends signalStore(
     validBuildings: null,
     validResources: null,
     canPass: false,
-    maxNumberOfKnights: null
-  })
+    maxNumberOfKnights: null,
+  }),
 ) {
   private game = inject(BaronyGameStore);
 
@@ -50,7 +50,7 @@ export class BaronyUiStore extends signalStore(
   landSelect = uiEvent<BaronyLand>();
   numberOfKnightsSelect = uiEvent<number>();
   passSelect = uiEvent<void>();
-  buildingSelect = uiEvent<"village" | "stronghold">();
+  buildingSelect = uiEvent<'village' | 'stronghold'>();
   resourceSelect = uiEvent<BaronyResourceType>();
   cancelSelect = uiEvent<void>();
 
@@ -65,7 +65,7 @@ export class BaronyUiStore extends signalStore(
     return this.game.select$(
       this.currentPlayerId$,
       this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
     );
   }
 
@@ -73,7 +73,7 @@ export class BaronyUiStore extends signalStore(
     return this.game.select$(
       this.turnPlayerId$,
       this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null)
+      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
     );
   }
 
@@ -81,14 +81,14 @@ export class BaronyUiStore extends signalStore(
     return this.game.select$(
       this.game.selectPlayerIds$(),
       this.game.selectPlayerMap$(),
-      (playerIds, playerMap) => playerIds.map(id => playerMap[id])
+      (playerIds, playerMap) => playerIds.map((id) => playerMap[id]),
     );
   }
 
   updateUi<
     S extends BaronyUiState & {
       [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;
-    }
+    },
   >(actionName: string, updater: (state: BaronyUiState) => S) {
     patchState(this, updater);
   }
@@ -102,21 +102,21 @@ export class BaronyUiStore extends signalStore(
       validActions: null,
       validBuildings: null,
       validLands: null,
-      validResources: null
+      validResources: null,
     };
   }
 
   setFirstActionUi(player: BaronyColor): Partial<BaronyUiState> {
     return {
       turnPlayer: player,
-      canCancel: false
+      canCancel: false,
     };
   }
 
   setCurrentPlayer(playerId: BaronyColor | null) {
-    this.updateUi("Set current player", s => ({
+    this.updateUi('Set current player', (s) => ({
       ...s,
-      currentPlayer: playerId
+      currentPlayer: playerId,
     }));
   }
 }

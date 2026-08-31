@@ -1,42 +1,52 @@
-import { JsonPipe } from "@angular/common";
-import { Component, effect, ElementRef, inject, viewChild } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { getStoryId, injectDialogContext } from "@leobg/commons";
-import { WotrAssetsStore } from "../assets/wotr-assets-store";
-import { WotrRemoteService } from "../remote/wotr-remote";
+import { JsonPipe } from '@angular/common';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  viewChild,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { getStoryId, injectDialogContext } from '@leobg/commons';
+import { WotrAssetsStore } from '../assets/wotr-assets-store';
+import { WotrRemoteService } from '../remote/wotr-remote';
 
 export type WotrStoriesDialogRef = { close: () => void };
 export interface WotrStoriesDialogData {
   gameId: string;
 }
 @Component({
-  selector: "wotr-region-dialog",
+  selector: 'wotr-region-dialog',
   imports: [JsonPipe],
   template: `
     <div
       class="box"
       role="region"
-      aria-label="Demo panel with toolbar and scrollable content">
+      aria-label="Demo panel with toolbar and scrollable content"
+    >
       @let s = stories();
       <div class="toolbar">
         <div class="title">Edit stories</div>
         <button
           class="btn"
           type="button"
-          (click)="delete()">
+          (click)="delete()"
+        >
           Delete
         </button>
         <button
           class="btn"
           type="button"
-          (click)="reload()">
+          (click)="reload()"
+        >
           Reload
         </button>
       </div>
       <div
         class="content"
-        #content>
-        @for (story of s; track story.time + "." + story.playerId) {
+        #content
+      >
+        @for (story of s; track story.time + '.' + story.playerId) {
           <p>{{ story | json }}</p>
         }
       </div>
@@ -44,7 +54,7 @@ export interface WotrStoriesDialogData {
   `,
   styles: [
     `
-      @use "wotr-variables" as wotr;
+      @use 'wotr-variables' as wotr;
 
       .box {
         width: var(--box-width);
@@ -70,7 +80,11 @@ export interface WotrStoriesDialogData {
         gap: 8px;
         padding: 10px 12px;
         // background: #151515;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.02)
+        );
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
@@ -111,8 +125,8 @@ export interface WotrStoriesDialogData {
         line-height: 1.5;
         scrollbar-gutter: stable both-edges; /* keeps layout stable during scroll */
       }
-    `
-  ]
+    `,
+  ],
 })
 export class WotrStoriesDialog {
   readonly context = injectDialogContext<WotrStoriesDialogData>();
@@ -120,7 +134,7 @@ export class WotrStoriesDialog {
   private assets = inject(WotrAssetsStore);
 
   private remote = inject(WotrRemoteService);
-  protected content = viewChild<ElementRef<HTMLDivElement>>("content");
+  protected content = viewChild<ElementRef<HTMLDivElement>>('content');
 
   private scrollToBottom = effect(() => {
     this.stories();
@@ -137,7 +151,10 @@ export class WotrStoriesDialog {
     const lastStory = this.stories()!.slice(-1)[0];
     if (lastStory) {
       this.remote
-        .deleteStory$(getStoryId(lastStory.time, lastStory.playerId), this.data.gameId)
+        .deleteStory$(
+          getStoryId(lastStory.time, lastStory.playerId),
+          this.data.gameId,
+        )
         .subscribe();
     }
   }

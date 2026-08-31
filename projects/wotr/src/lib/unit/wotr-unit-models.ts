@@ -1,8 +1,11 @@
-import { WotrCardId } from "../card/wotr-card-models";
-import { WotrCharacterId } from "../character/wotr-character-models";
-import { WotrFrontId } from "../front/wotr-front-models";
-import { WotrGenericUnitType, WotrNationId } from "../nation/wotr-nation-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrCardId } from '../card/wotr-card-models';
+import { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrFrontId } from '../front/wotr-front-models';
+import {
+  WotrGenericUnitType,
+  WotrNationId,
+} from '../nation/wotr-nation-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrUnits {
   regulars?: WotrNationUnit[];
@@ -56,47 +59,48 @@ export interface WotrForfeitLeadershipParams {
   cardId: WotrCardId;
   frontId: WotrFrontId;
   regionId: WotrRegionId;
-  only?: "nazgul" | "companions" | WotrCharacterId;
-  points: 1 | 2 | "oneOrMore" | "all";
+  only?: 'nazgul' | 'companions' | WotrCharacterId;
+  points: 1 | 2 | 'oneOrMore' | 'all';
 }
 
 export type WotrRegionUnitTypeMatch =
   | WotrRegionNationUnitTypeMatch
-  | "nazgul"
-  | "companion"
-  | "minion"
-  | "nazgulOrMinion";
-export type WotrRegionNationUnitTypeMatch = "regular" | "elite" | "leader" | "army";
+  | 'nazgul'
+  | 'companion'
+  | 'minion'
+  | 'nazgulOrMinion';
+export type WotrRegionNationUnitTypeMatch =
+  'regular' | 'elite' | 'leader' | 'army';
 
 export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
   switch (type) {
-    case "regular":
-      return "regular unit";
-    case "elite":
-      return "elite unit";
-    case "leader":
-      return "leader";
-    case "army":
-      return "army unit";
-    case "nazgul":
-      return "Nazgul";
-    case "companion":
-      return "Companion";
-    case "minion":
-      return "Minion";
-    case "nazgulOrMinion":
-      return "Nazgul or Minion";
+    case 'regular':
+      return 'regular unit';
+    case 'elite':
+      return 'elite unit';
+    case 'leader':
+      return 'leader';
+    case 'army':
+      return 'army unit';
+    case 'nazgul':
+      return 'Nazgul';
+    case 'companion':
+      return 'Companion';
+    case 'minion':
+      return 'Minion';
+    case 'nazgulOrMinion':
+      return 'Nazgul or Minion';
   }
 }
 
 export function regular(nation: WotrNationId, quantity: number = 1) {
-  return new WotrNationUnitComposer("regulars", nation, quantity);
+  return new WotrNationUnitComposer('regulars', nation, quantity);
 }
 export function elite(nation: WotrNationId, quantity: number = 1) {
-  return new WotrNationUnitComposer("elites", nation, quantity);
+  return new WotrNationUnitComposer('elites', nation, quantity);
 }
 export function leader(nation: WotrNationId, quantity: number = 1) {
-  return new WotrNationUnitComposer("leaders", nation, quantity);
+  return new WotrNationUnitComposer('leaders', nation, quantity);
 }
 export function nazgul(quantity: number = 1) {
   return new WotrNazgulComposer(quantity);
@@ -110,9 +114,9 @@ export interface WotrUnitComposer {
 }
 class WotrNationUnitComposer implements WotrUnitComposer {
   constructor(
-    private field: "regulars" | "elites" | "leaders",
+    private field: 'regulars' | 'elites' | 'leaders',
     private nationId: WotrNationId,
-    private quantity: number
+    private quantity: number,
   ) {}
   addTo(units: WotrUnits) {
     let slot = units[this.field];
@@ -140,7 +144,7 @@ class WotrCharacterComposer implements WotrUnitComposer {
     if (!units.characters) {
       units.characters = [];
     }
-    this.characters.forEach(m => units.characters!.push(m));
+    this.characters.forEach((m) => units.characters!.push(m));
     return units;
   }
 }

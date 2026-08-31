@@ -1,15 +1,20 @@
-import { Component, OnChanges, input, output } from "@angular/core";
-import { BaronyBuilding, BaronyPlayer } from "../barony-models";
+import { Component, OnChanges, input, output } from '@angular/core';
+import { BaronyBuilding, BaronyPlayer } from '../barony-models';
 
 @Component({
-  selector: "barony-buildings-selector",
+  selector: 'barony-buildings-selector',
   template: `
     <div class="b-buildings-selector-container">
       @for (building of buildings(); track building) {
         <div
           class="b-building-image"
-          (click)="onBuildingClick(building)">
-          <img [src]="'assets/barony/pawns/' + player().id + '-' + building + '.png'" />
+          (click)="onBuildingClick(building)"
+        >
+          <img
+            [src]="
+              'assets/barony/pawns/' + player().id + '-' + building + '.png'
+            "
+          />
         </div>
       }
     </div>
@@ -33,7 +38,7 @@ import { BaronyBuilding, BaronyPlayer } from "../barony-models";
       }
     }
   `,
-  imports: []
+  imports: [],
 })
 export class BaronyBuildingsSelector implements OnChanges {
   constructor() {}

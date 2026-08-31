@@ -16,14 +16,16 @@
             min="0"
             max="80"
             step="1"
-            [(ngModel)]="nCards" />
+            [(ngModel)]="nCards"
+          />
         </label>
         <label class="settings-checkbox">
           <input
             tuiCheckbox
             data-size="s"
             type="checkbox"
-            [(ngModel)]="duplicates" />
+            [(ngModel)]="duplicates"
+          />
           <span>Allow duplicates</span>
         </label>
       </div>
@@ -31,44 +33,51 @@
       <tui-accordion
         class="accordion"
         [closeOthers]="false"
-        size="m">
+        size="m"
+      >
         <button
           tuiAccordion
           tuiButton
-          type="button">
+          type="button"
+        >
           <span tuiTitle="s">Types</span>
         </button>
         <tui-expand>
           <agot-checkbox-list
             [items]="types()"
             [selected]="selectedTypeIds"
-            (selectedChange)="selectedTypeIds = $event" />
+            (selectedChange)="selectedTypeIds = $event"
+          />
         </tui-expand>
 
         <button
           tuiAccordion
           tuiButton
-          type="button">
+          type="button"
+        >
           <span tuiTitle="s">Factions</span>
         </button>
         <tui-expand>
           <agot-checkbox-list
             [items]="factions()"
             [selected]="selectedFactionIds"
-            (selectedChange)="selectedFactionIds = $any($event)" />
+            (selectedChange)="selectedFactionIds = $any($event)"
+          />
         </tui-expand>
 
         <button
           tuiAccordion
           tuiButton
-          type="button">
+          type="button"
+        >
           <span tuiTitle="s">Packs</span>
         </button>
         <tui-expand>
           <agot-checkbox-list
             [items]="packs()"
             [selected]="selectedPackIds"
-            (selectedChange)="selectedPackIds = $any($event)" />
+            (selectedChange)="selectedPackIds = $any($event)"
+          />
         </tui-expand>
       </tui-accordion>
     </div>
@@ -78,7 +87,8 @@
         tuiButton
         type="button"
         appearance="primary"
-        (click)="generate()">
+        (click)="generate()"
+      >
         Generate
       </button>
     </div>

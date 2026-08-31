@@ -1,8 +1,8 @@
-import { Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: "bgTimes",
-  standalone: true
+  name: 'bgTimes',
+  standalone: true,
 })
 export class BgTimesPipe implements PipeTransform {
   transform(value: number): any {
@@ -12,7 +12,7 @@ export class BgTimesPipe implements PipeTransform {
         while (n < value) {
           yield ++n;
         }
-      }
+      },
     };
     return iterable;
   }

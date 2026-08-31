@@ -1,4 +1,4 @@
-import { WotrAbility } from "../../ability/wotr-ability";
+import { WotrAbility } from '../../ability/wotr-ability';
 
 // Gollum - Slave of the Ring
 // As soon as there are no Companions in the Fellowship, immediately add Gollum to the Fellowship.

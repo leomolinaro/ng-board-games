@@ -1,14 +1,17 @@
-import { WotrCharacterId, WotrCompanionId } from "../character/wotr-character-models";
-import { WotrNationStore } from "../nation/wotr-nation-store";
-import { WotrRegion, WotrRegionId } from "../region/wotr-region-models";
-import { WotrRegionStore } from "../region/wotr-region-store";
-import { WotrFellowshipStore } from "./wotr-fellowship-store";
+import {
+  WotrCharacterId,
+  WotrCompanionId,
+} from '../character/wotr-character-models';
+import { WotrNationStore } from '../nation/wotr-nation-store';
+import { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
+import { WotrRegionStore } from '../region/wotr-region-store';
+import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export class WotrFellowshipQuery {
   constructor(
     private fellowshipStore: WotrFellowshipStore,
     private regionStore: WotrRegionStore,
-    private nationStore: WotrNationStore
+    private nationStore: WotrNationStore,
   ) {}
 
   corruption(): number {
@@ -44,14 +47,14 @@ export class WotrFellowshipQuery {
     const region = this.regionStore.region(this.regionId());
     if (!region.settlement) return false;
     const nation = this.nationStore.nation(region.nationId!);
-    return nation.front === "free-peoples";
+    return nation.front === 'free-peoples';
   }
 
   isInFreePeoplesCityOrStronghold() {
     const region = this.regionStore.region(this.regionId());
-    if (region.settlement === "city" || region.settlement === "stronghold") {
+    if (region.settlement === 'city' || region.settlement === 'stronghold') {
       const nation = this.nationStore.nation(region.nationId!);
-      return nation.front === "free-peoples";
+      return nation.front === 'free-peoples';
     } else {
       return false;
     }

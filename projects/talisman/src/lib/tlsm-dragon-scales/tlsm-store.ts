@@ -1,8 +1,8 @@
-import { computed, Injectable, signal } from "@angular/core";
+import { computed, Injectable, signal } from '@angular/core';
 
-export type TlsmDragonId = "varthrax" | "cadorus" | "grilipus";
+export type TlsmDragonId = 'varthrax' | 'cadorus' | 'grilipus';
 
-const DRAGON_IDS: TlsmDragonId[] = ["varthrax", "cadorus", "grilipus"];
+const DRAGON_IDS: TlsmDragonId[] = ['varthrax', 'cadorus', 'grilipus'];
 
 export interface Pool {
   scales: {
@@ -47,45 +47,45 @@ export interface IAppAction {
 
 export const INITIAL_STATE: IAppState = {
   varthrax: {
-    id: "varthrax",
-    name: "Varthrax",
+    id: 'varthrax',
+    name: 'Varthrax',
     crowned: false,
     nScales: 0,
-    imageSource: "../assets/talisman/varthrax-image.jpg",
-    tokenSource: "../assets/talisman/varthrax-token.png"
+    imageSource: '../assets/talisman/varthrax-image.jpg',
+    tokenSource: '../assets/talisman/varthrax-token.png',
   }, // varthrax
   cadorus: {
-    id: "cadorus",
-    name: "Cadorus",
+    id: 'cadorus',
+    name: 'Cadorus',
     crowned: false,
     nScales: 0,
-    imageSource: "../assets/talisman/cadorus-image.jpg",
-    tokenSource: "../assets/talisman/cadorus-token.png"
+    imageSource: '../assets/talisman/cadorus-image.jpg',
+    tokenSource: '../assets/talisman/cadorus-token.png',
   }, // cadorus
   grilipus: {
-    id: "grilipus",
-    name: "Grilipus",
+    id: 'grilipus',
+    name: 'Grilipus',
     crowned: false,
     nScales: 0,
-    imageSource: "../assets/talisman/grilipus-image.jpg",
-    tokenSource: "../assets/talisman/grilipus-token.png"
+    imageSource: '../assets/talisman/grilipus-image.jpg',
+    tokenSource: '../assets/talisman/grilipus-token.png',
   }, // grilipus
   pool: {
     scales: {
       varthrax: 40,
       cadorus: 40,
-      grilipus: 40
+      grilipus: 40,
     }, // dragonTokens
     strikes: 6,
     rages: 6,
-    slumbers: 8
+    slumbers: 8,
   }, // pool
-  players: ["Leo", "Nico", "Cesco", "Rob"],
+  players: ['Leo', 'Nico', 'Cesco', 'Rob'],
   settings: {
     scalesPerCrown: 5,
-    messagesLimit: 5
+    messagesLimit: 5,
   }, // settings
-  logs: []
+  logs: [],
 };
 
 @Injectable()
@@ -94,10 +94,14 @@ export class TlsmStore {
 
   public readonly players = computed(() => this.store().players);
   public readonly settings = computed(() => this.store().settings);
-  public readonly dragons = computed(() => DRAGON_IDS.map(id => this.store()[id]));
+  public readonly dragons = computed(() =>
+    DRAGON_IDS.map((id) => this.store()[id]),
+  );
   public readonly pool = computed(() => this.store().pool);
   public readonly logs = computed(() => this.store().logs);
-  public readonly king = computed(() => this.dragons().find(d => d.crowned) ?? null);
+  public readonly king = computed(
+    () => this.dragons().find((d) => d.crowned) ?? null,
+  );
 
   dragon(dragonId: TlsmDragonId) {
     return this.store()[dragonId];
@@ -108,41 +112,41 @@ export class TlsmStore {
   }
 
   discardScale(dragonId: TlsmDragonId) {
-    this.update("Discard scale", s => ({
+    this.update('Discard scale', (s) => ({
       ...s,
       [dragonId]: {
         ...s[dragonId],
-        nScales: s[dragonId].nScales - 1
-      }
+        nScales: s[dragonId].nScales - 1,
+      },
     }));
   }
 
   saveOpt(players: string[], scalesPerCrown: number) {
-    this.update("Save opt", s => ({
+    this.update('Save opt', (s) => ({
       ...s,
       players: players,
       settings: {
         ...s.settings,
-        scalesPerCrown: scalesPerCrown
-      }
+        scalesPerCrown: scalesPerCrown,
+      },
     }));
   }
 
   clearLog() {
-    this.update("Clear log", s => ({
+    this.update('Clear log', (s) => ({
       ...s,
-      logs: []
+      logs: [],
     }));
   }
 
   resetScale(dragonId: string) {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       switch (dragonId) {
-        case "varthrax":
+        case 'varthrax':
           return { ...s, varthrax: { ...s.varthrax, nScales: 0 } };
-        case "cadorus":
+        case 'cadorus':
           return { ...s, cadorus: { ...s.cadorus, nScales: 0 } };
-        case "grilipus":
+        case 'grilipus':
           return { ...s, grilipus: { ...s.grilipus, nScales: 0 } };
         default:
           return s;
@@ -151,13 +155,13 @@ export class TlsmStore {
   }
 
   crown(dragonId: string, crown: boolean) {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       switch (dragonId) {
-        case "varthrax":
+        case 'varthrax':
           return { ...s, varthrax: { ...s.varthrax, crowned: crown } };
-        case "cadorus":
+        case 'cadorus':
           return { ...s, cadorus: { ...s.cadorus, crowned: crown } };
-        case "grilipus":
+        case 'grilipus':
           return { ...s, grilipus: { ...s.grilipus, crowned: crown } };
         default:
           return s;
@@ -166,76 +170,76 @@ export class TlsmStore {
   }
 
   addLog(message: string, tokenSource: string) {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       return {
         ...s,
-        logs: [...s.logs, { message: message, tokenSource: tokenSource }]
+        logs: [...s.logs, { message: message, tokenSource: tokenSource }],
       };
     });
   }
 
   drawStrike() {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, strikes: s.pool.strikes - 1 } };
     });
   }
 
   drawRage() {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, rages: s.pool.rages - 1 } };
     });
   }
 
   drawSlumber() {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, slumbers: s.pool.slumbers - 1 } };
     });
   }
 
   drawScale(dragonId: string, resolved: boolean) {
-    this.update("Reset scale", s => {
+    this.update('Reset scale', (s) => {
       switch (dragonId) {
-        case "varthrax":
+        case 'varthrax':
           return {
             ...s,
             varthrax: {
               ...s.varthrax,
-              nScales: s.varthrax.nScales + (resolved ? 1 : 0)
+              nScales: s.varthrax.nScales + (resolved ? 1 : 0),
             },
             pool: {
               ...s.pool,
               scales: {
                 ...s.pool.scales,
-                varthrax: s.pool.scales.varthrax - 1
-              }
-            }
+                varthrax: s.pool.scales.varthrax - 1,
+              },
+            },
           };
-        case "cadorus":
+        case 'cadorus':
           return {
             ...s,
             cadorus: {
               ...s.cadorus,
-              nScales: s.cadorus.nScales + (resolved ? 1 : 0)
+              nScales: s.cadorus.nScales + (resolved ? 1 : 0),
             },
             pool: {
               ...s.pool,
-              scales: { ...s.pool.scales, cadorus: s.pool.scales.cadorus - 1 }
-            }
+              scales: { ...s.pool.scales, cadorus: s.pool.scales.cadorus - 1 },
+            },
           };
-        case "grilipus":
+        case 'grilipus':
           return {
             ...s,
             grilipus: {
               ...s.grilipus,
-              nScales: s.grilipus.nScales + (resolved ? 1 : 0)
+              nScales: s.grilipus.nScales + (resolved ? 1 : 0),
             },
             pool: {
               ...s.pool,
               scales: {
                 ...s.pool.scales,
-                grilipus: s.pool.scales.grilipus - 1
-              }
-            }
+                grilipus: s.pool.scales.grilipus - 1,
+              },
+            },
           };
       }
       return s;

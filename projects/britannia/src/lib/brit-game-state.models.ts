@@ -1,4 +1,4 @@
-import { BgUser } from "@leobg/commons";
+import { BgUser } from '@leobg/commons';
 import {
   BritAreaId,
   BritColor,
@@ -6,8 +6,8 @@ import {
   BritLeaderId,
   BritNationId,
   BritPhase,
-  BritPopulation
-} from "./brit-components.models";
+  BritPopulation,
+} from './brit-components.models';
 
 export interface BritGameState {
   gameId: string;
@@ -31,31 +31,31 @@ interface ABritAreaUnit {
 
 export interface BritAreaInfantry extends ABritAreaUnit {
   nationId: BritNationId;
-  type: "infantry";
+  type: 'infantry';
   quantity: number;
 }
 
 export interface BritAreaCavalry extends ABritAreaUnit {
   nationId: BritNationId;
-  type: "cavalry";
+  type: 'cavalry';
   quantity: number;
 }
 
 export interface BritAreaRomanFort extends ABritAreaUnit {
   nationId: BritNationId;
-  type: "roman-fort";
+  type: 'roman-fort';
   quantity: number;
 }
 
 export interface BritAreaSaxonBuhr extends ABritAreaUnit {
   nationId: BritNationId;
-  type: "saxon-buhr";
+  type: 'saxon-buhr';
   quantity: number;
 }
 
 export interface BritAreaLeader extends ABritAreaUnit {
   nationId: BritNationId;
-  type: "leader";
+  type: 'leader';
   leaderId: BritLeaderId;
 }
 
@@ -102,36 +102,36 @@ export interface BritRealPlayer extends ABritPlayer {
 export type BritPlayer = BritAiPlayer | BritRealPlayer;
 
 export interface BritLogSetup {
-  type: "setup";
+  type: 'setup';
 }
 export interface BritLogRound {
-  type: "round";
+  type: 'round';
   roundId: number;
 }
 export interface BritLogNationTurn {
-  type: "nation-turn";
+  type: 'nation-turn';
   nationId: BritNationId;
 }
 export interface BritLogPhase {
-  type: "phase";
+  type: 'phase';
   phase: BritPhase;
 }
 export interface BritLogPopulationMarkerSet {
-  type: "population-marker-set";
+  type: 'population-marker-set';
   populationMarker: number | null;
 }
 export interface BritLogInfantryPlacement {
-  type: "infantry-placement";
+  type: 'infantry-placement';
   landId: BritLandAreaId;
   quantity: number;
 }
 export interface BritLogInfantryReinforcement {
-  type: "infantry-reinforcement";
+  type: 'infantry-reinforcement';
   areaId: BritAreaId;
   quantity: number;
 }
 export interface BritLogArmyMovement {
-  type: "army-movement";
+  type: 'army-movement';
   units: BritAreaUnit[];
   toAreaId: BritAreaId;
 }

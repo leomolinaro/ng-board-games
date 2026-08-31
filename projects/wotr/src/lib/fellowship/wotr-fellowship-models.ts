@@ -1,8 +1,8 @@
-import { WotrCompanionId } from "../character/wotr-character-models";
-import { WotrRegionId } from "../region/wotr-region-models";
+import { WotrCompanionId } from '../character/wotr-character-models';
+import { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrFellowship {
-  status: "hidden" | "revealed";
+  status: 'hidden' | 'revealed';
   progress: number;
   corruption: number;
   companions: WotrCompanionId[];
@@ -15,7 +15,7 @@ export type WotrMordorTrack = 0 | 1 | 2 | 3 | 4 | 5;
 
 export class WotrRingDestroyed extends Error {
   constructor() {
-    super("The Ring has been destroyed! Free Peoples win!");
+    super('The Ring has been destroyed! Free Peoples win!');
   }
 }
 

@@ -1,10 +1,13 @@
-import { inject, Injectable } from "@angular/core";
-import { KomeSovereignId } from "../character/wotr-character-models";
-import { findAction } from "../commons/wotr-action-models";
-import { WotrShadowPlayer } from "../player/wotr-shadow-player";
-import { KomeCorruptionContinueAttempt, KomeCorruptionStopAttempt } from "./wotr-hunt-actions";
-import { WotrHuntTileId } from "./wotr-hunt-models";
-import { WotrHuntStore } from "./wotr-hunt-store";
+import { inject, Injectable } from '@angular/core';
+import { KomeSovereignId } from '../character/wotr-character-models';
+import { findAction } from '../commons/wotr-action-models';
+import { WotrShadowPlayer } from '../player/wotr-shadow-player';
+import {
+  KomeCorruptionContinueAttempt,
+  KomeCorruptionStopAttempt,
+} from './wotr-hunt-actions';
+import { WotrHuntTileId } from './wotr-hunt-models';
+import { WotrHuntStore } from './wotr-hunt-store';
 
 @Injectable()
 export class KomeCorruptionFlow {
@@ -15,20 +18,21 @@ export class KomeCorruptionFlow {
     let choosenTile: WotrHuntTileId | null = null;
     while (!choosenTile) {
       const story = await this.shadow.chooseCorruptionTile();
-      if (!("actions" in story)) throw new Error("Invalid story: no actions found");
+      if (!('actions' in story))
+        throw new Error('Invalid story: no actions found');
       const continueAttempt = findAction<KomeCorruptionContinueAttempt>(
         story.actions,
-        "corruption-continue-attempt"
+        'corruption-continue-attempt',
       );
       if (!continueAttempt) {
         const stopAttempt = findAction<KomeCorruptionStopAttempt>(
           story.actions,
-          "corruption-stop-attempt"
+          'corruption-stop-attempt',
         );
         if (stopAttempt) {
           choosenTile = stopAttempt.tile;
         } else {
-          throw new Error("Invalid story: no continue or stop attempt found");
+          throw new Error('Invalid story: no continue or stop attempt found');
         }
       }
     }

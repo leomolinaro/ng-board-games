@@ -1,23 +1,26 @@
-import { WotrAbility, WotrUiAbility } from "../../../ability/wotr-ability";
-import { WotrActionDie } from "../../../action-die/wotr-action-die-models";
-import { forfeitCombatCardById } from "../../../battle/wotr-battle-actions";
-import { WotrCombatRound } from "../../../battle/wotr-battle-models";
+import { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
+import { WotrActionDie } from '../../../action-die/wotr-action-die-models';
+import { forfeitCombatCardById } from '../../../battle/wotr-battle-actions';
+import { WotrCombatRound } from '../../../battle/wotr-battle-models';
 import {
   WotrBattleModifiers,
-  WotrBeforeCombatCardRevealing
-} from "../../../battle/wotr-battle-modifiers";
-import { WotrAction } from "../../../commons/wotr-action-models";
-import { WotrGameQuery } from "../../../game/wotr-game-query";
-import { WotrGameUiContext } from "../../../game/wotr-game-ui-context";
-import { WotrBeforeHuntRoll, WotrHuntModifiers } from "../../../hunt/wotr-hunt-modifiers";
-import { WotrShadowPlayer } from "../../../player/wotr-shadow-player";
-import { WotrRegionQuery } from "../../../region/wotr-region-query";
-import { playCharacter } from "../../wotr-character-actions";
+  WotrBeforeCombatCardRevealing,
+} from '../../../battle/wotr-battle-modifiers';
+import { WotrAction } from '../../../commons/wotr-action-models';
+import { WotrGameQuery } from '../../../game/wotr-game-query';
+import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
+import {
+  WotrBeforeHuntRoll,
+  WotrHuntModifiers,
+} from '../../../hunt/wotr-hunt-modifiers';
+import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
+import { WotrRegionQuery } from '../../../region/wotr-region-query';
+import { playCharacter } from '../../wotr-character-actions';
 import {
   activateCharacterAbility,
-  WotrPlayableCharacterCard
-} from "../wotr-playable-character-card";
-import { validChieftainPlayingDie } from "./commons";
+  WotrPlayableCharacterCard,
+} from '../wotr-playable-character-card';
+import { validChieftainPlayingDie } from './commons';
 
 // Ugluk - Chieftain of the Uruk-hai (Level 2, Leadership 1, +1 Ruler Special Action Die)
 // If Rohan is "At War", or the Fellowship is revealed, you may spend a Muster Action die result,
@@ -33,18 +36,18 @@ import { validChieftainPlayingDie } from "./commons";
 export class Ugluk extends WotrPlayableCharacterCard {
   constructor(
     private q: WotrGameQuery,
-    protected battleModifiers: WotrBattleModifiers
+    protected battleModifiers: WotrBattleModifiers,
   ) {
     super();
   }
 
-  public readonly characterId = "ugluk";
+  public readonly characterId = 'ugluk';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (
       (this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some(r => this.isValidRegion(r))
+      this.q.regions().some((r) => this.isValidRegion(r))
     ) {
       return true;
     }
@@ -52,10 +55,11 @@ export class Ugluk extends WotrPlayableCharacterCard {
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {
-    if (r.hasArmyUnitsOfNation("isengard")) return true;
+    if (r.hasArmyUnitsOfNation('isengard')) return true;
     if (this.q.fellowship.isRevealed()) {
       const fellowshipRegion = this.q.fellowship.region();
-      if (fellowshipRegion.id === r.id() || r.isAdjacentTo(fellowshipRegion.id)) return true;
+      if (fellowshipRegion.id === r.id() || r.isAdjacentTo(fellowshipRegion.id))
+        return true;
     }
     return false;
   }
@@ -63,32 +67,35 @@ export class Ugluk extends WotrPlayableCharacterCard {
   override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
     const validRegions = this.q
       .regions()
-      .filter(r => this.isValidRegion(r))
-      .map(r => r.id());
-    const region = await ui.askRegion("Select a region to bring Ugluk into play", validRegions);
-    return playCharacter(region, "ugluk");
+      .filter((r) => this.isValidRegion(r))
+      .map((r) => r.id());
+    const region = await ui.askRegion(
+      'Select a region to bring Ugluk into play',
+      validRegions,
+    );
+    return playCharacter(region, 'ugluk');
   }
 }
 
 export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
   constructor(
     private shadow: WotrShadowPlayer,
-    private battleModifiers: WotrBattleModifiers
+    private battleModifiers: WotrBattleModifiers,
   ) {}
   modifier = this.battleModifiers.beforeCombatCardRevealing;
 
   private round?: WotrCombatRound;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
-    if (!round.shadow.isCharacterActiveInBattle("ugluk")) return;
+    if (!round.shadow.isCharacterActiveInBattle('ugluk')) return;
     if (!round.shadow.combatCard) return;
     this.round = round;
-    if (!(await activateCharacterAbility(this, "ugluk", this.shadow))) return;
+    if (!(await activateCharacterAbility(this, 'ugluk', this.shadow))) return;
     // eslint-disable-next-line require-atomic-updates
     round.shadow.forfeitedCombatCard = true;
     round.shadow.combatModifiers.push(1);
     round.shadow.leaderModifiers.push(1);
-    if (round.shadow.combatCard.combatLabel !== "Desperate Battle") {
+    if (round.shadow.combatCard.combatLabel !== 'Desperate Battle') {
       round.freePeoples.combatModifiers.push(1);
       round.freePeoples.leaderModifiers.push(1);
     }
@@ -96,7 +103,7 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
 
   async play() {
     const combatCard = this.round?.shadow.combatCard;
-    if (!combatCard) throw new Error("No combat card to forfeit.");
+    if (!combatCard) throw new Error('No combat card to forfeit.');
     return [forfeitCombatCardById(combatCard.id)];
   }
 }
@@ -104,15 +111,18 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
 export class WeMarchDayAndNightAbility implements WotrAbility<WotrBeforeHuntRoll> {
   constructor(
     private q: WotrGameQuery,
-    private huntModifiers: WotrHuntModifiers
+    private huntModifiers: WotrHuntModifiers,
   ) {}
   modifier = this.huntModifiers.beforeHuntRoll;
-  handler: WotrBeforeHuntRoll = async modifiers => {
+  handler: WotrBeforeHuntRoll = async (modifiers) => {
     if (this.q.fellowship.isOnMordorTrack()) return;
     const fellowshipRegion = this.q.fellowship.region();
     const uglukRegionId = this.q.ugluk.region()!.id;
     const uglukRegion = this.q.region(uglukRegionId);
-    if (uglukRegion.id() === fellowshipRegion.id || uglukRegion.isAdjacentTo(fellowshipRegion.id)) {
+    if (
+      uglukRegion.id() === fellowshipRegion.id ||
+      uglukRegion.isAdjacentTo(fellowshipRegion.id)
+    ) {
       modifiers.reRollModifiers.push(1);
     }
   };

@@ -1,10 +1,16 @@
-import { inject, Injectable, Injector, Type } from "@angular/core";
-import { TuiDialogContext, TuiDialogOptions, TuiDialogService } from "@taiga-ui/core";
-import { injectContext, PolymorpheusComponent } from "@taiga-ui/polymorpheus";
-import { firstValueFrom } from "rxjs";
+import { inject, Injectable, Injector, Type } from '@angular/core';
+import {
+  TuiDialogContext,
+  TuiDialogOptions,
+  TuiDialogService,
+} from '@taiga-ui/core';
+import { injectContext, PolymorpheusComponent } from '@taiga-ui/polymorpheus';
+import { firstValueFrom } from 'rxjs';
 
 export class DialogContext<TData, TResult> {
-  constructor(private readonly tuiContext: TuiDialogContext<TResult | null, TData>) {}
+  constructor(
+    private readonly tuiContext: TuiDialogContext<TResult | null, TData>,
+  ) {}
 
   complete(result?: TResult | null) {
     this.tuiContext.completeWith(result ?? null);
@@ -15,7 +21,10 @@ export class DialogContext<TData, TResult> {
   }
 }
 
-export function injectDialogContext<TData = void, TResult = void>(): DialogContext<TData, TResult> {
+export function injectDialogContext<
+  TData = void,
+  TResult = void,
+>(): DialogContext<TData, TResult> {
   const tuiContext = injectContext<TuiDialogContext<TResult | null, TData>>();
   return new DialogContext<TData, TResult>(tuiContext);
 }
@@ -33,19 +42,19 @@ export type DialogOptions<TData> = Partial<TuiDialogOptions<TData>> & {
       });
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class BgDialogService {
   private dialogs = inject(TuiDialogService);
 
   open<TData, TResult>(
     component: Type<DialogComponent<TData, TResult>>,
-    options: DialogOptions<TData>
+    options: DialogOptions<TData>,
   ): Promise<TResult | null> {
     const { injector, ...dialogOptions } = options;
     const resultObs = this.dialogs.open<TResult | null>(
       new PolymorpheusComponent(component, injector),
-      dialogOptions
+      dialogOptions,
     );
     return firstValueFrom(resultObs, { defaultValue: null });
   }
