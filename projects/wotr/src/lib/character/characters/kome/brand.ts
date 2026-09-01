@@ -57,9 +57,11 @@ export class Brand extends KomeSovereignCard {
 }
 
 export class BrandCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
-  constructor(private unitModifiers: WotrUnitModifiers) {}
+  constructor(private unitModifiers: WotrUnitModifiers) {
+    this.modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  }
 
-  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  modifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
     constraints.excludedNationsForEliteUnits.add('north');
@@ -72,9 +74,11 @@ export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardReveal
     private battleModifiers: WotrBattleModifiers,
     private unitUtils: WotrUnitUtils,
     private shadow: WotrShadowPlayer,
-  ) {}
+  ) {
+    this.modifier = this.battleModifiers.afterCombatCardRevealing;
+  }
 
-  modifier = this.battleModifiers.afterCombatCardRevealing;
+  modifier;
   private round?: WotrCombatRound;
 
   handler: WotrAfterCombatCardRevealing = async (
@@ -91,9 +95,9 @@ export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardReveal
     if (!combatRound.defender.combatCard) return;
     this.round = combatRound;
     if (!(await activateCharacterAbility(this, 'brand', this.shadow))) return;
-     
+
     combatRound.freePeoples.cancelledCombatCard = true;
-     
+
     combatRound.shadow.forfeitedCombatCard = true;
   };
 

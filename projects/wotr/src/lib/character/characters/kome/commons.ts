@@ -24,9 +24,11 @@ export abstract class SovereingFateOf implements WotrAbility<WotrBeforeCombatRou
     private strongholdRegion: WotrRegionId,
     private battleModifiers: WotrBattleModifiers,
     private battleStore: WotrBattleStore,
-  ) {}
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatRound;
+  }
 
-  modifier = this.battleModifiers.beforeCombatRound;
+  modifier;
 
   private combatRound: WotrCombatRound | null = null;
 

@@ -81,8 +81,11 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
   constructor(
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
-  ) {}
-  modifier = this.battleModifiers.beforeCombatCardRevealing;
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatCardRevealing;
+  }
+
+  modifier;
 
   private round?: WotrCombatRound;
 
@@ -91,7 +94,7 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
     if (!round.shadow.combatCard) return;
     this.round = round;
     if (!(await activateCharacterAbility(this, 'ugluk', this.shadow))) return;
-     
+
     round.shadow.forfeitedCombatCard = true;
     round.shadow.combatModifiers.push(1);
     round.shadow.leaderModifiers.push(1);
@@ -112,8 +115,12 @@ export class WeMarchDayAndNightAbility implements WotrAbility<WotrBeforeHuntRoll
   constructor(
     private q: WotrGameQuery,
     private huntModifiers: WotrHuntModifiers,
-  ) {}
-  modifier = this.huntModifiers.beforeHuntRoll;
+  ) {
+    this.modifier = this.huntModifiers.beforeHuntRoll;
+  }
+
+  modifier;
+
   handler: WotrBeforeHuntRoll = async (modifiers) => {
     if (this.q.fellowship.isOnMordorTrack()) return;
     const fellowshipRegion = this.q.fellowship.region();

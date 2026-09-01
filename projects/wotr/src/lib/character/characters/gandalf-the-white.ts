@@ -78,9 +78,11 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
 }
 
 export class ShadowfaxAbility implements WotrAbility<WotrCharacterMovementLevelModifier> {
-  constructor(private characterModifiers: WotrCharacterModifiers) {}
+  constructor(private characterModifiers: WotrCharacterModifiers) {
+    this.modifier = this.characterModifiers.characterMovementLevelModifier;
+  }
 
-  public modifier = this.characterModifiers.characterMovementLevelModifier;
+  modifier;
 
   public handler: WotrCharacterMovementLevelModifier = (
     characters,
@@ -103,9 +105,11 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
     private freePeoples: WotrFreePeoplesPlayer,
     private battleModifiers: WotrBattleModifiers,
     private unitUtils: WotrUnitUtils,
-  ) {}
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatRound;
+  }
 
-  public modifier = this.battleModifiers.beforeCombatRound;
+  modifier;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
     if (!round.freePeoples.isCharacterActiveInBattle('gandalf-the-white'))

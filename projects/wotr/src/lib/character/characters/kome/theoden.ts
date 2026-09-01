@@ -51,9 +51,11 @@ export class Theoden extends KomeSovereignCard {
 }
 
 export class TheodenCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
-  constructor(private unitModifiers: WotrUnitModifiers) {}
+  constructor(private unitModifiers: WotrUnitModifiers) {
+    this.modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  }
 
-  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  modifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
     constraints.excludedNationsForEliteUnits.add('rohan');
@@ -65,9 +67,11 @@ export class MarkOfTheWhiteHand implements WotrAbility<WotrAfterRegionControlCha
   constructor(
     private regionModifiers: WotrRegionModifiers,
     private regionStore: WotrRegionStore,
-  ) {}
+  ) {
+    this.modifier = this.regionModifiers.afterRegionControlChange;
+  }
 
-  modifier = this.regionModifiers.afterRegionControlChange;
+  modifier;
 
   handler(regionId: WotrRegionId, newController: WotrFrontId): void {
     if (regionId === 'helms-deep') {

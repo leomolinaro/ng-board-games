@@ -50,9 +50,11 @@ export class Dain extends KomeSovereignCard {
 }
 
 export class DainCorruptedKing implements WotrAbility<WotrRecruitmentConstraintsModifier> {
-  constructor(private unitModifiers: WotrUnitModifiers) {}
+  constructor(private unitModifiers: WotrUnitModifiers) {
+    this.modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  }
 
-  modifier = this.unitModifiers.recruitmentConstraintsModifier;
+  modifier;
 
   handler(constraints: WotrRecruitmentConstraints): void {
     constraints.excludedRegionsForEliteUnits.add('erebor');

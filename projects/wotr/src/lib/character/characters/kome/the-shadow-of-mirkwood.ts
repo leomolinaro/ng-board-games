@@ -78,8 +78,11 @@ export class LordOfTheBats implements WotrUiAbility<WotrBeforeCombatCardRevealin
     private q: WotrGameQuery,
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
-  ) {}
-  modifier = this.battleModifiers.beforeCombatCardRevealing;
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatCardRevealing;
+  }
+
+  modifier;
 
   private round?: WotrCombatRound;
 
@@ -96,7 +99,7 @@ export class LordOfTheBats implements WotrUiAbility<WotrBeforeCombatCardRevealin
       ))
     )
       return;
-     
+
     round.shadow.forfeitedCombatCard = true;
     round.shadow.forfeitedLeadership = this.q.theShadowOfMirkwood.leadership;
     round.shadow.leaderModifiers.push(1);

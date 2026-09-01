@@ -18,9 +18,11 @@ export class StriderGuideAbility implements WotrAbility<WotrActionDieChoiceModif
   constructor(
     private fellowshipStore: WotrFellowshipStore,
     private actionDieModifiers: WotrActionDieModifiers,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.actionDieChoices;
+  }
 
-  public modifier = this.actionDieModifiers.actionDieChoices;
+  modifier;
 
   public handler: WotrActionDieChoiceModifier = ({ frontId }) => {
     if (frontId !== 'free-peoples') return [];

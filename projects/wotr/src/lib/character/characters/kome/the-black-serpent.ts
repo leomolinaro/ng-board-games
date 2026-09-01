@@ -72,8 +72,11 @@ export class RedWrath implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
     private battleUi: WotrBattleUi,
-  ) {}
-  modifier = this.battleModifiers.beforeCombatCardRevealing;
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatCardRevealing;
+  }
+
+  modifier;
 
   private round?: WotrCombatRound;
 
@@ -85,7 +88,7 @@ export class RedWrath implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
       !(await activateCharacterAbility(this, 'the-black-serpent', this.shadow))
     )
       return;
-     
+
     round.shadow.forfeitedCombatCard = true;
     round.shadow.combatModifiers.push(
       round.shadow.combatCard.combatLabel === 'Relentless Assault' ? 2 : 1,

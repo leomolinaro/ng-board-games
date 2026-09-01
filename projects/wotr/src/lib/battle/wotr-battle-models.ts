@@ -1,5 +1,6 @@
 import type { WotrCard, WotrCardId } from '../card/wotr-card-models';
 import type { WotrCharacterId } from '../character/wotr-character-models';
+import { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrPlayer } from '../player/wotr-player';
 import type { WotrRegionId } from '../region/wotr-region-models';
 import type { WotrArmy } from '../unit/wotr-unit-models';
@@ -25,9 +26,10 @@ export class WotrCombatFront {
     public isAttacker: boolean,
     public army: () => WotrArmy,
     public regionId: WotrRegionId,
-  ) {}
-
-  frontId = this.player.frontId;
+  ) {
+    this.frontId = this.player.frontId;
+  }
+  frontId: WotrFrontId;
 
   combatCard?: WotrCard;
   forfeitedCombatCard = false;

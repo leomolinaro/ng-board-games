@@ -34,9 +34,11 @@ export class HobbitGuideAbility implements WotrAbility<WotrHuntEffectChoiceModif
     private q: WotrGameQuery,
     private huntModifiers: WotrHuntModifiers,
     private ui: WotrGameUiContext,
-  ) {}
+  ) {
+    this.modifier = this.huntModifiers.huntEffectChoices;
+  }
 
-  modifier = this.huntModifiers.huntEffectChoices;
+  modifier;
 
   public handler: WotrHuntEffectChoiceModifier = (params) => {
     const character = this.q.character(this.characterId);
@@ -66,9 +68,11 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
     private characterModifiers: WotrCharacterModifiers,
     private freePeoples: WotrFreePeoplesPlayer,
     private ui: WotrGameUiContext,
-  ) {}
+  ) {
+    this.modifier = this.characterModifiers.beforeCharacterElimination;
+  }
 
-  modifier = this.characterModifiers.beforeCharacterElimination;
+  modifier;
 
   handler: WotrBeforeCharacterElimination = async (
     params: WotrCharacterEliminationParams,

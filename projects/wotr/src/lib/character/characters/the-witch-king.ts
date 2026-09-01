@@ -80,9 +80,11 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
     private shadow: WotrShadowPlayer,
     private battleModifiers: WotrBattleModifiers,
     private ui: WotrGameUiContext,
-  ) {}
+  ) {
+    this.modifier = this.battleModifiers.afterCombatRound;
+  }
 
-  public modifier = this.battleModifiers.afterCombatRound;
+  modifier;
 
   private lastCombatCard: WotrCard | null = null;
 

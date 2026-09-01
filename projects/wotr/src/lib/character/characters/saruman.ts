@@ -7,7 +7,10 @@ import type {
 import type { WotrAction } from '../../commons/wotr-action-models';
 import type { WotrFrontId } from '../../front/wotr-front-models';
 import type { WotrGameQuery } from '../../game/wotr-game-query';
-import type { WotrUiCharacterChoice, WotrUiChoice } from '../../game/wotr-game-ui';
+import type {
+  WotrUiCharacterChoice,
+  WotrUiChoice,
+} from '../../game/wotr-game-ui';
 import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
 import type { WotrRegionId } from '../../region/wotr-region-models';
 import { upgradeRegularUnit } from '../../unit/wotr-unit-actions';
@@ -50,9 +53,11 @@ export class TheVoiceOfSarumanAbility implements WotrAbility<WotrActionDieChoice
     private q: WotrGameQuery,
     private actionDieModifiers: WotrActionDieModifiers,
     private ui: WotrGameUiContext,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.actionDieChoices;
+  }
 
-  public modifier = this.actionDieModifiers.actionDieChoices;
+  modifier;
 
   public handler: WotrActionDieChoiceModifier = ({ dieResult, frontId }) => {
     if (dieResult !== 'muster' && dieResult !== 'muster-army') return [];
@@ -188,9 +193,11 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
 }
 
 export class ServantsOfTheWhiteHandAbility implements WotrAbility<WotrLeaderModifier> {
-  constructor(private unitModifiers: WotrUnitModifiers) {}
+  constructor(private unitModifiers: WotrUnitModifiers) {
+    this.modifier = this.unitModifiers.leaderModifier;
+  }
 
-  public modifier = this.unitModifiers.leaderModifier;
+  modifier;
 
   public handler: WotrLeaderModifier = (type, nationId) =>
     type === 'elite' && nationId === 'isengard';

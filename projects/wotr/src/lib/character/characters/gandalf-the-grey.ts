@@ -3,11 +3,8 @@ import type {
   WotrActionDieModifiers,
   WotrAfterActionDieCardResolution,
 } from '../../action-die/wotr-action-die-modifiers';
-import type {
-  WotrCardId} from '../../card/wotr-card-models';
-import {
-  isFreePeopleCharacterCard
-} from '../../card/wotr-card-models';
+import type { WotrCardId } from '../../card/wotr-card-models';
+import { isFreePeopleCharacterCard } from '../../card/wotr-card-models';
 import type { WotrAction } from '../../commons/wotr-action-models';
 import type { WotrGameQuery } from '../../game/wotr-game-query';
 import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
@@ -26,9 +23,11 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
     private freePeoples: WotrFreePeoplesPlayer,
     private q: WotrGameQuery,
     private ui: WotrGameUiContext,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.afterActionDieCardResolution;
+  }
 
-  modifier = this.actionDieModifiers.afterActionDieCardResolution;
+  modifier;
 
   private playedCard: WotrCardId | null = null;
 

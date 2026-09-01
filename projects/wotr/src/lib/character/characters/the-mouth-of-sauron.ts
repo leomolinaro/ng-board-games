@@ -62,9 +62,11 @@ export class MessengerOfTheDarkTowerAbility implements WotrAbility<WotrActionDie
     private q: WotrGameQuery,
     private ui: WotrGameUiContext,
     private actionDieModifiers: WotrActionDieModifiers,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.actionDieChoices;
+  }
 
-  public modifier = this.actionDieModifiers.actionDieChoices;
+  modifier;
   public handler: WotrActionDieChoiceModifier = ({
     dieResult,
     die,
@@ -87,9 +89,11 @@ export class MessengerOfTheDarkTowerSetUsedAbility implements WotrAbility<WotrAf
   constructor(
     private q: WotrGameQuery,
     private actionDieModifiers: WotrActionDieModifiers,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.afterActionDieResolution;
+  }
 
-  public modifier = this.actionDieModifiers.afterActionDieResolution;
+  modifier;
   public handler: WotrAfterActionDieResolution = async (
     story: WotrDieStory,
     frontId: WotrFrontId,

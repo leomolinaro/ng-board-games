@@ -22,9 +22,11 @@ export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRoun
     private characterId: WotrCharacterId,
     private q: WotrGameQuery,
     private battleModifiers: WotrBattleModifiers,
-  ) {}
+  ) {
+    this.modifier = this.battleModifiers.beforeCombatRound;
+  }
 
-  public modifier = this.battleModifiers.beforeCombatRound;
+  modifier;
 
   public handler = async (round: WotrCombatRound): Promise<void> => {
     const front = this.q.character(this.characterId).frontId;
@@ -45,11 +47,13 @@ export abstract class AdvanceAnyDieAbility implements WotrAbility<WotrActionDieC
     private nationId: WotrNationId,
     private q: WotrGameQuery,
     public actionDieModifiers: WotrActionDieModifiers,
-  ) {}
+  ) {
+    this.modifier = this.actionDieModifiers.actionDieChoices;
+  }
 
   protected abstract isValidRegion(region: WotrRegion): boolean;
 
-  public modifier = this.actionDieModifiers.actionDieChoices;
+  modifier;
 
   public handler: WotrActionDieChoiceModifier = ({ frontId }) => {
     if (frontId !== 'free-peoples') return [];
@@ -74,9 +78,11 @@ class AdvanceAnyDieChoice implements WotrUiCharacterChoice {
     private abilityName: string,
     private nationId: WotrNationId,
     private q: WotrGameQuery,
-  ) {}
+  ) {
+    this.character = this.characterId;
+  }
 
-  character = this.characterId;
+  character;
 
   label(): string {
     return this.abilityName;
