@@ -10,26 +10,26 @@
   </div>
   <div class="b-board-widgets-layer">
     @if (message()) { @let p = turnPlayer();
-    <div [class]="'b-board-instructions-widget' + (p ? ' is-' + p.id : '')">
+    <div [class]="'b-board-instructions-widget' + (p ? ' is-' + p : '')">
       <div class="b-board-instructions">{{ message() }}</div>
-      @if (maxNumberOfKnights()) {
+      @if (maxNumberOfKnights(); as maxKnights) {
       <barony-knights-selector
         [(number)]="numberOfKnights"
-        min="1"
-        [max]="maxNumberOfKnights()"
+        [min]="1"
+        [max]="maxKnights"
         (confirm)="onKnightsConfirm()"
       >
       </barony-knights-selector>
-      } @if (validBuildings()) {
+      } @if (validBuildings(); as buildings) {
       <barony-buildings-selector
-        [buildings]="validBuildings()"
-        [player]="currentPlayer()"
+        [buildings]="buildings"
+        [player]="currentPlayer()!"
         (buildingClick)="onBuildingSelect($event)"
       >
       </barony-buildings-selector>
-      } @if (validResources()) {
+      } @if (validResources(); as resources) {
       <barony-resources-selector
-        [resources]="validResources()?.resources"
+        [resources]="resources?.resources"
         (resourceClick)="onResourceSelect($event)"
       >
       </barony-resources-selector>
@@ -53,7 +53,7 @@
         class="b-board-player-widget"
         (selectPlayer)="onPlayerSelect(player)"
         [player]="player"
-        [currentPlayer]="player === currentPlayer()"
+        [currentPlayer]="player.id === currentPlayer()"
       >
       </barony-player-area>
       }

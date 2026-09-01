@@ -5,7 +5,11 @@ import { TuiSheetDialogService } from '@taiga-ui/addon-mobile';
 import { TuiIcon } from '@taiga-ui/core';
 import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import type { Observable } from 'rxjs';
-import type { BritAreaId, BritNationId } from '../brit-components.models';
+import type {
+  BritAreaId,
+  BritColor,
+  BritNationId,
+} from '../brit-components.models';
 import type {
   BritAreaLeader,
   BritAreaState,
@@ -42,8 +46,8 @@ export class BritBoardComponent {
     input.required<Record<BritNationId, BritNationState>>();
   readonly players = input.required<BritPlayer[]>();
   readonly logs = input.required<BritLog[]>();
-  readonly turnPlayer = input<BritPlayer | null>(null);
-  readonly currentPlayer = input<BritPlayer | null>(null);
+  readonly turnPlayer = input<BritColor>();
+  readonly currentPlayer = input<BritColor | null>(null);
   // @Input () otherPlayers!: BaronyPlayer[];
   readonly message = input<string | null>(null);
   readonly validAreas = input<BritAreaId[] | null>(null);
@@ -97,11 +101,11 @@ export class BritBoardComponent {
     null;
 
   onPlayerNationClick(nationId: BritNationId) {
-    const nationState = this.nationStates()[nationId];
+    const nationState = this.nationStates()?.[nationId];
     this.lastBottomSheet = 'nation-card';
     this.sheets
       .open<void>(new PolymorpheusComponent(BritNationCardSheet), {
-        data: [nationId, nationState],
+        data: [nationId, nationState] satisfies [BritNationId, BritNationState],
       })
       .subscribe();
   }

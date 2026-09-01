@@ -1,6 +1,5 @@
-import { AsyncPipe } from '@angular/common';
-import type { OnDestroy, OnInit} from '@angular/core';
-import { Component, ViewChild, inject } from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import type { BgUser } from '@leobg/commons';
 import { BgAuthService } from '@leobg/commons';
@@ -12,18 +11,14 @@ import {
 import { forkJoin, tap } from 'rxjs';
 import { BritBoardComponent } from '../brit-board/brit-board';
 import type { BritAreaId } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type {
   ABritPlayer,
   BritAreaUnit,
   BritPlayer,
 } from '../brit-game-state.models';
-import type {
-  BritPlayerDoc,
-  BritStoryDoc} from '../brit-remote.service';
-import {
-  BritRemoteService
-} from '../brit-remote.service';
+import type { BritPlayerDoc, BritStoryDoc } from '../brit-remote.service';
+import { BritRemoteService } from '../brit-remote.service';
 import { BritGameService } from './brit-game.service';
 import { BritGameStore } from './brit-game.store';
 import { BritPlayerAiService } from './brit-player-ai.service';
@@ -32,43 +27,30 @@ import { BritUiStore } from './brit-ui.store';
 
 @Component({
   selector: 'brit-game',
+  imports: [BritBoardComponent],
   template: `
     <brit-board
-      [areaStates]="areaStates$ | async"
-      [nationStates]="nationStates$ | async"
-      [players]="players$ | async"
-      [logs]="logs$ | async"
-      [message]="message$ | async"
-      [turnPlayer]="turnPlayer$ | async"
-      [currentPlayer]="currentPlayer$ | async"
-      [validAreas]="validAreas$ | async"
-      [validUnits]="validUnits$ | async"
-      [selectedUnits]="selectedUnits$ | async"
-      [canPass]="canPass$ | async"
-      [canConfirm]="canConfirm$ | async"
-      [canCancel]="canCancel$ | async"
+      [areaStates]="game.areas()"
+      [nationStates]="game.nations()"
+      [players]="game.playerList()"
+      [logs]="game.logs()"
+      [message]="ui.message()"
+      [turnPlayer]="ui.turnPlayer()"
+      [currentPlayer]="ui.currentPlayer()"
+      [validAreas]="ui.validAreas()"
+      [validUnits]="ui.validUnits()"
+      [selectedUnits]="ui.selectedUnits()"
+      [canPass]="ui.canPass()"
+      [canConfirm]="ui.canConfirm()"
+      [canCancel]="ui.canCancel()"
       (passClick)="onPassClick()"
       (confirmClick)="onConfirmClick()"
-      (cancelClick)="onCancelClick()"
+      (cancelClick)="ui.cancel.emit()"
       (areaClick)="onAreaClick($event)"
       (unitClick)="onUnitClick($event)"
       (selectedUnitsChange)="onSelectedUnitsChange($event)"
-    >
-    </brit-board>
-    <!-- [validLands]="validLands$ | async"
-    [validActions]="validActions$ | async"
-    [validBuildings]="validBuildings$ | async"
-    [validResources]="validResources$ | async"
-    [maxNumberOfKnights]="maxNumberOfKnights$ | async"
-    [endGame]="endGame$ | async"
-    (playerSelect)="onPlayerSelect ($event)"
-    (buildingSelect)="onBuildingSelect ($event)"
-    (landTileClick)="onLandTileClick ($event)"
-    (actionClick)="onActionClick ($event)"
-    (knightsConfirm)="onKnightsConfirm ($event)"
-    (resourceSelect)="onResourceSelect ($event)" -->
+    />
   `,
-  styles: [''],
   providers: [
     BritGameStore,
     BritUiStore,
@@ -76,41 +58,18 @@ import { BritUiStore } from './brit-ui.store';
     BritPlayerLocalService,
     BritGameService,
   ],
-  imports: [BritBoardComponent, AsyncPipe],
 })
 @UntilDestroy
 export class BritGamePage implements OnInit, OnDestroy {
-  private components = inject(BritComponentsService);
-  private game = inject(BritGameStore);
-  private ui = inject(BritUiStore);
+  private components = inject(BritComponents);
+  protected game = inject(BritGameStore);
+  protected ui = inject(BritUiStore);
   private remote = inject(BritRemoteService);
   private route = inject(ActivatedRoute);
   private authService = inject(BgAuthService);
   private gameService = inject(BritGameService);
 
   private gameId: string = this.route.snapshot.paramMap.get('gameId')!;
-
-  areaStates$ = this.game.selectAreas$();
-  nationStates$ = this.game.selectNations$();
-  players$ = this.game.selectPlayers$();
-  logs$ = this.game.selectLogs$();
-  // endGame$ = this.game.selectEndGame$ ();
-
-  turnPlayer$ = this.ui.selectTurnPlayer$();
-  currentPlayer$ = this.ui.selectCurrentPlayer$();
-  // players$ = this.ui.selectPlayers$ ();
-  message$ = this.ui.selectMessage$();
-  validAreas$ = this.ui.selectValidAreas$();
-  validUnits$ = this.ui.selectValidUnits$();
-  selectedUnits$ = this.ui.selectSelectedUnits$();
-  // validActions$ = this.ui.selectValidActions$ ();
-  // validBuildings$ = this.ui.selectValidBuildings$ ();
-  // validResources$ = this.ui.selectValidResources$ ();
-  canPass$ = this.ui.selectCanPass$();
-  canConfirm$ = this.ui.selectCanContinue$();
-  canCancel$ = this.ui.selectCanCancel$();
-
-  @ViewChild(BritBoardComponent) boardComponent!: BritBoardComponent;
 
   @SingleEvent()
   ngOnInit() {
@@ -190,9 +149,6 @@ export class BritGamePage implements OnInit, OnDestroy {
   }
   onConfirmClick() {
     this.ui.confirmChange();
-  }
-  onCancelClick() {
-    this.ui.cancelChange();
   }
   // onKnightsConfirm (numberOfKnights: number) { this.ui.numberOfKnightsChange (numberOfKnights); }
   // onResourceSelect (resource: BaronyResourceType) { this.ui.resourceChange (resource); }

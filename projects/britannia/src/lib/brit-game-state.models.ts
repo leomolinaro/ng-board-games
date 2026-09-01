@@ -19,6 +19,7 @@ export interface BritGameState {
   areas: Record<BritAreaId, BritAreaState>;
   nations: Record<BritNationId, BritNationState>;
   logs: BritLog[];
+  backupState: BritGameState | null;
 }
 
 export type BritAreaUnitId = string;

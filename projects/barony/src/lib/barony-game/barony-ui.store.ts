@@ -61,30 +61,6 @@ export class BaronyUiStore extends signalStore(
     return this.currentPlayerId$.pipe(skip(1), first());
   }
 
-  selectCurrentPlayer$() {
-    return this.game.select$(
-      this.currentPlayerId$,
-      this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
-    );
-  }
-
-  selectTurnPlayer$() {
-    return this.game.select$(
-      this.turnPlayerId$,
-      this.game.selectPlayerMap$(),
-      (playerId, playersMap) => (playerId ? playersMap[playerId] : null),
-    );
-  }
-
-  selectPlayers$() {
-    return this.game.select$(
-      this.game.selectPlayerIds$(),
-      this.game.selectPlayerMap$(),
-      (playerIds, playerMap) => playerIds.map((id) => playerMap[id]),
-    );
-  }
-
   updateUi<
     S extends BaronyUiState & {
       [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;

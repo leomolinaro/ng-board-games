@@ -14,9 +14,7 @@
   </div>
   <div class="brit-board-widgets-layer">
     @if (message()) { @let tp = turnPlayer();
-    <div
-      [class]="'brit-board-instructions-widget' + (tp ? ' is-' + tp.id : '')"
-    >
+    <div [class]="'brit-board-instructions-widget' + (tp ? ' is-' + tp : '')">
       <div class="brit-board-instructions">{{ message() }}</div>
     </div>
     }
@@ -38,7 +36,7 @@
       <brit-player
         class="brit-board-player-widget"
         [player]="player"
-        [currentPlayer]="player === currentPlayer()"
+        [currentPlayer]="player.id"
         (selectPlayer)="onPlayerSelect(player)"
         (nationClick)="onPlayerNationClick($event)"
       >

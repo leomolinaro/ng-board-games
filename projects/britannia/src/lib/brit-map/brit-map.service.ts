@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { Observable} from 'rxjs';
+import type { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type {
@@ -9,7 +9,7 @@ import type {
   BritPopulation,
   BritRoundId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 
 export type BritAreaSlots = Record<BritAreaId, Record<number, BritMapPoint[]>>;
 
@@ -34,7 +34,7 @@ const BRIT_POPULATION_START_X: Record<BritPopulation, number> = {
 })
 export class BritMapService {
   private http = inject(HttpClient);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   private svgLoaded = false;
   private areaPaths!: Record<BritAreaId, string>;

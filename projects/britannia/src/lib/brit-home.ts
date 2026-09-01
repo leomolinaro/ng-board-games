@@ -4,24 +4,22 @@ import type {
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
-  BgUser} from '@leobg/commons';
-import {
-  BgHome
+  BgUser,
 } from '@leobg/commons';
+import { BgHome } from '@leobg/commons';
 import { concatJoin } from '@leobg/commons/utils';
-import type { Observable} from 'rxjs';
+import type { Observable } from 'rxjs';
 import { forkJoin, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { BritColor } from './brit-components.models';
-import { BritComponentsService } from './brit-components.service';
+import { BritComponents } from './brit-components.service';
 import type {
   ABritPlayerDoc,
   BritAiPlayerDoc,
   BritPlayerDoc,
-  BritReadPlayerDoc} from './brit-remote.service';
-import {
-  BritRemoteService,
+  BritReadPlayerDoc,
 } from './brit-remote.service';
+import { BritRemoteService } from './brit-remote.service';
 
 @Component({
   selector: 'brit-home',
@@ -52,7 +50,7 @@ export class BritHome {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private gameService = inject(BritRemoteService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   config: BgHomeConfig<BritColor> = {
     boardGame: 'britannia',

@@ -1,4 +1,4 @@
-import type { OnChanges} from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, inject, input } from '@angular/core';
 import type { SimpleChanges } from '@leobg/commons/utils';
 import type {
@@ -7,7 +7,7 @@ import type {
   BritLeaderId,
   BritPhase,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type {
   BritAreaLeader,
   BritAreaUnit,
@@ -104,7 +104,7 @@ type BritLogFragment =
   ],
 })
 export class BritLogRow implements OnChanges {
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   readonly log = input.required<BritLog>();
 

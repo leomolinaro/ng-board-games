@@ -2,7 +2,8 @@ import type {
   ElementRef,
   OnChanges,
   OnInit,
-  TrackByFunction} from '@angular/core';
+  TrackByFunction,
+} from '@angular/core';
 import {
   ChangeDetectorRef,
   Component,
@@ -13,13 +14,8 @@ import {
   output,
 } from '@angular/core';
 import { BgMapZoom, BgSvg } from '@leobg/commons';
-import type {
-  SimpleChanges} from '@leobg/commons/utils';
-import {
-  BgTransformPipe,
-  arrayUtil,
-  downloadUtil,
-} from '@leobg/commons/utils';
+import type { SimpleChanges } from '@leobg/commons/utils';
+import { BgTransformPipe, arrayUtil, downloadUtil } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
 import { BritAssetsService } from '../brit-assets.service';
 import type {
@@ -32,14 +28,14 @@ import type {
   BritRound,
   BritRoundId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type {
   BritAreaState,
   BritAreaUnit,
   BritNationState,
 } from '../brit-game-state.models';
 import { BritMapSlotsGeneratorService } from './brit-map-slots-generator.service';
-import type { BritMapPoint} from './brit-map.service';
+import type { BritMapPoint } from './brit-map.service';
 import { BritMapService } from './brit-map.service';
 
 interface BritAreaNode {
@@ -114,7 +110,7 @@ export class BritMap implements OnChanges, OnInit {
   private mapService = inject(BritMapService);
   private slotsGeneratorService = inject(BritMapSlotsGeneratorService);
   private assetsService = inject(BritAssetsService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
   private cd = inject(ChangeDetectorRef);
 
   readonly areaStates = input.required<Record<BritAreaId, BritAreaState>>();

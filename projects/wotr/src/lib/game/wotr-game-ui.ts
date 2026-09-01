@@ -621,13 +621,6 @@ export class WotrGameUi extends signalStore(
     }));
   }
 
-  // setFirstActionUi (player: string): Partial<WotrUiState> {
-  //   return {
-  //     turnPlayer: player,
-  //     canCancel: false
-  //   };
-  // }
-
   player = uiEvent<WotrFrontId | null>();
   setCurrentPlayerId(playerId: WotrFrontId | null) {
     this.player.emit(playerId);

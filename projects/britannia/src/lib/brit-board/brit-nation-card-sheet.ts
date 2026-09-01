@@ -1,10 +1,10 @@
-import type { OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import type { TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
 import { BritAssetsService } from '../brit-assets.service';
 import type { BritNationId } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type { BritNationState } from '../brit-game-state.models';
 
 interface BritUnitNode {
@@ -73,7 +73,7 @@ export class BritNationCardSheet implements OnInit {
     injectContext<TuiDialogContext<void, [BritNationId, BritNationState]>>();
   data = this.context.data;
   private assetsService = inject(BritAssetsService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
   private cd = inject(ChangeDetectorRef);
 
   nationCardImageSource!: string;

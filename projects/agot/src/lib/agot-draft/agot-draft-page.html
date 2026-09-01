@@ -94,6 +94,8 @@
     </div>
   </aside>
   <main tuiNavigationMain>
+    @if (draftCards) {
     <agot-card-grid [cards]="draftCards"></agot-card-grid>
+    }
   </main>
 </div>

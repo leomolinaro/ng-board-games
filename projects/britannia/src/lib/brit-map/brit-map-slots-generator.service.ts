@@ -3,11 +3,10 @@ import { immutableUtil, randomUtil } from '@leobg/commons/utils';
 import type {
   BritAreaId,
   BritLandAreaId,
-  BritSeaAreaId} from '../brit-components.models';
-import {
-  isBritLandAreaId,
+  BritSeaAreaId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { isBritLandAreaId } from '../brit-components.models';
+import { BritComponents } from '../brit-components.service';
 import type { BritAreaSlots, BritMapPoint } from './brit-map.service';
 
 interface BritLandPoints {
@@ -41,7 +40,7 @@ const BRIT_SEA_GRID: Record<
   providedIn: 'root',
 })
 export class BritMapSlotsGeneratorService {
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   private neighbourDirections: { x: number; y: number }[] = [
     { x: -1, y: -1 },

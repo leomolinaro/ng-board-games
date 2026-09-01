@@ -10,7 +10,7 @@ import type {
   BritNationId,
   BritRoundId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type { BritPlayer } from '../brit-game-state.models';
 import type { BritStoryDoc } from '../brit-remote.service';
 import { BritRemoteService } from '../brit-remote.service';
@@ -36,18 +36,18 @@ export class BritGameService extends ABgGameService<
   private remoteService = inject(BritRemoteService);
   protected aiPlayer = inject(BritPlayerAiService);
   protected localPlayer = inject(BritPlayerLocalService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   protected storyDocs: BritStoryDoc[] | null = null;
 
   protected getGameId() {
-    return this.game.getGameId();
+    return this.game.gameId();
   }
   protected getPlayer(playerColor: BritColor) {
     return this.game.getPlayer(playerColor);
   }
   protected getGameOwner() {
-    return this.game.getGameOwner();
+    return this.game.gameOwner();
   }
   protected startTemporaryState() {
     this.game.startTemporaryState();
@@ -67,17 +67,17 @@ export class BritGameService extends ABgGameService<
     return this.remoteService.selectStory$(storyId, gameId);
   }
 
-  protected getCurrentPlayerId() {
-    return this.ui.getCurrentPlayerId();
+  protected override getCurrentPlayerId() {
+    return this.ui.currentPlayer();
   }
-  protected setCurrentPlayer(playerId: BritColor) {
+  protected override setCurrentPlayer(playerId: BritColor) {
     this.ui.setCurrentPlayer(playerId);
   }
-  protected currentPlayerChange$() {
-    return this.ui.currentPlayerChange$();
+  protected override currentPlayerChange$() {
+    return from(this.ui.player.get());
   }
-  protected cancelChange$() {
-    return this.ui.cancelChange$();
+  protected override cancelChange$() {
+    return from(this.ui.cancel.get());
   }
 
   protected resetUi(turnPlayer: BritColor) {
@@ -117,9 +117,7 @@ export class BritGameService extends ABgGameService<
   }
 
   nationTurn$(nationId: BritNationId, roundId: BritRoundId): Observable<void> {
-    if (
-      this.rules.populationIncrease.isNationActive(nationId, this.game.get())
-    ) {
+    if (this.rules.populationIncrease.isNationActive(nationId, this.game)) {
       this.game.logNationTurn(nationId);
       const player = this.game.getPlayerByNation(nationId)!;
       return this.populationIncreasePhase$(nationId, player.id, roundId).pipe(
@@ -142,7 +140,7 @@ export class BritGameService extends ABgGameService<
     const data = this.rules.populationIncrease.calculatePopulationIncreaseData(
       nationId,
       roundId,
-      this.game.get(),
+      this.game,
     );
     switch (data.type) {
       case 'infantry-placement': {
@@ -224,9 +222,7 @@ export class BritGameService extends ABgGameService<
 
   private battlesRetreatsPhase$(nationId: BritNationId, playerId: BritColor) {
     this.game.logPhase('battlesRetreats');
-    if (
-      this.rules.battlesRetreats.hasBattlesToResolve(nationId, this.game.get())
-    ) {
+    if (this.rules.battlesRetreats.hasBattlesToResolve(nationId, this.game)) {
       return from(
         this.executeTask(playerId, (p) =>
           firstValueFrom(p.battleInitiation$(nationId, playerId)),

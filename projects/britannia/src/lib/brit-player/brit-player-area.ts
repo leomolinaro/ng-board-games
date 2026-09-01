@@ -10,7 +10,7 @@ import { BgAuthService } from '@leobg/commons';
 import { TuiHint, TuiIcon } from '@taiga-ui/core';
 import { BritAssetsService } from '../brit-assets.service';
 import type { BritNation, BritNationId } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type { BritPlayer } from '../brit-game-state.models';
 
 // interface BritPawnNode {
@@ -105,7 +105,7 @@ interface BritNationNode {
 export class BritPlayerComponent implements OnInit {
   private authService = inject(BgAuthService);
   private assetsService = inject(BritAssetsService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   readonly player = input.required<BritPlayer>();
   readonly currentPlayer = input(false, { transform: booleanAttribute });

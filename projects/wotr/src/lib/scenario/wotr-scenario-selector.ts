@@ -67,9 +67,9 @@ export class WotrScenarioSelectorDialog {
   private router = inject(Router);
   private scenarios = inject(WotrScenarios);
   protected readonly handler: TuiHandler<
-    WotrScenarioGroupInfo,
+    WotrScenarioGroupInfo | WotrScenarioInfo,
     readonly (WotrScenarioGroupInfo | WotrScenarioInfo)[]
-  > = (item) => item.scenarios || [];
+  > = (item) => ('scenarios' in item ? item.scenarios || [] : []);
 
   private activatedRoute = inject(ActivatedRoute);
 

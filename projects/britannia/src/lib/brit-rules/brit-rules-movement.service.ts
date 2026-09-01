@@ -1,29 +1,25 @@
 import { Injectable, inject } from '@angular/core';
 import type { BritAreaId, BritNationId } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
-import type { BritAreaUnit, BritGameState } from '../brit-game-state.models';
-
-// interface BritMovingGroup {
-//   areaUnit: BritAreaUnit[];
-//   movements: number;
-// }
+import { BritComponents } from '../brit-components.service';
+import type { BritAreaUnit } from '../brit-game-state.models';
+import type { BritGameStore } from '../brit-game/brit-game.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BritRulesMovementService {
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   getValidUnitsForMovement(
     nationId: BritNationId,
-    state: BritGameState,
+    game: BritGameStore,
   ): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
     this.components.AREA_IDS.forEach((areaId) => {
       const areaUnits = this.getValidUnitsByNationByArea(
         areaId,
         nationId,
-        state,
+        game,
       );
       units.push(...areaUnits);
     });
@@ -33,17 +29,17 @@ export class BritRulesMovementService {
   getValidUnitsByAreaForMovement(
     nationId: BritNationId,
     areaId: BritAreaId,
-    state: BritGameState,
+    game: BritGameStore,
   ): BritAreaUnit[] {
-    return this.getValidUnitsByNationByArea(areaId, nationId, state);
+    return this.getValidUnitsByNationByArea(areaId, nationId, game);
   }
 
   private getValidUnitsByNationByArea(
     areaId: BritAreaId,
     nationId: BritNationId,
-    state: BritGameState,
+    game: BritGameStore,
   ): BritAreaUnit[] {
-    const areaState = state.areas[areaId];
+    const areaState = game.getArea(areaId);
     const areaUnits = areaState.units.filter((u) => u.nationId === nationId);
     const area = this.components.AREA[areaId];
     const validUnits: BritAreaUnit[] = [];
@@ -65,7 +61,6 @@ export class BritRulesMovementService {
         if (areaUnit.nMovements < 2) {
           validUnits.push(areaUnit);
         }
-      } else if (areaUnit.type === 'leader') {
       }
     }
     return validUnits;
@@ -73,8 +68,8 @@ export class BritRulesMovementService {
 
   getValidAreasForMovement(
     areaId: BritAreaId,
-    nationId: BritNationId,
-    state: BritGameState,
+    _nationId: BritNationId,
+    _game: BritGameStore,
   ): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
     const area = this.components.getArea(areaId);

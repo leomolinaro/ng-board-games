@@ -11,6 +11,7 @@ import { TuiIcon } from '@taiga-ui/core';
 import type {
   BaronyAction,
   BaronyBuilding,
+  BaronyColor,
   BaronyLand,
   BaronyLandCoordinates,
   BaronyLog,
@@ -56,8 +57,8 @@ export class BaronyBoard {
 
   readonly lands = input.required<BaronyLand[]>();
   readonly logs = input.required<BaronyLog[]>();
-  readonly turnPlayer = input<BaronyPlayer | null>(null);
-  readonly currentPlayer = input<BaronyPlayer | null>(null);
+  readonly turnPlayer = input<BaronyColor>();
+  readonly currentPlayer = input<BaronyColor | null>(null);
   readonly players = input.required<BaronyPlayer[]>();
   readonly message = input<string | null>(null);
   readonly validLands = input<BaronyLandCoordinates[] | null>(null);

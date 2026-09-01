@@ -12,16 +12,11 @@ import type {
   BaronyResourceType,
   BaronySetupPlacement,
   BaronyStory,
-  BaronyTurn} from '../barony-models';
-import {
-  landCoordinatesToId,
+  BaronyTurn,
 } from '../barony-models';
-import type {
-  BaronyPlayerDoc,
-  BaronyStoryDoc} from '../barony-remote.service';
-import {
-  BaronyRemoteService
-} from '../barony-remote.service';
+import { landCoordinatesToId } from '../barony-models';
+import type { BaronyPlayerDoc, BaronyStoryDoc } from '../barony-remote.service';
+import { BaronyRemoteService } from '../barony-remote.service';
 import { BaronyGameStore } from './barony-game.store';
 import { BaronyPlayerAiService } from './barony-player-ai.service';
 import { BaronyPlayerLocalService } from './barony-player-local.service';
@@ -76,7 +71,7 @@ export class BaronyGameService extends ABgGameService<
 
   private async setup() {
     this.gameStore.logSetup();
-    const playerIds = this.gameStore.getPlayerIds();
+    const playerIds = this.gameStore.players.ids();
     const turns: BaronyColor[] = [...playerIds];
     for (let i = playerIds.length - 1; i >= 0; i--) {
       turns.push(playerIds[i]);
@@ -89,7 +84,7 @@ export class BaronyGameService extends ABgGameService<
   }
 
   private async round(roundNumber: number): Promise<BaronyRoundOutput> {
-    const playerIds = this.gameStore.getPlayerIds();
+    const playerIds = this.gameStore.players.ids();
     const turns = [...playerIds];
     let turnOutput = await this.turn(turns.shift()!, false);
     while (turns.length) {
@@ -190,13 +185,13 @@ export class BaronyGameService extends ABgGameService<
   }
 
   protected getGameId() {
-    return this.gameStore.getGameId();
+    return this.gameStore.gameId();
   }
   protected getPlayer(playerId: BaronyColor) {
     return this.gameStore.getPlayer(playerId);
   }
   protected getGameOwner() {
-    return this.gameStore.getGameOwner();
+    return this.gameStore.gameOwner();
   }
   protected startTemporaryState() {
     this.gameStore.startTemporaryState();

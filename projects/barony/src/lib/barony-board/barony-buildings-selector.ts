@@ -1,6 +1,6 @@
-import type { OnChanges} from '@angular/core';
+import type { OnChanges } from '@angular/core';
 import { Component, input, output } from '@angular/core';
-import type { BaronyBuilding, BaronyPlayer } from '../barony-models';
+import type { BaronyBuilding, BaronyColor } from '../barony-models';
 
 @Component({
   selector: 'barony-buildings-selector',
@@ -12,9 +12,7 @@ import type { BaronyBuilding, BaronyPlayer } from '../barony-models';
           (click)="onBuildingClick(building)"
         >
           <img
-            [src]="
-              'assets/barony/pawns/' + player().id + '-' + building + '.png'
-            "
+            [src]="'assets/barony/pawns/' + player() + '-' + building + '.png'"
           />
         </div>
       }
@@ -45,7 +43,7 @@ export class BaronyBuildingsSelector implements OnChanges {
   constructor() {}
 
   readonly buildings = input.required<BaronyBuilding[]>();
-  readonly player = input.required<BaronyPlayer>();
+  readonly player = input.required<BaronyColor>();
   readonly buildingClick = output<BaronyBuilding>();
 
   ngOnChanges(): void {}

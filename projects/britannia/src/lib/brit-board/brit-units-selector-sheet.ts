@@ -1,4 +1,4 @@
-import type { OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, inject } from '@angular/core';
 import type { TuiDialogContext } from '@taiga-ui/core';
 import { injectContext } from '@taiga-ui/polymorpheus';
@@ -20,7 +20,7 @@ export interface BritUnitsSelectorSheetInput {
       [imageSource]="imageSource"
       [(number)]="quantity"
       [max]="data.maxQuantity"
-      min="0"
+      [min]="0"
       (confirm)="onConfirm()"
     >
     </brit-units-selector>

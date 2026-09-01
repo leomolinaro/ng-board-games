@@ -39,8 +39,7 @@ import { WotrScenarioSelectorDialog } from '../scenario/wotr-scenario-selector';
     <bg-home
       [config]="config"
       [actions]="devMode && isAdmin() ? [scenarioAction] : []"
-    >
-    </bg-home>
+    />
   `,
   styles: [
     `

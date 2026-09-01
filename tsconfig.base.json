@@ -26,8 +26,7 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictInputTypes": false
+    "strictInputAccessModifiers": true
   },
   "exclude": ["node_modules", "tmp"]
 }

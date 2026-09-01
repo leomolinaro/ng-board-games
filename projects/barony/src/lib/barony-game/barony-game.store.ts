@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import type { BgUser } from '@leobg/commons';
-import { arrayUtil, BgStore, immutableUtil } from '@leobg/commons/utils';
-import type { Observable } from 'rxjs';
+import { arrayUtil, immutableUtil } from '@leobg/commons/utils';
+import { patchState, signalStore, withState } from '@ngrx/signals';
 import type {
   BaronyColor,
   BaronyConstruction,
@@ -35,96 +35,82 @@ interface BaronyGameState {
   gameBox: BaronyGameBox;
   logs: BaronyLog[];
   endGame: boolean;
+  backupState: BaronyGameState | null;
 }
 
 @Injectable()
-export class BaronyGameStore extends BgStore<BaronyGameState> {
-  constructor() {
-    super(
-      {
-        gameId: '',
-        gameOwner: null as any,
-        players: { map: {}, ids: [] },
-        lands: { map: {}, coordinates: [] },
-        gameBox: { removedPawns: [] },
-        logs: [],
-        endGame: false,
-      },
-      'Barony Game',
-    );
-  }
-
+export class BaronyGameStore extends signalStore(
+  { protectedState: false },
+  withState<BaronyGameState>({
+    gameId: '',
+    gameOwner: null as any,
+    players: { map: {}, ids: [] },
+    lands: { map: {}, coordinates: [] },
+    gameBox: { removedPawns: [] },
+    logs: [],
+    endGame: false,
+    backupState: null,
+  }),
+) {
   setInitialState(
     players: BaronyPlayer[],
     lands: BaronyLand[],
     gameId: string,
     gameOwner: BgUser,
   ) {
-    this.update('Initial state', (s) => ({
-      gameId: gameId,
-      gameOwner: gameOwner,
-      players: {
-        map: arrayUtil.toMap(players, (p) => p.id),
-        ids: players.map((p) => p.id),
-      },
-      lands: {
-        map: arrayUtil.toMap(lands, (l) => l.id),
-        coordinates: lands.map((l) => l.coordinates),
-      },
-      gameBox: {
-        removedPawns: [],
-      },
-      logs: [],
-      endGame: false,
-    }));
+    patchState(
+      this,
+      () =>
+        ({
+          gameId,
+          gameOwner,
+          players: {
+            map: arrayUtil.toMap(players, (p) => p.id),
+            ids: players.map((p) => p.id),
+          },
+          lands: {
+            map: arrayUtil.toMap(lands, (l) => l.id),
+            coordinates: lands.map((l) => l.coordinates),
+          },
+          gameBox: {
+            removedPawns: [],
+          },
+          logs: [],
+          endGame: false,
+          backupState: null,
+        }) satisfies BaronyGameState,
+    );
   }
 
-  private notTemporaryState: BaronyGameState | null = null;
   isTemporaryState() {
-    return !!this.notTemporaryState;
+    return !!this.backupState();
   }
   startTemporaryState() {
-    this.notTemporaryState = this.get();
+    patchState(this, (s) => ({ ...s, backupState: s }));
   }
   endTemporaryState() {
-    if (!this.notTemporaryState)
+    if (this.backupState()) {
+      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
+    } else {
       throw new Error('endTemporaryState without startTemporaryState');
-    const state = this.notTemporaryState;
-    this.update('End temporary state', () => ({ ...state }));
-    this.notTemporaryState = null;
+    }
   }
 
-  getGameId(): string {
-    return this.get((s) => s.gameId);
-  }
-  getGameOwner(): BgUser {
-    return this.get((s) => s.gameOwner);
-  }
-  getPlayers(): BaronyPlayer[] {
-    return this.get((s) => s.players.ids.map((id) => s.players.map[id]!));
+  playerList(): BaronyPlayer[] {
+    return this.players.ids().map((id) => this.getPlayer(id));
   }
   getPlayer(id: BaronyColor): BaronyPlayer {
-    return this.get((s) => s.players.map[id]!);
-  }
-  // isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
-  getPlayerIds() {
-    return this.get((s) => s.players.ids);
-  }
-  getPlayerMap() {
-    return this.get((s) => s.players.map);
+    return this.players.map()[id]!;
   }
   getNumberOfPlayers(): number {
-    return this.getPlayers().length;
-  }
-  getLandCoordinates(): BaronyLandCoordinates[] {
-    return this.get((s) => s.lands.coordinates);
+    return this.playerList().length;
   }
   getLand(land: BaronyLandCoordinates) {
-    return this.get((s) => s.lands.map[landCoordinatesToId(land)]);
+    return this.lands.map()[landCoordinatesToId(land)];
   }
-  getLands(): BaronyLand[] {
-    const map = this.get((s) => s.lands.map);
-    const coordinates = this.get((s) => s.lands.coordinates);
+  landList(): BaronyLand[] {
+    const map = this.lands.map();
+    const coordinates = this.lands.coordinates();
     return coordinates.map(
       (coordinate) => map[landCoordinatesToId(coordinate)],
     );
@@ -133,38 +119,12 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     return this.getLand(land) || null;
   }
 
-  private selectLandTileMap$() {
-    return this.select$((s) => s.lands.map);
-  }
-  private selectLandTileKeys$() {
-    return this.select$((s) => s.lands.coordinates);
-  }
-  selectLands$(): Observable<BaronyLand[]> {
-    return this.select$(
-      this.selectLandTileMap$(),
-      this.selectLandTileKeys$(),
-      (map, keys) => keys.map((k) => map[landCoordinatesToId(k)]),
-    );
-  }
-  selectPlayerIds$() {
-    return this.select$((s) => s.players.ids);
-  }
-  selectPlayerMap$() {
-    return this.select$((s) => s.players.map);
-  }
-  selectLogs$() {
-    return this.select$((s) => s.logs);
-  }
-  selectEndGame$() {
-    return this.select$((s) => s.endGame);
-  }
-
   private updatePlayer(
-    actionName: string,
+    _actionName: string,
     playerId: BaronyColor,
     updater: (p: BaronyPlayer) => BaronyPlayer,
   ) {
-    this.update(actionName, (s) => ({
+    patchState(this, (s) => ({
       ...s,
       players: {
         ...s.players,
@@ -177,22 +137,22 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
   }
 
   private updateGameBox(
-    actionName: string,
+    _actionName: string,
     updater: (gameBox: BaronyGameBox) => BaronyGameBox,
   ) {
-    this.update(actionName, (s) => ({
+    patchState(this, (s) => ({
       ...s,
       gameBox: updater(s.gameBox),
     }));
   }
 
   private updateLand(
-    actionName: string,
+    _actionName: string,
     land: BaronyLandCoordinates,
     updater: (lt: BaronyLand) => BaronyLand,
   ) {
     const key = landCoordinatesToId(land);
-    this.update(actionName, (s) => ({
+    patchState(this, (s) => ({
       ...s,
       lands: {
         ...s.lands,
@@ -305,8 +265,8 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
     }));
   }
 
-  private addLog(actionName: string, log: BaronyLog) {
-    this.update(actionName, (s) => ({
+  private addLog(_actionName: string, log: BaronyLog) {
+    patchState(this, (s) => ({
       ...s,
       logs: [...s.logs, log],
     }));
@@ -333,7 +293,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
       land.pawns
         .filter((pawn) => pawn.color !== playerId)
         .forEach((pawn) => {
-          const pawnPlayer = this.getPlayers().find(
+          const pawnPlayer = this.playerList().find(
             (p) => p.id === pawn.color,
           )!;
           this.removePawnFromLandTile(pawn.type, pawn.color, land.coordinates);
@@ -377,7 +337,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
   }
 
   applyEndGame(finalScores: BaronyFinalScores) {
-    this.update('Set end game', (s) => ({
+    patchState(this, (s) => ({
       ...s,
       players: {
         ...s.players,
@@ -385,7 +345,7 @@ export class BaronyGameStore extends BgStore<BaronyGameState> {
           s.players.ids,
           (id) => id,
           (id) => ({
-            ...s.players.map[id],
+            ...s.players.map[id]!,
             victoryPoints: finalScores.victoryPointsByPlayer[id],
             winner: finalScores.winnerPlayer === id,
           }),

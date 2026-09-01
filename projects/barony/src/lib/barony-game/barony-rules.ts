@@ -45,7 +45,7 @@ export function getValidActions(
 export function getValidLandsForSetupPlacement(
   game: BaronyGameStore,
 ): BaronyLand[] {
-  const validLandTiles = game.getLands().filter((lt) => {
+  const validLandTiles = game.landList().filter((lt) => {
     if (lt.type === 'lake') {
       return false;
     }
@@ -106,7 +106,7 @@ export function getValidLandsForRecruitment(
 ): BaronyLand[] {
   const player = game.getPlayer(playerId);
   const validLandTiles = game
-    .getLands()
+    .landList()
     .filter((lt) =>
       lt.pawns.some((p) => p.type === 'city' && p.color === player.id),
     );
@@ -118,7 +118,7 @@ export function getValidSourceLandsForFirstMovement(
   game: BaronyGameStore,
 ): BaronyLand[] {
   return game
-    .getLands()
+    .landList()
     .filter((land) => isValidFirstMovementSource(land, player, game));
 }
 
@@ -128,7 +128,7 @@ export function getValidSourceLandsForSecondMovement(
   game: BaronyGameStore,
 ): BaronyLand[] {
   return game
-    .getLands()
+    .landList()
     .filter((land) =>
       isValidSecondMovementSource(land, player, firstMovement, game),
     );
@@ -149,7 +149,7 @@ export function getValidLandsForConstruction(
   game: BaronyGameStore,
 ) {
   return game
-    .getLands()
+    .landList()
     .filter((lt) => isValidLandTileForConstruction(lt, player, game));
 }
 
@@ -187,7 +187,7 @@ export function getValidLandsForNewCity(
   game: BaronyGameStore,
 ): BaronyLand[] {
   return game
-    .getLands()
+    .landList()
     .filter((land) => isValidLandForNewCity(land.coordinates, player, game));
 }
 
@@ -196,8 +196,8 @@ export function getValidLandsForExpedition(
   game: BaronyGameStore,
 ): BaronyLand[] {
   return game
-    .getLands()
-    .filter((land) => isValidLandForExpedition(land.coordinates, player, game));
+    .landList()
+    .filter((land) => isValidLandForExpedition(land.coordinates, game));
 }
 
 export function getValidResourcesForNobleTitle(
@@ -218,7 +218,7 @@ export function getVillageDestroyedPlayer(
   const villagePawn = land.pawns.find(
     (p) => p.type === 'village' && p.color !== player.id,
   )!;
-  return game.getPlayers().find((p) => p.id === villagePawn.color)!;
+  return game.playerList().find((p) => p.id === villagePawn.color)!;
 }
 
 export function getValidResourcesForVillageDestruction(
@@ -230,7 +230,7 @@ export function getValidResourcesForVillageDestruction(
 }
 
 export function getFinalScores(game: BaronyGameStore): BaronyFinalScores {
-  const players = game.getPlayers();
+  const players = game.playerList();
   const victoryPointsByPlayer: Record<string, number> = {};
   let winner = players[0];
   let winnerVictoryPoints = getPlayerVictoryPoints(winner);
@@ -266,7 +266,7 @@ export function isRecruitmentValid(
     return false;
   }
   const hasValidLandTiles = game
-    .getLands()
+    .landList()
     .some((lt) =>
       lt.pawns.some((p) => p.color === player.id && p.type === 'city'),
     );
@@ -278,7 +278,7 @@ export function isMovementValid(
   game: BaronyGameStore,
 ): boolean {
   return game
-    .getLands()
+    .landList()
     .some((land) => isValidFirstMovementSource(land, player, game));
 }
 
@@ -288,7 +288,7 @@ export function isSecondMovementValid(
   game: BaronyGameStore,
 ): boolean {
   return game
-    .getLands()
+    .landList()
     .some((land) =>
       isValidSecondMovementSource(land, player, firstMovement, game),
     );
@@ -349,7 +349,7 @@ export function isConstructionValid(
   game: BaronyGameStore,
 ): boolean {
   return game
-    .getLands()
+    .landList()
     .some((land) => isValidLandTileForConstruction(land, player, game));
 }
 
@@ -377,8 +377,8 @@ export function isNewCityValid(
 ): boolean {
   return (
     hasPawnInReserve('city', player, game) &&
-    game
-      .getLandCoordinates()
+    game.lands
+      .coordinates()
       .some((land) => isValidLandForNewCity(land, player, game))
   );
 }
@@ -402,7 +402,6 @@ function isValidLandForNewCity(
 
 function isValidLandForExpedition(
   landCoordinates: BaronyLandCoordinates,
-  playerId: BaronyColor,
   game: BaronyGameStore,
 ) {
   const land = game.getLand(landCoordinates);
@@ -419,9 +418,9 @@ export function isExpeditionValid(
 ): boolean {
   return (
     hasPawnsInReserve(2, 'knight', player, game) &&
-    game
-      .getLandCoordinates()
-      .some((land) => isValidLandForExpedition(land, player, game))
+    game.lands
+      .coordinates()
+      .some((land) => isValidLandForExpedition(land, game))
   );
 }
 

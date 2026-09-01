@@ -8,15 +8,14 @@ import {
   viewChild,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { injectDialogContext } from '@leobg/commons';
 import {
   ConcatingEvent,
   ExhaustingEvent,
   UntilDestroy,
 } from '@leobg/commons/utils';
-import type { TuiDialogContext } from '@taiga-ui/core';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiForm } from '@taiga-ui/layout';
-import { injectContext } from '@taiga-ui/polymorpheus';
 import type { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -111,10 +110,10 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
     effect(() => this.autoStartGame());
   }
 
-  protected readonly context =
-    injectContext<
-      TuiDialogContext<BgRoomDialogOutput | null, BgRoomDialogInput<Pid, Opt>>
-    >();
+  readonly context = injectDialogContext<
+    BgRoomDialogInput<Pid, Opt>,
+    BgRoomDialogOutput | null
+  >();
 
   private protoGameService = inject(BgProtoGameService);
   private authService = inject(BgAuthService);
@@ -227,7 +226,7 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
   }
 
   private closeDialog(startGame: boolean) {
-    this.context.completeWith({
+    this.context.complete({
       startGame: startGame,
       gameId: this.protoGame().id,
     });

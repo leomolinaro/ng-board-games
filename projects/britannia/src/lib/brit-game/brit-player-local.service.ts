@@ -1,23 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { forN } from '@leobg/commons/utils';
-import type {
-  Observable} from 'rxjs';
-import {
-  EMPTY,
-  expand,
-  last,
-  map,
-  mapTo,
-  race,
-  switchMap,
-} from 'rxjs';
+import type { Observable } from 'rxjs';
+import { EMPTY, expand, last, map, mapTo, race, switchMap } from 'rxjs';
 import type {
   BritAreaId,
   BritColor,
   BritLandAreaId,
   BritNationId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type { BritAreaUnit } from '../brit-game-state.models';
 import { BritRulesService } from '../brit-rules/brit-rules.service';
 import type {
@@ -35,7 +26,7 @@ export class BritPlayerLocalService implements BritPlayerService {
   private game = inject(BritGameStore);
   private ui = inject(BritUiStore);
   private rules = inject(BritRulesService);
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   armyPlacement$(
     nInfantries: number,
@@ -81,8 +72,7 @@ export class BritPlayerLocalService implements BritPlayerService {
   ): Observable<BritLandAreaId> {
     const validLands = this.rules.populationIncrease.getValidLandsForPlacement(
       nationId,
-      playerId,
-      this.game.get(),
+      this.game,
     );
     this.ui.updateUi('Choose land for placement', (s) => ({
       ...s,
@@ -184,7 +174,7 @@ export class BritPlayerLocalService implements BritPlayerService {
   ): Observable<BritAreaUnit[] | 'pass'> {
     const validUnits = this.rules.movement.getValidUnitsForMovement(
       nationId,
-      this.game.get(),
+      this.game,
     );
     this.ui.updateUi('Select units for movement', (s) => ({
       ...s,
@@ -211,12 +201,12 @@ export class BritPlayerLocalService implements BritPlayerService {
     const validUnits = this.rules.movement.getValidUnitsByAreaForMovement(
       nationId,
       areaId,
-      this.game.get(),
+      this.game,
     );
     const validAreas = this.rules.movement.getValidAreasForMovement(
       areaId,
       nationId,
-      this.game.get(),
+      this.game,
     );
     this.ui.updateUi('Select area or units for movement', (s) => ({
       ...s,
@@ -251,7 +241,7 @@ export class BritPlayerLocalService implements BritPlayerService {
   ): Observable<BritLandAreaId> {
     const validAreas = this.rules.battlesRetreats.getValidAreasForBattle(
       nationId,
-      this.game.get(),
+      this.game,
     );
     this.ui.updateUi('Select area for battle', (s) => ({
       ...s,

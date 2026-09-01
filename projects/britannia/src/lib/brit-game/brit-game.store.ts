@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+import { computed, Injectable } from '@angular/core';
 import type { BgUser } from '@leobg/commons';
-import { BgStore, arrayUtil, immutableUtil } from '@leobg/commons/utils';
+import { arrayUtil, immutableUtil } from '@leobg/commons/utils';
+import { patchState, signalStore, withState } from '@ngrx/signals';
 import type {
   BritAreaId,
   BritColor,
@@ -12,7 +13,7 @@ import type {
   BritRoundId,
   BritUnitType,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
+import { BritComponents } from '../brit-components.service';
 import type {
   BritAreaLeader,
   BritAreaState,
@@ -25,113 +26,79 @@ import type {
 } from '../brit-game-state.models';
 import type { BritArmyMovement, BritArmyMovements } from '../brit-story.models';
 
+function initialState(): BritGameState {
+  const components = new BritComponents();
+  return {
+    gameId: '',
+    gameOwner: null as any,
+    players: { map: {}, colors: [] },
+    areas: components.areasToMap((areaId) => ({ units: [] })),
+    nations: components.nationsToMap((nationId) => {
+      const nation = components.NATION[nationId];
+      return {
+        active: false,
+        population: null,
+        nInfantries: nation.nInfantries,
+        nCavalries: nation.nCavalries,
+        nBuildings: nation.nBuildings,
+        leaderIds: [...nation.leaderIds],
+      };
+    }),
+    logs: [],
+    backupState: null,
+  };
+}
+
 @Injectable()
-export class BritGameStore extends BgStore<BritGameState> {
-  private components: BritComponentsService;
-
-  constructor() {
-    const components = inject(BritComponentsService);
-
-    super(
-      {
-        gameId: '',
-        gameOwner: null as any,
-        players: { map: {}, colors: [] },
-        areas: components.areasToMap((areaId) => ({ units: [] })),
-        nations: components.nationsToMap((nationId) => {
-          const nation = components.NATION[nationId];
-          return {
-            active: false,
-            population: null,
-            nInfantries: nation.nInfantries,
-            nCavalries: nation.nCavalries,
-            nBuildings: nation.nBuildings,
-            leaderIds: [...nation.leaderIds],
-          };
-        }),
-        logs: [],
-      },
-      'Britannia Game',
-    );
-
-    this.components = components;
-  }
-
+export class BritGameStore extends signalStore(
+  { protectedState: false },
+  withState<BritGameState>(initialState()),
+) {
   initGameState(players: BritPlayer[], gameId: string, gameOwner: BgUser) {
-    this.update('Initial state', (s) => ({
-      ...s,
-      gameId: gameId,
-      gameOwner: gameOwner,
-      players: {
-        map: arrayUtil.toMap(players, (p) => p.id),
-        colors: players.map((p) => p.id),
-      },
-    }));
+    patchState(
+      this,
+      (s) =>
+        ({
+          ...s,
+          gameId: gameId,
+          gameOwner: gameOwner,
+          players: {
+            map: arrayUtil.toMap(players, (p) => p.id),
+            colors: players.map((p) => p.id),
+          },
+        }) satisfies BritGameState,
+    );
   }
 
-  private notTemporaryState: BritGameState | null = null;
   isTemporaryState() {
-    return !!this.notTemporaryState;
+    return !!this.backupState();
   }
   startTemporaryState() {
-    this.notTemporaryState = this.get();
+    patchState(this, (s) => ({ ...s, backupState: s }));
   }
   endTemporaryState() {
-    if (this.notTemporaryState) {
-      const state = this.notTemporaryState;
-      this.update('End temporary state', (s) => ({ ...state }));
-      this.notTemporaryState = null;
+    if (this.backupState()) {
+      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
     } else {
       throw new Error('endTemporaryState without startTemporaryState');
     }
   }
 
-  selectAreas$() {
-    return this.select$((s) => s.areas);
-  }
-  selectNations$() {
-    return this.select$((s) => s.nations);
-  }
+  playerList = computed<BritPlayer[]>(() =>
+    this.players.colors().map((color) => this.players.map()[color]!),
+  );
 
-  selectPlayerMap$() {
-    return this.select$((s) => s.players.map);
-  }
-
-  selectPlayers$() {
-    return this.select$(
-      this.select$((s) => s.players),
-      (players) => {
-        return players ? players.colors.map((id) => players.map[id]) : [];
-      },
-    );
-  }
-
-  selectLogs$() {
-    return this.select$((s) => s.logs);
-  }
-
-  getGameId(): string {
-    return this.get((s) => s.gameId);
-  }
-  getGameOwner(): BgUser {
-    return this.get((s) => s.gameOwner);
-  }
-  getPlayers(): BritPlayer[] {
-    return this.get((s) =>
-      s.players.colors.map((color) => s.players.map[color]!),
-    );
-  }
   getPlayer(color: BritColor): BritPlayer {
-    return this.get((s) => s.players.map[color]!);
+    return this.players.map()[color]!;
   }
   getNation(nationId: BritNationId) {
-    return this.get((s) => s.nations[nationId]);
+    return this.nations()[nationId];
   }
   getArea(areaId: BritAreaId) {
-    return this.get((s) => s.areas[areaId]);
+    return this.areas()[areaId];
   }
   getPlayerByNation(nationId: BritNationId) {
-    return this.getPlayers().find((p) =>
+    return this.playerList().find((p) =>
       p.nationIds.some((n) => n === nationId),
     );
   }
@@ -280,7 +247,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   // }
 
   private addLog(log: BritLog) {
-    this.update('Add log', (s) => ({
+    patchState(this, (s) => ({
       ...s,
       logs: [...s.logs, log],
     }));
@@ -509,8 +476,9 @@ export class BritGameStore extends BgStore<BritGameState> {
   }
 
   applySetup(setup: BritSetup) {
-    this.update('Setup', (s) => {
-      return this.components.AREA_IDS.reduce((state, areaId) => {
+    patchState(this, (s) => {
+      const components = new BritComponents();
+      return components.AREA_IDS.reduce((state, areaId) => {
         const areaSetup = setup.areas[areaId];
         if (areaSetup) {
           const [nationId, nInfantries] =
@@ -554,9 +522,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   }
 
   applyInfantryPlacement(areaId: BritAreaId, nationId: BritNationId) {
-    this.update('Apply infantry placement', (s) =>
-      this.placeInfantry(areaId, nationId, s),
-    );
+    patchState(this, (s) => this.placeInfantry(areaId, nationId, s));
   }
 
   applyPopulationIncrease(
@@ -564,7 +530,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     infantryPlacement: { areaId: BritAreaId; quantity: number }[],
     nationId: BritNationId,
   ) {
-    this.update('Apply population increase', (s) => {
+    patchState(this, (s) => {
       s = this.setNationPopulation(population, nationId, s);
       for (const ip of infantryPlacement) {
         for (let i = 0; i < ip.quantity; i++) {
@@ -579,7 +545,7 @@ export class BritGameStore extends BgStore<BritGameState> {
     armyMovements: BritArmyMovements,
     doCountMovements: boolean,
   ) {
-    this.update('Apply army movements', (s) => {
+    patchState(this, (s) => {
       for (const movement of armyMovements.movements) {
         s = this.armyMovement(movement, doCountMovements, s);
       }
@@ -626,7 +592,7 @@ export class BritGameStore extends BgStore<BritGameState> {
   }
 
   applyArmyMovement(armyMovement: BritArmyMovement, doCountMovements: boolean) {
-    this.update('Apply army movement', (s) =>
+    patchState(this, (s) =>
       this.armyMovement(armyMovement, doCountMovements, s),
     );
   }

@@ -7,7 +7,7 @@ ARCHITECTURE
 [] prettier defaults
 [] reduce/remove rxjs
 [] review bg commons components
-[] remove ignoreDeprecations strictInputTypes
+[] remove ignoreDeprecations
 [] Eslint e hooks
 
 WOTR

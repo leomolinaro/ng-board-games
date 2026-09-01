@@ -1,25 +1,25 @@
 import { Injectable, inject } from '@angular/core';
 import type { BritLandAreaId, BritNationId } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
-import type { BritGameState } from '../brit-game-state.models';
+import { BritComponents } from '../brit-components.service';
+import { BritGameStore } from '../brit-game/brit-game.store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BritRulesBattlesRetreatsService {
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
-  hasBattlesToResolve(nationId: BritNationId, state: BritGameState) {
+  hasBattlesToResolve(nationId: BritNationId, game: BritGameStore) {
     for (const landId of this.components.LAND_AREA_IDS) {
-      if (this.isBattleArea(landId, state)) {
+      if (this.isBattleArea(landId, game)) {
         return true;
       }
     }
     return false;
   }
 
-  private isBattleArea(landId: BritLandAreaId, state: BritGameState) {
-    const areaState = state.areas[landId];
+  private isBattleArea(landId: BritLandAreaId, game: BritGameStore) {
+    const areaState = game.getArea(landId);
     let nationId: BritNationId | null = null;
     for (const unit of areaState.units) {
       if (nationId) {
@@ -33,10 +33,10 @@ export class BritRulesBattlesRetreatsService {
     return false;
   }
 
-  getValidAreasForBattle(nationId: BritNationId, state: BritGameState) {
+  getValidAreasForBattle(nationId: BritNationId, game: BritGameStore) {
     const validAreas: BritLandAreaId[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
-      if (this.isBattleArea(landId, state)) {
+      if (this.isBattleArea(landId, game)) {
         validAreas.push(landId);
       }
     }

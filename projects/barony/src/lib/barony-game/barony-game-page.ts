@@ -1,5 +1,4 @@
-import { AsyncPipe } from '@angular/common';
-import type { OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BaronyBoard } from '../barony-board/barony-board';
@@ -18,14 +17,14 @@ import { BaronyUiStore } from './barony-ui.store';
 
 @Component({
   selector: 'barony-game-page',
-  imports: [BaronyBoard, AsyncPipe],
+  imports: [BaronyBoard],
   template: `
     <barony-board
-      [lands]="lands$ | async"
-      [logs]="logs$ | async"
-      [turnPlayer]="turnPlayer$ | async"
-      [currentPlayer]="currentPlayer$ | async"
-      [players]="players$ | async"
+      [lands]="game.landList()"
+      [logs]="game.logs()"
+      [turnPlayer]="ui.turnPlayer()"
+      [currentPlayer]="ui.currentPlayer()"
+      [players]="game.playerList()"
       [message]="ui.message()"
       [validLands]="ui.validLands()"
       [validActions]="ui.validActions()"
@@ -34,7 +33,7 @@ import { BaronyUiStore } from './barony-ui.store';
       [canPass]="ui.canPass()"
       [canCancel]="ui.canCancel()"
       [maxNumberOfKnights]="ui.maxNumberOfKnights()"
-      [endGame]="endGame$ | async"
+      [endGame]="game.endGame()"
       (playerSelect)="onPlayerSelect($event)"
       (buildingSelect)="onBuildingSelect($event)"
       (landTileClick)="onLandTileClick($event)"
@@ -55,20 +54,12 @@ import { BaronyUiStore } from './barony-ui.store';
   ],
 })
 export class BaronyGamePage implements OnInit {
-  private game = inject(BaronyGameStore);
+  protected game = inject(BaronyGameStore);
   protected ui = inject(BaronyUiStore);
   private route = inject(ActivatedRoute);
   private gameService = inject(BaronyGameService);
 
   private gameId = this.route.snapshot.paramMap.get('gameId')!;
-
-  lands$ = this.game.selectLands$();
-  logs$ = this.game.selectLogs$();
-  endGame$ = this.game.selectEndGame$();
-
-  turnPlayer$ = this.ui.selectTurnPlayer$();
-  currentPlayer$ = this.ui.selectCurrentPlayer$();
-  players$ = this.ui.selectPlayers$();
 
   async ngOnInit() {
     const stories = await this.gameService.loadGame(this.gameId);

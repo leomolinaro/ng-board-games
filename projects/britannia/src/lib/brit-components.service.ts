@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import type {
   BritArea,
   BritAreaId,
@@ -23,10 +22,7 @@ import type {
   BritUnitType,
 } from './brit-components.models';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class BritComponentsService {
+export class BritComponents {
   constructor() {
     this.init();
   }

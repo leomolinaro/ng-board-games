@@ -3,6 +3,7 @@ import { AsyncPipe } from '@angular/common';
 import type { OnDestroy, OnInit, TemplateRef, Type } from '@angular/core';
 import { Component, ViewChild, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { BgDialogService } from '@leobg/commons';
 import type { BgTransformFn } from '@leobg/commons/utils';
 import {
   BgTransformPipe,
@@ -13,12 +14,7 @@ import {
 } from '@leobg/commons/utils';
 import { TuiTabBar } from '@taiga-ui/addon-mobile';
 import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
-import {
-  TuiButton,
-  TuiDialogService,
-  TuiDropdown,
-  TuiTitle,
-} from '@taiga-ui/core';
+import { TuiButton, TuiDropdown, TuiTitle } from '@taiga-ui/core';
 import { TuiCell } from '@taiga-ui/core/components/cell';
 import {
   TuiAutoColorPipe,
@@ -29,7 +25,6 @@ import {
   TuiStatus,
 } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
-import { PolymorpheusComponent } from '@taiga-ui/polymorpheus';
 import type { Observable } from 'rxjs';
 import { firstValueFrom, map, mapTo, of, switchMap } from 'rxjs';
 import { BgAuthService } from '../../authentication';
@@ -106,13 +101,13 @@ interface GameStateDecode {
   ],
 })
 @UntilDestroy
-export class BgHome<Pid extends string> implements OnInit, OnDestroy {
+export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
   private protoGameService = inject(BgProtoGameService);
   private authService = inject(BgAuthService);
-  private readonly dialogs = inject(TuiDialogService);
+  private readonly dialogs = inject(BgDialogService);
 
-  config = input.required<BgHomeConfig<Pid>>();
+  config = input.required<BgHomeConfig<Pid, Opt>>();
   actions = input<BgHomeAction[]>();
   @ViewChild('newGameDialog') newGameDialog!: TemplateRef<void>;
 
@@ -142,15 +137,10 @@ export class BgHome<Pid extends string> implements OnInit, OnDestroy {
   ngOnDestroy() {}
 
   protected async openNewGameDialog() {
-    const game = await firstValueFrom(
-      this.dialogs.open<NewGame | null>(
-        new PolymorpheusComponent(BgNewGameDialog),
-        {
-          label: 'New Game',
-          size: 's',
-        },
-      ),
-    );
+    const game = await this.dialogs.open<void, NewGame>(BgNewGameDialog, {
+      label: 'New Game',
+      size: 's',
+    });
     if (!game) return;
     await this.createGame(game);
   }
@@ -198,23 +188,20 @@ export class BgHome<Pid extends string> implements OnInit, OnDestroy {
   }
 
   private async playersRoom(game: BgProtoGame) {
-    const output = await firstValueFrom(
-      this.dialogs.open<BgRoomDialogOutput | null>(
-        new PolymorpheusComponent(BgGameRoomDialog),
-        {
-          label: game.name,
-          // width: "1000px",
-          data: {
-            protoGame: game,
-            createGame$: (protoGame, protoPlayers) =>
-              this.createGame$(protoGame, protoPlayers),
-            deleteGame$: (gameId) => this.deleteGame$(gameId),
-            playerIdToCssClass: (role) => this.config().playerIdCssClass(role),
-            optionsComponent: this.config().optionsComponent?.(),
-          } satisfies BgRoomDialogInput<Pid, unknown>,
-        },
-      ),
-    );
+    const output = await this.dialogs.open<
+      BgRoomDialogInput<Pid, Opt>,
+      BgRoomDialogOutput
+    >(BgGameRoomDialog, {
+      label: game.name,
+      data: {
+        protoGame: game,
+        createGame$: (protoGame, protoPlayers) =>
+          this.createGame$(protoGame, protoPlayers),
+        deleteGame$: (gameId) => this.deleteGame$(gameId),
+        playerIdToCssClass: (role) => this.config().playerIdCssClass(role),
+        optionsComponent: this.config().optionsComponent?.(),
+      },
+    });
     if (output?.startGame)
       return firstValueFrom(this.config().startGame$(output.gameId));
     return of(void 0);

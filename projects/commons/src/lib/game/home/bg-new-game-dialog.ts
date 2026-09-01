@@ -1,16 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { injectDialogContext } from '@leobg/commons';
 import { TuiAutoFocus } from '@taiga-ui/cdk';
-import type {
-  TuiDialogContext} from '@taiga-ui/core';
-import {
-  TuiButton,
-  TuiInput,
-  TuiLabel,
-} from '@taiga-ui/core';
+import { TuiButton, TuiInput, TuiLabel } from '@taiga-ui/core';
 import { TuiRadioList } from '@taiga-ui/kit';
 import { TuiForm } from '@taiga-ui/layout';
-import { injectContext } from '@taiga-ui/polymorpheus';
 import type { NewGame } from '../bg-proto-game-service';
 
 @Component({
@@ -50,14 +44,14 @@ import type { NewGame } from '../bg-proto-game-service';
         <button
           appearance="secondary"
           tuiButton
-          (click)="context.completeWith(null)"
+          (click)="context.complete(null)"
         >
           Cancel
         </button>
         <button
           tuiButton
           [disabled]="!gameValid()"
-          (click)="context.completeWith(game())"
+          (click)="context.complete(game())"
         >
           Create game
         </button>
@@ -66,8 +60,7 @@ import type { NewGame } from '../bg-proto-game-service';
   `,
 })
 export class BgNewGameDialog {
-  protected readonly context =
-    injectContext<TuiDialogContext<NewGame | null>>();
+  readonly context = injectDialogContext<void, NewGame>();
 
   protected game = signal<NewGame>({ name: '', online: false });
 

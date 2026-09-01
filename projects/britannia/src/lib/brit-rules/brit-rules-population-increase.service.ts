@@ -8,8 +8,8 @@ import type {
   BritPopulation,
   BritRoundId,
 } from '../brit-components.models';
-import { BritComponentsService } from '../brit-components.service';
-import type { BritGameState } from '../brit-game-state.models';
+import { BritComponents } from '../brit-components.service';
+import type { BritGameStore } from '../brit-game/brit-game.store';
 
 export interface BritPopulationIncreaseData {
   nInfantries: number;
@@ -21,7 +21,7 @@ export interface BritPopulationIncreaseData {
   providedIn: 'root',
 })
 export class BritRulesPopulationIncreaseService {
-  private components = inject(BritComponentsService);
+  private components = inject(BritComponents);
 
   private NON_DIFFICULT_TERRAIN_STACKING_LIMIT = 3;
   private DIFFICULT_TERRAIN_STACKING_LIMIT = 2;
@@ -35,14 +35,13 @@ export class BritRulesPopulationIncreaseService {
   private ROMAN_REINFORCEMENTS_5 = [3, 3, 3, 3];
   private ROMAN_REINFORCEMENTS_4 = [4, 4, 3, 3];
 
-  isNationActive(nationId: BritNationId, state: BritGameState): boolean {
-    return state.nations[nationId].active;
+  isNationActive(nationId: BritNationId, game: BritGameStore): boolean {
+    return game.getNation(nationId).active;
   }
 
   getValidLandsForPlacement(
     nationId: BritNationId,
-    playerId: string,
-    state: BritGameState,
+    game: BritGameStore,
   ): BritLandAreaId[] {
     if (nationId === 'romans') {
       return [];
@@ -51,9 +50,9 @@ export class BritRulesPopulationIncreaseService {
     const fullLands: BritLandAreaId[] = [];
     let overstackedLand: BritLandArea | null = null;
     let overstackedArmiesCount: number | null = null;
-    const lands = this.getOccupiedLandsByNation(nationId, state);
+    const lands = this.getOccupiedLandsByNation(nationId, game);
     for (const land of lands) {
-      const nArmies = this.getNPlacedArmiesByArea(land.id, state);
+      const nArmies = this.getNPlacedArmiesByArea(land.id, game);
       if (land.difficultTerrain) {
         if (nArmies < this.DIFFICULT_TERRAIN_STACKING_LIMIT) {
           validLands.push(land.id);
@@ -90,18 +89,18 @@ export class BritRulesPopulationIncreaseService {
   calculatePopulationIncreaseData(
     nationId: BritNationId,
     roundId: BritRoundId,
-    state: BritGameState,
+    game: BritGameStore,
   ): BritPopulationIncreaseData {
     if (nationId === 'romans') {
-      const nArmies = this.getNPlacedArmiesByNation('romans', state);
+      const nArmies = this.getNPlacedArmiesByNation('romans', game);
       return {
         nInfantries: this.getRomanReinforcements(nArmies, roundId),
         type: 'roman-reinforcements',
         populationMarker: null,
       };
     } else {
-      const lands = this.getOccupiedLandsByNation(nationId, state);
-      const nation = state.nations[nationId];
+      const lands = this.getOccupiedLandsByNation(nationId, game);
+      const nation = game.getNation(nationId);
       let populationPoints = nation.population || 0;
       let onlyDifficultTerrains = true;
       for (const land of lands) {
@@ -124,7 +123,7 @@ export class BritRulesPopulationIncreaseService {
         let availableSlots = 0;
         let overstackedArmiesCount: number | null = null;
         for (const land of lands) {
-          const nArmies = this.getNPlacedArmiesByArea(land.id, state);
+          const nArmies = this.getNPlacedArmiesByArea(land.id, game);
           if (nArmies <= this.DIFFICULT_TERRAIN_STACKING_LIMIT) {
             availableSlots += this.DIFFICULT_TERRAIN_STACKING_LIMIT - nArmies;
           } else {
@@ -186,8 +185,8 @@ export class BritRulesPopulationIncreaseService {
     }
   }
 
-  private getNPlacedArmiesByArea(areaId: BritAreaId, state: BritGameState) {
-    return state.areas[areaId].units.reduce((armiesCount, unit) => {
+  private getNPlacedArmiesByArea(areaId: BritAreaId, game: BritGameStore) {
+    return game.getArea(areaId).units.reduce((armiesCount, unit) => {
       // const unit = this.components.UNIT[unitId];
       if (unit.type === 'infantry' || unit.type === 'cavalry') {
         armiesCount += unit.quantity;
@@ -198,21 +197,21 @@ export class BritRulesPopulationIncreaseService {
 
   private getNPlacedArmiesByNation(
     nationId: BritNationId,
-    state: BritGameState,
+    game: BritGameStore,
   ) {
-    return this.getOccupiedAreasByNation(nationId, state).reduce(
-      (counter, area) => counter + this.getNPlacedArmiesByArea(area.id, state),
+    return this.getOccupiedAreasByNation(nationId, game).reduce(
+      (counter, area) => counter + this.getNPlacedArmiesByArea(area.id, game),
       0,
     );
   }
 
   private getOccupiedLandsByNation(
     nationId: BritNationId,
-    state: BritGameState,
+    game: BritGameStore,
   ) {
     const lands: BritLandArea[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
-      const landState = state.areas[landId];
+      const landState = game.getArea(landId);
       if (landState.units.some((u) => u.nationId === nationId)) {
         lands.push(this.components.getLandArea(landId));
       }
@@ -222,11 +221,11 @@ export class BritRulesPopulationIncreaseService {
 
   private getOccupiedAreasByNation(
     nationId: BritNationId,
-    state: BritGameState,
+    game: BritGameStore,
   ) {
     const areas: BritArea[] = [];
     for (const areaId of this.components.AREA_IDS) {
-      const areaState = state.areas[areaId];
+      const areaState = game.getArea(areaId);
       if (areaState.units.some((u) => u.nationId === nationId)) {
         areas.push(this.components.getArea(areaId));
       }

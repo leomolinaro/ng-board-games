@@ -46,13 +46,13 @@ export function translate<T>(firstIndex: number, array: T[]): T[] {
   return toReturn;
 }
 
-export function toMap<T, V>(
+export function toMap<T, K extends string, V>(
   array: T[],
-  keyGetter: (e: T, index: number) => string,
-  valueGetter?: (e: T, key: string, index: number) => V,
-): Record<string, V> {
+  keyGetter: (e: T, index: number) => K,
+  valueGetter?: (e: T, key: K, index: number) => V,
+): Record<K, V> {
   const vG = valueGetter || ((e) => e as unknown as V);
-  const map: Record<string, V> = {};
+  const map: Record<K, V> = {} as any;
   array?.forEach((e, index) => {
     const key = keyGetter(e, index);
     map[key] = vG(e, key, index);
