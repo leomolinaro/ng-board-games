@@ -7,7 +7,7 @@ export function downloadJson(jsonObject: object, fileName: string) {
   );
   element.setAttribute('download', fileName);
   element.style.display = 'none';
-  document.body.appendChild(element);
+  document.body.append(element);
   element.click();
-  document.body.removeChild(element);
+  element.remove();
 }

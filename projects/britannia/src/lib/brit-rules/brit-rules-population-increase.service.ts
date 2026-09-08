@@ -81,7 +81,7 @@ export class BritRulesPopulationIncreaseService {
         validLands.push(overstackedLand.id);
       }
     } else {
-      fullLands.forEach((l) => validLands.push(l));
+      for (const l of fullLands) validLands.push(l);
     }
     return validLands;
   }
@@ -98,57 +98,52 @@ export class BritRulesPopulationIncreaseService {
         type: 'roman-reinforcements',
         populationMarker: null,
       };
-    } else {
-      const lands = this.getOccupiedLandsByNation(nationId, game);
-      const nation = game.getNation(nationId);
-      let populationPoints = nation.population ?? 0;
-      let onlyDifficultTerrains = true;
+    }
+    const lands = this.getOccupiedLandsByNation(nationId, game);
+    const nation = game.getNation(nationId);
+    let populationPoints = nation.population ?? 0;
+    let onlyDifficultTerrains = true;
+    for (const land of lands) {
+      if (land.difficultTerrain) {
+        populationPoints += 1;
+      } else {
+        populationPoints += 2;
+        onlyDifficultTerrains = false;
+      }
+    }
+    let nInfantries = Math.floor(populationPoints / 6);
+    let populationMarker = (populationPoints % 6) as BritPopulation;
+    // Check armies limit.
+    if (nInfantries > nation.nInfantries) {
+      nInfantries = nation.nInfantries;
+      populationMarker = 5;
+    }
+    // Check the stacking limits. The only limiting case is when there are only difficult terrains.
+    if (onlyDifficultTerrains) {
+      let availableSlots = 0;
+      let overstackedArmiesCount: number | null = null;
       for (const land of lands) {
-        if (land.difficultTerrain) {
-          populationPoints += 1;
+        const nArmies = this.getNPlacedArmiesByArea(land.id, game);
+        if (nArmies <= this.DIFFICULT_TERRAIN_STACKING_LIMIT) {
+          availableSlots += this.DIFFICULT_TERRAIN_STACKING_LIMIT - nArmies;
         } else {
-          populationPoints += 2;
-          onlyDifficultTerrains = false;
+          overstackedArmiesCount = nArmies;
         }
       }
-      let nInfantries = Math.floor(populationPoints / 6);
-      let populationMarker = (populationPoints % 6) as BritPopulation;
-      // Check armies limit.
-      if (nInfantries > nation.nInfantries) {
-        nInfantries = nation.nInfantries;
+      availableSlots += overstackedArmiesCount
+        ? this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT - overstackedArmiesCount
+        : this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT -
+          this.DIFFICULT_TERRAIN_STACKING_LIMIT;
+      if (nInfantries > availableSlots) {
+        nInfantries = availableSlots;
         populationMarker = 5;
       }
-      // Check the stacking limits. The only limiting case is when there are only difficult terrains.
-      if (onlyDifficultTerrains) {
-        let availableSlots = 0;
-        let overstackedArmiesCount: number | null = null;
-        for (const land of lands) {
-          const nArmies = this.getNPlacedArmiesByArea(land.id, game);
-          if (nArmies <= this.DIFFICULT_TERRAIN_STACKING_LIMIT) {
-            availableSlots += this.DIFFICULT_TERRAIN_STACKING_LIMIT - nArmies;
-          } else {
-            overstackedArmiesCount = nArmies;
-          }
-        }
-        if (overstackedArmiesCount) {
-          availableSlots +=
-            this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT - overstackedArmiesCount;
-        } else {
-          availableSlots +=
-            this.DIFFICULT_TERRAIN_OVERSTACKING_LIMIT -
-            this.DIFFICULT_TERRAIN_STACKING_LIMIT;
-        }
-        if (nInfantries > availableSlots) {
-          nInfantries = availableSlots;
-          populationMarker = 5;
-        }
-      }
-      return {
-        nInfantries,
-        type: 'infantry-placement',
-        populationMarker,
-      };
     }
+    return {
+      nInfantries,
+      type: 'infantry-placement',
+      populationMarker,
+    };
   }
 
   hasPopulationMarker(nationId: BritNationId) {
@@ -186,23 +181,25 @@ export class BritRulesPopulationIncreaseService {
   }
 
   private getNPlacedArmiesByArea(areaId: BritAreaId, game: BritGameStore) {
-    return game.getArea(areaId).units.reduce((armiesCount, unit) => {
+    let armiesCount = 0;
+    for (const unit of game.getArea(areaId).units) {
       // const unit = this.components.UNIT[unitId];
       if (unit.type === 'infantry' || unit.type === 'cavalry') {
         armiesCount += unit.quantity;
       }
-      return armiesCount;
-    }, 0);
+    }
+    return armiesCount;
   }
 
   private getNPlacedArmiesByNation(
     nationId: BritNationId,
     game: BritGameStore,
   ) {
-    return this.getOccupiedAreasByNation(nationId, game).reduce(
-      (counter, area) => counter + this.getNPlacedArmiesByArea(area.id, game),
-      0,
-    );
+    let counter = 0;
+    for (const area of this.getOccupiedAreasByNation(nationId, game)) {
+      counter += this.getNPlacedArmiesByArea(area.id, game);
+    }
+    return counter;
   }
 
   private getOccupiedLandsByNation(

@@ -86,22 +86,18 @@ export class BritGamePage implements OnInit {
     playerDoc: BritPlayerDoc,
     user: BgUser,
   ): BritPlayer {
-    if (playerDoc.isAi) {
-      return {
+    return playerDoc.isAi ? {
         ...this.playerDocToAPlayerInit(playerDoc),
         isAi: true,
         isLocal: false,
         isRemote: false,
-      };
-    } else {
-      return {
+      } : {
         ...this.playerDocToAPlayerInit(playerDoc),
         isAi: false,
         controller: playerDoc.controller,
         isLocal: user.id === playerDoc.controller.id,
         isRemote: user.id !== playerDoc.controller.id,
       };
-    }
   }
 
   private playerDocToAPlayerInit(playerDoc: BritPlayerDoc): ABritPlayer {

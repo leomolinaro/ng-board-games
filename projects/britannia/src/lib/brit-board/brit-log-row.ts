@@ -157,10 +157,10 @@ export class BritLogRow {
         }
         fragments.push(
           this.string(` ${quantity === 1 ? 'moves' : 'move'} from `),
+          this.area(l.units[0].areaId),
+          this.string(' to '),
+          this.area(l.toAreaId),
         );
-        fragments.push(this.area(l.units[0].areaId));
-        fragments.push(this.string(' to '));
-        fragments.push(this.area(l.toAreaId));
         return fragments;
       }
     }

@@ -44,14 +44,9 @@ export class Ugluk extends WotrPlayableCharacterCard {
   public readonly characterId = 'ugluk';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (
-      (this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
+    return ((this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some((r) => this.isValidRegion(r))
-    ) {
-      return true;
-    }
-    return false;
+      this.q.regions().some((r) => this.isValidRegion(r)));
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {

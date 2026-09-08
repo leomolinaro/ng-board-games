@@ -205,8 +205,10 @@ export class WotrUnitUi {
     const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingArmy);
     const movement = moveArmy(movingArmy.regionId, toRegionId, leftUnits);
     this.unitHandler.moveArmy(movement, frontId);
-    const actions: WotrAction[] = [movement];
-    actions.push(...(await this.checkStackingLimit(toRegionId, frontId)));
+    const actions: WotrAction[] = [
+      movement,
+      ...(await this.checkStackingLimit(toRegionId, frontId)),
+    ];
     return actions;
   }
 
@@ -248,7 +250,7 @@ export class WotrUnitUi {
     army: WotrArmy,
     regionId: WotrRegionId,
     stackingLimit: number,
-    underSiege: boolean,
+    isUnderSiege: boolean,
   ): Promise<WotrAction[]> {
     const nArmyUnits = this.unitUtils.nArmyUnits(army);
     if (nArmyUnits <= stackingLimit) return [];
@@ -256,17 +258,23 @@ export class WotrUnitUi {
       regionIds: [regionId],
       type: 'disband',
       nArmyUnits: nArmyUnits - stackingLimit,
-      underSiege,
+      isUnderSiege: isUnderSiege,
     });
     const actions: WotrAction[] = [];
-    units.regulars?.forEach((unit) => {
-      actions.push(disbandRegularUnit(regionId, unit.nation, unit.quantity));
-      this.unitHandler.disbandRegularUnit(unit.quantity, unit.nation, regionId);
-    });
-    units.elites?.forEach((unit) => {
-      actions.push(disbandEliteUnit(regionId, unit.nation, unit.quantity));
-      this.unitHandler.disbandEliteUnit(unit.quantity, unit.nation, regionId);
-    });
+    if (units.regulars)
+      for (const unit of units.regulars) {
+        actions.push(disbandRegularUnit(regionId, unit.nation, unit.quantity));
+        this.unitHandler.disbandRegularUnit(
+          unit.quantity,
+          unit.nation,
+          regionId,
+        );
+      }
+    if (units.elites)
+      for (const unit of units.elites) {
+        actions.push(disbandEliteUnit(regionId, unit.nation, unit.quantity));
+        this.unitHandler.disbandEliteUnit(unit.quantity, unit.nation, regionId);
+      }
     return actions;
   }
 
@@ -289,7 +297,7 @@ export class WotrUnitUi {
         frontId,
         constraints,
       );
-      if (!validUnits.length) return actions;
+      if (validUnits.length === 0) return actions;
       const unit = await this.ui.askReinforcementUnit(
         'Choose a unit to recruit',
         {
@@ -308,10 +316,11 @@ export class WotrUnitUi {
           if (unit.type === 'elite') {
             if (constraints.excludedRegionsForEliteUnits.has(r.id))
               return false;
-          } else if (unit.type === 'leader') {
-            if (constraints.excludedRegionsForLeaderUnits.has(r.id))
-              return false;
-          }
+          } else if (
+            unit.type === 'leader' &&
+            constraints.excludedRegionsForLeaderUnits.has(r.id)
+          )
+            return false;
           return true;
         });
       const regionId = await this.ui.askRegion(
@@ -389,13 +398,13 @@ export class WotrUnitUi {
       await this.ui.askContinue('No reinforcements available');
       return [];
     }
-    if (!availableRegionIds.length) {
+    if (availableRegionIds.length === 0) {
       await this.ui.askContinue('No free regions available');
       return [];
     }
     let nLeftRegions = Math.min(availableRegionIds.length, nMaxRegions);
     let nLeftUnits = Math.min(nReinforcements, nLeftRegions * nUnitsPerRegion);
-    let continuee: boolean;
+    let shouldContinue: boolean;
     const actions: WotrAction[] = [];
     do {
       const regionId = await this.ui.askRegion(
@@ -411,18 +420,14 @@ export class WotrUnitUi {
           nLeftUnits - (nLeftRegions - 1) * nUnitsPerRegion,
         );
         const nMaxUnits = Math.min(nLeftUnits, nUnitsPerRegion);
-        if (nMinUnits === nMaxUnits) {
-          nUnits = nMaxUnits;
-        } else {
-          nUnits = await this.ui.askQuantity(
-            'Select number of units to recruit',
-            {
-              min: nMinUnits,
-              max: nMaxUnits,
-              default: nMaxUnits,
-            },
-          );
-        }
+        nUnits =
+          nMinUnits === nMaxUnits
+            ? nMaxUnits
+            : await this.ui.askQuantity('Select number of units to recruit', {
+                min: nMinUnits,
+                max: nMaxUnits,
+                default: nMaxUnits,
+              });
       }
 
       if (type === 'regulars') {
@@ -436,8 +441,8 @@ export class WotrUnitUi {
       availableRegionIds = availableRegionIds.filter((r) => r !== regionId);
       nLeftRegions--;
       nLeftUnits -= nUnits;
-      continuee = nLeftRegions > 0 && nLeftUnits > 0;
-    } while (continuee);
+      shouldContinue = nLeftRegions > 0 && nLeftUnits > 0;
+    } while (shouldContinue);
     return actions;
   }
 
@@ -448,16 +453,16 @@ export class WotrUnitUi {
   ): Promise<WotrAction[]> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return [];
-    let continuee = true;
+    let shouldContinue = true;
     let nRegulars = 0;
     let nElites = 0;
-    while (continuee) {
+    while (shouldContinue) {
       const units: WotrReinforcementUnit[] = [];
       if (this.q.nation(nationId).hasRegularReinforcements())
         units.push({ nation: nationId, type: 'regular' });
       if (this.q.nation(nationId).hasEliteReinforcements())
         units.push({ nation: nationId, type: 'elite' });
-      if (units.length) {
+      if (units.length > 0) {
         const unit = await this.ui.askReinforcementUnit(
           'Choose a unit to recruit',
           {
@@ -468,9 +473,9 @@ export class WotrUnitUi {
         );
         if (unit.type === 'regular') nRegulars++;
         else nElites++;
-        continuee = nRegulars + nElites < nUnits;
+        shouldContinue = nRegulars + nElites < nUnits;
       } else {
-        continuee = false;
+        shouldContinue = false;
       }
     }
     const actions: WotrAction[] = [];
@@ -495,11 +500,11 @@ export class WotrUnitUi {
   ): Promise<WotrAction[]> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId)) return [];
-    let continuee = true;
+    let shouldContinue = true;
     let nChosenRegulars = 0;
     let nChosenElites = 0;
     let nChosenNazguls = 0;
-    while (continuee) {
+    while (shouldContinue) {
       const units: WotrReinforcementUnit[] = [];
       if (
         nChosenRegulars < nRegulars &&
@@ -516,7 +521,7 @@ export class WotrUnitUi {
         this.q.nation(nationId).hasNazgulReinforcements()
       )
         units.push({ nation: nationId, type: 'nazgul' });
-      if (units.length) {
+      if (units.length > 0) {
         const unit = await this.ui.askReinforcementUnit(
           'Choose a unit to recruit',
           {
@@ -526,23 +531,31 @@ export class WotrUnitUi {
           },
         );
         if (unit) {
-          if (unit.type === 'regular') {
-            this.unitHandler.recruitRegularUnit(1, nationId, regionId);
-            nChosenRegulars++;
-          } else if (unit.type === 'elite') {
-            this.unitHandler.recruitEliteUnit(1, nationId, regionId);
-            nChosenElites++;
-          } else if (unit.type === 'nazgul') {
-            this.unitHandler.recruitNazgul(1, regionId);
-            nChosenNazguls++;
+          switch (unit.type) {
+            case 'regular': {
+              this.unitHandler.recruitRegularUnit(1, nationId, regionId);
+              nChosenRegulars++;
+              break;
+            }
+            case 'elite': {
+              this.unitHandler.recruitEliteUnit(1, nationId, regionId);
+              nChosenElites++;
+              break;
+            }
+            case 'nazgul': {
+              this.unitHandler.recruitNazgul(1, regionId);
+              nChosenNazguls++;
+              break;
+            }
+            // No default
           }
         }
-        continuee =
+        shouldContinue =
           nChosenRegulars < nRegulars ||
           nChosenElites < nElites ||
           nChosenNazguls < nNazguls;
       } else {
-        continuee = false;
+        shouldContinue = false;
       }
     }
     const actions: WotrAction[] = [];
@@ -564,7 +577,7 @@ export class WotrUnitUi {
     const units: WotrReinforcementUnit[] = [];
     if (this.q.nation(nationId).hasRegularReinforcements())
       units.push({ nation: nationId, type: 'regular' });
-    if (!units.length) return null;
+    if (units.length === 0) return null;
     await this.ui.askReinforcementUnit('Choose a unit to recruit', {
       frontId,
       units,
@@ -584,7 +597,7 @@ export class WotrUnitUi {
     const units: WotrReinforcementUnit[] = [];
     if (this.q.nation(nationId).hasEliteReinforcements())
       units.push({ nation: nationId, type: 'elite' });
-    if (!units.length) return null;
+    if (units.length === 0) return null;
     await this.ui.askReinforcementUnit('Choose a unit to recruit', {
       frontId,
       units,
@@ -598,8 +611,8 @@ export class WotrUnitUi {
     regionId: WotrRegionId,
     nationId: WotrNationId,
   ): Promise<WotrAction[]> {
-    const frontId: WotrFrontId = 'free-peoples';
     if (!this.q.nation(nationId).hasLeaderReinforcements()) return [];
+    const frontId: WotrFrontId = 'free-peoples';
     if (!this.q.region(regionId).hasArmy(frontId)) return [];
     await this.ui.askReinforcementUnit('Choose a leader to recruit', {
       frontId,
@@ -664,7 +677,7 @@ export class WotrUnitUi {
     const actions: WotrAction[] = [];
     if (!regionIds) {
       const regionFilter = this.regionFilter(selection);
-      const regions = this.q.regions().filter(regionFilter);
+      const regions = this.q.regions().filter((r) => regionFilter(r));
       regionIds = regions.map((r) => r.id());
     }
     const units = await this.ui.askRegionUnits(
@@ -750,12 +763,12 @@ export class WotrUnitUi {
   async forfeitLeadership(
     params: WotrForfeitLeadershipParams,
   ): Promise<WotrEffectStory> {
-    const continuee = await this.ui.askConfirm(
+    const shouldContinue = await this.ui.askConfirm(
       'Forfeit leadership?',
       'Forfeit leadership',
       'Cancel',
     );
-    if (!continuee)
+    if (!shouldContinue)
       return {
         type: 'card-effect-skip',
         card: params.cardId,
@@ -771,14 +784,15 @@ export class WotrUnitUi {
       leaderRestriction: params.only ?? null,
     });
     const unitComposers: WotrUnitComposer[] = [];
-    units.elites?.forEach((unit) =>
-      unitComposers.push(elite(unit.nation, unit.quantity)),
-    );
-    units.leaders?.forEach((unit) =>
-      unitComposers.push(leader(unit.nation, unit.quantity)),
-    );
+    if (units.elites)
+      for (const unit of units.elites)
+        unitComposers.push(elite(unit.nation, unit.quantity));
+    if (units.leaders)
+      for (const unit of units.leaders)
+        unitComposers.push(leader(unit.nation, unit.quantity));
     if (units.nNazgul) unitComposers.push(nazgul(units.nNazgul));
-    units.characters?.forEach((unit) => unitComposers.push(character(unit)));
+    if (units.characters)
+      for (const unit of units.characters) unitComposers.push(character(unit));
     return {
       type: 'card-effect',
       card: params.cardId,
@@ -804,25 +818,32 @@ export class WotrUnitUi {
           break;
       }
     }
-    if (points === 'oneOrMore') {
-      return `Select one or more ${type}leadership points to forfeit`;
-    } else if (points === 1) {
-      return `Select 1 ${type}leadership point to forfeit`;
-    } else if (points === 'all') {
-      return `Select all ${type}leadership points to forfeit`;
-    } else {
-      return `Select ${points} ${type}leadership points to forfeit`;
+    switch (points) {
+      case 'oneOrMore': {
+        return `Select one or more ${type}leadership points to forfeit`;
+      }
+      case 1: {
+        return `Select 1 ${type}leadership point to forfeit`;
+      }
+      case 'all': {
+        return `Select all ${type}leadership points to forfeit`;
+      }
+      default: {
+        return `Select ${points} ${type}leadership points to forfeit`;
+      }
     }
   }
 
   private forfeitLeadershipPoints(
     params: WotrForfeitLeadershipParams,
-  ): { min: number } | 'all' {
+  ): 'all' | { min: number } {
     if (params.points === 'oneOrMore') {
       return { min: 1 };
-    } else if (typeof params.points === 'number') {
+    }
+    if (typeof params.points === 'number') {
       return { min: params.points };
-    } else if (params.points === 'all') {
+    }
+    if (params.points === 'all') {
       return 'all';
     }
     throw new Error(`Invalid points value`);
@@ -836,16 +857,16 @@ export class WotrUnitUi {
     let fromRegions = dunlandRegions.filter((r) =>
       this.q.region(r).hasArmyUnitsOfNation('isengard'),
     );
-    if (!fromRegions.length) return actions;
-    const move = await this.ui.askConfirm(
+    if (fromRegions.length === 0) return actions;
+    const shouldMove = await this.ui.askConfirm(
       'Want to move armies?',
       'Move',
       'Skip',
     );
-    if (!move) return actions;
-    let continueMoving = true;
+    if (!shouldMove) return actions;
+    let shouldContinueMoving = true;
     let movableUnits = 4;
-    while (continueMoving) {
+    while (shouldContinueMoving) {
       const movingArmy = await this.ui.askRegionUnits('Select units to move', {
         regionIds: fromRegions,
         type: 'rageOfTheDunlendings',
@@ -861,15 +882,14 @@ export class WotrUnitUi {
       movableUnits -= this.unitUtils.nArmyUnits(regionArmy);
       if (action.leftUnits)
         movableUnits += this.unitUtils.nArmyUnits(action.leftUnits);
-      if (fromRegions.length && movableUnits > 0) {
-        continueMoving = await this.ui.askConfirm(
-          'Continue moving armies?',
-          'Move another',
-          'Stop moving',
-        );
-      } else {
-        continueMoving = false;
-      }
+      shouldContinueMoving =
+        fromRegions.length > 0 && movableUnits > 0
+          ? await this.ui.askConfirm(
+              'Continue moving armies?',
+              'Move another',
+              'Stop moving',
+            )
+          : false;
     }
     return actions;
   }
@@ -909,11 +929,10 @@ export class WotrUnitUi {
   }
 
   async faramirsRangersRecruit(): Promise<WotrAction[]> {
-    const actions: WotrAction[] = [];
-    actions.push(
+    const actions: WotrAction[] = [
       ...(await this.recruitRegularsOrElitesByCard('osgiliath', 'gondor', 1)),
-    );
-    actions.push(...(await this.recruitLeaderByCard('osgiliath', 'gondor')));
+      ...(await this.recruitLeaderByCard('osgiliath', 'gondor')),
+    ];
     return actions;
   }
 

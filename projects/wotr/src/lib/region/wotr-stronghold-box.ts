@@ -304,7 +304,7 @@ export class WotrStrongholdBox {
         totalWidth += armyUnit.image.width - reducedWitdh;
         maxHeight = Math.max(armyUnit.image.height, maxHeight);
       }
-      if (army.leaderUnits.length) {
+      if (army.leaderUnits.length > 0) {
         const firstLeaderUnit = army.leaderUnits[0];
         totalWidth += firstLeaderUnit.image.width - reducedWitdh;
       }
@@ -361,9 +361,11 @@ export class WotrStrongholdBox {
   private regionToArmyUnitNodes(
     army: WotrArmy,
   ): [WotrArmyUnitNode[], number, number] {
-    const nRegulars =
-      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
-    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
+    let nRegulars = 0;
+    if (army.regulars)
+      for (const unit of army.regulars) nRegulars += unit.quantity;
+    let nElites = 0;
+    if (army.elites) for (const unit of army.elites) nElites += unit.quantity;
 
     const unitNodes: WotrArmyUnitNode[] = [];
     const nEliteNodes = army.elites ? Math.min(2, army.elites.length) : 0;
@@ -403,43 +405,41 @@ export class WotrStrongholdBox {
     const leaders: (WotrCharacter | WotrNationId)[] = [];
 
     if (army.leaders) {
-      army.leaders.forEach((leader) => {
+      for (const leader of army.leaders) {
         leadership += leader.quantity;
         leaders.push(leader.nation);
-      });
+      }
     }
 
     if (army.characters) {
-      army.characters.forEach((characterId) => {
+      for (const characterId of army.characters) {
         const character = this.characterById()[characterId];
         if (character.front === 'free-peoples') {
           leadership += character.leadership;
           leaders.push(character);
         }
-      });
+      }
     }
 
     leaders.sort((a, b) => this.compareFreePeopleLeaders(a, b));
     const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
-      if (typeof leader === 'string') {
-        return {
-          unitType: 'leader',
-          character: null,
-          nationId: leader,
-          image: this.assets.leaderImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      } else {
-        return {
-          unitType: 'character',
-          character: leader.id,
-          nationId: null,
-          image: this.assets.regionCharacterImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      }
+      return typeof leader === 'string'
+        ? {
+            unitType: 'leader',
+            character: null,
+            nationId: leader,
+            image: this.assets.leaderImage(leader),
+            svgX: 0,
+            svgY: 0,
+          }
+        : {
+            unitType: 'character',
+            character: leader.id,
+            nationId: null,
+            image: this.assets.regionCharacterImage(leader),
+            svgX: 0,
+            svgY: 0,
+          };
     });
     return [unitNodes, leadership];
   }
@@ -454,33 +454,31 @@ export class WotrStrongholdBox {
       leaders.push('nazgul');
     }
     if (army.characters) {
-      army.characters.forEach((characterId) => {
+      for (const characterId of army.characters) {
         const character = this.characterById()[characterId];
         leadership += character.leadership;
         leaders.push(character);
-      });
+      }
     }
     leaders.sort((a, b) => this.compareShadowLeaders(a, b));
     const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
-      if (leader === 'nazgul') {
-        return {
-          unitType: 'nazgul',
-          character: null,
-          nationId: null,
-          image: this.assets.nazgulImage(),
-          svgX: 0,
-          svgY: 0,
-        };
-      } else {
-        return {
-          unitType: 'character',
-          character: leader.id,
-          nationId: null,
-          image: this.assets.regionCharacterImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      }
+      return leader === 'nazgul'
+        ? {
+            unitType: 'nazgul',
+            character: null,
+            nationId: null,
+            image: this.assets.nazgulImage(),
+            svgX: 0,
+            svgY: 0,
+          }
+        : {
+            unitType: 'character',
+            character: leader.id,
+            nationId: null,
+            image: this.assets.regionCharacterImage(leader),
+            svgX: 0,
+            svgY: 0,
+          };
     });
     return [unitNodes, leadership];
   }
@@ -490,18 +488,13 @@ export class WotrStrongholdBox {
     b: WotrCharacter | WotrNationId,
   ) {
     if (typeof a === 'string') {
-      return typeof b === 'string' ? (a < b ? -1 : a === b ? 0 : 1) : 1;
+      if (typeof b !== 'string') return 1;
+      return a.localeCompare(b);
     }
-    if (typeof b === 'string') {
-      return -1;
-    }
+    if (typeof b === 'string') return -1;
     for (const c of SORTED_COMPANIONS) {
-      if (a.id === c) {
-        return -1;
-      }
-      if (b.id === c) {
-        return 1;
-      }
+      if (a.id === c) return -1;
+      if (b.id === c) return 1;
     }
     return 0;
   }

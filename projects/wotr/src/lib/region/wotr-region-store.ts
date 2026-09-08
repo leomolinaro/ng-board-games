@@ -477,27 +477,26 @@ function initialRegion(
   id: WotrRegionId,
   name: string,
   nationId: WotrNationId | null,
-  fortification: boolean,
+  hasFortification: boolean,
   settlement: WotrSettlentType | null,
   passableNeighbors: WotrRegionId[],
   impassableNeighbors: WotrRegionId[],
-  seaside: boolean,
+  isSeaside: boolean,
 ): WotrRegion {
-  const neighbors: WotrNeighbor[] = [];
-  passableNeighbors.forEach((neighborId) =>
-    neighbors.push({ id: neighborId, impassable: false }),
+  const neighbors: WotrNeighbor[] = Array.from(
+    passableNeighbors,
+    (neighborId) => ({ id: neighborId, impassable: false }),
   );
-  impassableNeighbors.forEach((neighborId) =>
-    neighbors.push({ id: neighborId, impassable: true }),
-  );
+  for (const neighborId of impassableNeighbors)
+    neighbors.push({ id: neighborId, impassable: true });
   const region: WotrRegion = {
     id: id,
     name: name,
-    ...(nationId ? { nationId, frontId: frontOfNation(nationId) } : {}),
-    ...(fortification ? { fortification } : {}),
-    ...(settlement ? { settlement } : {}),
+    ...(nationId && { nationId, frontId: frontOfNation(nationId) }),
+    ...(hasFortification && { fortification: hasFortification }),
+    ...(settlement && { settlement }),
     neighbors: neighbors,
-    seaside: seaside,
+    seaside: isSeaside,
     fellowship: false,
   };
   if (settlement && nationId) {
@@ -584,10 +583,16 @@ export class WotrRegionStore {
     nation: WotrNation,
     constraints: WotrRecruitmentConstraints,
   ): boolean {
-    if (constraints.excludedNationsForEliteUnits.has(nation.id))
-      if (this.hasOnlyEliteRecruitments(nation)) return true;
-    if (constraints.excludedNationsForLeaderUnits.has(nation.id))
-      if (this.hasOnlyLeaderRecruitments(nation)) return true;
+    if (
+      constraints.excludedNationsForEliteUnits.has(nation.id) &&
+      this.hasOnlyEliteRecruitments(nation)
+    )
+      return true;
+    if (
+      constraints.excludedNationsForLeaderUnits.has(nation.id) &&
+      this.hasOnlyLeaderRecruitments(nation)
+    )
+      return true;
     return this.regions().some(
       (r) =>
         this.isRecruitmentRegion(r, nation) &&
@@ -600,10 +605,16 @@ export class WotrRegionStore {
     constraints: WotrRecruitmentConstraints,
   ): boolean {
     if (constraints.excludedRegions.has(region.id)) return true;
-    if (constraints.excludedRegionsForEliteUnits.has(region.id))
-      if (this.hasOnlyEliteRecruitments(nation)) return true;
-    if (constraints.excludedRegionsForLeaderUnits.has(region.id))
-      if (this.hasOnlyLeaderRecruitments(nation)) return true;
+    if (
+      constraints.excludedRegionsForEliteUnits.has(region.id) &&
+      this.hasOnlyEliteRecruitments(nation)
+    )
+      return true;
+    if (
+      constraints.excludedRegionsForLeaderUnits.has(region.id) &&
+      this.hasOnlyLeaderRecruitments(nation)
+    )
+      return true;
     return false;
   }
   private hasOnlyEliteRecruitments(nation: WotrNation): boolean {
@@ -706,13 +717,14 @@ export class WotrRegionStore {
       return;
     }
     const characters = region.freeUnits?.characters;
-    characters?.forEach((characterId) => {
-      const character = this.characterStore.character(characterId);
-      if (character.front === region.army?.front) {
-        this.removeCharacterFromFreeUnits(characterId, regionId);
-        this.addCharacterToArmy(characterId, regionId);
+    if (characters)
+      for (const characterId of characters) {
+        const character = this.characterStore.character(characterId);
+        if (character.front === region.army?.front) {
+          this.removeCharacterFromFreeUnits(characterId, regionId);
+          this.addCharacterToArmy(characterId, regionId);
+        }
       }
-    });
   }
   addRegularsToArmy(
     quantity: number,
@@ -1097,7 +1109,7 @@ export class WotrRegionStore {
         }
       }
     }
-    return Array.from(reachable);
+    return [...reachable];
   }
 
   pathsBetweenRegions(
@@ -1115,22 +1127,21 @@ export class WotrRegionStore {
     ];
     while (queue.length > 0) {
       const { path, distance, visited } = queue.shift()!;
-      const currentRegionId = path[path.length - 1];
+      const currentRegionId = path.at(-1)!;
       if (currentRegionId === endRegionId && distance <= maxDistance) {
         allPaths.push(path);
       }
       if (distance < maxDistance) {
         const neighbors = this.region(currentRegionId).neighbors;
         for (const neighbor of neighbors) {
-          if (!neighbor.impassable && !visited.has(neighbor.id)) {
-            const newVisited = new Set(visited);
-            newVisited.add(neighbor.id);
-            queue.push({
-              path: [...path, neighbor.id],
-              distance: distance + 1,
-              visited: newVisited,
-            });
-          }
+          if (neighbor.impassable || visited.has(neighbor.id)) continue;
+          const newVisited = new Set(visited);
+          newVisited.add(neighbor.id);
+          queue.push({
+            path: [...path, neighbor.id],
+            distance: distance + 1,
+            visited: newVisited,
+          });
         }
       }
     }

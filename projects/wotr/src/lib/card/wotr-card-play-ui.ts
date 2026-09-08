@@ -77,8 +77,7 @@ export class WotrCardPlayUi {
         cards: playableCards,
       },
     );
-    actions.push(playCardId(cardId));
-    actions.push(...(await this.playCard(cardId, frontId)));
+    actions.push(playCardId(cardId), ...(await this.playCard(cardId, frontId)));
     return actions;
   }
 
@@ -87,19 +86,17 @@ export class WotrCardPlayUi {
     cardId: WotrCardId,
   ): Promise<WotrStory> {
     const card = getCard(cardId);
-    const confirm = await this.ui.askConfirm(
+    const shouldActivate = await this.ui.askConfirm(
       `Do you want to activate ${card.label} ability?`,
       'Activate',
       'Skip',
     );
-    if (confirm) {
-      return {
-        type: 'card-effect',
-        card: cardId,
-        actions: await ability.play(this.ui),
-      };
-    } else {
-      return { type: 'card-effect-skip', card: cardId };
-    }
+    return shouldActivate
+      ? {
+          type: 'card-effect',
+          card: cardId,
+          actions: await ability.play(this.ui),
+        }
+      : { type: 'card-effect-skip', card: cardId };
   }
 }

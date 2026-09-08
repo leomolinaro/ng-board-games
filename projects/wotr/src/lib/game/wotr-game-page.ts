@@ -182,22 +182,20 @@ export class WotrGamePage implements OnInit, OnDestroy {
     playerDoc: WotrPlayerDoc,
     user: BgUser,
   ): WotrPlayerInfo {
-    if (playerDoc.isAi) {
-      return {
-        ...this.playerDocToAPlayerInfo(playerDoc),
-        isAi: true,
-        isLocal: false,
-        isRemote: false,
-      };
-    } else {
-      return {
-        ...this.playerDocToAPlayerInfo(playerDoc),
-        isAi: false,
-        controller: playerDoc.controller,
-        isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id,
-      };
-    }
+    return playerDoc.isAi
+      ? {
+          ...this.playerDocToAPlayerInfo(playerDoc),
+          isAi: true,
+          isLocal: false,
+          isRemote: false,
+        }
+      : {
+          ...this.playerDocToAPlayerInfo(playerDoc),
+          isAi: false,
+          controller: playerDoc.controller,
+          isLocal: user.id === playerDoc.controller.id,
+          isRemote: user.id !== playerDoc.controller.id,
+        };
   }
 
   private playerDocToAPlayerInfo(playerDoc: WotrPlayerDoc): AWotrPlayerInfo {
@@ -231,11 +229,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
     });
   }
 
-  protected reloadPage(replay: boolean) {
+  protected reloadPage(shouldReplay: boolean) {
     setTimeout(() => location.reload());
     void this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: replay ? { replay } : {},
+      queryParams: shouldReplay ? { replay: shouldReplay } : {},
       queryParamsHandling: 'replace',
     });
   }

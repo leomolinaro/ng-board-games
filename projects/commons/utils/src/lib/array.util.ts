@@ -36,10 +36,11 @@ export function toMap<T, K extends string, V>(
   const vG = valueGetter ?? ((e) => e as unknown as V);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   const map: Record<K, V> = {} as any;
-  array?.forEach((e, index) => {
-    const key = keyGetter(e, index);
-    map[key] = vG(e, key, index);
-  });
+  if (array)
+    for (const [index, e] of array.entries()) {
+      const key = keyGetter(e, index);
+      map[key] = vG(e, key, index);
+    }
   return map;
 }
 
@@ -52,22 +53,20 @@ export function entitiesToNodes<E, N>(
 ): { nodes: N[]; map: Record<string | number, N> } {
   const map: Record<string | number, N> = {};
   const nodes: N[] = [];
-  entities.forEach((entity, index) => {
+  for (const [index, entity] of entities.entries()) {
     const id = getEntityId(entity);
     let node!: N;
     const oldNode = oldMap[id];
     if (oldNode) {
-      if (isEntityUnchanged(entity, oldNode)) {
-        node = oldNode;
-      } else {
-        node = entityToNode(entity, index, oldNode);
-      }
+      node = isEntityUnchanged(entity, oldNode)
+        ? oldNode
+        : entityToNode(entity, index, oldNode);
     } else {
       node = entityToNode(entity, index, null);
     }
     map[id] = node;
     nodes.push(node);
-  });
+  }
   return { map, nodes };
 }
 
@@ -78,23 +77,26 @@ export function group<T, K extends number | string, V = T>(
 ): Record<K, V[]> {
   getValue ??= (e) => e as unknown as V;
   const map = {} as Record<K, V[]>;
-  array?.forEach((e) => {
-    const key = getKey(e);
-    let groupList = map[key];
-    if (!groupList) {
-      groupList = [];
-      map[key] = groupList;
+  if (array)
+    for (const e of array) {
+      const key = getKey(e);
+      let groupList = map[key];
+      if (!groupList) {
+        groupList = [];
+        map[key] = groupList;
+      }
+      groupList.push(getValue(e));
     }
-    groupList.push(getValue(e));
-  });
   return map;
 }
 
 export function shuffle<T>(array: T[]): T[] {
-  const newArray = array.slice();
+  const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    const value = newArray[i];
+    newArray[i] = newArray[j];
+    newArray[j] = value;
   }
   return newArray;
 }

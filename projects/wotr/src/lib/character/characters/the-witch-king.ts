@@ -91,26 +91,27 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
   public handler: WotrAfterCombatRound = async (
     combatRound: WotrCombatRound,
   ) => {
-    if (
+    if (!(
       this.isCharacterInBattle('the-witch-king', combatRound) &&
       combatRound.round === 1 &&
       combatRound.shadow.combatCard
-    ) {
-      this.lastCombatCard = combatRound.shadow.combatCard;
-      await activateCharacterAbility(this, 'the-witch-king', this.shadow);
+    )) {
+      return;
     }
+
+    this.lastCombatCard = combatRound.shadow.combatCard;
+    await activateCharacterAbility(this, 'the-witch-king', this.shadow);
   };
 
   play: () => Promise<WotrAction[]> = async () => {
     const characterCard = this.lastCombatCard!.type === 'character';
-    const actions: WotrAction[] = [];
-    actions.push(
+    const actions: WotrAction[] = [
       await this.ui.cardDrawUi.drawCards(
         1,
         characterCard ? 'character' : 'strategy',
         this.shadow.frontId,
       ),
-    );
+    ];
     return actions;
   };
 

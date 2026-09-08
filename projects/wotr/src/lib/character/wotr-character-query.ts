@@ -97,9 +97,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     const character = this.data();
     if (character.status !== 'inPlay') return false;
     if (character.level === 0) return false;
-    if (character.flying) {
-      if (this.isUnderSiege()) return false;
-    }
+    if (character.flying && this.isUnderSiege()) return false;
     return true;
   }
 

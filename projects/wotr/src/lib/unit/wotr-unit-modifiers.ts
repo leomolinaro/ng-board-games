@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { WotrModifier } from '../commons/wotr-modifier';
 import type { WotrFrontId } from '../front/wotr-front-models';
-import type { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
+import type {
+  WotrArmyUnitType,
+  WotrNationId,
+} from '../nation/wotr-nation-models';
 import type { WotrRegionId } from '../region/wotr-region-models';
 import type { WotrRecruitmentConstraints } from './wotr-unit-handler';
 import type { WotrArmy } from './wotr-unit-models';
@@ -28,12 +31,14 @@ export class WotrUnitModifiers {
 
   nLeaders(army: WotrArmy): number {
     let nLeaders = 0;
-    army.regulars?.forEach((unit) => {
-      if (this.isLeader('regular', unit.nation)) nLeaders += unit.quantity;
-    });
-    army.elites?.forEach((unit) => {
-      if (this.isLeader('elite', unit.nation)) nLeaders += unit.quantity;
-    });
+    if (army.regulars)
+      for (const unit of army.regulars) {
+        if (this.isLeader('regular', unit.nation)) nLeaders += unit.quantity;
+      }
+    if (army.elites)
+      for (const unit of army.elites) {
+        if (this.isLeader('elite', unit.nation)) nLeaders += unit.quantity;
+      }
     return nLeaders;
   }
 

@@ -263,7 +263,7 @@ export class BritMapSlotsGeneratorService {
     const index = randomUtil.getRandomInteger(0, points.length);
     const oldPoint = points[index];
     let newPoint: BritMapLandPoint;
-    if (oldPoint.neighbours.length) {
+    if (oldPoint.neighbours.length > 0) {
       let i = 0;
       do {
         newPoint = randomUtil.getRandomElement(oldPoint.neighbours);

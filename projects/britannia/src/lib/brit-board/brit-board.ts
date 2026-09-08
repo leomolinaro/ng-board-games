@@ -118,11 +118,11 @@ export class BritBoardComponent {
         (u) => this.getUnitNodeId(u) === unitId,
       );
       const selectedUnit =
-        selectedIndex >= 0 ? selectedUnits[selectedIndex] : null;
+        selectedIndex === -1 ? null : selectedUnits[selectedIndex];
       const newSelectedUnits =
-        selectedIndex >= 0
-          ? immutableUtil.listRemoveByIndex(selectedIndex, selectedUnits)
-          : [...selectedUnits];
+        selectedIndex === -1
+          ? [...selectedUnits]
+          : immutableUtil.listRemoveByIndex(selectedIndex, selectedUnits);
       if (unit.type === 'leader' || unit.quantity === 1) {
         if (!selectedUnit) {
           newSelectedUnits.push(unit);
@@ -137,12 +137,9 @@ export class BritBoardComponent {
             : 1,
           unit.quantity,
         ).subscribe((quantity) => {
-          if (quantity != null) {
-            if (quantity > 0) {
-              newSelectedUnits.push({ ...unit, quantity });
-            }
-            this.selectedUnitsChange.emit(newSelectedUnits);
-          }
+          if (quantity == null) return;
+          if (quantity > 0) newSelectedUnits.push({ ...unit, quantity });
+          this.selectedUnitsChange.emit(newSelectedUnits);
         });
       }
     } else {

@@ -119,7 +119,7 @@ export class BritComponents {
 
   areasToMap<V>(getValue: (areaId: BritAreaId) => V): Record<BritAreaId, V> {
     const map: Record<BritAreaId, V> = {} as never;
-    this.AREA_IDS.forEach((areaId) => (map[areaId] = getValue(areaId)));
+    for (const areaId of this.AREA_IDS) map[areaId] = getValue(areaId);
     return map;
   }
 
@@ -133,7 +133,7 @@ export class BritComponents {
     return this.AREA[seaAreaId] as BritSeaArea;
   }
   forEachArea(forEachArea: (area: BritArea) => void): void {
-    this.AREA_IDS.forEach((areaId) => forEachArea(this.AREA[areaId]));
+    for (const areaId of this.AREA_IDS) forEachArea(this.AREA[areaId]);
   }
 
   getNationIdsOfColor(color: BritColor): BritNationId[] {
@@ -153,7 +153,7 @@ export class BritComponents {
     getValue: (nationId: BritNationId) => V,
   ): Record<BritNationId, V> {
     const map: Record<BritNationId, V> = {} as never;
-    this.NATION_IDS.forEach((nationId) => (map[nationId] = getValue(nationId)));
+    for (const nationId of this.NATION_IDS) map[nationId] = getValue(nationId);
     return map;
   }
 
@@ -167,17 +167,17 @@ export class BritComponents {
 
   getUnitTypeLabel(
     unitType: Exclude<BritUnitType, 'leader'>,
-    singular: boolean,
+    isSingular: boolean,
   ) {
     switch (unitType) {
       case 'infantry':
-        return singular ? 'Infantry' : 'Infantries';
+        return isSingular ? 'Infantry' : 'Infantries';
       case 'cavalry':
-        return singular ? 'Cavalry' : 'Cavalries';
+        return isSingular ? 'Cavalry' : 'Cavalries';
       case 'roman-fort':
-        return singular ? 'Fort' : 'Forts';
+        return isSingular ? 'Fort' : 'Forts';
       case 'saxon-buhr':
-        return singular ? 'Buhr' : 'Buhrs';
+        return isSingular ? 'Buhr' : 'Buhrs';
     }
   }
 
@@ -864,7 +864,7 @@ export class BritComponents {
     id: BritLandAreaId,
     name: string,
     region: BritRegionId,
-    difficultTerrain: boolean,
+    isDifficultTerrain: boolean,
     neighbors: BritNeighbor[],
   ) {
     this.AREA[id] = {
@@ -872,7 +872,7 @@ export class BritComponents {
       name: name,
       region: region,
       type: 'land',
-      difficultTerrain: difficultTerrain,
+      difficultTerrain: isDifficultTerrain,
       neighbors: neighbors,
     };
   }
@@ -899,7 +899,9 @@ export class BritComponents {
     nBuildings: number,
     leaderIdAndNames: [BritLeaderId, string][],
   ) {
-    leaderIdAndNames.map((l) => this.initLeader(l[0], l[1]));
+    for (const [leaderId, leaderName] of leaderIdAndNames) {
+      this.initLeader(leaderId, leaderName);
+    }
     this.NATION[nationId] = {
       id: nationId,
       label: label,

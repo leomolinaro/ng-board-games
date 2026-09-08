@@ -137,7 +137,7 @@ export class BgGameRoomDialog<
 
   protected validPlayers = computed(() => {
     const players = this.players();
-    if (!players) return undefined;
+    if (!players) return;
     let nPlayers = 0;
     for (const player of players) {
       switch (player.type) {
@@ -157,10 +157,7 @@ export class BgGameRoomDialog<
           return false;
       }
     }
-    if (nPlayers < 2) {
-      return false;
-    }
-    return true;
+    return !(nPlayers < 2);
   });
 
   private autoStartGame() {
@@ -171,7 +168,7 @@ export class BgGameRoomDialog<
 
   ngAfterViewInit() {
     const optionsRef = this.optionsRef();
-    if (this.optionsComponent && optionsRef) {
+    if (optionsRef && this.optionsComponent) {
       const componentRef = optionsRef.createComponent(this.optionsComponent);
       componentRef.setInput('isOwner', this.isOwner());
       if (this.context.data.protoGame.options) {

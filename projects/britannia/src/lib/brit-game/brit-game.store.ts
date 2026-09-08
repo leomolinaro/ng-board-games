@@ -98,9 +98,7 @@ export class BritGameStore extends signalStore(
     return this.areas()[areaId];
   }
   getPlayerByNation(nationId: BritNationId) {
-    return this.playerList().find((p) =>
-      p.nationIds.some((n) => n === nationId),
-    );
+    return this.playerList().find((p) => p.nationIds.includes(nationId));
   }
 
   // // isLocalPlayer (id: string): boolean { return !this.getPlayer (id).isAi && !this.getPlayer (id).isRemote; }
@@ -269,7 +267,7 @@ export class BritGameStore extends signalStore(
   }
 
   private setNationActive(
-    active: boolean,
+    isActive: boolean,
     nationId: BritNationId,
     s: BritGameState,
   ): BritGameState {
@@ -277,7 +275,7 @@ export class BritGameStore extends signalStore(
       nationId,
       (nation) => ({
         ...nation,
-        active: active,
+        active: isActive,
       }),
       s,
     );
@@ -300,20 +298,7 @@ export class BritGameStore extends signalStore(
             u.nationId === nationId &&
             u.nMovements === nMovements,
         );
-        if (index >= 0) {
-          const unit = area.units[index];
-          if (unit.type === 'leader') {
-            return area;
-          }
-          return {
-            ...area,
-            units: immutableUtil.listReplaceByIndex(
-              index,
-              { ...unit, quantity: unit.quantity + quantity },
-              area.units,
-            ),
-          };
-        } else {
+        if (index === -1) {
           return {
             ...area,
             units: immutableUtil.listPush(
@@ -330,6 +315,16 @@ export class BritGameStore extends signalStore(
             ),
           };
         }
+        const unit = area.units[index];
+        if (unit.type === 'leader') return area;
+        return {
+          ...area,
+          units: immutableUtil.listReplaceByIndex(
+            index,
+            { ...unit, quantity: unit.quantity + quantity },
+            area.units,
+          ),
+        };
       },
       s,
     );
@@ -348,21 +343,19 @@ export class BritGameStore extends signalStore(
         if (unit.type === 'leader') {
           return area;
         }
-        if (unit.quantity <= quantity) {
-          return {
-            ...area,
-            units: immutableUtil.listRemoveByIndex(unitIndex, area.units),
-          };
-        } else {
-          return {
-            ...area,
-            units: immutableUtil.listReplaceByIndex(
-              unitIndex,
-              { ...unit, quantity: unit.quantity - quantity },
-              area.units,
-            ),
-          };
-        }
+        return unit.quantity <= quantity
+          ? {
+              ...area,
+              units: immutableUtil.listRemoveByIndex(unitIndex, area.units),
+            }
+          : {
+              ...area,
+              units: immutableUtil.listReplaceByIndex(
+                unitIndex,
+                { ...unit, quantity: unit.quantity - quantity },
+                area.units,
+              ),
+            };
       },
       s,
     );
@@ -478,7 +471,8 @@ export class BritGameStore extends signalStore(
   applySetup(setup: BritSetup) {
     patchState(this, (s) => {
       const components = new BritComponents();
-      return components.AREA_IDS.reduce((state, areaId) => {
+      let state = s;
+      for (const areaId of components.AREA_IDS) {
         const areaSetup = setup.areas[areaId];
         if (areaSetup) {
           const [nationId, nInfantries] =
@@ -500,14 +494,14 @@ export class BritGameStore extends signalStore(
             state,
           );
         }
-        setup.populationMarkers.forEach((nationId) => {
+        for (const nationId of setup.populationMarkers) {
           state = this.setNationPopulation(0, nationId, state);
-        });
-        setup.activeNations.forEach((nationId) => {
+        }
+        for (const nationId of setup.activeNations) {
           state = this.setNationActive(true, nationId, state);
-        });
-        return state;
-      }, s);
+        }
+      }
+      return state;
     });
   }
 
@@ -543,11 +537,11 @@ export class BritGameStore extends signalStore(
 
   applyArmyMovements(
     armyMovements: BritArmyMovements,
-    doCountMovements: boolean,
+    shouldCountMovements: boolean,
   ) {
     patchState(this, (s) => {
       for (const movement of armyMovements.movements) {
-        s = this.armyMovement(movement, doCountMovements, s);
+        s = this.armyMovement(movement, shouldCountMovements, s);
       }
       for (const movement of armyMovements.movements) {
         s = this.resetAreaNMovements(movement.toAreaId, s);
@@ -571,14 +565,14 @@ export class BritGameStore extends signalStore(
             const newIndex = newUnits.findIndex(
               (u) => u.type === unit.type && u.nationId === unit.nationId,
             );
-            if (newIndex >= 0) {
+            if (newIndex === -1) {
+              newUnits.push({ ...unit, nMovements: 0 });
+            } else {
               const newUnit = newUnits[newIndex];
               if (newUnit.type === 'leader') {
                 throw new Error('Unexpected');
               }
               newUnit.quantity += unit.quantity;
-            } else {
-              newUnits.push({ ...unit, nMovements: 0 });
             }
           }
         }
@@ -591,15 +585,18 @@ export class BritGameStore extends signalStore(
     );
   }
 
-  applyArmyMovement(armyMovement: BritArmyMovement, doCountMovements: boolean) {
+  applyArmyMovement(
+    armyMovement: BritArmyMovement,
+    shouldCountMovements: boolean,
+  ) {
     patchState(this, (s) =>
-      this.armyMovement(armyMovement, doCountMovements, s),
+      this.armyMovement(armyMovement, shouldCountMovements, s),
     );
   }
 
   private armyMovement(
     armyMovement: BritArmyMovement,
-    doCountMovements: boolean,
+    shouldCountMovements: boolean,
     s: BritGameState,
   ): BritGameState {
     for (const unit of armyMovement.units) {
@@ -609,7 +606,7 @@ export class BritGameStore extends signalStore(
           areaLeaderIndex
         ] as BritAreaLeader;
         s = this.removeUnitFromAreaByIndex(areaLeaderIndex, unit.areaId, s);
-        const nMovements = doCountMovements ? areaLeader.nMovements + 1 : 0;
+        const nMovements = shouldCountMovements ? areaLeader.nMovements + 1 : 0;
         s = this.addLeaderToArea(
           unit.leaderId,
           unit.nationId,
@@ -629,7 +626,7 @@ export class BritGameStore extends signalStore(
           unit.quantity,
           s,
         );
-        const nMovements = doCountMovements ? areaUnit.nMovements + 1 : 0;
+        const nMovements = shouldCountMovements ? areaUnit.nMovements + 1 : 0;
         s = this.addUnitsToArea(
           unit.type,
           unit.nationId,

@@ -16,9 +16,8 @@ export class WotrRegionModifiers {
     regionId: WotrRegionId,
     frontId: WotrFrontId,
   ): void {
-    this.afterRegionControlChange
-      .get()
-      .forEach((handler) => handler(regionId, frontId));
+    for (const handler of this.afterRegionControlChange
+      .get()) handler(regionId, frontId);
   }
 
   clear() {

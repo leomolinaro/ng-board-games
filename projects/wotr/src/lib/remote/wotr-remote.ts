@@ -77,7 +77,7 @@ export class WotrRemoteService {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }
   selectStory$(storyId: string, gameId: string) {
-    return this.cloud.select$(storyId + '', this.stories(gameId));
+    return this.cloud.select$(storyId, this.stories(gameId));
   }
   insertStory(storyId: string, story: WotrStoryDoc, gameId: string) {
     return this.cloud.set(storyId, story, this.stories(gameId));

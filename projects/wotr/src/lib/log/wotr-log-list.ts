@@ -48,7 +48,7 @@ export class WotrLogList implements OnInit {
   ngOnInit() {
     const indexes = localStorage.getItem(DEBUG_LOG_INDEXES);
     if (indexes) {
-      indexes.split(',').forEach((i) => (this.debugIndexes[i] = true));
+      for (const i of indexes.split(',')) (this.debugIndexes[i] = true);
     }
   }
 
@@ -61,16 +61,18 @@ export class WotrLogList implements OnInit {
   }
 
   onLogClick(index: number) {
-    if (isDevMode()) {
-      if (this.debugIndexes[index]) {
-        delete this.debugIndexes[index];
-      } else {
-        this.debugIndexes[index] = true;
-      }
-      localStorage.setItem(
-        DEBUG_LOG_INDEXES,
-        Object.keys(this.debugIndexes).join(','),
-      );
+    if (!isDevMode()) {
+    	return;
     }
+
+    if (this.debugIndexes[index]) {
+      delete this.debugIndexes[index];
+    } else {
+      this.debugIndexes[index] = true;
+    }
+    localStorage.setItem(
+      DEBUG_LOG_INDEXES,
+      Object.keys(this.debugIndexes).join(','),
+    );
   }
 }

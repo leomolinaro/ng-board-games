@@ -94,7 +94,7 @@ export class WotrShadowStrategyCards {
               .some((r) => r.isControlledBy('shadow')),
           play: async (ui) => {
             const regions = this.returnToValinorRegions();
-            if (!regions.length) {
+            if (regions.length === 0) {
               await ui.askContinue('No valid Elven strongholds available');
               return [];
             }
@@ -107,7 +107,7 @@ export class WotrShadowStrategyCards {
           effect: async (params) => {
             let regions = [...this.returnToValinorRegions()];
             let regionChooseStory = params.story;
-            while (regions.length) {
+            while (regions.length > 0) {
               const regionChoose = findAction<WotrRegionChoose>(
                 regionChooseStory.actions,
                 'region-choose',
@@ -139,7 +139,7 @@ export class WotrShadowStrategyCards {
                 (r) => r === regionChoose.region,
                 regions,
               );
-              if (regions.length) {
+              if (regions.length > 0) {
                 const story = await this.shadow.chooseRegion(
                   regions,
                   params.cardId,
@@ -195,8 +195,7 @@ export class WotrShadowStrategyCards {
                   if (combatFront.frontId !== 'free-peoples') return true;
                   if (combatRound.round !== 1) return true;
                   const freeArmy = combatRound.defender.army();
-                  if (this.unitUtils.hasCompanions(freeArmy)) return true;
-                  return false;
+                  return this.unitUtils.hasCompanions(freeArmy);
                 },
               },
             ];
@@ -333,7 +332,8 @@ export class WotrShadowStrategyCards {
               .regions()
               .filter((region) => this.isStormcrowRegion(region));
             const nations = new Set<WotrNationId>();
-            regions.forEach((region) => nations.add(region.region().nationId!));
+            for (const region of regions)
+              nations.add(region.region().nationId!);
             const nationId = await ui.askNation(
               'Select a Free Peoples Nation to move back on the Political Track',
               [...nations],
@@ -387,7 +387,7 @@ export class WotrShadowStrategyCards {
                 region.isFreeForArmyMovement('shadow'),
               )
               .filter((r) => r.hasArmyNotUnderSiege('shadow'));
-            if (!targetRegions.length) {
+            if (targetRegions.length === 0) {
               await ui.askContinue(
                 'No valid target regions available for movement',
               );
@@ -409,8 +409,8 @@ export class WotrShadowStrategyCards {
           play: async (ui) => {
             const actions: WotrAction[] = [];
             const doneMovements: WotrMovingUnits[] = [];
-            let continueMoving = true;
-            while (continueMoving) {
+            let shouldContinueMoving = true;
+            while (shouldContinueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions(
                 'shadow',
                 [],
@@ -433,7 +433,7 @@ export class WotrShadowStrategyCards {
                   region.isFreeForArmyMovement('shadow'),
                 )
                 .filter((r) => r.hasArmyNotUnderSiege('shadow'));
-              if (!targetRegions.length) {
+              if (targetRegions.length === 0) {
                 await ui.askContinue(
                   'No valid target regions available for movement',
                 );
@@ -449,7 +449,7 @@ export class WotrShadowStrategyCards {
                 toRegionId,
               );
               actions.push(...movActions);
-              continueMoving = false;
+              shouldContinueMoving = false;
               const movement = findAction<WotrArmyMovement>(
                 movActions,
                 'army-movement',
@@ -460,7 +460,7 @@ export class WotrShadowStrategyCards {
                 toRegion: movement.toRegion,
               });
               if (doneMovements.length < 2) {
-                continueMoving = await ui.askConfirm(
+                shouldContinueMoving = await ui.askConfirm(
                   'Continue moving armies?',
                   'Move another',
                   'Stop moving',
@@ -480,8 +480,8 @@ export class WotrShadowStrategyCards {
           play: async (ui) => {
             const actions: WotrAction[] = [];
             const doneMovements: WotrMovingUnits[] = [];
-            let continueMoving = true;
-            while (continueMoving) {
+            let shouldContinueMoving = true;
+            while (shouldContinueMoving) {
               const regionIds = this.unitRules.armyMovementStartingRegions(
                 'shadow',
                 [],
@@ -503,7 +503,7 @@ export class WotrShadowStrategyCards {
                 .reachableRegions(1, (region) =>
                   region.isFreeForArmyMovement('shadow'),
                 );
-              if (!targetRegions.length) {
+              if (targetRegions.length === 0) {
                 await ui.askContinue(
                   'No valid target regions available for movement',
                 );
@@ -519,7 +519,7 @@ export class WotrShadowStrategyCards {
                 toRegionId,
               );
               actions.push(...movActions);
-              continueMoving = false;
+              shouldContinueMoving = false;
               const movement = findAction<WotrArmyMovement>(
                 movActions,
                 'army-movement',
@@ -530,7 +530,7 @@ export class WotrShadowStrategyCards {
                 toRegion: movement.toRegion,
               });
               if (doneMovements.length < 4) {
-                continueMoving = await ui.askConfirm(
+                shouldContinueMoving = await ui.askConfirm(
                   'Continue moving armies?',
                   'Move another',
                   'Stop moving',
@@ -578,15 +578,10 @@ export class WotrShadowStrategyCards {
                 units,
               );
               return [attack('umbar', toRegionId, retroguard)];
-            } else {
-              actions.push(
-                ...(await ui.unitUi.moveThisArmyTo(
-                  units,
-                  'shadow',
-                  toRegionId,
-                )),
-              );
             }
+            actions.push(
+              ...(await ui.unitUi.moveThisArmyTo(units, 'shadow', toRegionId)),
+            );
             return actions;
           },
           onBattleAbilities: () => {
@@ -594,8 +589,7 @@ export class WotrShadowStrategyCards {
               {
                 modifier: this.battleModifiers.canCeaseModifier,
                 handler: (combatRound: WotrCombatRound) => {
-                  if (combatRound.siege) return true;
-                  return false;
+                  return combatRound.siege;
                 },
               },
             ];
@@ -625,8 +619,7 @@ export class WotrShadowStrategyCards {
               'Select a region to recruit Isengard units',
               regions,
             );
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitUnitsInSameRegionByCard(
                 region,
                 'isengard',
@@ -634,13 +627,11 @@ export class WotrShadowStrategyCards {
                 0,
                 0,
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.rageOfTheDunledingsMoveUnits(
                 region,
                 dunlandRegions,
               )),
-            );
+            ];
             return actions;
           },
         };
@@ -738,7 +729,7 @@ export class WotrShadowStrategyCards {
               const regions = this.q
                 .regions()
                 .filter((r) => r.hasRegularUnitsOfNation('sauron'));
-              if (!regions.length) return actions;
+              if (regions.length === 0) return actions;
               const region = await ui.askRegion(
                 'Select a region to upgrade a Sauron regular unit',
                 regions.map((r) => r.id()),
@@ -785,12 +776,12 @@ export class WotrShadowStrategyCards {
               );
               if (eliteRecruitment) {
                 actions.push(eliteRecruitment);
-                const confirm = await ui.askConfirm(
+                const shouldRecruit = await ui.askConfirm(
                   'Recruit a regular unit in Orthanc?',
                   'Yes',
                   'No',
                 );
-                if (confirm) {
+                if (shouldRecruit) {
                   const regularRecruitment =
                     await ui.unitUi.recruitRegularByCard('orthanc', 'isengard');
                   if (regularRecruitment) {
@@ -863,28 +854,25 @@ export class WotrShadowStrategyCards {
             regionIds = regionIds.filter((r) =>
               this.q.region(r).isFreeForRecruitmentByCard('shadow'),
             );
-            if (!regionIds.length) {
+            if (regionIds.length === 0) {
               await ui.askContinue(
                 'No valid regions available for recruitment.',
               );
               return [];
             }
-            let regionId = regionIds[0];
-            if (regionIds.length > 1) {
-              regionId = await ui.askRegion(
-                'Select a region to recruit Sauron units',
-                regionIds,
-              );
-            }
-            const actions: WotrAction[] = [];
-            actions.push(
+            const regionId =
+              regionIds.length > 1
+                ? await ui.askRegion(
+                    'Select a region to recruit Sauron units',
+                    regionIds,
+                  )
+                : regionIds[0];
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 regionId,
                 'sauron',
                 2,
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitUnitsInSameRegionByCard(
                 regionId,
                 'sauron',
@@ -892,7 +880,7 @@ export class WotrShadowStrategyCards {
                 0,
                 1,
               )),
-            );
+            ];
             return actions;
           },
         };
@@ -935,8 +923,7 @@ export class WotrShadowStrategyCards {
       case 'sstr22':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitUnitsInDifferentRegions(
                 1,
                 'sauron',
@@ -947,8 +934,6 @@ export class WotrShadowStrategyCards {
                   .filter((r) => r.isFreeForRecruitment('shadow'))
                   .map((r) => r.id()),
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitUnitsInDifferentRegions(
                 1,
                 'sauron',
@@ -959,7 +944,7 @@ export class WotrShadowStrategyCards {
                   .filter((r) => r.isFreeForRecruitment('shadow'))
                   .map((r) => r.id()),
               )),
-            );
+            ];
             return actions;
           },
         };

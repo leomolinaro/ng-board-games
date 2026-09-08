@@ -48,8 +48,7 @@ export class WotrFrontHandler {
     };
 
     for (const region of this.regionStore.regions()) {
-      if (region.settlement === 'stronghold' || region.settlement === 'city') {
-        if (
+      if ((region.settlement === 'stronghold' || region.settlement === 'city') && 
           region.frontId &&
           region.controlledBy &&
           region.controlledBy !== region.frontId
@@ -57,7 +56,6 @@ export class WotrFrontHandler {
           points[region.controlledBy] +=
             region.settlement === 'stronghold' ? 2 : 1;
         }
-      }
     }
     this.frontStore.setVictoryPoints(points['free-peoples'], 'free-peoples');
     this.frontStore.setVictoryPoints(points.shadow, 'shadow');

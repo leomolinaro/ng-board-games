@@ -290,22 +290,19 @@ export class BaronyGameStore extends signalStore(
     if (movement.conflict) {
       const land = this.getLand(movement.toLand);
       let villagePlayer: BaronyPlayer | null = null;
-      land.pawns
-        .filter((pawn) => pawn.color !== playerId)
-        .forEach((pawn) => {
-          const pawnPlayer = this.playerList().find(
-            (p) => p.id === pawn.color,
-          )!;
-          this.removePawnFromLandTile(pawn.type, pawn.color, land.coordinates);
-          this.addPawnToPlayer(pawn.type, pawnPlayer.id);
-          if (pawn.type === 'village') {
-            villagePlayer = pawnPlayer;
-          }
-        });
+      const playerPawns = land.pawns.filter((pawn) => pawn.color !== playerId);
+      for (const pawn of playerPawns) {
+        const pawnPlayer = this.playerList().find((p) => p.id === pawn.color)!;
+        this.removePawnFromLandTile(pawn.type, pawn.color, land.coordinates);
+        this.addPawnToPlayer(pawn.type, pawnPlayer.id);
+        if (pawn.type === 'village') {
+          villagePlayer = pawnPlayer;
+        }
+      }
       if (villagePlayer && movement.gainedResource) {
         this.removeResourceFromPlayer(
           movement.gainedResource,
-          (villagePlayer as BaronyPlayer).id,
+          villagePlayer.id,
         );
         this.addResourceToPlayer(movement.gainedResource, playerId);
       }
@@ -360,7 +357,7 @@ export class BaronyGameStore extends signalStore(
   }
 
   applyNobleTitle(resources: BaronyResourceType[], playerId: BaronyColor) {
-    resources.forEach((resource) => this.discardResource(resource, playerId));
+    for (const resource of resources) this.discardResource(resource, playerId);
     this.addVictoryPoints(15, playerId);
   }
 

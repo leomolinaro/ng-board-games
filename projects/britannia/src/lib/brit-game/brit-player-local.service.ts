@@ -44,15 +44,15 @@ export class BritPlayerLocalService implements BritPlayerService {
       const ipIndex = placement.infantryPlacement.findIndex(
         (ip) => (typeof ip === 'object' ? ip.areaId : ip) === landAreaId,
       );
-      if (ipIndex >= 0) {
+      if (ipIndex === -1) {
+        placement.infantryPlacement.push(landAreaId);
+      } else {
         let ip = placement.infantryPlacement[ipIndex];
         ip = {
           areaId: landAreaId,
           quantity: typeof ip === 'object' ? ip.quantity + 1 : 2,
         };
         placement.infantryPlacement[ipIndex] = ip;
-      } else {
-        placement.infantryPlacement.push(landAreaId);
       }
     }
     return placement;
@@ -103,44 +103,37 @@ export class BritPlayerLocalService implements BritPlayerService {
     playerId: BritColor,
     movements: BritArmyMovement[],
   ): Promise<BritArmyMovement | 'pass'> {
-    const unitsOrPass = await this.chooseUnitsForMovement(
+    let unitsOrPass = await this.chooseUnitsForMovement(
       nationId,
       playerId,
       movements,
     );
     const armyMovementOrPass =
       unitsOrPass === 'pass' ? 'pass' : { units: unitsOrPass, toAreaId: null! };
-    if (armyMovementOrPass === 'pass') {
-      return 'pass';
-    } else if (armyMovementOrPass.toAreaId) {
-      return armyMovementOrPass;
-    } else {
-      this.ui.updateUi('Units selected', (s) => ({
-        ...s,
-        selectedUnits: armyMovementOrPass.units,
-      }));
-      if (armyMovementOrPass.units.length) {
-        const unitsOrAreaId = await this.chooseUnitsOrAreaForMovement(
-          nationId,
-          playerId,
-          armyMovementOrPass.units,
-        );
-        if (typeof unitsOrAreaId === 'string') {
-          return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
-        } else {
-          return { ...armyMovementOrPass, units: unitsOrAreaId };
-        }
-      } else {
-        const unitsOrPass = await this.chooseUnitsForMovement(
-          nationId,
-          playerId,
-          movements,
-        );
-        return unitsOrPass === 'pass'
-          ? 'pass'
-          : { ...armyMovementOrPass, units: unitsOrPass };
-      }
+    if (armyMovementOrPass === 'pass') return 'pass';
+    if (armyMovementOrPass.toAreaId) return armyMovementOrPass;
+    this.ui.updateUi('Units selected', (s) => ({
+      ...s,
+      selectedUnits: armyMovementOrPass.units,
+    }));
+    if (armyMovementOrPass.units.length > 0) {
+      const unitsOrAreaId = await this.chooseUnitsOrAreaForMovement(
+        nationId,
+        playerId,
+        armyMovementOrPass.units,
+      );
+      return typeof unitsOrAreaId === 'string'
+        ? { ...armyMovementOrPass, toAreaId: unitsOrAreaId }
+        : { ...armyMovementOrPass, units: unitsOrAreaId };
     }
+    unitsOrPass = await this.chooseUnitsForMovement(
+      nationId,
+      playerId,
+      movements,
+    );
+    return unitsOrPass === 'pass'
+      ? 'pass'
+      : { ...armyMovementOrPass, units: unitsOrPass };
   }
 
   private async chooseUnitsForMovement(
@@ -159,7 +152,7 @@ export class BritPlayerLocalService implements BritPlayerService {
       message: 'Select one or more units to be moved.',
       validUnits: validUnits,
       selectedUnits: [],
-      canCancel: !!movements.length,
+      canCancel: movements.length > 0,
       canPass: true,
     }));
     return (

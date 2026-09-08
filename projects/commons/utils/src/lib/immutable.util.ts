@@ -6,26 +6,23 @@ function error(msg: string) {
 
 export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
   if (list) {
-    const index = list.findIndex(matcher);
-    if (index >= 0) {
-      return listRemoveByIndex(index, list);
-    } else {
+    const index = list.findIndex((element) => matcher(element));
+    if (index === -1) {
       error('match not found');
       return list;
     }
-  } else {
-    error('empty list');
-    return list;
+    return listRemoveByIndex(index, list);
   }
+  error('empty list');
+  return list;
 }
 
 export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
   if (list) {
     return list.filter((e) => !matcher(e));
-  } else {
-    error('empty list');
-    return list;
   }
+  error('empty list');
+  return list;
 }
 
 export function listRemoveByIndex<T>(index: number, list: T[]) {
@@ -38,17 +35,15 @@ export function listReplaceFirst<T>(
   list: T[],
 ) {
   if (list) {
-    const index = list.findIndex(matcher);
-    if (index >= 0) {
-      return listReplaceByIndex(index, element, list);
-    } else {
+    const index = list.findIndex((element) => matcher(element));
+    if (index === -1) {
       error('match not found');
       return list;
     }
-  } else {
-    error('empty list');
-    return list;
+    return listReplaceByIndex(index, element, list);
   }
+  error('empty list');
+  return list;
 }
 
 export function listReplaceFirstOrInsert<T>(
@@ -58,15 +53,12 @@ export function listReplaceFirstOrInsert<T>(
   list: T[],
 ) {
   if (list) {
-    const index = list.findIndex(matcher);
-    if (index >= 0) {
-      return listReplaceByIndex(index, element, list);
-    } else {
-      return listInsert(element, insertIndex, list);
-    }
-  } else {
-    return listInsert(element, insertIndex, list);
+    const index = list.findIndex((element) => matcher(element));
+    return index === -1
+      ? listInsert(element, insertIndex, list)
+      : listReplaceByIndex(index, element, list);
   }
+  return listInsert(element, insertIndex, list);
 }
 
 export function listUpdateFirstOrPush<T>(
@@ -75,14 +67,13 @@ export function listUpdateFirstOrPush<T>(
   pusher: () => T,
   list: T[],
 ) {
-  const index = list.findIndex(matcher);
-  if (index >= 0) {
-    const newElement = updater(list[index]);
-    return listReplaceByIndex(index, newElement, list);
-  } else {
+  const index = list.findIndex((element) => matcher(element));
+  if (index === -1) {
     const newElement = pusher();
     return listPush([newElement], list);
   }
+  const newElement = updater(list[index]);
+  return listReplaceByIndex(index, newElement, list);
 }
 
 /**
@@ -104,27 +95,19 @@ export function listInsert<T>(element: T, index: number, list: T[]) {
       if (index > list.length) {
         error('index greater than list length');
         return list;
-      } else {
-        const newArray = [...list];
-        newArray.splice(index, 0, element);
-        return newArray;
       }
-    } else {
-      return [...list, element];
+      const newArray = [...list];
+      newArray.splice(index, 0, element);
+      return newArray;
     }
-  } else {
-    return [element];
+    return [...list, element];
   }
+  return [element];
 }
 
 export function listPush<T>(toPush: T[], list: T[]) {
   if (toPush && toPush.length > 0) {
-    if (list) {
-      return [...list, ...toPush];
-    } else {
-      return [...toPush];
-    }
-  } else {
-    return list;
+    return list ? [...list, ...toPush] : [...toPush];
   }
+  return list;
 }

@@ -53,18 +53,18 @@ export class BaronyScoreboard {
   protected counterNodes = computed<BaronyCounterNode[]>(() => {
     const counterNodes: BaronyCounterNode[] = [];
     const playersByScore: Record<number, BaronyPlayer[]> = {};
-    this.players().forEach((p) => {
+    for (const p of this.players()) {
       let sameScorePlayers = playersByScore[p.score];
       if (!sameScorePlayers) {
         sameScorePlayers = [];
         playersByScore[p.score] = sameScorePlayers;
       }
       sameScorePlayers.push(p);
-    });
+    }
     objectUtil.forEachProp(
       playersByScore,
       (_score, players: BaronyPlayer[]) => {
-        players.forEach((p, index) => {
+        for (const [index, p] of players.entries()) {
           let row = 0;
           let col;
           if (p.score % 15 === 0) {
@@ -82,7 +82,7 @@ export class BaronyScoreboard {
             x: 200 + row * 70 + col * 105 + index * 5,
             y: 200 + row * 70 + index * 5,
           });
-        });
+        }
       },
     );
     return counterNodes;

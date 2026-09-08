@@ -166,11 +166,7 @@ export class WotrMap {
         clientP.x,
         clientP.y,
       )?.id;
-      if (elementId?.startsWith('wotr-region-')) {
-        return elementId.slice(12) as WotrRegionId;
-      } else {
-        return null;
-      }
+      return elementId?.startsWith('wotr-region-') ? (elementId.slice(12) as WotrRegionId) : null;
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;

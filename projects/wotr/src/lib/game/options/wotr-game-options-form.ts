@@ -114,21 +114,14 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
   expansionsChange(expansions: WotrExpansionId[]) {
     for (const expansion of expansions) {
       const requiredExpansions = getExpansion(expansion).requires ?? [];
-
-      if (
-        requiredExpansions.some((required) => !expansions.includes(required))
-      ) {
+      if (requiredExpansions.some((required) => !expansions.includes(required)))
         expansions = expansions.filter((e) => e !== expansion);
-      }
     }
     let variants = this.options().variants;
     for (const variant of variants) {
       const requiredExpansions = getVariant(variant).requires || [];
-      if (
-        requiredExpansions.some((required) => !expansions.includes(required))
-      ) {
+      if (requiredExpansions.some((required) => !expansions.includes(required)))
         variants = variants.filter((v) => v !== variant);
-      }
     }
     this.options.update((o) => ({ ...o, expansions, variants }));
   }

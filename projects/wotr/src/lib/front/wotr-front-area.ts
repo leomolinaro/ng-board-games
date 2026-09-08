@@ -276,7 +276,7 @@ export class WotrFrontArea {
 
   private handCards = computed(() => this.front().handCards);
   protected sortedHandCards = computed(() => {
-    const cards = this.handCards().slice();
+    const cards = [...this.handCards()];
     cards.sort((a, b) => a.localeCompare(b));
     return cards;
   });
@@ -352,8 +352,8 @@ export class WotrFrontArea {
     const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
     if (!reinforcementUnitSelection) return;
     if (
-      !reinforcementUnitSelection.units.some(
-        (u) => u.nation === nationId && u.type === type,
+      reinforcementUnitSelection.units.every(
+        (u) => !(u.nation === nationId && u.type === type),
       )
     )
       return;

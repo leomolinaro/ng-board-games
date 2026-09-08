@@ -70,9 +70,8 @@ export class BgCloudService {
       queryFn(qf);
       const q = query(this.getCollectionRef(coll), ...qf.get());
       return this.collectionData$<T>(q);
-    } else {
-      return this.collectionData$<T>(this.getCollectionRef(coll));
     }
+    return this.collectionData$<T>(this.getCollectionRef(coll));
   }
 
   getAll$<T>(
@@ -88,7 +87,9 @@ export class BgCloudService {
   ): Promise<T[]> {
     const snapshot = await this.getDocs(coll, queryFn);
     const result: T[] = [];
-    snapshot.forEach((d) => result.push(d.data()));
+    snapshot.forEach((d) => {
+      result.push(d.data());
+    });
     return result;
   }
 
@@ -206,7 +207,9 @@ export class BgCloudService {
   async deleteAll<T>(coll: BgCloudCollection<T>) {
     const snapshot = await this.getDocs(coll);
     const deletes: Promise<void>[] = [];
-    snapshot.forEach((r) => deletes.push(this.delete(r.id, coll)));
+    snapshot.forEach((r) => {
+      deletes.push(this.delete(r.id, coll));
+    });
     await Promise.all(deletes);
   }
 

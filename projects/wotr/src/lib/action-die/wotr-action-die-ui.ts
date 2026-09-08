@@ -266,8 +266,10 @@ export class WotrActionDieUi {
     } else {
       choices.push(this.ui.characterUi.moveMinionsChoice);
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
-    choices.push(this.skipDieChoice(die));
+    choices.push(
+      ...this.actionDieModifiers.getActionDieChoices(die, frontId),
+      this.skipDieChoice(die),
+    );
     return this.ui.askDieStoryChoice(
       die,
       'Choose an action for the character die',
@@ -298,8 +300,10 @@ export class WotrActionDieUi {
       if (this.q.kome())
         choices.push(this.ui.characterUi.awakeSovereignChoice('muster'));
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
-    choices.push(this.skipDieChoice('muster'));
+    choices.push(
+      ...this.actionDieModifiers.getActionDieChoices(die, frontId),
+      this.skipDieChoice('muster'),
+    );
     return this.ui.askDieStoryChoice(
       die,
       'Choose an action for the muster die',
@@ -325,8 +329,10 @@ export class WotrActionDieUi {
       if (this.q.kome())
         choices.push(this.ui.characterUi.awakeSovereignChoice('muster'));
     }
-    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
-    choices.push(this.skipDieChoice('muster-army'));
+    choices.push(
+      ...this.actionDieModifiers.getActionDieChoices(die, frontId),
+      this.skipDieChoice('muster-army'),
+    );
     return this.ui.askDieStoryChoice(
       die,
       'Choose an action for the muster-army die',
@@ -345,13 +351,14 @@ export class WotrActionDieUi {
       this.changeMusterDieChoice(die),
       this.changeEventDieChoice(die),
     ];
-    if (frontId === 'free-peoples') {
+    if (frontId === 'free-peoples')
       choices.push(
         this.ui.characterUi.bringCharacterIntoPlayChoice('will-of-the-west'),
       );
-    }
-    choices.push(...this.actionDieModifiers.getActionDieChoices(die, frontId));
-    choices.push(this.skipDieChoice(die));
+    choices.push(
+      ...this.actionDieModifiers.getActionDieChoices(die, frontId),
+      this.skipDieChoice(die),
+    );
     return this.ui.askDieStoryChoice(
       die,
       'Choose an action for the Will of the West die',

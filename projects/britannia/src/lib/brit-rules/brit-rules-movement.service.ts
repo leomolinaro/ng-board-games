@@ -15,14 +15,14 @@ export class BritRulesMovementService {
     game: BritGameStore,
   ): BritAreaUnit[] {
     const units: BritAreaUnit[] = [];
-    this.components.AREA_IDS.forEach((areaId) => {
+    for (const areaId of this.components.AREA_IDS) {
       const areaUnits = this.getValidUnitsByNationByArea(
         areaId,
         nationId,
         game,
       );
       units.push(...areaUnits);
-    });
+    }
     return units;
   }
 
@@ -57,11 +57,9 @@ export class BritRulesMovementService {
         if (areaUnit.nMovements < 3) {
           validUnits.push(areaUnit);
         }
-      } else if (areaUnit.type === 'infantry') {
-        if (areaUnit.nMovements < 2) {
+      } else if (areaUnit.type === 'infantry' && areaUnit.nMovements < 2) {
           validUnits.push(areaUnit);
         }
-      }
     }
     return validUnits;
   }
@@ -73,11 +71,11 @@ export class BritRulesMovementService {
   ): BritAreaId[] {
     const validAreas: BritAreaId[] = [];
     const area = this.components.getArea(areaId);
-    area.neighbors.forEach((n) => {
+    for (const n of area.neighbors) {
       const { id: neiAreaId } = typeof n === 'object' ? n : { id: n };
       const neiArea = this.components.getArea(neiAreaId);
       if (neiArea.type === 'land') validAreas.push(neiAreaId);
-    });
+    }
     return validAreas;
   }
 }

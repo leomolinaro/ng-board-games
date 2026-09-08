@@ -128,13 +128,11 @@ export class WotrCards {
   private createCard(cardId: WotrCardId): WotrEventCard {
     if (isFreePeopleCharacterCard(cardId)) {
       return this.freePeopleCharacterCards.createCard(cardId);
-    } else if (isFreePeopleStrategyCard(cardId)) {
-      return this.freePeopleStrategyCards.createCard(cardId);
-    } else if (isShadowCharacterCard(cardId)) {
-      return this.shadowCharacterCards.createCard(cardId);
-    } else {
-      return this.shadowStrategyCards.createCard(cardId);
     }
+    if (isFreePeopleStrategyCard(cardId)) {
+      return this.freePeopleStrategyCards.createCard(cardId);
+    }
+    return isShadowCharacterCard(cardId) ? this.shadowCharacterCards.createCard(cardId) : this.shadowStrategyCards.createCard(cardId);
   }
 
   isPlayableCard(cardId: WotrCardId) {

@@ -52,14 +52,11 @@ export function getValidLandsForSetupPlacement(
     if (lt.type === 'forest') {
       return false;
     }
-    if (lt.pawns.length) {
+    if (lt.pawns.length > 0) {
       return false;
     }
     const nearbyLandTiles = getNearbyLands(lt.coordinates, game);
-    if (nearbyLandTiles.some((nlt) => nlt.pawns.length)) {
-      return false;
-    }
-    return true;
+    return nearbyLandTiles.every((nlt) => nlt.pawns.length === 0);
   });
   return validLandTiles;
 }
@@ -175,11 +172,9 @@ export function getMaxKnightForRecruitment(
 ): number {
   const player = game.getPlayer(playerId);
   const playerKnights = player.pawns.knight;
-  if (isLandTileAdiacentToLake(land, game)) {
-    return Math.min(playerKnights, 3);
-  } else {
-    return Math.min(playerKnights, 2);
-  }
+  return isLandTileAdiacentToLake(land, game)
+    ? Math.min(playerKnights, 3)
+    : Math.min(playerKnights, 2);
 }
 
 export function getValidLandsForNewCity(
@@ -331,9 +326,10 @@ function isValidMovementTarget(
   const player = game.getPlayer(playerId);
   return (
     land.type !== 'lake' &&
-    !land.pawns.some(
+    land.pawns.every(
       (p) =>
-        p.color !== player.id && (p.type === 'city' || p.type === 'stronghold'),
+        p.color === player.id ||
+        !(p.type === 'city' || p.type === 'stronghold'),
     ) &&
     !hasTwoOrMorePawnsOfSameOpponent(land.coordinates, player.id, game) &&
     !(
@@ -393,8 +389,8 @@ function isValidLandForNewCity(
     land.pawns.some((p) => p.type === 'village' && p.color === player.id) &&
     land.type !== 'forest' &&
     !hasOneOrMoreOpponentKnight(landCoordinates, playerId, game) &&
-    !getNearbyLands(landCoordinates, game).some((nl) =>
-      nl.pawns.some((p) => p.type === 'city'),
+    getNearbyLands(landCoordinates, game).every((nl) =>
+      nl.pawns.every((p) => p.type !== 'city'),
     )
   );
 }
@@ -406,7 +402,7 @@ function isValidLandForExpedition(
   const land = game.getLand(landCoordinates);
   return (
     land.type !== 'lake' &&
-    !land.pawns.length &&
+    land.pawns.length === 0 &&
     getNearbyLands(landCoordinates, game).length < 6
   );
 }
@@ -432,11 +428,10 @@ export function isNobleTitleValid(
 
 function getPlayerResourcePoints(playerId: BaronyColor, game: BaronyGameStore) {
   const player = game.getPlayer(playerId);
-  const sum = BARONY_RESOURCE_TYPES.reduce(
-    (pSum, resource) =>
-      pSum + player.resources[resource] * getResourcePoints(resource),
-    0,
-  );
+  let sum = 0;
+  for (const resource of BARONY_RESOURCE_TYPES) {
+    sum += player.resources[resource] * getResourcePoints(resource);
+  }
   return sum;
 }
 
@@ -512,11 +507,7 @@ export function isLandTileAdiacentToLake(
   return offsets.some((o) => {
     const adiacentC = { x: land.x + o.x, y: land.y + o.y, z: land.z + o.z };
     const adiacentLand = game.getLand(adiacentC);
-    if (adiacentLand) {
-      return adiacentLand.type === 'lake';
-    } else {
-      return false;
-    }
+    return adiacentLand ? adiacentLand.type === 'lake' : false;
   });
 }
 
@@ -597,7 +588,7 @@ function hasPawnsByColor(
   const filteredPawns = pawnFilter
     ? land.pawns.filter((p) => pawnFilter(p.type))
     : land.pawns;
-  filteredPawns.forEach((p) => (pawns[p.color] += 1));
+  for (const p of filteredPawns) pawns[p.color] += 1;
   const filteredColors = colorFilter
     ? BARONY_COLORS.filter((c) => colorFilter(c))
     : BARONY_COLORS;

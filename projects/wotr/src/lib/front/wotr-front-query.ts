@@ -30,11 +30,11 @@ export class WotrFrontQuery {
   }
 
   hasActionDice() {
-    return !!this.data().actionDice.length;
+    return this.data().actionDice.length > 0;
   }
 
   hasRulerDie() {
-    return !!this.data().actionDice.some(
+    return this.data().actionDice.some(
       (die) => typeof die !== 'string' && die.type === 'ruler',
     );
   }
@@ -63,7 +63,7 @@ export class WotrFrontQuery {
   }
 
   hasActionTokens() {
-    return !!this.data().actionTokens.length;
+    return this.data().actionTokens.length > 0;
   }
 
   actionTokens() {

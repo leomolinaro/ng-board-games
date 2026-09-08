@@ -145,19 +145,17 @@ export class WotrRegionDialog implements OnInit {
 
   ngOnInit() {
     const region = this.data.region;
-    this.unitNodes = region.army
-      ? this.unitsToUnitNodes(region.army, 'army')
-      : [];
-    this.unitNodes = this.unitNodes.concat(
-      region.underSiegeArmy
-        ? this.unitsToUnitNodes(region.underSiegeArmy, 'underSiege')
-        : [],
-    );
-    this.unitNodes = this.unitNodes.concat(
-      region.freeUnits
-        ? this.unitsToUnitNodes(region.freeUnits, 'freeUnits')
-        : [],
-    );
+    this.unitNodes = [];
+    if (region.army)
+      this.unitNodes.push(...this.unitsToUnitNodes(region.army, 'army'));
+    if (region.underSiegeArmy)
+      this.unitNodes.push(
+        ...this.unitsToUnitNodes(region.underSiegeArmy, 'underSiege'),
+      );
+    if (region.freeUnits)
+      this.unitNodes.push(
+        ...this.unitsToUnitNodes(region.freeUnits, 'freeUnits'),
+      );
     if (this.data.region.fellowship) {
       const image = this.assets.fellowshipImage(
         this.data.fellowship.status === 'revealed',
@@ -188,48 +186,51 @@ export class WotrRegionDialog implements OnInit {
   ): UnitNode[] {
     const d = this.data;
     const unitNodes: UnitNode[] = [];
-    units.regulars?.forEach((armyUnit) => {
-      const image = this.assets.armyUnitImage('regular', armyUnit.nation);
-      for (let i = 0; i < armyUnit.quantity; i++) {
-        unitNodes.push({
-          id: armyUnit.nation + '_regular_' + i,
-          type: 'regular',
-          group,
-          nationId: armyUnit.nation,
-          frontId: frontOfNation(armyUnit.nation),
-          label: d.nationById[armyUnit.nation].regularLabel,
-          ...this.scale(image),
-        });
+    if (units.regulars)
+      for (const armyUnit of units.regulars) {
+        const image = this.assets.armyUnitImage('regular', armyUnit.nation);
+        for (let i = 0; i < armyUnit.quantity; i++) {
+          unitNodes.push({
+            id: armyUnit.nation + '_regular_' + i,
+            type: 'regular',
+            group,
+            nationId: armyUnit.nation,
+            frontId: frontOfNation(armyUnit.nation),
+            label: d.nationById[armyUnit.nation].regularLabel,
+            ...this.scale(image),
+          });
+        }
       }
-    });
-    units.elites?.forEach((armyUnit) => {
-      const image = this.assets.armyUnitImage('elite', armyUnit.nation);
-      for (let i = 0; i < armyUnit.quantity; i++) {
-        unitNodes.push({
-          id: armyUnit.nation + '_elite_' + i,
-          type: 'elite',
-          group,
-          nationId: armyUnit.nation,
-          frontId: frontOfNation(armyUnit.nation),
-          label: d.nationById[armyUnit.nation].eliteLabel,
-          ...this.scale(image),
-        });
+    if (units.elites)
+      for (const armyUnit of units.elites) {
+        const image = this.assets.armyUnitImage('elite', armyUnit.nation);
+        for (let i = 0; i < armyUnit.quantity; i++) {
+          unitNodes.push({
+            id: armyUnit.nation + '_elite_' + i,
+            type: 'elite',
+            group,
+            nationId: armyUnit.nation,
+            frontId: frontOfNation(armyUnit.nation),
+            label: d.nationById[armyUnit.nation].eliteLabel,
+            ...this.scale(image),
+          });
+        }
       }
-    });
-    units.leaders?.forEach((leader) => {
-      const image = this.assets.leaderImage(leader.nation);
-      for (let i = 0; i < leader.quantity; i++) {
-        unitNodes.push({
-          id: leader.nation + '_leader_' + i,
-          type: 'leader',
-          group,
-          nationId: leader.nation,
-          frontId: frontOfNation(leader.nation),
-          label: d.nationById[leader.nation].leaderLabel!,
-          ...this.scale(image),
-        });
+    if (units.leaders)
+      for (const leader of units.leaders) {
+        const image = this.assets.leaderImage(leader.nation);
+        for (let i = 0; i < leader.quantity; i++) {
+          unitNodes.push({
+            id: leader.nation + '_leader_' + i,
+            type: 'leader',
+            group,
+            nationId: leader.nation,
+            frontId: frontOfNation(leader.nation),
+            label: d.nationById[leader.nation].leaderLabel!,
+            ...this.scale(image),
+          });
+        }
       }
-    });
     if (units.nNazgul) {
       const image = this.assets.nazgulImage();
       for (let i = 0; i < units.nNazgul; i++) {
@@ -244,20 +245,21 @@ export class WotrRegionDialog implements OnInit {
         });
       }
     }
-    units.characters?.forEach((characterId) => {
-      const character = this.q.character(characterId);
-      const image = this.assets.regionCharacterImage(character.data());
-      unitNodes.push({
-        id: characterId,
-        type: 'character',
-        character,
-        group,
-        nationId: null,
-        frontId: character.frontId,
-        label: d.characterById[characterId].name,
-        ...this.scale(image),
-      });
-    });
+    if (units.characters)
+      for (const characterId of units.characters) {
+        const character = this.q.character(characterId);
+        const image = this.assets.regionCharacterImage(character.data());
+        unitNodes.push({
+          id: characterId,
+          type: 'character',
+          character,
+          group,
+          nationId: null,
+          frontId: character.frontId,
+          label: d.characterById[characterId].name,
+          ...this.scale(image),
+        });
+      }
     return unitNodes;
   }
 

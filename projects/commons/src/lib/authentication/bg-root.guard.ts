@@ -14,13 +14,9 @@ export class BgRootGuard implements CanActivate {
     return this.authService.getUser$().pipe(
       first(),
       switchMap((user) => {
-        if (user) {
-          return of(true);
-        } else {
-          return this.authService
+        return user ? of(true) : this.authService
             .autoSignIn$()
             .pipe(map((autoUser) => !!autoUser));
-        }
       }),
       switchMap((hasUser) => {
         if (!hasUser) return this.router.navigate(['/']);

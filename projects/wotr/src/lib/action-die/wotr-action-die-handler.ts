@@ -132,7 +132,7 @@ export class WotrActionDieHandler {
       },
       'action-dice-discard': (action, front, f) => {
         const logs = [f.player(front), ' discards ', f.player(action.front)];
-        if (action.dice.length) logs.push(` ${this.dice(action.dice)}`);
+        if (action.dice.length > 0) logs.push(` ${this.dice(action.dice)}`);
         return logs;
       },
       'action-die-skip': (action, front, f) => [

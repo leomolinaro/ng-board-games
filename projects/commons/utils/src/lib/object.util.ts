@@ -2,5 +2,5 @@ export function forEachProp<K extends string | number, V>(
   obj: Record<K, V>,
   fn: (key: K, value: V) => void,
 ) {
-  (Object.entries(obj) as [K, V][]).forEach(([k, v]) => fn(k, v));
+  for (const [k, v] of (Object.entries(obj) as [K, V][])) fn(k, v);
 }

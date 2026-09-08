@@ -44,7 +44,7 @@ export interface BgStoryTask<Pid extends string, St, PlSrv> {
 }
 
 export function unexpectedStory<St>(actualStoryDoc: St, expected: string) {
-  console.error('Unexpected story', actualStoryDoc, ' Expected: ', expected);
+  console.error('Unexpected story', actualStoryDoc, 'Expected:', expected);
   return new Error('Unexpected story');
 }
 
@@ -126,11 +126,8 @@ export abstract class ABgGameService<
   private getPlayerService(playerId: Pid) {
     if (this.isLocalPlayer(playerId) && this.isCurrentPlayer(playerId)) {
       return this.localPlayer;
-    } else if (this.isAiPlayer(playerId) && this.isOwnerUser()) {
-      return this.aiPlayer;
-    } else {
-      return null;
     }
+    return this.isAiPlayer(playerId) && this.isOwnerUser() ? this.aiPlayer : null;
   }
 
   private async getLocalStory<R extends St>(
@@ -172,18 +169,14 @@ export abstract class ABgGameService<
     task: (playerService: PlSrv) => Promise<R>,
   ): Observable<R | null> {
     const playerService = this.getPlayerService(playerId);
-    if (playerService) {
-      return race(
+    return playerService ? race(
         this.getLocalStory(time, playerId, () => task(playerService)),
         this.currentPlayerChange$().pipe(map(() => null)),
         this.cancelChange$().pipe(
           tap(() => this.endTemporaryState()),
           map(() => null),
         ),
-      );
-    } else {
-      return this.currentPlayerChange$().pipe(map(() => null));
-    }
+      ) : this.currentPlayerChange$().pipe(map(() => null));
   }
 
   private getStoryWrap$<R extends St>(
@@ -194,18 +187,17 @@ export abstract class ABgGameService<
     if (this.isRemotePlayer(playerId)) {
       this.resetUi(playerId);
       return this.getRemoteStory$<R>(time, playerId);
-    } else {
-      this.resetUi(playerId);
-      return this.getLocalStoryWrap$(time, playerId, task).pipe(
-        expand((storyDoc) => {
-          if (storyDoc) return EMPTY;
-          this.resetUi(playerId);
-          return this.getLocalStoryWrap$(time, playerId, task);
-        }),
-        last(),
-        map((story) => story!),
-      );
     }
+    this.resetUi(playerId);
+    return this.getLocalStoryWrap$(time, playerId, task).pipe(
+      expand((storyDoc) => {
+        if (storyDoc) return EMPTY;
+        this.resetUi(playerId);
+        return this.getLocalStoryWrap$(time, playerId, task);
+      }),
+      last(),
+      map((story) => story!),
+    );
   }
 
   protected executeTask<R extends St>(
@@ -273,7 +265,7 @@ export abstract class ABgGameService<
       }
     }
 
-    if (pastStoryDocByPlayer.size) {
+    if (pastStoryDocByPlayer.size > 0) {
       const next = pastStoryDocByPlayer.values().next();
       throw unexpectedStory(
         next,
@@ -289,16 +281,16 @@ export abstract class ABgGameService<
       storyDocByPlayer.set(aiTask.playerId, story);
     }
 
-    while (localTasks.length) {
+    while (localTasks.length > 0) {
       let playerId = this.getCurrentPlayerId();
       let task: BgStoryTask<Pid, St, PlSrv>;
       const taskIndex = localTasks.findIndex((t) => t.playerId === playerId);
-      if (taskIndex >= 0) {
-        task = localTasks.splice(taskIndex, 1)[0];
-      } else {
+      if (taskIndex === -1) {
         task = localTasks.shift()!;
         playerId = task.playerId;
         this.autoRefreshCurrentPlayer(playerId);
+      } else {
+        task = localTasks.splice(taskIndex, 1)[0];
       }
       const playerService = this.getPlayerService(playerId!)!;
       this.resetUi(playerId!);

@@ -53,14 +53,14 @@ export class WotrTableCardsComponent {
   tableCardNodes: Signal<WotrTableCardNode[]> = computed(() => {
     const nodes: WotrTableCardNode[] = [];
     let index = 0;
-    this.freePeoples().tableCards.forEach((c) => {
+    for (const c of this.freePeoples().tableCards) {
       nodes.push(this.cardToNode(c, index));
       index++;
-    });
-    this.shadow().tableCards.forEach((c) => {
+    }
+    for (const c of this.shadow().tableCards) {
       nodes.push(this.cardToNode(c, index));
       index++;
-    });
+    }
     return nodes;
   });
 

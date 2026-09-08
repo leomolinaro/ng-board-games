@@ -19,8 +19,8 @@ export class WotrCardDrawUi {
     const characterDeck = this.q.front(frontId).characterDeck();
     const strategyDeck = this.q.front(frontId).strategyDeck();
     const drawnCards: WotrCardId[] = [];
-    if (characterDeck.length) drawnCards.push(characterDeck[0]);
-    if (strategyDeck.length) drawnCards.push(strategyDeck[0]);
+    if (characterDeck.length > 0) drawnCards.push(characterDeck[0]);
+    if (strategyDeck.length > 0) drawnCards.push(strategyDeck[0]);
     this.frontStore.drawCards(drawnCards, frontId);
     return drawCardIds(...drawnCards);
   }

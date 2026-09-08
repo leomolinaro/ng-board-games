@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Injectable, computed } from '@angular/core';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type {
@@ -112,7 +112,7 @@ export function initialeState(): WotrNationState {
 function initialFreePeopleNation(
   id: WotrNationId,
   name: string,
-  active: boolean,
+  isActive: boolean,
   nRegulars: number,
   nElites: number,
   nLeaders: number,
@@ -124,7 +124,7 @@ function initialFreePeopleNation(
     id,
     name,
     'free-peoples',
-    active,
+    isActive,
     nRegulars,
     nElites,
     nLeaders,
@@ -138,7 +138,7 @@ function initialFreePeopleNation(
 function initialShadowNation(
   id: WotrNationId,
   name: string,
-  active: boolean,
+  isActive: boolean,
   nRegulars: number,
   nElites: number,
   nNazgul: number,
@@ -149,7 +149,7 @@ function initialShadowNation(
     id,
     name,
     'shadow',
-    active,
+    isActive,
     nRegulars,
     nElites,
     0,
@@ -164,7 +164,7 @@ function initialNation(
   id: WotrNationId,
   name: string,
   front: WotrFrontId,
-  active: boolean,
+  isActive: boolean,
   nRegulars: number,
   nElites: number,
   nLeaders: number,
@@ -193,7 +193,7 @@ function initialNation(
       nazgul: nNazgul,
     },
     casualties: { regular: 0, elite: 0, leader: 0 },
-    active,
+    active: isActive,
     politicalStep: 3,
   };
 }

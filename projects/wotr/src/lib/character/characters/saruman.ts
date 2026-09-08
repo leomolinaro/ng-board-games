@@ -89,8 +89,7 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
     if (!isengard.isAtWar()) return false;
     if (!this.q.region('orthanc').isUnconquered()) return false;
     if (this.q.region('orthanc').isUnderSiege('shadow')) return false;
-    if (this.subChoices.some((c) => c.isAvailable!(frontId))) return true;
-    return false;
+    return this.subChoices.some((c) => c.isAvailable!(frontId));
   }
 
   async actions(): Promise<WotrAction[]> {

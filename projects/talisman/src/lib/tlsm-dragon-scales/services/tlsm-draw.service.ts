@@ -169,8 +169,7 @@ export class AskTokenResolver extends TokenResolver {
       'Has the token to be resolved?',
     );
     this.store.drawScale(dragonId, confirm);
-    if (confirm) {
-      if (dragon.nScales >= settings.scalesPerCrown) {
+    if (confirm && dragon.nScales >= settings.scalesPerCrown) {
         this.store.resetScale(dragonId);
         const oldKing = this.store.king();
         if (oldKing) this.store.crown(oldKing.id, false);
@@ -180,6 +179,5 @@ export class AskTokenResolver extends TokenResolver {
           dragon.tokenSource,
         );
       }
-    }
   }
 }

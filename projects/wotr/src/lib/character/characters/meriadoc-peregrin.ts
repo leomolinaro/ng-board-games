@@ -79,11 +79,7 @@ export class TakeThemAliveAbility implements WotrUiAbility<WotrBeforeCharacterEl
   ) => {
     if (params.characterId !== this.characterId) return true;
     if (!this.q.character(this.characterId).isInFellowship()) return true;
-    if (
-      await activateCharacterAbility(this, this.characterId, this.freePeoples)
-    )
-      return false;
-    return true;
+    return !await activateCharacterAbility(this, this.characterId, this.freePeoples);
   };
 
   play: () => Promise<WotrAction[]> = async () => {

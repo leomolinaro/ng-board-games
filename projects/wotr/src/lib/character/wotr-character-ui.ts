@@ -75,8 +75,8 @@ export class WotrCharacterUi {
       this.q.companions.filter((c) => c.canMove()).map((c) => c.id),
     );
     const actions: WotrAction[] = [];
-    let continueMoving = movableCompanions.size > 0;
-    while (continueMoving) {
+    let canContinueMoving = movableCompanions.size > 0;
+    while (canContinueMoving) {
       const action = await this.moveCharacterGroup(
         movableCompanions,
         'free-peoples',
@@ -88,16 +88,15 @@ export class WotrCharacterUi {
         action.toRegion,
       );
       actions.push(action);
-      action.characters.forEach((c) => movableCompanions.delete(c));
-      if (movableCompanions.size > 0 && !options?.onlyOneGroup) {
-        continueMoving = await this.ui.askConfirm(
-          'Do you want to move more companions?',
-          'Move more',
-          'Stop moving',
-        );
-      } else {
-        continueMoving = false;
-      }
+      for (const c of action.characters) movableCompanions.delete(c);
+      canContinueMoving =
+        movableCompanions.size > 0 && !options?.onlyOneGroup
+          ? await this.ui.askConfirm(
+              'Do you want to move more companions?',
+              'Move more',
+              'Stop moving',
+            )
+          : false;
     }
     return actions;
   }
@@ -112,16 +111,16 @@ export class WotrCharacterUi {
     const actions: WotrAction[] = [];
     let continueMoving;
     do {
-      let moveNonFlyingMinions = moveableNonFlyingMinions.size > 0;
-      if (moveNonFlyingMinions && hasNazgul) {
-        moveNonFlyingMinions = await this.ui.askConfirm(
+      let canMoveNonFlyingMinions = moveableNonFlyingMinions.size > 0;
+      if (canMoveNonFlyingMinions && hasNazgul) {
+        canMoveNonFlyingMinions = await this.ui.askConfirm(
           'Do you want to move non-flying minions or Nazgul?',
           'Move non-flying minions',
           'Move Nazgul',
         );
       }
 
-      if (moveNonFlyingMinions) {
+      if (canMoveNonFlyingMinions) {
         const action = await this.moveCharacterGroup(
           moveableNonFlyingMinions,
           'shadow',
@@ -132,7 +131,7 @@ export class WotrCharacterUi {
           action.toRegion,
         );
         actions.push(action);
-        action.characters.forEach((c) => moveableNonFlyingMinions.delete(c));
+        for (const c of action.characters) moveableNonFlyingMinions.delete(c);
       } else {
         const moveNazgulActions = await this.moveNazgul();
         for (const action of moveNazgulActions) {
@@ -153,15 +152,14 @@ export class WotrCharacterUi {
         }
       }
 
-      if (hasNazgul || moveableNonFlyingMinions.size > 0) {
-        continueMoving = await this.ui.askConfirm(
-          'Do you want to move more minions?',
-          'Move more',
-          'Stop moving',
-        );
-      } else {
-        continueMoving = false;
-      }
+      continueMoving =
+        hasNazgul || moveableNonFlyingMinions.size > 0
+          ? await this.ui.askConfirm(
+              'Do you want to move more minions?',
+              'Move more',
+              'Stop moving',
+            )
+          : false;
     } while (continueMoving);
     return actions;
   }
@@ -215,13 +213,11 @@ export class WotrCharacterUi {
     });
     const fromRegion = movingNazgul.regionId;
     const targetRegions = this.regionStore.regions().filter((region) => {
-      if (
+      return !(
         region.settlement === 'stronghold' &&
         region.controlledBy === 'free-peoples' &&
         !region.underSiegeArmy
-      )
-        return false;
-      return true;
+      );
     });
     const targetRegion = await this.ui.askRegion(
       'Select a region to move Nazgul',
@@ -254,7 +250,7 @@ export class WotrCharacterUi {
       {
         type: 'moveCharacters',
         regionIds: fromRegions.map((r) => r.id),
-        characters: Array.from(moveableCharacters),
+        characters: [...moveableCharacters],
         requiredCharacters: [],
       },
     );
@@ -312,20 +308,18 @@ export class WotrCharacterUi {
     characterId: WotrCharacterId,
   ): Promise<WotrStory> {
     const character = this.q.character(characterId);
-    const confirm = await this.ui.askConfirm(
+    const shouldActivate = await this.ui.askConfirm(
       `Do you want to activate ${character.name + "'s ability?"}`,
       'Activate',
       'Skip',
     );
-    if (confirm) {
-      return {
-        type: 'character-effect',
-        character: characterId,
-        actions: await ability.play(this.ui),
-      };
-    } else {
-      return { type: 'character-effect-skip', character: characterId };
-    }
+    return shouldActivate
+      ? {
+          type: 'character-effect',
+          character: characterId,
+          actions: await ability.play(this.ui),
+        }
+      : { type: 'character-effect-skip', character: characterId };
   }
 
   moveCompanionsChoice: WotrUiChoice = {

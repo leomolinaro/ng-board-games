@@ -87,8 +87,8 @@ export class WotrStoryService extends ABgGameService<
   private replayToLastStory = true;
   private $replayCall = new Subject<void>();
 
-  setReplayMode(replayMode: boolean) {
-    this.replayToLastStory = !replayMode;
+  setReplayMode(isReplayMode: boolean) {
+    this.replayToLastStory = !isReplayMode;
   }
 
   private currentStory: WotrStory | null = null;

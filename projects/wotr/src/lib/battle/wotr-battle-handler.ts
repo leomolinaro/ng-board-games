@@ -35,21 +35,21 @@ import type {
   WotrCombatCardParams,
 } from './combat-cards/wotr-combat-cards';
 import { WotrCombatCards } from './combat-cards/wotr-combat-cards';
-import type {
-  WotrArmyAdvance,
-  WotrArmyAttack,
-  WotrArmyNotAdvance,
-  WotrArmyNotRetreat,
-  WotrArmyNotRetreatIntoSiege,
-  WotrArmyRetreat,
-  WotrArmyRetreatIntoSiege,
-  WotrBattleAction,
-  WotrBattleCease,
-  WotrBattleContinue,
-  WotrCombatCardChoose,
-  WotrCombatCardChooseNot,
-  WotrCombatReRoll,
-  WotrCombatRoll,
+import {
+  type WotrArmyAdvance,
+  type WotrArmyAttack,
+  type WotrArmyNotAdvance,
+  type WotrArmyNotRetreat,
+  type WotrArmyNotRetreatIntoSiege,
+  type WotrArmyRetreat,
+  type WotrArmyRetreatIntoSiege,
+  type WotrBattleAction,
+  type WotrBattleCease,
+  type WotrBattleContinue,
+  type WotrCombatCardChoose,
+  type WotrCombatCardChooseNot,
+  type WotrCombatReRoll,
+  type WotrCombatRoll,
 } from './wotr-battle-actions';
 import type { WotrBattle, WotrCombatFront } from './wotr-battle-models';
 import { WotrCombatRound } from './wotr-battle-models';
@@ -200,24 +200,24 @@ export class WotrBattleHandler {
       ],
       'leader-forfeit': (action, front, f) => {
         const forfeitedUnits: string[] = [];
-        const nElites =
-          action.leaders.elites?.reduce((n, elite) => n + elite.quantity, 0) ??
-          0;
+        let nElites = 0;
+        if (action.leaders.elites)
+          for (const elite of action.leaders.elites) nElites += elite.quantity;
         if (nElites > 0)
           forfeitedUnits.push(`${nElites} elite unit${nElites > 1 ? 's' : ''}`);
-        const nLeaders =
-          action.leaders.leaders?.reduce(
-            (n, leader) => n + leader.quantity,
-            0,
-          ) ?? 0;
+        let nLeaders = 0;
+        if (action.leaders.leaders)
+          for (const leader of action.leaders.leaders)
+            nLeaders += leader.quantity;
         if (nLeaders > 0)
           forfeitedUnits.push(`${nLeaders} leader${nLeaders > 1 ? 's' : ''}`);
         const nNazgul = action.leaders.nNazgul ?? 0;
         if (nNazgul > 0)
           forfeitedUnits.push(`${nNazgul} Nazgul${nNazgul > 1 ? 's' : ''}`);
-        action.leaders.characters?.forEach((characterId) => {
-          forfeitedUnits.push(this.q.character(characterId).name);
-        });
+        if (action.leaders.characters)
+          for (const characterId of action.leaders.characters) {
+            forfeitedUnits.push(this.q.character(characterId).name);
+          }
         return [
           f.player(front),
           ` forfeits leadership of ${forfeitedUnits.join(', ')}`,
@@ -352,10 +352,10 @@ export class WotrBattleHandler {
         }
       } else {
         const mustContinueBattle = !this.battleModifiers.canCease(combatRound);
-        let wantContinueBattle = false;
-        if (!mustContinueBattle)
-          wantContinueBattle = await this.wantContinueBattle(combatRound);
-        if (mustContinueBattle || wantContinueBattle) {
+        if (
+          mustContinueBattle ||
+          (await this.wantContinueBattle(combatRound))
+        ) {
           if (this.canRetreat(combatRound.defender)) {
             const wantRetreat = await this.wantRetreat(
               combatRound.defender.player,
@@ -451,14 +451,13 @@ export class WotrBattleHandler {
   }
 
   private revealCombatCard(combatFront: WotrCombatFront) {
-    if (combatFront.combatCard) {
-      this.frontStore.discardCards(
-        [combatFront.combatCard.id],
-        combatFront.frontId,
-      );
-      this.battleStore.addAttackerCombatCard(combatFront.combatCard.id);
-      this.logger.logCombatCard(combatFront.combatCard.id, combatFront.frontId);
-    }
+    if (!combatFront.combatCard) return;
+    this.frontStore.discardCards(
+      [combatFront.combatCard.id],
+      combatFront.frontId,
+    );
+    this.battleStore.addAttackerCombatCard(combatFront.combatCard.id);
+    this.logger.logCombatCard(combatFront.combatCard.id, combatFront.frontId);
   }
 
   private async resolveCombatCards(
@@ -675,29 +674,28 @@ export class WotrBattleHandler {
         this.attackingArmy(combatRound.action),
       );
       return armyLeadership - retroguardLeadership;
-    } else {
-      return this.getUnitsHitPoints(
-        this.defendingArmy(combatRound.action, combatRound.siege),
-      );
     }
+    return this.getUnitsHitPoints(
+      this.defendingArmy(combatRound.action, combatRound.siege),
+    );
   }
 
   private getUnitsHitPoints(army: WotrArmy | undefined) {
-    if (!army) {
-      return 0;
-    }
+    if (!army) return 0;
     let damagePoints = 0;
-    damagePoints += army.regulars?.reduce((d, r) => d + r.quantity, 0) ?? 0;
-    damagePoints += army.elites?.reduce((d, r) => d + r.quantity * 2, 0) ?? 0;
+    if (army.regulars)
+      for (const regular of army.regulars) damagePoints += regular.quantity;
+    if (army.elites)
+      for (const elite of army.elites) damagePoints += elite.quantity * 2;
     return damagePoints;
   }
 
   getCombatStrength(combatFront: WotrCombatFront): number {
     const army = combatFront.army();
     let strength = this.unitRules.getArmyCombatStrength(army);
-    combatFront.combatStrengthModifiers.forEach((modifier) => {
+    for (const modifier of combatFront.combatStrengthModifiers) {
       strength += modifier;
-    });
+    }
     return strength;
   }
 
@@ -730,12 +728,13 @@ export class WotrBattleHandler {
       combatRound,
       reRoll,
     );
-    return roll.reduce((successes, dice) => {
+    let successes = 0;
+    for (const dice of roll) {
       if (dice >= successThreashold) {
         successes++;
       }
-      return successes;
-    }, 0);
+    }
+    return successes;
   }
 
   private getSuccessThreashold(
@@ -750,10 +749,11 @@ export class WotrBattleHandler {
     const modifiers = reRoll
       ? combatFront.leaderModifiers
       : combatFront.combatModifiers;
-    return modifiers.reduce((t, modifier) => {
-      t -= modifier;
-      return t;
-    }, defaultSuccessThreashold);
+    let threshold = defaultSuccessThreashold;
+    for (const modifier of modifiers) {
+      threshold -= modifier;
+    }
+    return threshold;
   }
 
   private getDefaultSuccessThreashold(
@@ -810,14 +810,12 @@ export class WotrBattleHandler {
     return this.regionStore.region(action.fromRegion);
   }
   private attackingArmy(action: WotrArmyAttack): WotrArmy {
-    if (action.retroguard) {
-      return this.unitUtils.splitUnits(
-        this.attackingRegion(action).army,
-        action.retroguard,
-      )!;
-    } else {
-      return this.attackingRegion(action).army!;
-    }
+    return action.retroguard
+      ? this.unitUtils.splitUnits(
+          this.attackingRegion(action).army,
+          action.retroguard,
+        )!
+      : this.attackingRegion(action).army!;
   }
   private defendingArmy(action: WotrArmyAttack, siege: boolean): WotrArmy {
     const attackedRegion = this.attackedRegion(action);

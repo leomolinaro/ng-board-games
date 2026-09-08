@@ -54,15 +54,13 @@ export abstract class KomeSovereignCard {
       throw new Error(
         `Cannot awaken ${this.sovereignId} because there are no valid regions to awaken in.`,
       );
-    let awakeningRegion: WotrRegionId;
-    if (validRegions.length > 1) {
-      awakeningRegion = await ui.askRegion(
-        `Where do you want to awaken ${this.sovereignId}?`,
-        validRegions.map((r) => r.id()),
-      );
-    } else {
-      awakeningRegion = validRegions[0].id();
-    }
+    const awakeningRegion =
+      validRegions.length > 1
+        ? await ui.askRegion(
+            `Where do you want to awaken ${this.sovereignId}?`,
+            validRegions.map((r) => r.id()),
+          )
+        : validRegions[0].id();
     return awakeSovereign(this.sovereignId, awakeningRegion);
   }
 

@@ -13,7 +13,7 @@ export class WotrFellowshipModifiers {
   async onAfterFellowshipDeclaration(
     params: WotrFellowshipMove,
   ): Promise<void> {
-    if (!this.afterDeclaration.get().length) return;
+    if (this.afterDeclaration.get().length === 0) return;
     for (const handler of this.afterDeclaration.get()) {
       await handler(params);
     }

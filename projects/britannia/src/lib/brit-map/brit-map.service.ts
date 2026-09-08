@@ -75,65 +75,63 @@ export class BritMapService {
   }
 
   loadAreaPaths$() {
-    if (this.svgLoaded) {
-      return of(true);
-    } else {
-      return this.http
-        .get('assets/britannia/britannia-map.svg', { responseType: 'text' })
-        .pipe(
-          map((response) => {
-            const parser = new DOMParser();
-            const dom = parser.parseFromString(response, 'application/xml');
-            const svg = dom.getElementsByTagName('svg').item(0)!;
-            this.viewBox = svg.getAttribute('viewBox')!;
-            this.width = +this.viewBox.split(' ')[2];
-            this.areaPaths = this.getGroupPaths<BritAreaId>(
-              'brit-areas',
-              dom,
-              (pId) => pId as BritAreaId,
-            );
-            this.nationTurnPaths = this.getGroupPaths<BritNationId>(
-              'brit-turns',
-              dom,
-              (pId) => pId.substring('turn-'.length) as BritNationId,
-            );
-            this.populationTrackPaths = this.getGroupPaths<BritPopulation>(
-              'brit-population-track',
-              dom,
-              (pId) =>
-                +pId.substring('population-track-'.length) as BritPopulation,
-            );
-            this.roundPaths = this.getGroupPaths<BritRoundId>(
-              'brit-rounds',
-              dom,
-              (pId) => +pId.substring('round-'.length) as BritRoundId,
-            );
-            this.scoringRoundPaths = this.getGroupPaths<BritRoundId>(
-              'brit-scoring-rounds',
-              dom,
-              (pId) =>
-                +pId
-                  .substring('round-'.length)
-                  .replace('-scoring', '') as BritRoundId,
-            );
-            this.eventPaths = {} as Record<
-              BritRoundId,
-              Record<BritNationId, string>
-            >;
-            for (const roundId of this.components.ROUND_IDS) {
-              const roundEventPaths = this.getGroupPaths<BritNationId>(
-                `brit-round-${roundId}`,
+    return this.svgLoaded
+      ? of(true)
+      : this.http
+          .get('assets/britannia/britannia-map.svg', { responseType: 'text' })
+          .pipe(
+            map((response) => {
+              const parser = new DOMParser();
+              const dom = parser.parseFromString(response, 'application/xml');
+              const svg = dom.querySelector('svg')!;
+              this.viewBox = svg.getAttribute('viewBox')!;
+              this.width = +this.viewBox.split(' ', 3)[2];
+              this.areaPaths = this.getGroupPaths<BritAreaId>(
+                'brit-areas',
+                dom,
+                (pId) => pId as BritAreaId,
+              );
+              this.nationTurnPaths = this.getGroupPaths<BritNationId>(
+                'brit-turns',
+                dom,
+                (pId) => pId.slice('turn-'.length) as BritNationId,
+              );
+              this.populationTrackPaths = this.getGroupPaths<BritPopulation>(
+                'brit-population-track',
                 dom,
                 (pId) =>
-                  pId.substring(`round-${roundId}-`.length) as BritNationId,
+                  +pId.slice('population-track-'.length) as BritPopulation,
               );
-              this.eventPaths[roundId] = roundEventPaths;
-            }
-            this.svgLoaded = true;
-            return true;
-          }),
-        );
-    }
+              this.roundPaths = this.getGroupPaths<BritRoundId>(
+                'brit-rounds',
+                dom,
+                (pId) => +pId.slice('round-'.length) as BritRoundId,
+              );
+              this.scoringRoundPaths = this.getGroupPaths<BritRoundId>(
+                'brit-scoring-rounds',
+                dom,
+                (pId) =>
+                  +pId
+                    .slice('round-'.length)
+                    .replace('-scoring', '') as BritRoundId,
+              );
+              this.eventPaths = {} as Record<
+                BritRoundId,
+                Record<BritNationId, string>
+              >;
+              for (const roundId of this.components.ROUND_IDS) {
+                const roundEventPaths = this.getGroupPaths<BritNationId>(
+                  `brit-round-${roundId}`,
+                  dom,
+                  (pId) =>
+                    pId.slice(`round-${roundId}-`.length) as BritNationId,
+                );
+                this.eventPaths[roundId] = roundEventPaths;
+              }
+              this.svgLoaded = true;
+              return true;
+            }),
+          );
   }
 
   private getGroupPaths<K extends string | number>(
@@ -141,16 +139,15 @@ export class BritMapService {
     dom: Document,
     pathIdToId: (pathId: string) => K,
   ) {
-    const britGroup = dom.getElementById(groupId);
+    const britGroup = dom.querySelector(`#${groupId}`);
     const paths: Record<K, string> = {} as never;
     britGroup?.childNodes.forEach((childNode) => {
-      if (childNode.nodeName === 'path') {
-        const pathElement = childNode as SVGPathElement;
-        const pathId = pathElement.getAttribute('id')!;
-        const id = pathIdToId(pathId);
-        const pathD = pathElement.getAttribute('d')!;
-        paths[id] = pathD;
-      }
+      if (childNode.nodeName !== 'path') return;
+      const pathElement = childNode as SVGPathElement;
+      const pathId = pathElement.getAttribute('id')!;
+      const id = pathIdToId(pathId);
+      const pathD = pathElement.getAttribute('d')!;
+      paths[id] = pathD;
     });
     return paths;
   }

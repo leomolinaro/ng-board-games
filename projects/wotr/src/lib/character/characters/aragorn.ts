@@ -23,8 +23,7 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
     if (die !== 'will-of-the-west') return false;
-    if (this.striderValidRegion()) return true;
-    return false;
+    return Boolean(this.striderValidRegion());
   }
 
   private striderValidRegion(): WotrRegionId | null {
@@ -37,12 +36,9 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
   private striderInRegion(regionId: WotrRegionId): boolean {
     const region = this.q.region(regionId).region();
     if (region.army?.front === 'free-peoples') {
-      return !!region.army.characters?.some((c) => c === 'strider');
-    } else if (region.underSiegeArmy?.front === 'free-peoples') {
-      return !!region.underSiegeArmy.characters?.some((c) => c === 'strider');
-    } else {
-      return !!region.freeUnits?.characters?.some((c) => c === 'strider');
+      return !!region.army.characters?.includes('strider');
     }
+    return region.underSiegeArmy?.front === 'free-peoples' ? !!region.underSiegeArmy.characters?.includes('strider') : !!region.freeUnits?.characters?.includes('strider');
   }
 
   override bringIntoPlay(): WotrAction {

@@ -109,8 +109,8 @@ export class WotrRegionQuery {
   army(frontId: WotrFrontId): WotrArmy | null {
     const region = this.regionStore.region(this.regionId);
     const a = region.army;
-    const u = region.underSiegeArmy;
     if (a?.front === frontId && !this.unitUtils.isEmptyArmy(a)) return a;
+    const u = region.underSiegeArmy;
     if (u?.front === frontId && !this.unitUtils.isEmptyArmy(u)) return u;
     return null;
   }

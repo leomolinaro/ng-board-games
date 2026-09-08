@@ -40,8 +40,11 @@ export class WotrExpansionOptionsForm {
     option.requires?.some((requiredId) => !expansions.includes(requiredId)) ??
     false;
 
-  protected toggleExpansion(optionId: WotrExpansionId, checked: boolean): void {
-    const next = checked
+  protected toggleExpansion(
+    optionId: WotrExpansionId,
+    isChecked: boolean,
+  ): void {
+    const next = isChecked
       ? this.expansions().includes(optionId)
         ? this.expansions()
         : [...this.expansions(), optionId]

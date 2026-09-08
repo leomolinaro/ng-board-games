@@ -6,9 +6,9 @@ export interface BgReduxDevtoolsInstance {
 export class BgReduxDevtools {
   constructor() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.reduxDevtoolsExtension = window
+    this.reduxDevtoolsExtension = globalThis
       ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-        (window as any).__REDUX_DEVTOOLS_EXTENSION__
+        (globalThis as any).__REDUX_DEVTOOLS_EXTENSION__
       : null;
   }
 
@@ -17,11 +17,7 @@ export class BgReduxDevtools {
   };
 
   connect(name: string): BgReduxDevtoolsInstance | null {
-    if (this.reduxDevtoolsExtension) {
-      return this.reduxDevtoolsExtension.connect({ name: name });
-    } else {
-      return null;
-    }
+    return this.reduxDevtoolsExtension ? this.reduxDevtoolsExtension.connect({ name: name }) : null;
   }
 }
 

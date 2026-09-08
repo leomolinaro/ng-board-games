@@ -188,18 +188,17 @@ export class WotrHuntUi {
       );
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return drawHuntTile(huntTile);
-    } else {
-      n = Math.min(n, this.huntStore.huntPool().length);
-      await this.ui.askContinue(
-        `Draw ${n} hunt tiles${card ? ` for ${card.label}` : ''}`,
-      );
-      const huntTiles = randomUtil.getRandomElements(
-        n,
-        n,
-        this.huntStore.huntPool(),
-      );
-      return drawHuntTile(...huntTiles);
     }
+    n = Math.min(n, this.huntStore.huntPool().length);
+    await this.ui.askContinue(
+      `Draw ${n} hunt tiles${card ? ` for ${card.label}` : ''}`,
+    );
+    const huntTiles = randomUtil.getRandomElements(
+      n,
+      n,
+      this.huntStore.huntPool(),
+    );
+    return drawHuntTile(...huntTiles);
   }
 
   async huntEffect(params: WotrHuntEffectParams): Promise<WotrAction[]> {
@@ -218,7 +217,11 @@ export class WotrHuntUi {
         `Eliminate ${randomCompanions.map((c) => c.name).join(', ')}`,
       );
       actions.push(eliminateCharacter(...randomCompanionIds));
-      damage -= randomCompanions.reduce((sum, c) => sum + c.level, 0);
+      let companionDamage = 0;
+      for (const companion of randomCompanions) {
+        companionDamage += companion.level;
+      }
+      damage -= companionDamage;
       casualtyTaken = true;
       await this.characterHandler.eliminateCharacters(randomCompanionIds);
       if (wasGuide) {
@@ -249,8 +252,8 @@ export class WotrHuntUi {
       const hasCompanion = this.fellowshipStore.companions().length > 0;
       if (
         casualtyTaken ||
-        !params.mustEliminateRandomCompanion ||
-        !hasCompanion
+        !hasCompanion ||
+        !params.mustEliminateRandomCompanion
       )
         choices.push(this.useRingChoice(damage));
       // Can use card with Foul Thing from the Deep
@@ -271,31 +274,10 @@ export class WotrHuntUi {
         chosenActions,
         'companion-random',
       );
-      const useRing = findAction<WotrFellowshipCorruption>(
-        chosenActions,
-        'fellowship-corruption',
-      );
-      const discardTableCard = findAction<WotrCardDiscardFromTable>(
-        chosenActions,
-        'card-discard-from-table',
-      );
-      const gollumRevealing = findAction<WotrFellowshipReveal>(
-        chosenActions,
-        'fellowship-reveal',
-      );
-      const gollumRevealingInMordor = findAction<WotrFellowshipRevealInMordor>(
-        chosenActions,
-        'fellowship-reveal-in-mordor',
-      );
-      const companionSeparation = findAction<WotrCompanionSeparation>(
-        chosenActions,
-        'companion-separation',
-      );
       if (randomCompanion) {
         continuee = false;
         continue;
       }
-
       if (characterElimination) {
         if (
           params.guideSpecialAbilityAbsorption?.companionId ===
@@ -304,23 +286,35 @@ export class WotrHuntUi {
           // Meriadoc and Peregrin separate for 1 damage absorption
           damage -= params.guideSpecialAbilityAbsorption.amount;
         } else {
-          damage -= characterElimination.characters.reduce(
-            (sum, c) => sum + this.q.character(c).level,
-            0,
-          );
+          let characterDamage = 0;
+          for (const characterId of characterElimination.characters) {
+            characterDamage += this.q.character(characterId).level;
+          }
+          damage -= characterDamage;
           casualtyTaken = true;
         }
       }
-      if (companionSeparation) {
-        if (
-          params.guideSpecialAbilityAbsorption?.companionId ===
+      const companionSeparation = findAction<WotrCompanionSeparation>(
+        chosenActions,
+        'companion-separation',
+      );
+      if (
+        companionSeparation &&
+        params.guideSpecialAbilityAbsorption?.companionId ===
           companionSeparation.companions[0]
-        ) {
-          // Meriadoc and Peregrin separate for 1 damage absorption
-          damage -= params.guideSpecialAbilityAbsorption.amount;
-        }
+      ) {
+        // Meriadoc and Peregrin separate for 1 damage absorption
+        damage -= params.guideSpecialAbilityAbsorption.amount;
       }
+      const useRing = findAction<WotrFellowshipCorruption>(
+        chosenActions,
+        'fellowship-corruption',
+      );
       if (useRing) damage -= useRing.quantity;
+      const discardTableCard = findAction<WotrCardDiscardFromTable>(
+        chosenActions,
+        'card-discard-from-table',
+      );
       if (discardTableCard) {
         damage -= this.huntHandler.cardHuntDamageReduction(
           discardTableCard.card,
@@ -328,6 +322,14 @@ export class WotrHuntUi {
         params.tableCardsUsed = true;
         this.cardHandler.discardCardFromTable(discardTableCard.card);
       }
+      const gollumRevealing = findAction<WotrFellowshipReveal>(
+        chosenActions,
+        'fellowship-reveal',
+      );
+      const gollumRevealingInMordor = findAction<WotrFellowshipRevealInMordor>(
+        chosenActions,
+        'fellowship-reveal-in-mordor',
+      );
       if (gollumRevealing || gollumRevealingInMordor) damage -= 1;
     }
     return actions;
@@ -339,11 +341,9 @@ export class WotrHuntUi {
       { label: `Add ${companion.level} corruption points`, value: 'corrupt' },
       { label: `Eliminate ${companion.name}`, value: 'eliminate' },
     ]);
-    if (option === 'corrupt') {
-      return [corruptFellowship(companion.level)];
-    } else {
-      return [eliminateCharacter(character)];
-    }
+    return option === 'corrupt'
+      ? [corruptFellowship(companion.level)]
+      : [eliminateCharacter(character)];
   }
 
   private async startCorruptionAttempt() {
@@ -369,11 +369,12 @@ export class WotrHuntUi {
     if (!corruptionAttempt)
       throw new Error('No corruption attempt in progress');
     const drawnTiles = corruptionAttempt.drawnTiles;
-    const lastDrawnTileId = drawnTiles[drawnTiles.length - 1];
+    const lastDrawnTileId = drawnTiles.at(-1)!;
     const lastDrawnTile = this.huntStore.huntTile(lastDrawnTileId);
     if (lastDrawnTile.crown) {
       return stopCorruptionAttempt(lastDrawnTileId);
-    } else if (lastDrawnTile.type !== 'standard' || lastDrawnTile.eye) {
+    }
+    if (lastDrawnTile.type !== 'standard' || lastDrawnTile.eye) {
       await this.ui.askContinue('Draw hunt tile');
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return continueCorruptionAttempt(huntTile);
@@ -395,28 +396,24 @@ export class WotrHuntUi {
             this.huntStore.huntPool(),
           );
           return continueCorruptionAttempt(huntTile);
-        } else {
-          return stopCorruptionAttempt(lastDrawnTileId);
         }
-      } else {
-        await this.ui.askContinue('Choose the last tile');
         return stopCorruptionAttempt(lastDrawnTileId);
       }
-    } else {
-      if (remainingDraws > 0) {
-        await this.ui.askContinue('Draw hunt tile');
-        const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
-        return continueCorruptionAttempt(huntTile);
-      } else {
-        const chosenTile = await this.ui.askOption(
-          'Choose a corruption tile to apply',
-          drawnTiles.map((id) => ({
-            label: id,
-            value: id,
-          })),
-        );
-        return stopCorruptionAttempt(chosenTile);
-      }
+      await this.ui.askContinue('Choose the last tile');
+      return stopCorruptionAttempt(lastDrawnTileId);
     }
+    if (remainingDraws > 0) {
+      await this.ui.askContinue('Draw hunt tile');
+      const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
+      return continueCorruptionAttempt(huntTile);
+    }
+    const chosenTile = await this.ui.askOption(
+      'Choose a corruption tile to apply',
+      drawnTiles.map((id) => ({
+        label: id,
+        value: id,
+      })),
+    );
+    return stopCorruptionAttempt(chosenTile);
   }
 }

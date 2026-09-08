@@ -118,15 +118,11 @@ export class BaronyMap {
 
   protected isValid = computed<Record<string, boolean> | null>(() => {
     const validLands = this.validLands();
-    if (validLands) {
-      return arrayUtil.toMap(
+    return validLands ? arrayUtil.toMap(
         validLands,
         (lt) => landCoordinatesToId(lt),
         () => true,
-      );
-    } else {
-      return null;
-    }
+      ) : null;
   });
 
   onLandTileClick(landTile: BaronyLand) {

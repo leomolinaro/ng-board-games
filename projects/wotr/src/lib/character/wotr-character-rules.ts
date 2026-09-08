@@ -50,20 +50,16 @@ export class WotrCharacterRules {
     if (distance === 0) return true;
     if (options?.canEndInSiege) return true;
     if (region.settlement !== 'stronghold') return true;
-    if (region.underSiegeArmy) {
-      return region.controlledBy !== frontId;
-    } else {
-      return region.controlledBy === frontId;
-    }
+    return region.underSiegeArmy
+      ? region.controlledBy !== frontId
+      : region.controlledBy === frontId;
   }
 
   companionCanLeaveRegion(region: WotrRegion, distance: number): boolean {
     if (region.settlement !== 'stronghold') return true;
-    if (region.controlledBy === 'free-peoples') {
-      return !region.underSiegeArmy;
-    } else {
-      return distance === 0;
-    }
+    return region.controlledBy === 'free-peoples'
+      ? !region.underSiegeArmy
+      : distance === 0;
   }
 
   hasNazgul(region: WotrRegion): boolean {
@@ -78,17 +74,19 @@ export class WotrCharacterRules {
   }
 
   characterGroupLevel(characters: WotrCharacterId[]): number {
-    return characters.reduce((l, characterId) => {
+    let level = 0;
+    for (const characterId of characters) {
       const character = this.q.character(characterId);
-      if (l < character.level) return character.level;
-      return l;
-    }, 0);
+      if (level < character.level) level = character.level;
+    }
+    return level;
   }
 
   maxLevel(companions: WotrCharacterId[]): number {
-    return companions.reduce(
-      (max, c) => Math.max(max, this.q.character(c).level),
-      0,
-    );
+    let max = 0;
+    for (const companion of companions) {
+      max = Math.max(max, this.q.character(companion).level);
+    }
+    return max;
   }
 }

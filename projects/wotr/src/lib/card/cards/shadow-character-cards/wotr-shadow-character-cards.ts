@@ -351,22 +351,20 @@ export class WotrShadowCharacterCards {
         return {
           canBePlayed: () => this.q.fellowship.isRevealed(),
           play: () => {
-            if (this.q.fellowship.guideIs('gollum')) {
+            if (this.q.fellowship.guideIs('gollum'))
               return [corruptFellowship(1)];
-            } else {
-              const companions = this.q.fellowship.companions();
-              const randomCompanion = randomUtil.getRandomElement(companions);
-              return [chooseRandomCompanion(randomCompanion)];
-            }
+            const companions = this.q.fellowship.companions();
+            const randomCompanion = randomUtil.getRandomElement(companions);
+            return [chooseRandomCompanion(randomCompanion)];
           },
           effect: async (params) => {
-            if (!this.q.fellowship.guideIs('gollum')) {
-              const action = findAction<WotrCompanionRandom>(
-                params.story.actions,
-                'companion-random',
-              );
-              await this.freePeoples.lureOfTheRingEffect(action!.companions[0]);
-            }
+            if (this.q.fellowship.guideIs('gollum')) return;
+
+            const action = findAction<WotrCompanionRandom>(
+              params.story.actions,
+              'companion-random',
+            );
+            await this.freePeoples.lureOfTheRingEffect(action!.companions[0]);
           },
         };
       // The Breaking of the Fellowship
@@ -443,23 +441,21 @@ export class WotrShadowCharacterCards {
                   let doDiscardTableCard = false;
                   let doDiscardHandCard = false;
                   if (fpHasTableCards) {
-                    if (fpHasHandCards) {
-                      doDiscardTableCard = await ui.askOption<boolean>(
-                        'Choose the card to discard',
-                        [
-                          {
-                            value: true,
-                            label: 'A table card',
-                          },
-                          {
-                            value: false,
-                            label: 'A random card from hand',
-                          },
-                        ],
-                      );
-                    } else {
-                      doDiscardTableCard = true;
-                    }
+                    doDiscardTableCard = fpHasHandCards
+                      ? await ui.askOption<boolean>(
+                          'Choose the card to discard',
+                          [
+                            {
+                              value: true,
+                              label: 'A table card',
+                            },
+                            {
+                              value: false,
+                              label: 'A random card from hand',
+                            },
+                          ],
+                        )
+                      : true;
                   } else {
                     if (fpHasHandCards) {
                       doDiscardHandCard = true;
@@ -476,17 +472,17 @@ export class WotrShadowCharacterCards {
                       },
                     );
                     return [discardCardFromTableById(card)];
-                  } else if (doDiscardHandCard) {
+                  }
+                  if (doDiscardHandCard) {
                     await ui.askContinue(
                       'Discard a Free Peoples random card from hand',
                     );
                     const cards = this.q.freePeoples.characterHandCards();
                     const randomCard = randomUtil.getRandomElement(cards);
                     return [discardRandomCardById(randomCard)];
-                  } else {
-                    await ui.askContinue('No cards to discard');
-                    return [];
                   }
+                  await ui.askContinue('No cards to discard');
+                  return [];
                 },
               };
             const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> =
@@ -653,10 +649,10 @@ export class WotrShadowCharacterCards {
             const targetRegionIds: WotrRegionId[] = [];
             if (sourceRegion.hasArmy('free-peoples'))
               targetRegionIds.push(sourceRegion.id());
-            sourceRegion.adjacentRegions().forEach((adjRegion) => {
+            for (const adjRegion of sourceRegion.adjacentRegions()) {
               if (adjRegion.hasArmy('free-peoples'))
                 targetRegionIds.push(adjRegion.id());
-            });
+            }
             const targetRegionId = await ui.askRegion(
               'Choose a Free Peoples army to attack',
               targetRegionIds,
@@ -727,8 +723,7 @@ export class WotrShadowCharacterCards {
                   if (combatFront.frontId !== 'free-peoples') return true;
                   if (combatRound.round !== 1) return true;
                   const freeArmy = combatRound.defender.army();
-                  if (this.unitUtils.hasCompanions(freeArmy)) return true;
-                  return false;
+                  return this.unitUtils.hasCompanions(freeArmy);
                 },
               },
             ];
@@ -759,7 +754,7 @@ export class WotrShadowCharacterCards {
                       findAction<WotrCardPlayOnTable>(
                         story.actions,
                         'card-play-on-table',
-                      )?.card === 'scha21' || false;
+                      )?.card === 'scha21';
                     if (isBeingPlayed) return;
                     playedCard = story.card;
                     await activateTableCard(drawAbility, 'scha21', this.shadow);
@@ -828,15 +823,11 @@ export class WotrShadowCharacterCards {
                   return true;
                 if (
                   typeof source === 'object' &&
-                  source.type === 'army-attack'
-                ) {
-                  if (
-                    source.toRegion === 'edoras' ||
-                    source.toRegion === 'helms-deep'
-                  ) {
-                    return true;
-                  }
-                }
+                  source.type === 'army-attack' &&
+                  (source.toRegion === 'edoras' ||
+                    source.toRegion === 'helms-deep')
+                )
+                  return true;
                 return false;
               },
             };
@@ -871,8 +862,9 @@ export class WotrShadowCharacterCards {
       case 'scha23':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(...(await ui.characterUi.moveAnyOrAllNazgul()));
+            const actions: WotrAction[] = [
+              ...(await ui.characterUi.moveAnyOrAllNazgul()),
+            ];
             const option = await ui.askOption<'move' | 'attack'>(
               'Choose an action',
               [

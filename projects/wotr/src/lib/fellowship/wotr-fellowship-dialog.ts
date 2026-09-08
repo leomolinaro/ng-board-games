@@ -123,7 +123,7 @@ export class WotrFellowshipDialog implements OnInit {
     this.unitNodes = this.unitsToUnitNodes(this.fellowshipStore.companions());
     const companionSelection = this.data.selection;
     if (companionSelection) {
-      this.unitNodes.forEach((unitNode) => {
+      for (const unitNode of this.unitNodes) {
         if (companionSelection.companions.includes(unitNode.id)) {
           unitNode.selectable = true;
           unitNode.disabled = false;
@@ -131,20 +131,20 @@ export class WotrFellowshipDialog implements OnInit {
           unitNode.selectable = false;
           unitNode.disabled = true;
         }
-      });
+      }
     }
   }
 
   private unitsToUnitNodes(companionIds: WotrCompanionId[]): CompanionNode[] {
     const unitNodes: CompanionNode[] = [];
-    companionIds.forEach((companionId) => {
+    for (const companionId of companionIds) {
       const image = this.assets.frontCharacterImage(companionId);
       unitNodes.push({
         id: companionId,
         label: this.q.character(companionId).name,
         ...this.scale(image),
       });
-    });
+    }
     return unitNodes;
   }
 

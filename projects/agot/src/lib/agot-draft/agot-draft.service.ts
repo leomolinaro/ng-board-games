@@ -62,9 +62,9 @@ export class AgotDraftService {
     const typeIds: Record<string, boolean> = {};
     const factionIds: Record<string, boolean> = {};
     const packIds: Record<string, boolean> = {};
-    types.forEach((id) => (typeIds[id] = true));
-    factions.forEach((id) => (factionIds[id] = true));
-    packs.forEach((id) => (packIds[id] = true));
+    for (const id of types) typeIds[id] = true;
+    for (const id of factions) factionIds[id] = true;
+    for (const id of packs) packIds[id] = true;
     const poolCards: AgotCard[] = [];
     const cards = this.dataService.getCards();
     if (cards) {
@@ -89,7 +89,7 @@ export class AgotDraftService {
     if (num > array.length) {
       return null;
     }
-    const copy = array.slice();
+    const copy = [...array];
     const result = [];
     if (duplicates) {
       while (num--) {

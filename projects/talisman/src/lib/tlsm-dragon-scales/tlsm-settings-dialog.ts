@@ -143,7 +143,7 @@ export class TlsmSettingsDialog {
       .filter(Boolean);
 
     this.context.completeWith({
-      players: players.length ? players : ['Player 1'],
+      players: players.length > 0 ? players : ['Player 1'],
       scalesPerCrown: Math.max(1, this.settings().scalesPerCrown),
     });
   }

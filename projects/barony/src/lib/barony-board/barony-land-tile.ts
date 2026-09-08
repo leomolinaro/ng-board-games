@@ -151,7 +151,7 @@ export class BaronyLandComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['pawns']) return;
     this.pawnNodes = [];
-    this.pawns().forEach((pawn) => {
+    for (const pawn of this.pawns()) {
       this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
         (p) => p.color === pawn.color && p.type === pawn.type,
         (p) => ({ ...p, quantity: p.quantity + 1 }),
@@ -167,34 +167,29 @@ export class BaronyLandComponent implements OnChanges {
         }),
         this.pawnNodes,
       );
-    });
+    }
 
     this.pawnNodes.sort((a, b) => {
       if (a.type === b.type) {
         return 0;
-      } else {
-        if (a.type === 'knight') {
-          return 1;
-        } else {
-          return -1;
-        }
       }
+      return a.type === 'knight' ? 1 : -1;
     });
 
-    this.pawnNodes.forEach((pawnNode, index) => {
+    for (const [index, pawnNode] of this.pawnNodes.entries()) {
       pawnNode.x =
         this.hexCenter()?.x -
-        this.pawnWidth / 2.0 +
+        this.pawnWidth / 2 +
         this.pawnPositionRadius *
           this.getPawnNodeDeltaX(index, this.pawnNodes.length);
       pawnNode.y =
         this.hexCenter()?.y -
-        this.pawnHeight / 2.0 +
+        this.pawnHeight / 2 +
         this.pawnPositionRadius *
           this.getPawnNodeDeltaY(index, this.pawnNodes.length);
       pawnNode.xText = pawnNode.x + this.textXOffset;
       pawnNode.yText = pawnNode.y + this.textYOffset;
-    });
+    }
   }
 
   private getPawnNodeDeltaX(index: number, total: number) {
@@ -202,7 +197,7 @@ export class BaronyLandComponent implements OnChanges {
   }
 
   private getPawnNodeDeltaY(index: number, total: number) {
-    return total === 1 ? 0 : -1 * Math.cos((2 * Math.PI * index) / total);
+    return total === 1 ? 0 : -Math.cos((2 * Math.PI * index) / total);
   }
 
   onLandTileClick() {

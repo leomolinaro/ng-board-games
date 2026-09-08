@@ -1,4 +1,5 @@
 import { computed, effect, inject } from '@angular/core';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrNationId } from '../nation/wotr-nation-models';
 import { frontOfNation } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
@@ -7,9 +8,11 @@ import type { WotrArmy } from './wotr-unit-models';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
 export class WotrUnitDebug {
-  constructor(private nationId: WotrNationId) {}
+  constructor(private nationId: WotrNationId) {
+    this.frontId = frontOfNation(this.nationId);
+  }
 
-  private frontId = frontOfNation(this.nationId);
+  private frontId: WotrFrontId;
   private nationStore = inject(WotrNationStore);
   private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
@@ -39,16 +42,15 @@ export class WotrUnitDebug {
 
   private nRegularCasualties = computed(() => this.nation().casualties.regular);
 
-  private nRegularForces = computed(() =>
-    this.armies().reduce(
-      (sum, army) =>
-        sum +
-        (army
-          ? this.unitUtils.getNRegularUnitsOfNation(this.nationId, army)
-          : 0),
-      0,
-    ),
-  );
+  private nRegularForces = computed(() => {
+    let sum = 0;
+    for (const army of this.armies()) {
+      sum += army
+        ? this.unitUtils.getNRegularUnitsOfNation(this.nationId, army)
+        : 0;
+    }
+    return sum;
+  });
 
   private nEliteReinforcements = computed(
     () => this.nation().reinforcements.elite,
@@ -56,14 +58,15 @@ export class WotrUnitDebug {
 
   private nEliteCasualties = computed(() => this.nation().casualties.elite);
 
-  private nEliteForces = computed(() =>
-    this.armies().reduce(
-      (sum, army) =>
-        sum +
-        (army ? this.unitUtils.getNEliteUnitsOfNation(this.nationId, army) : 0),
-      0,
-    ),
-  );
+  private nEliteForces = computed(() => {
+    let sum = 0;
+    for (const army of this.armies()) {
+      sum += army
+        ? this.unitUtils.getNEliteUnitsOfNation(this.nationId, army)
+        : 0;
+    }
+    return sum;
+  });
 
   private writeLog = effect(() => {
     const totalRegular =

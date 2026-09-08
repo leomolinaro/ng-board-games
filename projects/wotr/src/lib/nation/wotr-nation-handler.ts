@@ -93,9 +93,9 @@ export class WotrNationHandler {
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
       if (
+        armyFront === 'shadow' &&
         !nation.active &&
-        nation.front === 'free-peoples' &&
-        armyFront === 'shadow'
+        nation.front === 'free-peoples'
       ) {
         this.activateNationEffect(region.nationId, 'region-entered');
       }
@@ -126,8 +126,10 @@ export class WotrNationHandler {
     const region = this.regionStore.region(regionId);
     const defendingArmy = region.underSiegeArmy ?? region.army!;
     const nations = new Set<WotrNationId>();
-    defendingArmy.regulars?.forEach((r) => nations.add(r.nation));
-    defendingArmy.elites?.forEach((r) => nations.add(r.nation));
+    if (defendingArmy.regulars)
+      for (const r of defendingArmy.regulars) nations.add(r.nation);
+    if (defendingArmy.elites)
+      for (const r of defendingArmy.elites) nations.add(r.nation);
     return nations;
   }
 
@@ -153,17 +155,17 @@ export class WotrNationHandler {
         nation.front === 'free-peoples' &&
         (region.settlement === 'city' || region.settlement === 'stronghold')
       ) {
-        let doActivate = false;
+        let shouldActivate = false;
         for (const characterId of characters) {
           const character = this.q.character(characterId);
           if (
             character.activationNation === 'all' ||
             character.activationNation === region.nationId
           ) {
-            doActivate = true;
+            shouldActivate = true;
           }
         }
-        if (doActivate) {
+        if (shouldActivate) {
           this.activateNationEffect(region.nationId, 'companion-ability');
         }
       }
@@ -257,8 +259,8 @@ export class WotrNationHandler {
     const isActive = this.nationStore.isActive(nation);
     if (isActive) return true;
     const stepsToWar = this.nationStore.stepsToWar(nation);
-    const goToWar = quantity === 'war' || quantity >= stepsToWar;
-    return !goToWar;
+    const shouldGoToWar = quantity === 'war' || quantity >= stepsToWar;
+    return !shouldGoToWar;
   }
 
   activateAllFreePeoplesNations(source: WotrNationActivationSource): void {

@@ -41,12 +41,10 @@ export class WotrActionDieModifiers {
       dieResult: typeof die === 'string' ? die : die.result,
       frontId,
     };
-    return this.actionDieChoices
-      .get()
-      .reduce<WotrUiChoice[]>(
-        (choices, modifier) => choices.concat(modifier(params)),
-        [],
-      );
+    const choices: WotrUiChoice[] = [];
+    for (const modifier of this.actionDieChoices.get())
+      choices.push(...modifier(params));
+    return choices;
   }
 
   public readonly afterActionDieResolution =

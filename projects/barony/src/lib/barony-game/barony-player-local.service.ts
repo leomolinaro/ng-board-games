@@ -163,14 +163,9 @@ export class BaronyPlayerLocalService {
         player,
         firstMovement,
       );
-      if (secondMovement) {
-        return [firstMovement, secondMovement];
-      } else {
-        return [firstMovement];
-      }
-    } else {
-      return [firstMovement];
+      return secondMovement ? [firstMovement, secondMovement] : [firstMovement];
     }
+    return [firstMovement];
   }
 
   private async chooseFirstMovement(
@@ -191,14 +186,9 @@ export class BaronyPlayerLocalService {
       player,
       firstMovement,
     );
-    if (movementSource) {
-      return this.chooseMovementTargetAndConflict(
-        movementSource.coordinates,
-        player,
-      );
-    } else {
-      return null;
-    }
+    return movementSource
+      ? this.chooseMovementTargetAndConflict(movementSource.coordinates, player)
+      : null;
   }
 
   private async chooseMovementTargetAndConflict(
@@ -245,14 +235,13 @@ export class BaronyPlayerLocalService {
         conflict: true,
         gainedResource: null,
       };
-    } else {
-      return {
-        fromLand: movementSource,
-        toLand: movementTarget.coordinates,
-        conflict: false,
-        gainedResource: null,
-      };
     }
+    return {
+      fromLand: movementSource,
+      toLand: movementTarget.coordinates,
+      conflict: false,
+      gainedResource: null,
+    };
   }
 
   private chooseResourceForVillageDestruction(
@@ -337,24 +326,18 @@ export class BaronyPlayerLocalService {
       if (construction) {
         this.game.applyConstruction(construction, player);
         const constructions = [...prevConstructions, construction];
-        if (baronyRules.isConstructionValid(player, this.game)) {
-          return this.chooseConstructions(player, constructions);
-        } else {
-          return constructions;
-        }
-      } else {
-        return prevConstructions;
+        return baronyRules.isConstructionValid(player, this.game)
+          ? this.chooseConstructions(player, constructions)
+          : constructions;
       }
-    } else {
-      const construction = await this.chooseConstruction(player, false);
-      const constructions = [construction];
-      this.game.applyConstruction(construction, player);
-      if (baronyRules.isConstructionValid(player, this.game)) {
-        return this.chooseConstructions(player, constructions);
-      } else {
-        return constructions;
-      }
+      return prevConstructions;
     }
+    const construction = await this.chooseConstruction(player, false);
+    const constructions = [construction];
+    this.game.applyConstruction(construction, player);
+    return baronyRules.isConstructionValid(player, this.game)
+      ? this.chooseConstructions(player, constructions)
+      : constructions;
   }
 
   private chooseConstructionOrPass(
@@ -368,16 +351,16 @@ export class BaronyPlayerLocalService {
 
   private async chooseConstruction(
     player: BaronyColor,
-    orPass: boolean,
+    canPass: boolean,
   ): Promise<BaronyConstruction> {
-    const land = await this.chooseLandForConstruction(player, orPass);
-    const building = await this.chooseBuildingForConstruction(player, orPass);
+    const land = await this.chooseLandForConstruction(player, canPass);
+    const building = await this.chooseBuildingForConstruction(player, canPass);
     return { building, land: land.coordinates };
   }
 
   private chooseLandForConstruction(
     player: BaronyColor,
-    orPass: boolean,
+    canPass: boolean,
   ): Promise<BaronyLand> {
     const validLands = baronyRules.getValidLandsForConstruction(
       player,
@@ -386,16 +369,16 @@ export class BaronyPlayerLocalService {
     this.ui.updateUi('Choose land for construction', (s) => ({
       ...s,
       ...this.ui.resetUi(),
-      message: `Choose a land tile to construct on${orPass ? ', or pass' : ''}.`,
+      message: `Choose a land tile to construct on${canPass ? ', or pass' : ''}.`,
       validLands: validLands.map((lt) => lt.coordinates),
-      canPass: orPass,
+      canPass: canPass,
     }));
     return this.ui.landSelect.get();
   }
 
   private chooseBuildingForConstruction(
     player: BaronyColor,
-    orPass: boolean,
+    canPass: boolean,
   ): Promise<'stronghold' | 'village'> {
     const validBuildings = baronyRules.getValidBuildingsForConstruction(
       player,
@@ -404,9 +387,9 @@ export class BaronyPlayerLocalService {
     this.ui.updateUi('Choose building for construction', (s) => ({
       ...s,
       ...this.ui.resetUi(),
-      message: `Choose a building to construct on the tile${orPass ? ', or pass' : ''}.`,
+      message: `Choose a building to construct on the tile${canPass ? ', or pass' : ''}.`,
       validBuildings: validBuildings,
-      canPass: orPass,
+      canPass: canPass,
     }));
     return this.ui.buildingSelect.get();
   }
@@ -452,11 +435,9 @@ export class BaronyPlayerLocalService {
     sum += resoucePoints;
     resources.push(resource);
     this.game.discardResource(resource, player);
-    if (sum < 15) {
-      return this.chooseResourcesForNobleTitle(player, resources, sum);
-    } else {
-      return resources;
-    }
+    return sum < 15
+      ? this.chooseResourcesForNobleTitle(player, resources, sum)
+      : resources;
   }
 
   private async chooseResourceForNobleTitle(

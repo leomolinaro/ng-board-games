@@ -137,9 +137,8 @@ export class WotrAssetsStore {
     if ('sovereignStatus' in character) {
       const sovereign = character as KomeSovereign;
       return this.SOVEREIGN_BY_ID[sovereign.id][sovereign.sovereignStatus];
-    } else {
-      return this.CHARACTER_BY_ID[character.id];
     }
+    return this.CHARACTER_BY_ID[character.id];
   }
   private initCharacterImage(
     fileName: string,
@@ -286,23 +285,25 @@ export class WotrAssetsStore {
     const pending = this.cardTextLoaders.get(cardId);
     if (pending) return pending;
 
-    const loadPromise = firstValueFrom(
-      this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`),
-    )
-      .then((cardText) => {
-        this.cardTextCache.set(cardId, cardText);
-        return cardText;
-      })
-      .catch(() => {
-        this.cardTextCache.set(cardId, null);
-        return null;
-      })
-      .finally(() => {
-        this.cardTextLoaders.delete(cardId);
-      });
+    const loadPromise = this.loadCardText(cardId);
 
     this.cardTextLoaders.set(cardId, loadPromise);
     return loadPromise;
+  }
+
+  private async loadCardText(cardId: WotrCardId): Promise<WotrCardText | null> {
+    try {
+      const cardText = await firstValueFrom(
+        this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`),
+      );
+      this.cardTextCache.set(cardId, cardText);
+      return cardText;
+    } catch {
+      this.cardTextCache.set(cardId, null);
+      return null;
+    } finally {
+      this.cardTextLoaders.delete(cardId);
+    }
   }
 
   private unitImage(
@@ -316,11 +317,10 @@ export class WotrAssetsStore {
   actionDieImage(actionDie: WotrActionDie, front: WotrFrontId) {
     if (typeof actionDie === 'string') {
       return `${BASE_PATH}/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie}.png`;
-    } else {
-      switch (actionDie.type) {
-        case 'ruler':
-          return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
-      }
+    }
+    switch (actionDie.type) {
+      case 'ruler':
+        return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
     }
   }
   actionTokenImage(actionToken: WotrActionToken, front: WotrFrontId) {
@@ -347,11 +347,9 @@ export class WotrAssetsStore {
     return `${BASE_PATH}/elven-rings/${elvenRing}.png`;
   }
   victoryMarker(front: WotrFrontId, points: number) {
-    if (points <= 10) {
-      return `${BASE_PATH}/victory-markers/${front}.png`;
-    } else {
-      return `${BASE_PATH}/victory-markers/${front}-10.png`;
-    }
+    return points <= 10
+      ? `${BASE_PATH}/victory-markers/${front}.png`
+      : `${BASE_PATH}/victory-markers/${front}-10.png`;
   }
   controlMarker(front: WotrFrontId) {
     return `${BASE_PATH}/control-markers/${front}.png`;

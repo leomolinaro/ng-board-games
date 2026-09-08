@@ -165,11 +165,7 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
   }
 
   async enterGame(game: BgProtoGame) {
-    if (game.state === 'running') {
-      return this.config().startGame(game.id);
-    } else {
-      return this.playersRoom(game);
-    }
+    return game.state === 'running' ? this.config().startGame(game.id) : this.playersRoom(game);
   }
 
   private async playersRoom(game: BgProtoGame) {

@@ -83,20 +83,16 @@ export class AgotData {
   }
 
   private filterCards(cards: AgotCard[], options?: { onlyOfficial: boolean }) {
-    if (options) {
-      if (options.onlyOfficial) {
+    if (options?.onlyOfficial) {
         return cards.filter((c) => this.officialPackCodes[c.pack_code]);
       }
-    }
     return cards;
   }
 
   private filterPacks(packs: AgotPack[], options?: { onlyOfficial: boolean }) {
-    if (options) {
-      if (options.onlyOfficial) {
+    if (options?.onlyOfficial) {
         return packs.filter((p) => this.officialPackCodes[p.code]);
       }
-    }
     return packs;
   }
 
@@ -111,7 +107,7 @@ export class AgotData {
     const factionIds: Record<string, boolean> = {};
     const types: AgotType[] = [];
     const typeIds: Record<string, boolean> = {};
-    cards.forEach((card) => {
+    for (const card of cards) {
       const factionCode = card.faction_code;
       if (!factionIds[factionCode]) {
         factionIds[factionCode] = true;
@@ -123,7 +119,7 @@ export class AgotData {
         types.push({ code: typeCode, name: card.type_name });
       }
       this.cardMap[card.code] = card;
-    });
+    }
     this.factions.set(factions);
     this.types.set(types);
     this.cards = cards;

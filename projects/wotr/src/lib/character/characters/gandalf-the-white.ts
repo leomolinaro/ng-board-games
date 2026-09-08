@@ -53,7 +53,8 @@ export class WotrGandalfTheWhite extends WotrPlayableCharacterCard {
     if (gandalf.isInPlay()) {
       const gandalfRegion = gandalf.region()!;
       return playCharacter(gandalfRegion.id, 'gandalf-the-white');
-    } else if (gandalf.isEliminated()) {
+    }
+    if (gandalf.isEliminated()) {
       const elvenStrongholds: WotrRegionId[] = [
         'rivendell',
         'lorien',

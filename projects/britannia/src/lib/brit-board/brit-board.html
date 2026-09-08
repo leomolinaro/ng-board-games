@@ -47,7 +47,7 @@
       @if (zoomFixed) {
       <bg-map-zoom-buttons
         class="brit-board-zoom-buttons-widget"
-        [controls]="britMap.bgMapZoom"
+        [controls]="britMap.bgMapZoom()"
       ></bg-map-zoom-buttons>
       } @if (logsFixed) {
       <brit-logs

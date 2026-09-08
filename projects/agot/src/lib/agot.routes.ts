@@ -4,19 +4,17 @@ import { AGOT_FEATURE_PATHS } from './agot-features';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./agot-home').then((m) => m.AgotHome),
+    loadComponent: async () => (await import('./agot-home')).AgotHome,
   },
   {
     path: AGOT_FEATURE_PATHS.draft,
-    loadComponent: () =>
-      import('./agot-draft/agot-draft-page').then((m) => m.AgotDraftPage),
+    loadComponent: async () =>
+      (await import('./agot-draft/agot-draft-page')).AgotDraftPage,
   },
   {
     path: AGOT_FEATURE_PATHS.fcDecks,
-    loadComponent: () =>
-      import('./agot-fc-decks/agot-fc-decks-page').then(
-        (m) => m.AgotFcDecksPage,
-      ),
+    loadComponent: async () =>
+      (await import('./agot-fc-decks/agot-fc-decks-page')).AgotFcDecksPage,
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

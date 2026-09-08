@@ -1,9 +1,5 @@
-import type {
-  WotrCardId,
-  WotrCardLabel} from '../card/wotr-card-models';
-import {
-  labelToCardId,
-} from '../card/wotr-card-models';
+import type { WotrCardId, WotrCardLabel } from '../card/wotr-card-models';
+import { labelToCardId } from '../card/wotr-card-models';
 import { frontOfNation } from '../nation/wotr-nation-models';
 import type { WotrRegionId } from '../region/wotr-region-models';
 import type {
@@ -40,7 +36,7 @@ export interface WotrArmyAttack {
 export function attack(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-   
+
   retroguard?: WotrArmy,
 ): WotrArmyAttack {
   const action: WotrArmyAttack = { type: 'army-attack', fromRegion, toRegion };
@@ -52,13 +48,11 @@ export function retroguard(...comp: WotrUnitComposer[]): WotrArmy {
 }
 
 function composeArmy(comp: WotrUnitComposer[]): WotrArmy {
-  const a: Omit<WotrArmy, 'front'> = comp.reduce(
-    (units, u) => u.addTo(units),
-    {},
+  let a: Omit<WotrArmy, 'front'> = {};
+  for (const unitComposer of comp) a = unitComposer.addTo(a);
+  const front = frontOfNation(
+    a.regulars?.length ? a.regulars[0].nation : a.elites![0].nation,
   );
-  const front = a.regulars?.length
-    ? frontOfNation(a.regulars[0].nation)
-    : frontOfNation(a.elites![0].nation);
   return { ...a, front };
 }
 
@@ -166,7 +160,7 @@ export function reRollCombatDice(...dice: WotrCombatDie[]): WotrCombatReRoll {
 
 export function composeLeaders(comp: WotrUnitComposer[]): WotrLeaderUnits {
   const a: WotrLeaderUnits = {};
-  comp.forEach((c) => c.addTo(a));
+  for (const c of comp) c.addTo(a);
   return a;
 }
 

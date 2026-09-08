@@ -97,8 +97,8 @@ export class WotrHuntFlow {
       nSuccesses += nReRollSuccesses;
     }
     if (!nSuccesses) return;
-    const prevented = await this.huntModifiers.isHuntDrawPrevented();
-    if (prevented) return;
+    const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+    if (isPrevented) return;
     let huntTileId = await this.drawHuntTile(this.shadow);
     huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
     await this.resolveHuntTile(huntTileId, {
@@ -108,8 +108,8 @@ export class WotrHuntFlow {
 
   private async resolveHuntOnMordorTrack() {
     this.logger.logHuntResolution();
-    const prevented = await this.huntModifiers.isHuntDrawPrevented();
-    if (prevented) return;
+    const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+    if (isPrevented) return;
     const nSuccesses = this.huntStore.nTotalDice();
     let huntTileId = await this.drawHuntTile(this.shadow);
     huntTileId = await this.huntModifiers.onAfterTileDrawn(huntTileId);
@@ -146,18 +146,16 @@ export class WotrHuntFlow {
 
     const wasRevealed = this.fellowshipStore.isRevealed();
 
-    let doReveal = false;
-    if (huntTile.reveal && !wasRevealed && !options.ignoreRevealIcon) {
-      if (
-        this.fellowshipStore.guide() !== 'gollum' ||
-        huntTile.type !== 'standard' ||
-        huntTile.quantity == null
-      ) {
-        doReveal = true;
-      }
-    }
+    const shouldReveal =
+      (huntTile.reveal &&
+        !wasRevealed &&
+        !options.ignoreRevealIcon &&
+        (this.fellowshipStore.guide() !== 'gollum' ||
+          huntTile.type !== 'standard' ||
+          huntTile.quantity == null)) ??
+      false;
 
-    let isRevealing = doReveal;
+    let isRevealing = shouldReveal;
     const params: WotrHuntEffectParams = {
       damage: 0,
       isRevealing,
@@ -182,13 +180,13 @@ export class WotrHuntFlow {
       } else {
         const fromRegion = this.regionStore.fellowshipRegion();
         const progress = this.fellowshipStore.progress();
-        if (doReveal) await this.revealFellowship();
+        if (shouldReveal) await this.revealFellowship();
         const toRegion = this.regionStore.fellowshipRegion();
         if (
           this.movingThroughShadowStronghold(fromRegion, toRegion, progress)
         ) {
-          const prevented = await this.huntModifiers.isHuntDrawPrevented();
-          if (!prevented) {
+          const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
+          if (!isPrevented) {
             const newHuntTileId = await this.drawHuntTile(this.shadow);
             await this.resolveHuntTile(newHuntTileId, options);
           }
@@ -228,12 +226,15 @@ export class WotrHuntFlow {
 
   private getNSuccesses(huntRoll: WotrCombatDie[], modifiers: number[]) {
     const hunt = this.huntStore.state();
-    const rollModifiers = modifiers.reduce((a, b) => a + b, 0);
+    let rollModifiers = 0;
+    for (const modifier of modifiers) {
+      rollModifiers += modifier;
+    }
     const threshold = Math.max(6 - hunt.nFreePeopleDice - rollModifiers, 1);
-    const nSuccesses = huntRoll.reduce((counter, die) => {
-      if (die >= threshold) counter++;
-      return counter;
-    }, 0);
+    let nSuccesses = 0;
+    for (const die of huntRoll) {
+      if (die >= threshold) nSuccesses++;
+    }
     return nSuccesses;
   }
 
@@ -265,7 +266,7 @@ export class WotrHuntFlow {
     params: WotrHuntEffectParams,
   ): Promise<{ absorbedDamage: number; gollumRevealing?: true }> {
     let absorbedDamage = 0;
-    let gollumRevealing = false;
+    let isGollumRevealing = false;
     const actions = await this.huntEffect(params);
     for (const action of actions) {
       switch (action.type) {
@@ -300,18 +301,18 @@ export class WotrHuntFlow {
         case 'fellowship-reveal-in-mordor': {
           if (this.fellowshipStore.guide() === 'gollum') {
             absorbedDamage += 1;
-            gollumRevealing = true;
+            isGollumRevealing = true;
           }
           break;
         }
         case 'companion-random': {
           for (const companionId of action.companions) {
-            const eliminating =
+            const isEliminating =
               await this.charactersModifiers.onBeforeCharacterElimination({
                 characterId: companionId,
                 fromTheFellowship: true,
               });
-            if (eliminating) {
+            if (isEliminating) {
               params.randomCompanions ??= [];
               params.randomCompanions.push(companionId);
             } else {
@@ -338,11 +339,9 @@ export class WotrHuntFlow {
         }
       }
     }
-    if (gollumRevealing) {
-      return { absorbedDamage, gollumRevealing };
-    } else {
-      return { absorbedDamage };
-    }
+    return isGollumRevealing
+      ? { absorbedDamage, gollumRevealing: isGollumRevealing }
+      : { absorbedDamage };
   }
 
   async huntEffect(params: WotrHuntEffectParams): Promise<HuntEffect[]> {

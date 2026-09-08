@@ -31,10 +31,10 @@ export class WotrActionRegistry {
   registerActions<A extends WotrAction>(
     actionAppliers: WotrActionApplierMap<A>,
   ) {
-    for (const actionType of Object.keys(actionAppliers)) {
+    for (const [actionType, value] of Object.entries(actionAppliers as WotrActionApplierMap<WotrAction>)) {
       this.actionAppliers.set(
         actionType,
-        (actionAppliers as WotrActionApplierMap<WotrAction>)[actionType],
+        value,
       );
     }
   }

@@ -113,30 +113,26 @@ function generateRectangularMap(nPieces: number): {
   let rowIndex = 0;
   let up = true;
   for (const piece of choosenPieces) {
-    let x = -1 * rowIndex;
+    let x = -rowIndex;
     const y = 2 * rowIndex;
-    let z = -1 * rowIndex;
+    let z = -rowIndex;
     if (up) {
       x += (pIndex / 2) * 3;
       z += (pIndex / 2) * -3;
-      toReturn.push({ coordinates: { x, y, z }, type: piece[1] });
-      toReturn.push({
+      toReturn.push({ coordinates: { x, y, z }, type: piece[1] }, {
         coordinates: { x: x, y: y + 1, z: z - 1 },
         type: piece[2],
-      });
-      toReturn.push({
+      }, {
         coordinates: { x: x - 1, y: y + 1, z: z },
         type: piece[3],
       });
     } else {
       x += ((pIndex - 1) / 2) * 3 + 1;
       z += ((pIndex - 1) / 2) * -3 - 1;
-      toReturn.push({ coordinates: { x, y, z }, type: piece[1] });
-      toReturn.push({
+      toReturn.push({ coordinates: { x, y, z }, type: piece[1] }, {
         coordinates: { x: x + 1, y: y, z: z - 1 },
         type: piece[2],
-      });
-      toReturn.push({
+      }, {
         coordinates: { x: x, y: y + 1, z: z - 1 },
         type: piece[3],
       });

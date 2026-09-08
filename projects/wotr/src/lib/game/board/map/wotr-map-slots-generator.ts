@@ -52,9 +52,9 @@ export class WotrMapSlotsGenerator {
 
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
-      const regionSlots: Record<number, WotrMapPoint[]> = {};
       if (!regionPoints)
         throw new Error(`Region points not found for region ${region.id}`);
+      const regionSlots: Record<number, WotrMapPoint[]> = {};
       for (let i = 1; i <= MAX_SLOTS; i++) {
         const slots = this.generateRegionSlots(i, regionPoints, region.id);
         regionSlots[i] = slots;
@@ -240,7 +240,7 @@ export class WotrMapSlotsGenerator {
     const oldPoint = points[index];
     let newPoint: WotrMapRegionPoint;
     const limit = 1000;
-    if (oldPoint.neighbours.length) {
+    if (oldPoint.neighbours.length > 0) {
       let i = 0;
       do {
         newPoint = randomUtil.getRandomElement(oldPoint.neighbours);

@@ -40,14 +40,9 @@ export class TheBlackSerpent extends WotrPlayableCharacterCard {
   public readonly characterId = 'the-black-serpent';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (
-      this.q.gondor.isAtWar() &&
+    return (this.q.gondor.isAtWar() &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some((r) => this.isValidRegion(r))
-    ) {
-      return true;
-    }
-    return false;
+      this.q.regions().some((r) => this.isValidRegion(r)));
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {

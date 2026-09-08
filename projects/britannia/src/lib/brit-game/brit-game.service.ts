@@ -119,16 +119,18 @@ export class BritGameService extends ABgGameService<
     roundId: BritRoundId,
   ): Promise<void> {
     if (
-      this.rules.populationIncrease.isNationActive(nationId, this.gameStore)
+      !this.rules.populationIncrease.isNationActive(nationId, this.gameStore)
     ) {
-      this.gameStore.logNationTurn(nationId);
-      const player = this.gameStore.getPlayerByNation(nationId)!;
-      await this.populationIncreasePhase(nationId, player.id, roundId);
-      await this.movementPhase(nationId, player.id);
-      await this.battlesRetreatsPhase(nationId, player.id);
-      this.raiderWithdrawalPhase();
-      this.overpopulationPhase();
+      return;
     }
+
+    this.gameStore.logNationTurn(nationId);
+    const player = this.gameStore.getPlayerByNation(nationId)!;
+    await this.populationIncreasePhase(nationId, player.id, roundId);
+    await this.movementPhase(nationId, player.id);
+    await this.battlesRetreatsPhase(nationId, player.id);
+    this.raiderWithdrawalPhase();
+    this.overpopulationPhase();
   }
 
   private async populationIncreasePhase(
@@ -151,12 +153,9 @@ export class BritGameService extends ABgGameService<
           const infantryPlacement: {
             areaId: BritLandAreaId;
             quantity: number;
-          }[] = [];
-          for (const ip of armyPlacement.infantryPlacement) {
-            infantryPlacement.push(
-              typeof ip === 'object' ? ip : { areaId: ip, quantity: 1 },
-            );
-          }
+          }[] = Array.from(armyPlacement.infantryPlacement, (ip) =>
+            typeof ip === 'object' ? ip : { areaId: ip, quantity: 1 },
+          );
           this.gameStore.applyPopulationIncrease(
             data.populationMarker,
             infantryPlacement,
@@ -165,15 +164,14 @@ export class BritGameService extends ABgGameService<
           for (const ip of infantryPlacement) {
             this.gameStore.logInfantryPlacement(ip.areaId, ip.quantity);
           }
-          this.gameStore.logPopulationMarkerSet(data.populationMarker);
         } else {
           this.gameStore.applyPopulationIncrease(
             data.populationMarker,
             [],
             nationId,
           );
-          this.gameStore.logPopulationMarkerSet(data.populationMarker);
         }
+        this.gameStore.logPopulationMarkerSet(data.populationMarker);
         break;
       }
       case 'roman-reinforcements': {

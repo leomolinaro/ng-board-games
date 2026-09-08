@@ -174,16 +174,20 @@ export class WotrBoard {
 
   replayMode = model();
 
-  protected nChaCards: BgTransformFn<WotrCardId[], number> = (handCards) =>
-    handCards.reduce(
-      (count, card) => (isCharacterCard(card) ? count + 1 : count),
-      0,
-    );
-  protected nStrCards: BgTransformFn<WotrCardId[], number> = (handCards) =>
-    handCards.reduce(
-      (count, card) => (isStrategyCard(card) ? count + 1 : count),
-      0,
-    );
+  protected nChaCards: BgTransformFn<WotrCardId[], number> = (handCards) => {
+    let count = 0;
+    for (const card of handCards) {
+      if (isCharacterCard(card)) count++;
+    }
+    return count;
+  };
+  protected nStrCards: BgTransformFn<WotrCardId[], number> = (handCards) => {
+    let count = 0;
+    for (const card of handCards) {
+      if (isStrategyCard(card)) count++;
+    }
+    return count;
+  };
 
   replayNext = output<number>();
   replayLast = output<void>();

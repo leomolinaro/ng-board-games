@@ -86,18 +86,14 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async separateCompanions(
     params: WotrSeparateCompanionsOptions,
   ): Promise<WotrStory> {
-    if (params.cardId) {
-      return {
+    return params.cardId ? {
         type: 'card-effect',
         card: params.cardId,
         actions: await this.fellowshipUi.separateCompanions(params),
-      };
-    } else {
-      return {
+      } : {
         type: 'base',
         actions: await this.fellowshipUi.separateCompanions(params),
       };
-    }
   }
 
   async rollHuntDice(): Promise<WotrStory> {
@@ -218,14 +214,9 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       frontId,
     );
     if (cardId) {
-      if (this.battleStore.battleInProgress()) {
-        return { type: 'combat-card-effect', card: cardId, actions };
-      } else {
-        return { type: 'card-effect', card: cardId, actions };
-      }
-    } else {
-      return { type: 'base', actions };
+      return this.battleStore.battleInProgress() ? { type: 'combat-card-effect', card: cardId, actions } : { type: 'card-effect', card: cardId, actions };
     }
+    return { type: 'base', actions };
   }
 
   async eliminateArmy(
@@ -234,11 +225,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     frontId: WotrFrontId,
   ): Promise<WotrBaseStory | WotrCardEffectStory> {
     const actions = await this.battleUi.eliminateArmy(regionId, frontId);
-    if (cardId) {
-      return { type: 'card-effect', card: cardId, actions };
-    } else {
-      return { type: 'base', actions };
-    }
+    return cardId ? { type: 'card-effect', card: cardId, actions } : { type: 'base', actions };
   }
 
   async battleAdvance(): Promise<WotrBaseStory> {

@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import type {
@@ -143,7 +143,9 @@ export class KomeCorruptionBoard {
       : this.assets.huntTileBack();
 
   selectSovereign(sovereignId: KomeSovereignId) {
-    if (!this.sovereignSelectionMap()?.[sovereignId]) return;
+    const sovereignSelectionMap = this.sovereignSelectionMap();
+    if (!sovereignSelectionMap) return;
+    if (!sovereignSelectionMap[sovereignId]) return;
     this.ui.sovereign.emit(sovereignId);
   }
 }

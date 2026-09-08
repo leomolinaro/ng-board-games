@@ -74,11 +74,10 @@ export class BaronyGameService extends ABgGameService<
     const playerIds = this.gameStore.players.ids();
     const turns: BaronyColor[] = [...playerIds];
     for (let i = playerIds.length - 1; i >= 0; i--) {
-      turns.push(playerIds[i]);
-      turns.push(playerIds[i]);
+      turns.push(playerIds[i], playerIds[i]);
     }
     await this.setupPlacement(turns.shift()!);
-    while (turns.length) {
+    while (turns.length > 0) {
       await this.setupPlacement(turns.shift()!);
     }
   }
@@ -87,7 +86,7 @@ export class BaronyGameService extends ABgGameService<
     const playerIds = this.gameStore.players.ids();
     const turns = [...playerIds];
     let turnOutput = await this.turn(turns.shift()!, false);
-    while (turns.length) {
+    while (turns.length > 0) {
       turnOutput = await this.turn(turns.shift()!, turnOutput.lastRound);
     }
     return { endGame: turnOutput.lastRound, roundNumber };
@@ -103,7 +102,7 @@ export class BaronyGameService extends ABgGameService<
 
   private async turn(
     player: BaronyColor,
-    lastRound: boolean,
+    isLastRound: boolean,
   ): Promise<BaronyTurnOutput> {
     this.gameStore.logTurn(player);
     const result = await this.executeTask(player, (p) => p.turn(player));
@@ -127,13 +126,16 @@ export class BaronyGameService extends ABgGameService<
         this.nobleTitle(result.discardedResources, player);
         break;
     }
-    if (!lastRound) {
-      const playerWinning = baronyRules.isPlayerWinning(player, this.gameStore);
-      if (playerWinning) {
-        lastRound = true;
+    if (!isLastRound) {
+      const isPlayerWinning = baronyRules.isPlayerWinning(
+        player,
+        this.gameStore,
+      );
+      if (isPlayerWinning) {
+        isLastRound = true;
       }
     }
-    return { lastRound: lastRound };
+    return { lastRound: isLastRound };
   }
 
   private recruitment(
@@ -151,10 +153,10 @@ export class BaronyGameService extends ABgGameService<
     constructions: BaronyConstruction[],
     player: BaronyColor,
   ) {
-    constructions.forEach((construction) => {
+    for (const construction of constructions) {
       this.gameStore.applyConstruction(construction, player);
       this.gameStore.logConstruction(construction, player);
-    });
+    }
   }
 
   private expedition(land: BaronyLandCoordinates, player: BaronyColor) {
@@ -163,10 +165,10 @@ export class BaronyGameService extends ABgGameService<
   }
 
   private movement(movements: BaronyMovement[], player: BaronyColor) {
-    movements.forEach((movement) => {
+    for (const movement of movements) {
       this.gameStore.applyMovement(movement, player);
       this.gameStore.logMovement(movement, player);
-    });
+    }
   }
 
   private newCity(land: BaronyLandCoordinates, player: BaronyColor) {
@@ -254,7 +256,7 @@ export class BaronyGameService extends ABgGameService<
         baronyMap.lands.map((l) => {
           const x = l.x;
           const y = l.y;
-          const z = -1 * (x + y);
+          const z = -(x + y);
           const coordinates: BaronyLandCoordinates = { x, y, z };
           return {
             id: landCoordinatesToId(coordinates),
@@ -275,22 +277,20 @@ export class BaronyGameService extends ABgGameService<
     user: BgUser,
     isOwner: boolean,
   ): BaronyPlayer {
-    if (playerDoc.isAi) {
-      return {
-        ...this.playerDocToAPlayerInit(playerDoc),
-        isAi: true,
-        isLocal: isOwner,
-        isRemote: !isOwner,
-      };
-    } else {
-      return {
-        ...this.playerDocToAPlayerInit(playerDoc),
-        isAi: false,
-        controller: playerDoc.controller,
-        isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id,
-      };
-    }
+    return playerDoc.isAi
+      ? {
+          ...this.playerDocToAPlayerInit(playerDoc),
+          isAi: true,
+          isLocal: isOwner,
+          isRemote: !isOwner,
+        }
+      : {
+          ...this.playerDocToAPlayerInit(playerDoc),
+          isAi: false,
+          controller: playerDoc.controller,
+          isLocal: user.id === playerDoc.controller.id,
+          isRemote: user.id !== playerDoc.controller.id,
+        };
   }
 
   private playerDocToAPlayerInit(playerDoc: BaronyPlayerDoc): ABaronyPlayer {

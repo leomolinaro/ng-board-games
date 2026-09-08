@@ -92,15 +92,11 @@ export class BaronyActionsArea {
 
   protected isValid = computed(() => {
     const validActions = this.validActions();
-    if (validActions) {
-      return arrayUtil.toMap(
+    return validActions ? arrayUtil.toMap(
         validActions,
         (a) => a,
         () => true,
-      );
-    } else {
-      return null;
-    }
+      ) : null;
   });
 
   onActionClick(action: BaronyAction) {

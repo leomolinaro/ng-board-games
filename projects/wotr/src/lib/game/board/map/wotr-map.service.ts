@@ -95,9 +95,9 @@ export class WotrMapService {
         map((response) => {
           const parser = new DOMParser();
           const dom = parser.parseFromString(response, 'application/xml');
-          const svg = dom.getElementsByTagName('svg').item(0)!;
+          const svg = dom.querySelector('svg')!;
           this.viewBox = svg.getAttribute('viewBox')!;
-          this.width = +this.viewBox.split(' ')[2];
+          this.width = +this.viewBox.split(' ', 3)[2];
           this.regionPaths = this.getGroupPaths<WotrRegionId>(
             'wotr-regions',
             dom,
@@ -119,17 +119,16 @@ export class WotrMapService {
     dom: Document,
     pathIdToId: (pathId: string) => K,
   ): Partial<Record<K, string>> {
-    const wotrGroup = dom.getElementById(groupId);
+    const wotrGroup = dom.querySelector(`#${groupId}`);
     if (!wotrGroup) return {};
     const paths: Partial<Record<K, string>> = {};
     for (const childNode of wotrGroup.childNodes) {
-      if (childNode.nodeName === 'path') {
-        const pathElement = childNode as SVGPathElement;
-        const pathId = pathElement.getAttribute('id')!;
-        const id = pathIdToId(pathId);
-        const pathD = pathElement.getAttribute('d')!;
-        paths[id] = pathD;
-      }
+      if (childNode.nodeName !== 'path') continue;
+      const pathElement = childNode as SVGPathElement;
+      const pathId = pathElement.getAttribute('id')!;
+      const id = pathIdToId(pathId);
+      const pathD = pathElement.getAttribute('d')!;
+      paths[id] = pathD;
     }
     return paths;
   }

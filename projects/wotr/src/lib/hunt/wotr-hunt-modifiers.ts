@@ -66,12 +66,10 @@ export class WotrHuntModifiers {
   public getHuntEffectChoices(
     params: WotrHuntEffectParams,
   ): WotrUiChoice<WotrHuntEffectParams>[] {
-    return this.huntEffectChoices
-      .get()
-      .reduce<WotrUiChoice<WotrHuntEffectParams>[]>(
-        (choices, modifier) => choices.concat(modifier(params)),
-        [],
-      );
+    const choices: WotrUiChoice<WotrHuntEffectParams>[] = [];
+    for (const modifier of this.huntEffectChoices.get())
+      choices.push(...modifier(params));
+    return choices;
   }
 
   public readonly afterFellowshipReveal =

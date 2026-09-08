@@ -146,7 +146,7 @@ export class WotrCombatCards {
           .characters?.some((c) => c === 'strider' || c === 'aragorn') ?? false,
       effect: async (card, params) => {
         const isAragorn =
-          params.freePeoples.army().characters?.some((c) => c === 'aragorn') ??
+          params.freePeoples.army().characters?.includes('aragorn') ??
           false;
         await this.forfeitLeadership(
           {
@@ -531,7 +531,8 @@ export class WotrCombatCards {
               return [
                 eliminateLeader(params.freePeoples.regionId, leader.nation, 1),
               ];
-            } else if (units.characters?.length) {
+            }
+            if (units.characters?.length) {
               const character = units.characters[0];
               return [eliminateCharacter(character)];
             }
@@ -787,7 +788,7 @@ export class WotrCombatCards {
               region.region(),
               'free-peoples',
             );
-            if (!retreatableRegions.length) return [];
+            if (retreatableRegions.length === 0) return [];
             const retreatRegionId = await ui.askRegion(
               'Choose a region to retreat your Army to',
               retreatableRegions,

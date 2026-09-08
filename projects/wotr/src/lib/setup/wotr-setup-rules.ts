@@ -13,22 +13,22 @@ import { WotrCardUtils } from '../card/wotr-card-utils';
 import type {
   KomeSovereignId,
   WotrCharacterId,
-  WotrCompanionId} from '../character/wotr-character-models';
+  WotrCompanionId,
+} from '../character/wotr-character-models';
 import {
   baseCharacters,
-  komeCharacters
+  komeCharacters,
 } from '../character/wotr-character-models';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrGameOptions } from '../game/options/wotr-game-options';
 import type { WotrGameConfig } from '../game/wotr-game-config';
 import { WotrGameStore } from '../game/wotr-game-store';
+import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import { baseHuntTiles, komeHuntTiles } from '../hunt/wotr-hunt-models';
 import type {
-  WotrHuntTileId} from '../hunt/wotr-hunt-models';
-import {
-  baseHuntTiles,
-  komeHuntTiles
-} from '../hunt/wotr-hunt-models';
-import type { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+  WotrNationId,
+  WotrPoliticalStep,
+} from '../nation/wotr-nation-models';
 import type { WotrRegionId } from '../region/wotr-region-models';
 
 export interface WotrSetup {
@@ -88,11 +88,11 @@ export class WotrSetupRules {
     const freePeopleTokens: WotrFreePeoplesActionToken[] = [];
     const shadowTokens: WotrShadowActionToken[] = [];
     const options = this.gameStore.gameOptions();
-    options.tokens.forEach((t) => {
+    for (const t of options.tokens) {
       if (t.front === 'free-peoples')
         freePeopleTokens.push(t.token as WotrFreePeoplesActionToken);
       else shadowTokens.push(t.token as WotrShadowActionToken);
-    });
+    }
     return {
       decks: this.shuffledDecks(options),
       regions: [
@@ -165,15 +165,13 @@ export class WotrSetupRules {
   }
 
   huntPool(): WotrHuntTileId[] {
-    const huntPool: WotrHuntTileId[] = [];
-    huntPool.push(...baseHuntTiles());
+    const huntPool: WotrHuntTileId[] = [...baseHuntTiles()];
     if (this.gameStore.kome()) huntPool.push(...komeHuntTiles());
     return huntPool;
   }
 
   characters(): WotrCharacterId[] {
-    const characters: WotrCharacterId[] = [];
-    characters.push(...baseCharacters());
+    const characters: WotrCharacterId[] = [...baseCharacters()];
     if (this.gameStore.kome()) characters.push(...komeCharacters());
     return characters;
   }
@@ -211,7 +209,7 @@ export class WotrSetupRules {
       nNazgul: 0,
       ruler: null,
     };
-    if (this.gameStore.kome() && ruler) setup.ruler = ruler;
+    if (ruler && this.gameStore.kome()) setup.ruler = ruler;
     return setup;
   }
 

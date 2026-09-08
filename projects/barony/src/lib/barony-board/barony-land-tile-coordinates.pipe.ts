@@ -2,9 +2,9 @@ import type { PipeTransform } from '@angular/core';
 import { Pipe } from '@angular/core';
 import type { BaronyLandCoordinates } from '../barony-models';
 
-const sqrt3Half = Math.sqrt(3) / 2.0;
+const sqrt3Half = Math.sqrt(3) / 2;
 const half = 0.5;
-const one = 1.0;
+const one = 1;
 const oneHalf = 1.5;
 const sqrt3 = Math.sqrt(3);
 
@@ -37,19 +37,10 @@ export class BaronyLandCoordinatesPipe implements PipeTransform {
 
         return `${p1x},${p1y} ${p2x},${p2y} ${p3x},${p3y} ${p4x},${p4y} ${p5x},${p5y} ${p6x},${p6y}`;
       }
-      case 'center-x': {
-        if (translate) {
-          return hexToCartesian(c).x + translate + '';
-        } else {
-          return hexToCartesian(c).x + '';
-        }
-      }
+      case 'center-x':
+        return hexToCartesian(c).x + (translate ?? 0) + '';
       case 'center-y': {
-        if (translate) {
-          return hexToCartesian(c).y + translate + '';
-        } else {
-          return hexToCartesian(c).y + '';
-        }
+        return hexToCartesian(c).y + (translate ?? 0) + '';
       }
     }
   }

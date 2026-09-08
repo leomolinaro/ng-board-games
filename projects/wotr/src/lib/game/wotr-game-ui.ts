@@ -148,11 +148,9 @@ export class WotrGameUi extends signalStore(
 
   currentPlayer = computed<WotrPlayerInfo | null>(() => {
     const currentPlayerId = this.currentPlayerId();
-    if (currentPlayerId) {
-      return this.playerInfoStore.playerMap()[currentPlayerId];
-    } else {
-      return null;
-    }
+    return currentPlayerId
+      ? this.playerInfoStore.playerMap()[currentPlayerId]
+      : null;
   });
 
   pass = uiEvent<void>();
@@ -359,13 +357,17 @@ export class WotrGameUi extends signalStore(
     const actionDieOrTokenOrElvenRing = await Promise.race([
       this.actionDieChoice
         .get()
+        // eslint-disable-next-line unicorn/prefer-await
         .then<WotrActionChoice>((die) => ({ type: 'die', die })),
       this.actionTokenChoice
         .get()
+        // eslint-disable-next-line unicorn/prefer-await
         .then<WotrActionChoice>((token) => ({ type: 'token', token })),
       this.elvenRing
         .get()
+        // eslint-disable-next-line unicorn/prefer-await
         .then<WotrActionChoice>((ring) => ({ type: 'elvenRing', ring })),
+      // eslint-disable-next-line unicorn/prefer-await
       this.eyeChoice.get().then<WotrActionChoice>(() => ({ type: 'eye' })),
     ]);
     this.updateUi((s) => ({
@@ -398,6 +400,7 @@ export class WotrGameUi extends signalStore(
     const actionDieOrStop = await Promise.race([
       this.actionDieChoice
         .get()
+        // eslint-disable-next-line unicorn/prefer-await
         .then<WotrActionChoice>((die) => ({ type: 'die', die })),
       this.option.get(),
     ]);
@@ -410,11 +413,11 @@ export class WotrGameUi extends signalStore(
     }));
     if ('type' in actionDieOrStop && actionDieOrStop.type === 'die') {
       return actionDieOrStop.die;
-    } else if ('value' in actionDieOrStop && actionDieOrStop.value === 'stop') {
-      return 'stop';
-    } else {
-      throw new Error('Invalid action die or stop selection');
     }
+    if ('value' in actionDieOrStop && actionDieOrStop.value === 'stop') {
+      return 'stop';
+    }
+    throw new Error('Invalid action die or stop selection');
   }
 
   sovereign = uiEvent<KomeSovereignId>();
@@ -458,6 +461,7 @@ export class WotrGameUi extends signalStore(
       elvenRingSelection,
     }));
     const optionOrElvenRing = await Promise.race([
+      // eslint-disable-next-line unicorn/prefer-await
       this.option.get().then((o) => o.value as O),
       this.elvenRing.get(),
     ]);
@@ -602,15 +606,14 @@ export class WotrGameUi extends signalStore(
         card,
       };
       return story;
-    } else {
-      const story: WotrDieStory = {
-        type: 'die',
-        die,
-        actions,
-      };
-      if (choice.character) story.character = choice.character;
-      return story;
     }
+    const story: WotrDieStory = {
+      type: 'die',
+      die,
+      actions,
+    };
+    if (choice.character) story.character = choice.character;
+    return story;
   }
 
   resetUi(turnPlayer: WotrFrontId) {

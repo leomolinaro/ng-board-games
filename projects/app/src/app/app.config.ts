@@ -18,7 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(),
     provideAppInitializer(() => {
-      if (!getApps().length) {
+      if (getApps().length === 0) {
         initializeApp(environment.firebase);
       }
     }),

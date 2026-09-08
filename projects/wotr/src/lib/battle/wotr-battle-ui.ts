@@ -92,7 +92,7 @@ export class WotrBattleUi {
       {
         type: 'chooseCasualties',
         regionIds: [regionId],
-        underSiege,
+        isUnderSiege: underSiege,
         hitPoints,
         retroguard: null,
       },
@@ -108,7 +108,7 @@ export class WotrBattleUi {
     const units = await this.ui.askCasualtyUnits('Eliminate the entire army', {
       type: 'chooseCasualties',
       regionIds: [regionId],
-      underSiege,
+      isUnderSiege: underSiege,
       hitPoints: 'full',
       retroguard: null,
     });
@@ -123,24 +123,25 @@ export class WotrBattleUi {
     regionId: WotrRegionId,
   ): WotrAction[] {
     const actions: WotrAction[] = [];
-    units.downgrading.elites?.forEach((unit) =>
-      actions.push(downgradeEliteUnit(regionId, unit.nation, unit.quantity)),
-    );
-    units.removing.regulars?.forEach((unit) =>
-      actions.push(eliminateRegularUnit(regionId, unit.nation, unit.quantity)),
-    );
-    units.removing.elites?.forEach((unit) =>
-      actions.push(eliminateEliteUnit(regionId, unit.nation, unit.quantity)),
-    );
-    units.removing.leaders?.forEach((unit) =>
-      actions.push(eliminateLeader(regionId, unit.nation, unit.quantity)),
-    );
-    if (units.removing.nNazgul) {
+    if (units.downgrading.elites)
+      for (const unit of units.downgrading.elites)
+        actions.push(downgradeEliteUnit(regionId, unit.nation, unit.quantity));
+    if (units.removing.regulars)
+      for (const unit of units.removing.regulars)
+        actions.push(
+          eliminateRegularUnit(regionId, unit.nation, unit.quantity),
+        );
+    if (units.removing.elites)
+      for (const unit of units.removing.elites)
+        actions.push(eliminateEliteUnit(regionId, unit.nation, unit.quantity));
+    if (units.removing.leaders)
+      for (const unit of units.removing.leaders)
+        actions.push(eliminateLeader(regionId, unit.nation, unit.quantity));
+    if (units.removing.nNazgul)
       actions.push(eliminateNazgul(regionId, units.removing.nNazgul));
-    }
-    units.removing.characters?.forEach((unit) =>
-      actions.push(eliminateCharacter(unit)),
-    );
+    if (units.removing.characters)
+      for (const unit of units.removing.characters)
+        actions.push(eliminateCharacter(unit));
     return actions;
   }
 
@@ -158,12 +159,10 @@ export class WotrBattleUi {
         doneMovements: [],
       },
     );
-    if (this.unitUtils.isEmptyArmy(movingUnits)) {
+    if (this.unitUtils.isEmptyArmy(movingUnits))
       return [notAdvanceArmy(fromRegion.id)];
-    } else {
-      const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingUnits);
-      return [advanceArmy(leftUnits)];
-    }
+    const leftUnits = this.unitUtils.splitUnits(fromRegion.army, movingUnits);
+    return [advanceArmy(leftUnits)];
   }
 
   async wantRetreatIntoSiege(): Promise<WotrAction[]> {
@@ -263,14 +262,16 @@ export class WotrBattleUi {
         value: 'retreat-into-siege',
       });
     }
-    options.push({
-      label: 'Retreat',
-      value: 'retreat',
-    });
-    options.push({
-      label: 'Not retreat',
-      value: 'not-retreat',
-    });
+    options.push(
+      {
+        label: 'Retreat',
+        value: 'retreat',
+      },
+      {
+        label: 'Not retreat',
+        value: 'not-retreat',
+      },
+    );
     const option = await this.ui.askOption<
       'retreat-into-siege' | 'retreat' | 'not-retreat'
     >('Do you want to retreat?', options);
@@ -356,7 +357,7 @@ export class WotrBattleUi {
       const card = getCard(c);
       return this.combatCards.canBePlayed(card.combatLabel, params);
     });
-    if (!playableCards.length) return null;
+    if (playableCards.length === 0) return null;
     const confirm = await this.ui.askConfirm(
       'Do you want to play a combat card from the table?',
       'Choose table combat card',
@@ -385,25 +386,22 @@ export class WotrBattleUi {
       'Activate',
       'Skip',
     );
-    if (confirm) {
-      return {
-        type: 'combat-card-effect',
-        card: cardId,
-        actions: await ability.play(this.ui),
-      };
-    } else {
-      return { type: 'combat-card-effect-skip', card: cardId };
-    }
+    return confirm
+      ? {
+          type: 'combat-card-effect',
+          card: cardId,
+          actions: await ability.play(this.ui),
+        }
+      : { type: 'combat-card-effect-skip', card: cardId };
   }
 
   async deadMenOfDunharrowCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
   ): Promise<WotrAction[]> {
-    const actions: WotrAction[] = [];
-    actions.push(
+    const actions: WotrAction[] = [
       ...(await this.chooseCasualties(hitPoints, regionId, 'shadow')),
-    );
+    ];
     const region = this.regionStore.region(regionId);
     const retreatableRegions = this.unitRules.retreatableRegions(
       region,

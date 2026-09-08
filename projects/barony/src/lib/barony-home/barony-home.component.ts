@@ -95,8 +95,7 @@ export class BaronyHomeComponent {
       online: protoGame.online,
       state: 'open',
     });
-    for (let index = 0; index < protoPlayers.length; index++) {
-      const p = protoPlayers[index];
+    for (const [index, p] of protoPlayers.entries()) {
       if (p.type === 'ai') {
         await this.insertAiPlayer(p.id, p.name, index + 1, game.id);
       } else {

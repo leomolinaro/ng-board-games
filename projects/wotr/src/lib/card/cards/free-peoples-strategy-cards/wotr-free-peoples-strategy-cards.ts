@@ -124,8 +124,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr02':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(playCardOnTableId('fpstr02'));
+            const actions: WotrAction[] = [playCardOnTableId('fpstr02')];
             const advanceAction = await ui.nationUi.advanceNation(
               'elves',
               'card-ability',
@@ -155,8 +154,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr03':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(playCardOnTableId('fpstr03'));
+            const actions: WotrAction[] = [playCardOnTableId('fpstr03')];
             this.cardHandler.playCardOnTable('fpstr03', 'free-peoples');
             const advanceAction = await ui.nationUi.advanceNation(
               'north',
@@ -185,18 +183,19 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async (ui) => ui.characterUi.moveCompanions(),
           effect: () => {
-            if (
+            if (!(
               this.q.region('erebor').hasCompanions() ||
               this.q.region('ered-luin').hasCompanions()
-            ) {
-              if (!this.q.dwarves.isActive())
-                this.nationHandler.activateNationEffect(
-                  'dwarves',
-                  'card-ability',
-                );
-              if (!this.q.dwarves.isAtWar())
-                this.nationHandler.advanceAtWar('dwarves', 'card-ability');
-            }
+            ))
+              return;
+
+            if (!this.q.dwarves.isActive())
+              this.nationHandler.activateNationEffect(
+                'dwarves',
+                'card-ability',
+              );
+            if (!this.q.dwarves.isAtWar())
+              this.nationHandler.advanceAtWar('dwarves', 'card-ability');
           },
         };
       // The Spirit of Mordor
@@ -210,13 +209,12 @@ export class WotrFreePeoplesStrategyCards {
               if (!shadowArmy) return false;
               return this.unitUtils.hasArmyUnitsOfDifferentNations(shadowArmy);
             });
-            if (!regions.length) return [];
+            if (regions.length === 0) return [];
             const regionId = await ui.askRegion(
               'Choose a region with a Shadow Army of different nations',
               regions.map((r) => r.id()),
             );
-            const actions: WotrAction[] = [];
-            actions.push(targetRegion(regionId));
+            const actions: WotrAction[] = [targetRegion(regionId)];
             const combatRoll = await ui.battleUi.rollCombatDice(5);
             actions.push(combatRoll);
             return actions;
@@ -262,13 +260,12 @@ export class WotrFreePeoplesStrategyCards {
               this.q.region('north-ithilien'),
             ];
             regions = regions.filter((r) => r.hasArmy('shadow'));
-            if (!regions.length) return [];
+            if (regions.length === 0) return [];
             const regionId = await ui.askRegion(
               'Choose a region with a Shadow Army',
               regions.map((r) => r.id()),
             );
-            const actions: WotrAction[] = [];
-            actions.push(targetRegion(regionId));
+            const actions: WotrAction[] = [targetRegion(regionId)];
             const combatRoll = await ui.battleUi.rollCombatDice(3);
             actions.push(combatRoll);
             return actions;
@@ -311,18 +308,16 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async (ui) => ui.characterUi.moveCompanions(),
           effect: () => {
-            if (
+            if (!(
               this.q.region('the-shire').hasCompanions() ||
               this.q.region('bree').hasCompanions()
-            ) {
-              if (!this.q.north.isActive())
-                this.nationHandler.activateNationEffect(
-                  'north',
-                  'card-ability',
-                );
-              if (!this.q.north.isAtWar())
-                this.nationHandler.advanceAtWar('north', 'card-ability');
-            }
+            ))
+              return;
+
+            if (!this.q.north.isActive())
+              this.nationHandler.activateNationEffect('north', 'card-ability');
+            if (!this.q.north.isAtWar())
+              this.nationHandler.advanceAtWar('north', 'card-ability');
           },
         };
       // Wisdom of Elrond
@@ -333,7 +328,7 @@ export class WotrFreePeoplesStrategyCards {
             const nations = this.q.freePeoplesNations
               .filter((n) => !n.isAtWar())
               .map((n) => n.id());
-            if (!nations.length) return [];
+            if (nations.length === 0) return [];
             const nationId = await ui.askNation(
               'Choose a nation to activate and advance',
               nations,
@@ -364,8 +359,6 @@ export class WotrFreePeoplesStrategyCards {
                 'edoras',
                 'rohan',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard('edoras', 'rohan')),
             );
             return actions;
@@ -455,7 +448,7 @@ export class WotrFreePeoplesStrategyCards {
             const fromRegions = this.q
               .regions()
               .filter((r) => r.isNation('rohan') && r.hasArmy('free-peoples'));
-            if (!fromRegions.length) return [];
+            if (fromRegions.length === 0) return [];
             const minasTirith = this.q.region('minas-tirith');
             const toRegions: WotrRegionQuery[] = [];
             if (
@@ -470,7 +463,7 @@ export class WotrFreePeoplesStrategyCards {
             } else {
               toRegions.push(minasTirith);
             }
-            if (!toRegions.length) return [];
+            if (toRegions.length === 0) return [];
             const movingUnits = await ui.askRegionUnits(
               'Choose an army to move',
               {
@@ -519,7 +512,7 @@ export class WotrFreePeoplesStrategyCards {
               .reachableRegions(2, (region) =>
                 region.isFreeForArmyMovement('free-peoples'),
               );
-            if (!targetRegions.length) {
+            if (targetRegions.length === 0) {
               await ui.askContinue(
                 'No valid target regions available for movement',
               );
@@ -542,7 +535,7 @@ export class WotrFreePeoplesStrategyCards {
             const coastalRegions = this.q
               .regions()
               .filter((r) => r.isCoastal() && r.hasArmy('free-peoples'));
-            if (!coastalRegions.length) return [];
+            if (coastalRegions.length === 0) return [];
             const regionId = await ui.askRegion(
               'Choose a region to recruit in',
               coastalRegions.map((r) => r.id()),
@@ -559,19 +552,16 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr14':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'minas-tirith',
                 'gondor',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard(
                 'minas-tirith',
                 'gondor',
               )),
-            );
+            ];
             return actions;
           },
         };
@@ -581,13 +571,12 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr15':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'lorien',
                 'elves',
               )),
-            );
+            ];
             const drawA =
               await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawA) actions.push(drawA);
@@ -607,21 +596,18 @@ export class WotrFreePeoplesStrategyCards {
                 return false;
               return r.isFreeForRecruitmentByCard('free-peoples');
             });
-            if (!regions.length) return [];
+            if (regions.length === 0) return [];
             const region = await ui.askRegion(
               'Choose a region to recruit in',
               regions.map((r) => r.id()),
             );
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 region,
                 'rohan',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard(region, 'rohan')),
-            );
+            ];
             return actions;
           },
         };
@@ -630,16 +616,13 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr17':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'carrock',
                 'north',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard('carrock', 'north')),
-            );
+            ];
             return actions;
           },
         };
@@ -648,16 +631,13 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr18':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'dol-amroth',
                 'gondor',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard('dol-amroth', 'gondor')),
-            );
+            ];
             return actions;
           },
         };
@@ -690,19 +670,16 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr20':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'the-shire',
                 'north',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'ered-luin',
                 'dwarves',
               )),
-            );
+            ];
             const drawAction =
               await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
@@ -715,13 +692,12 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr21':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'rivendell',
                 'elves',
               )),
-            );
+            ];
             const drawAction =
               await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);
@@ -733,16 +709,13 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr22':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'erebor',
                 'dwarves',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard('erebor', 'dwarves')),
-            );
+            ];
             return actions;
           },
         };
@@ -755,7 +728,7 @@ export class WotrFreePeoplesStrategyCards {
               .settlementRegions()
               .filter((r) => this.q.rohan.canRecruit(r.id))
               .map((r) => r.id);
-            if (!availableRegions.length) {
+            if (availableRegions.length === 0) {
               await ui.askContinue('No free Rohan region with a settlement');
               return [];
             }
@@ -763,16 +736,13 @@ export class WotrFreePeoplesStrategyCards {
               'Choose a region to recruit units',
               availableRegions,
             );
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 regionId,
                 'rohan',
               )),
-            );
-            actions.push(
               ...(await ui.unitUi.recruitLeaderByCard(regionId, 'rohan')),
-            );
+            ];
             return actions;
           },
         };
@@ -782,13 +752,12 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr24':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(
+            const actions: WotrAction[] = [
               ...(await ui.unitUi.recruitRegularsOrElitesByCard(
                 'woodland-realm',
                 'elves',
               )),
-            );
+            ];
             const drawAction =
               await ui.cardDrawUi.drawStrategyEventCardByCard('free-peoples');
             if (drawAction) actions.push(drawAction);

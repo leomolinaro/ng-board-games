@@ -2,8 +2,8 @@
 
 import js from "@eslint/js";
 // import sonarjs from "eslint-plugin-sonarjs";
-// import unicorn from "eslint-plugin-unicorn";
 import angular from "angular-eslint";
+import unicorn from "eslint-plugin-unicorn";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -38,8 +38,9 @@ export default tseslint.config(
       // Type-aware stylistic rules
       tseslint.configs.stylisticTypeChecked,
 
-      // // Modern JS/TS idioms
-      // unicorn.configs["flat/recommended"],
+      // Modern JS/TS idioms
+      unicorn.configs.recommended,
+      // unicorn.configs.unopinionated,
 
       // // Code smells / complexity
       // sonarjs.configs.recommended,
@@ -93,8 +94,43 @@ export default tseslint.config(
       // "unicorn/prefer-number-properties": "error",
       // // Don't force obscure Unicode escapes / alternatives.
       // "unicorn/prefer-code-point": "off",
-      // // Angular code often legitimately uses class methods.
-      // "unicorn/no-array-for-each": "off",
+      "unicorn/switch-case-braces": "off", // Too verbose for my taste
+      "unicorn/no-null": "off", // Nice, maybe later
+      "unicorn/consistent-boolean-name": "off", // Good, maybe later
+      "unicorn/name-replacements": [
+        "off",
+        {
+          replacements: {
+            param: false,
+            params: false,
+            util: false,
+            utils: false,
+            doc: false,
+            docs: false,
+            fn: false,
+            curr: false,
+            i: false,
+            j: false,
+            def: false,
+            proto: false,
+            prev: false,
+            prop: false,
+            props: false,
+            ref: false,
+            refs: false,
+          },
+        },
+      ],
+      "unicorn/consistent-class-member-order": "off", // Nice, maybe later
+      "unicorn/consistent-function-scoping": "off", // Not sure
+      "unicorn/prefer-includes-over-repeated-comparisons": "off", // Not sure
+      "unicorn/single-line-block-comment-style": ["error", "single-line"],
+      "unicorn/no-incorrect-template-string-interpolation": "off", // Wrong for scss styles in .ts
+      "unicorn/no-nested-ternary": "off", // Conflicting with Prettier
+      "unicorn/no-break-in-nested-loop": "off", // Good, maybe later
+      "unicorn/no-computed-property-existence-check": "off", // Hard to follow
+      "unicorn/max-nested-calls": ["error", { max: 5 }],
+      "unicorn/no-await-expression-member": "off", // Too verbose otherwise
       // // -----------------------------------------------------------------------
       // // SonarJS
       // // -----------------------------------------------------------------------

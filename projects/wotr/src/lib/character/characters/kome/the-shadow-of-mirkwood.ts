@@ -44,16 +44,11 @@ export class TheShadowOfMirkwood extends WotrPlayableCharacterCard {
   public readonly characterId = 'the-shadow-of-mirkwood';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    if (
-      (this.q.dwarves.isAtWar() ||
+    return ((this.q.dwarves.isAtWar() ||
         this.q.elves.isAtWar() ||
         this.q.north.isAtWar()) &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some((r) => this.isValidRegion(r))
-    ) {
-      return true;
-    }
-    return false;
+      this.q.regions().some((r) => this.isValidRegion(r)));
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {

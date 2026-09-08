@@ -328,7 +328,7 @@ export class WotrRegionArea {
         totalWidth += armyUnit.image.width - reducedWitdh;
         maxHeight = Math.max(armyUnit.image.height, maxHeight);
       }
-      if (army.leaderUnits.length) {
+      if (army.leaderUnits.length > 0) {
         const firstLeaderUnit = army.leaderUnits[0];
         totalWidth += firstLeaderUnit.image.width - reducedWitdh;
       }
@@ -406,9 +406,11 @@ export class WotrRegionArea {
   private regionToArmyUnitNodes(
     army: WotrArmy,
   ): [WotrArmyUnitNode[], number, number] {
-    const nRegulars =
-      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
-    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
+    let nRegulars = 0;
+    if (army.regulars)
+      for (const unit of army.regulars) nRegulars += unit.quantity;
+    let nElites = 0;
+    if (army.elites) for (const unit of army.elites) nElites += unit.quantity;
 
     const unitNodes: WotrArmyUnitNode[] = [];
     const nEliteNodes = army.elites ? Math.min(2, army.elites.length) : 0;
@@ -452,43 +454,41 @@ export class WotrRegionArea {
     const leaders: (WotrCharacter | WotrNationId)[] = [];
 
     if (region.army?.leaders) {
-      region.army.leaders.forEach((leader) => {
+      for (const leader of region.army.leaders) {
         leadership += leader.quantity;
         leaders.push(leader.nation);
-      });
+      }
     }
 
     if (region.army?.characters) {
-      region.army.characters.forEach((characterId) => {
+      for (const characterId of region.army.characters) {
         const character = this.characterById()[characterId];
         if (character.front === 'free-peoples') {
           leadership += character.leadership;
           leaders.push(character);
         }
-      });
+      }
     }
 
     leaders.sort((a, b) => this.compareFreePeopleLeaders(a, b));
     const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
-      if (typeof leader === 'string') {
-        return {
-          unitType: 'leader',
-          character: null,
-          nationId: leader,
-          image: this.assets.leaderImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      } else {
-        return {
-          unitType: 'character',
-          character: leader.id,
-          nationId: null,
-          image: this.characterImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      }
+      return typeof leader === 'string'
+        ? {
+            unitType: 'leader',
+            character: null,
+            nationId: leader,
+            image: this.assets.leaderImage(leader),
+            svgX: 0,
+            svgY: 0,
+          }
+        : {
+            unitType: 'character',
+            character: leader.id,
+            nationId: null,
+            image: this.characterImage(leader),
+            svgX: 0,
+            svgY: 0,
+          };
     });
     return [unitNodes, leadership];
   }
@@ -503,33 +503,31 @@ export class WotrRegionArea {
       leaders.push('nazgul');
     }
     if (region.army?.characters) {
-      region.army.characters.forEach((characterId) => {
+      for (const characterId of region.army.characters) {
         const character = this.characterById()[characterId];
         leadership += character.leadership;
         leaders.push(character);
-      });
+      }
     }
     leaders.sort((a, b) => this.compareShadowLeaders(a, b));
     const unitNodes = leaders.slice(0, 2).map<WotrLeaderUnitNode>((leader) => {
-      if (leader === 'nazgul') {
-        return {
-          unitType: 'nazgul',
-          character: null,
-          nationId: null,
-          image: this.assets.nazgulImage(),
-          svgX: 0,
-          svgY: 0,
-        };
-      } else {
-        return {
-          unitType: 'character',
-          character: leader.id,
-          nationId: null,
-          image: this.characterImage(leader),
-          svgX: 0,
-          svgY: 0,
-        };
-      }
+      return leader === 'nazgul'
+        ? {
+            unitType: 'nazgul',
+            character: null,
+            nationId: null,
+            image: this.assets.nazgulImage(),
+            svgX: 0,
+            svgY: 0,
+          }
+        : {
+            unitType: 'character',
+            character: leader.id,
+            nationId: null,
+            image: this.characterImage(leader),
+            svgX: 0,
+            svgY: 0,
+          };
     });
     return [unitNodes, leadership];
   }
@@ -540,7 +538,7 @@ export class WotrRegionArea {
   ): WotrFreeGroupNode[] {
     const freeGroups: WotrFreeGroupNode[] = [];
 
-    if (region.fellowship && fellowhip) {
+    if (fellowhip && region.fellowship) {
       freeGroups.push({
         units: [
           {
@@ -560,7 +558,7 @@ export class WotrRegionArea {
       const [fpFreeUnits, fpNUnits] = this.regionToFreePeopleFreeUnitNodes(
         region.freeUnits,
       );
-      if (fpFreeUnits.length) {
+      if (fpFreeUnits.length > 0) {
         freeGroups.push({
           units: fpFreeUnits,
           nUnits: fpNUnits,
@@ -571,7 +569,7 @@ export class WotrRegionArea {
       const [sFreeUnits, sNUnits] = this.regionToShadowFreeUnitNodes(
         region.freeUnits,
       );
-      if (sFreeUnits.length) {
+      if (sFreeUnits.length > 0) {
         freeGroups.push({
           units: sFreeUnits,
           nUnits: sNUnits,
@@ -588,12 +586,13 @@ export class WotrRegionArea {
     freeUnits: WotrFreeUnits,
   ): [WotrFreePeoplesFreeUnitNode[], number] {
     const fpFreeUnits: WotrCharacter[] = [];
-    freeUnits.characters?.forEach((characterId) => {
-      const character = this.characterById()[characterId];
-      if (character.front === 'free-peoples') {
-        fpFreeUnits.push(character);
+    if (freeUnits.characters)
+      for (const characterId of freeUnits.characters) {
+        const character = this.characterById()[characterId];
+        if (character.front === 'free-peoples') {
+          fpFreeUnits.push(character);
+        }
       }
-    });
     const nUnits = fpFreeUnits.length;
     fpFreeUnits.sort((a, b) => this.compareFreePeopleFreeUnits(a, b));
     const unitNodes = fpFreeUnits
@@ -613,13 +612,14 @@ export class WotrRegionArea {
   ): [WotrShadowFreeUnitNode[], number] {
     let nUnits = 0;
     const sFreeUnits: (WotrCharacter | 'nazgul')[] = [];
-    freeUnits.characters?.forEach((characterId) => {
-      const character = this.characterById()[characterId];
-      if (character.front === 'shadow') {
-        nUnits++;
-        sFreeUnits.push(character);
+    if (freeUnits.characters)
+      for (const characterId of freeUnits.characters) {
+        const character = this.characterById()[characterId];
+        if (character.front === 'shadow') {
+          nUnits++;
+          sFreeUnits.push(character);
+        }
       }
-    });
     if (freeUnits.nNazgul) {
       nUnits += freeUnits.nNazgul;
       sFreeUnits.push('nazgul');
@@ -628,23 +628,21 @@ export class WotrRegionArea {
     const unitNodes = sFreeUnits
       .slice(0, 2)
       .map<WotrShadowFreeUnitNode>((freeUnit) => {
-        if (freeUnit === 'nazgul') {
-          return {
-            unitType: 'nazgul',
-            character: null,
-            image: this.assets.nazgulImage(),
-            svgX: 0,
-            svgY: 0,
-          };
-        } else {
-          return {
-            unitType: 'minion',
-            character: freeUnit.id,
-            image: this.characterImage(freeUnit),
-            svgX: 0,
-            svgY: 0,
-          };
-        }
+        return freeUnit === 'nazgul'
+          ? {
+              unitType: 'nazgul',
+              character: null,
+              image: this.assets.nazgulImage(),
+              svgX: 0,
+              svgY: 0,
+            }
+          : {
+              unitType: 'minion',
+              character: freeUnit.id,
+              image: this.characterImage(freeUnit),
+              svgX: 0,
+              svgY: 0,
+            };
       });
     return [unitNodes, nUnits];
   }

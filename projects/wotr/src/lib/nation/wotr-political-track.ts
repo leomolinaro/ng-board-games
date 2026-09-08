@@ -93,9 +93,7 @@ export class WotrPoliticalTrack {
     Record<WotrNationId, boolean>
   > | null> = computed(() => {
     const validNations = this.validNations();
-    if (!validNations) {
-      return null;
-    }
+    if (!validNations) return null;
     return arrayUtil.toMap(
       validNations,
       (n) => n,
@@ -190,8 +188,9 @@ export class WotrPoliticalTrack {
   }
 
   protected onNationClick(nationId: WotrNationId) {
-    if (this.validNationMap()?.[nationId]) {
-      this.ui.nation.emit(nationId);
-    }
+    const validNationMap = this.validNationMap();
+    if (!validNationMap) return;
+    if (!validNationMap[nationId]) return;
+    this.ui.nation.emit(nationId);
   }
 }

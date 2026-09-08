@@ -5,7 +5,7 @@ export function getRandomInteger(minIncluded: number, maxExcluded: number) {
 export function getRandomFloat(min: number, max: number) {
   const integer = getRandomInteger(min, max);
   const decimal = getRandomInteger(0, 100);
-  return integer + decimal / 100.0;
+  return integer + decimal / 100;
 }
 
 export function getRandomBoolean() {
@@ -25,7 +25,7 @@ export function getRandomElements<T>(
   const toReturn: T[] = [];
   const remainings = [...array];
   let i = 0;
-  while (i < length && remainings.length) {
+  while (i < length && remainings.length > 0) {
     const index = getRandomInteger(0, remainings.length);
     const choosen = remainings.splice(index, 1)[0];
     toReturn.push(choosen);
@@ -84,10 +84,6 @@ export class BgSimulatedAnnealing<S> {
     if (eNew === e) {
       return 0;
     }
-    if (eNew > e) {
-      return Math.exp((e - eNew) / t);
-    } else {
-      return 1;
-    }
+    return eNew > e ? Math.exp((e - eNew) / t) : 1;
   }
 }

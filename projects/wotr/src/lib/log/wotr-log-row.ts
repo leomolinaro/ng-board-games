@@ -256,10 +256,7 @@ export class WotrLogRow implements OnInit {
           l.front,
           FRAGMENT_CREATOR,
         );
-        const parsed: WotrLogParsedFragment[] = [];
-        for (const f of fragments) {
-          parsed.push(this.parseFragment(f));
-        }
+        const parsed: WotrLogParsedFragment[] = Array.from(fragments, f => this.parseFragment(f));
         if ('card' in l.story) {
           // TODO WOTR combat card label
           parsed.push(
@@ -356,10 +353,7 @@ export class WotrLogRow implements OnInit {
           l.effect,
           FRAGMENT_CREATOR,
         );
-        const parsed: WotrLogParsedFragment[] = [];
-        for (const f of fragments) {
-          parsed.push(this.parseFragment(f));
-        }
+        const parsed: WotrLogParsedFragment[] = Array.from(fragments, f => this.parseFragment(f));
         return parsed;
       }
       case 'combat-card':
@@ -378,25 +372,24 @@ export class WotrLogRow implements OnInit {
   private parseFragment(f: WotrLogFragment): WotrLogParsedFragment {
     if (typeof f === 'string') {
       return this.string(f);
-    } else {
-      switch (f.type) {
-        case 'card':
-          return this.card(f.label);
-        case 'die':
-          return this.die(f.die, f.front);
-        case 'hunt-tile':
-          return this.huntTile(f.tile);
-        case 'nation':
-          return this.nation(f.nation);
-        case 'player':
-          return this.player(f.front);
-        case 'character':
-          return this.character(f.character);
-        case 'region':
-          return this.region(f.region);
-        case 'token':
-          return this.token(f.token, f.front);
-      }
+    }
+    switch (f.type) {
+      case 'card':
+        return this.card(f.label);
+      case 'die':
+        return this.die(f.die, f.front);
+      case 'hunt-tile':
+        return this.huntTile(f.tile);
+      case 'nation':
+        return this.nation(f.nation);
+      case 'player':
+        return this.player(f.front);
+      case 'character':
+        return this.character(f.character);
+      case 'region':
+        return this.region(f.region);
+      case 'token':
+        return this.token(f.token, f.front);
     }
   }
 

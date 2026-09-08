@@ -70,9 +70,9 @@ export class WotrGameFlow {
     this.setup(config);
     try {
       let roundNumber = 0;
-      let continueGame = await this.round(++roundNumber);
-      while (continueGame) {
-        continueGame = await this.round(++roundNumber);
+      let shouldContinueGame = await this.round(++roundNumber);
+      while (shouldContinueGame) {
+        shouldContinueGame = await this.round(++roundNumber);
       }
     } catch (error) {
       if (!(
@@ -106,8 +106,7 @@ export class WotrGameFlow {
     continueGame = await this.actionResolution();
     if (!continueGame) return false;
     continueGame = this.victoryCheck();
-    if (!continueGame) return false;
-    return true;
+    return !!continueGame;
   }
 
   private async firstPhase() {
@@ -174,12 +173,10 @@ export class WotrGameFlow {
   }
 
   private eyeResultsToHuntBox() {
-    const nEyeResults = this.frontStore
-      .shadowFront()
-      .actionDice.reduce((counter, die) => {
-        if (die === 'eye') counter++;
-        return counter;
-      }, 0);
+    let nEyeResults = 0;
+    for (const die of this.frontStore.shadowFront().actionDice) {
+      if (die === 'eye') nEyeResults++;
+    }
     this.frontStore.removeAllEyeResults('shadow');
     this.huntStore.addHuntDice(nEyeResults);
   }
@@ -234,17 +231,14 @@ export class WotrGameFlow {
       return false;
     }
     const freePeoples = this.frontStore.freePeoplesFront();
-    if (freePeoples.victoryPoints >= 4) {
-      return false;
-    }
-    return true;
+    return !(freePeoples.victoryPoints >= 4);
   }
 
   private getFirstResolutionFrontId(): WotrPlayer | null {
     const freePeoplesFrontQ = this.q.front('free-peoples');
-    const shadowFrontQ = this.q.front('shadow');
     if (freePeoplesFrontQ.hasActionDice()) return this.freePeoples;
     if (freePeoplesFrontQ.hasActionTokens()) return this.freePeoples;
+    const shadowFrontQ = this.q.front('shadow');
     if (shadowFrontQ.hasActionDice()) return this.shadow;
     if (shadowFrontQ.hasActionTokens()) return this.shadow;
     return null;

@@ -28,11 +28,11 @@ export class WotrCharacterModifiers {
   async onBeforeCharacterElimination(
     params: WotrCharacterEliminationParams,
   ): Promise<boolean> {
-    if (!this.beforeCharacterElimination.get().length) return true;
+    if (this.beforeCharacterElimination.get().length === 0) return true;
     const results = await Promise.all(
       this.beforeCharacterElimination.get().map((handler) => handler(params)),
     );
-    return results.every((result) => result === true);
+    return results.every(Boolean);
   }
 
   public readonly afterCharacterElimination =
@@ -61,13 +61,11 @@ export class WotrCharacterModifiers {
     characters: WotrCharacterId[],
     originalLevel: number,
   ): number {
-    return this.characterMovementLevelModifier
-      .get()
-      .reduce(
-        (modifier, handler) =>
-          Math.max(modifier, handler(characters, originalLevel)),
-        originalLevel,
-      );
+    let modifier = originalLevel;
+    for (const handler of this.characterMovementLevelModifier.get()) {
+      modifier = Math.max(modifier, handler(characters, originalLevel));
+    }
+    return modifier;
   }
 
   clear() {

@@ -59,7 +59,7 @@ export class WotrHuntHandler {
         /*empty*/
       },
       'hunt-tile-draw': (action) => {
-        action.tiles.forEach((tile) => this.huntStore.drawHuntTile(tile));
+        for (const tile of action.tiles) this.huntStore.drawHuntTile(tile);
       },
       'hunt-tile-add': (action) => {
         if (this.fellowshipStore.isOnMordorTrack()) {
@@ -91,10 +91,10 @@ export class WotrHuntHandler {
         ` allocates ${this.nDice(action.quantity)} in the Hunt Box`,
       ],
       'hunt-lidless-eye-die-change': (action, front, f) => {
-        const multiple = action.dice.length > 1;
+        const areMultiple = action.dice.length > 1;
         return [
           f.player(front),
-          ` changes ${action.dice.length} action ${multiple ? 'die' : 'dice'} into Eye${multiple ? 's' : ''} for the hunt`,
+          ` changes ${action.dice.length} action ${areMultiple ? 'die' : 'dice'} into Eye${areMultiple ? 's' : ''} for the hunt`,
         ];
       },
       'hunt-re-roll': (action, front, f) => [
@@ -133,21 +133,20 @@ export class WotrHuntHandler {
           ' starts a corruption attempt on ',
           f.character(action.sovereign),
           ',',
-        ];
-        log.push(
           ' drawing ',
           f.huntTile(action.tile, this.huntTileLogOptions(action.tile)),
           ' corruption tile',
-        );
+        ];
         return log;
       },
       'corruption-continue-attempt': (action, front, f) => {
-        const log = [f.player(front), ' continues a corruption attempt,'];
-        log.push(
+        const log = [
+          f.player(front),
+          ' continues a corruption attempt,',
           ' drawing ',
           f.huntTile(action.tile, this.huntTileLogOptions(action.tile)),
           ' corruption tile',
-        );
+        ];
         return log;
       },
       'corruption-stop-attempt': (action, front, f) => [
@@ -226,10 +225,10 @@ export class WotrHuntHandler {
       corruptionAttempt.sovereign,
     );
     const corruptionTiles = sovereign.corruptionTiles;
-    const currentCorruption = corruptionTiles.reduce(
-      (acc, t) => acc + (this.huntStore.huntTile(t).quantity ?? 0),
-      0,
-    );
+    let currentCorruption = 0;
+    for (const tileId of corruptionTiles) {
+      currentCorruption += this.huntStore.huntTile(tileId).quantity ?? 0;
+    }
     if (currentCorruption >= sovereign.shadowResistance) {
       this.characterStore.corruptSovereign(sovereign.id);
       this.huntStore.resetCorruptionTiles(corruptionTiles);

@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Injectable, computed } from '@angular/core';
 import { immutableUtil } from '@leobg/commons/utils';
 import type {
@@ -8,12 +8,14 @@ import type {
 import type {
   WotrCardId,
   WotrCharacterCardId,
-  WotrStrategyCardId} from '../card/wotr-card-models';
-import {
-  isCharacterCard,
-  isStrategyCard,
+  WotrStrategyCardId,
 } from '../card/wotr-card-models';
-import type { WotrElvenRing, WotrFront, WotrFrontId } from './wotr-front-models';
+import { isCharacterCard, isStrategyCard } from '../card/wotr-card-models';
+import type {
+  WotrElvenRing,
+  WotrFront,
+  WotrFrontId,
+} from './wotr-front-models';
 
 export interface WotrFrontState {
   ids: WotrFrontId[];
@@ -87,10 +89,10 @@ export class WotrFrontStore {
   shouldSkipDiscardExcessCards(): boolean {
     return this.state().skipDiscardExcessCards;
   }
-  skipDiscardExcessCards(skip: boolean): void {
+  skipDiscardExcessCards(shouldSkip: boolean): void {
     this.update('skipDiscardExcessCards', (s) => ({
       ...s,
-      skipDiscardExcessCards: skip,
+      skipDiscardExcessCards: shouldSkip,
     }));
   }
 
@@ -233,26 +235,24 @@ export class WotrFrontStore {
 
   removeActionDie(die: WotrActionDie, frontId: WotrFrontId): void {
     this.updateFront('removeActionDie', frontId, (front) => {
-      if (typeof die === 'string') {
-        return {
-          ...front,
-          actionDice: immutableUtil.listRemoveFirst(
-            (d) => d === die,
-            front.actionDice,
-          ),
-        };
-      } else {
-        return {
-          ...front,
-          actionDice: immutableUtil.listRemoveFirst(
-            (d) =>
-              typeof d !== 'string' &&
-              d.type === die.type &&
-              d.result === die.result,
-            front.actionDice,
-          ),
-        };
-      }
+      return typeof die === 'string'
+        ? {
+            ...front,
+            actionDice: immutableUtil.listRemoveFirst(
+              (d) => d === die,
+              front.actionDice,
+            ),
+          }
+        : {
+            ...front,
+            actionDice: immutableUtil.listRemoveFirst(
+              (d) =>
+                typeof d !== 'string' &&
+                d.type === die.type &&
+                d.result === die.result,
+              front.actionDice,
+            ),
+          };
     });
   }
 

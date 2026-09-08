@@ -109,10 +109,10 @@ export class WotrHuntStore {
     }));
   }
 
-  setInProgress(inProgress: boolean): void {
+  setInProgress(isInProgress: boolean): void {
     this.update('setInProgress', (state) => ({
       ...state,
-      inProgress,
+      inProgress: isInProgress,
     }));
   }
 
@@ -287,11 +287,13 @@ export class WotrHuntStore {
   }
 
   private getHighestNumberedTile(tileIds: WotrHuntTileId[]): WotrHuntTile {
-    return tileIds.reduce((highest, tileId) => {
+    let highest = this.huntTile(tileIds[0]);
+    for (const tileId of tileIds) {
       const tile = this.huntTile(tileId);
       const highestNumber = highest.quantity ?? 0;
       const tileNumber = tile.quantity ?? 0;
-      return tileNumber > highestNumber ? tile : highest;
-    }, this.huntTile(tileIds[0]));
+      if (tileNumber > highestNumber) highest = tile;
+    }
+    return highest;
   }
 }

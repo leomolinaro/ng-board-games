@@ -65,13 +65,9 @@ export class BgAuthService {
     const loginType = localStorage.getItem(
       LOCALSTORAGE_BG_LOGIN_TYPE_KEY,
     ) as BgUserLoginType | null;
-    if (loginType) {
-      return this.provider(loginType)
+    return loginType ? this.provider(loginType)
         .autoSignIn$()
-        .pipe(switchMap((user) => this.login$(user)));
-    } else {
-      return of(null);
-    }
+        .pipe(switchMap((user) => this.login$(user))) : of(null);
   }
 
   signIn$(type: BgUserLoginType) {
@@ -92,20 +88,15 @@ export class BgAuthService {
       this.setUser(null);
       localStorage.removeItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY);
       return this.provider(user.loginType).signOut$();
-    } else {
-      return of(void 0);
     }
+    return of(void 0);
   }
 
   deleteUser$() {
     const user = this.$user.getValue();
-    if (user) {
-      return this.signOut$().pipe(
+    return user ? this.signOut$().pipe(
         switchMap(() => this.cloud.delete$(user.id, this.users())),
-      );
-    } else {
-      return of(void 0);
-    }
+      ) : of(void 0);
   }
 
   private provider(type: BgUserLoginType): IBgAuthProvider {
@@ -124,10 +115,9 @@ export class BgAuthService {
       this.setUser(user);
       localStorage.setItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY, user.loginType);
       return this.upsertUser$(user);
-    } else {
-      this.setUser(null);
-      return of(null);
     }
+    this.setUser(null);
+    return of(null);
   }
 
   private upsertUser$(user: BgUser) {
@@ -184,7 +174,7 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
 })
 class BgGuestAuthProvider implements IBgAuthProvider {
   signIn$(): Observable<BgUser | null> {
-    const guestKey = `guestKey${new Date().getTime()}`;
+    const guestKey = `guestKey${Date.now()}`;
     localStorage.setItem(LOCALSTORAGE_BG_PROVIDER_GUEST_KEY, guestKey);
     const user = this.guestKeyToBgUser(guestKey);
     return of(user);
@@ -200,9 +190,8 @@ class BgGuestAuthProvider implements IBgAuthProvider {
     if (guestKey) {
       const user = this.guestKeyToBgUser(guestKey);
       return of(user);
-    } else {
-      return of(null);
     }
+    return of(null);
   }
 
   private guestKeyToBgUser(guestKey: string): BgUser | null {

@@ -140,7 +140,7 @@ class WotrCharacterComposer implements WotrUnitComposer {
   constructor(private characters: WotrCharacterId[]) {}
   addTo(units: WotrUnits) {
     units.characters ??= [];
-    this.characters.forEach((m) => units.characters!.push(m));
+    for (const m of this.characters) units.characters.push(m);
     return units;
   }
 }

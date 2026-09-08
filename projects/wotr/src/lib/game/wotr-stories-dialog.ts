@@ -147,7 +147,7 @@ export class WotrStoriesDialog {
   protected stories = toSignal(this.remote.selectStories$(this.data.gameId));
 
   async delete() {
-    const lastStory = this.stories()!.slice(-1)[0];
+    const lastStory = this.stories()!.at(-1);
     if (lastStory) {
       await this.remote.deleteStory(
         getStoryId(lastStory.time, lastStory.playerId),

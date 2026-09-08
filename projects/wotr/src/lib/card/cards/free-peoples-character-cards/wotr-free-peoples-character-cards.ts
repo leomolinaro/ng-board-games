@@ -284,8 +284,9 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha10':
         return {
           play: async (ui) => {
-            const actions: WotrAction[] = [];
-            actions.push(...(await ui.fellowshipUi.healFellowship(1)));
+            const actions: WotrAction[] = [
+              ...(await ui.fellowshipUi.healFellowship(1)),
+            ];
             if (this.q.gollum.isGuide()) {
               if (this.q.fellowship.isHidden()) {
                 const move = await ui.askConfirm(
@@ -332,10 +333,7 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha12':
         return {
           play: () => {
-            let quantity = 1;
-            if (this.q.gollum.isGuide()) {
-              quantity = 2;
-            }
+            let quantity = this.q.gollum.isGuide() ? 2 : 1;
             quantity = Math.min(quantity, this.q.fellowship.corruption());
             return [healFellowship(quantity)];
           },
@@ -348,7 +346,7 @@ export class WotrFreePeoplesCharacterCards {
           play: async (ui) => {
             const hasCharacterDie = this.frontStore
               .front('free-peoples')
-              .actionDice.some((die) => die === 'character');
+              .actionDice.includes('character');
             const actions: WotrAction[] = [];
             if (hasCharacterDie) {
               const change = await ui.askConfirm(
@@ -469,18 +467,16 @@ export class WotrFreePeoplesCharacterCards {
                 },
               ],
             );
-            if (option === 'separate') {
-              return ui.fellowshipUi.separateCompanions({
-                extraMovements: 2,
-                canEndInSiege: true,
-              });
-            } else {
-              return ui.characterUi.moveCompanions({
-                extraMovements: 2,
-                onlyOneGroup: true,
-                canEndInSiege: true,
-              });
-            }
+            return option === 'separate'
+              ? ui.fellowshipUi.separateCompanions({
+                  extraMovements: 2,
+                  canEndInSiege: true,
+                })
+              : ui.characterUi.moveCompanions({
+                  extraMovements: 2,
+                  onlyOneGroup: true,
+                  canEndInSiege: true,
+                });
           },
         };
       // There and Back Again
@@ -495,16 +491,16 @@ export class WotrFreePeoplesCharacterCards {
             });
           },
           effect: () => {
-            const regions: WotrRegionId[] = [
+            const regions = new Set<WotrRegionId>([
               'dale',
               'erebor',
               'woodland-realm',
-            ];
+            ]);
             const gimliRegion = this.q.gimli.region();
             const legolasRegion = this.q.legolas.region();
             if (
-              (gimliRegion && regions.includes(gimliRegion.id)) ||
-              (legolasRegion && regions.includes(legolasRegion.id))
+              (gimliRegion && regions.has(gimliRegion.id)) ||
+              (legolasRegion && regions.has(legolasRegion.id))
             ) {
               this.nationHandler.activateNationEffect(
                 'dwarves',
@@ -540,10 +536,10 @@ export class WotrFreePeoplesCharacterCards {
               const sArmy = sourceRegion.army('shadow');
               if (sArmy?.nNazgul) targetRegionIds.push(sourceRegion.id());
             }
-            sourceRegion.adjacentRegions().forEach((adjRegion) => {
+            for (const adjRegion of sourceRegion.adjacentRegions()) {
               const sArmy = adjRegion.army('shadow');
               if (sArmy?.nNazgul) targetRegionIds.push(adjRegion.id());
-            });
+            }
             const targetRegionId = await ui.askRegion(
               'Choose a Shadow army to attack',
               targetRegionIds,
@@ -748,7 +744,7 @@ export class WotrFreePeoplesCharacterCards {
             const army = this.q.region(region.id).army('free-peoples')!;
             const nations = army.regulars?.map((u) => u.nation) ?? [];
             const actions: WotrAction[] = [];
-            if (nations.length) {
+            if (nations.length > 0) {
               const units = await ui.askRegionUnits(
                 'Choose a Regular unit to eliminate',
                 {
@@ -814,10 +810,9 @@ export class WotrFreePeoplesCharacterCards {
           await ui.askContinue('Roll three dice');
           const dice = ui.battleUi.rollDice(3);
           return [rollCombatDice(...dice)];
-        } else {
-          if (this.q.saruman.isIn('orthanc')) {
-            return [eliminateCharacter('saruman')];
-          }
+        }
+        if (this.q.saruman.isIn('orthanc')) {
+          return [eliminateCharacter('saruman')];
         }
         return [];
       },
@@ -845,7 +840,7 @@ export class WotrFreePeoplesCharacterCards {
             ['character'],
             'free-peoples',
           );
-          if (playableCards.length) {
+          if (playableCards.length > 0) {
             await this.freePeoples.playCharacterCardFromHand();
           }
         }
@@ -862,8 +857,7 @@ export class WotrFreePeoplesCharacterCards {
     if (shadowArmy?.nNazgul) return true;
     return region.adjacentRegions().some((r) => {
       const sArmy = r.army('shadow');
-      if (sArmy?.nNazgul) return true;
-      return false;
+      return Boolean(sArmy?.nNazgul);
     });
   }
 

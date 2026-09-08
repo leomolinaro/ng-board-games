@@ -110,20 +110,22 @@ export class BgMapZoom implements OnInit {
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
-    if (this.grabbing) {
-      const xt = event.clientX - this.grabbingX!;
-      const yt = event.clientY - this.grabbingY!;
-      this.grabbingX = event.clientX;
-      this.grabbingY = event.clientY;
-      this.refreshTransform({
-        zoom: 1,
-        x0: 0,
-        y0: 0,
-        xt: xt,
-        yt: yt,
-        reset: false,
-      });
+    if (!this.grabbing) {
+      return;
     }
+
+    const xt = event.clientX - this.grabbingX!;
+    const yt = event.clientY - this.grabbingY!;
+    this.grabbingX = event.clientX;
+    this.grabbingY = event.clientY;
+    this.refreshTransform({
+      zoom: 1,
+      x0: 0,
+      y0: 0,
+      xt: xt,
+      yt: yt,
+      reset: false,
+    });
   }
 
   // @HostListener ("touchmove", ["$event"]) TODO
@@ -257,7 +259,7 @@ export class BgMapZoom implements OnInit {
     };
     switch (event.key) {
       case 'd':
-        refreshParams.xt = -1 * this.translateStep;
+        refreshParams.xt = -this.translateStep;
         break;
       case 'w':
         refreshParams.yt = this.translateStep;
@@ -266,7 +268,7 @@ export class BgMapZoom implements OnInit {
         refreshParams.xt = this.translateStep;
         break;
       case 's':
-        refreshParams.yt = -1 * this.translateStep;
+        refreshParams.yt = -this.translateStep;
         break;
       default:
         return;
@@ -279,7 +281,7 @@ export class BgMapZoom implements OnInit {
       this.parseConfig();
     } else {
       const newScale = refreshParams.zoom;
-      this.scale = newScale * this.scale;
+      this.scale *= newScale;
       const newXt = refreshParams.x0 * (1 - newScale) + refreshParams.xt;
       const newYt = refreshParams.y0 * (1 - newScale) + refreshParams.yt;
       this.translateX = newXt + newScale * this.translateX;

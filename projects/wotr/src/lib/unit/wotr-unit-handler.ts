@@ -506,23 +506,22 @@ export class WotrUnitHandler {
         'elite-unit-downgrade',
       );
       return actions;
-    } else {
-      const story = await player.eliminateArmy(regionId, cardId);
-      const actions = filterActions<
-        | WotrRegularUnitElimination
-        | WotrEliteUnitElimination
-        | WotrLeaderElimination
-        | WotrNazgulElimination
-        | WotrCharacterElimination
-      >(
-        story,
-        'regular-unit-elimination',
-        'elite-unit-elimination',
-        'leader-elimination',
-        'nazgul-elimination',
-        'character-elimination',
-      );
-      return actions;
     }
+    const story = await player.eliminateArmy(regionId, cardId);
+    const actions = filterActions<
+      | WotrRegularUnitElimination
+      | WotrEliteUnitElimination
+      | WotrLeaderElimination
+      | WotrNazgulElimination
+      | WotrCharacterElimination
+    >(
+      story,
+      'regular-unit-elimination',
+      'elite-unit-elimination',
+      'leader-elimination',
+      'nazgul-elimination',
+      'character-elimination',
+    );
+    return actions;
   }
 }

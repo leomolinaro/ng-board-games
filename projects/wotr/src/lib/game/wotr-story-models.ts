@@ -102,7 +102,7 @@ export function filterActions<A extends WotrAction>(
   const foundActions = actions.filter((a) =>
     actionTypes.includes(a.type),
   ) as A[];
-  if (foundActions.length) return foundActions;
+  if (foundActions.length > 0) return foundActions;
   throw unexpectedStory(story, actionTypes.join(' or '));
 }
 

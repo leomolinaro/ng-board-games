@@ -130,7 +130,7 @@ export class WotrCardsDialog {
   protected cardTooltip = inject(WotrCardTooltipService);
 
   constructor() {
-    this.cardIds = this.data.cardIds.slice();
+    this.cardIds = [...this.data.cardIds];
     this.cardIds.sort((a, b) => a.localeCompare(b));
     this.cardIds.reverse();
   }

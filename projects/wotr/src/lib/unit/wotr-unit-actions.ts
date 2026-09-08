@@ -27,7 +27,7 @@ export interface WotrArmyMovement {
 export function moveArmy(
   fromRegion: WotrRegionId,
   toRegion: WotrRegionId,
-   
+
   leftUnits?: WotrUnits,
 ): WotrArmyMovement {
   const movement: WotrArmyMovement = {
@@ -41,7 +41,9 @@ export function moveArmy(
   return movement;
 }
 export function leftUnits(...comp: WotrUnitComposer[]): WotrUnits {
-  return comp.reduce((units, u) => u.addTo(units), {});
+  let units: WotrUnits = {};
+  for (const unitComposer of comp) units = unitComposer.addTo(units);
+  return units;
 }
 
 export interface WotrNazgulMovement {

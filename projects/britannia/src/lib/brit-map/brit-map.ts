@@ -5,7 +5,6 @@ import type {
   SimpleChanges,
 } from '@angular/core';
 import {
-  ChangeDetectorRef,
   Component,
   inject,
   input,
@@ -110,7 +109,6 @@ export class BritMap implements OnChanges, OnInit {
   private slotsGeneratorService = inject(BritMapSlotsGeneratorService);
   private assetsService = inject(BritAssetsService);
   private components = inject(BritComponents);
-  private cd = inject(ChangeDetectorRef);
 
   readonly areaStates = input.required<Record<BritAreaId, BritAreaState>>();
   readonly nationStates =
@@ -122,6 +120,8 @@ export class BritMap implements OnChanges, OnInit {
 
   readonly areaClick = output<BritAreaId>();
   readonly unitClick = output<BritAreaUnit>();
+
+  bgMapZoom = viewChild.required(BgMapZoom);
 
   areaNodes!: BritAreaNode[];
   private areaNodeMap!: Record<BritAreaId, BritAreaNode>;
@@ -233,14 +233,14 @@ export class BritMap implements OnChanges, OnInit {
     );
     this.nationPopulationNodeMap = map;
     this.populationNodes.map((pn) => ({ id: pn.id, nationNodes: [] }));
-    this.populationNodes.forEach((pn) => (pn.nationNodes = []));
-    nodes.forEach((nationNode) => {
+    for (const pn of this.populationNodes) pn.nationNodes = [];
+    for (const nationNode of nodes) {
       const population = nationNode.state.population;
       if (population != null) {
         const populationNode = this.populationNodes[population];
         populationNode.nationNodes.push(nationNode);
       }
-    });
+    }
   }
 
   private refreshNationTurnNodes() {
@@ -282,13 +282,12 @@ export class BritMap implements OnChanges, OnInit {
       unitNodes: null!,
       tooltip: area.name,
     };
-    if (state.units === oldNode?.state.units) {
-      node.unitNodes = oldNode.unitNodes;
-    } else {
-      node.unitNodes = state.units.map((u, index) =>
-        this.unitToNode(u, index, node, state.units.length),
-      );
-    }
+    node.unitNodes =
+      state.units === oldNode?.state.units
+        ? oldNode.unitNodes
+        : state.units.map((u, index) =>
+            this.unitToNode(u, index, node, state.units.length),
+          );
     return node;
   }
 
@@ -335,43 +334,37 @@ export class BritMap implements OnChanges, OnInit {
     nationId: BritNationId,
     oldNode: BritNationTurnNode | null,
   ): BritNationTurnNode {
-    if (oldNode) {
-      return oldNode;
-    } else {
-      const nation = this.components.NATION[nationId];
-      return {
-        id: nationId,
-        nation,
-        state: this.nationStates()[nationId],
-        path: this.mapService.getNationTurnPath(nation.id),
-        tooltip: nation.label,
-      };
-    }
+    if (oldNode) return oldNode;
+    const nation = this.components.NATION[nationId];
+    return {
+      id: nationId,
+      nation,
+      state: this.nationStates()[nationId],
+      path: this.mapService.getNationTurnPath(nation.id),
+      tooltip: nation.label,
+    };
   }
 
   private roundToNode(
     roundId: BritRoundId,
     oldNode: BritRoundNode | null,
   ): BritRoundNode {
-    if (oldNode) {
-      return oldNode;
-    } else {
-      const round = this.components.ROUND[roundId];
-      const eventNodes: BritEventNode[] = round.events.map((event) => ({
-        event,
-        id: event.nation,
-        path: this.mapService.getEventPath(round.id, event.nation),
-        tooltip: this.nationTurnNodeMap[event.nation]?.nation.label,
-      }));
-      return {
-        id: roundId,
-        round: round,
-        path: this.mapService.getRoundPath(round.id),
-        scoringPath: this.mapService.getScoringRoundPath(round.id) || null,
-        eventNodes,
-        tooltip: `Round ${round.id}\n(${round.fromYear}-${round.toYear})`,
-      };
-    }
+    if (oldNode) return oldNode;
+    const round = this.components.ROUND[roundId];
+    const eventNodes: BritEventNode[] = round.events.map((event) => ({
+      event,
+      id: event.nation,
+      path: this.mapService.getEventPath(round.id, event.nation),
+      tooltip: this.nationTurnNodeMap[event.nation]?.nation.label,
+    }));
+    return {
+      id: roundId,
+      round: round,
+      path: this.mapService.getRoundPath(round.id),
+      scoringPath: this.mapService.getScoringRoundPath(round.id) || null,
+      eventNodes,
+      tooltip: `Round ${round.id}\n(${round.fromYear}-${round.toYear})`,
+    };
   }
 
   private nationToPopulationNode(
@@ -425,11 +418,9 @@ export class BritMap implements OnChanges, OnInit {
         clientP.x,
         clientP.y,
       )?.id;
-      if (elementId?.startsWith('brit-area-')) {
-        return elementId.slice(10) as BritAreaId;
-      } else {
-        return null;
-      }
+      return elementId?.startsWith('brit-area-')
+        ? (elementId.slice(10) as BritAreaId)
+        : null;
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;

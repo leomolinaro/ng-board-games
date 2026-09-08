@@ -66,13 +66,13 @@ export interface WotrAttackingUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrDisbandingUnitSelection extends AWotrRegionUnitSelection {
   type: 'disband';
   nArmyUnits: number;
-  underSiege: boolean;
+  isUnderSiege: boolean;
 }
 
 export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelection {
   type: 'chooseCasualties';
   hitPoints: number | 'full';
-  underSiege: boolean;
+  isUnderSiege: boolean;
   retroguard: WotrUnits | null;
 }
 
@@ -91,7 +91,7 @@ export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection {
   type: 'forfeitLeadership';
   frontId: WotrFrontId;
-  points: { min: number } | 'all';
+  points: 'all' | { min: number };
   leaderRestriction: 'nazgul' | 'companions' | WotrCharacterId | null;
   message: string;
 }
@@ -143,7 +143,7 @@ export function selectionModeFactory(
     case 'disband':
       return new DisbandSelectionMode(
         unitSelection.nArmyUnits,
-        unitSelection.underSiege,
+        unitSelection.isUnderSiege,
       );
     case 'moveCharacters':
       return new MoveCharactersSelectionMode(unitSelection, q);
@@ -228,9 +228,8 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
       if (
         unitNode.type === 'character' &&
         this.q.character(unitNode.id as WotrCharacterId).level === 0
-      ) {
+      )
         continue;
-      }
       unitNode.selectable = true;
       unitNode.selected = true;
     }
@@ -246,26 +245,37 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     if (!someArmyUnits)
       return 'Select at least one regular or elite unit to move.';
     if (!this.unitSelection.required) return true;
-    for (const reqUnit of this.unitSelection.requiredUnits) {
-      if (reqUnit === 'anyLeader') {
-        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-        if (!someLeaders) return 'Select at least one leader to move.';
-      } else if (reqUnit === 'anyNazgul') {
-        const someNazgul = selectedNodes.some(
-          (node) =>
-            node.type === 'nazgul' ||
-            (node.type === 'character' && node.id === 'the-witch-king'),
-        );
-        if (!someNazgul) return 'Select at least one Nazgul to move.';
-      } else if (reqUnit === 'anyCharacter') {
-        const someCharacters = selectedNodes.some(
-          (node) => node.type === 'character',
-        );
-        if (!someCharacters) return 'Select at least one character to move.';
-      } else {
-        if (!hasCharacter(selectedNodes, reqUnit)) {
-          const character = this.q.character(reqUnit);
-          return `Select (${character.name}) to move.`;
+    for (const requiredUnit of this.unitSelection.requiredUnits) {
+      switch (requiredUnit) {
+        case 'anyLeader': {
+          const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
+          if (!someLeaders) return 'Select at least one leader to move.';
+
+          break;
+        }
+        case 'anyNazgul': {
+          const someNazgul = selectedNodes.some(
+            (node) =>
+              node.type === 'nazgul' ||
+              (node.type === 'character' && node.id === 'the-witch-king'),
+          );
+          if (!someNazgul) return 'Select at least one Nazgul to move.';
+
+          break;
+        }
+        case 'anyCharacter': {
+          const someCharacters = selectedNodes.some(
+            (node) => node.type === 'character',
+          );
+          if (!someCharacters) return 'Select at least one character to move.';
+
+          break;
+        }
+        default: {
+          if (!hasCharacter(selectedNodes, requiredUnit)) {
+            const character = this.q.character(requiredUnit);
+            return `Select (${character.name}) to move.`;
+          }
         }
       }
     }
@@ -274,30 +284,33 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
 }
 
 function removeUnitNodes(nodes: UnitNode[], removing: WotrUnits): UnitNode[] {
-  removing.regulars?.forEach((unit) => {
-    for (let i = 0; i < unit.quantity; i++) {
-      nodes = immutableUtil.listRemoveFirst(
-        (node) => node.type === 'regular' && node.nationId === unit.nation,
-        nodes,
-      );
+  if (removing.regulars)
+    for (const unit of removing.regulars) {
+      for (let i = 0; i < unit.quantity; i++) {
+        nodes = immutableUtil.listRemoveFirst(
+          (node) => node.type === 'regular' && node.nationId === unit.nation,
+          nodes,
+        );
+      }
     }
-  });
-  removing.elites?.forEach((unit) => {
-    for (let i = 0; i < unit.quantity; i++) {
-      nodes = immutableUtil.listRemoveFirst(
-        (node) => node.type === 'elite' && node.nationId === unit.nation,
-        nodes,
-      );
+  if (removing.elites)
+    for (const unit of removing.elites) {
+      for (let i = 0; i < unit.quantity; i++) {
+        nodes = immutableUtil.listRemoveFirst(
+          (node) => node.type === 'elite' && node.nationId === unit.nation,
+          nodes,
+        );
+      }
     }
-  });
-  removing.leaders?.forEach((unit) => {
-    for (let i = 0; i < unit.quantity; i++) {
-      nodes = immutableUtil.listRemoveFirst(
-        (node) => node.type === 'leader' && node.nationId === unit.nation,
-        nodes,
-      );
+  if (removing.leaders)
+    for (const unit of removing.leaders) {
+      for (let i = 0; i < unit.quantity; i++) {
+        nodes = immutableUtil.listRemoveFirst(
+          (node) => node.type === 'leader' && node.nationId === unit.nation,
+          nodes,
+        );
+      }
     }
-  });
   if (removing.nNazgul) {
     for (let i = 0; i < removing.nNazgul; i++) {
       nodes = immutableUtil.listRemoveFirst(
@@ -306,12 +319,13 @@ function removeUnitNodes(nodes: UnitNode[], removing: WotrUnits): UnitNode[] {
       );
     }
   }
-  removing.characters?.forEach((unit) => {
-    nodes = immutableUtil.listRemoveFirst(
-      (node) => node.type === 'character' && node.id === unit,
-      nodes,
-    );
-  });
+  if (removing.characters)
+    for (const unit of removing.characters) {
+      nodes = immutableUtil.listRemoveFirst(
+        (node) => node.type === 'character' && node.id === unit,
+        nodes,
+      );
+    }
   return nodes;
 }
 
@@ -323,10 +337,12 @@ function hasLeaders(
     if (node.type === 'character') return true;
     if (node.type === 'nazgul') return true;
     if (node.type === 'leader') return true;
-    if (node.type === 'regular' || node.type === 'elite') {
-      if (node.nationId && unitModifiers.isLeader(node.type, node.nationId))
-        return true;
-    }
+    if (
+      (node.type === 'regular' || node.type === 'elite') &&
+      node.nationId &&
+      unitModifiers.isLeader(node.type, node.nationId)
+    )
+      return true;
     return false;
   });
 }
@@ -336,8 +352,7 @@ function hasCharacter(
   characterId: WotrCharacterId,
 ): boolean {
   return selectedNodes.some((node) => {
-    if (node.type === 'character' && node.id === characterId) return true;
-    return false;
+    return node.type === 'character' && node.id === characterId;
   });
 }
 
@@ -360,12 +375,12 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
         if (unitNode.group !== 'army') continue;
       }
       if (
-        unitNode.type === 'regular' ||
-        unitNode.type === 'elite' ||
-        unitNode.type === 'leader'
-      ) {
-        if (!this.q.nation(unitNode.nationId).isAtWar()) continue;
-      }
+        (unitNode.type === 'regular' ||
+          unitNode.type === 'elite' ||
+          unitNode.type === 'leader') &&
+        !this.q.nation(unitNode.nationId).isAtWar()
+      )
+        continue;
       unitNode.selectable = true;
       unitNode.selected = true;
     }
@@ -379,27 +394,35 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
     });
     if (!someArmyUnits)
       return 'Select at least one regular or elite unit to attack.';
-    for (const reqUnit of this.selection.requiredUnits) {
-      if (reqUnit === 'anyLeader') {
-        const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
-        if (!someLeaders) return 'Select at least one leader to attack with.';
-      } else if (reqUnit === 'anyNazgul') {
-        const someNazgul = selectedNodes.some(
-          (node) =>
-            node.type === 'nazgul' ||
-            (node.type === 'character' && node.id === 'the-witch-king'),
-        );
-        if (!someNazgul) return 'Select at least one Nazgûl to attack with.';
-      } else if (reqUnit === 'anyCharacter') {
-        const someCharacters = selectedNodes.some(
-          (node) => node.type === 'character',
-        );
-        if (!someCharacters)
-          return 'Select at least one character to attack with.';
-      } else {
-        if (!hasCharacter(selectedNodes, reqUnit)) {
-          const character = this.q.character(reqUnit);
-          return `Select (${character.name}) to move.`;
+    for (const requiredUnit of this.selection.requiredUnits) {
+      switch (requiredUnit) {
+        case 'anyLeader': {
+          const someLeaders = hasLeaders(selectedNodes, this.unitModifiers);
+          if (!someLeaders) return 'Select at least one leader to attack with.';
+          break;
+        }
+        case 'anyNazgul': {
+          const someNazgul = selectedNodes.some(
+            (node) =>
+              node.type === 'nazgul' ||
+              (node.type === 'character' && node.id === 'the-witch-king'),
+          );
+          if (!someNazgul) return 'Select at least one Nazgûl to attack with.';
+          break;
+        }
+        case 'anyCharacter': {
+          const someCharacters = selectedNodes.some(
+            (node) => node.type === 'character',
+          );
+          if (!someCharacters)
+            return 'Select at least one character to attack with.';
+          break;
+        }
+        default: {
+          if (!hasCharacter(selectedNodes, requiredUnit)) {
+            const character = this.q.character(requiredUnit);
+            return `Select (${character.name}) to move.`;
+          }
         }
       }
     }
@@ -415,13 +438,14 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
 
   initialize(unitNodes: UnitNode[]) {
     for (const unitNode of unitNodes) {
+      if (unitNode.type !== 'character') continue;
       if (
-        unitNode.type === 'character' &&
-        this.unitSelection.characters.includes(unitNode.id as WotrCharacterId)
-      ) {
-        unitNode.selectable = true;
-        unitNode.selected = true;
-      }
+        !this.unitSelection.characters.includes(unitNode.id as WotrCharacterId)
+      )
+        continue;
+
+      unitNode.selectable = true;
+      unitNode.selected = true;
     }
   }
 
@@ -444,13 +468,15 @@ export class MoveNazgulSelectionMode implements WotrRegionUnitSelectionMode {
 
   initialize(unitNodes: UnitNode[]) {
     for (const unitNode of unitNodes) {
-      if (
+      if (!(
         unitNode.type === 'nazgul' ||
         (unitNode.type === 'character' && unitNode.id === 'the-witch-king')
-      ) {
-        unitNode.selectable = true;
-        unitNode.selected = true;
+      )) {
+        continue;
       }
+
+      unitNode.selectable = true;
+      unitNode.selected = true;
     }
   }
 
@@ -469,7 +495,7 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
     if (this.unitSelection.retroguard) {
       unitNodes = removeUnitNodes(unitNodes, this.unitSelection.retroguard);
     }
-    const group = this.unitSelection.underSiege ? 'underSiege' : 'army';
+    const group = this.unitSelection.isUnderSiege ? 'underSiege' : 'army';
     if (this.unitSelection.hitPoints === 'full') {
       for (const node of unitNodes) {
         if (node.group === group) {
@@ -489,37 +515,33 @@ export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMod
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
-    const group = this.unitSelection.underSiege ? 'underSiege' : 'army';
+    const group = this.unitSelection.isUnderSiege ? 'underSiege' : 'army';
     const nodes = selectedNodes.filter((node) => node.group === group);
     if (this.unitSelection.hitPoints === 'full') {
-      if (nodes.every((node) => node.removing)) {
-        return true;
-      } else {
-        return 'Remove all the units.';
-      }
-    } else {
-      let selectedHitPoints = 0;
-      for (const node of nodes) {
-        switch (node.type) {
-          case 'regular':
-            if (node.removing) {
-              selectedHitPoints += 1;
-            }
-            break;
-          case 'elite':
-            if (node.downgrading) {
-              selectedHitPoints += 1;
-            } else if (node.removing) {
-              selectedHitPoints += 2;
-            }
-            break;
-        }
-      }
-      if (selectedHitPoints !== this.unitSelection.hitPoints) {
-        return `Select casualties with ${this.unitSelection.hitPoints} hit points.`;
-      }
-      return true;
+      return nodes.every((node) => node.removing)
+        ? true
+        : 'Remove all the units.';
     }
+    let selectedHitPoints = 0;
+    for (const node of nodes) {
+      switch (node.type) {
+        case 'regular':
+          if (node.removing) {
+            selectedHitPoints += 1;
+          }
+          break;
+        case 'elite':
+          if (node.downgrading) {
+            selectedHitPoints += 1;
+          } else if (node.removing) {
+            selectedHitPoints += 2;
+          }
+          break;
+      }
+    }
+    if (selectedHitPoints !== this.unitSelection.hitPoints)
+      return `Select casualties with ${this.unitSelection.hitPoints} hit points.`;
+    return true;
   }
 }
 
@@ -531,12 +553,12 @@ export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
 
   initialize(unitNodes: UnitNode[]): void {
     for (const node of unitNodes) {
-      if (node.group === 'army') {
-        if (node.type === 'elite') {
-          node.selectable = true;
-        } else if (node.type === 'regular' && this.allowRegularElimination) {
-          node.selectable = true;
-        }
+      if (node.group !== 'army') continue;
+      if (
+        node.type === 'elite' ||
+        (node.type === 'regular' && this.allowRegularElimination)
+      ) {
+        node.selectable = true;
       }
     }
   }
@@ -626,50 +648,37 @@ export class ForfeitLeadershipSelectionMode implements WotrRegionUnitSelectionMo
         if (node.type === 'character' && node.id === 'the-witch-king')
           return true;
         return false;
-      } else if (this.params.leaderRestriction === 'companions') {
-        if (node.type === 'character' && node.frontId === 'free-peoples')
-          return true;
-        return false;
-      } else {
-        if (
-          node.type === 'character' &&
-          node.character.id === this.params.leaderRestriction
-        )
-          return true;
-        return false;
       }
-    } else {
-      if (
-        node.type === 'leader' ||
-        node.type === 'nazgul' ||
-        node.type === 'character'
-      )
-        return true;
-      return false;
+      return this.params.leaderRestriction === 'companions'
+        ? node.type === 'character' && node.frontId === 'free-peoples'
+        : node.type === 'character' &&
+            node.character.id === this.params.leaderRestriction;
     }
+    return (
+      node.type === 'leader' ||
+      node.type === 'nazgul' ||
+      node.type === 'character'
+    );
   }
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
-    if (this.params.points === 'all') {
-      return true;
-    } else {
-      let totalPoints = 0;
-      for (const node of selectedNodes) {
-        switch (node.type) {
-          case 'leader':
-            totalPoints += 1;
-            break;
-          case 'nazgul':
-            totalPoints += 1;
-            break;
-          case 'character':
-            totalPoints += node.character.leadership;
-            break;
-        }
+    if (this.params.points === 'all') return true;
+    let totalPoints = 0;
+    for (const node of selectedNodes) {
+      switch (node.type) {
+        case 'leader':
+          totalPoints += 1;
+          break;
+        case 'nazgul':
+          totalPoints += 1;
+          break;
+        case 'character':
+          totalPoints += node.character.leadership;
+          break;
       }
-      if (totalPoints >= this.params.points.min) return true;
-      return this.params.message;
     }
+    if (totalPoints >= this.params.points.min) return true;
+    return this.params.message;
   }
 }
 
@@ -690,7 +699,7 @@ export class RageOfTheDunlendingsSelectionMode implements WotrRegionUnitSelectio
 
   canConfirm(selectedNodes: UnitNode[]): true | string {
     if (
-      selectedNodes.length &&
+      selectedNodes.length > 0 &&
       selectedNodes.length <= this.unitSelection.maxNArmyUnits
     ) {
       return true;

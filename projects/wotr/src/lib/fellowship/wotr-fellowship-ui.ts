@@ -134,7 +134,7 @@ export class WotrFellowshipUi {
       await this.fellowshipHandler.separateCompanions(companions, targetRegion);
     }
 
-    if (companions.some((c) => this.fellowshipStore.guide() === c)) {
+    if (companions.includes(this.fellowshipStore.guide())) {
       const fellowshipCompanions = this.fellowshipStore.companions();
       const leftCompanionIds = fellowshipCompanions.filter(
         (c) => !companions.includes(c),
@@ -163,7 +163,10 @@ export class WotrFellowshipUi {
     companions: WotrCharacterQuery[],
   ): Promise<WotrFellowshipGuide> {
     const guide = this.fellowshipStore.guide();
-    const maxLevel = companions.reduce((max, c) => Math.max(max, c.level), 0);
+    let maxLevel = 0;
+    for (const companion of companions) {
+      maxLevel = Math.max(maxLevel, companion.level);
+    }
     const targetCompanions = companions.filter(
       (c) => c.level === maxLevel && c.id !== guide,
     );

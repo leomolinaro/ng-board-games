@@ -85,12 +85,10 @@ export class WotrBattleModifiers {
     combatFront: WotrCombatFront,
     combatRound: WotrCombatRound,
   ): WotrCardId[] {
-    return this.tableCombatCardGetter
-      .get()
-      .reduce<WotrCardId[]>(
-        (cards, getter) => cards.concat(getter(combatFront, combatRound)),
-        [],
-      );
+    const cards: WotrCardId[] = [];
+    for (const getter of this.tableCombatCardGetter.get())
+      cards.push(...getter(combatFront, combatRound));
+    return cards;
   }
 
   public readonly nSiegeRoundsModifier =

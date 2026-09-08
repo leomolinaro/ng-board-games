@@ -72,28 +72,26 @@ export class WotrUnitUtils {
     const units = army[unitKey];
     if (units) {
       const index = units.findIndex((u) => u.nation === nation);
-      if (index >= 0) {
-        const unit = units[index];
-        return {
-          ...army,
-          [unitKey]: immutableUtil.listReplaceByIndex(
-            index,
-            { ...unit, quantity: unit.quantity + quantity },
-            units,
-          ),
-        };
-      } else {
+      if (index === -1) {
         return {
           ...army,
           [unitKey]: immutableUtil.listPush([{ nation, quantity }], units),
         };
       }
-    } else {
+      const unit = units[index];
       return {
         ...army,
-        [unitKey]: [{ nation, quantity }],
+        [unitKey]: immutableUtil.listReplaceByIndex(
+          index,
+          { ...unit, quantity: unit.quantity + quantity },
+          units,
+        ),
       };
     }
+    return {
+      ...army,
+      [unitKey]: [{ nation, quantity }],
+    };
   }
 
   private removeUnits(
@@ -110,9 +108,7 @@ export class WotrUnitUtils {
       throw new Error('removeUnitsFrom');
     }
     const index = units.findIndex((u) => u.nation === nation);
-    if (index < 0) {
-      throw new Error('removeUnitsFrom');
-    }
+    if (index === -1) throw new Error('removeUnitsFrom');
     const unit = units[index];
     const newQuantity = unit.quantity - quantity;
     if (newQuantity < 0) {
@@ -213,13 +209,11 @@ export class WotrUnitUtils {
   }
 
   hasRegularUnits(units: WotrUnits) {
-    if (units.regulars?.length) return true;
-    return false;
+    return Boolean(units.regulars?.length);
   }
 
   hasRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
-    if (units.regulars?.some((u) => u.nation === nation)) return true;
-    return false;
+    return Boolean(units.regulars?.some((u) => u.nation === nation));
   }
 
   getNRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
@@ -229,13 +223,13 @@ export class WotrUnitUtils {
   }
 
   hasEliteUnits(units: WotrUnits) {
-    if (units.elites?.length) return true;
-    return false;
+    return Boolean(units.elites?.length);
   }
 
   getNEliteUnits(units: WotrUnits) {
-    if (!units.elites?.length) return 0;
-    return units.elites.reduce((count, u) => count + u.quantity, 0);
+    let count = 0;
+    if (units.elites) for (const unit of units.elites) count += unit.quantity;
+    return count;
   }
 
   getNEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
@@ -245,8 +239,7 @@ export class WotrUnitUtils {
   }
 
   hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
-    if (units.elites?.some((u) => u.nation === nation)) return true;
-    return false;
+    return Boolean(units.elites?.some((u) => u.nation === nation));
   }
 
   hasNazgul(units: WotrUnits) {
@@ -270,8 +263,7 @@ export class WotrUnitUtils {
   }
 
   hasLeaders(units: WotrUnits): boolean {
-    if (units.leaders?.length) return true;
-    return false;
+    return Boolean(units.leaders?.length);
   }
 
   leadership(units: WotrLeaderUnits): number {
@@ -331,18 +323,18 @@ export class WotrUnitUtils {
 
   getNArmyUnits(units: WotrUnits) {
     let n = 0;
-    if (units.regulars?.length)
-      n += units.regulars.reduce((count, u) => count + u.quantity, 0);
-    if (units.elites?.length)
-      n += units.elites.reduce((count, u) => count + u.quantity, 0);
+    if (units.regulars) for (const unit of units.regulars) n += unit.quantity;
+    if (units.elites) for (const unit of units.elites) n += unit.quantity;
     return n;
   }
 
   unitsToArmy(units: WotrUnits): WotrArmy {
     return {
-      front: units.regulars?.length
-        ? frontOfNation(units.regulars[0].nation)
-        : frontOfNation(units.elites![0].nation),
+      front: frontOfNation(
+        units.regulars?.length
+          ? units.regulars[0].nation
+          : units.elites![0].nation,
+      ),
       ...units,
     };
   }
@@ -355,32 +347,19 @@ export class WotrUnitUtils {
     if (!army2) return army1;
     let newArmy = army1;
     if (army2.regulars) {
-      newArmy = army2.regulars.reduce(
-        (a, unit) => this.addRegulars(unit.quantity, unit.nation, a),
-        newArmy,
-      );
+      for (const unit of army2.regulars)
+        newArmy = this.addRegulars(unit.quantity, unit.nation, newArmy);
     }
-    if (army2.elites) {
-      newArmy = army2.elites.reduce(
-        (a, unit) => this.addElites(unit.quantity, unit.nation, a),
-        newArmy,
-      );
-    }
-    if (army2.leaders) {
-      newArmy = army2.leaders.reduce(
-        (a, unit) => this.addLeaders(unit.quantity, unit.nation, a),
-        newArmy,
-      );
-    }
-    if (army2.nNazgul) {
-      newArmy = this.addNazgul(army2.nNazgul, newArmy);
-    }
-    if (army2.characters) {
-      newArmy = army2.characters.reduce(
-        (a, unit) => this.addCharacter(unit, a),
-        newArmy,
-      );
-    }
+    if (army2.elites)
+      for (const unit of army2.elites)
+        newArmy = this.addElites(unit.quantity, unit.nation, newArmy);
+    if (army2.leaders)
+      for (const unit of army2.leaders)
+        newArmy = this.addLeaders(unit.quantity, unit.nation, newArmy);
+    if (army2.nNazgul) newArmy = this.addNazgul(army2.nNazgul, newArmy);
+    if (army2.characters)
+      for (const character of army2.characters)
+        newArmy = this.addCharacter(character, newArmy);
     return newArmy;
   }
 
@@ -391,51 +370,37 @@ export class WotrUnitUtils {
     if (!army) throw new Error('splitArmy');
     if (!splittedUnits) return army;
     let newArmy: WotrArmy | undefined = army;
-    if (splittedUnits.regulars) {
-      newArmy = splittedUnits.regulars.reduce<WotrArmy | undefined>(
-        (a, unit) => this.removeRegulars(unit.quantity, unit.nation, a),
-        newArmy,
-      );
-    }
-    if (splittedUnits.elites) {
-      newArmy = splittedUnits.elites.reduce<WotrArmy | undefined>(
-        (a, unit) => this.removeElites(unit.quantity, unit.nation, a),
-        newArmy,
-      );
-    }
-    if (splittedUnits.leaders) {
-      newArmy = splittedUnits.leaders.reduce<WotrArmy | undefined>(
-        (a, unit) => this.removeLeaders(unit.quantity, unit.nation, a),
-        newArmy,
-      );
-    }
-    if (splittedUnits.nNazgul) {
+    if (splittedUnits.regulars)
+      for (const unit of splittedUnits.regulars)
+        newArmy = this.removeRegulars(unit.quantity, unit.nation, newArmy);
+    if (splittedUnits.elites)
+      for (const unit of splittedUnits.elites)
+        newArmy = this.removeElites(unit.quantity, unit.nation, newArmy);
+    if (splittedUnits.leaders)
+      for (const unit of splittedUnits.leaders)
+        newArmy = this.removeLeaders(unit.quantity, unit.nation, newArmy);
+
+    if (splittedUnits.nNazgul)
       newArmy = this.removeNazgul(splittedUnits.nNazgul, newArmy);
-    }
-    if (splittedUnits.characters) {
-      newArmy = splittedUnits.characters.reduce<WotrArmy | undefined>(
-        (a, unit) => this.removeCharacter(unit, a),
-        newArmy,
-      );
-    }
+    if (splittedUnits.characters)
+      for (const character of splittedUnits.characters)
+        newArmy = this.removeCharacter(character, newArmy);
     return newArmy;
   }
 
   nArmyUnits(army: WotrUnits): number {
     const { regulars, elites } = army;
     let totalArmyUnits = 0;
-    totalArmyUnits +=
-      regulars?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
-    totalArmyUnits +=
-      elites?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
+    if (regulars) for (const unit of regulars) totalArmyUnits += unit.quantity;
+    if (elites) for (const unit of elites) totalArmyUnits += unit.quantity;
     return totalArmyUnits;
   }
 
   nHits(army: WotrArmy) {
     const { regulars, elites } = army;
     let totalHits = 0;
-    totalHits += regulars?.reduce((sum, unit) => sum + unit.quantity, 0) ?? 0;
-    totalHits += elites?.reduce((sum, unit) => sum + unit.quantity * 2, 0) ?? 0;
+    if (regulars) for (const unit of regulars) totalHits += unit.quantity;
+    if (elites) for (const unit of elites) totalHits += unit.quantity * 2;
     return totalHits;
   }
 }

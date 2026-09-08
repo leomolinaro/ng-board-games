@@ -67,12 +67,11 @@ export class BaronyPlayerAiService {
             action: 'movement',
             movements: [firstMovement, secondMovement],
           });
-        } else {
-          return Promise.resolve({
-            action: 'movement',
-            movements: [firstMovement],
-          });
         }
+        return Promise.resolve({
+          action: 'movement',
+          movements: [firstMovement],
+        });
       }
       case 'construction': {
         const constructions: BaronyConstruction[] = [];
@@ -206,13 +205,12 @@ export class BaronyPlayerAiService {
         conflict: true,
         gainedResource: null,
       };
-    } else {
-      return {
-        fromLand: sourceLand.coordinates,
-        toLand: targetLand.coordinates,
-        conflict: false,
-        gainedResource: null,
-      };
     }
+    return {
+      fromLand: sourceLand.coordinates,
+      toLand: targetLand.coordinates,
+      conflict: false,
+      gainedResource: null,
+    };
   }
 }
