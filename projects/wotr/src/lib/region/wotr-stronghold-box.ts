@@ -1,12 +1,11 @@
-import type {
-  Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import {
   Component,
   computed,
   EventEmitter,
   inject,
   input,
-  Output
+  Output,
 } from '@angular/core';
 import type { WotrUnitImage } from '../assets/wotr-assets-store';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
@@ -19,10 +18,9 @@ import type {
 import { WotrMapService } from '../game/board/map/wotr-map.service';
 import type {
   WotrArmyUnitType,
-  WotrNationId} from '../nation/wotr-nation-models';
-import {
-  frontOfNation
+  WotrNationId,
 } from '../nation/wotr-nation-models';
+import { frontOfNation } from '../nation/wotr-nation-models';
 import type { WotrArmy } from '../unit/wotr-unit-models';
 import type { WotrRegion, WotrRegionId } from './wotr-region-models';
 
@@ -279,7 +277,7 @@ export class WotrStrongholdBox {
       id: region.id,
       region,
       path,
-      army: army ? this.regionToArmyNode(army, region) : null,
+      army: army ? this.regionToArmyNode(army) : null,
       tooltip: region.name,
       shadowFrame: shadowFrame
         ? {
@@ -328,7 +326,7 @@ export class WotrStrongholdBox {
     }
   }
 
-  private regionToArmyNode(army: WotrArmy, region: WotrRegion): WotrArmyNode {
+  private regionToArmyNode(army: WotrArmy): WotrArmyNode {
     const armyFront = army.front;
 
     const [armyUnits, nRegulars, nElites] = this.regionToArmyUnitNodes(army);
@@ -364,8 +362,8 @@ export class WotrStrongholdBox {
     army: WotrArmy,
   ): [WotrArmyUnitNode[], number, number] {
     const nRegulars =
-      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) || 0;
-    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) || 0;
+      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
+    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
 
     const unitNodes: WotrArmyUnitNode[] = [];
     const nEliteNodes = army.elites ? Math.min(2, army.elites.length) : 0;

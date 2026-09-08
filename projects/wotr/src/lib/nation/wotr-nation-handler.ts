@@ -4,7 +4,6 @@ import type { WotrCharacterId } from '../character/wotr-character-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
-import type { WotrStory } from '../game/wotr-story-models';
 import { WotrStoryService } from '../game/wotr-story-service';
 import { WotrLogWriter } from '../log/wotr-log-writer';
 import type { WotrRegionId } from '../region/wotr-region-models';
@@ -36,7 +35,7 @@ export class WotrNationHandler {
   init() {
     this.actionRegistry.registerAction<WotrPoliticalActivation>(
       'political-activation',
-      (action, front) => this.activateNation(action.nation, 'card-ability'),
+      (action) => this.activateNation(action.nation, 'card-ability'),
       (action, front, f) => [
         f.player(front),
         ' activates ',
@@ -45,7 +44,7 @@ export class WotrNationHandler {
     );
     this.actionRegistry.registerAction<WotrPoliticalAdvance>(
       'political-advance',
-      (action, front) =>
+      (action) =>
         this.advanceNation(
           action.quantity,
           action.nation,
@@ -125,7 +124,7 @@ export class WotrNationHandler {
 
   private nationOfAttackedUnits(regionId: WotrRegionId) {
     const region = this.regionStore.region(regionId);
-    const defendingArmy = region.underSiegeArmy || region.army!;
+    const defendingArmy = region.underSiegeArmy ?? region.army!;
     const nations = new Set<WotrNationId>();
     defendingArmy.regulars?.forEach((r) => nations.add(r.nation));
     defendingArmy.elites?.forEach((r) => nations.add(r.nation));
@@ -284,7 +283,7 @@ export class WotrNationHandler {
           case 'will-of-the-west':
             return 'will-of-the-west-die-result';
           default:
-            throw new Error(`Unexpected die type: ${story.die}`);
+            throw new Error(`Unexpected die type`);
         }
       case 'die-card':
         return 'card-ability';

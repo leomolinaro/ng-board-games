@@ -1,6 +1,7 @@
 import type { WotrCharacterId } from '../character/wotr-character-models';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
+import type { WotrLogFragment } from '../log/wotr-log-models';
 import type { WotrNationId } from '../nation/wotr-nation-models';
 import type { WotrRegionId } from '../region/wotr-region-models';
 
@@ -24,27 +25,40 @@ export function findActions<A extends WotrAction>(
   return actions.filter((a) => actionTypes.includes(a.type)) as A[];
 }
 
-export interface WotrFragmentCreator<F> {
-  player(front: WotrFrontId): F;
-  region(region: WotrRegionId): F;
-  nation(nation: WotrNationId): F;
-  character(characterId: WotrCharacterId): F;
-  huntTile(huntTile: WotrHuntTileId, options?: { hideFor?: WotrFrontId }): F;
+export class WotrFragmentCreator {
+  player(front: WotrFrontId): WotrLogFragment {
+    return { type: 'player', front };
+  }
+  region(region: WotrRegionId): WotrLogFragment {
+    return { type: 'region', region };
+  }
+  nation(nation: WotrNationId): WotrLogFragment {
+    return { type: 'nation', nation };
+  }
+  character(character: WotrCharacterId): WotrLogFragment {
+    return { type: 'character', character };
+  }
+  huntTile(
+    huntTile: WotrHuntTileId,
+    _options?: { hideFor?: WotrFrontId },
+  ): WotrLogFragment {
+    return { type: 'hunt-tile', tile: huntTile };
+  }
 }
 
-export type WotrActionLogger<A, F = any> = (
+export type WotrActionLogger<A> = (
   action: A,
   front: WotrFrontId,
-  f: WotrFragmentCreator<F>,
-) => F[];
+  f: WotrFragmentCreator,
+) => WotrLogFragment[];
 export type WotrActionLoggerMap<A extends WotrAction> = {
-  [key in A['type']]: WotrActionLogger<{ type: key } & A>;
+  [key in A['type'] & string]: WotrActionLogger<{ type: key } & A>;
 };
 
-export type WotrEffectLogger<E, F = any> = (
+export type WotrEffectLogger<E> = (
   effect: E,
-  f: WotrFragmentCreator<F>,
-) => F[];
+  f: WotrFragmentCreator,
+) => WotrLogFragment[];
 export type WotrEffectLoggerMap<E extends WotrAction> = {
   [key in E['type']]: WotrEffectLogger<{ type: key } & E>;
 };

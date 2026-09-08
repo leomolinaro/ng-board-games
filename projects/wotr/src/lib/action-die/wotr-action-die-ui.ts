@@ -415,7 +415,7 @@ export class WotrActionDieUi {
   private skipDieChoice(die: WotrActionDie): WotrUiChoice {
     return {
       label: () => 'Skip the action die',
-      actions: async () => [skipActionDie(die)],
+      actions: () => [skipActionDie(die)],
     };
   }
 
@@ -453,7 +453,7 @@ export class WotrActionDieUi {
       case 'political-advance':
         return this.resolvePoliticalAdvanceToken(frontId);
       case 'move-nazgul-minions':
-        return this.resolveMoveNazgulMinionsToken(frontId);
+        return this.resolveMoveNazgulMinionsToken();
     }
   }
 
@@ -478,9 +478,7 @@ export class WotrActionDieUi {
     };
   }
 
-  private async resolveMoveNazgulMinionsToken(
-    frontId: WotrFrontId,
-  ): Promise<WotrTokenStory> {
+  private async resolveMoveNazgulMinionsToken(): Promise<WotrTokenStory> {
     const nazgulMovements = await this.ui.characterUi.moveNazgulAndMinions();
     return {
       type: 'token',

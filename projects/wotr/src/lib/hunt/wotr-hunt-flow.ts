@@ -312,7 +312,7 @@ export class WotrHuntFlow {
                 fromTheFellowship: true,
               });
             if (eliminating) {
-              if (!params.randomCompanions) params.randomCompanions = [];
+              params.randomCompanions ??= [];
               params.randomCompanions.push(companionId);
             } else {
               absorbedDamage += this.q.character(companionId).level;

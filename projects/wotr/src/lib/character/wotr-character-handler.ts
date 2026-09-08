@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { lazyInject } from '../../../../commons/utils/src';
 import type { WotrUiAbility } from '../ability/wotr-ability';
 import type { WotrCardId } from '../card/wotr-card-models';
 import type {
@@ -37,7 +38,7 @@ import type {
 } from './wotr-character-models';
 import { WotrCharacterModifiers } from './wotr-character-modifiers';
 import { WotrCharacterStore } from './wotr-character-store';
-import type { WotrCharacters } from './wotr-characters';
+import { WotrCharacters } from './wotr-characters';
 
 @Injectable()
 export class WotrCharacterHandler {
@@ -50,14 +51,17 @@ export class WotrCharacterHandler {
   private q = inject(WotrGameQuery);
   private characterModifiers = inject(WotrCharacterModifiers);
 
-  characterAbilities: WotrCharacters = null as any;
+  private characterAbilities = lazyInject(WotrCharacters);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<WotrGollumEnterFellowship>(
       'gollum-enter-fellowship',
-      (effect, f) => [f.character('gollum'), ' enters the Fellowship as Guide'],
+      (_effect, f) => [
+        f.character('gollum'),
+        ' enters the Fellowship as Guide',
+      ],
     );
     this.actionRegistry.registerEffectLogger<WotrCharacterElimination>(
       'character-elimination',
@@ -108,8 +112,12 @@ export class WotrCharacterHandler {
         ),
       'character-elimination': (action) =>
         this.eliminateCharacters(action.characters),
-      'gollum-enter-fellowship': () => {},
-      'character-choose': () => {},
+      'gollum-enter-fellowship': () => {
+        /*empty*/
+      },
+      'character-choose': () => {
+        /*empty*/
+      },
       'sovereign-awake': (action) =>
         this.awakeSovereign(action.sovereignId, action.regionId),
     };
@@ -285,7 +293,7 @@ export class WotrCharacterHandler {
         ' in ',
         f.region(action.region),
       ],
-      'gollum-enter-fellowship': (action, front, f) => [],
+      'gollum-enter-fellowship': () => [],
       'character-choose': (action, front, f) => [
         f.player(front),
         ' chooses ',

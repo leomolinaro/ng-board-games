@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Injectable, computed } from '@angular/core';
 import type { WotrCardId } from '../card/wotr-card-models';
 import type { WotrCharacterId } from '../character/wotr-character-models';
@@ -25,7 +25,7 @@ export class WotrBattleStore {
   }
 
   startBattle(battle: WotrBattle) {
-    this.update('startBattle', (s) => battle);
+    this.update('startBattle', () => battle);
   }
   addAttackerCombatCard(card: WotrCardId) {
     this.update('addAttackerCombatCard', (s) => ({
@@ -40,7 +40,7 @@ export class WotrBattleStore {
     }));
   }
   endBattle() {
-    this.update('endBattle', (s) => null);
+    this.update('endBattle', () => null);
   }
   addNRegularCasualtiesToContinueSiege(n: number) {
     this.update('addNRegularCasualtiesToContinueSiege', (s) => {

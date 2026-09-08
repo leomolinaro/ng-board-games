@@ -10,9 +10,13 @@ export abstract class WotrPlayableCharacterCard {
   public abstract characterId: WotrCharacterId;
 
   abstract canBeBroughtIntoPlay(die: WotrActionDie): boolean;
-  abstract bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction>;
+  abstract bringIntoPlay(
+    ui: WotrGameUiContext,
+  ): WotrAction | Promise<WotrAction>;
 
-  resolveBringIntoPlayEffect(): void {}
+  resolveBringIntoPlayEffect(): void {
+    /*empty*/
+  }
 }
 
 export async function activateCharacterAbility(

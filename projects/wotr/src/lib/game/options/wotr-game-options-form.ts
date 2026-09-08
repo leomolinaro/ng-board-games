@@ -8,18 +8,16 @@ import {
 import type { BgGameOptionsComponent } from '@leobg/commons';
 import { TuiButton, TuiExpand, TuiTitle } from '@taiga-ui/core';
 import { TuiAccordion } from '@taiga-ui/kit';
-import type {
-  WotrActionTokenOption} from '../../action-die/wotr-action-die-models';
-import {
-  getActionTokenName
-} from '../../action-die/wotr-action-die-models';
+import type { WotrActionTokenOption } from '../../action-die/wotr-action-die-models';
+import { getActionTokenName } from '../../action-die/wotr-action-die-models';
 import { WotrActionTokenOptionsForm } from '../../action-die/wotr-action-token-options-form';
 import type {
   WotrExpansionId,
-  WotrVariantId} from '../../expansion/wotr-expansion-models';
+  WotrVariantId,
+} from '../../expansion/wotr-expansion-models';
 import {
   getExpansion,
-  getVariant
+  getVariant,
 } from '../../expansion/wotr-expansion-models';
 import { WotrExpansionOptionsForm } from '../../expansion/wotr-expansion-options-form';
 import { WotrVariantOptionsForm } from '../../expansion/wotr-variant-options-form';
@@ -115,8 +113,8 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
 
   expansionsChange(expansions: WotrExpansionId[]) {
     for (const expansion of expansions) {
-      const requiredExpansions = getExpansion(expansion).requires || [];
-       
+      const requiredExpansions = getExpansion(expansion).requires ?? [];
+
       if (
         requiredExpansions.some((required) => !expansions.includes(required))
       ) {

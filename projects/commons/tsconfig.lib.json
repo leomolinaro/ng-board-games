@@ -7,6 +7,6 @@
     "declarationMap": true,
     "types": []
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "utils/src/**/*.ts"],
   "exclude": ["**/*.spec.ts"]
 }

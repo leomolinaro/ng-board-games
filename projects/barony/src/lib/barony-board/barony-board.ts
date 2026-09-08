@@ -40,7 +40,6 @@ import { BaronyScoreboard } from './barony-scoreboard';
     BgMapZoomButtons,
     BaronyScoreboard,
     BaronyLogs,
-
     TuiIcon,
   ],
   templateUrl: './barony-board.html',
@@ -49,7 +48,7 @@ import { BaronyScoreboard } from './barony-scoreboard';
 export class BaronyBoard {
   constructor() {
     effect(() => {
-      this.openEndGameDialog().then(() => {});
+      void this.openEndGameDialog();
     });
   }
 
@@ -88,7 +87,7 @@ export class BaronyBoard {
   protected scoreboardFixed = false;
 
   protected numberOfKnights = linkedSignal(
-    () => this.maxNumberOfKnights() || 0,
+    () => this.maxNumberOfKnights() ?? 0,
   );
 
   protected onPlayerSelect(player: BaronyPlayer) {
@@ -117,16 +116,14 @@ export class BaronyBoard {
     this.resourceSelect.emit(resource);
   }
 
-  private async openEndGameDialog() {
+  private openEndGameDialog() {
     if (!this.endGame()) return;
-    await this.dialogs
-      .open(BaronyEndGameDialog, {
-        label: 'End Game',
-        data: {
-          players: this.players(),
-        },
-        size: 'l',
-      })
-      .then(() => {});
+    void this.dialogs.open(BaronyEndGameDialog, {
+      label: 'End Game',
+      data: {
+        players: this.players(),
+      },
+      size: 'l',
+    });
   }
 }

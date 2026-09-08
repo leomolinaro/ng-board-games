@@ -61,7 +61,11 @@ export class BaronyGamePage implements OnInit {
 
   private gameId = this.route.snapshot.paramMap.get('gameId')!;
 
-  async ngOnInit() {
+  ngOnInit() {
+    void this.init();
+  }
+
+  private async init() {
     const stories = await this.gameService.loadGame(this.gameId);
     await this.gameService.game(stories);
   }

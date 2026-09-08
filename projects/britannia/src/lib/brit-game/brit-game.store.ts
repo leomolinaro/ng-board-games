@@ -30,9 +30,9 @@ function initialState(): BritGameState {
   const components = new BritComponents();
   return {
     gameId: '',
-    gameOwner: null as any,
+    gameOwner: null,
     players: { map: {}, colors: [] },
-    areas: components.areasToMap((areaId) => ({ units: [] })),
+    areas: components.areasToMap(() => ({ units: [] })),
     nations: components.nationsToMap((nationId) => {
       const nation = components.NATION[nationId];
       return {
@@ -574,7 +574,7 @@ export class BritGameStore extends signalStore(
             if (newIndex >= 0) {
               const newUnit = newUnits[newIndex];
               if (newUnit.type === 'leader') {
-                throw 'Unexpected';
+                throw new Error('Unexpected');
               }
               newUnit.quantity += unit.quantity;
             } else {

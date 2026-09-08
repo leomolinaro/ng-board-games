@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { Observable} from 'rxjs';
+import type { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { WotrAssetsStore } from '../../../assets/wotr-assets-store';
@@ -61,14 +61,17 @@ export class WotrMapService {
   private assets = inject(WotrAssetsStore);
 
   private svgLoaded = false;
-  private regionPaths!: Record<WotrRegionId, string>;
+  private regionPaths!: Partial<Record<WotrRegionId, string>>;
   private strongholdPaths!: Partial<Record<WotrRegionId, string>>;
   private viewBox!: string;
   private width!: number;
   private regionSlots!: WotrRegionSlots;
 
-  getRegionPath(regionId: WotrRegionId) {
-    return this.regionPaths[regionId];
+  getRegionPath(regionId: WotrRegionId): string {
+    const path = this.regionPaths[regionId];
+    if (!path)
+      throw new Error(`Region path not found for regionId: ${regionId}`);
+    return path;
   }
   getStrongholdPath(regionId: WotrRegionId) {
     return this.strongholdPaths[regionId];
@@ -111,14 +114,15 @@ export class WotrMapService {
       );
   }
 
-  private getGroupPaths<K extends string | number>(
+  private getGroupPaths<K extends string>(
     groupId: string,
     dom: Document,
     pathIdToId: (pathId: string) => K,
-  ) {
+  ): Partial<Record<K, string>> {
     const wotrGroup = dom.getElementById(groupId);
-    const paths: Record<K, string> = {} as any;
-    wotrGroup?.childNodes.forEach((childNode) => {
+    if (!wotrGroup) return {};
+    const paths: Partial<Record<K, string>> = {};
+    for (const childNode of wotrGroup.childNodes) {
       if (childNode.nodeName === 'path') {
         const pathElement = childNode as SVGPathElement;
         const pathId = pathElement.getAttribute('id')!;
@@ -126,7 +130,7 @@ export class WotrMapService {
         const pathD = pathElement.getAttribute('d')!;
         paths[id] = pathD;
       }
-    });
+    }
     return paths;
   }
 
@@ -135,6 +139,7 @@ export class WotrMapService {
       .get(this.assets.mapSlotsPath(), { responseType: 'text' })
       .pipe(
         map((response) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           this.regionSlots = JSON.parse(response);
           return true;
         }),

@@ -4,80 +4,57 @@ import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
 import type { WotrActionDie } from '../../../action-die/wotr-action-die-models';
 import type {
   WotrActionDieChoiceModifier,
-  WotrAfterActionDieCardResolution} from '../../../action-die/wotr-action-die-modifiers';
-import {
-  WotrActionDieModifiers
+  WotrAfterActionDieCardResolution,
 } from '../../../action-die/wotr-action-die-modifiers';
+import { WotrActionDieModifiers } from '../../../action-die/wotr-action-die-modifiers';
 import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
 import type {
   WotrCombatFront,
   WotrCombatRound,
 } from '../../../battle/wotr-battle-models';
-import type {
-  WotrTableCombatCardGetter} from '../../../battle/wotr-battle-modifiers';
-import {
-  WotrBattleModifiers
-} from '../../../battle/wotr-battle-modifiers';
-import type {
-  WotrAfterCharacterElimination} from '../../../character/wotr-character-modifiers';
-import {
-  WotrCharacterModifiers,
-} from '../../../character/wotr-character-modifiers';
+import type { WotrTableCombatCardGetter } from '../../../battle/wotr-battle-modifiers';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
+import type { WotrAfterCharacterElimination } from '../../../character/wotr-character-modifiers';
+import { WotrCharacterModifiers } from '../../../character/wotr-character-modifiers';
 import type { WotrAction } from '../../../commons/wotr-action-models';
 import { findAction } from '../../../commons/wotr-action-models';
-import type {
-  WotrCompanionRandom} from '../../../fellowship/wotr-fellowship-actions';
+import type { WotrCompanionRandom } from '../../../fellowship/wotr-fellowship-actions';
 import {
   chooseRandomCompanion,
   corruptFellowship,
-  pushFellowship
+  pushFellowship,
 } from '../../../fellowship/wotr-fellowship-actions';
 import { WotrFellowshipHandler } from '../../../fellowship/wotr-fellowship-handler';
 import type { WotrFellowshipMove } from '../../../fellowship/wotr-fellowship-models';
-import type {
-  WotrAfterFellowshipDeclaration} from '../../../fellowship/wotr-fellowship-modifiers';
-import {
-  WotrFellowshipModifiers,
-} from '../../../fellowship/wotr-fellowship-modifiers';
+import type { WotrAfterFellowshipDeclaration } from '../../../fellowship/wotr-fellowship-modifiers';
+import { WotrFellowshipModifiers } from '../../../fellowship/wotr-fellowship-modifiers';
 import { useElvenRing } from '../../../front/wotr-front-actions';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
 import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import type { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
 import type { WotrStory } from '../../../game/wotr-story-models';
 import { assertAction } from '../../../game/wotr-story-models';
-import type {
-  WotrHuntTileDraw} from '../../../hunt/wotr-hunt-actions';
-import {
-  addHuntTile,
-  lidlessEye
-} from '../../../hunt/wotr-hunt-actions';
-import type {
-  WotrHuntTileResolutionOptions} from '../../../hunt/wotr-hunt-flow';
-import {
-  WotrHuntFlow
-} from '../../../hunt/wotr-hunt-flow';
+import type { WotrHuntTileDraw } from '../../../hunt/wotr-hunt-actions';
+import { addHuntTile, lidlessEye } from '../../../hunt/wotr-hunt-actions';
+import type { WotrHuntTileResolutionOptions } from '../../../hunt/wotr-hunt-flow';
+import { WotrHuntFlow } from '../../../hunt/wotr-hunt-flow';
 import { WotrHuntHandler } from '../../../hunt/wotr-hunt-handler';
 import type {
   WotrAfterFellowshipReveal,
-  WotrBeforeHuntRoll} from '../../../hunt/wotr-hunt-modifiers';
-import {
-  WotrHuntModifiers,
+  WotrBeforeHuntRoll,
 } from '../../../hunt/wotr-hunt-modifiers';
+import { WotrHuntModifiers } from '../../../hunt/wotr-hunt-modifiers';
 import { WotrHuntStore } from '../../../hunt/wotr-hunt-store';
 import { WotrLogWriter } from '../../../log/wotr-log-writer';
 import type {
   WotrAfterNationActivation,
-  WotrCanActivateNationModifier} from '../../../nation/wotr-nation-modifiers';
-import {
-  WotrNationModifiers,
+  WotrCanActivateNationModifier,
 } from '../../../nation/wotr-nation-modifiers';
+import { WotrNationModifiers } from '../../../nation/wotr-nation-modifiers';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import type {
-  WotrRegionChoose} from '../../../region/wotr-region-actions';
-import {
-  targetRegion
-} from '../../../region/wotr-region-actions';
+import type { WotrRegionChoose } from '../../../region/wotr-region-actions';
+import { targetRegion } from '../../../region/wotr-region-actions';
 import type { WotrRegionId } from '../../../region/wotr-region-models';
 import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import { WotrRegionStore } from '../../../region/wotr-region-store';
@@ -85,20 +62,20 @@ import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
 import type {
   WotrCardDiscardFromTable,
-  WotrCardPlayOnTable} from '../../wotr-card-actions';
+  WotrCardPlayOnTable,
+} from '../../wotr-card-actions';
 import {
   discardCardFromTableById,
   discardRandomCardById,
   playCardOnTable,
-  playCardOnTableId
+  playCardOnTableId,
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
 import type {
   WotrCardId,
-  WotrShadowCharacterCardId} from '../../wotr-card-models';
-import {
-  isShadowCharacterCard
+  WotrShadowCharacterCardId,
 } from '../../wotr-card-models';
+import { isShadowCharacterCard } from '../../wotr-card-models';
 import type { WotrEventCard } from '../wotr-cards';
 import { activateTableCard } from '../wotr-cards';
 
@@ -130,28 +107,28 @@ export class WotrShadowCharacterCards {
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case 'scha01':
         return {
-          play: async (ui) => [addHuntTile('rds')],
+          play: () => [addHuntTile('rds')],
         };
       // The Ring is Mine!
       // The "The Ring is Mine!" special Hunt tile [eye, reveal, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case 'scha02':
         return {
-          play: async (ui) => [addHuntTile('rers')],
+          play: () => [addHuntTile('rers')],
         };
       // On, On They Went
       // The "On, On They Went" special Hunt tile [3, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case 'scha03':
         return {
-          play: async (ui) => [addHuntTile('r3s')],
+          play: () => [addHuntTile('r3s')],
         };
       // Give it to Uss!
       // The "Give it to Uss!" special Hunt tile [1, reveal, stop] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case 'scha04':
         return {
-          play: async (ui) => [addHuntTile('r1rs')],
+          play: () => [addHuntTile('r1rs')],
         };
       // Orc Patrol
       // Play if the Fellowship is not in a region containing a Free Peoples Settlement.
@@ -253,8 +230,8 @@ export class WotrShadowCharacterCards {
       case 'scha08':
         return {
           canBePlayed: () => !this.q.fellowship.isInFreePeoplesSettlement(),
-          play: async (ui) => [await ui.battleUi.rollCombatDice(3, 'shadow')],
-          effect: async (params) => {
+          play: async (ui) => [await ui.battleUi.rollCombatDice(3)],
+          effect: (params) => {
             const action = assertAction<WotrCombatRoll>(
               params.story,
               'combat-roll',
@@ -277,7 +254,7 @@ export class WotrShadowCharacterCards {
         return {
           canBePlayed: () => this.q.fellowship.progress() >= 1,
           play: async (ui) => ui.characterUi.moveAnyOrAllNazgul(),
-          effect: async (params) => {
+          effect: async () => {
             const regionId = this.q.fellowship.regionId();
             if (this.q.region(regionId).hasNazgul()) {
               await this.huntFlow.revealFellowship();
@@ -360,7 +337,7 @@ export class WotrShadowCharacterCards {
       case 'scha12':
         return {
           canBePlayed: () => this.q.fellowship.isRevealed(),
-          play: async (ui) => {
+          play: () => {
             const nCorruption = this.q.fellowship.corruption() <= 3 ? 2 : 1;
             return [corruptFellowship(nCorruption)];
           },
@@ -373,7 +350,7 @@ export class WotrShadowCharacterCards {
       case 'scha13':
         return {
           canBePlayed: () => this.q.fellowship.isRevealed(),
-          play: async (ui) => {
+          play: () => {
             if (this.q.fellowship.guideIs('gollum')) {
               return [corruptFellowship(1)];
             } else {
@@ -444,7 +421,7 @@ export class WotrShadowCharacterCards {
       case 'scha15':
         return {
           canBePlayed: () => true,
-          play: async (ui) => [playCardOnTableId('scha15')],
+          play: () => [playCardOnTableId('scha15')],
           onTableAbilities: () => {
             const casualtyAbility: WotrUiAbility<WotrAfterCharacterElimination> =
               {
@@ -515,7 +492,7 @@ export class WotrShadowCharacterCards {
             const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> =
               {
                 modifier: this.fellowshipModifiers.afterDeclaration,
-                handler: async (params) => {
+                handler: (params) => {
                   const region = this.q.region(params.toRegionId);
                   if (!region.isFreePeoplesRegion()) return;
                   if (!region.isCity() && !region.isStronghold()) return;
@@ -531,7 +508,7 @@ export class WotrShadowCharacterCards {
       // You must discard this card from the table immediately if the Fellowship is declared in an unconquered Free Peoples City or Stronghold.
       case 'scha16':
         return {
-          play: async (ui) => [playCardOnTable('Flocks of Crebain')],
+          play: () => [playCardOnTable('Flocks of Crebain')],
           onTableAbilities: () => {
             const huntAbility: WotrUiAbility<WotrBeforeHuntRoll> = {
               modifier: this.huntModifiers.beforeHuntRoll,
@@ -545,12 +522,12 @@ export class WotrShadowCharacterCards {
                 modifiers.rollModifiers.push(1);
                 modifiers.reRollModifiers.push(1);
               },
-              play: async (ui) => [discardCardFromTableById('scha16')],
+              play: () => [discardCardFromTableById('scha16')],
             };
             const discardAbility: WotrAbility<WotrAfterFellowshipDeclaration> =
               {
                 modifier: this.fellowshipModifiers.afterDeclaration,
-                handler: async (params) => {
+                handler: (params) => {
                   const region = this.q.region(params.toRegionId);
                   if (!region.isFreePeoplesRegion()) return;
                   if (!region.isCity() && !region.isStronghold()) return;
@@ -570,7 +547,7 @@ export class WotrShadowCharacterCards {
       // Or, you may discard "Balrog of Moria" to use its Combat card effect as if you were playing the card from your hand.
       case 'scha17':
         return {
-          play: async (ui) => [playCardOnTable('Balrog of Moria')],
+          play: () => [playCardOnTable('Balrog of Moria')],
           onTableAbilities: () => {
             const moveHandler: (
               params: WotrFellowshipMove,
@@ -627,7 +604,7 @@ export class WotrShadowCharacterCards {
               };
             const combatAbility: WotrAbility<WotrTableCombatCardGetter> = {
               modifier: this.battleModifiers.tableCombatCardGetter,
-              handler: (front) => ['scha17'],
+              handler: () => ['scha17'],
             };
             return [afterDeclarationAbility, afterRevealAbility, combatAbility];
           },
@@ -686,10 +663,7 @@ export class WotrShadowCharacterCards {
             );
             const shadowArmy = this.q.region(sourceRegionId).army('shadow')!;
             const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
-            const roll = await ui.battleUi.rollCombatDice(
-              Math.min(nNazgul, 5),
-              'shadow',
-            );
+            const roll = await ui.battleUi.rollCombatDice(Math.min(nNazgul, 5));
             return [targetRegion(targetRegionId), roll];
           },
           effect: async (params) => {
@@ -769,7 +743,7 @@ export class WotrShadowCharacterCards {
       case 'scha21':
         return {
           canBePlayed: () => this.q.saruman.isInPlay(),
-          play: async (ui) => [playCardOnTableId('scha21')],
+          play: () => [playCardOnTableId('scha21')],
           onTableAbilities: () => {
             let playedCard: WotrCardId | null = null;
             const drawAbility: WotrUiAbility<WotrAfterActionDieCardResolution> =
@@ -809,7 +783,7 @@ export class WotrShadowCharacterCards {
                     if (dieResult === 'will-of-the-west') return true;
                     return this.q.freePeoples.hasElvenRings();
                   },
-                  actions: async (params, ui) => {
+                  actions: async (_params, ui) => {
                     const actions: WotrAction[] = [
                       discardCardFromTableById('scha21'),
                     ];
@@ -841,7 +815,7 @@ export class WotrShadowCharacterCards {
       case 'scha22':
         return {
           canBePlayed: () => this.q.saruman.isInPlay(),
-          play: async (ui) => [playCardOnTableId('scha22')],
+          play: () => [playCardOnTableId('scha22')],
           onTableAbilities: () => {
             const cannotActivate: WotrAbility<WotrCanActivateNationModifier> = {
               modifier: this.nationModifiers.canActivateNationModifier,
@@ -869,7 +843,7 @@ export class WotrShadowCharacterCards {
             const discardForActivation: WotrAbility<WotrAfterNationActivation> =
               {
                 modifier: this.nationModifiers.afterNationActivation,
-                handler: (nationId, source) => {
+                handler: (nationId) => {
                   if (nationId === 'rohan') {
                     this.cardHandler.discardCardFromTableEffect('scha22');
                   }
@@ -878,7 +852,7 @@ export class WotrShadowCharacterCards {
             const discardForSarumanElimination: WotrAbility<WotrAfterCharacterElimination> =
               {
                 modifier: this.characterModifiers.afterCharacterElimination,
-                handler: async (params) => {
+                handler: (params) => {
                   if (params.characterId === 'saruman') {
                     this.cardHandler.discardCardFromTableEffect('scha22');
                   }
@@ -995,7 +969,7 @@ export class WotrShadowCharacterCards {
       case 'scha25km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // The West has Failed
       // Initiate a corruption attempt on a Sovereign in a region adjacent to,
@@ -1005,7 +979,7 @@ export class WotrShadowCharacterCards {
       case 'scha26km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
     }
   }

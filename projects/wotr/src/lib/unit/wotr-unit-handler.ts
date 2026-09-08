@@ -13,10 +13,9 @@ import { filterActions } from '../game/wotr-story-models';
 import { WotrNationHandler } from '../nation/wotr-nation-handler';
 import type {
   WotrGenericUnitType,
-  WotrNationId} from '../nation/wotr-nation-models';
-import {
-  frontOfNation,
+  WotrNationId,
 } from '../nation/wotr-nation-models';
+import { frontOfNation } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
 import type { WotrPlayer } from '../player/wotr-player';
 import { WotrRegionHandler } from '../region/wotr-region-handler';
@@ -55,42 +54,42 @@ export class WotrUnitHandler {
   private q = inject(WotrGameQuery);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrUnitAction> {
     return {
       'army-movement': (action, front) => this.moveArmy(action, front),
-      'nazgul-movement': (action, front) =>
+      'nazgul-movement': (action) =>
         this.moveNazgul(action.nNazgul, action.fromRegion, action.toRegion),
-      'regular-unit-recruitment': (action, front) =>
+      'regular-unit-recruitment': (action) =>
         this.recruitRegularUnit(action.quantity, action.nation, action.region),
-      'regular-unit-elimination': (action, front) =>
+      'regular-unit-elimination': (action) =>
         this.eliminateRegularUnit(
           action.quantity,
           action.nation,
           action.region,
         ),
-      'regular-unit-upgrade': (action, front) =>
+      'regular-unit-upgrade': (action) =>
         this.upgradeRegularUnits(action.quantity, action.nation, action.region),
-      'regular-unit-disband': (action, front) =>
+      'regular-unit-disband': (action) =>
         this.disbandRegularUnit(action.quantity, action.nation, action.region),
-      'elite-unit-recruitment': (action, front) =>
+      'elite-unit-recruitment': (action) =>
         this.recruitEliteUnit(action.quantity, action.nation, action.region),
-      'elite-unit-elimination': (action, front) =>
+      'elite-unit-elimination': (action) =>
         this.eliminateEliteUnit(action.quantity, action.nation, action.region),
-      'elite-unit-downgrade': (action, front) =>
+      'elite-unit-downgrade': (action) =>
         this.downgradeEliteUnits(action.quantity, action.nation, action.region),
-      'elite-unit-disband': (action, front) =>
+      'elite-unit-disband': (action) =>
         this.disbandEliteUnit(action.quantity, action.nation, action.region),
-      'leader-recruitment': (action, front) =>
+      'leader-recruitment': (action) =>
         this.recruitLeader(action.quantity, action.nation, action.region),
-      'leader-elimination': (action, front) =>
+      'leader-elimination': (action) =>
         this.eliminateLeader(action.quantity, action.nation, action.region),
-      'nazgul-recruitment': (action, front) =>
+      'nazgul-recruitment': (action) =>
         this.recruitNazgul(action.quantity, action.region),
-      'nazgul-elimination': (action, front) =>
+      'nazgul-elimination': (action) =>
         this.eliminateNazgul(action.quantity, action.region),
     };
   }
@@ -108,6 +107,7 @@ export class WotrUnitHandler {
     this.regionStore.moveArmy(
       movement.fromRegion,
       movement.toRegion,
+      frontId,
       movement.leftUnits,
     );
     this.nationHandler.checkNationActivationByArmyMovement(
@@ -485,7 +485,7 @@ export class WotrUnitHandler {
   }
 
   async chooseArmyCasualties(
-    nTotalHits: number | 0,
+    nTotalHits: number,
     army: WotrArmy,
     regionId: WotrRegionId,
     cardId: WotrCardId | null,

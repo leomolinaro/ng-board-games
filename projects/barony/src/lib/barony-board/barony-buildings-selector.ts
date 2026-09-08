@@ -1,4 +1,3 @@
-import type { OnChanges } from '@angular/core';
 import { Component, input, output } from '@angular/core';
 import type { BaronyBuilding, BaronyColor } from '../barony-models';
 
@@ -39,14 +38,10 @@ import type { BaronyBuilding, BaronyColor } from '../barony-models';
   `,
   imports: [],
 })
-export class BaronyBuildingsSelector implements OnChanges {
-  constructor() {}
-
+export class BaronyBuildingsSelector {
   readonly buildings = input.required<BaronyBuilding[]>();
   readonly player = input.required<BaronyColor>();
   readonly buildingClick = output<BaronyBuilding>();
-
-  ngOnChanges(): void {}
 
   onBuildingClick(building: BaronyBuilding) {
     this.buildingClick.emit(building);

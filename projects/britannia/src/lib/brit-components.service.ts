@@ -108,13 +108,17 @@ export class BritComponents {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   readonly AREA: Record<BritAreaId, BritArea> = {} as any;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   readonly NATION: Record<BritNationId, BritNation> = {} as any;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   readonly ROUND: Record<BritRoundId, BritRound> = {} as any;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   readonly LEADER: Record<BritLeaderId, BritLeader> = {} as any;
 
   areasToMap<V>(getValue: (areaId: BritAreaId) => V): Record<BritAreaId, V> {
-    const map: Record<BritAreaId, V> = {} as any;
+    const map: Record<BritAreaId, V> = {} as never;
     this.AREA_IDS.forEach((areaId) => (map[areaId] = getValue(areaId)));
     return map;
   }
@@ -148,7 +152,7 @@ export class BritComponents {
   nationsToMap<V>(
     getValue: (nationId: BritNationId) => V,
   ): Record<BritNationId, V> {
-    const map: Record<BritNationId, V> = {} as any;
+    const map: Record<BritNationId, V> = {} as never;
     this.NATION_IDS.forEach((nationId) => (map[nationId] = getValue(nationId)));
     return map;
   }
@@ -967,18 +971,16 @@ class BritEventBuilder {
   revolt(infantries: number, cavalries?: number) {
     this._revolt = {
       infantries,
-      cavalries: cavalries || 0,
+      cavalries: cavalries ?? 0,
     };
     return this;
   }
   invasion(area: BritSeaAreaId, infantries: number, cavalries?: number) {
-    if (!this._invasions) {
-      this._invasions = [];
-    }
+    this._invasions ??= [];
     this._invasions.push({
       area,
       infantries,
-      cavalries: cavalries || 0,
+      cavalries: cavalries ?? 0,
     });
     return this;
   }

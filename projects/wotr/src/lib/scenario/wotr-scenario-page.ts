@@ -41,7 +41,7 @@ export class WotrScenarioPage {
       const setup = scenarioDef.setup;
       if (setup)
         gameConfig.setup = (rules) =>
-          setup(new WotrSetupBuilder(options || DEFAULT_OPTIONS, rules));
+          setup(new WotrSetupBuilder(options ?? DEFAULT_OPTIONS, rules));
       return Promise.resolve(gameConfig);
     },
   }).value;

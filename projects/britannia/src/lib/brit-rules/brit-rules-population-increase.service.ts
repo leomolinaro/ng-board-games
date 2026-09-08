@@ -101,7 +101,7 @@ export class BritRulesPopulationIncreaseService {
     } else {
       const lands = this.getOccupiedLandsByNation(nationId, game);
       const nation = game.getNation(nationId);
-      let populationPoints = nation.population || 0;
+      let populationPoints = nation.population ?? 0;
       let onlyDifficultTerrains = true;
       for (const land of lands) {
         if (land.difficultTerrain) {

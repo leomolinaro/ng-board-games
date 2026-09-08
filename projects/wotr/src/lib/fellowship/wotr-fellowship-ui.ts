@@ -7,22 +7,18 @@ import type { WotrAction } from '../commons/wotr-action-models';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import type { WotrUiChoice, WotrUiOption } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
-import type {
-  WotrFellowshipGuide} from './wotr-fellowship-actions';
+import type { WotrFellowshipGuide } from './wotr-fellowship-actions';
 import {
   changeGuide,
   declareFellowship,
   healFellowship,
   hideFellowship,
   moveFelloswhip,
-  separateCompanions
+  separateCompanions,
 } from './wotr-fellowship-actions';
 import { WotrFellowshipHandler } from './wotr-fellowship-handler';
-import type {
-  WotrSeparateCompanionsOptions} from './wotr-fellowship-rules';
-import {
-  WotrFellowshipRules
-} from './wotr-fellowship-rules';
+import type { WotrSeparateCompanionsOptions } from './wotr-fellowship-rules';
+import { WotrFellowshipRules } from './wotr-fellowship-rules';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 @Injectable()
@@ -67,7 +63,7 @@ export class WotrFellowshipUi {
             'Choose a region to declare the fellowship',
             validRegions,
           );
-          this.fellowshipHandler.declare(region);
+          await this.fellowshipHandler.declare(region);
           actions.push(declareFellowship(region));
           break;
         }
@@ -135,7 +131,7 @@ export class WotrFellowshipUi {
         targetRegions,
       );
       actions.push(separateCompanions(targetRegion, ...companions));
-      this.fellowshipHandler.separateCompanions(companions, targetRegion);
+      await this.fellowshipHandler.separateCompanions(companions, targetRegion);
     }
 
     if (companions.some((c) => this.fellowshipStore.guide() === c)) {
@@ -194,13 +190,13 @@ export class WotrFellowshipUi {
   progressChoice: WotrUiChoice = {
     label: () => 'Fellowship progress',
     isAvailable: () => !this.fellowshipStore.isRevealed(),
-    actions: async () => [moveFelloswhip()],
+    actions: () => [moveFelloswhip()],
   };
 
   hideFellowshipChoice: WotrUiChoice = {
     label: () => 'Hide the Fellowship',
     isAvailable: () => this.fellowshipStore.isRevealed(),
-    actions: async () => [hideFellowship()],
+    actions: () => [hideFellowship()],
   };
 
   separateCompanionsChoice: WotrUiChoice = {

@@ -7,7 +7,6 @@ import { BgReduxDevtools } from './lib/redux-devtools';
 
 export * from './lib/bg-transform.pipe';
 export * from './lib/ng.util';
-export * from './lib/rxjs.util';
 export * from './lib/ui-event';
 export {
   arrayUtil,

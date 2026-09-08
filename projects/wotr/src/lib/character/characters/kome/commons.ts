@@ -32,9 +32,7 @@ export abstract class SovereingFateOf implements WotrAbility<WotrBeforeCombatRou
 
   private combatRound: WotrCombatRound | null = null;
 
-  handler: WotrBeforeCombatRound = async (
-    combatRound: WotrCombatRound,
-  ): Promise<void> => {
+  handler: WotrBeforeCombatRound = (combatRound: WotrCombatRound): void => {
     const battle = this.battleStore.battle();
     if (!battle) throw new Error('No battle in progress');
     if (battle.region !== this.strongholdRegion) return;

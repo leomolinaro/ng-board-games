@@ -1,6 +1,4 @@
-import type { OnChanges } from '@angular/core';
-import { Component, ElementRef, inject, input } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
+import { Component, effect, ElementRef, inject, input } from '@angular/core';
 import type { BaronyLog } from '../barony-models';
 import { BaronyLogRow } from './barony-log-row';
 
@@ -24,18 +22,20 @@ import { BaronyLogRow } from './barony-log-row';
     `,
   ],
 })
-export class BaronyLogs implements OnChanges {
+export class BaronyLogs {
+  constructor() {
+    effect(() => this.scrollToBottom());
+  }
+
   private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly logs = input.required<BaronyLog[]>();
 
-  ngOnChanges(changes: SimpleChanges<BaronyLogs>) {
-    if (changes.logs) {
-      setTimeout(
-        () =>
-          (this.elementRef.nativeElement.scrollTop =
-            this.elementRef.nativeElement.scrollHeight),
-      );
-    }
+  private scrollToBottom() {
+    this.logs();
+    setTimeout(() => {
+      this.elementRef.nativeElement.scrollTop =
+        this.elementRef.nativeElement.scrollHeight;
+    });
   }
 }

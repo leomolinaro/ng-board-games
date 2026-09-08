@@ -116,10 +116,7 @@ export class BaronyPlayerAiService {
         });
       }
       case 'expedition': {
-        const validLands = baronyRules.getValidLandsForExpedition(
-          playerId,
-          this.game,
-        );
+        const validLands = baronyRules.getValidLandsForExpedition(this.game);
         const land = randomUtil.getRandomElement(validLands);
         return Promise.resolve({
           action: 'expedition',

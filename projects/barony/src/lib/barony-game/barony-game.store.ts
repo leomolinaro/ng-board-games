@@ -23,7 +23,7 @@ interface BaronyGameBox {
 
 interface BaronyGameState {
   gameId: string;
-  gameOwner: BgUser;
+  gameOwner: null | BgUser;
   players: {
     map: Partial<Record<BaronyColor, BaronyPlayer>>;
     ids: BaronyColor[];
@@ -43,7 +43,7 @@ export class BaronyGameStore extends signalStore(
   { protectedState: false },
   withState<BaronyGameState>({
     gameId: '',
-    gameOwner: null as any,
+    gameOwner: null,
     players: { map: {}, ids: [] },
     lands: { map: {}, coordinates: [] },
     gameBox: { removedPawns: [] },

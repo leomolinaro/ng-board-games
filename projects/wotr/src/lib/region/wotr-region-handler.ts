@@ -17,13 +17,13 @@ export class WotrRegionHandler {
   private regionModifiers = inject(WotrRegionModifiers);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrRegionAction> {
     return {
-      'region-choose': (action, front) => {
+      'region-choose': () => {
         /*empty*/
       },
     };

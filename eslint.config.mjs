@@ -3,6 +3,7 @@
 import js from "@eslint/js";
 // import sonarjs from "eslint-plugin-sonarjs";
 // import unicorn from "eslint-plugin-unicorn";
+import angular from "angular-eslint";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
@@ -34,8 +35,8 @@ export default tseslint.config(
       // Type-aware correctness rules
       tseslint.configs.recommendedTypeChecked,
 
-      // // Type-aware stylistic rules
-      // tseslint.configs.stylisticTypeChecked,
+      // Type-aware stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
       // // Modern JS/TS idioms
       // unicorn.configs["flat/recommended"],
@@ -114,32 +115,28 @@ export default tseslint.config(
   // ---------------------------------------------------------------------------
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
-
     extends: [tseslint.configs.disableTypeChecked],
   },
 
   // ---------------------------------------------------------------------------
   // Angular TypeScript
   // ---------------------------------------------------------------------------
-  // {
-  //   files: ["**/*.ts"],
-
-  //   extends: [angular.configs.tsRecommended],
-
-  //   processor: angular.processInlineTemplates,
-  // },
+  {
+    files: ["**/*.ts"],
+    extends: [angular.configs.tsRecommended],
+    processor: angular.processInlineTemplates,
+  },
 
   // ---------------------------------------------------------------------------
   // Angular templates
   // ---------------------------------------------------------------------------
-  // {
-  //   files: ["**/*.html"],
-
-  //   extends: [
-  //     angular.configs.templateRecommended,
-  //     angular.configs.templateAccessibility,
-  //   ],
-  // },
+  {
+    files: ["**/*.html"],
+    extends: [
+      angular.configs.templateRecommended,
+      // angular.configs.templateAccessibility,
+    ],
+  },
 
   // ---------------------------------------------------------------------------
   // Tests
@@ -154,9 +151,7 @@ export default tseslint.config(
 
     rules: {
       // Tests are intentionally less strict in some respects.
-
       "@typescript-eslint/no-explicit-any": "off",
-
       "sonarjs/no-duplicate-string": "off",
     },
   },

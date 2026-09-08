@@ -3,6 +3,7 @@ import type {
   WotrActionToken,
 } from '../action-die/wotr-action-die-models';
 import type { WotrCardId } from '../card/wotr-card-models';
+import type { WotrCharacterId } from '../character/wotr-character-models';
 import type { WotrAction } from '../commons/wotr-action-models';
 import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 import type { WotrPhase } from '../game-turn/wotr-phase-models';
@@ -124,6 +125,10 @@ export interface WotrLogNationFragment {
   type: 'nation';
   nation: WotrNationId;
 }
+export interface WotrLogCharacterFragment {
+  type: 'character';
+  character: WotrCharacterId;
+}
 export interface WotrLogDieFragment {
   type: 'die';
   die: WotrActionDie;
@@ -140,11 +145,12 @@ export interface WotrLogHuntTileFragment {
 }
 
 export type WotrLogFragment =
-  | WotrLogStringFragment
+  | string
   | WotrLogCardFragment
   | WotrLogPlayerFragment
   | WotrLogRegionFragment
   | WotrLogNationFragment
+  | WotrLogCharacterFragment
   | WotrLogDieFragment
   | WotrLogTokenFragment
   | WotrLogHuntTileFragment;

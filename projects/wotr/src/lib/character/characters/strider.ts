@@ -42,12 +42,7 @@ class StriderHideChoice implements WotrUiCharacterChoice {
   isAvailable(): boolean {
     return this.fellowshipStore.isRevealed();
   }
-  async actions(): Promise<WotrAction[]> {
+  actions(): WotrAction[] {
     return [hideFellowship()];
   }
-}
-
-export class HeirToIsildurAbility implements WotrAbility<unknown> {
-  public modifier = null as any;
-  public handler = null;
 }

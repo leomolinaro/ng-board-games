@@ -1,15 +1,14 @@
 import { booleanAttribute, Component, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiCheckbox, TuiLabel } from '@taiga-ui/core';
 import type {
   WotrExpansion,
   WotrExpansionId,
-  WotrVariantId} from './wotr-expansion-models';
-import {
-  VARIANTS
+  WotrVariantId,
 } from './wotr-expansion-models';
+import { VARIANTS } from './wotr-expansion-models';
 
 @Component({
   selector: 'wotr-variant-options-form',
@@ -43,7 +42,7 @@ export class WotrVariantOptionsForm {
     boolean,
     WotrExpansionId[]
   > = (option, expansions) =>
-    option.requires?.some((requiredId) => !expansions.includes(requiredId)) ||
+    option.requires?.some((requiredId) => !expansions.includes(requiredId)) ??
     false;
 
   protected toggleVariant(optionId: WotrVariantId, checked: boolean): void {

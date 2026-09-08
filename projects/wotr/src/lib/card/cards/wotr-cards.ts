@@ -8,14 +8,12 @@ import { WotrGameStore } from '../../game/wotr-game-store';
 import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
 import type { WotrDieCardStory, WotrStory } from '../../game/wotr-story-models';
 import type { WotrPlayer } from '../../player/wotr-player';
-import type {
-  WotrCardId,
-  WotrCardType} from '../wotr-card-models';
+import type { WotrCardId, WotrCardType } from '../wotr-card-models';
 import {
   getCard,
   isFreePeopleCharacterCard,
   isFreePeopleStrategyCard,
-  isShadowCharacterCard
+  isShadowCharacterCard,
 } from '../wotr-card-models';
 import { WotrFreePeoplesCharacterCards } from './free-peoples-character-cards/wotr-free-peoples-character-cards';
 import { WotrFreePeoplesStrategyCards } from './free-peoples-strategy-cards/wotr-free-peoples-strategy-cards';
@@ -24,8 +22,8 @@ import { WotrShadowStrategyCards } from './shadow-strategy-cards/wotr-shadow-str
 
 export interface WotrEventCard {
   canBePlayed?: () => boolean;
-  play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
-  effect?: (params: WotrCardParams) => Promise<void>;
+  play: (ui: WotrGameUiContext) => WotrAction[] | Promise<WotrAction[]>;
+  effect?: (params: WotrCardParams) => void | Promise<void>;
   onTableAbilities?: () => WotrAbility[];
   onBattleAbilities?: () => WotrAbility[];
 }
@@ -56,7 +54,7 @@ export class WotrCards {
   private frontStore = inject(WotrFrontStore);
 
   private getCard(cardId: WotrCardId): WotrEventCard {
-    if (!this.cards[cardId]) this.cards[cardId] = this.createCard(cardId);
+    this.cards[cardId] ??= this.createCard(cardId);
     return this.cards[cardId];
   }
 
@@ -139,12 +137,15 @@ export class WotrCards {
     }
   }
 
-  isPlayableCard(cardId: WotrCardId, frontId: WotrFrontId) {
+  isPlayableCard(cardId: WotrCardId) {
     const card = this.getCard(cardId);
     return card.canBePlayed ? card.canBePlayed() : true;
   }
 
-  playCard(cardId: WotrCardId, ui: WotrGameUiContext): Promise<WotrAction[]> {
+  playCard(
+    cardId: WotrCardId,
+    ui: WotrGameUiContext,
+  ): WotrAction[] | Promise<WotrAction[]> {
     const card = this.getCard(cardId);
     return card.play(ui);
   }
@@ -158,7 +159,7 @@ export class WotrCards {
       .handCards.filter((cardId) =>
         cardTypes === 'any' ? true : cardTypes.includes(getCard(cardId).type),
       )
-      .filter((cardId) => this.isPlayableCard(cardId, frontId));
+      .filter((cardId) => this.isPlayableCard(cardId));
   }
 
   async triggerCardEffect(story: WotrDieCardStory, front: WotrFrontId) {

@@ -3,7 +3,10 @@ import { WotrModifier } from '../commons/wotr-modifier';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrUiChoice } from '../game/wotr-game-ui';
 import type { WotrDieCardStory, WotrDieStory } from '../game/wotr-story-models';
-import type { WotrActionDie, WotrActionDieResult } from './wotr-action-die-models';
+import type {
+  WotrActionDie,
+  WotrActionDieResult,
+} from './wotr-action-die-models';
 
 export type WotrActionDieChoiceModifier = (
   params: WotrActionDieChoiceParams,
@@ -18,7 +21,7 @@ export interface WotrActionDieChoiceParams {
 export type WotrAfterActionDieResolution = (
   story: WotrDieStory,
   frontId: WotrFrontId,
-) => Promise<void>;
+) => void | Promise<void>;
 
 export type WotrAfterActionDieCardResolution = (
   story: WotrDieCardStory,
@@ -52,11 +55,9 @@ export class WotrActionDieModifiers {
     story: WotrDieStory,
     frontId: WotrFrontId,
   ): Promise<void> {
-    await Promise.all(
-      this.afterActionDieResolution
-        .get()
-        .map((handler) => handler(story, frontId)),
-    );
+    for (const handler of this.afterActionDieResolution.get()) {
+      await handler(story, frontId);
+    }
   }
 
   public readonly afterActionDieCardResolution =

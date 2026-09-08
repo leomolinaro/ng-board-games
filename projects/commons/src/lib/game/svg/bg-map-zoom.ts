@@ -37,7 +37,12 @@ export class BgSvg {
   }
 }
 
-@Directive({ selector: '[bgMapZoom]' })
+@Directive({
+  selector: '[bgMapZoom]',
+  host: {
+    '(mousewheel)': 'onMouseWheel($event)',
+  },
+})
 export class BgMapZoom implements OnInit {
   private bgSvg = inject(BgSvg);
   private cd = inject(ChangeDetectorRef);
@@ -70,11 +75,11 @@ export class BgMapZoom implements OnInit {
   }
 
   private parseConfig() {
-    this.scale = this.config().scale || 1;
-    this.translateX = this.config().translateX || 0;
-    this.translateY = this.config().translateY || 0;
-    this.zoomStep = this.config().zoomStep || 0.1;
-    this.translateStep = this.config().translateStep || 15;
+    this.scale = this.config().scale ?? 1;
+    this.translateX = this.config().translateX ?? 0;
+    this.translateY = this.config().translateY ?? 0;
+    this.zoomStep = this.config().zoomStep ?? 0.1;
+    this.translateStep = this.config().translateStep ?? 15;
   }
 
   @HostListener('mousedown', ['$event'])
@@ -221,14 +226,13 @@ export class BgMapZoom implements OnInit {
     this.grabbingY = null;
   }
 
-  @HostListener('mousewheel', ['$event'])
-  onMouseWheel(event: MouseEvent | any) {
-    /* if (event.ctrlKey) { */
+  onMouseWheel(event: Event) {
+    const wEvent = event as WheelEvent;
     event.preventDefault();
-    const zoom = event.deltaY > 0 ? 1 - this.zoomStep : 1 + this.zoomStep;
+    const zoom = wEvent.deltaY > 0 ? 1 - this.zoomStep : 1 + this.zoomStep;
     const pt = this.bgSvg.createSVGPoint();
-    pt.x = event.clientX;
-    pt.y = event.clientY;
+    pt.x = wEvent.clientX;
+    pt.y = wEvent.clientY;
     const zoomOrigin = pt.matrixTransform(this.bgSvg.getScreenCTM()?.inverse());
     this.refreshTransform({
       zoom: zoom,
@@ -238,13 +242,6 @@ export class BgMapZoom implements OnInit {
       yt: 0,
       reset: false,
     });
-    /* } else if (event.shiftKey) {
-      event.preventDefault ();
-      this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: this.translateStep * (event.deltaY > 0 ? -1 : 1), yt: 0, reset: false });
-    } else {
-      event.preventDefault ();
-      this.refreshTransform ({ zoom: 1, x0: 0, y0: 0, xt: 0, yt: this.translateStep * (event.deltaY > 0 ? -1 : 1), reset: false });
-    }*/
   }
 
   // @HostListener ("keydown", ["$event"]) TODO

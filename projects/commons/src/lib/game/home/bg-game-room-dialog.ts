@@ -1,4 +1,4 @@
-import type { AfterViewInit, OnDestroy, Type } from '@angular/core';
+import type { AfterViewInit, Type } from '@angular/core';
 import {
   Component,
   ViewContainerRef,
@@ -9,16 +9,9 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { injectDialogContext } from '@leobg/commons';
-import {
-  ConcatingEvent,
-  ExhaustingEvent,
-  UntilDestroy,
-} from '@leobg/commons/utils';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiForm } from '@taiga-ui/layout';
 import type { Observable } from 'rxjs';
-import { of } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { BgTransformPipe } from '../../../../utils/src/lib/bg-transform.pipe';
 import { BgAuthService } from '../../authentication';
 import { BgIfUserDirective } from '../../authentication/bg-if-user-of.directive';
@@ -30,11 +23,11 @@ import { BgPlayerForm } from './bg-player-form';
 
 export interface BgRoomDialogInput<Pid extends string, Opt = unknown> {
   protoGame: BgProtoGame;
-  createGame$: (
+  createGame: (
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<Pid>[],
-  ) => Observable<void>;
-  deleteGame$: (gameId: string) => Observable<void>;
+  ) => Promise<void>;
+  deleteGame: (gameId: string) => Promise<void>;
   playerIdToCssClass: (id: Pid) => string;
   optionsComponent?: Type<BgGameOptionsComponent<Opt>>;
 }
@@ -102,10 +95,10 @@ export interface BgRoomDialogOutput {
     }
   `,
 })
-@UntilDestroy
-export class BgGameRoomDialog<Pid extends string, Opt = unknown>
-  implements AfterViewInit, OnDestroy
-{
+export class BgGameRoomDialog<
+  Pid extends string,
+  Opt = unknown,
+> implements AfterViewInit {
   constructor() {
     effect(() => this.autoStartGame());
   }
@@ -129,7 +122,7 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
   protected optionsComponent = this.context.data.optionsComponent;
   protected isOwner = computed(() => {
     const user = this.authService.getUser();
-    return user && this.protoGame().owner.id === user.id;
+    return this.protoGame().owner.id === user?.id;
   });
 
   protected optionsRef = viewChild('options', { read: ViewContainerRef });
@@ -176,8 +169,6 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
     }
   }
 
-  ngOnDestroy() {}
-
   ngAfterViewInit() {
     const optionsRef = this.optionsRef();
     if (this.optionsComponent && optionsRef) {
@@ -187,41 +178,34 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
         componentRef.setInput('options', this.context.data.protoGame.options);
       }
       const subscription = componentRef.instance.options.subscribe(
-        (options) => {
-          this.updateOptions(options);
-        },
+        (options) => void this.updateOptions(options),
       );
       componentRef.onDestroy(() => subscription.unsubscribe());
     }
   }
 
-  @ConcatingEvent()
   private updateOptions(options: Opt) {
-    return this.protoGameService.updateProtoGame$(
+    return this.protoGameService.updateProtoGame(
       { options: options },
       this.protoGame().id,
     );
   }
 
-  @ConcatingEvent()
   changePlayer(player: BgProtoPlayer<string>, playerId: string) {
-    return this.protoGameService.updateProtoPlayer$(
+    return this.protoGameService.updateProtoPlayer(
       player,
       playerId,
       this.protoGame().id,
     );
   }
 
-  @ExhaustingEvent()
-  startGame() {
+  async startGame() {
     if (this.protoGame().state === 'open') {
       const protoPlayers = this.players()!;
-      return this.context.data
-        .createGame$(this.protoGame(), protoPlayers)
-        .pipe(tap(() => this.closeDialog(true)));
+      await this.context.data.createGame(this.protoGame(), protoPlayers);
+      this.closeDialog(true);
     } else {
       this.closeDialog(true);
-      return of(void 0);
     }
   }
 
@@ -232,10 +216,8 @@ export class BgGameRoomDialog<Pid extends string, Opt = unknown>
     });
   }
 
-  @ExhaustingEvent()
-  deleteGame() {
-    return this.context.data
-      .deleteGame$(this.protoGame().id)
-      .pipe(tap(() => this.closeDialog(false)));
+  async deleteGame() {
+    await this.context.data.deleteGame(this.protoGame().id);
+    this.closeDialog(false);
   }
 }

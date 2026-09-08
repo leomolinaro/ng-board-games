@@ -9,5 +9,5 @@ export interface WotrAbility<H = unknown> {
 }
 
 export interface WotrUiAbility<H = unknown> extends WotrAbility<H> {
-  play: (ui: WotrGameUiContext) => Promise<WotrAction[]>;
+  play: (ui: WotrGameUiContext) => WotrAction[] | Promise<WotrAction[]>;
 }

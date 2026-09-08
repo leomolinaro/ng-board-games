@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { immutableUtil, randomUtil } from '@leobg/commons/utils';
-import type { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import type {
+  WotrRegion,
+  WotrRegionId,
+} from '../../../region/wotr-region-models';
 import type { WotrMapPoint, WotrRegionSlots } from './wotr-map.service';
 
 interface WotrRegionPoints {
@@ -37,10 +40,9 @@ export class WotrMapSlotsGenerator {
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
   ): WotrRegionSlots {
-    const areaSlots: Record<
-      WotrRegionId,
-      Record<number, WotrMapPoint[]>
-    > = {} as any;
+    const areaSlots: Partial<
+      Record<WotrRegionId, Record<number, WotrMapPoint[]>>
+    > = {};
     const regionPointsById = this.generateRegionPoints(
       regions,
       xMax,
@@ -51,6 +53,8 @@ export class WotrMapSlotsGenerator {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       const regionSlots: Record<number, WotrMapPoint[]> = {};
+      if (!regionPoints)
+        throw new Error(`Region points not found for region ${region.id}`);
       for (let i = 1; i <= MAX_SLOTS; i++) {
         const slots = this.generateRegionSlots(i, regionPoints, region.id);
         regionSlots[i] = slots;
@@ -58,7 +62,7 @@ export class WotrMapSlotsGenerator {
       areaSlots[region.id] = regionSlots;
     }
 
-    return areaSlots;
+    return areaSlots as WotrRegionSlots;
   }
 
   private generateRegionPoints(
@@ -67,7 +71,8 @@ export class WotrMapSlotsGenerator {
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
   ) {
-    const regionPointsById: Record<WotrRegionId, WotrRegionPoints> = {} as any;
+    const regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>> =
+      {};
     const regionPointByYByX: Record<
       number,
       Record<number, WotrMapRegionPoint>
@@ -107,9 +112,10 @@ export class WotrMapSlotsGenerator {
     // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
-      if (regionPoints.innerPoints.length < MAX_SLOTS) {
+      if (!regionPoints)
+        throw new Error(`Region points not found for region ${region.id}`);
+      if (regionPoints.innerPoints.length < MAX_SLOTS)
         console.log(region, regionPoints);
-      }
       const points = regionPoints.innerPoints;
       const outerPoints: WotrMapPoint[] = [];
       const foundOuterPoints: Record<string, boolean> = {};
@@ -149,6 +155,8 @@ export class WotrMapSlotsGenerator {
     // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
+      if (!regionPoints)
+        throw new Error(`Region points not found for region ${region.id}`);
       for (const innerPoint of regionPoints.innerPoints) {
         let cenralEnergy = 0;
         for (const outerBorderPoint of regionPoints.outerBorderPoints) {

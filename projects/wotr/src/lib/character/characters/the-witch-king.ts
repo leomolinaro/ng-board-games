@@ -66,8 +66,8 @@ export class TheWitchKing extends WotrPlayableCharacterCard {
     if (!region.army) return false;
     if (region.army.front !== 'shadow') return false;
     return (
-      region.army.regulars?.some((u) => u.nation === 'sauron') ||
-      region.army.elites?.some((c) => c.nation === 'sauron') ||
+      region.army.regulars?.some((u) => u.nation === 'sauron') ??
+      region.army.elites?.some((c) => c.nation === 'sauron') ??
       false
     );
   }

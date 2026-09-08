@@ -108,7 +108,7 @@ export class LordOfTheBats implements WotrUiAbility<WotrBeforeCombatCardRevealin
     }
   };
 
-  async play() {
+  play() {
     const combatCard = this.round?.shadow.combatCard;
     if (!combatCard) throw new Error('No combat card to forfeit.');
     return [

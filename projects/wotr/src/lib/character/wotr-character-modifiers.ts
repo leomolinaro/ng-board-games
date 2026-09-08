@@ -12,10 +12,10 @@ export type WotrBeforeCharacterElimination = (
 ) => Promise<boolean>;
 export type WotrAfterCharacterElimination = (
   params: WotrCharacterEliminationParams,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrAfterCompanionLeavingTheFellowship = (
   companionId: WotrCompanionId,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrCharacterMovementLevelModifier = (
   movingCharacters: WotrCharacterId[],
   originalLevel: number,
@@ -40,9 +40,9 @@ export class WotrCharacterModifiers {
   public async onAfterCharacterElimination(
     params: WotrCharacterEliminationParams,
   ): Promise<void> {
-    await Promise.all(
-      this.afterCharacterElimination.get().map((handler) => handler(params)),
-    );
+    for (const handler of this.afterCharacterElimination.get()) {
+      await handler(params);
+    }
   }
 
   public readonly afterCompanionLeavingTheFellowship =
@@ -50,11 +50,9 @@ export class WotrCharacterModifiers {
   public async onAfterCompanionLeavingTheFellowship(
     companionId: WotrCompanionId,
   ): Promise<void> {
-    await Promise.all(
-      this.afterCompanionLeavingTheFellowship
-        .get()
-        .map((handler) => handler(companionId)),
-    );
+    for (const handler of this.afterCompanionLeavingTheFellowship.get()) {
+      await handler(companionId);
+    }
   }
 
   public readonly characterMovementLevelModifier =

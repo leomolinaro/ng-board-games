@@ -10,8 +10,6 @@ import type { BritAreaUnit } from './brit-game-state.models';
   providedIn: 'root',
 })
 export class BritAssetsService {
-  constructor() {}
-
   getNationIconImageSource(nationId: BritNationId) {
     return `assets/britannia/population-markers/${nationId}.png`;
   }

@@ -5,8 +5,6 @@ import type { BritSetup } from '../brit-game-state.models';
   providedIn: 'root',
 })
 export class BritRulesSetupService {
-  constructor() {}
-
   getGameSetup(): BritSetup {
     return {
       areas: {

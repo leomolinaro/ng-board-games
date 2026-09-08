@@ -1,14 +1,10 @@
 import { booleanAttribute, Component, input, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiCheckbox, TuiLabel } from '@taiga-ui/core';
-import type {
-  WotrExpansion,
-  WotrExpansionId} from './wotr-expansion-models';
-import {
-  EXPANSIONS
-} from './wotr-expansion-models';
+import type { WotrExpansion, WotrExpansionId } from './wotr-expansion-models';
+import { EXPANSIONS } from './wotr-expansion-models';
 
 @Component({
   selector: 'wotr-expansion-options-form',
@@ -41,7 +37,7 @@ export class WotrExpansionOptionsForm {
     boolean,
     WotrExpansionId[]
   > = (option, expansions) =>
-    option.requires?.some((requiredId) => !expansions.includes(requiredId)) ||
+    option.requires?.some((requiredId) => !expansions.includes(requiredId)) ??
     false;
 
   protected toggleExpansion(optionId: WotrExpansionId, checked: boolean): void {

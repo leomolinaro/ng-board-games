@@ -4,11 +4,8 @@ import { BgDialogService } from '@leobg/commons';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import type { WotrCardId } from '../card/wotr-card-models';
 import { isFreePeoplesCard } from '../card/wotr-card-models';
-import type {
-  WotrCardsDialogData} from '../card/wotr-cards-dialog';
-import {
-  WotrCardsDialog
-} from '../card/wotr-cards-dialog';
+import type { WotrCardsDialogData } from '../card/wotr-cards-dialog';
+import { WotrCardsDialog } from '../card/wotr-cards-dialog';
 import type { WotrFront } from './wotr-front-models';
 
 interface WotrTableCardNode {
@@ -78,19 +75,17 @@ export class WotrTableCardsComponent {
 
   protected openCardsDialog(cardId: WotrCardId) {
     const isFreePeoples = isFreePeoplesCard(cardId);
-    this.dialogs
-      .open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
-        data: {
-          focusedCardId: cardId,
-          cardIds: isFreePeoples
-            ? this.freePeoples().tableCards
-            : this.shadow().tableCards,
-          selectableCards: null,
-        },
-        size: 'l',
-        closable: false,
-        appearance: 'wotr-cards-dialog',
-      })
-      .then();
+    void this.dialogs.open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
+      data: {
+        focusedCardId: cardId,
+        cardIds: isFreePeoples
+          ? this.freePeoples().tableCards
+          : this.shadow().tableCards,
+        selectableCards: null,
+      },
+      size: 'l',
+      closable: false,
+      appearance: 'wotr-cards-dialog',
+    });
   }
 }

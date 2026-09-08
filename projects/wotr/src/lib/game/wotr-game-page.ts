@@ -1,22 +1,19 @@
-import type { OnDestroy, OnInit} from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, inject, input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BgAuthService, BgDialogService, type BgUser } from '@leobg/commons';
-import { UntilDestroy } from '@leobg/commons/utils';
 import { WotrActionDieHandler } from '../action-die/wotr-action-die-handler';
 import { WotrActionDieModifiers } from '../action-die/wotr-action-die-modifiers';
 import { actionDieProviders } from '../action-die/wotr-action-die.providers';
 import { WotrBattleHandler } from '../battle/wotr-battle-handler';
 import { WotrBattleModifiers } from '../battle/wotr-battle-modifiers';
 import { battleProviders } from '../battle/wotr-battle.providers';
-import { WotrCards } from '../card/cards/wotr-cards';
 import { WotrCardHandler } from '../card/wotr-card-handler';
 import { WotrCardStoryHandler } from '../card/wotr-card-story-handler';
 import { cardProviders } from '../card/wotr-card.providers';
 import { WotrCharacterHandler } from '../character/wotr-character-handler';
 import { WotrCharacterModifiers } from '../character/wotr-character-modifiers';
 import { characterProviders } from '../character/wotr-character.providers';
-import { WotrCharacters } from '../character/wotr-characters';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import { commonsProviders } from '../commons/wotr-commons.providers';
 import { WotrFellowshipHandler } from '../fellowship/wotr-fellowship-handler';
@@ -58,10 +55,9 @@ import { WotrGameUi } from './wotr-game-ui';
 import { WotrGameUiContext } from './wotr-game-ui-context';
 import type {
   WotrStoriesDialogData,
-  WotrStoriesDialogRef} from './wotr-stories-dialog';
-import {
-  WotrStoriesDialog
+  WotrStoriesDialogRef,
 } from './wotr-stories-dialog';
+import { WotrStoriesDialog } from './wotr-stories-dialog';
 import { WotrStoryService } from './wotr-story-service';
 
 @Component({
@@ -103,7 +99,6 @@ import { WotrStoryService } from './wotr-story-service';
     ...unitProviders,
   ],
 })
-@UntilDestroy
 export class WotrGamePage implements OnInit, OnDestroy {
   protected store = inject(WotrGameStore);
   private remote = inject(WotrRemoteService);
@@ -119,13 +114,8 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
   private huntModifiers = inject(WotrHuntModifiers);
   private unitModifiers = inject(WotrUnitModifiers);
-  private characterHandler = inject(WotrCharacterHandler);
-  private characterAbilities = inject(WotrCharacters);
-  private cardHandler = inject(WotrCardHandler);
-  private cards = inject(WotrCards);
   private nationModifiers = inject(WotrNationModifiers);
   private unitUtils = inject(WotrUnitUtils);
-  private huntHandler = inject(WotrHuntHandler);
   private q = inject(WotrGameQuery);
   private router = inject(Router);
 
@@ -145,10 +135,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     inject(WotrUnitHandler).init();
     inject(WotrFrontHandler).init();
     this.story.init(this.localPlayerService);
-    this.characterHandler.characterAbilities = this.characterAbilities;
-    this.cardHandler.cards = this.cards;
     this.unitUtils.q = this.q;
-    this.huntHandler.characters = this.characterAbilities;
   }
 
   private gameId: string = this.route.snapshot.paramMap.get('gameId')!;
@@ -157,7 +144,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
 
   gameConfig = input<WotrGameConfig>();
 
-  async ngOnInit() {
+  ngOnInit() {
+    void this.init();
+  }
+
+  private async init() {
     const [game, players, stories] = await Promise.all([
       this.remote.getGame(this.gameId),
       this.remote.getPlayers(this.gameId, (ref) => ref.orderBy('sort')),
@@ -232,22 +223,20 @@ export class WotrGamePage implements OnInit, OnDestroy {
   private storiesDialogRef: WotrStoriesDialogRef | null = null;
 
   editStories() {
-    this.dialogs
-      .open<WotrStoriesDialogData, void>(WotrStoriesDialog, {
-        data: {
-          gameId: this.gameId,
-        },
-        size: 'l',
-      })
-      .then();
+    void this.dialogs.open<WotrStoriesDialogData, void>(WotrStoriesDialog, {
+      data: {
+        gameId: this.gameId,
+      },
+      size: 'l',
+    });
   }
 
   protected reloadPage(replay: boolean) {
-    this.router.navigate([], {
+    setTimeout(() => location.reload());
+    void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: replay ? { replay } : {},
       queryParamsHandling: 'replace',
     });
-    setTimeout(() => location.reload());
   }
 }

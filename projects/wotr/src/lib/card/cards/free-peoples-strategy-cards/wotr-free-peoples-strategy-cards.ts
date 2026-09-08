@@ -1,10 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import type { WotrAbility } from '../../../ability/wotr-ability';
-import type {
-  WotrActionDieChoiceModifier} from '../../../action-die/wotr-action-die-modifiers';
-import {
-  WotrActionDieModifiers,
-} from '../../../action-die/wotr-action-die-modifiers';
+import type { WotrActionDieChoiceModifier } from '../../../action-die/wotr-action-die-modifiers';
+import { WotrActionDieModifiers } from '../../../action-die/wotr-action-die-modifiers';
 import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
 import { attack } from '../../../battle/wotr-battle-actions';
 import type {
@@ -13,21 +10,17 @@ import type {
 } from '../../../battle/wotr-battle-models';
 import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
 import type { WotrAction } from '../../../commons/wotr-action-models';
-import type {
-  WotrAfterFellowshipDeclaration} from '../../../fellowship/wotr-fellowship-modifiers';
-import {
-  WotrFellowshipModifiers,
-} from '../../../fellowship/wotr-fellowship-modifiers';
+import type { WotrAfterFellowshipDeclaration } from '../../../fellowship/wotr-fellowship-modifiers';
+import { WotrFellowshipModifiers } from '../../../fellowship/wotr-fellowship-modifiers';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
 import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
 import { assertAction } from '../../../game/wotr-story-models';
 import type {
   WotrAfterFellowshipReveal,
-  WotrFellowshipProgressDieAddedToHuntBoxPrevented} from '../../../hunt/wotr-hunt-modifiers';
-import {
-  WotrHuntModifiers,
+  WotrFellowshipProgressDieAddedToHuntBoxPrevented,
 } from '../../../hunt/wotr-hunt-modifiers';
+import { WotrHuntModifiers } from '../../../hunt/wotr-hunt-modifiers';
 import {
   activateNation,
   advanceNation,
@@ -35,19 +28,15 @@ import {
 import { WotrNationHandler } from '../../../nation/wotr-nation-handler';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import type {
-  WotrRegionChoose} from '../../../region/wotr-region-actions';
-import {
-  targetRegion
-} from '../../../region/wotr-region-actions';
+import type { WotrRegionChoose } from '../../../region/wotr-region-actions';
+import { targetRegion } from '../../../region/wotr-region-actions';
 import type { WotrRegionId } from '../../../region/wotr-region-models';
 import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import type {
   WotrCanAttackRegionModifier,
-  WotrCanMoveIntoRegionModifier} from '../../../unit/wotr-unit-modifiers';
-import {
-  WotrUnitModifiers,
+  WotrCanMoveIntoRegionModifier,
 } from '../../../unit/wotr-unit-modifiers';
+import { WotrUnitModifiers } from '../../../unit/wotr-unit-modifiers';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
 import {
@@ -59,10 +48,9 @@ import { WotrCardHandler } from '../../wotr-card-handler';
 import type {
   WotrCard,
   WotrCardId,
-  WotrFreePeoplesStrategyCardId} from '../../wotr-card-models';
-import {
-  getCard
+  WotrFreePeoplesStrategyCardId,
 } from '../../wotr-card-models';
+import { getCard } from '../../wotr-card-models';
 import type { WotrEventCard } from '../wotr-cards';
 
 @Injectable()
@@ -99,25 +87,25 @@ export class WotrFreePeoplesStrategyCards {
             if (region.isFront('free-peoples')) return false;
             return true;
           },
-          play: async (ui) => [playCardOnTableId('fpstr01')],
+          play: () => [playCardOnTableId('fpstr01')],
           onTableAbilities: () => {
             const huntBoxPreventedAbility: WotrAbility<WotrFellowshipProgressDieAddedToHuntBoxPrevented> =
               {
                 modifier:
                   this.huntModifiers
                     .fellowshipProgressDieAddedToHuntBoxPrevented,
-                handler: async () => true,
+                handler: () => true,
               };
             const discardByDeclarationAbility: WotrAbility<WotrAfterFellowshipDeclaration> =
               {
                 modifier: this.fellowshipModifiers.afterDeclaration,
-                handler: async (params) =>
+                handler: () =>
                   this.cardHandler.discardCardFromTableEffect('fpstr01'),
               };
             const discardByRevealAbility: WotrAbility<WotrAfterFellowshipReveal> =
               {
                 modifier: this.huntModifiers.afterFellowshipReveal,
-                handler: async (params) =>
+                handler: () =>
                   this.cardHandler.discardCardFromTableEffect('fpstr01'),
               };
             return [
@@ -196,7 +184,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr04':
         return {
           play: async (ui) => ui.characterUi.moveCompanions(),
-          effect: async (params) => {
+          effect: () => {
             if (
               this.q.region('erebor').hasCompanions() ||
               this.q.region('ered-luin').hasCompanions()
@@ -229,10 +217,7 @@ export class WotrFreePeoplesStrategyCards {
             );
             const actions: WotrAction[] = [];
             actions.push(targetRegion(regionId));
-            const combatRoll = await ui.battleUi.rollCombatDice(
-              5,
-              'free-peoples',
-            );
+            const combatRoll = await ui.battleUi.rollCombatDice(5);
             actions.push(combatRoll);
             return actions;
           },
@@ -284,10 +269,7 @@ export class WotrFreePeoplesStrategyCards {
             );
             const actions: WotrAction[] = [];
             actions.push(targetRegion(regionId));
-            const combatRoll = await ui.battleUi.rollCombatDice(
-              3,
-              'free-peoples',
-            );
+            const combatRoll = await ui.battleUi.rollCombatDice(3);
             actions.push(combatRoll);
             return actions;
           },
@@ -318,7 +300,7 @@ export class WotrFreePeoplesStrategyCards {
               );
             }
             if (this.q.region('osgiliath').hasArmy('free-peoples')) {
-              this.freePeoples.faramirsRangersRecruit(params.cardId);
+              await this.freePeoples.faramirsRangersRecruit(params.cardId);
             }
           },
         };
@@ -328,7 +310,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr07':
         return {
           play: async (ui) => ui.characterUi.moveCompanions(),
-          effect: async (params) => {
+          effect: () => {
             if (
               this.q.region('the-shire').hasCompanions() ||
               this.q.region('bree').hasCompanions()
@@ -821,7 +803,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr08km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Riders of Théoden
       // If Théoden, Corrupted Rules, is in play, remove him from play.
@@ -833,7 +815,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr16km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // King Brand's Men
       // If Brand, Corrupted Ruler, is in play, remove him from play.
@@ -844,7 +826,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr19km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Dain Ironfoot's Guard
       // If Dáin, Corrupted Ruler, is in play, remove him from play.
@@ -855,7 +837,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr22km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Thranduil's Archers
       // If Thranduil, Corrupted Ruler, is in play, remove him from play.
@@ -866,7 +848,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr24km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Evet at Your Service
       // Choose a non-Corrupted Sovereign.
@@ -876,7 +858,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr25km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Men of Little Villages
       // Recruit one Regular unit or Leader in each of four different Free Peoples Nations,
@@ -884,7 +866,7 @@ export class WotrFreePeoplesStrategyCards {
       case 'fpstr26km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
     }
   }
@@ -928,7 +910,7 @@ export class WotrFreePeoplesStrategyCards {
             if (!this.q.shadow.hasHandCardOfType('character')) return false;
             return true;
           },
-          actions: async (params, ui) => {
+          actions: async (_params, ui) => {
             const armyCard = await ui.askHandCard(
               'Choose an Army Event card to discard',
               {

@@ -7,10 +7,6 @@ import type {
   BgUser,
 } from '@leobg/commons';
 import { BgHome } from '@leobg/commons';
-import { concatJoin } from '@leobg/commons/utils';
-import type { Observable } from 'rxjs';
-import { forkJoin, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import type { BritColor } from './brit-components.models';
 import { BritComponents } from './brit-components.service';
 import type {
@@ -55,19 +51,17 @@ export class BritHome {
   config: BgHomeConfig<BritColor> = {
     boardGame: 'britannia',
     boardGameName: 'Britannia',
-    startGame$: (gameId: string) =>
-      from(
-        this.router.navigate(['game', gameId], {
-          relativeTo: this.activatedRoute,
-        }),
-      ),
-    deleteGame$: (gameId: string) =>
-      concatJoin([
-        this.gameService.deleteStories$(gameId),
-        this.gameService.deletePlayers$(gameId),
-        this.gameService.deleteGame$(gameId),
-      ]),
-    createGame$: (protoGame, protoPlayers) =>
+    startGame: async (gameId: string) => {
+      await this.router.navigate(['game', gameId], {
+        relativeTo: this.activatedRoute,
+      });
+    },
+    deleteGame: async (gameId: string) => {
+      await this.gameService.deleteStories(gameId);
+      await this.gameService.deletePlayers(gameId);
+      await this.gameService.deleteGame(gameId);
+    },
+    createGame: (protoGame, protoPlayers) =>
       this.createGame$(protoGame, protoPlayers),
     playerIds: () => this.components.COLORS,
     playerIdCssClass: (color: BritColor) => {
@@ -84,65 +78,58 @@ export class BritHome {
     },
   };
 
-  private createGame$(
+  private async createGame$(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<BritColor>[],
   ) {
-    return this.gameService
-      .insertGame$({
-        id: protoGame.id,
-        owner: protoGame.owner,
-        name: protoGame.name,
-        online: protoGame.online,
-        state: 'open',
-      })
-      .pipe(
-        switchMap((game) =>
-          forkJoin([
-            ...protoPlayers.map((p, index) => {
-              if (p.type === 'ai') {
-                return this.insertAiPlayer$(p.id, p.name, index + 1, game.id);
-              } else {
-                return this.insertRealPlayer$(
-                  p.id,
-                  p.name,
-                  index + 1,
-                  p.controller!,
-                  game.id,
-                );
-              }
-            }),
-          ]),
-        ),
-      );
+    const game = await this.gameService.insertGame({
+      id: protoGame.id,
+      owner: protoGame.owner,
+      name: protoGame.name,
+      online: protoGame.online,
+      state: 'open',
+    });
+    for (const [index, p] of protoPlayers.entries()) {
+      if (p.type === 'ai') {
+        await this.insertAiPlayer(p.id, p.name, index + 1, game.id);
+      } else {
+        await this.insertRealPlayer(
+          p.id,
+          p.name,
+          index + 1,
+          p.controller!,
+          game.id,
+        );
+      }
+    }
   }
 
-  private insertAiPlayer$(
+  private insertAiPlayer(
     playerId: BritColor,
     name: string,
     sort: number,
     gameId: string,
-  ): Observable<BritPlayerDoc> {
+  ): Promise<BritPlayerDoc> {
     const player: BritAiPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: true,
     };
-    return this.gameService.insertPlayer$(player, gameId);
+    return this.gameService.insertPlayer(player, gameId);
   }
 
-  private insertRealPlayer$(
+  private insertRealPlayer(
     playerId: BritColor,
     name: string,
     sort: number,
     controller: BgUser,
     gameId: string,
-  ): Observable<BritPlayerDoc> {
+  ): Promise<BritPlayerDoc> {
     const player: BritReadPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: false,
       controller: controller,
     };
-    return this.gameService.insertPlayer$(player, gameId);
+    return this.gameService.insertPlayer(player, gameId);
   }
 
   private aPlayerDoc(

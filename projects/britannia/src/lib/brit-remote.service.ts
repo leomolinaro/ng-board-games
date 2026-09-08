@@ -2,11 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import type {
   BgCloudCollectionQuery,
   BgStoryDoc,
-  BgUser} from '@leobg/commons';
-import {
-  BgCloudService
+  BgUser,
 } from '@leobg/commons';
-import type { Observable } from 'rxjs';
+import { BgCloudService } from '@leobg/commons';
 import type { BritColor } from './brit-components.models';
 import type { BritStory } from './brit-story.models';
 
@@ -46,91 +44,82 @@ export class BritRemoteService {
   private games() {
     return this.cloud.collection<BritGameDoc>('brit-games');
   }
-  getGame$(gameId: string) {
-    return this.cloud.get$(gameId, this.games());
+  getGame(gameId: string) {
+    return this.cloud.get(gameId, this.games());
   }
-  selectGames$(queryFn?: BgCloudCollectionQuery<BritGameDoc>  ) {
+  selectGames$(queryFn?: BgCloudCollectionQuery<BritGameDoc>) {
     return this.cloud.selectAll$(this.games(), queryFn);
   }
-  insertGame$(game: BritGameDoc) {
-    return this.cloud.set$(game.id, game, this.games());
+  insertGame(game: BritGameDoc) {
+    return this.cloud.set(game.id, game, this.games());
   }
-  updateGame$(patch: Partial<BritGameDoc>, gameId: string) {
-    return this.cloud.update$(gameId, patch, this.games());
+  updateGame(patch: Partial<BritGameDoc>, gameId: string) {
+    return this.cloud.update(gameId, patch, this.games());
   }
-  deleteGame$(gameId: string) {
-    return this.cloud.delete$(gameId, this.games());
+  deleteGame(gameId: string) {
+    return this.cloud.delete(gameId, this.games());
   }
 
   private players(gameId: string) {
     return this.cloud.collection<BritPlayerDoc>(`brit-games/${gameId}/players`);
   }
-  getPlayers$(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritPlayerDoc>  ,
-  ) {
-    return this.cloud.getAll$(this.players(gameId), queryFn);
+  getPlayers(gameId: string, queryFn?: BgCloudCollectionQuery<BritPlayerDoc>) {
+    return this.cloud.getAll(this.players(gameId), queryFn);
   }
   selectPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritPlayerDoc>  ,
+    queryFn?: BgCloudCollectionQuery<BritPlayerDoc>,
   ) {
     return this.cloud.selectAll$(this.players(gameId), queryFn);
   }
   selectPlayer$(playerId: string, gameId: string) {
     return this.cloud.select$(playerId, this.players(gameId));
   }
-  insertPlayer$(
-    player: BritPlayerDoc,
-    gameId: string,
-  ): Observable<BritPlayerDoc> {
-    return this.cloud.set$(player.id, player, this.players(gameId));
+  insertPlayer(player: BritPlayerDoc, gameId: string) {
+    return this.cloud.set(player.id, player, this.players(gameId));
   }
-  updatePlayer$(
+  updatePlayer(
     patch: Partial<BritPlayerDoc>,
     playerId: string,
     gameId: string,
   ) {
-    return this.cloud.update$(playerId, patch, this.players(gameId));
+    return this.cloud.update(playerId, patch, this.players(gameId));
   }
-  deletePlayer$(playerId: string, gameId: string) {
-    return this.cloud.delete$(playerId, this.players(gameId));
+  deletePlayer(playerId: string, gameId: string) {
+    return this.cloud.delete(playerId, this.players(gameId));
   }
-  deletePlayers$(gameId: string) {
-    return this.cloud.deleteAll$(this.players(gameId));
+  deletePlayers(gameId: string) {
+    return this.cloud.deleteAll(this.players(gameId));
   }
 
   private stories(gameId: string) {
     return this.cloud.collection<BritStoryDoc>(`brit-games/${gameId}/stories`);
   }
-  getStories$(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritStoryDoc>  ,
-  ) {
-    return this.cloud.getAll$(this.stories(gameId), queryFn);
+  getStories(gameId: string, queryFn?: BgCloudCollectionQuery<BritStoryDoc>) {
+    return this.cloud.getAll(this.stories(gameId), queryFn);
   }
   getStory$(storyId: number, gameId: string) {
     return this.cloud.get$(storyId + '', this.stories(gameId));
   }
   selectStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BritStoryDoc>  ,
+    queryFn?: BgCloudCollectionQuery<BritStoryDoc>,
   ) {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }
   selectStory$(storyId: string, gameId: string) {
     return this.cloud.select$(storyId, this.stories(gameId));
   }
-  insertStory$(storyId: string, story: BritStoryDoc, gameId: string) {
-    return this.cloud.set$(storyId, story, this.stories(gameId));
+  insertStory(storyId: string, story: BritStoryDoc, gameId: string) {
+    return this.cloud.set(storyId, story, this.stories(gameId));
   }
-  updateStory$(patch: Partial<BritStoryDoc>, storyId: string, gameId: string) {
-    return this.cloud.update$(storyId, patch, this.stories(gameId));
+  updateStory(patch: Partial<BritStoryDoc>, storyId: string, gameId: string) {
+    return this.cloud.update(storyId, patch, this.stories(gameId));
   }
-  deleteStory$(storyId: string, gameId: string) {
-    return this.cloud.delete$(storyId, this.stories(gameId));
+  deleteStory(storyId: string, gameId: string) {
+    return this.cloud.delete(storyId, this.stories(gameId));
   }
-  deleteStories$(gameId: string) {
-    return this.cloud.deleteAll$(this.stories(gameId));
+  deleteStories(gameId: string) {
+    return this.cloud.deleteAll(this.stories(gameId));
   }
 }

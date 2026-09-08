@@ -4,14 +4,14 @@ import { immutableUtil } from '@leobg/commons/utils';
 import type { WotrCharacterId } from '../character/wotr-character-models';
 import { WotrCharacterStore } from '../character/wotr-character-store';
 import type { WotrFrontId } from '../front/wotr-front-models';
-import type {
-  WotrNation,
-  WotrNationId} from '../nation/wotr-nation-models';
-import {
-  frontOfNation
-} from '../nation/wotr-nation-models';
+import type { WotrNation, WotrNationId } from '../nation/wotr-nation-models';
+import { frontOfNation } from '../nation/wotr-nation-models';
 import type { WotrRecruitmentConstraints } from '../unit/wotr-unit-handler';
-import type { WotrArmy, WotrFreeUnits, WotrUnits } from '../unit/wotr-unit-models';
+import type {
+  WotrArmy,
+  WotrFreeUnits,
+  WotrUnits,
+} from '../unit/wotr-unit-models';
 import { WotrUnitUtils } from '../unit/wotr-unit-utils';
 import type {
   WotrNeighbor,
@@ -527,15 +527,15 @@ export class WotrRegionStore {
   isCharacterInRegion(character: WotrCharacterId, regionId: WotrRegionId) {
     const region = this.region(regionId);
     return (
-      region.army?.characters?.includes(character) ||
-      region.underSiegeArmy?.characters?.includes(character) ||
-      region.freeUnits?.characters?.includes(character) ||
+      region.army?.characters?.includes(character) ??
+      region.underSiegeArmy?.characters?.includes(character) ??
+      region.freeUnits?.characters?.includes(character) ??
       false
     );
   }
   characterRegion(character: WotrCharacterId): WotrRegion | null {
     return (
-      this.regions().find((r) => this.isCharacterInRegion(character, r.id)) ||
+      this.regions().find((r) => this.isCharacterInRegion(character, r.id)) ??
       null
     );
   }
@@ -854,10 +854,8 @@ export class WotrRegionStore {
 
   addNazgulToFreeUnits(quantity: number, regionId: WotrRegionId) {
     this.updateFreeUnits('addNazgulToFreeUnits', regionId, (freeUnits) => {
-      if (!freeUnits) {
-        freeUnits = {};
-      }
-      return { ...freeUnits, nNazgul: (freeUnits.nNazgul || 0) + quantity };
+      freeUnits ??= {};
+      return { ...freeUnits, nNazgul: (freeUnits.nNazgul ?? 0) + quantity };
     });
   }
 
@@ -866,7 +864,7 @@ export class WotrRegionStore {
       if (!freeUnits) {
         throw new Error('removeNazgulFromFreeUnits');
       }
-      return { ...freeUnits, nNazgul: (freeUnits.nNazgul || 0) - quantity };
+      return { ...freeUnits, nNazgul: (freeUnits.nNazgul ?? 0) - quantity };
     });
   }
 
@@ -909,6 +907,7 @@ export class WotrRegionStore {
   moveArmy(
     fromRegionId: WotrRegionId,
     toRegionId: WotrRegionId,
+    frontId: WotrFrontId,
     leftUnits?: WotrUnits,
   ) {
     const fromRegion = this.region(fromRegionId);
@@ -920,7 +919,14 @@ export class WotrRegionStore {
         this.unitUtils.unitsToArmy(leftUnits),
       );
     } else {
-      this.updateArmy('moveArmy', fromRegionId, () => leftUnits as any);
+      this.updateArmy('moveArmy', fromRegionId, () =>
+        leftUnits
+          ? {
+              ...leftUnits,
+              front: frontId,
+            }
+          : undefined,
+      );
       this.freeNazgulFromArmy(fromRegionId);
       this.freeCharactersFromArmy(fromRegionId);
     }
@@ -955,14 +961,12 @@ export class WotrRegionStore {
     regionId: WotrRegionId,
   ) {
     this.updateFreeUnits('addCharacterToFreeUnits', regionId, (freeunits) => {
-      if (!freeunits) {
-        freeunits = {};
-      }
+      freeunits ??= {};
       return {
         ...freeunits,
         characters: immutableUtil.listPush(
           [characterId],
-          freeunits.characters || [],
+          freeunits.characters ?? [],
         ),
       };
     });

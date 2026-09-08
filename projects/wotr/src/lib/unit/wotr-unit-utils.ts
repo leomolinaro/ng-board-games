@@ -68,9 +68,7 @@ export class WotrUnitUtils {
     quantity: number,
     army: WotrArmy | undefined,
   ): WotrArmy {
-    if (!army) {
-      army = { front: frontOfNation(nation) };
-    }
+    army ??= { front: frontOfNation(nation) };
     const units = army[unitKey];
     if (units) {
       const index = units.findIndex((u) => u.nation === nation);
@@ -135,10 +133,8 @@ export class WotrUnitUtils {
   }
 
   addNazgul(quantity: number, army: WotrArmy | undefined): WotrArmy {
-    if (!army) {
-      army = { front: 'shadow' };
-    }
-    return { ...army, nNazgul: (army.nNazgul || 0) + quantity };
+    army ??= { front: 'shadow' };
+    return { ...army, nNazgul: (army.nNazgul ?? 0) + quantity };
   }
 
   removeNazgul(
@@ -148,7 +144,7 @@ export class WotrUnitUtils {
     if (!army) {
       throw new Error('removeNazgul');
     }
-    army = { ...army, nNazgul: (army.nNazgul || 0) - quantity };
+    army = { ...army, nNazgul: (army.nNazgul ?? 0) - quantity };
     return this.isEmptyArmy(army) ? undefined : army;
   }
 
@@ -161,7 +157,7 @@ export class WotrUnitUtils {
     }
     return {
       ...army,
-      characters: immutableUtil.listPush([characterId], army.characters || []),
+      characters: immutableUtil.listPush([characterId], army.characters ?? []),
     };
   }
 
@@ -174,7 +170,7 @@ export class WotrUnitUtils {
       ...army,
       characters: immutableUtil.listRemoveFirst(
         (c) => c === characterId,
-        army.characters || [],
+        army.characters ?? [],
       ),
     };
     return this.isEmptyArmy(army) ? undefined : army;
@@ -304,14 +300,14 @@ export class WotrUnitUtils {
     return (
       units.characters?.some(
         (c) => this.q.character(c).frontId === 'free-peoples',
-      ) || false
+      ) ?? false
     );
   }
 
   getCompanions(units: WotrUnits): WotrCompanionId[] {
     return (units.characters?.filter(
       (c) => this.q.character(c).frontId === 'free-peoples',
-    ) || []) as WotrCompanionId[];
+    ) ?? []) as WotrCompanionId[];
   }
 
   isCompanion(characterId: WotrCharacterId): boolean {
@@ -328,7 +324,7 @@ export class WotrUnitUtils {
 
   hasMinions(units: WotrUnits): boolean {
     return (
-      units.characters?.some((c) => this.q.character(c).frontId === 'shadow') ||
+      units.characters?.some((c) => this.q.character(c).frontId === 'shadow') ??
       false
     );
   }

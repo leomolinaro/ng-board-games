@@ -8,22 +8,15 @@ import {
   output,
   signal,
 } from '@angular/core';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiButton } from '@taiga-ui/core';
 import { BgDialogService } from '../../../../../commons/src';
 import { WotrActionDiceBox } from '../../action-die/wotr-action-dice-box';
-import type {
-  WotrCardId} from '../../card/wotr-card-models';
-import {
-  isCharacterCard,
-  isStrategyCard
-} from '../../card/wotr-card-models';
-import type {
-  WotrCardsDialogData} from '../../card/wotr-cards-dialog';
-import {
-  WotrCardsDialog
-} from '../../card/wotr-cards-dialog';
+import type { WotrCardId } from '../../card/wotr-card-models';
+import { isCharacterCard, isStrategyCard } from '../../card/wotr-card-models';
+import type { WotrCardsDialogData } from '../../card/wotr-cards-dialog';
+import { WotrCardsDialog } from '../../card/wotr-cards-dialog';
 import { WotrCharacterStore } from '../../character/wotr-character-store';
 import { WotrFellowshipDialog } from '../../fellowship/wotr-fellowship-dialog';
 import { WotrFellowshipStore } from '../../fellowship/wotr-fellowship-store';
@@ -42,7 +35,7 @@ import type { WotrRegion } from '../../region/wotr-region-models';
 import { WotrRegionStore } from '../../region/wotr-region-store';
 import type { WotrRegionUnits } from '../../unit/wotr-unit-models';
 import { WotrGameStore } from '../wotr-game-store';
-import type { WotrCardSelection} from '../wotr-game-ui';
+import type { WotrCardSelection } from '../wotr-game-ui';
 import { WotrGameUi } from '../wotr-game-ui';
 import { WotrMap } from './map/wotr-map';
 import { WotrReplayButtons } from './wotr-replay-buttons';
@@ -226,30 +219,30 @@ export class WotrBoard {
     if (!regionUnitSelection) return;
     if (regionUnitSelection.regionIds.length !== 1) return;
     const region = this.regionStore.region(regionUnitSelection.regionIds[0]);
-    this.openRegionDialog(region);
+    void this.openRegionDialog(region);
   });
 
   private focusHandCards = effect(() => {
     const cardSelection = this.ui.handCardSelection();
     if (!cardSelection) return;
-    this.openHandCardsDialog(null, cardSelection.frontId);
+    void this.openHandCardsDialog(null, cardSelection.frontId);
   });
 
   private focusTableCards = effect(() => {
     const cardSelection = this.ui.tableCardSelection();
     if (!cardSelection) return;
-    this.openTableCardsDialog(null, cardSelection.frontId);
+    void this.openTableCardsDialog(null, cardSelection.frontId);
   });
 
   private focusFellowship = effect(() => {
     const fellowshipCompanionsSelection =
       this.ui.fellowshipCompanionsSelection();
     if (!fellowshipCompanionsSelection) return;
-    this.openFellowshipBoxDialog();
+    void this.openFellowshipBoxDialog();
   });
 
   onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
-    this.openHandCardsDialog(cardId, frontId);
+    void this.openHandCardsDialog(cardId, frontId);
   }
 
   private async openHandCardsDialog(
@@ -334,11 +327,11 @@ export class WotrBoard {
   }
 
   onRegionClick(region: WotrRegion) {
-    this.openRegionDialog(region);
+    void this.openRegionDialog(region);
   }
 
   onFellowshipBoxClick() {
-    this.openFellowshipBoxDialog();
+    void this.openFellowshipBoxDialog();
   }
 
   private async openFellowshipBoxDialog() {

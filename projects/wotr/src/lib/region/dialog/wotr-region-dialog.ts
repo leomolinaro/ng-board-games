@@ -1,7 +1,7 @@
-import type { OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, computed, inject, signal } from '@angular/core';
 import { injectDialogContext } from '@leobg/commons';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { arrayUtil } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
 import type { WotrUnitImage } from '../../assets/wotr-assets-store';
@@ -12,22 +12,15 @@ import type {
 } from '../../character/wotr-character-models';
 import type { WotrFellowship } from '../../fellowship/wotr-fellowship-models';
 import { WotrGameQuery } from '../../game/wotr-game-query';
-import type {
-  WotrNation,
-  WotrNationId} from '../../nation/wotr-nation-models';
-import {
-  frontOfNation,
-} from '../../nation/wotr-nation-models';
+import type { WotrNation, WotrNationId } from '../../nation/wotr-nation-models';
+import { frontOfNation } from '../../nation/wotr-nation-models';
 import type { WotrUnits } from '../../unit/wotr-unit-models';
 import { WotrUnitModifiers } from '../../unit/wotr-unit-modifiers';
 import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
 import type { WotrRegion } from '../wotr-region-models';
 import type { UnitNode } from './wotr-region-unit-node';
-import type {
-  WotrRegionUnitSelection} from './wotr-region-unit-selection';
-import {
-  selectionModeFactory,
-} from './wotr-region-unit-selection';
+import type { WotrRegionUnitSelection } from './wotr-region-unit-selection';
+import { selectionModeFactory } from './wotr-region-unit-selection';
 
 export interface WotrRegionDialogData {
   region: WotrRegion;
@@ -313,7 +306,7 @@ export class WotrRegionDialog implements OnInit {
   private addNodeToUnits(unitNode: UnitNode, units: WotrUnits) {
     switch (unitNode.type) {
       case 'regular': {
-        if (!units.regulars) units.regulars = [];
+        units.regulars ??= [];
         const regular = units.regulars.find(
           (u) => u.nation === unitNode.nationId,
         );
@@ -328,7 +321,7 @@ export class WotrRegionDialog implements OnInit {
         break;
       }
       case 'elite': {
-        if (!units.elites) units.elites = [];
+        units.elites ??= [];
         const elite = units.elites.find((u) => u.nation === unitNode.nationId);
         if (elite) {
           elite.quantity++;
@@ -341,7 +334,7 @@ export class WotrRegionDialog implements OnInit {
         break;
       }
       case 'leader': {
-        if (!units.leaders) units.leaders = [];
+        units.leaders ??= [];
         const leader = units.leaders.find(
           (u) => u.nation === unitNode.nationId,
         );
@@ -356,12 +349,12 @@ export class WotrRegionDialog implements OnInit {
         break;
       }
       case 'nazgul': {
-        if (!units.nNazgul) units.nNazgul = 0;
+        units.nNazgul ??= 0;
         units.nNazgul++;
         break;
       }
       case 'character': {
-        if (!units.characters) units.characters = [];
+        units.characters ??= [];
         units.characters.push(unitNode.id as WotrCharacterId);
         break;
       }

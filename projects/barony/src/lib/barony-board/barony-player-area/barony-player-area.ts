@@ -56,12 +56,9 @@ export class BaronyPlayerArea implements OnChanges {
       const prevPlayer = playerChanges.previousValue as
         BaronyPlayer | undefined;
       const currPlayer = playerChanges.currentValue as BaronyPlayer;
-      if (!prevPlayer || prevPlayer.pawns !== currPlayer.pawns) {
-        refreshPawns = true;
-      }
-      if (!prevPlayer || prevPlayer.resources !== currPlayer.resources) {
+      if (prevPlayer?.pawns !== currPlayer.pawns) refreshPawns = true;
+      if (prevPlayer?.resources !== currPlayer.resources)
         refreshResources = true;
-      }
     }
     if (changes['validBuildings']) refreshPawns = true;
     if (changes['validResources']) refreshResources = true;

@@ -9,6 +9,7 @@ ARCHITECTURE
 [] review bg commons components
 [] remove ignoreDeprecations
 [] Eslint e hooks
+[] Utility type for map to be initialized to avoid eslint disabling (search for "{} as ")
 
 WOTR
 [] refactor logs

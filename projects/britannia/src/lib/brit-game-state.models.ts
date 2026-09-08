@@ -11,7 +11,7 @@ import type {
 
 export interface BritGameState {
   gameId: string;
-  gameOwner: BgUser;
+  gameOwner: BgUser | null;
   players: {
     map: Partial<Record<BritColor, BritPlayer>>;
     colors: BritColor[];

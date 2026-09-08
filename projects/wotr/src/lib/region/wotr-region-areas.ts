@@ -53,7 +53,7 @@ import { WotrStrongholdBox } from './wotr-stronghold-box';
         ></svg:g>
       }
     }
-    @if (fellowship().mordorTrack != null) {
+    @if (fellowship().mordorTrack !== undefined) {
       <svg:g
         wotrMordorTrack
         [fellowship]="fellowship()"

@@ -171,8 +171,8 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
     return authUser
       ? {
           id: authUser.uid,
-          email: authUser.email || '',
-          displayName: authUser.displayName || authUser.email || '',
+          email: authUser.email ?? '',
+          displayName: authUser.displayName ?? authUser.email ?? '',
           loginType: 'google',
         }
       : null;

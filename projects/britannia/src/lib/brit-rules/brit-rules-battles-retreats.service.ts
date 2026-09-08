@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import type { BritLandAreaId, BritNationId } from '../brit-components.models';
 import { BritComponents } from '../brit-components.service';
-import { BritGameStore } from '../brit-game/brit-game.store';
+import type { BritGameStore } from '../brit-game/brit-game.store';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ import { BritGameStore } from '../brit-game/brit-game.store';
 export class BritRulesBattlesRetreatsService {
   private components = inject(BritComponents);
 
-  hasBattlesToResolve(nationId: BritNationId, game: BritGameStore) {
+  hasBattlesToResolve(game: BritGameStore) {
     for (const landId of this.components.LAND_AREA_IDS) {
       if (this.isBattleArea(landId, game)) {
         return true;
@@ -33,7 +33,7 @@ export class BritRulesBattlesRetreatsService {
     return false;
   }
 
-  getValidAreasForBattle(nationId: BritNationId, game: BritGameStore) {
+  getValidAreasForBattle(game: BritGameStore) {
     const validAreas: BritLandAreaId[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
       if (this.isBattleArea(landId, game)) {

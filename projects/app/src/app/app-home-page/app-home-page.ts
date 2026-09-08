@@ -1,8 +1,7 @@
-import type { OnDestroy, OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BgAccountButton, BgAuthService } from '@leobg/commons';
-import { SingleEvent, UntilDestroy } from '@leobg/commons/utils';
 import { TuiButton } from '@taiga-ui/core';
 import { TuiNavigation } from '@taiga-ui/layout';
 import { GAMES } from '../app-games';
@@ -86,16 +85,12 @@ import { GAMES } from '../app-games';
     `,
   ],
 })
-@UntilDestroy
-export class AppHomePage implements OnInit, OnDestroy {
+export class AppHomePage implements OnInit {
   private authService = inject(BgAuthService);
 
   games = GAMES;
 
-  @SingleEvent()
   ngOnInit() {
-    return this.authService.autoSignIn$();
+    this.authService.autoSignIn$().subscribe();
   }
-
-  ngOnDestroy() {}
 }

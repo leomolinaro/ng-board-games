@@ -23,14 +23,14 @@ export interface BritBattleInitiation {
   landId: BritLandAreaId;
 }
 
-export interface BritBattleAttack {}
+// export interface BritBattleAttack {}
 
-export interface BritBattleDefend {}
+// export interface BritBattleDefend {}
 
-export interface BritBattleDefendResolution {}
+// export interface BritBattleDefendResolution {}
 
-export interface BritBattleAttackResolution {}
+// export interface BritBattleAttackResolution {}
 
-export interface BritRaidRetreat {}
+// export interface BritRaidRetreat {}
 
-export interface BritOverpopulationChecks {}
+// export interface BritOverpopulationChecks {}

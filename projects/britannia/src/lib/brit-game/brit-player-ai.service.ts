@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import type { Observable } from 'rxjs';
 import type {
   BritArmyMovements,
   BritArmyPlacement,
@@ -9,15 +8,15 @@ import type { BritPlayerService } from './brit-player.service';
 
 @Injectable()
 export class BritPlayerAiService implements BritPlayerService {
-  armyPlacement$(): Observable<BritArmyPlacement> {
+  armyPlacement(): Promise<BritArmyPlacement> {
     throw new Error('Method not implemented.');
   }
 
-  armyMovements$(): Observable<BritArmyMovements> {
+  armyMovements(): Promise<BritArmyMovements> {
     throw new Error('Method not implemented.');
   }
 
-  battleInitiation$(): Observable<BritBattleInitiation> {
+  battleInitiation(): Promise<BritBattleInitiation> {
     throw new Error('Method not implemented.');
   }
 }

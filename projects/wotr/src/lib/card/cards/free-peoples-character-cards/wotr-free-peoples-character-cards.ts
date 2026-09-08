@@ -3,23 +3,16 @@ import { lazyInject } from '@leobg/commons/utils';
 import type { WotrAbility, WotrUiAbility } from '../../../ability/wotr-ability';
 import { changeActionDie } from '../../../action-die/wotr-action-die-actions';
 import { WotrActionDieHandler } from '../../../action-die/wotr-action-die-handler';
-import type {
-  WotrCombatRoll} from '../../../battle/wotr-battle-actions';
-import {
-  rollCombatDice
-} from '../../../battle/wotr-battle-actions';
-import type {
-  WotrCharacterMovement} from '../../../character/wotr-character-actions';
+import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
+import { rollCombatDice } from '../../../battle/wotr-battle-actions';
+import type { WotrCharacterMovement } from '../../../character/wotr-character-actions';
 import {
   eliminateCharacter,
-  moveCharacters
+  moveCharacters,
 } from '../../../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../../../character/wotr-character-handler';
-import type {
-  WotrAfterCompanionLeavingTheFellowship} from '../../../character/wotr-character-modifiers';
-import {
-  WotrCharacterModifiers,
-} from '../../../character/wotr-character-modifiers';
+import type { WotrAfterCompanionLeavingTheFellowship } from '../../../character/wotr-character-modifiers';
+import { WotrCharacterModifiers } from '../../../character/wotr-character-modifiers';
 import type { WotrCharacterQuery } from '../../../character/wotr-character-query';
 import type { WotrAction } from '../../../commons/wotr-action-models';
 import { findAction } from '../../../commons/wotr-action-models';
@@ -33,12 +26,8 @@ import { WotrFrontStore } from '../../../front/wotr-front-store';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
 import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { assertAction } from '../../../game/wotr-story-models';
-import type {
-  WotrHuntTileDraw} from '../../../hunt/wotr-hunt-actions';
-import {
-  addHuntTile,
-  returnHuntTile
-} from '../../../hunt/wotr-hunt-actions';
+import type { WotrHuntTileDraw } from '../../../hunt/wotr-hunt-actions';
+import { addHuntTile, returnHuntTile } from '../../../hunt/wotr-hunt-actions';
 import type {
   WotrHuntEffectParams,
   WotrHuntTileId,
@@ -46,19 +35,15 @@ import type {
 import type {
   WotrAfterTileDrawn,
   WotrHuntDrawPrevented,
-  WotrHuntEffectChoiceModifier} from '../../../hunt/wotr-hunt-modifiers';
-import {
-  WotrHuntModifiers,
+  WotrHuntEffectChoiceModifier,
 } from '../../../hunt/wotr-hunt-modifiers';
+import { WotrHuntModifiers } from '../../../hunt/wotr-hunt-modifiers';
 import { WotrHuntStore } from '../../../hunt/wotr-hunt-store';
 import { WotrNationHandler } from '../../../nation/wotr-nation-handler';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import type {
-  WotrRegionChoose} from '../../../region/wotr-region-actions';
-import {
-  targetRegion
-} from '../../../region/wotr-region-actions';
+import type { WotrRegionChoose } from '../../../region/wotr-region-actions';
+import { targetRegion } from '../../../region/wotr-region-actions';
 import type { WotrRegionId } from '../../../region/wotr-region-models';
 import type { WotrRegionQuery } from '../../../region/wotr-region-query';
 import {
@@ -70,12 +55,11 @@ import { WotrUnitHandler } from '../../../unit/wotr-unit-handler';
 import type { WotrReinforcementUnit } from '../../../unit/wotr-unit-models';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../../unit/wotr-unit-utils';
-import type {
-  WotrCardDiscardFromTable} from '../../wotr-card-actions';
+import type { WotrCardDiscardFromTable } from '../../wotr-card-actions';
 import {
   discardCardFromTableById,
   playCardOnTable,
-  playCardOnTableId
+  playCardOnTableId,
 } from '../../wotr-card-actions';
 import { WotrCardHandler } from '../../wotr-card-handler';
 import type {
@@ -111,28 +95,28 @@ export class WotrFreePeoplesCharacterCards {
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track.
       case 'fpcha01':
         return {
-          play: async () => [addHuntTile('b0')],
+          play: () => [addHuntTile('b0')],
         };
       // Eleven Rope
       // The "Elven Rope" special Hunt tile [0] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track
       case 'fpcha02':
         return {
-          play: async () => [addHuntTile('b0')],
+          play: () => [addHuntTile('b0')],
         };
       // Phial of Galadriel
       // The "Phial of Galadriel" special Hunt tile [-2] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track
       case 'fpcha03':
         return {
-          play: async () => [addHuntTile('b-2')],
+          play: () => [addHuntTile('b-2')],
         };
       // Sméagol Helps Nice Master
       // The "Sméagol Helps Nice Master" special Hunt tile [-1] is now in play.
       // Add the tile to the Hunt Pool when the Fellowship is on the Mordor Track
       case 'fpcha04':
         return {
-          play: async () => [addHuntTile('b-1')],
+          play: () => [addHuntTile('b-1')],
         };
       // Mithril Coat and Sting
       // Play on the table.
@@ -140,7 +124,7 @@ export class WotrFreePeoplesCharacterCards {
       // then return the first tile to the Hunt Pool.
       case 'fpcha05':
         return {
-          play: async () => [playCardOnTable('Mithril Coat and Sting')],
+          play: () => [playCardOnTable('Mithril Coat and Sting')],
           onTableAbilities: () => {
             let originalTile: WotrHuntTileId | null = null;
             const redrawAbility: WotrUiAbility<WotrAfterTileDrawn> = {
@@ -182,17 +166,16 @@ export class WotrFreePeoplesCharacterCards {
         return {
           canBePlayed: () =>
             this.q.gimli.isInFellowship() || this.q.legolas.isInFellowship(),
-          play: async () => [playCardOnTableId('fpcha06')],
+          play: () => [playCardOnTableId('fpcha06')],
           onTableAbilities: () => {
             const absorbeAbility: WotrAbility<WotrHuntEffectChoiceModifier> = {
               modifier: this.huntModifiers.huntEffectChoices,
               handler: (params) => {
                 if (params.tableCardsUsed) return [];
                 const choice: WotrUiChoice<WotrHuntEffectParams> = {
-                  // eslint-disable-next-line @typescript-eslint/quotes
                   label: () => 'Discard "Axe and Bow"',
                   card: () => 'fpcha06',
-                  actions: async () => [discardCardFromTableById('fpcha06')],
+                  actions: () => [discardCardFromTableById('fpcha06')],
                 };
                 return [choice];
               },
@@ -213,17 +196,16 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha07':
         return {
           canBePlayed: () => this.q.boromir.isInFellowship(),
-          play: async () => [playCardOnTableId('fpcha07')],
+          play: () => [playCardOnTableId('fpcha07')],
           onTableAbilities: () => {
             const absorbeAbility: WotrAbility<WotrHuntEffectChoiceModifier> = {
               modifier: this.huntModifiers.huntEffectChoices,
               handler: (params) => {
                 if (params.tableCardsUsed) return [];
                 const choice: WotrUiChoice<WotrHuntEffectParams> = {
-                  // eslint-disable-next-line @typescript-eslint/quotes
                   label: () => 'Discard "Horn of Gondor"',
                   card: () => 'fpcha07',
-                  actions: async () => [discardCardFromTableById('fpcha07')],
+                  actions: () => [discardCardFromTableById('fpcha07')],
                 };
                 return [choice];
               },
@@ -242,7 +224,7 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha08':
         return {
           canBePlayed: () => this.q.gandalfTheGrey.isInFellowship(),
-          play: async () => [playCardOnTable("Wizard's Staff")],
+          play: () => [playCardOnTable("Wizard's Staff")],
           onTableAbilities: () => {
             const preventAbility: WotrUiAbility<WotrHuntDrawPrevented> = {
               modifier: this.huntModifiers.huntDrawPrevented,
@@ -261,7 +243,7 @@ export class WotrFreePeoplesCharacterCards {
                   throw new Error('Unexpected state: no hunt tile draw action');
                 return true;
               },
-              play: async (ui) => [discardCardFromTableById('fpcha08')],
+              play: () => [discardCardFromTableById('fpcha08')],
             };
             const discardAbility = this.discardCompanionCardAbility(
               'fpcha08',
@@ -280,7 +262,7 @@ export class WotrFreePeoplesCharacterCards {
             const dice = ui.battleUi.rollDice(3);
             return [rollCombatDice(...dice)];
           },
-          effect: async (params) => {
+          effect: (params) => {
             const action = assertAction<WotrCombatRoll>(
               params.story,
               'combat-roll',
@@ -349,7 +331,7 @@ export class WotrFreePeoplesCharacterCards {
       // If Gollum is the Guide, heal two Corruption points instead.
       case 'fpcha12':
         return {
-          play: async (ui) => {
+          play: () => {
             let quantity = 1;
             if (this.q.gollum.isGuide()) {
               quantity = 2;
@@ -512,7 +494,7 @@ export class WotrFreePeoplesCharacterCards {
               extraMovements: 1,
             });
           },
-          effect: async (params) => {
+          effect: () => {
             const regions: WotrRegionId[] = [
               'dale',
               'erebor',
@@ -568,10 +550,7 @@ export class WotrFreePeoplesCharacterCards {
             );
             const shadowArmy = this.q.region(targetRegionId).army('shadow')!;
             const nNazgul = this.unitUtils.nazgulCount(shadowArmy);
-            const roll = await ui.battleUi.rollCombatDice(
-              Math.min(nNazgul, 5),
-              'free-peoples',
-            );
+            const roll = await ui.battleUi.rollCombatDice(Math.min(nNazgul, 5));
             return [targetRegion(targetRegionId), roll];
           },
           effect: async (params) => {
@@ -656,10 +635,7 @@ export class WotrFreePeoplesCharacterCards {
               toRegion.id(),
             );
             if (toRegion.hasArmy('shadow')) {
-              const rollAction = await ui.battleUi.rollCombatDice(
-                1,
-                'free-peoples',
-              );
+              const rollAction = await ui.battleUi.rollCombatDice(1);
               actions.push(rollAction);
             } else {
               const recruitActions =
@@ -804,7 +780,7 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha23km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Aid in Time of Need
       // Move any or all Companions who are not in the Fellowship.
@@ -813,7 +789,7 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha25km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // It Is not so Dark Here
       // Advance one Free Peoples Nation on the Political track, then look at
@@ -822,7 +798,7 @@ export class WotrFreePeoplesCharacterCards {
       case 'fpcha26km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
     }
   }
@@ -898,7 +874,7 @@ export class WotrFreePeoplesCharacterCards {
     const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> =
       {
         modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,
-        handler: async (companionId) => {
+        handler: () => {
           if (characters.some((c) => c.isInFellowship())) return;
           return this.cardHandler.discardCardFromTableEffect(cardId);
         },

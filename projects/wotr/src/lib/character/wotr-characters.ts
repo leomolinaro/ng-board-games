@@ -347,50 +347,42 @@ export class WotrCharacters {
   ): WotrPlayableCharacterCard {
     switch (characterId) {
       case 'gandalf-the-white':
-        if (!this.characters['gandalf-the-white'])
-          this.characters['gandalf-the-white'] = new WotrGandalfTheWhite(
-            this.q,
-          );
+        this.characters['gandalf-the-white'] ??= new WotrGandalfTheWhite(
+          this.q,
+        );
         return this.characters['gandalf-the-white'];
       case 'aragorn':
-        if (!this.characters.aragorn)
-          this.characters.aragorn = new WotrAragorn(
-            this.q,
-            this.battleModifiers,
-          );
+        this.characters.aragorn ??= new WotrAragorn(
+          this.q,
+          this.battleModifiers,
+        );
         return this.characters.aragorn;
       case 'saruman':
-        if (!this.characters.saruman)
-          this.characters.saruman = new WotrSaruman(this.q);
+        this.characters.saruman ??= new WotrSaruman(this.q);
         return this.characters.saruman;
       case 'the-witch-king':
-        if (!this.characters['the-witch-king'])
-          this.characters['the-witch-king'] = new TheWitchKing(
-            this.q,
-            this.nationHandler,
-          );
+        this.characters['the-witch-king'] ??= new TheWitchKing(
+          this.q,
+          this.nationHandler,
+        );
         return this.characters['the-witch-king'];
       case 'the-mouth-of-sauron':
-        if (!this.characters['the-mouth-of-sauron'])
-          this.characters['the-mouth-of-sauron'] = new TheMouthOfSauron(this.q);
+        this.characters['the-mouth-of-sauron'] ??= new TheMouthOfSauron(this.q);
         return this.characters['the-mouth-of-sauron'];
       case 'ugluk':
-        if (!this.characters.ugluk)
-          this.characters.ugluk = new Ugluk(this.q, this.battleModifiers);
+        this.characters.ugluk ??= new Ugluk(this.q, this.battleModifiers);
         return this.characters.ugluk;
       case 'the-shadow-of-mirkwood':
-        if (!this.characters['the-shadow-of-mirkwood'])
-          this.characters['the-shadow-of-mirkwood'] = new TheShadowOfMirkwood(
-            this.q,
-            this.battleModifiers,
-          );
+        this.characters['the-shadow-of-mirkwood'] ??= new TheShadowOfMirkwood(
+          this.q,
+          this.battleModifiers,
+        );
         return this.characters['the-shadow-of-mirkwood'];
       case 'the-black-serpent':
-        if (!this.characters['the-black-serpent'])
-          this.characters['the-black-serpent'] = new TheBlackSerpent(
-            this.q,
-            this.battleModifiers,
-          );
+        this.characters['the-black-serpent'] ??= new TheBlackSerpent(
+          this.q,
+          this.battleModifiers,
+        );
         return this.characters['the-black-serpent'];
       default:
         throw new Error(`Unknown character ID: ${characterId}`);
@@ -400,44 +392,39 @@ export class WotrCharacters {
   getSovereignCard(sovereignId: KomeSovereignId): KomeSovereignCard {
     switch (sovereignId) {
       case 'thranduil':
-        if (!this.sovereigns.thranduil)
-          this.sovereigns.thranduil = new Thranduil(
-            this.q,
-            this.characterHandler,
-            this.logger,
-          );
+        this.sovereigns.thranduil ??= new Thranduil(
+          this.q,
+          this.characterHandler,
+          this.logger,
+        );
         return this.sovereigns.thranduil;
       case 'brand':
-        if (!this.sovereigns.brand)
-          this.sovereigns.brand = new Brand(
-            this.q,
-            this.characterHandler,
-            this.logger,
-          );
+        this.sovereigns.brand ??= new Brand(
+          this.q,
+          this.characterHandler,
+          this.logger,
+        );
         return this.sovereigns.brand;
       case 'dain':
-        if (!this.sovereigns.dain)
-          this.sovereigns.dain = new Dain(
-            this.q,
-            this.characterHandler,
-            this.logger,
-          );
+        this.sovereigns.dain ??= new Dain(
+          this.q,
+          this.characterHandler,
+          this.logger,
+        );
         return this.sovereigns.dain;
       case 'denethor':
-        if (!this.sovereigns.denethor)
-          this.sovereigns.denethor = new Denethor(
-            this.q,
-            this.characterHandler,
-            this.logger,
-          );
+        this.sovereigns.denethor ??= new Denethor(
+          this.q,
+          this.characterHandler,
+          this.logger,
+        );
         return this.sovereigns.denethor;
       case 'theoden':
-        if (!this.sovereigns.theoden)
-          this.sovereigns.theoden = new Theoden(
-            this.q,
-            this.characterHandler,
-            this.logger,
-          );
+        this.sovereigns.theoden ??= new Theoden(
+          this.q,
+          this.characterHandler,
+          this.logger,
+        );
         return this.sovereigns.theoden;
     }
   }

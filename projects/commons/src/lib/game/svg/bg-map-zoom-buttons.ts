@@ -1,4 +1,3 @@
-import type { OnInit} from '@angular/core';
 import { Component, input } from '@angular/core';
 import { TuiButton } from '@taiga-ui/core';
 import type { BgMapZoom } from './bg-map-zoom';
@@ -143,12 +142,8 @@ import type { BgMapZoom } from './bg-map-zoom';
     `,
   ],
 })
-export class BgMapZoomButtons implements OnInit {
-  constructor() {}
-
+export class BgMapZoomButtons {
   readonly controls = input.required<BgMapZoom>();
-
-  ngOnInit(): void {}
 
   onMoveUp() {
     this.controls().moveUp();

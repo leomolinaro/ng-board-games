@@ -62,7 +62,7 @@
       @if (zoomFixed) {
       <bg-map-zoom-buttons
         class="b-board-zoom-buttons-widget"
-        [controls]="baronyMap.bgMapZoom"
+        [controls]="baronyMap.bgMapZoom()"
       ></bg-map-zoom-buttons>
       } @if (summaryFixed) {
       <img

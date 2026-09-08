@@ -2,11 +2,10 @@ import type { OnInit, Signal } from '@angular/core';
 import {
   Component,
   computed,
-  EventEmitter,
   inject,
   input,
   isDevMode,
-  Output,
+  output,
 } from '@angular/core';
 import type {
   WotrActionDie,
@@ -15,7 +14,7 @@ import type {
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { cardToLabel, combatCardToLabel } from '../card/wotr-card-models';
 import type { WotrCharacterId } from '../character/wotr-character-models';
-import type { WotrFragmentCreator } from '../commons/wotr-action-models';
+import { WotrFragmentCreator } from '../commons/wotr-action-models';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 import { elvenRingLabel } from '../front/wotr-front-models';
@@ -78,6 +77,8 @@ export type WotrLogParsedFragment =
   | WotrLogParsedTokenFragment
   | WotrLogParsedHuntTileFragment;
 
+const FRAGMENT_CREATOR = new WotrFragmentCreator();
+
 @Component({
   selector: 'wotr-log-row',
   template: `
@@ -95,7 +96,7 @@ export type WotrLogParsedFragment =
         'hunt-log': huntLog(),
         breakpoint: debugBreakpoint(),
       }"
-      (click)="logClick.next()"
+      (click)="logClick.emit()"
     >
       @for (fragment of fragments(); track $index) {
         @switch (fragment.type) {
@@ -194,9 +195,7 @@ export type WotrLogParsedFragment =
     `,
   ],
 })
-export class WotrLogRow
-  implements OnInit, WotrFragmentCreator<WotrLogParsedFragment>
-{
+export class WotrLogRow implements OnInit {
   private actionRegistry = inject(WotrActionRegistry);
   private assets = inject(WotrAssetsStore);
   private nationStore = inject(WotrNationStore);
@@ -206,7 +205,7 @@ export class WotrLogRow
 
   log = input.required<WotrLog>();
   debugBreakpoint = input.required<boolean>();
-  @Output() logClick = new EventEmitter<void>();
+  logClick = output<void>();
 
   protected battleLog = computed(() => {
     const log = this.log();
@@ -252,19 +251,14 @@ export class WotrLogRow
       case 'hunt-resolution':
         return [this.string('Hunt Resolution')];
       case 'action': {
-        const fragments =
-          this.actionRegistry.getActionLogFragments<WotrLogParsedFragment>(
-            l.action,
-            l.front,
-            this,
-          );
+        const fragments = this.actionRegistry.getActionLogFragments(
+          l.action,
+          l.front,
+          FRAGMENT_CREATOR,
+        );
         const parsed: WotrLogParsedFragment[] = [];
         for (const f of fragments) {
-          if (typeof f === 'string') {
-            parsed.push(this.string(f));
-          } else {
-            parsed.push(f);
-          }
+          parsed.push(this.parseFragment(f));
         }
         if ('card' in l.story) {
           // TODO WOTR combat card label
@@ -358,18 +352,13 @@ export class WotrLogRow
         ];
       }
       case 'effect': {
-        const fragments =
-          this.actionRegistry.getEffectLogFragments<WotrLogParsedFragment>(
-            l.effect,
-            this,
-          );
+        const fragments = this.actionRegistry.getEffectLogFragments(
+          l.effect,
+          FRAGMENT_CREATOR,
+        );
         const parsed: WotrLogParsedFragment[] = [];
         for (const f of fragments) {
-          if (typeof f === 'string') {
-            parsed.push(this.string(f));
-          } else {
-            parsed.push(f);
-          }
+          parsed.push(this.parseFragment(f));
         }
         return parsed;
       }
@@ -401,10 +390,10 @@ export class WotrLogRow
           return this.nation(f.nation);
         case 'player':
           return this.player(f.front);
+        case 'character':
+          return this.character(f.character);
         case 'region':
           return this.region(f.region);
-        case 'string':
-          return this.string(f.label);
         case 'token':
           return this.token(f.token, f.front);
       }
@@ -436,35 +425,38 @@ export class WotrLogRow
     }
   }
 
-  elvenRing(ring: WotrElvenRing): WotrLogParsedStringFragment {
+  private elvenRing(ring: WotrElvenRing): WotrLogParsedStringFragment {
     return { type: 'string', label: elvenRingLabel(ring) };
   }
 
-  character(characterId: WotrCharacterId): WotrLogParsedStringFragment {
+  private character(characterId: WotrCharacterId): WotrLogParsedStringFragment {
     const companion = this.q.character(characterId);
     return { type: 'string', label: companion.name };
   }
 
-  player(front: WotrFrontId): WotrLogParsedPlayerFragment {
+  private player(front: WotrFrontId): WotrLogParsedPlayerFragment {
     const player = this.playerInfoStore.player(front);
     return { type: 'player', label: player.name, front };
   }
 
-  region(regionId: WotrRegionId): WotrLogParsedRegionFragment {
+  private region(regionId: WotrRegionId): WotrLogParsedRegionFragment {
     const region = this.regionStore.region(regionId);
     return { type: 'region', region };
   }
 
-  nation(nationId: WotrNationId): WotrLogParsedNationFragment {
+  private nation(nationId: WotrNationId): WotrLogParsedNationFragment {
     const nation = this.nationStore.nation(nationId);
     return { type: 'nation', nation };
   }
 
-  die(die: WotrActionDie, frontId: WotrFrontId): WotrLogParsedDieFragment {
+  private die(
+    die: WotrActionDie,
+    frontId: WotrFrontId,
+  ): WotrLogParsedDieFragment {
     return { type: 'die', dieImage: this.assets.actionDieImage(die, frontId) };
   }
 
-  token(
+  private token(
     token: WotrActionToken,
     frontId: WotrFrontId,
   ): WotrLogParsedTokenFragment {
@@ -474,7 +466,7 @@ export class WotrLogRow
     };
   }
 
-  huntTile(tile: WotrHuntTileId): WotrLogParsedHuntTileFragment {
+  private huntTile(tile: WotrHuntTileId): WotrLogParsedHuntTileFragment {
     return { type: 'hunt-tile', tileImage: this.assets.huntTileImage(tile) };
   }
 }

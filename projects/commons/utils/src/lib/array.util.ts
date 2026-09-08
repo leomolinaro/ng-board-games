@@ -2,30 +2,12 @@ export function range<T = number>(
   length: number,
   supplier?: (index: number) => T,
 ): T[] {
-  if (!supplier) {
-    supplier = (index) => index as unknown as T;
-  }
+  supplier ??= (index) => index as unknown as T;
   const array: T[] = [];
   for (let i = 0; i < length; i++) {
     array.push(supplier(i));
   }
   return array;
-}
-
-export function isEmpty<T>(array: T[]): boolean {
-  return !isNotEmpty(array);
-}
-
-export function isNotEmpty<T>(array: T[]): boolean {
-  return !!(array && array.length);
-}
-
-export function sortComparatorByKey(
-  key: string,
-): (val1: object, val2: object) => number {
-  return (val1: Record<string, any>, val2: Record<string, any>) => {
-    return val1[key] < val2[key] ? -1 : val1[key] === val2[key] ? 0 : 1;
-  };
 }
 
 /**
@@ -51,21 +33,14 @@ export function toMap<T, K extends string, V>(
   keyGetter: (e: T, index: number) => K,
   valueGetter?: (e: T, key: K, index: number) => V,
 ): Record<K, V> {
-  const vG = valueGetter || ((e) => e as unknown as V);
+  const vG = valueGetter ?? ((e) => e as unknown as V);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   const map: Record<K, V> = {} as any;
   array?.forEach((e, index) => {
     const key = keyGetter(e, index);
     map[key] = vG(e, key, index);
   });
   return map;
-}
-
-export function safeArray<T>(array: T[]): T[] {
-  return array || [];
-}
-
-export function flattify<T>(arrays: T[][]): T[] {
-  return ([] as T[]).concat.apply([] as T[], arrays);
 }
 
 export function entitiesToNodes<E, N>(
@@ -101,9 +76,7 @@ export function group<T, K extends number | string, V = T>(
   getKey: (e: T) => K,
   getValue?: (e: T) => V,
 ): Record<K, V[]> {
-  if (!getValue) {
-    getValue = (e) => e as unknown as V;
-  }
+  getValue ??= (e) => e as unknown as V;
   const map = {} as Record<K, V[]>;
   array?.forEach((e) => {
     const key = getKey(e);

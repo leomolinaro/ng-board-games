@@ -5,8 +5,10 @@ export interface BgReduxDevtoolsInstance {
 
 export class BgReduxDevtools {
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.reduxDevtoolsExtension = window
-      ? (window as any).__REDUX_DEVTOOLS_EXTENSION__
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        (window as any).__REDUX_DEVTOOLS_EXTENSION__
       : null;
   }
 

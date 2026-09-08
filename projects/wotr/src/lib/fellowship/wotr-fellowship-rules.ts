@@ -78,6 +78,6 @@ export class WotrFellowshipRules {
     if (options?.asLevel) return options.asLevel;
     const groupLevel = this.characterRules.characterGroupLevel(companions);
     const fellowshipProgress = this.fellowshipStore.progress();
-    return fellowshipProgress + groupLevel + (options?.extraMovements || 0);
+    return fellowshipProgress + groupLevel + (options?.extraMovements ?? 0);
   }
 }

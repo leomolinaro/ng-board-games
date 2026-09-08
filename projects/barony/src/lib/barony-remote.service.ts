@@ -2,11 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import type {
   BgCloudCollectionQuery,
   BgStoryDoc,
-  BgUser} from '@leobg/commons';
-import {
-  BgCloudService
+  BgUser,
 } from '@leobg/commons';
-import type { Observable } from 'rxjs';
+import { BgCloudService } from '@leobg/commons';
 import type { BaronyColor, BaronyLandType, BaronyStory } from './barony-models';
 
 export interface BaronyGameDoc {
@@ -59,14 +57,14 @@ export class BaronyRemoteService {
   selectGames$() {
     return this.cloud.selectAll$(this.games());
   }
-  insertGame$(game: BaronyGameDoc): Observable<BaronyGameDoc> {
-    return this.cloud.set$<BaronyGameDoc>(game.id, game, this.games());
+  insertGame(game: BaronyGameDoc): Promise<BaronyGameDoc> {
+    return this.cloud.set<BaronyGameDoc>(game.id, game, this.games());
   }
-  updateGame$(patch: Partial<BaronyGameDoc>, gameId: string) {
-    return this.cloud.update$(gameId, patch, this.games());
+  updateGame(patch: Partial<BaronyGameDoc>, gameId: string) {
+    return this.cloud.update(gameId, patch, this.games());
   }
-  deleteGame$(gameId: string) {
-    return this.cloud.delete$(gameId, this.games());
+  deleteGame(gameId: string) {
+    return this.cloud.delete(gameId, this.games());
   }
 
   private players(gameId: string) {
@@ -76,37 +74,37 @@ export class BaronyRemoteService {
   }
   getPlayers(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>  ,
+    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>,
   ) {
     return this.cloud.getAll(this.players(gameId), queryFn);
   }
   selectPlayers$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>  ,
+    queryFn?: BgCloudCollectionQuery<BaronyPlayerDoc>,
   ) {
     return this.cloud.selectAll$(this.players(gameId), queryFn);
   }
   selectPlayer$(playerId: string, gameId: string) {
     return this.cloud.select$(playerId, this.players(gameId));
   }
-  insertPlayer$(
+  insertPlayer(
     player: BaronyPlayerDoc,
     gameId: string,
-  ): Observable<BaronyPlayerDoc> {
-    return this.cloud.set$(player.id, player, this.players(gameId));
+  ): Promise<BaronyPlayerDoc> {
+    return this.cloud.set(player.id, player, this.players(gameId));
   }
-  updatePlayer$(
+  updatePlayer(
     patch: Partial<BaronyPlayerDoc>,
     playerId: string,
     gameId: string,
   ) {
-    return this.cloud.update$(playerId, patch, this.players(gameId));
+    return this.cloud.update(playerId, patch, this.players(gameId));
   }
-  deletePlayer$(playerId: string, gameId: string) {
-    return this.cloud.delete$(playerId, this.players(gameId));
+  deletePlayer(playerId: string, gameId: string) {
+    return this.cloud.delete(playerId, this.players(gameId));
   }
-  deletePlayers$(gameId: string) {
-    return this.cloud.deleteAll$(this.players(gameId));
+  deletePlayers(gameId: string) {
+    return this.cloud.deleteAll(this.players(gameId));
   }
 
   private maps(gameId: string) {
@@ -115,11 +113,11 @@ export class BaronyRemoteService {
   getMap(gameId: string) {
     return this.cloud.get('map', this.maps(gameId));
   }
-  insertMap$(map: BaronyMapDoc, gameId: string): Observable<BaronyMapDoc> {
-    return this.cloud.set$('map', map, this.maps(gameId));
+  insertMap(map: BaronyMapDoc, gameId: string): Promise<BaronyMapDoc> {
+    return this.cloud.set('map', map, this.maps(gameId));
   }
-  deleteMap$(gameId: string) {
-    return this.cloud.delete$('map', this.maps(gameId));
+  deleteMap(gameId: string) {
+    return this.cloud.delete('map', this.maps(gameId));
   }
 
   private stories(gameId: string) {
@@ -127,10 +125,7 @@ export class BaronyRemoteService {
       `barony-games/${gameId}/stories`,
     );
   }
-  getStories(
-    gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>  ,
-  ) {
+  getStories(gameId: string, queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>) {
     return this.cloud.getAll(this.stories(gameId), queryFn);
   }
   getStory$(storyId: string, gameId: string) {
@@ -138,20 +133,20 @@ export class BaronyRemoteService {
   }
   selectStories$(
     gameId: string,
-    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>  ,
+    queryFn?: BgCloudCollectionQuery<BaronyStoryDoc>,
   ) {
     return this.cloud.selectAll$(this.stories(gameId), queryFn);
   }
   selectStory$(storyId: string, gameId: string) {
     return this.cloud.select$(storyId, this.stories(gameId));
   }
-  insertStory$(storyId: string, story: BaronyStoryDoc, gameId: string) {
+  insertStory(storyId: string, story: BaronyStoryDoc, gameId: string) {
     return this.cloud.set$(storyId, story, this.stories(gameId));
   }
-  deleteStory$(storyId: string, gameId: string) {
-    return this.cloud.delete$(storyId, this.stories(gameId));
+  deleteStory(storyId: string, gameId: string) {
+    return this.cloud.delete(storyId, this.stories(gameId));
   }
-  deleteStories$(gameId: string) {
-    return this.cloud.deleteAll$(this.stories(gameId));
+  deleteStories(gameId: string) {
+    return this.cloud.deleteAll(this.stories(gameId));
   }
 }

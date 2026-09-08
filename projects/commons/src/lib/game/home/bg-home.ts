@@ -1,17 +1,11 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
-import type { OnDestroy, OnInit, TemplateRef, Type } from '@angular/core';
-import { Component, ViewChild, inject, input } from '@angular/core';
+import type { OnInit, Type } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BgDialogService } from '@leobg/commons';
 import type { BgTransformFn } from '@leobg/commons/utils';
-import {
-  BgTransformPipe,
-  ExhaustingEvent,
-  Loading,
-  UntilDestroy,
-  concatJoin,
-} from '@leobg/commons/utils';
+import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiTabBar } from '@taiga-ui/addon-mobile';
 import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
 import { TuiButton, TuiDropdown, TuiTitle } from '@taiga-ui/core';
@@ -26,7 +20,7 @@ import {
 } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 import type { Observable } from 'rxjs';
-import { firstValueFrom, map, mapTo, of, switchMap } from 'rxjs';
+import { map, of } from 'rxjs';
 import { BgAuthService } from '../../authentication';
 import { BgAccountButton } from '../../authentication/bg-account-button';
 import { BgIfUserDirective } from '../../authentication/bg-if-user-of.directive';
@@ -49,12 +43,12 @@ import { BgNewGameDialog } from './bg-new-game-dialog';
 export interface BgHomeConfig<Pid extends string, Opt = unknown> {
   boardGame: BgBoardGame;
   boardGameName: string;
-  startGame$: (gameId: string) => Observable<unknown>;
-  deleteGame$: (gameId: string) => Observable<unknown>;
-  createGame$: (
+  startGame: (gameId: string) => Promise<void>;
+  deleteGame: (gameId: string) => Promise<void>;
+  createGame: (
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<Pid>[],
-  ) => Observable<unknown>;
+  ) => Promise<void>;
   playerIds: () => Pid[];
   playerIdCssClass: (playerId: Pid) => string;
   optionsComponent?: () => Type<BgGameOptionsComponent<Opt>>;
@@ -100,8 +94,7 @@ interface GameStateDecode {
     RouterLink,
   ],
 })
-@UntilDestroy
-export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
+export class BgHome<Pid extends string, Opt> implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
   private protoGameService = inject(BgProtoGameService);
   private authService = inject(BgAuthService);
@@ -109,7 +102,6 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
 
   config = input.required<BgHomeConfig<Pid, Opt>>();
   actions = input<BgHomeAction[]>();
-  @ViewChild('newGameDialog') newGameDialog!: TemplateRef<void>;
 
   private stateDecodes: Record<BgProtoGameState, GameStateDecode> = {
     open: { color: '#4caf50', label: 'Open' },
@@ -120,7 +112,6 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
     state: BgProtoGameState,
   ) => this.stateDecodes[state];
 
-  @Loading() loading$!: Observable<boolean>;
   isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)
     .pipe(map((result) => result.matches));
@@ -133,8 +124,6 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
       ref.where('boardGame', '==', this.config().boardGame),
     );
   }
-
-  ngOnDestroy() {}
 
   protected async openNewGameDialog() {
     const game = await this.dialogs.open<void, NewGame>(BgNewGameDialog, {
@@ -153,17 +142,14 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
       owner: user,
       state: 'open',
     };
-    const savedProtoGame = await firstValueFrom(
-      this.protoGameService.insertProtoGame$(protoGame),
-    );
-    const inserts: Observable<BgProtoPlayer<Pid>>[] = this.config()
-      .playerIds()
-      .map((id) => this.insertProtoPlayer$(id, savedProtoGame.id));
-    await firstValueFrom(concatJoin(inserts));
+    const savedProtoGame =
+      await this.protoGameService.insertProtoGame(protoGame);
+    for (const id of this.config().playerIds())
+      await this.insertProtoPlayer(id, savedProtoGame.id);
     await this.playersRoom(savedProtoGame);
   }
 
-  private insertProtoPlayer$(id: Pid, gameId: string) {
+  private insertProtoPlayer(id: Pid, gameId: string) {
     const player: BgProtoPlayer<Pid> = {
       id: id,
       name: '',
@@ -171,17 +157,16 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
       type: 'closed',
       ready: false,
     };
-    return this.protoGameService.insertProtoPlayer$(player, gameId);
+    return this.protoGameService.insertProtoPlayer(player, gameId);
   }
 
-  @ExhaustingEvent()
   deleteGame(game: BgProtoGame) {
-    return this.deleteGame$(game.id);
+    void this.deleteGameId(game.id);
   }
 
   async enterGame(game: BgProtoGame) {
     if (game.state === 'running') {
-      return firstValueFrom(this.config().startGame$(game.id));
+      return this.config().startGame(game.id);
     } else {
       return this.playersRoom(game);
     }
@@ -195,42 +180,34 @@ export class BgHome<Pid extends string, Opt> implements OnInit, OnDestroy {
       label: game.name,
       data: {
         protoGame: game,
-        createGame$: (protoGame, protoPlayers) =>
+        createGame: (protoGame, protoPlayers) =>
           this.createGame$(protoGame, protoPlayers),
-        deleteGame$: (gameId) => this.deleteGame$(gameId),
+        deleteGame: (gameId) => this.deleteGameId(gameId),
         playerIdToCssClass: (role) => this.config().playerIdCssClass(role),
         optionsComponent: this.config().optionsComponent?.(),
       },
     });
-    if (output?.startGame)
-      return firstValueFrom(this.config().startGame$(output.gameId));
+    if (output?.startGame) return this.config().startGame(output.gameId);
     return of(void 0);
   }
 
-  private createGame$(
+  private async createGame$(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<Pid>[],
   ) {
     const activeProtoPlayers = protoPlayers.filter(
       (p) => p.type === 'user' || p.type === 'ai',
     );
-    return this.config()
-      .createGame$(protoGame, activeProtoPlayers)
-      .pipe(
-        switchMap(() =>
-          this.protoGameService.updateProtoGame$(
-            { state: 'running' },
-            protoGame.id,
-          ),
-        ),
-      );
+    await this.config().createGame(protoGame, activeProtoPlayers);
+    await this.protoGameService.updateProtoGame(
+      { state: 'running' },
+      protoGame.id,
+    );
   }
 
-  private deleteGame$(gameId: string) {
-    return concatJoin([
-      this.config().deleteGame$(gameId),
-      this.protoGameService.deleteProtoPlayers$(gameId),
-      this.protoGameService.deleteProtoGame$(gameId),
-    ]).pipe(mapTo(void 0));
+  private async deleteGameId(gameId: string) {
+    await this.config().deleteGame(gameId);
+    await this.protoGameService.deleteProtoPlayers(gameId);
+    await this.protoGameService.deleteProtoGame(gameId);
   }
 }

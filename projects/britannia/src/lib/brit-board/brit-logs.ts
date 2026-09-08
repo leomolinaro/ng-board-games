@@ -1,6 +1,4 @@
-import type { OnChanges } from '@angular/core';
-import { Component, ElementRef, inject, input } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
+import { Component, effect, ElementRef, inject, input } from '@angular/core';
 import type { BritLog } from '../brit-game-state.models';
 import { BritLogRow } from './brit-log-row';
 
@@ -24,18 +22,20 @@ import { BritLogRow } from './brit-log-row';
     `,
   ],
 })
-export class BritLogs implements OnChanges {
+export class BritLogs {
+  constructor() {
+    effect(() => this.scrollToBottom());
+  }
+
   private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly logs = input.required<BritLog[]>();
 
-  ngOnChanges(changes: SimpleChanges<this>) {
-    if (changes.logs) {
-      setTimeout(
-        () =>
-          (this.elementRef.nativeElement.scrollTop =
-            this.elementRef.nativeElement.scrollHeight),
-      );
-    }
+  private scrollToBottom() {
+    this.logs();
+    setTimeout(() => {
+      this.elementRef.nativeElement.scrollTop =
+        this.elementRef.nativeElement.scrollHeight;
+    });
   }
 }

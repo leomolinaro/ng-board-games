@@ -1,12 +1,5 @@
-import type {
-  Signal} from '@angular/core';
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  output
-} from '@angular/core';
+import type { Signal } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import type { WotrUnitImage } from '../assets/wotr-assets-store';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import type {
@@ -16,11 +9,8 @@ import type {
   WotrMinionId,
 } from '../character/wotr-character-models';
 import type { WotrFellowship } from '../fellowship/wotr-fellowship-models';
-import type {
-  WotrMapPoint} from '../game/board/map/wotr-map.service';
-import {
-  WotrMapService,
-} from '../game/board/map/wotr-map.service';
+import type { WotrMapPoint } from '../game/board/map/wotr-map.service';
+import { WotrMapService } from '../game/board/map/wotr-map.service';
 import type {
   WotrArmyUnitType,
   WotrFreeUnitType,
@@ -417,8 +407,8 @@ export class WotrRegionArea {
     army: WotrArmy,
   ): [WotrArmyUnitNode[], number, number] {
     const nRegulars =
-      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) || 0;
-    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) || 0;
+      army.regulars?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
+    const nElites = army.elites?.reduce((n, unit) => n + unit.quantity, 0) ?? 0;
 
     const unitNodes: WotrArmyUnitNode[] = [];
     const nEliteNodes = army.elites ? Math.min(2, army.elites.length) : 0;

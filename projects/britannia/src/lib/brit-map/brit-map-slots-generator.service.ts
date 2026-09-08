@@ -58,10 +58,7 @@ export class BritMapSlotsGeneratorService {
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
   ): BritAreaSlots {
-    const areaSlots: Record<
-      BritAreaId,
-      Record<number, BritMapPoint[]>
-    > = {} as any;
+    const areaSlots = {} as Record<BritAreaId, Record<number, BritMapPoint[]>>;
     const landPointsById = this.generateLandPoints(
       xMax,
       yMax,
@@ -95,7 +92,7 @@ export class BritMapSlotsGeneratorService {
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
   ) {
-    const landPointsById: Record<BritLandAreaId, BritLandPoints> = {} as any;
+    const landPointsById = {} as Record<BritLandAreaId, BritLandPoints>;
     const landPointByYByX: Record<
       number,
       Record<number, BritMapLandPoint>

@@ -1,14 +1,8 @@
-import type { OnChanges} from '@angular/core';
-import { Component, ViewChild, input, output } from '@angular/core';
+import { Component, computed, input, output, viewChild } from '@angular/core';
 import { BgMapZoom, BgSvg } from '@leobg/commons';
-import type { SimpleChanges} from '@leobg/commons/utils';
 import { arrayUtil } from '@leobg/commons/utils';
-import type {
-  BaronyLand,
-  BaronyLandCoordinates} from '../barony-models';
-import {
-  landCoordinatesToId,
-} from '../barony-models';
+import type { BaronyLand, BaronyLandCoordinates } from '../barony-models';
+import { landCoordinatesToId } from '../barony-models';
 import { BaronyLandComponent } from './barony-land-tile';
 
 @Component({
@@ -99,14 +93,15 @@ import { BaronyLandComponent } from './barony-land-tile';
           scale: 20,
         }"
       >
+        @let isVal = isValid();
         @for (land of lands(); track land.id) {
           <svg:g
             baronyLandTile
             [type]="land.type"
             [coordinates]="land.coordinates"
             [pawns]="land.pawns"
-            [active]="isValid ? isValid[land.id] : false"
-            [disabled]="isValid ? !isValid[land.id] : false"
+            [active]="isVal ? isVal[land.id] : false"
+            [disabled]="isVal ? !isVal[land.id] : false"
             (landTileClick)="onLandTileClick(land)"
           ></svg:g>
         }
@@ -114,36 +109,28 @@ import { BaronyLandComponent } from './barony-land-tile';
     </svg>
   `,
 })
-export class BaronyMap implements OnChanges {
-  constructor() {}
-
+export class BaronyMap {
   readonly lands = input.required<BaronyLand[]>();
   readonly validLands = input<BaronyLandCoordinates[] | null>(null);
   readonly landTileClick = output<BaronyLand>();
 
-  @ViewChild(BgMapZoom, { static: true })
-  bgMapZoom!: BgMapZoom;
+  bgMapZoom = viewChild.required(BgMapZoom);
 
-  isValid: Record<string, boolean> | null = null;
-
-  ngOnChanges(changes: SimpleChanges<BaronyMap>): void {
-    if (changes.validLands) {
-      const validLands = this.validLands();
-      if (validLands) {
-        this.isValid = arrayUtil.toMap(
-          validLands,
-          (lt) => landCoordinatesToId(lt),
-          () => true,
-        );
-      } else {
-        this.isValid = null;
-      }
+  protected isValid = computed<Record<string, boolean> | null>(() => {
+    const validLands = this.validLands();
+    if (validLands) {
+      return arrayUtil.toMap(
+        validLands,
+        (lt) => landCoordinatesToId(lt),
+        () => true,
+      );
+    } else {
+      return null;
     }
-  }
+  });
 
   onLandTileClick(landTile: BaronyLand) {
-    if (this.isValid && this.isValid[landTile.id]) {
-      this.landTileClick.emit(landTile);
-    }
+    const isValid = this.isValid();
+    if (isValid?.[landTile.id]) this.landTileClick.emit(landTile);
   }
 }

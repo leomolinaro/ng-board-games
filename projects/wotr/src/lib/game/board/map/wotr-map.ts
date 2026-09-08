@@ -1,13 +1,12 @@
-import type {
-  ElementRef} from '@angular/core';
+import type { ElementRef } from '@angular/core';
 import {
   Component,
-  ViewChild,
   computed,
   inject,
   input,
   isDevMode,
   output,
+  viewChild,
 } from '@angular/core';
 import { BgMapZoom, BgSvg } from '@leobg/commons';
 import { downloadUtil } from '@leobg/commons/utils';
@@ -29,7 +28,10 @@ import { WotrHuntBox } from '../../../hunt/wotr-hunt-box';
 import type { WotrHuntState } from '../../../hunt/wotr-hunt-store';
 import { WotrPoliticalTrack } from '../../../nation/wotr-political-track';
 import { WotrRegionAreas } from '../../../region/wotr-region-areas';
-import type { WotrRegion, WotrRegionId } from '../../../region/wotr-region-models';
+import type {
+  WotrRegion,
+  WotrRegionId,
+} from '../../../region/wotr-region-models';
 import { WotrGameUi } from '../../wotr-game-ui';
 import { WotrMapSlotsGenerator } from './wotr-map-slots-generator';
 import { WotrMapService } from './wotr-map.service';
@@ -131,34 +133,30 @@ export class WotrMap {
   shadow = input.required<WotrFront>();
   fellowship = input.required<WotrFellowship>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
-  fronts = computed(() => [this.freePeoples(), this.shadow()]);
 
   regionClick = output<WotrRegion>();
   fellowshipBoxClick = output<void>();
 
+  protected fronts = computed(() => [this.freePeoples(), this.shadow()]);
   protected viewBox = this.mapService.getViewBox();
   protected mapWidth = this.mapService.getWidth();
 
   protected testGridPoints: { x: number; y: number; color: string }[] = [];
 
-  @ViewChild(BgSvg) bgSvg!: BgSvg;
-  @ViewChild('wotrMap') mapElementRef!: ElementRef<SVGGElement>;
-  @ViewChild(BgMapZoom, { static: true }) bgMapZoom!: BgMapZoom;
+  private bgSvg = viewChild.required(BgSvg);
+  private mapElementRef =
+    viewChild.required<ElementRef<SVGGElement>>('wotrMap');
 
   protected isDevMode = isDevMode();
 
   protected mapImageSource = this.assets.mapImageSource();
 
-  // onUnitClick (unitNode: WotrUnitNode) {
-  //   if (this.isValidUnit && this.isValidUnit[unitNode.id]) {
-  //     this.unitClick.emit (unitNode.unit);
-
   calculateSlots() {
     const splittedViewBox = this.viewBox.split(' ');
     const width = +splittedViewBox[2];
     const height = +splittedViewBox[3];
-    const screenCTM = this.mapElementRef.nativeElement.getScreenCTM()!;
-    const pt = this.bgSvg.createSVGPoint();
+    const screenCTM = this.mapElementRef().nativeElement.getScreenCTM()!;
+    const pt = this.bgSvg().createSVGPoint();
     const coordinatesToAreaId = (x: number, y: number) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;

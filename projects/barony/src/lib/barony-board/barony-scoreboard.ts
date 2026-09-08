@@ -1,5 +1,4 @@
-import type { OnChanges, SimpleChanges } from '@angular/core';
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { BgSvg } from '@leobg/commons';
 import { objectUtil } from '@leobg/commons/utils';
 import type { BaronyColor, BaronyPlayer } from '../barony-models';
@@ -30,7 +29,7 @@ interface BaronyCounterNode {
           preserveAspectRatio="xMinYMin"
           xlink:href="assets/barony/scoreboard.jpg"
         ></svg:image>
-        @for (counterNode of counterNodes; track counterNode.color) {
+        @for (counterNode of counterNodes(); track counterNode.color) {
           <svg:image
             [attr.width]="counterWidth"
             [attr.height]="counterHeight"
@@ -45,40 +44,14 @@ interface BaronyCounterNode {
   `,
   imports: [BgSvg],
 })
-export class BaronyScoreboard implements OnChanges {
-  constructor() {}
-
+export class BaronyScoreboard {
   players = input.required<BaronyPlayer[]>();
 
   counterWidth = 50;
   counterHeight = 50;
 
-  counterNodes!: BaronyCounterNode[];
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['players']) {
-      let changed = !!changes['players'].previousValue;
-      if (!changed) {
-        changed =
-          this.players.length !== changes['players'].previousValue?.length;
-      }
-      const i = 0;
-      while (!changed && i < this.players.length) {
-        const player = this.players()[i];
-        const oldPlayer = changes['players'].previousValue[i];
-        if (player !== oldPlayer && player.score !== oldPlayer.score) {
-          changed = true;
-        }
-      }
-
-      if (changed) {
-        this.refreshCounterNodes();
-      }
-    }
-  }
-
-  private refreshCounterNodes() {
-    this.counterNodes = [];
+  protected counterNodes = computed<BaronyCounterNode[]>(() => {
+    const counterNodes: BaronyCounterNode[] = [];
     const playersByScore: Record<number, BaronyPlayer[]> = {};
     this.players().forEach((p) => {
       let sameScorePlayers = playersByScore[p.score];
@@ -88,26 +61,30 @@ export class BaronyScoreboard implements OnChanges {
       }
       sameScorePlayers.push(p);
     });
-    objectUtil.forEachProp(playersByScore, (score, players: BaronyPlayer[]) => {
-      players.forEach((p, index) => {
-        let row = 0;
-        let col = 0;
-        if (p.score % 15 === 0) {
-          col = p.score / 15;
-        } else if ((p.score - 10) % 15 === 0) {
-          row = 1;
-          col = (p.score - 10) / 15;
-        } else {
-          row = 2;
-          col = (p.score - 20) / 15;
-        }
-        this.counterNodes.push({
-          color: p.id,
-          href: `assets/barony/pawns/${p.id}-counter.png`,
-          x: 200 + row * 70 + col * 105 + index * 5,
-          y: 200 + row * 70 + index * 5,
+    objectUtil.forEachProp(
+      playersByScore,
+      (_score, players: BaronyPlayer[]) => {
+        players.forEach((p, index) => {
+          let row = 0;
+          let col;
+          if (p.score % 15 === 0) {
+            col = p.score / 15;
+          } else if ((p.score - 10) % 15 === 0) {
+            row = 1;
+            col = (p.score - 10) / 15;
+          } else {
+            row = 2;
+            col = (p.score - 20) / 15;
+          }
+          counterNodes.push({
+            color: p.id,
+            href: `assets/barony/pawns/${p.id}-counter.png`,
+            x: 200 + row * 70 + col * 105 + index * 5,
+            y: 200 + row * 70 + index * 5,
+          });
         });
-      });
-    });
-  }
+      },
+    );
+    return counterNodes;
+  });
 }

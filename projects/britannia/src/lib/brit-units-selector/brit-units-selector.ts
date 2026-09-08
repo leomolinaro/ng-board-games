@@ -1,6 +1,4 @@
-import type { OnChanges} from '@angular/core';
-import { Component, input, output } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
+import { Component, computed, input, output } from '@angular/core';
 import { TuiIcon } from '@taiga-ui/core';
 
 @Component({
@@ -20,15 +18,15 @@ import { TuiIcon } from '@taiga-ui/core';
       <div class="brit-unit-buttons">
         <button
           (click)="onIncrease()"
-          [class.is-active]="enableIncrease"
-          [class.is-disabled]="!enableIncrease"
+          [class.is-active]="enableIncrease()"
+          [class.is-disabled]="!enableIncrease()"
         >
           <tui-icon icon="chevron-up" />
         </button>
         <button
           (click)="onDecrease()"
-          [class.is-active]="enableDecrease"
-          [class.is-disabled]="!enableDecrease"
+          [class.is-active]="enableDecrease()"
+          [class.is-disabled]="!enableDecrease()"
         >
           <tui-icon icon="chevron-down" />
         </button>
@@ -43,7 +41,7 @@ import { TuiIcon } from '@taiga-ui/core';
   `,
   styleUrls: ['./brit-units-selector.scss'],
 })
-export class BritUnitsSelector implements OnChanges {
+export class BritUnitsSelector {
   readonly number = input.required<number>();
   readonly imageSource = input.required<string>();
   readonly min = input.required<number>();
@@ -51,24 +49,21 @@ export class BritUnitsSelector implements OnChanges {
   readonly numberChange = output<number>();
   readonly confirm = output<void>();
 
-  enableIncrease = false;
-  enableDecrease = false;
-
-  ngOnChanges(changes: SimpleChanges<this>) {
-    if (changes.number || changes.min || changes.max) {
-      this.enableIncrease = this.number() < this.max();
-      this.enableDecrease = this.number() > this.min();
-    }
-  }
+  protected enableIncrease = computed<boolean>(
+    () => this.number() < this.max(),
+  );
+  protected enableDecrease = computed<boolean>(
+    () => this.number() > this.min(),
+  );
 
   onIncrease() {
-    if (this.enableIncrease) {
+    if (this.enableIncrease()) {
       this.numberChange.emit(this.number() + 1);
     }
   }
 
   onDecrease() {
-    if (this.enableDecrease) {
+    if (this.enableDecrease()) {
       this.numberChange.emit(this.number() - 1);
     }
   }

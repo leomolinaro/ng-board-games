@@ -34,8 +34,8 @@ export class WotrActionDieHandler {
   private actionDieModifiers = inject(WotrActionDieModifiers);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerStory('die', this.die);
     this.actionRegistry.registerStory('die-pass', this.diePass);
     this.actionRegistry.registerStory('token', this.token);
@@ -72,7 +72,7 @@ export class WotrActionDieHandler {
     this.frontStore.removeActionToken(token, front);
   }
 
-  private diePass: WotrStoryApplier<WotrPassStory> = async (story, front) => {
+  private diePass: WotrStoryApplier<WotrPassStory> = (story, front) => {
     if (story.elvenRing) {
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
     }
@@ -91,13 +91,9 @@ export class WotrActionDieHandler {
     this.frontStore.removeCurrentActionToken(front);
   };
 
-  private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = async (
-    story,
-    front,
-  ) => {
-    if (story.elvenRing) {
+  private tokenSkip: WotrStoryApplier<WotrSkipTokensStory> = (story, front) => {
+    if (story.elvenRing)
       this.frontHandler.convertDieWithElvenRing(story.elvenRing, front);
-    }
     this.logger.logStory(story, front);
   };
 
@@ -106,15 +102,15 @@ export class WotrActionDieHandler {
       'action-roll': (action, front) => {
         this.frontStore.setActionDice(action.dice, front);
       },
-      'action-dice-discard': async (action, front) => {
+      'action-dice-discard': (action) => {
         for (const die of action.dice) {
           this.frontStore.removeActionDie(die, action.front);
         }
       },
-      'action-die-skip': async (action, front) => {
+      'action-die-skip': () => {
         // empty (the die will already be removed at the end of the action)
       },
-      'action-die-change': async (action, front) => {
+      'action-die-change': (action, front) => {
         this.changeActionDie(action.die, action.toDie, front);
       },
     };

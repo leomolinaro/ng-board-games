@@ -1,4 +1,3 @@
-import type { OnChanges} from '@angular/core';
 import { Component, input, output } from '@angular/core';
 import type { BaronyResourceType } from '../barony-models';
 
@@ -37,13 +36,9 @@ import type { BaronyResourceType } from '../barony-models';
   `,
   imports: [],
 })
-export class BaronyResourcesSelector implements OnChanges {
-  constructor() {}
-
+export class BaronyResourcesSelector {
   readonly resources = input.required<BaronyResourceType[]>();
   readonly resourceClick = output<BaronyResourceType>();
-
-  ngOnChanges(): void {}
 
   onResourceClick(resource: BaronyResourceType) {
     this.resourceClick.emit(resource);

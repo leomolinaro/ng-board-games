@@ -191,7 +191,9 @@ export class BaronyGameService extends ABgGameService<
     return this.gameStore.getPlayer(playerId);
   }
   protected getGameOwner() {
-    return this.gameStore.gameOwner();
+    const gameOwner = this.gameStore.gameOwner();
+    if (!gameOwner) throw new Error('Game owner is not set');
+    return gameOwner;
   }
   protected startTemporaryState() {
     this.gameStore.startTemporaryState();
@@ -205,7 +207,7 @@ export class BaronyGameService extends ABgGameService<
     story: BaronyStoryDoc,
     gameId: string,
   ) {
-    return this.remote.insertStory$(storyId, story, gameId);
+    return from(this.remote.insertStory(storyId, story, gameId));
   }
   protected selectStoryDoc$(storyId: string, gameId: string) {
     return this.remote.selectStory$(storyId, gameId);

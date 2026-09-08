@@ -54,7 +54,7 @@ import type { WotrGameOptions } from './options/wotr-game-options';
 
 export interface WotrGameState {
   gameId: string;
-  gameOwner: BgUser;
+  gameOwner: BgUser | null;
   gameOptions: WotrGameOptions;
   players: WotrPlayerInfoState;
   frontState: WotrFrontState;
@@ -71,7 +71,7 @@ export interface WotrGameState {
 function initialeState(): WotrGameState {
   return {
     gameId: '',
-    gameOwner: null as any,
+    gameOwner: null,
     gameOptions: {
       expansions: [],
       variants: [],
@@ -108,34 +108,34 @@ export class WotrGameStore extends signalStore(
     const battleStore = inject(WotrBattleStore);
 
     super();
-    playerInfoStore.update = (actionName, updater) =>
+    playerInfoStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, players: updater(s.players) }));
     playerInfoStore.state = this.players;
-    frontStore.update = (actionName, updater) =>
+    frontStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, frontState: updater(s.frontState) }));
     frontStore.state = this.frontState;
-    regionStore.update = (actionName, updater) =>
+    regionStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, regionState: updater(s.regionState) }));
     regionStore.state = this.regionState;
-    nationStore.update = (actionName, updater) =>
+    nationStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, nationState: updater(s.nationState) }));
     nationStore.state = this.nationState;
-    characterStore.update = (actionName, updater) =>
+    characterStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({
         ...s,
         characterState: updater(s.characterState),
       }));
     characterStore.state = this.characterState;
-    fellowshipStore.update = (actionName, updater) =>
+    fellowshipStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, fellowship: updater(s.fellowship) }));
     fellowshipStore.state = this.fellowship;
-    huntStore.update = (actionName, updater) =>
+    huntStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, hunt: updater(s.hunt) }));
     huntStore.state = this.hunt;
-    logStore.update = (actionName, updater) =>
+    logStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, logs: updater(s.logs) }));
     logStore.state = this.logs;
-    battleStore.update = (actionName, updater) =>
+    battleStore.update = (_actionName, updater) =>
       patchState(this, (s) => ({ ...s, battle: updater(s.battle) }));
     battleStore.state = this.battle;
   }
@@ -156,6 +156,7 @@ export class WotrGameStore extends signalStore(
       gameOwner,
       gameOptions,
       players: {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         map: arrayUtil.toMap(players, (p) => p.id) as Record<
           WotrFrontId,
           WotrPlayerInfo
@@ -183,7 +184,9 @@ export class WotrGameStore extends signalStore(
     return this.gameId();
   }
   getGameOwner(): BgUser {
-    return this.gameOwner();
+    const owner = this.gameOwner();
+    if (!owner) throw new Error('Game owner is not set');
+    return owner;
   }
 
   kome = computed(() => this.gameOptions().expansions.includes('kome'));

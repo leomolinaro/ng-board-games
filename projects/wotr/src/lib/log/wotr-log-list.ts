@@ -1,6 +1,12 @@
-import type { OnChanges, OnInit } from '@angular/core';
-import { Component, ElementRef, inject, input, isDevMode } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
+import type { OnInit } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  isDevMode,
+} from '@angular/core';
 import type { WotrLog } from './wotr-log-models';
 import { WotrLogRow } from './wotr-log-row';
 
@@ -29,7 +35,11 @@ const DEBUG_LOG_INDEXES = 'wotr.debugLogIndex';
     `,
   ],
 })
-export class WotrLogList implements OnChanges, OnInit {
+export class WotrLogList implements OnInit {
+  constructor() {
+    effect(() => this.scrollToBottom());
+  }
+
   private elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   logs = input.required<WotrLog[]>();
@@ -42,13 +52,12 @@ export class WotrLogList implements OnChanges, OnInit {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges<this>) {
-    if (changes.logs) {
-      setTimeout(() => {
-        this.elementRef.nativeElement.scrollTop =
-          this.elementRef.nativeElement.scrollHeight;
-      });
-    }
+  private scrollToBottom() {
+    this.logs();
+    setTimeout(() => {
+      this.elementRef.nativeElement.scrollTop =
+        this.elementRef.nativeElement.scrollHeight;
+    });
   }
 
   onLogClick(index: number) {

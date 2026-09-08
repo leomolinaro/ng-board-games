@@ -65,7 +65,7 @@ export class WotrStoryService extends ABgGameService<
     story: WotrStoryDoc,
     gameId: string,
   ) {
-    return this.remote.insertStory$(storyId, story, gameId);
+    return from(this.remote.insertStory(storyId, story, gameId));
   }
   protected override selectStoryDoc$(storyId: string, gameId: string) {
     return this.remote.selectStory$(storyId, gameId);
@@ -133,8 +133,8 @@ export class WotrStoryService extends ABgGameService<
     }
   }
 
-  eraseLast() {
-    this.remote.deleteStory$(
+  async eraseLast() {
+    await this.remote.deleteStory(
       getStoryId(this.storyTime, 'free-peoples'),
       this.getGameId(),
     );
@@ -153,20 +153,19 @@ export class WotrStoryService extends ABgGameService<
     getTask: (
       front: WotrFrontId,
     ) => (playerService: WotrPlayerStoryService) => Promise<WotrStory>,
-  ) {
+  ): Promise<Record<WotrFrontId, WotrStory>> {
     const stories = await this.executeTasks2(
       this.frontStore
         .frontIds()
         .map((front) => ({ playerId: front, task: getTask(front) })),
     );
-    let index = 0;
-    const toReturn: Record<WotrFrontId, WotrStory> = {} as any;
-    for (const frontId of this.frontStore.frontIds()) {
-      const story = stories[index++];
+    const entries: [WotrFrontId, WotrStory][] = [];
+    for (const [index, frontId] of this.frontStore.frontIds().entries()) {
+      const story = stories[index];
       await this.applyStory(story, frontId);
-      toReturn[frontId] = story;
+      entries.push([frontId, story]);
     }
-    return toReturn;
+    return Object.fromEntries(entries) as Record<WotrFrontId, WotrStory>;
   }
 
   async story(

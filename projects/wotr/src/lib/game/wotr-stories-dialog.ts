@@ -1,18 +1,13 @@
 import { JsonPipe } from '@angular/common';
-import type {
-  ElementRef} from '@angular/core';
-import {
-  Component,
-  effect,
-  inject,
-  viewChild,
-} from '@angular/core';
+import type { ElementRef } from '@angular/core';
+import { Component, effect, inject, viewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { getStoryId, injectDialogContext } from '@leobg/commons';
-import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrRemoteService } from '../remote/wotr-remote';
 
-export interface WotrStoriesDialogRef { close: () => void }
+export interface WotrStoriesDialogRef {
+  close: () => void;
+}
 export interface WotrStoriesDialogData {
   gameId: string;
 }
@@ -130,33 +125,34 @@ export interface WotrStoriesDialogData {
   ],
 })
 export class WotrStoriesDialog {
+  constructor() {
+    effect(() => this.scrollToBottom());
+  }
+
   readonly context = injectDialogContext<WotrStoriesDialogData>();
   protected data = this.context.data;
-  private assets = inject(WotrAssetsStore);
 
   private remote = inject(WotrRemoteService);
   protected content = viewChild<ElementRef<HTMLDivElement>>('content');
 
-  private scrollToBottom = effect(() => {
+  private scrollToBottom() {
     this.stories();
     setTimeout(() => {
       const content = this.content();
       if (!content) return;
       content.nativeElement.scrollTop = content.nativeElement.scrollHeight;
     });
-  });
+  }
 
   protected stories = toSignal(this.remote.selectStories$(this.data.gameId));
 
-  delete() {
+  async delete() {
     const lastStory = this.stories()!.slice(-1)[0];
     if (lastStory) {
-      this.remote
-        .deleteStory$(
-          getStoryId(lastStory.time, lastStory.playerId),
-          this.data.gameId,
-        )
-        .subscribe();
+      await this.remote.deleteStory(
+        getStoryId(lastStory.time, lastStory.playerId),
+        this.data.gameId,
+      );
     }
   }
 

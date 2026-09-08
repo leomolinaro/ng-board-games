@@ -86,10 +86,10 @@ export class WotrCardDrawUi {
     }
   }
 
-  private async drawCardFromDeck(
+  private drawCardFromDeck(
     deck: WotrCardId[],
     frontId: WotrFrontId,
-  ): Promise<WotrAction> {
+  ): WotrAction {
     const drawnCard = deck[0];
     this.frontStore.drawCards([drawnCard], frontId);
     return drawCardIds(drawnCard);

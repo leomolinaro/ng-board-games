@@ -15,10 +15,6 @@ import type {
   BgUser,
 } from '@leobg/commons';
 import { BgAuthService, BgDialogService, BgHome } from '@leobg/commons';
-import { concatJoin } from '@leobg/commons/utils';
-import type { Observable } from 'rxjs';
-import { forkJoin, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrGameOptions } from '../game/options/wotr-game-options';
 import { WotrGameOptionsFormComponent } from '../game/options/wotr-game-options-form';
@@ -71,20 +67,18 @@ export class WotrHomePage {
   protected config: BgHomeConfig<WotrFrontId, WotrGameOptions> = {
     boardGame: 'wotr',
     boardGameName: 'War of the Ring (2nd Edition)',
-    startGame$: (gameId: string) =>
-      from(
-        this.router.navigate(['game', gameId], {
-          relativeTo: this.activatedRoute,
-        }),
-      ),
-    deleteGame$: (gameId: string) =>
-      concatJoin([
-        this.remote.deleteStories$(gameId),
-        this.remote.deletePlayers$(gameId),
-        this.remote.deleteGame$(gameId),
-      ]),
-    createGame$: (protoGame, protoPlayers) =>
-      this.createGame$(protoGame, protoPlayers),
+    startGame: async (gameId: string) => {
+      await this.router.navigate(['game', gameId], {
+        relativeTo: this.activatedRoute,
+      });
+    },
+    deleteGame: async (gameId: string) => {
+      await this.remote.deleteStories(gameId);
+      await this.remote.deletePlayers(gameId);
+      await this.remote.deleteGame(gameId);
+    },
+    createGame: (protoGame, protoPlayers) =>
+      this.createGame(protoGame, protoPlayers),
     playerIds: () => ['free-peoples', 'shadow'],
     playerIdCssClass: (front: WotrFrontId) => {
       switch (front) {
@@ -97,7 +91,7 @@ export class WotrHomePage {
     optionsComponent: () => WotrGameOptionsFormComponent,
   };
 
-  private createGame$(
+  private async createGame(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<WotrFrontId>[],
   ) {
@@ -109,53 +103,42 @@ export class WotrHomePage {
       state: 'open',
     };
     if (protoGame.options) game.options = protoGame.options as WotrGameOptions;
-    return this.remote.insertGame$(game).pipe(
-      switchMap(({ id }) =>
-        forkJoin([
-          ...protoPlayers.map((p, index) => {
-            if (p.type === 'ai') {
-              return this.insertAiPlayer$(p.name, p.id, index + 1, id);
-            } else {
-              return this.insertRealPlayer$(
-                p.name,
-                p.id,
-                index + 1,
-                p.controller!,
-                id,
-              );
-            }
-          }),
-        ]),
-      ),
-    );
+    const { id } = await this.remote.insertGame(game);
+    for (const [index, p] of protoPlayers.entries()) {
+      if (p.type === 'ai') {
+        await this.insertAiPlayer(p.name, p.id, index + 1, id);
+      } else {
+        await this.insertRealPlayer(p.name, p.id, index + 1, p.controller!, id);
+      }
+    }
   }
 
-  private insertAiPlayer$(
+  private insertAiPlayer(
     name: string,
     front: WotrFrontId,
     sort: number,
     gameId: string,
-  ): Observable<WotrPlayerDoc> {
+  ): Promise<WotrPlayerDoc> {
     const player: WotrAiPlayerDoc = {
       ...this.aPlayerDoc(name, front, sort),
       isAi: true,
     };
-    return this.remote.insertPlayer$(player, gameId);
+    return this.remote.insertPlayer(player, gameId);
   }
 
-  private insertRealPlayer$(
+  private insertRealPlayer(
     name: string,
     front: WotrFrontId,
     sort: number,
     controller: BgUser,
     gameId: string,
-  ): Observable<WotrPlayerDoc> {
+  ): Promise<WotrPlayerDoc> {
     const player: WotrReadPlayerDoc = {
       ...this.aPlayerDoc(name, front, sort),
       isAi: false,
       controller: controller,
     };
-    return this.remote.insertPlayer$(player, gameId);
+    return this.remote.insertPlayer(player, gameId);
   }
 
   private aPlayerDoc(
@@ -178,12 +161,10 @@ export class WotrHomePage {
     id: 'scenario',
     label: 'Scenario',
     action: () => {
-      this.dialogs
-        .open(WotrScenarioSelectorDialog, {
-          injector: this.injector,
-          size: 'l',
-        })
-        .then();
+      void this.dialogs.open(WotrScenarioSelectorDialog, {
+        injector: this.injector,
+        size: 'l',
+      });
     },
     icon: '@tui.bookmark',
   };

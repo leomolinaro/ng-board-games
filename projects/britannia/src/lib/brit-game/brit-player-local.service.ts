@@ -1,7 +1,4 @@
-import { Injectable, inject } from '@angular/core';
-import { forN } from '@leobg/commons/utils';
-import type { Observable } from 'rxjs';
-import { EMPTY, expand, last, map, mapTo, race, switchMap } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
 import type {
   BritAreaId,
   BritColor,
@@ -28,48 +25,45 @@ export class BritPlayerLocalService implements BritPlayerService {
   private rules = inject(BritRulesService);
   private components = inject(BritComponents);
 
-  armyPlacement$(
+  async armyPlacement(
     nInfantries: number,
     nationId: BritNationId,
     playerId: BritColor,
-  ): Observable<BritArmyPlacement> {
+  ): Promise<BritArmyPlacement> {
     const placement: BritArmyPlacement = {
       infantryPlacement: [],
     };
-    return forN(nInfantries, (index) => {
-      return this.chooseLandForPlacement$(
+    for (let index = 0; index < nInfantries; index++) {
+      const landAreaId = await this.chooseLandForPlacement(
         index + 1,
         nInfantries,
         nationId,
         playerId,
-      ).pipe(
-        map((landAreaId) => {
-          this.game.applyInfantryPlacement(landAreaId, nationId);
-          const ipIndex = placement.infantryPlacement.findIndex(
-            (ip) => (typeof ip === 'object' ? ip.areaId : ip) === landAreaId,
-          );
-          if (ipIndex >= 0) {
-            let ip = placement.infantryPlacement[ipIndex];
-            ip = {
-              areaId: landAreaId,
-              quantity: typeof ip === 'object' ? ip.quantity + 1 : 2,
-            };
-            placement.infantryPlacement[ipIndex] = ip;
-          } else {
-            placement.infantryPlacement.push(landAreaId);
-          }
-          return void 0;
-        }),
       );
-    }).pipe(mapTo(placement));
+      this.game.applyInfantryPlacement(landAreaId, nationId);
+      const ipIndex = placement.infantryPlacement.findIndex(
+        (ip) => (typeof ip === 'object' ? ip.areaId : ip) === landAreaId,
+      );
+      if (ipIndex >= 0) {
+        let ip = placement.infantryPlacement[ipIndex];
+        ip = {
+          areaId: landAreaId,
+          quantity: typeof ip === 'object' ? ip.quantity + 1 : 2,
+        };
+        placement.infantryPlacement[ipIndex] = ip;
+      } else {
+        placement.infantryPlacement.push(landAreaId);
+      }
+    }
+    return placement;
   }
 
-  private chooseLandForPlacement$(
+  private chooseLandForPlacement(
     iInfantry: number,
     nTotInfantries: number,
     nationId: BritNationId,
     playerId: BritColor,
-  ): Observable<BritLandAreaId> {
+  ): Promise<BritLandAreaId> {
     const validLands = this.rules.populationIncrease.getValidLandsForPlacement(
       nationId,
       this.game,
@@ -82,96 +76,78 @@ export class BritPlayerLocalService implements BritPlayerService {
       validAreas: validLands,
       canCancel: iInfantry !== 1,
     }));
-    return this.ui.areaChange$<BritLandAreaId>();
+    return this.ui.landAreaChange.get();
   }
 
-  armyMovements$(
+  async armyMovements(
     nationId: BritNationId,
     playerId: BritColor,
-  ): Observable<BritArmyMovements> {
+  ): Promise<BritArmyMovements> {
     const armyMovements: BritArmyMovements = { movements: [] };
-    return this.armyMovement$(nationId, playerId, armyMovements.movements).pipe(
-      expand<BritArmyMovement | 'pass', Observable<BritArmyMovement | 'pass'>>(
-        (movementOrPass) => {
-          if (movementOrPass === 'pass') {
-            return EMPTY;
-          } else {
-            armyMovements.movements.push(movementOrPass);
-            this.game.applyArmyMovement(movementOrPass, true);
-            return this.armyMovement$(
-              nationId,
-              playerId,
-              armyMovements.movements,
-            );
-          }
-        },
-      ),
-      last(),
-      mapTo(armyMovements),
+
+    const movementOrPass = await this.armyMovement(
+      nationId,
+      playerId,
+      armyMovements.movements,
     );
+    if (movementOrPass !== 'pass') {
+      armyMovements.movements.push(movementOrPass);
+      this.game.applyArmyMovement(movementOrPass, true);
+      await this.armyMovement(nationId, playerId, armyMovements.movements);
+    }
+    return armyMovements;
   }
 
-  private armyMovement$(
+  private async armyMovement(
     nationId: BritNationId,
     playerId: BritColor,
     movements: BritArmyMovement[],
-  ): Observable<BritArmyMovement | 'pass'> {
-    return this.chooseUnitsForMovement$(nationId, playerId, movements).pipe(
-      map((unitsOrPass) =>
-        unitsOrPass === 'pass'
+  ): Promise<BritArmyMovement | 'pass'> {
+    const unitsOrPass = await this.chooseUnitsForMovement(
+      nationId,
+      playerId,
+      movements,
+    );
+    const armyMovementOrPass =
+      unitsOrPass === 'pass' ? 'pass' : { units: unitsOrPass, toAreaId: null! };
+    if (armyMovementOrPass === 'pass') {
+      return 'pass';
+    } else if (armyMovementOrPass.toAreaId) {
+      return armyMovementOrPass;
+    } else {
+      this.ui.updateUi('Units selected', (s) => ({
+        ...s,
+        selectedUnits: armyMovementOrPass.units,
+      }));
+      if (armyMovementOrPass.units.length) {
+        const unitsOrAreaId = await this.chooseUnitsOrAreaForMovement(
+          nationId,
+          playerId,
+          armyMovementOrPass.units,
+        );
+        if (typeof unitsOrAreaId === 'string') {
+          return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
+        } else {
+          return { ...armyMovementOrPass, units: unitsOrAreaId };
+        }
+      } else {
+        const unitsOrPass = await this.chooseUnitsForMovement(
+          nationId,
+          playerId,
+          movements,
+        );
+        return unitsOrPass === 'pass'
           ? 'pass'
-          : { units: unitsOrPass, toAreaId: null! },
-      ),
-      expand<BritArmyMovement | 'pass', Observable<BritArmyMovement | 'pass'>>(
-        (armyMovementOrPass) => {
-          if (armyMovementOrPass === 'pass') {
-            return EMPTY;
-          } else if (armyMovementOrPass.toAreaId) {
-            return EMPTY;
-          } else {
-            this.ui.updateUi('Units selected', (s) => ({
-              ...s,
-              selectedUnits: armyMovementOrPass.units,
-            }));
-            if (armyMovementOrPass.units.length) {
-              return this.chooseUnitsOrAreaForMovement$(
-                nationId,
-                playerId,
-                armyMovementOrPass.units,
-              ).pipe(
-                map((unitsOrAreaId) => {
-                  if (typeof unitsOrAreaId === 'string') {
-                    return { ...armyMovementOrPass, toAreaId: unitsOrAreaId };
-                  } else {
-                    return { ...armyMovementOrPass, units: unitsOrAreaId };
-                  }
-                }),
-              );
-            } else {
-              return this.chooseUnitsForMovement$(
-                nationId,
-                playerId,
-                movements,
-              ).pipe(
-                map((unitsOrPass) =>
-                  unitsOrPass === 'pass'
-                    ? 'pass'
-                    : { ...armyMovementOrPass, units: unitsOrPass },
-                ),
-              );
-            }
-          }
-        },
-      ),
-      last(),
-    );
+          : { ...armyMovementOrPass, units: unitsOrPass };
+      }
+    }
   }
 
-  private chooseUnitsForMovement$(
+  private async chooseUnitsForMovement(
     nationId: BritNationId,
     playerId: BritColor,
     movements: BritArmyMovement[],
-  ): Observable<BritAreaUnit[] | 'pass'> {
+  ): Promise<BritAreaUnit[] | 'pass'> {
     const validUnits = this.rules.movement.getValidUnitsForMovement(
       nationId,
       this.game,
@@ -186,17 +162,19 @@ export class BritPlayerLocalService implements BritPlayerService {
       canCancel: !!movements.length,
       canPass: true,
     }));
-    return race<[BritAreaUnit[], 'pass']>(
-      this.ui.selectedUnitsChange$(),
-      this.ui.passChange$().pipe(mapTo('pass')),
+    return (
+      (await Promise.race([
+        this.ui.selectedUnitsChange.get(),
+        this.ui.passChange.get(),
+      ])) ?? 'pass'
     );
   }
 
-  private chooseUnitsOrAreaForMovement$(
+  private async chooseUnitsOrAreaForMovement(
     nationId: BritNationId,
     playerId: BritColor,
     selectedUnits: BritAreaUnit[],
-  ): Observable<BritAreaUnit[] | BritAreaId> {
+  ): Promise<BritAreaUnit[] | BritAreaId> {
     const areaId = selectedUnits[0].areaId;
     const validUnits = this.rules.movement.getValidUnitsByAreaForMovement(
       nationId,
@@ -219,28 +197,22 @@ export class BritPlayerLocalService implements BritPlayerService {
       selectedUnits: selectedUnits,
       canCancel: true,
     }));
-    return race(this.ui.selectedUnitsChange$(), this.ui.areaChange$());
+    return Promise.race([
+      this.ui.selectedUnitsChange.get(),
+      this.ui.areaChange.get(),
+    ]);
   }
 
-  battleInitiation$(
-    nationId: BritNationId,
-    playerId: BritColor,
-  ): Observable<BritBattleInitiation> {
-    return this.chooseLandForBattle$(nationId, playerId).pipe(
-      switchMap((landId) => {
-        return this.confirmBattleInitiation$(landId, playerId).pipe(
-          map(() => ({ landId })),
-        );
-      }),
-    );
+  async battleInitiation(playerId: BritColor): Promise<BritBattleInitiation> {
+    const landId = await this.chooseLandForBattle(playerId);
+    await this.confirmBattleInitiation(landId, playerId);
+    return { landId };
   }
 
-  private chooseLandForBattle$(
-    nationId: BritNationId,
+  private async chooseLandForBattle(
     playerId: BritColor,
-  ): Observable<BritLandAreaId> {
+  ): Promise<BritLandAreaId> {
     const validAreas = this.rules.battlesRetreats.getValidAreasForBattle(
-      nationId,
       this.game,
     );
     this.ui.updateUi('Select area for battle', (s) => ({
@@ -250,13 +222,13 @@ export class BritPlayerLocalService implements BritPlayerService {
       message: 'Choose an area to resolve the battle into.',
       validAreas: validAreas,
     }));
-    return this.ui.areaChange$<BritLandAreaId>();
+    return this.ui.landAreaChange.get();
   }
 
-  private confirmBattleInitiation$(
+  private async confirmBattleInitiation(
     landId: BritLandAreaId,
     playerId: BritColor,
-  ): Observable<void> {
+  ): Promise<void> {
     this.ui.updateUi('Confirm battle initiation', (s) => ({
       ...s,
       ...this.ui.resetUi(),
@@ -266,6 +238,6 @@ export class BritPlayerLocalService implements BritPlayerService {
       canConfirm: true,
       canCancel: true,
     }));
-    return this.ui.confirmChange$();
+    return this.ui.confirmChange.get();
   }
 }

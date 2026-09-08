@@ -1,18 +1,12 @@
-import type { OnInit} from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import type {
   BgHomeConfig,
   BgProtoGame,
   BgProtoPlayer,
-  BgUser} from '@leobg/commons';
-import {
-  BgHome
+  BgUser,
 } from '@leobg/commons';
-import { concatJoin } from '@leobg/commons/utils';
-import type { Observable} from 'rxjs';
-import { forkJoin, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { BgHome } from '@leobg/commons';
 import { BARONY_COLORS } from '../barony-constants';
 import type {
   BaronyColor,
@@ -24,10 +18,9 @@ import type {
   BaronyAiPlayerDoc,
   BaronyMapDoc,
   BaronyPlayerDoc,
-  BaronyReadPlayerDoc} from '../barony-remote.service';
-import {
-  BaronyRemoteService,
+  BaronyReadPlayerDoc,
 } from '../barony-remote.service';
+import { BaronyRemoteService } from '../barony-remote.service';
 import { getRandomLands } from './barony-initializer';
 
 @Component({
@@ -55,7 +48,7 @@ import { getRandomLands } from './barony-initializer';
     `,
   ],
 })
-export class BaronyHomeComponent implements OnInit {
+export class BaronyHomeComponent {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private gameService = inject(BaronyRemoteService);
@@ -63,21 +56,19 @@ export class BaronyHomeComponent implements OnInit {
   config: BgHomeConfig<BaronyColor> = {
     boardGame: 'barony',
     boardGameName: 'Barony',
-    startGame$: (gameId: string) =>
-      from(
-        this.router.navigate(['game', gameId], {
-          relativeTo: this.activatedRoute,
-        }),
-      ),
-    deleteGame$: (gameId: string) =>
-      concatJoin([
-        this.gameService.deleteStories$(gameId),
-        this.gameService.deleteMap$(gameId),
-        this.gameService.deletePlayers$(gameId),
-        this.gameService.deleteGame$(gameId),
-      ]),
-    createGame$: (protoGame, protoPlayers) =>
-      this.createGame$(protoGame, protoPlayers),
+    startGame: async (gameId: string) => {
+      await this.router.navigate(['game', gameId], {
+        relativeTo: this.activatedRoute,
+      });
+    },
+    deleteGame: async (gameId: string) => {
+      await this.gameService.deleteStories(gameId);
+      await this.gameService.deleteMap(gameId);
+      await this.gameService.deletePlayers(gameId);
+      await this.gameService.deleteGame(gameId);
+    },
+    createGame: (protoGame, protoPlayers) =>
+      this.createGame(protoGame, protoPlayers),
     playerIds: () => BARONY_COLORS,
     playerIdCssClass: (color: BaronyColor) => {
       switch (color) {
@@ -93,47 +84,38 @@ export class BaronyHomeComponent implements OnInit {
     },
   };
 
-  ngOnInit(): void {}
-
-  private createGame$(
+  private async createGame(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<BaronyColor>[],
   ) {
-    return this.gameService
-      .insertGame$({
-        id: protoGame.id,
-        owner: protoGame.owner,
-        name: protoGame.name,
-        online: protoGame.online,
-        state: 'open',
-      })
-      .pipe(
-        switchMap((game) =>
-          forkJoin([
-            ...protoPlayers.map((p, index) => {
-              if (p.type === 'ai') {
-                return this.insertAiPlayer$(p.id, p.name, index + 1, game.id);
-              } else {
-                return this.insertRealPlayer$(
-                  p.id,
-                  p.name,
-                  index + 1,
-                  p.controller!,
-                  game.id,
-                );
-              }
-            }),
-            this.insertMap$(getRandomLands(protoPlayers.length), game.id),
-            // ...getRandomLands (activeProtoPlayers.length).map (l => this.insertLand$ (l.coordinates, l.type, game.id))
-          ]),
-        ),
-      );
+    const game = await this.gameService.insertGame({
+      id: protoGame.id,
+      owner: protoGame.owner,
+      name: protoGame.name,
+      online: protoGame.online,
+      state: 'open',
+    });
+    for (let index = 0; index < protoPlayers.length; index++) {
+      const p = protoPlayers[index];
+      if (p.type === 'ai') {
+        await this.insertAiPlayer(p.id, p.name, index + 1, game.id);
+      } else {
+        await this.insertRealPlayer(
+          p.id,
+          p.name,
+          index + 1,
+          p.controller!,
+          game.id,
+        );
+      }
+    }
+    await this.insertMap(getRandomLands(protoPlayers.length), game.id);
   }
 
-  private insertMap$(
+  private insertMap(
     lands: { coordinates: BaronyLandCoordinates; type: BaronyLandType }[],
     gameId: string,
-  ): Observable<BaronyMapDoc> {
+  ): Promise<BaronyMapDoc> {
     const baronyMap: BaronyMapDoc = {
       lands: lands.map((l) => ({
         x: l.coordinates.x,
@@ -141,35 +123,35 @@ export class BaronyHomeComponent implements OnInit {
         type: l.type,
       })),
     };
-    return this.gameService.insertMap$(baronyMap, gameId);
+    return this.gameService.insertMap(baronyMap, gameId);
   }
 
-  private insertAiPlayer$(
+  private insertAiPlayer(
     playerId: BaronyColor,
     name: string,
     sort: number,
     gameId: string,
-  ): Observable<BaronyPlayerDoc> {
+  ): Promise<BaronyPlayerDoc> {
     const player: BaronyAiPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: true,
     };
-    return this.gameService.insertPlayer$(player, gameId);
+    return this.gameService.insertPlayer(player, gameId);
   }
 
-  private insertRealPlayer$(
+  private insertRealPlayer(
     playerId: BaronyColor,
     name: string,
     sort: number,
     controller: BgUser,
     gameId: string,
-  ): Observable<BaronyPlayerDoc> {
+  ): Promise<BaronyPlayerDoc> {
     const player: BaronyReadPlayerDoc = {
       ...this.aPlayerDoc(playerId, name, sort),
       isAi: false,
       controller: controller,
     };
-    return this.gameService.insertPlayer$(player, gameId);
+    return this.gameService.insertPlayer(player, gameId);
   }
 
   private aPlayerDoc(

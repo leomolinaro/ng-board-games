@@ -1069,6 +1069,7 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 const CARD_BY_LABEL = arrayUtil.toMap(
   Object.keys(CARD_BY_ID) as WotrCardId[],
   (cardId) => CARD_BY_ID[cardId].label,

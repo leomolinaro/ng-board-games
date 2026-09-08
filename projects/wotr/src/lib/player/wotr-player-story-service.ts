@@ -43,7 +43,7 @@ export interface WotrPlayerStoryService {
   ): Promise<WotrStory>;
   forfeitLeadership(params: WotrForfeitLeadershipParams): Promise<WotrStory>;
   wantRetreatIntoSiege(): Promise<WotrStory>;
-  wantRetreat(): Promise<WotrStory>;
+  wantRetreat(frontId: WotrFrontId): Promise<WotrStory>;
   chooseCombatCard(
     frontId: WotrFrontId,
     combatRound: WotrCombatRound,

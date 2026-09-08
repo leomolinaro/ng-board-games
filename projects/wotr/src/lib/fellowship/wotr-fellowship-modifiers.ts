@@ -4,7 +4,7 @@ import type { WotrFellowshipMove } from './wotr-fellowship-models';
 
 export type WotrAfterFellowshipDeclaration = (
   params: WotrFellowshipMove,
-) => Promise<void>;
+) => void | Promise<void>;
 
 @Injectable()
 export class WotrFellowshipModifiers {

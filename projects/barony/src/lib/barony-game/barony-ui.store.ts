@@ -65,7 +65,7 @@ export class BaronyUiStore extends signalStore(
     S extends BaronyUiState & {
       [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;
     },
-  >(actionName: string, updater: (state: BaronyUiState) => S) {
+  >(_actionName: string, updater: (state: BaronyUiState) => S) {
     patchState(this, updater);
   }
 

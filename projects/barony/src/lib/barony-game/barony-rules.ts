@@ -192,7 +192,6 @@ export function getValidLandsForNewCity(
 }
 
 export function getValidLandsForExpedition(
-  player: BaronyColor,
   game: BaronyGameStore,
 ): BaronyLand[] {
   return game

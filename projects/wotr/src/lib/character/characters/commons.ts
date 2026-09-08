@@ -9,7 +9,6 @@ import type {
   WotrBeforeCombatRound,
 } from '../../battle/wotr-battle-modifiers';
 import type { WotrAction } from '../../commons/wotr-action-models';
-import type { WotrFrontId } from '../../front/wotr-front-models';
 import type { WotrGameQuery } from '../../game/wotr-game-query';
 import type { WotrUiCharacterChoice } from '../../game/wotr-game-ui';
 import { advanceNation } from '../../nation/wotr-nation-actions';
@@ -28,7 +27,7 @@ export class CaptainOfTheWestAbility implements WotrAbility<WotrBeforeCombatRoun
 
   modifier;
 
-  public handler = async (round: WotrCombatRound): Promise<void> => {
+  public handler = (round: WotrCombatRound): void => {
     const front = this.q.character(this.characterId).frontId;
     const combatFront =
       round.attacker.frontId === front ? round.attacker : round.defender;
@@ -88,11 +87,11 @@ class AdvanceAnyDieChoice implements WotrUiCharacterChoice {
     return this.abilityName;
   }
 
-  isAvailable(frontId: WotrFrontId): boolean {
+  isAvailable(): boolean {
     return !this.q.nation(this.nationId).isAtWar();
   }
 
-  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+  actions(): WotrAction[] {
     return [advanceNation(this.nationId)];
   }
 }

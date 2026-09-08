@@ -1,6 +1,5 @@
-import type { OnChanges } from '@angular/core';
+import type { OnChanges, SimpleChanges } from '@angular/core';
 import { Component, computed, input, output } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
 import { immutableUtil } from '@leobg/commons/utils';
 import type {
   BaronyColor,
@@ -127,8 +126,6 @@ interface BaronyPawnNode {
   imports: [BaronyLandCoordinatesPipe],
 })
 export class BaronyLandComponent implements OnChanges {
-  constructor() {}
-
   readonly type = input.required<BaronyLandType>();
   readonly coordinates = input.required<BaronyLandCoordinates>();
   readonly pawns = input.required<BaronyPawn[]>();
@@ -139,7 +136,9 @@ export class BaronyLandComponent implements OnChanges {
   protected url = computed(() => `url('#${this.type()}')`);
 
   pawnNodes!: BaronyPawnNode[];
-  private hexCenter!: { x: number; y: number };
+  private hexCenter = computed<{ x: number; y: number }>(() => {
+    return hexToCartesian(this.coordinates());
+  });
 
   pawnWidth = 0.7;
   pawnHeight = 0.7;
@@ -149,58 +148,53 @@ export class BaronyLandComponent implements OnChanges {
 
   activeCircleRadius = Math.sqrt(3) / 2;
 
-  ngOnChanges(changes: SimpleChanges<this>): void {
-    if (changes.coordinates) {
-      this.hexCenter = hexToCartesian(this.coordinates());
-    }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['pawns']) return;
+    this.pawnNodes = [];
+    this.pawns().forEach((pawn) => {
+      this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
+        (p) => p.color === pawn.color && p.type === pawn.type,
+        (p) => ({ ...p, quantity: p.quantity + 1 }),
+        () => ({
+          type: pawn.type,
+          color: pawn.color,
+          quantity: 1,
+          href: `assets/barony/pawns/${pawn.color}-${pawn.type}.png`,
+          x: 0,
+          y: 0,
+          xText: 0,
+          yText: 0,
+        }),
+        this.pawnNodes,
+      );
+    });
 
-    if (changes.pawns) {
-      this.pawnNodes = [];
-      this.pawns().forEach((pawn) => {
-        this.pawnNodes = immutableUtil.listUpdateFirstOrPush<BaronyPawnNode>(
-          (p) => p.color === pawn.color && p.type === pawn.type,
-          (p) => ({ ...p, quantity: p.quantity + 1 }),
-          () => ({
-            type: pawn.type,
-            color: pawn.color,
-            quantity: 1,
-            href: `assets/barony/pawns/${pawn.color}-${pawn.type}.png`,
-            x: 0,
-            y: 0,
-            xText: 0,
-            yText: 0,
-          }),
-          this.pawnNodes,
-        );
-      });
-
-      this.pawnNodes.sort((a, b) => {
-        if (a.type === b.type) {
-          return 0;
+    this.pawnNodes.sort((a, b) => {
+      if (a.type === b.type) {
+        return 0;
+      } else {
+        if (a.type === 'knight') {
+          return 1;
         } else {
-          if (a.type === 'knight') {
-            return 1;
-          } else {
-            return -1;
-          }
+          return -1;
         }
-      });
+      }
+    });
 
-      this.pawnNodes.forEach((pawnNode, index) => {
-        pawnNode.x =
-          this.hexCenter?.x -
-          this.pawnWidth / 2.0 +
-          this.pawnPositionRadius *
-            this.getPawnNodeDeltaX(index, this.pawnNodes.length);
-        pawnNode.y =
-          this.hexCenter?.y -
-          this.pawnHeight / 2.0 +
-          this.pawnPositionRadius *
-            this.getPawnNodeDeltaY(index, this.pawnNodes.length);
-        pawnNode.xText = pawnNode.x + this.textXOffset;
-        pawnNode.yText = pawnNode.y + this.textYOffset;
-      });
-    }
+    this.pawnNodes.forEach((pawnNode, index) => {
+      pawnNode.x =
+        this.hexCenter()?.x -
+        this.pawnWidth / 2.0 +
+        this.pawnPositionRadius *
+          this.getPawnNodeDeltaX(index, this.pawnNodes.length);
+      pawnNode.y =
+        this.hexCenter()?.y -
+        this.pawnHeight / 2.0 +
+        this.pawnPositionRadius *
+          this.getPawnNodeDeltaY(index, this.pawnNodes.length);
+      pawnNode.xText = pawnNode.x + this.textXOffset;
+      pawnNode.yText = pawnNode.y + this.textYOffset;
+    });
   }
 
   private getPawnNodeDeltaX(index: number, total: number) {

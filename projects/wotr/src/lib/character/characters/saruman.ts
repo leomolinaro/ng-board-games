@@ -43,7 +43,7 @@ export class WotrSaruman extends WotrPlayableCharacterCard {
     );
   }
 
-  override async bringIntoPlay(): Promise<WotrAction> {
+  override bringIntoPlay(): WotrAction {
     return playCharacter('orthanc', 'saruman');
   }
 }
@@ -93,7 +93,7 @@ class SarumanVoiceChoice implements WotrUiCharacterChoice {
     return false;
   }
 
-  async actions(frontId: WotrFrontId): Promise<WotrAction[]> {
+  async actions(): Promise<WotrAction[]> {
     const actions = await this.ui.askChoice(
       'Choose an action for The Voice of Saruman',
       this.subChoices,
@@ -117,7 +117,7 @@ class SarumanRecruitmentChoice implements WotrUiChoice {
     return this.q.isengard.hasRegularReinforcements();
   }
 
-  async actions(params: WotrFrontId): Promise<WotrAction[]> {
+  async actions(): Promise<WotrAction[]> {
     const exludedRegions = new Set<WotrRegionId>();
     let counter = 0;
     let canPass = false;
@@ -169,7 +169,7 @@ class SarumanUpgradeRegularsChoice implements WotrUiChoice {
     );
   }
 
-  async actions(params: WotrFrontId): Promise<WotrAction[]> {
+  async actions(): Promise<WotrAction[]> {
     const maxRegulars = this.nUpgradeableRegulars();
     const quantity = await this.ui.askQuantity(
       'How many regular units to upgrade?',

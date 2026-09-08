@@ -90,7 +90,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
   isInNation(nationId: WotrNationId): boolean {
     if (!this.isInPlay()) return false;
     const region = this.region()!;
-    return region && region.nationId === nationId;
+    return region?.nationId === nationId;
   }
 
   canMove(): unknown {

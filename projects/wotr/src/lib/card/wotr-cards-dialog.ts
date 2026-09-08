@@ -5,7 +5,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { injectDialogContext } from '../../../../commons/src';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
@@ -157,8 +157,8 @@ export class WotrCardsDialog {
     this.context.complete(this.selectedCards());
   }
 
-  @HostListener('mouseover', ['$event'])
-  onMouseHover(event: MouseEvent) {
+  @HostListener('mouseover')
+  onMouseHover() {
     this.focusedCardId = null;
   }
 

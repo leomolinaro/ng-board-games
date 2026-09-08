@@ -94,7 +94,7 @@ export class MessengerOfTheDarkTowerSetUsedAbility implements WotrAbility<WotrAf
   }
 
   modifier;
-  public handler: WotrAfterActionDieResolution = async (
+  public handler: WotrAfterActionDieResolution = (
     story: WotrDieStory,
     frontId: WotrFrontId,
   ) => {

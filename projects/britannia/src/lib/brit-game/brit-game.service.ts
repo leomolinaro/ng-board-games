@@ -1,9 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ABgGameService, BgAuthService } from '@leobg/commons';
-import { forEach, forN } from '@leobg/commons/utils';
-import type { Observable } from 'rxjs';
-import { firstValueFrom, from, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { from } from 'rxjs';
 import type {
   BritColor,
   BritLandAreaId,
@@ -30,7 +27,7 @@ export class BritGameService extends ABgGameService<
   BritPlayerService
 > {
   private rules = inject(BritRulesService);
-  private game = inject(BritGameStore);
+  private gameStore = inject(BritGameStore);
   private ui = inject(BritUiStore);
   protected auth = inject(BgAuthService);
   private remoteService = inject(BritRemoteService);
@@ -41,19 +38,21 @@ export class BritGameService extends ABgGameService<
   protected storyDocs: BritStoryDoc[] | null = null;
 
   protected getGameId() {
-    return this.game.gameId();
+    return this.gameStore.gameId();
   }
   protected getPlayer(playerColor: BritColor) {
-    return this.game.getPlayer(playerColor);
+    return this.gameStore.getPlayer(playerColor);
   }
   protected getGameOwner() {
-    return this.game.gameOwner();
+    const owner = this.gameStore.gameOwner();
+    if (!owner) throw new Error('Game owner not set');
+    return owner;
   }
   protected startTemporaryState() {
-    this.game.startTemporaryState();
+    this.gameStore.startTemporaryState();
   }
   protected endTemporaryState() {
-    this.game.endTemporaryState();
+    this.gameStore.endTemporaryState();
   }
 
   protected insertStoryDoc$(
@@ -61,7 +60,7 @@ export class BritGameService extends ABgGameService<
     story: BritStoryDoc,
     gameId: string,
   ) {
-    return this.remoteService.insertStory$(storyId, story, gameId);
+    return from(this.remoteService.insertStory(storyId, story, gameId));
   }
   protected selectStoryDoc$(storyId: string, gameId: string) {
     return this.remoteService.selectStory$(storyId, gameId);
@@ -86,165 +85,148 @@ export class BritGameService extends ABgGameService<
       turnPlayer: turnPlayer,
       ...this.ui.resetUi(),
       canCancel: false,
-      message: `${this.game.getPlayer(turnPlayer).name} is thinking...`,
+      message: `${this.gameStore.getPlayer(turnPlayer).name} is thinking...`,
     }));
   }
 
-  game$(stories: BritStoryDoc[]): Observable<void> {
+  async game(stories: BritStoryDoc[]): Promise<void> {
     this.storyDocs = stories;
     this.setup();
-    return forN(16, (index) => this.round$((index + 1) as BritRoundId)).pipe(
-      tap(() => {
-        this.ui.updateUi('End game', (s) => ({
-          ...s,
-          ...this.ui.resetUi(),
-        }));
-      }),
-    );
+    for (let index = 0; index < 16; index++) {
+      await this.round((index + 1) as BritRoundId);
+    }
+    this.ui.updateUi('End game', (s) => ({
+      ...s,
+      ...this.ui.resetUi(),
+    }));
   }
 
   setup() {
-    this.game.logSetup();
+    this.gameStore.logSetup();
     const gameSetup = this.rules.setup.getGameSetup();
-    this.game.applySetup(gameSetup);
+    this.gameStore.applySetup(gameSetup);
   }
 
-  round$(roundId: BritRoundId): Observable<void> {
-    this.game.logRound(roundId);
-    return forEach(this.components.NATION_IDS, (nationId) =>
-      this.nationTurn$(nationId, roundId),
-    );
-  }
-
-  nationTurn$(nationId: BritNationId, roundId: BritRoundId): Observable<void> {
-    if (this.rules.populationIncrease.isNationActive(nationId, this.game)) {
-      this.game.logNationTurn(nationId);
-      const player = this.game.getPlayerByNation(nationId)!;
-      return this.populationIncreasePhase$(nationId, player.id, roundId).pipe(
-        switchMap(() => this.movementPhase$(nationId, player.id)),
-        switchMap(() => this.battlesRetreatsPhase$(nationId, player.id)),
-        switchMap(() => this.raiderWithdrawalPhase$()),
-        switchMap(() => this.overpopulationPhase$()),
-      );
-    } else {
-      return of(void 0);
+  async round(roundId: BritRoundId): Promise<void> {
+    this.gameStore.logRound(roundId);
+    for (const nationId of this.components.NATION_IDS) {
+      await this.nationTurn(nationId, roundId);
     }
   }
 
-  private populationIncreasePhase$(
+  async nationTurn(
+    nationId: BritNationId,
+    roundId: BritRoundId,
+  ): Promise<void> {
+    if (
+      this.rules.populationIncrease.isNationActive(nationId, this.gameStore)
+    ) {
+      this.gameStore.logNationTurn(nationId);
+      const player = this.gameStore.getPlayerByNation(nationId)!;
+      await this.populationIncreasePhase(nationId, player.id, roundId);
+      await this.movementPhase(nationId, player.id);
+      await this.battlesRetreatsPhase(nationId, player.id);
+      this.raiderWithdrawalPhase();
+      this.overpopulationPhase();
+    }
+  }
+
+  private async populationIncreasePhase(
     nationId: BritNationId,
     playerId: BritColor,
     roundId: BritRoundId,
-  ): Observable<void> {
-    this.game.logPhase('populationIncrease');
+  ): Promise<void> {
+    this.gameStore.logPhase('populationIncrease');
     const data = this.rules.populationIncrease.calculatePopulationIncreaseData(
       nationId,
       roundId,
-      this.game,
+      this.gameStore,
     );
     switch (data.type) {
       case 'infantry-placement': {
         if (data.nInfantries) {
-          return from(
-            this.executeTask(playerId, (p) =>
-              firstValueFrom(
-                p.armyPlacement$(data.nInfantries, nationId, playerId),
-              ),
-            ),
-          ).pipe(
-            map((armyPlacement) => {
-              const infantryPlacement: {
-                areaId: BritLandAreaId;
-                quantity: number;
-              }[] = [];
-              for (const ip of armyPlacement.infantryPlacement) {
-                infantryPlacement.push(
-                  typeof ip === 'object' ? ip : { areaId: ip, quantity: 1 },
-                );
-              }
-              this.game.applyPopulationIncrease(
-                data.populationMarker,
-                infantryPlacement,
-                nationId,
-              );
-              for (const ip of infantryPlacement) {
-                this.game.logInfantryPlacement(ip.areaId, ip.quantity);
-              }
-              this.game.logPopulationMarkerSet(data.populationMarker);
-              return void 0;
-            }),
+          const armyPlacement = await this.executeTask(playerId, (p) =>
+            p.armyPlacement(data.nInfantries, nationId, playerId),
           );
+          const infantryPlacement: {
+            areaId: BritLandAreaId;
+            quantity: number;
+          }[] = [];
+          for (const ip of armyPlacement.infantryPlacement) {
+            infantryPlacement.push(
+              typeof ip === 'object' ? ip : { areaId: ip, quantity: 1 },
+            );
+          }
+          this.gameStore.applyPopulationIncrease(
+            data.populationMarker,
+            infantryPlacement,
+            nationId,
+          );
+          for (const ip of infantryPlacement) {
+            this.gameStore.logInfantryPlacement(ip.areaId, ip.quantity);
+          }
+          this.gameStore.logPopulationMarkerSet(data.populationMarker);
         } else {
-          this.game.applyPopulationIncrease(
+          this.gameStore.applyPopulationIncrease(
             data.populationMarker,
             [],
             nationId,
           );
-          this.game.logPopulationMarkerSet(data.populationMarker);
-          return of(void 0);
+          this.gameStore.logPopulationMarkerSet(data.populationMarker);
         }
+        break;
       }
       case 'roman-reinforcements': {
         if (data.nInfantries) {
-          this.game.applyPopulationIncrease(
+          this.gameStore.applyPopulationIncrease(
             null,
             [{ areaId: 'english-channel', quantity: data.nInfantries }],
             nationId,
           );
         }
-        this.game.logInfantryReinforcements(
+        this.gameStore.logInfantryReinforcements(
           'english-channel',
           data.nInfantries,
         );
-        return of(void 0);
+        break;
       }
     }
   }
 
-  private movementPhase$(nationId: BritNationId, playerId: BritColor) {
-    this.game.logPhase('movement');
-    return from(
-      this.executeTask(playerId, (p) =>
-        firstValueFrom(p.armyMovements$(nationId, playerId)),
-      ),
-    ).pipe(
-      map((armyMovements) => {
-        if (armyMovements.movements?.length) {
-          this.game.applyArmyMovements(armyMovements, true);
-          for (const movement of armyMovements.movements) {
-            this.game.logArmyMovement(movement.units, movement.toAreaId);
-          }
-        }
-        return void 0;
-      }),
+  private async movementPhase(
+    nationId: BritNationId,
+    playerId: BritColor,
+  ): Promise<void> {
+    this.gameStore.logPhase('movement');
+    const armyMovements = await this.executeTask(playerId, (p) =>
+      p.armyMovements(nationId, playerId),
     );
-  }
-
-  private battlesRetreatsPhase$(nationId: BritNationId, playerId: BritColor) {
-    this.game.logPhase('battlesRetreats');
-    if (this.rules.battlesRetreats.hasBattlesToResolve(nationId, this.game)) {
-      return from(
-        this.executeTask(playerId, (p) =>
-          firstValueFrom(p.battleInitiation$(nationId, playerId)),
-        ),
-      ).pipe(
-        map((battleInitiation) => {
-          console.log('battleInitiation', battleInitiation);
-          return void 0;
-        }),
-      );
-    } else {
-      return of(void 0);
+    if (armyMovements.movements?.length) {
+      this.gameStore.applyArmyMovements(armyMovements, true);
+      for (const movement of armyMovements.movements) {
+        this.gameStore.logArmyMovement(movement.units, movement.toAreaId);
+      }
     }
   }
 
-  private raiderWithdrawalPhase$() {
-    this.game.logPhase('raiderWithdrawal');
-    return of(void 0);
+  private async battlesRetreatsPhase(
+    nationId: BritNationId,
+    playerId: BritColor,
+  ): Promise<void> {
+    this.gameStore.logPhase('battlesRetreats');
+    if (this.rules.battlesRetreats.hasBattlesToResolve(this.gameStore)) {
+      const battleInitiation = await this.executeTask(playerId, (p) =>
+        p.battleInitiation(nationId, playerId),
+      );
+      console.log('battleInitiation', battleInitiation);
+    }
   }
 
-  private overpopulationPhase$() {
-    this.game.logPhase('overpopulation');
-    return of(void 0);
+  private raiderWithdrawalPhase() {
+    this.gameStore.logPhase('raiderWithdrawal');
+  }
+
+  private overpopulationPhase() {
+    this.gameStore.logPhase('overpopulation');
   }
 }

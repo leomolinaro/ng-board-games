@@ -1,6 +1,5 @@
 import type { WotrCardDraw } from '../../card/wotr-card-actions';
 import type { WotrScenarioDefinition } from '../wotr-scenario';
-import type { WotrStoriesBuilder } from '../wotr-story-builder';
 
 export const scenario: WotrScenarioDefinition = {
   options: {
@@ -11,7 +10,7 @@ export const scenario: WotrScenarioDefinition = {
     expansions: [],
     variants: [],
   },
-  stories: (b: WotrStoriesBuilder) => [
+  stories: () => [
     {
       playerId: 'free-peoples',
       type: 'base',

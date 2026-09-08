@@ -1,80 +1,7 @@
-// In caso di errore, stampo in console un messaggio e ritorno le liste originali.
-
 export type Key = string | number;
 
 function error(msg: string) {
   throw new Error(msg);
-}
-
-function toMap<E, V = E>(
-  list: E[],
-  keyGetter: (e: E) => any,
-  valueGetter?: (e: E) => V,
-): Record<string, V> {
-  if (list) {
-    if (valueGetter) {
-      const map: Record<string, V> = {};
-      list.forEach((e) => (map[keyGetter(e)] = valueGetter(e)));
-      return map;
-    } else {
-      const map: Record<string, V> = {};
-      list.forEach((e) => (map[keyGetter(e)] = e as unknown as V));
-      return map;
-    }
-  }
-  return {};
-}
-
-/************************************************************************************************/
-/**** UTILITA' SULLE LISTE **********************************************************************/
-/************************************************************************************************/
-
-export function listGetByIndicies<T>(indicies: number[], list: T[]) {
-  const indexMap = toMap(
-    indicies,
-    (i) => i,
-    (i) => true,
-  );
-  return list.filter((element, index) => indexMap[index]);
-}
-
-/**
- * Crea una lista di entità che corrispondono alla lista patch sulla base del confronto delle chiavi.
- * Se viene trovato un elemento patch che non corrisponde a nessuna entità vecchia, viene creata un'entità nuova.
- * Se viene trovato un elemento patch che corrisponde ad un'entità vecchia, viene mantenuta l'entità vecchia.
- * Se un'entità vecchia non corrisponde a nessun elemento patch, non sarà presente nel risultato.
- * Se tutti gli elementi patch corrispondono esattamente alle entità, viene restituita la lista vecchia.
- * @param patchList La lista patch.
- * @param patchListKeyGetter L'estrattore di chiave dagli elementi patch.
- * @param entityOldList La lista delle vecchie entità.
- * @param entityListKeyGetter L'estrattore di chiave dagli elementi entity.
- * @param createEntity Il creatore di entità a partire dalla chiave.
- */
-export function listMergeLists<P, E>(
-  patchList: P[],
-  patchListKeyGetter: (e: P) => any,
-  entityOldList: E[],
-  entityListKeyGetter: (e: E) => any,
-  createEntity: (p: P, key: any) => E,
-) {
-  const entityOldMap = toMap(entityOldList, entityListKeyGetter);
-  const entityNewList: E[] = [];
-  let entityListChanged = false;
-  patchList.forEach((p) => {
-    const key = patchListKeyGetter(p);
-    let e = entityOldMap[key];
-    if (e) {
-      delete entityOldMap[key];
-    } else {
-      e = createEntity(p, key);
-      entityListChanged = true;
-    }
-    entityNewList.push(e);
-  });
-  if (Object.keys(entityOldList).length) {
-    entityListChanged = true;
-  }
-  return entityListChanged ? entityNewList : entityOldList;
 }
 
 export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
@@ -102,16 +29,7 @@ export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
 }
 
 export function listRemoveByIndex<T>(index: number, list: T[]) {
-  return list.filter((el, i) => i !== index);
-}
-
-export function listRemoveByIndicies<T>(indicies: number[], list: T[]) {
-  const indexMap = toMap(
-    indicies,
-    (i) => i,
-    (i) => true,
-  );
-  return list.filter((element, index) => !indexMap[index]);
+  return list.filter((_el, i) => i !== index);
 }
 
 export function listReplaceFirst<T>(

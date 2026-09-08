@@ -23,13 +23,10 @@ import { WotrUnitRules } from '../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../unit/wotr-unit-utils';
 import type {
   WotrCombatCardAbility,
-  WotrCombatCardParams} from './combat-cards/wotr-combat-cards';
-import {
-  WotrCombatCards,
+  WotrCombatCardParams,
 } from './combat-cards/wotr-combat-cards';
-import type {
-  WotrCombatReRoll,
-  WotrCombatRoll} from './wotr-battle-actions';
+import { WotrCombatCards } from './combat-cards/wotr-combat-cards';
+import type { WotrCombatReRoll, WotrCombatRoll } from './wotr-battle-actions';
 import {
   advanceArmy,
   ceaseBattle,
@@ -40,7 +37,7 @@ import {
   notRetreat,
   notRetreatIntoSiege,
   retreat,
-  retreatIntoSiege
+  retreatIntoSiege,
 } from './wotr-battle-actions';
 import { WotrBattleHandler } from './wotr-battle-handler';
 import type { WotrCombatRound } from './wotr-battle-models';
@@ -60,10 +57,7 @@ export class WotrBattleUi {
   private unitRules = inject(WotrUnitRules);
   private battleModifiers = inject(WotrBattleModifiers);
 
-  async rollCombatDice(
-    nDice: number,
-    frontId: WotrFrontId,
-  ): Promise<WotrCombatRoll> {
+  async rollCombatDice(nDice: number): Promise<WotrCombatRoll> {
     await this.ui.askContinue(`Roll ${nDice} combat dice`);
     return {
       type: 'combat-roll',
@@ -71,10 +65,7 @@ export class WotrBattleUi {
     };
   }
 
-  async reRollCombatDice(
-    nDice: number,
-    frontId: WotrFrontId,
-  ): Promise<WotrCombatReRoll> {
+  async reRollCombatDice(nDice: number): Promise<WotrCombatReRoll> {
     await this.ui.askContinue(`Re-roll ${nDice} combat dice`);
     return {
       type: 'combat-re-roll',
@@ -161,7 +152,7 @@ export class WotrBattleUi {
       {
         type: 'moveArmy',
         regionIds: [fromRegion.id],
-        retroguard: battle.retroguard || null,
+        retroguard: battle.retroguard ?? null,
         requiredUnits: [],
         required: false,
         doneMovements: [],
@@ -260,7 +251,7 @@ export class WotrBattleUi {
     return actions;
   }
 
-  async wantRetreat(): Promise<WotrAction[]> {
+  async wantRetreat(front: WotrFrontId): Promise<WotrAction[]> {
     const battle = this.battleStore.battle()!;
     const region = this.regionStore.region(battle.action.toRegion);
     const options: WotrUiOption<
@@ -304,7 +295,7 @@ export class WotrBattleUi {
         retreatableRegions,
       );
       actions.push(retreat(toRegionId));
-      this.battleHandler.retreat(toRegionId);
+      this.battleHandler.retreat(toRegionId, front);
       actions.push(
         ...(await this.ui.unitUi.checkStackingLimit(
           toRegionId,
@@ -408,7 +399,6 @@ export class WotrBattleUi {
   async deadMenOfDunharrowCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     actions.push(
@@ -424,7 +414,7 @@ export class WotrBattleUi {
       retreatableRegions,
     );
     actions.push(retreat(toRegionId));
-    this.battleHandler.retreat(toRegionId);
+    this.battleHandler.retreat(toRegionId, 'shadow');
     actions.push(
       ...(await this.ui.unitUi.checkStackingLimit(toRegionId, 'shadow')),
     );

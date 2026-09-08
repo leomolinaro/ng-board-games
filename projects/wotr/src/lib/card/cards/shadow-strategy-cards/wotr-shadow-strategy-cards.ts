@@ -2,22 +2,16 @@ import { inject, Injectable } from '@angular/core';
 import { immutableUtil } from '../../../../../../commons/utils/src';
 import type { WotrAbility } from '../../../ability/wotr-ability';
 import { discardDice } from '../../../action-die/wotr-action-die-actions';
-import type {
-  WotrActionDieChoiceModifier} from '../../../action-die/wotr-action-die-modifiers';
-import {
-  WotrActionDieModifiers,
-} from '../../../action-die/wotr-action-die-modifiers';
+import type { WotrActionDieChoiceModifier } from '../../../action-die/wotr-action-die-modifiers';
+import { WotrActionDieModifiers } from '../../../action-die/wotr-action-die-modifiers';
 import type { WotrCombatRoll } from '../../../battle/wotr-battle-actions';
 import { attack } from '../../../battle/wotr-battle-actions';
 import type {
   WotrCombatFront,
   WotrCombatRound,
 } from '../../../battle/wotr-battle-models';
-import type {
-  WotrCanUseCombatCardModifier} from '../../../battle/wotr-battle-modifiers';
-import {
-  WotrBattleModifiers
-} from '../../../battle/wotr-battle-modifiers';
+import type { WotrCanUseCombatCardModifier } from '../../../battle/wotr-battle-modifiers';
+import { WotrBattleModifiers } from '../../../battle/wotr-battle-modifiers';
 import { moveCharacters } from '../../../character/wotr-character-actions';
 import { WotrCharacterHandler } from '../../../character/wotr-character-handler';
 import type { WotrAction } from '../../../commons/wotr-action-models';
@@ -25,33 +19,25 @@ import { findAction } from '../../../commons/wotr-action-models';
 import { WotrGameQuery } from '../../../game/wotr-game-query';
 import type { WotrUiChoice } from '../../../game/wotr-game-ui';
 import { WotrGameUiContext } from '../../../game/wotr-game-ui-context';
-import type {
-  WotrPoliticalRecede} from '../../../nation/wotr-nation-actions';
-import {
-  recedeNation
-} from '../../../nation/wotr-nation-actions';
+import type { WotrPoliticalRecede } from '../../../nation/wotr-nation-actions';
+import { recedeNation } from '../../../nation/wotr-nation-actions';
 import type { WotrNationId } from '../../../nation/wotr-nation-models';
 import type {
   WotrAfterNationAdvance,
-  WotrCanAdvanceNationModifier} from '../../../nation/wotr-nation-modifiers';
-import {
-  WotrNationModifiers,
+  WotrCanAdvanceNationModifier,
 } from '../../../nation/wotr-nation-modifiers';
+import { WotrNationModifiers } from '../../../nation/wotr-nation-modifiers';
 import type { WotrNationAdvanceSource } from '../../../nation/wotr-nation-rules';
 import { WotrFreePeoplesPlayer } from '../../../player/wotr-free-peoples-player';
 import { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
-import type {
-  WotrRegionChoose} from '../../../region/wotr-region-actions';
-import {
-  targetRegion
-} from '../../../region/wotr-region-actions';
+import type { WotrRegionChoose } from '../../../region/wotr-region-actions';
+import { targetRegion } from '../../../region/wotr-region-actions';
 import type { WotrRegionId } from '../../../region/wotr-region-models';
 import type { WotrRegionQuery } from '../../../region/wotr-region-query';
-import type {
-  WotrArmyMovement} from '../../../unit/wotr-unit-actions';
+import type { WotrArmyMovement } from '../../../unit/wotr-unit-actions';
 import {
   eliminateLeader,
-  upgradeRegularUnit
+  upgradeRegularUnit,
 } from '../../../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../../../unit/wotr-unit-handler';
 import { WotrUnitRules } from '../../../unit/wotr-unit-rules';
@@ -270,7 +256,7 @@ export class WotrShadowStrategyCards {
                 ) {
                   choices.push({
                     label: () => "Discard Denethor's Folly",
-                    actions: async () => [discardCardFromTableById('sstr03')],
+                    actions: () => [discardCardFromTableById('sstr03')],
                   });
                 }
                 return choices;
@@ -286,7 +272,7 @@ export class WotrShadowStrategyCards {
         return {
           canBePlayed: () =>
             this.q.shadowNations.every((nation) => nation.isAtWar()),
-          play: async (ui) => {
+          play: () => {
             const willDice = this.q.freePeoples
               .actionDice()
               .filter((die) => die === 'will-of-the-west');
@@ -299,7 +285,7 @@ export class WotrShadowStrategyCards {
       // You must discard this card from the table as soon as a Free Peoples Nation advances on the Political Track either due to an attack or due to a Companion's special ability
       case 'sstr05':
         return {
-          play: async (ui) => [playCardOnTableId('sstr05')],
+          play: () => [playCardOnTableId('sstr05')],
           onTableAbilities: () => {
             const cannotAdvanceAbility: WotrAbility<WotrCanAdvanceNationModifier> =
               {
@@ -317,7 +303,7 @@ export class WotrShadowStrategyCards {
               };
             const discardAbility: WotrAbility<WotrAfterNationAdvance> = {
               modifier: this.nationModifiers.afterNationAdvance,
-              handler: async (
+              handler: (
                 nationId: WotrNationId,
                 source: WotrNationAdvanceSource,
               ) => {
@@ -1026,7 +1012,7 @@ export class WotrShadowStrategyCards {
       case 'sstr01km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Denethor's Folly
       // Play on the table if Denethor is in play and not Awakened.
@@ -1039,7 +1025,7 @@ export class WotrShadowStrategyCards {
       case 'sstr03km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Threats and Promises
       // Play on the table.
@@ -1050,7 +1036,7 @@ export class WotrShadowStrategyCards {
       case 'sstr05km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Stormcrow
       // Play if either the Fellowship or a Companion is inside the borders of a Free Peoples Nation not "At War."
@@ -1060,7 +1046,7 @@ export class WotrShadowStrategyCards {
       case 'sstr06km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // The King Is Revealed
       // Play if either Aragorn or Denethor, Lord Steward of Gondor, is in play.
@@ -1070,7 +1056,7 @@ export class WotrShadowStrategyCards {
       case 'sstr18km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // The Palantir of Barad-dûr
       // Play on the table.
@@ -1081,7 +1067,7 @@ export class WotrShadowStrategyCards {
       case 'sstr25km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
       // Work of the Enemy
       // Choose a region with a Sovereign.
@@ -1090,7 +1076,7 @@ export class WotrShadowStrategyCards {
       case 'sstr26km': // TODO KOME
         return {
           canBePlayed: () => false,
-          play: async (ui) => [],
+          play: () => [],
         };
     }
   }

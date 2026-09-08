@@ -25,7 +25,7 @@
       preserveAspectRatio="xMinYMin"
       xlink:href="assets/britannia/britannia-map.png"
     ></image>
-    @for (areaNode of areaNodes; track areaTrackBy($index, areaNode)) {
+    @for (areaNode of areaNodes; track areaNode.id) {
     <svg:g>
       <svg:path
         [class.is-active]="isValidArea ? isValidArea[areaNode.id] : false"
@@ -45,10 +45,9 @@
       ></svg:circle>
       }
     </svg:g>
-    } @for (areaNode of areaNodes; track areaTrackBy($index, areaNode)) {
+    } @for (areaNode of areaNodes; track areaNode.id) {
     <ng-container>
-      @for (unitNode of areaNode.unitNodes; track unitTrackBy($index, unitNode))
-      {
+      @for (unitNode of areaNode.unitNodes; track unitNode.id) {
       <ng-container>
         <svg:svg
           class="brit-unit"
@@ -107,8 +106,7 @@
       </ng-container>
       }
     </ng-container>
-    } @for (populationNode of populationNodes; track populationTrackBy($index,
-    populationNode)) {
+    } @for (populationNode of populationNodes; track populationNode.id) {
     <svg:g>
       <svg:path
         [attr.id]="'brit-population-track-' + populationNode.id"
@@ -116,12 +114,11 @@
         [attr.d]="populationNode.path"
         [tuiHint]="populationNode.tooltip"
       ></svg:path>
-      @for ( nationNode of populationNode.nationNodes; track
-      nationPopulationTrackBy(i, nationNode); let i = $index ) {
+      @for ( nationNode of populationNode.nationNodes; track nationNode.id; let
+      i = $index ) {
       <ng-container>
-        @let c = { x: nationNode | bgTransform: getNationPopulationNodeX : i :
-        populationNode, y: nationNode | bgTransform: getNationPopulationNodeY :
-        i : populationNode };
+        @let c = { x: i | bgTransform: getNationPopulationNodeX :
+        populationNode, y: i | bgTransform: getNationPopulationNodeY };
         <svg:g>
           <svg:circle
             class="brit-population-circle"
@@ -140,8 +137,7 @@
       </ng-container>
       }
     </svg:g>
-    } @for (nationTurnNode of nationTurnNodes; track nationTurnTrackBy($index,
-    nationTurnNode)) {
+    } @for (nationTurnNode of nationTurnNodes; track nationTurnNode.id) {
     <svg:g>
       <svg:path
         [attr.id]="'brit-nation-turn-' + nationTurnNode.id"
@@ -150,7 +146,7 @@
         [tuiHint]="nationTurnNode.tooltip"
       ></svg:path>
     </svg:g>
-    } @for (roundNode of roundNodes; track roundTrackBy($index, roundNode)) {
+    } @for (roundNode of roundNodes; track roundNode.id) {
     <svg:g>
       <svg:path
         [attr.id]="'brit-round-' + roundNode.id"
@@ -158,8 +154,7 @@
         [attr.d]="roundNode.path"
         [tuiHint]="roundNode.tooltip"
       ></svg:path>
-      @for (eventNode of roundNode.eventNodes; track eventTrackBy($index,
-      eventNode)) {
+      @for (eventNode of roundNode.eventNodes; track eventNode.id) {
       <svg:g>
         <svg:path
           [attr.id]="'brit-event-' + roundNode.id + '-' + eventNode.id"

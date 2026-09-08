@@ -94,7 +94,9 @@ export abstract class WotrPlayer {
     );
   }
   wantRetreat(): Promise<WotrStory> {
-    return this.storyService.story(this.frontId, (p) => p.wantRetreat());
+    return this.storyService.story(this.frontId, (p) =>
+      p.wantRetreat(this.frontId),
+    );
   }
   chooseCombatCard(combatRound: WotrCombatRound): Promise<WotrStory> {
     return this.storyService.story(this.frontId, (p) =>

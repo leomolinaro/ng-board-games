@@ -10,7 +10,7 @@ export class WotrHuntRollModifiers {
 }
 export type WotrBeforeHuntRoll = (
   modifiers: WotrHuntRollModifiers,
-) => Promise<void>;
+) => void | Promise<void>;
 
 export type WotrHuntDrawPrevented = () => Promise<boolean>;
 
@@ -24,10 +24,10 @@ export type WotrHuntEffectChoiceModifier = (
 
 export type WotrAfterFellowshipReveal = (
   params: WotrFellowshipMove,
-) => Promise<void>;
+) => void | Promise<void>;
 
-export type WotrFellowshipProgressDieAddedToHuntBoxPrevented =
-  () => Promise<boolean>;
+export type WotrFellowshipProgressDieAddedToHuntBoxPrevented = () =>
+  boolean | Promise<boolean>;
 
 @Injectable()
 export class WotrHuntModifiers {

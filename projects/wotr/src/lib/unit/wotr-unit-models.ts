@@ -131,9 +131,7 @@ class WotrNationUnitComposer implements WotrUnitComposer {
 class WotrNazgulComposer implements WotrUnitComposer {
   constructor(private quantity: number) {}
   addTo(units: WotrUnits) {
-    if (!units.nNazgul) {
-      units.nNazgul = 0;
-    }
+    units.nNazgul ??= 0;
     units.nNazgul += this.quantity;
     return units;
   }
@@ -141,9 +139,7 @@ class WotrNazgulComposer implements WotrUnitComposer {
 class WotrCharacterComposer implements WotrUnitComposer {
   constructor(private characters: WotrCharacterId[]) {}
   addTo(units: WotrUnits) {
-    if (!units.characters) {
-      units.characters = [];
-    }
+    units.characters ??= [];
     this.characters.forEach((m) => units.characters!.push(m));
     return units;
   }

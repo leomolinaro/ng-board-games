@@ -66,7 +66,7 @@ export class BaronyPlayerLocalService {
         } satisfies BaronyTurnNewCity;
       }
       case 'expedition': {
-        const land = await this.chooseExpedition(playerId);
+        const land = await this.chooseExpedition();
         return {
           action: 'expedition',
           land: land.coordinates,
@@ -425,9 +425,8 @@ export class BaronyPlayerLocalService {
     return this.ui.landSelect.get();
   }
 
-  private chooseExpedition(player: BaronyColor): Promise<BaronyLand> {
+  private chooseExpedition(): Promise<BaronyLand> {
     const validLandsForExpedition = baronyRules.getValidLandsForExpedition(
-      player,
       this.game,
     );
     this.ui.updateUi('Choose expedition', (s) => ({

@@ -1,6 +1,4 @@
-import type { OnChanges } from '@angular/core';
-import { Component, inject, input } from '@angular/core';
-import type { SimpleChanges } from '@leobg/commons/utils';
+import { Component, computed, inject, input } from '@angular/core';
 import type {
   BritArea,
   BritAreaId,
@@ -52,7 +50,7 @@ type BritLogFragment =
       [class.brit-log-h1]="log().type === 'nation-turn'"
       [class.brit-log-h2]="log().type === 'phase'"
     >
-      @for (fragment of fragments; track fragment) {
+      @for (fragment of fragments(); track fragment) {
         @switch (fragment.type) {
           @case ('string') {
             <span>{{ fragment.label }}</span>
@@ -103,92 +101,70 @@ type BritLogFragment =
     `,
   ],
 })
-export class BritLogRow implements OnChanges {
+export class BritLogRow {
   private components = inject(BritComponents);
 
   readonly log = input.required<BritLog>();
 
-  fragments!: BritLogFragment[];
-
-  ngOnChanges(changes: SimpleChanges<this>) {
-    if (changes.log) {
-      const l = this.log();
-      switch (l.type) {
-        case 'setup':
-          this.fragments = [this.string('Setup')];
-          break;
-        case 'round':
-          this.fragments = [this.string(`Round ${l.roundId}`)];
-          break;
-        case 'nation-turn':
-          this.fragments = [
-            this.string(this.components.NATION[l.nationId].label),
-          ];
-          break;
-        case 'phase':
-          this.fragments = [this.string(this.getPhaseLabel(l.phase))];
-          break;
-        case 'population-marker-set':
-          this.fragments = [
-            this.string(
-              `Population marker ${l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`}`,
-            ),
-          ];
-          break;
-        case 'infantry-placement':
-          this.fragments = [
-            this.string(
-              `${l.quantity} infantr${l.quantity === 1 ? 'y' : 'ies'} placed in `,
-            ),
-            this.area(l.landId),
-          ];
-          break;
-        case 'infantry-reinforcement':
-          this.fragments = [
-            this.string(
-              `${l.quantity} infantry reinforcement${l.quantity === 1 ? '' : 's'} in `,
-            ),
-            this.area(l.areaId),
-          ];
-          break;
-        case 'army-movement': {
-          this.fragments = [];
-          let quantity = 0;
-          let isFirst = true;
-          for (const unit of l.units) {
-            if (isFirst) {
-              isFirst = false;
-            } else {
-              this.fragments.push(this.string(', '));
-            }
-            if (unit.type === 'leader') {
-              quantity++;
-              this.fragments.push(this.leader(unit.leaderId));
-            } else {
-              quantity += unit.quantity;
-              this.fragments.push(this.unit(unit));
-            }
+  protected fragments = computed<BritLogFragment[]>(() => {
+    const l = this.log();
+    switch (l.type) {
+      case 'setup':
+        return [this.string('Setup')];
+      case 'round':
+        return [this.string(`Round ${l.roundId}`)];
+      case 'nation-turn':
+        return [this.string(this.components.NATION[l.nationId].label)];
+      case 'phase':
+        return [this.string(this.getPhaseLabel(l.phase))];
+      case 'population-marker-set':
+        return [
+          this.string(
+            `Population marker ${l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`}`,
+          ),
+        ];
+      case 'infantry-placement':
+        return [
+          this.string(
+            `${l.quantity} infantr${l.quantity === 1 ? 'y' : 'ies'} placed in `,
+          ),
+          this.area(l.landId),
+        ];
+      case 'infantry-reinforcement':
+        return [
+          this.string(
+            `${l.quantity} infantry reinforcement${l.quantity === 1 ? '' : 's'} in `,
+          ),
+          this.area(l.areaId),
+        ];
+      case 'army-movement': {
+        const fragments: BritLogFragment[] = [];
+        let quantity = 0;
+        let isFirst = true;
+        for (const unit of l.units) {
+          if (isFirst) {
+            isFirst = false;
+          } else {
+            fragments.push(this.string(', '));
           }
-          this.fragments.push(
-            this.string(` ${quantity === 1 ? 'moves' : 'move'} from `),
-          );
-          this.fragments.push(this.area(l.units[0].areaId));
-          this.fragments.push(this.string(' to '));
-          this.fragments.push(this.area(l.toAreaId));
-          break;
+          if (unit.type === 'leader') {
+            quantity++;
+            fragments.push(this.leader(unit.leaderId));
+          } else {
+            quantity += unit.quantity;
+            fragments.push(this.unit(unit));
+          }
         }
-        // case "turn": this.fragments = [this.player (l.player), this.string ("'s turn")]; break;
-        // case "recruitment": this.fragments = [this.player (l.player), this.string (" recruits a knight in "), this.land (l.land), this.string (".")]; break;
-        // case "movement": this.fragments = [this.player (l.player), this.string (" moves a knight from "), this.land (l.movement.fromLand), this.string (" to "), this.land (l.movement.toLand), this.string (".")]; break;
-        // case "construction": this.fragments = [this.player (l.player), this.string (" builds a "), this.pawn (l.construction.building), this.string (" in "), this.land (l.construction.land), this.string (".")]; break;
-        // case "expedition": this.fragments = [this.player (l.player), this.string (" makes an expedition to "), this.land (l.land), this.string (".")]; break;
-        // case "newCity": this.fragments = [this.player (l.player), this.string (" builds a new city in "), this.land (l.land), this.string (".")]; break;
-        // case "nobleTitle": this.fragments = [this.player (l.player), this.string (" earns a new noble title.")]; break;
-        // case "setupPlacement": this.fragments = [this.player (l.player), this.string (" places a knight in "), this.land (l.land), this.string (".")]; break;
-        // default: console.error (`Log type ${l.type} not managed`);
+        fragments.push(
+          this.string(` ${quantity === 1 ? 'moves' : 'move'} from `),
+        );
+        fragments.push(this.area(l.units[0].areaId));
+        fragments.push(this.string(' to '));
+        fragments.push(this.area(l.toAreaId));
+        return fragments;
       }
     }
-  }
+  });
 
   private string(label: string): BritLogStringFragment {
     return {

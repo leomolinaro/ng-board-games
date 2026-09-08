@@ -21,8 +21,8 @@ export class WotrFrontHandler {
   private actionRegistry = inject(WotrActionRegistry);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
 
   getActionAppliers(): WotrActionApplierMap<WotrFrontAction> {
@@ -34,7 +34,7 @@ export class WotrFrontHandler {
 
   private getActionLoggers(): WotrActionLoggerMap<WotrFrontAction> {
     return {
-      'elven-ring-use': (action, front, f) => [
+      'elven-ring-use': (_action, front, f) => [
         f.player(front),
         ' uses the Elven Ring',
       ],

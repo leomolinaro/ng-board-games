@@ -14,7 +14,10 @@ import type {
 } from '../character/wotr-character-models';
 import type { WotrElvenRing, WotrFrontId } from '../front/wotr-front-models';
 import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import type { WotrArmyUnitType, WotrNationId } from '../nation/wotr-nation-models';
+import type {
+  WotrArmyUnitType,
+  WotrNationId,
+} from '../nation/wotr-nation-models';
 
 const BASE_PATH = 'assets/wotr';
 
@@ -63,9 +66,11 @@ export class WotrAssetsStore {
     return `${BASE_PATH}/map.svg`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private NATION_BY_ID: Record<
     WotrNationId,
     { regular: WotrUnitImage; elite: WotrUnitImage; leader?: WotrUnitImage }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   > = {} as any;
   armyUnitImage(type: WotrArmyUnitType, nationId: WotrNationId) {
     switch (type) {
@@ -123,6 +128,7 @@ export class WotrAssetsStore {
     return this.NAZGUL;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   private CHARACTER_BY_ID: Record<WotrCharacterId, WotrUnitImage> = {} as any;
   frontCharacterImage(characterId: WotrCharacterId) {
     return this.CHARACTER_BY_ID[characterId];
@@ -143,9 +149,11 @@ export class WotrAssetsStore {
     return { source: `${BASE_PATH}/characters/${fileName}.png`, width, height };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   private SOVEREIGN_BY_ID: Record<
     KomeSovereignId,
     Record<KomeSovereign['sovereignStatus'], WotrUnitImage>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   > = {} as any;
   private initKomeSovereignImage(
     fileName: string,

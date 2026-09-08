@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Injectable, computed } from '@angular/core';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrPlayerInfo } from './wotr-player-info-models';
@@ -10,7 +10,7 @@ export interface WotrPlayerInfoState {
 
 export function initialState(): WotrPlayerInfoState {
   return {
-    map: {} as any,
+    map: {} as unknown as Record<WotrFrontId, WotrPlayerInfo>,
     ids: [],
   };
 }

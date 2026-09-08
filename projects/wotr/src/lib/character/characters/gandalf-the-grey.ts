@@ -52,7 +52,3 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
     return [action];
   };
 }
-
-// export class EmissaryFromTheWestAbility implements WotrAbility<unknown> {
-//   public handler = null;
-// }

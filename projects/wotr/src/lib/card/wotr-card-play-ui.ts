@@ -49,12 +49,14 @@ export class WotrCardPlayUi {
   }
 
   private hasPlayableCards(
-    cartTypes: WotrCardType[] | 'any',
+    cardTypes: WotrCardType[] | 'any',
     frontId: WotrFrontId,
   ) {
-    return this.frontStore
-      .front(frontId)
-      .handCards.some((cardId) => this.cards.isPlayableCard(cardId, frontId));
+    return this.frontStore.front(frontId).handCards.some((cardId) => {
+      if (cardTypes !== 'any' && !cardTypes.includes(getCard(cardId).type))
+        return false;
+      return this.cards.isPlayableCard(cardId);
+    });
   }
 
   async playCharacterCardFromHand(frontId: WotrFrontId): Promise<WotrAction[]> {

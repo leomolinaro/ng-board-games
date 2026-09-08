@@ -75,6 +75,7 @@ function generateExhagonalMap(nTiles: number): BaronyLandCoordinates[] {
   return coordinates;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- for development purposes
 function generateRectangularMap(nPieces: number): {
   coordinates: BaronyLandCoordinates;
   type: BaronyLandType;

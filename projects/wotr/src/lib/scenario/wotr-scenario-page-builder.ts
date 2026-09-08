@@ -19,7 +19,7 @@ export class WotrScenarioPageBuilder {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              paramMap: new Map([['scenarioId', this.scenarioId || 'empty']]),
+              paramMap: new Map([['scenarioId', this.scenarioId ?? 'empty']]),
             },
           },
         },

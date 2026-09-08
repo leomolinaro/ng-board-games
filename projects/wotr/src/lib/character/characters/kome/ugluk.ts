@@ -104,7 +104,7 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
     }
   };
 
-  async play() {
+  play() {
     const combatCard = this.round?.shadow.combatCard;
     if (!combatCard) throw new Error('No combat card to forfeit.');
     return [forfeitCombatCardById(combatCard.id)];
@@ -121,7 +121,7 @@ export class WeMarchDayAndNightAbility implements WotrAbility<WotrBeforeHuntRoll
 
   modifier;
 
-  handler: WotrBeforeHuntRoll = async (modifiers) => {
+  handler: WotrBeforeHuntRoll = (modifiers) => {
     if (this.q.fellowship.isOnMordorTrack()) return;
     const fellowshipRegion = this.q.fellowship.region();
     const uglukRegionId = this.q.ugluk.region()!.id;

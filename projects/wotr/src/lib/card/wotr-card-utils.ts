@@ -1,4 +1,3 @@
- 
 import { inject, Injectable } from '@angular/core';
 import { WotrFrontStore } from '../front/wotr-front-store';
 import type { WotrGameOptions } from '../game/options/wotr-game-options';
@@ -42,32 +41,30 @@ export class WotrCardUtils {
 
   private _komeExpansionCards: ExpansionCards | null = null;
   private get komeExpansionCards(): ExpansionCards {
-    if (!this._komeExpansionCards) {
-      this._komeExpansionCards = {
-        fpchaReplacements: {
-          fpcha23: 'fpcha23km',
-        },
-        fpchaAdditions: ['fpcha25km', 'fpcha26km'],
-        fpstrReplacements: {
-          fpstr08: 'fpstr08km',
-          fpstr16: 'fpstr16km',
-          fpstr19: 'fpstr19km',
-          fpstr22: 'fpstr22km',
-          fpstr24: 'fpstr24km',
-        },
-        fpstrAdditions: ['fpstr25km', 'fpstr26km'],
-        schaReplacements: {},
-        schaAdditions: ['scha25km', 'scha26km'],
-        sstrReplacements: {
-          sstr01: 'sstr01km',
-          sstr03: 'sstr03km',
-          sstr05: 'sstr05km',
-          sstr06: 'sstr06km',
-          sstr18: 'sstr18km',
-        },
-        sstrAdditions: ['sstr25km', 'sstr26km'],
-      };
-    }
+    this._komeExpansionCards ??= {
+      fpchaReplacements: {
+        fpcha23: 'fpcha23km',
+      },
+      fpchaAdditions: ['fpcha25km', 'fpcha26km'],
+      fpstrReplacements: {
+        fpstr08: 'fpstr08km',
+        fpstr16: 'fpstr16km',
+        fpstr19: 'fpstr19km',
+        fpstr22: 'fpstr22km',
+        fpstr24: 'fpstr24km',
+      },
+      fpstrAdditions: ['fpstr25km', 'fpstr26km'],
+      schaReplacements: {},
+      schaAdditions: ['scha25km', 'scha26km'],
+      sstrReplacements: {
+        sstr01: 'sstr01km',
+        sstr03: 'sstr03km',
+        sstr05: 'sstr05km',
+        sstr06: 'sstr06km',
+        sstr18: 'sstr18km',
+      },
+      sstrAdditions: ['sstr25km', 'sstr26km'],
+    };
     return this._komeExpansionCards;
   }
 
@@ -147,17 +144,17 @@ export class WotrCardUtils {
     for (const cardNumber of this.BASE_CARD_NUMBERS) {
       let fpChaCardId = `fpcha${cardNumber}` as WotrFreePeoplesCharacterCardId;
       fpChaCardId =
-        expansionCards.fpchaReplacements[fpChaCardId] || fpChaCardId;
+        expansionCards.fpchaReplacements[fpChaCardId] ?? fpChaCardId;
       fpchaCardIds.push(fpChaCardId);
       let fpStrCardId = `fpstr${cardNumber}` as WotrFreePeoplesStrategyCardId;
       fpStrCardId =
-        expansionCards.fpstrReplacements[fpStrCardId] || fpStrCardId;
+        expansionCards.fpstrReplacements[fpStrCardId] ?? fpStrCardId;
       fpstrCardIds.push(fpStrCardId);
       let sChaCardId = `scha${cardNumber}` as WotrShadowCharacterCardId;
-      sChaCardId = expansionCards.schaReplacements[sChaCardId] || sChaCardId;
+      sChaCardId = expansionCards.schaReplacements[sChaCardId] ?? sChaCardId;
       schaCardIds.push(sChaCardId);
       let sStrCardId = `sstr${cardNumber}` as WotrShadowStrategyCardId;
-      sStrCardId = expansionCards.sstrReplacements[sStrCardId] || sStrCardId;
+      sStrCardId = expansionCards.sstrReplacements[sStrCardId] ?? sStrCardId;
       sstrCardIds.push(sStrCardId);
     }
     for (const addition of expansionCards.fpchaAdditions)

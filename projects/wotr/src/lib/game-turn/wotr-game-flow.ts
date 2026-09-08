@@ -30,7 +30,7 @@ import { WotrFreePeoplesPlayer } from '../player/wotr-free-peoples-player';
 import type { WotrPlayer } from '../player/wotr-player';
 import { WotrShadowPlayer } from '../player/wotr-shadow-player';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import type { WotrSetup} from '../setup/wotr-setup-rules';
+import type { WotrSetup } from '../setup/wotr-setup-rules';
 import { WotrSetupRules } from '../setup/wotr-setup-rules';
 
 @Injectable()
@@ -75,11 +75,11 @@ export class WotrGameFlow {
         continueGame = await this.round(++roundNumber);
       }
     } catch (error) {
-      if (error instanceof WotrRingDestroyed) {
-      } else if (error instanceof WotrRingBearerCorrupted) {
-      } else {
+      if (!(
+        error instanceof WotrRingDestroyed ||
+        error instanceof WotrRingBearerCorrupted
+      ))
         throw error;
-      }
     }
     this.logger.logEndGame();
   }
@@ -105,7 +105,7 @@ export class WotrGameFlow {
     if (!continueGame) return false;
     continueGame = await this.actionResolution();
     if (!continueGame) return false;
-    continueGame = await this.victoryCheck(roundNumber);
+    continueGame = this.victoryCheck();
     if (!continueGame) return false;
     return true;
   }
@@ -227,7 +227,7 @@ export class WotrGameFlow {
     }
   }
 
-  private async victoryCheck(roundNumber: number) {
+  private victoryCheck() {
     this.logger.logPhase(6);
     const shadow = this.frontStore.shadowFront();
     if (shadow.victoryPoints >= 10) {

@@ -74,12 +74,9 @@ export class BritRulesMovementService {
     const validAreas: BritAreaId[] = [];
     const area = this.components.getArea(areaId);
     area.neighbors.forEach((n) => {
-      const { id: neiAreaId, strait } =
-        typeof n === 'object' ? n : { id: n, strait: false };
+      const { id: neiAreaId } = typeof n === 'object' ? n : { id: n };
       const neiArea = this.components.getArea(neiAreaId);
-      if (neiArea.type === 'land') {
-        validAreas.push(neiAreaId);
-      }
+      if (neiArea.type === 'land') validAreas.push(neiAreaId);
     });
     return validAreas;
   }

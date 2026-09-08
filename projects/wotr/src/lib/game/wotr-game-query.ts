@@ -140,18 +140,17 @@ export class WotrGameQuery {
   ];
   darkChieftains = [this.theBlackSerpent, this.theShadowOfMirkwood, this.ugluk];
 
-  private characterById = arrayUtil.toMap(
-    [...this.companions, ...this.minions],
-    (character) => character.id,
-  ) as Record<WotrCharacterId, WotrCharacterQuery>;
+  private characterById: Record<WotrCharacterId, WotrCharacterQuery> =
+    arrayUtil.toMap(
+      [...this.companions, ...this.minions],
+      (character) => character.id,
+    );
   character(characterId: WotrCharacterId): WotrCharacterQuery {
     return this.characterById[characterId];
   }
 
-  private sovereignById = arrayUtil.toMap(
-    this.sovereigns,
-    (sovereign) => sovereign.id,
-  ) as Record<KomeSovereignId, KomeSovereignQuery>;
+  private sovereignById: Record<KomeSovereignId, KomeSovereignQuery> =
+    arrayUtil.toMap(this.sovereigns, (sovereign) => sovereign.id);
   sovereign(sovereignId: KomeSovereignId): KomeSovereignQuery {
     return this.sovereignById[sovereignId];
   }
@@ -180,10 +179,10 @@ export class WotrGameQuery {
     this.regionStore,
   );
   shadowNations = [this.sauron, this.isengard, this.southrons];
-  private nationById = arrayUtil.toMap(
+  private nationById: Record<WotrNationId, WotrNationQuery> = arrayUtil.toMap(
     [...this.freePeoplesNations, ...this.shadowNations],
     (nation) => nation.id(),
-  ) as Record<WotrNationId, WotrNationQuery>;
+  );
   nation(nationId: WotrNationId): WotrNationQuery {
     return this.nationById[nationId];
   }
@@ -191,13 +190,11 @@ export class WotrGameQuery {
   private _regions: Partial<Record<WotrRegionId, WotrRegionQuery>> = {};
 
   region(regionId: WotrRegionId): WotrRegionQuery {
-    if (!this._regions[regionId]) {
-      this._regions[regionId] = new WotrRegionQuery(
-        regionId,
-        this.regionStore,
-        this.unitUtils,
-      );
-    }
+    this._regions[regionId] ??= new WotrRegionQuery(
+      regionId,
+      this.regionStore,
+      this.unitUtils,
+    );
     return this._regions[regionId];
   }
   regions(...regionIds: WotrRegionId[]): WotrRegionQuery[] {

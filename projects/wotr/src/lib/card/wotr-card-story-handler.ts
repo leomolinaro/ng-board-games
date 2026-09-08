@@ -63,7 +63,7 @@ export class WotrCardStoryHandler {
     }
   };
 
-  private reactionCardSkip: WotrStoryApplier<WotrSkipCardEffectStory> = async (
+  private reactionCardSkip: WotrStoryApplier<WotrSkipCardEffectStory> = (
     story,
     front,
   ) => {

@@ -66,7 +66,9 @@ export abstract class KomeSovereignCard {
     return awakeSovereign(this.sovereignId, awakeningRegion);
   }
 
-  resolveAwakeEffect(): void {}
+  resolveAwakeEffect(): void {
+    /*empty*/
+  }
 
   resolveCorruptionEffect(): void {
     const fromRegion = this.q.brand.region();

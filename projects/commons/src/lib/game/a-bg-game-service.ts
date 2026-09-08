@@ -1,5 +1,4 @@
-import type {
-  Observable} from 'rxjs';
+import type { Observable } from 'rxjs';
 import {
   EMPTY,
   expand,
@@ -55,8 +54,6 @@ export abstract class ABgGameService<
   St,
   PlSrv,
 > {
-  constructor() {}
-
   protected abstract auth: BgAuthService;
   protected abstract localPlayer: PlSrv;
   protected abstract aiPlayer: PlSrv;

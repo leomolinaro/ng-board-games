@@ -1,8 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import type { OnDestroy, OnInit} from '@angular/core';
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ExhaustingEvent, UntilDestroy } from '@leobg/commons/utils';
 import { TuiButton, TuiDataList, TuiDropdown } from '@taiga-ui/core';
 import { switchMap } from 'rxjs/operators';
 import type { BgUserLoginType } from './bg-auth.service';
@@ -84,8 +82,7 @@ import { BgAuthService } from './bg-auth.service';
     `,
   ],
 })
-@UntilDestroy
-export class BgAccountButton implements OnInit, OnDestroy {
+export class BgAccountButton {
   private authService = inject(BgAuthService);
   private router = inject(Router);
 
@@ -93,25 +90,21 @@ export class BgAccountButton implements OnInit, OnDestroy {
 
   protected dropdownOpen = false;
 
-  ngOnInit() {}
-  ngOnDestroy() {}
-
-  @ExhaustingEvent()
   onSignInClick(type: BgUserLoginType) {
-    return this.authService.signIn$(type);
+    this.authService.signIn$(type).subscribe();
   }
 
-  @ExhaustingEvent()
   onSignOutClick() {
-    return this.authService
+    this.authService
       .signOut$()
-      .pipe(switchMap(() => this.router.navigate([''])));
+      .pipe(switchMap(() => this.router.navigate([''])))
+      .subscribe();
   }
 
-  @ExhaustingEvent()
   onDeleteAccountClick() {
-    return this.authService
+    this.authService
       .deleteUser$()
-      .pipe(switchMap(() => this.router.navigate([''])));
+      .pipe(switchMap(() => this.router.navigate([''])))
+      .subscribe();
   }
 }

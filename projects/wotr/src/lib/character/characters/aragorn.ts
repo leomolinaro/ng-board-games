@@ -2,7 +2,6 @@ import type { WotrActionDie } from '../../action-die/wotr-action-die-models';
 import type { WotrBattleModifiers } from '../../battle/wotr-battle-modifiers';
 import type { WotrAction } from '../../commons/wotr-action-models';
 import type { WotrGameQuery } from '../../game/wotr-game-query';
-import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
 import type { WotrRegionId } from '../../region/wotr-region-models';
 import { playCharacter } from '../wotr-character-actions';
 import { WotrPlayableCharacterCard } from './wotr-playable-character-card';
@@ -46,7 +45,7 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
     }
   }
 
-  override async bringIntoPlay(ui: WotrGameUiContext): Promise<WotrAction> {
+  override bringIntoPlay(): WotrAction {
     const regionId = this.striderValidRegion();
     if (!regionId)
       throw new Error(

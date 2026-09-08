@@ -8,14 +8,11 @@ import type { WotrUiChoice } from '../game/wotr-game-ui';
 import { WotrGameUiContext } from '../game/wotr-game-ui-context';
 import type { WotrStory } from '../game/wotr-story-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
-import type { WotrNazgulMovement} from '../unit/wotr-unit-actions';
+import type { WotrNazgulMovement } from '../unit/wotr-unit-actions';
 import { moveNazgul } from '../unit/wotr-unit-actions';
 import { WotrUnitHandler } from '../unit/wotr-unit-handler';
-import type {
-  WotrCharacterMovement} from './wotr-character-actions';
-import {
-  moveCharacters,
-} from './wotr-character-actions';
+import type { WotrCharacterMovement } from './wotr-character-actions';
+import { moveCharacters } from './wotr-character-actions';
 import { WotrCharacterHandler } from './wotr-character-handler';
 import type { WotrCharacterId } from './wotr-character-models';
 import { WotrCharacterModifiers } from './wotr-character-modifiers';
@@ -113,7 +110,7 @@ export class WotrCharacterUi {
       this.characterRules.canMoveStandardNazgul() ||
       this.q.theWitchKing.canMove();
     const actions: WotrAction[] = [];
-    let continueMoving = true;
+    let continueMoving;
     do {
       let moveNonFlyingMinions = moveableNonFlyingMinions.size > 0;
       if (moveNonFlyingMinions && hasNazgul) {
@@ -178,7 +175,7 @@ export class WotrCharacterUi {
       return [];
     }
     const actions: WotrAction[] = [];
-    let continueMoving = true;
+    let continueMoving;
     do {
       const moveNazgulActions = await this.moveNazgul();
       for (const action of moveNazgulActions) {
@@ -305,9 +302,8 @@ export class WotrCharacterUi {
   awakeSovereignChoice(die: WotrActionDie): WotrUiChoice {
     return {
       label: () => 'Awake a sovereign',
-      isAvailable: (frontId: WotrFrontId) =>
-        this.characterAbilities.canAwakeSovereign(die),
-      actions: (frontId: WotrFrontId) => this.awakeSovereign(die),
+      isAvailable: () => this.characterAbilities.canAwakeSovereign(die),
+      actions: () => this.awakeSovereign(die),
     };
   }
 

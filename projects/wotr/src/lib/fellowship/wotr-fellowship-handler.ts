@@ -21,11 +21,9 @@ import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
 import type {
   WotrFellowshipAction,
-  WotrFellowshipCorruption} from './wotr-fellowship-actions';
-import {
-  changeGuide,
-  corruptFellowship
+  WotrFellowshipCorruption,
 } from './wotr-fellowship-actions';
+import { corruptFellowship } from './wotr-fellowship-actions';
 import { WotrRingDestroyed } from './wotr-fellowship-models';
 import { WotrFellowshipModifiers } from './wotr-fellowship-modifiers';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
@@ -46,11 +44,11 @@ export class WotrFellowshipHandler {
   private huntModifiers = inject(WotrHuntModifiers);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<WotrFellowshipCorruption>(
       'fellowship-corruption',
-      (effect, f) => [
+      (effect) => [
         `Fellowship is ${effect.quantity < 0 ? 'healed' : 'corrupted'} by ${this.nCorruptionPoints(Math.abs(effect.quantity))}`,
       ],
     );
@@ -58,17 +56,19 @@ export class WotrFellowshipHandler {
 
   getActionAppliers(): WotrActionApplierMap<WotrFellowshipAction> {
     return {
-      'fellowship-declare': (story, front) => this.declare(story.region),
-      'fellowship-corruption': (action, front) => this.corrupt(action.quantity),
-      'fellowship-heal': (action, front) => this.corrupt(-action.quantity),
-      'fellowship-push': (action, front) => this.pushFellowship(action.region),
-      'fellowship-guide': (action, front) => this.changeGuide(action.companion),
-      'fellowship-hide': (action, front) => this.hide(),
-      'fellowship-progress': (action, front) => this.progress(),
-      'fellowship-reveal': (action, front) => this.reveal(action.region),
-      'fellowship-reveal-in-mordor': (action, front) => this.revealInMordor(),
-      'companion-random': (action, front) => {} /*empty*/,
-      'companion-separation': (action, front) =>
+      'fellowship-declare': (story) => this.declare(story.region),
+      'fellowship-corruption': (action) => this.corrupt(action.quantity),
+      'fellowship-heal': (action) => this.corrupt(-action.quantity),
+      'fellowship-push': (action) => this.pushFellowship(action.region),
+      'fellowship-guide': (action) => this.changeGuide(action.companion),
+      'fellowship-hide': () => this.hide(),
+      'fellowship-progress': () => this.progress(),
+      'fellowship-reveal': (action) => this.reveal(action.region),
+      'fellowship-reveal-in-mordor': () => this.revealInMordor(),
+      'companion-random': () => {
+        /*empty*/
+      },
+      'companion-separation': (action) =>
         this.separateCompanions(action.companions, action.toRegion),
     };
   }
@@ -207,11 +207,11 @@ export class WotrFellowshipHandler {
         ' declares the Fellowship in ',
         f.region(action.region),
       ],
-      'fellowship-hide': (action, front, f) => [
+      'fellowship-hide': (_action, front, f) => [
         f.player(front),
         ' hides the Fellowship',
       ],
-      'fellowship-progress': (action, front, f) => [
+      'fellowship-progress': (_action, front, f) => [
         f.player(front),
         ' moves the Fellowship',
       ],
@@ -220,7 +220,7 @@ export class WotrFellowshipHandler {
         ' reveals the Fellowship in ',
         f.region(action.region),
       ],
-      'fellowship-reveal-in-mordor': (action, front, f) => [
+      'fellowship-reveal-in-mordor': (_action, front, f) => [
         f.player(front),
         ' reveals the Fellowship in Mordor',
       ],

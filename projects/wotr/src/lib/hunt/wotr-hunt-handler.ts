@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
+import { lazyInject } from '../../../../commons/utils/src';
 import type { WotrActionDie } from '../action-die/wotr-action-die-models';
 import type { WotrCardId } from '../card/wotr-card-models';
 import { cardToLabel } from '../card/wotr-card-models';
 import type { KomeSovereignId } from '../character/wotr-character-models';
 import { WotrCharacterStore } from '../character/wotr-character-store';
-import type { WotrCharacters } from '../character/wotr-characters';
+import { WotrCharacters } from '../character/wotr-characters';
 import type {
   WotrActionApplierMap,
   WotrActionLoggerMap,
@@ -31,11 +32,11 @@ export class WotrHuntHandler {
   private corruptionFlow = inject(KomeCorruptionFlow);
   private characterStore = inject(WotrCharacterStore);
   private logger = inject(WotrLogWriter);
-  characters!: WotrCharacters;
+  private characters = lazyInject(WotrCharacters);
 
   init() {
-    this.actionRegistry.registerActions(this.getActionAppliers() as any);
-    this.actionRegistry.registerActionLoggers(this.getActionLoggers() as any);
+    this.actionRegistry.registerActions(this.getActionAppliers());
+    this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<KomeCorruptSovereign>(
       'corrupt-sovereign',
       (effect, f) => [f.character(effect.sovereign), ' has been corrupted'],
@@ -155,7 +156,7 @@ export class WotrHuntHandler {
         f.huntTile(action.tile),
         ' corruption tile',
       ],
-      'corrupt-sovereign': (effect, front, f) => {
+      'corrupt-sovereign': () => {
         throw new Error(
           'This should be handled by the effect logger and not the action logger',
         );

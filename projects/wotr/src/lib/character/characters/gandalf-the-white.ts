@@ -91,9 +91,7 @@ export class ShadowfaxAbility implements WotrAbility<WotrCharacterMovementLevelM
     if (!characters.includes('gandalf-the-white')) return originalLevel;
     if (characters.length === 1) return 4;
     if (characters.length > 2) return originalLevel;
-    const otherCharacter = characters.filter(
-      (c) => c !== 'gandalf-the-white',
-    )[0];
+    const otherCharacter = characters.find((c) => c !== 'gandalf-the-white');
     if (otherCharacter === 'peregrin' || otherCharacter === 'meriadoc')
       return 4;
     return originalLevel;
@@ -126,7 +124,7 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
     round.shadow.negateNazgulLeadership = true;
   };
 
-  async play() {
+  play() {
     return [forfeitLeadership(character('gandalf-the-white'))];
   }
 }

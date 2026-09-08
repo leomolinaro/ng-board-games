@@ -7,7 +7,7 @@
     "build": "ng build app",
     "watch": "ng build app --watch --configuration development",
     "test": "ng test app",
-    "lint": "eslint .",
+    "lint": "eslint -- ./projects",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "e2e": "cypress open",

@@ -673,7 +673,7 @@ export class WotrUnitUi {
         regionIds,
         type: 'eliminateUnit',
         unitType: selection.unitType,
-        nationId: selection.nationId || null,
+        nationId: selection.nationId ?? null,
       },
     );
     if (units.regulars?.length) {

@@ -1,6 +1,4 @@
-import type { OnChanges} from '@angular/core';
-import { Component, input, output } from '@angular/core';
-import type { SimpleChanges} from '@leobg/commons/utils';
+import { Component, computed, input, output } from '@angular/core';
 import { arrayUtil } from '@leobg/commons/utils';
 import { BARONY_ACTIONS } from '../barony-constants';
 import type { BaronyAction } from '../barony-models';
@@ -25,11 +23,12 @@ import type { BaronyAction } from '../barony-models';
       >
         {{ labels.pass }}
       </button>
+      @let isVal = isValid();
       @for (action of actions; track action) {
         <button
           class="b-action"
-          [class.is-active]="isValid ? isValid[action] : false"
-          [class.is-disabled]="isValid ? !isValid[action] : true"
+          [class.is-active]="isVal ? isVal[action] : false"
+          [class.is-disabled]="isVal ? !isVal[action] : true"
           (click)="onActionClick(action)"
         >
           {{ $any(labels)[action] }}
@@ -70,9 +69,7 @@ import type { BaronyAction } from '../barony-models';
     }
   `,
 })
-export class BaronyActionsArea implements OnChanges {
-  constructor() {}
-
+export class BaronyActionsArea {
   readonly validActions = input<BaronyAction[] | null>(null);
   readonly canPass = input.required<boolean>();
   readonly canCancel = input.required<boolean>();
@@ -93,38 +90,28 @@ export class BaronyActionsArea implements OnChanges {
     cancel: 'Cancel',
   };
 
-  isValid: Record<string, boolean> | null = null;
-
-  ngOnChanges(changes: SimpleChanges<this>): void {
-    if (changes.validActions || changes.canPass) {
-      const validActions = this.validActions();
-      if (validActions) {
-        this.isValid = arrayUtil.toMap(
-          validActions,
-          (a) => a,
-          () => true,
-        );
-      } else {
-        this.isValid = null;
-      }
+  protected isValid = computed(() => {
+    const validActions = this.validActions();
+    if (validActions) {
+      return arrayUtil.toMap(
+        validActions,
+        (a) => a,
+        () => true,
+      );
+    } else {
+      return null;
     }
-  }
+  });
 
   onActionClick(action: BaronyAction) {
-    if (this.isValid && this.isValid[action]) {
-      this.actionClick.emit(action);
-    }
+    if (this.isValid()?.[action]) this.actionClick.emit(action);
   }
 
   onPassClick() {
-    if (this.canPass()) {
-      this.passClick.emit();
-    }
+    if (this.canPass()) this.passClick.emit();
   }
 
   onCancelClick() {
-    if (this.canCancel()) {
-      this.cancelClick.emit();
-    }
+    if (this.canCancel()) this.cancelClick.emit();
   }
 }

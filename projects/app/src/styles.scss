@@ -17,7 +17,7 @@ p {
 }
 
 [tuiTheme] {
-  --tui-stroke-width: 4px;
+  --tui-stroke-width: 2px;
   tui-hint {
     justify-self: baseline; // otherwise the hint is stretched in the grid layout cell of tui-popups
   }

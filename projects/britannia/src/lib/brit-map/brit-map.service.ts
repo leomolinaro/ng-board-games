@@ -116,7 +116,10 @@ export class BritMapService {
                   .substring('round-'.length)
                   .replace('-scoring', '') as BritRoundId,
             );
-            this.eventPaths = {} as any;
+            this.eventPaths = {} as Record<
+              BritRoundId,
+              Record<BritNationId, string>
+            >;
             for (const roundId of this.components.ROUND_IDS) {
               const roundEventPaths = this.getGroupPaths<BritNationId>(
                 `brit-round-${roundId}`,
@@ -139,7 +142,7 @@ export class BritMapService {
     pathIdToId: (pathId: string) => K,
   ) {
     const britGroup = dom.getElementById(groupId);
-    const paths: Record<K, string> = {} as any;
+    const paths: Record<K, string> = {} as never;
     britGroup?.childNodes.forEach((childNode) => {
       if (childNode.nodeName === 'path') {
         const pathElement = childNode as SVGPathElement;
@@ -159,7 +162,7 @@ export class BritMapService {
       })
       .pipe(
         map((response) => {
-          this.areaSlots = JSON.parse(response);
+          this.areaSlots = JSON.parse(response) as BritAreaSlots;
           return true;
         }),
       );
@@ -174,7 +177,7 @@ export class BritMapService {
     return startX + (index % BRIT_POPULATION_START_WIDTH);
   }
 
-  getPopulationY(population: BritPopulation, index: number): number {
+  getPopulationY(index: number): number {
     return (
       BRIT_POPULATION_START_Y + Math.floor(index / BRIT_POPULATION_START_WIDTH)
     );

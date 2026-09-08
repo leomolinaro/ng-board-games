@@ -175,10 +175,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async wantRetreat(): Promise<WotrBaseStory> {
+  async wantRetreat(frontId: WotrFrontId): Promise<WotrBaseStory> {
     return {
       type: 'base',
-      actions: await this.battleUi.wantRetreat(),
+      actions: await this.battleUi.wantRetreat(frontId),
     };
   }
 
@@ -192,23 +192,17 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     };
   }
 
-  async rollCombatDice(
-    nDice: number,
-    frontId: WotrFrontId,
-  ): Promise<WotrBaseStory> {
+  async rollCombatDice(nDice: number): Promise<WotrBaseStory> {
     return {
       type: 'base',
-      actions: [await this.battleUi.rollCombatDice(nDice, frontId)],
+      actions: [await this.battleUi.rollCombatDice(nDice)],
     };
   }
 
-  async reRollCombatDice(
-    nDice: number,
-    frontId: WotrFrontId,
-  ): Promise<WotrBaseStory> {
+  async reRollCombatDice(nDice: number): Promise<WotrBaseStory> {
     return {
       type: 'base',
-      actions: [await this.battleUi.reRollCombatDice(nDice, frontId)],
+      actions: [await this.battleUi.reRollCombatDice(nDice)],
     };
   }
 
@@ -344,7 +338,6 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     const actions = await this.battleUi.deadMenOfDunharrowCasualties(
       nHits,
       regionId,
-      cardId,
     );
     return { type: 'card-effect', card: cardId, actions };
   }

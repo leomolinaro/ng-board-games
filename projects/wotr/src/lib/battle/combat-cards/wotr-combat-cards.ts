@@ -7,17 +7,14 @@ import type {
 } from '../../card/wotr-card-models';
 import type {
   WotrCharacterChoose,
-  WotrCharacterElimination} from '../../character/wotr-character-actions';
+  WotrCharacterElimination,
+} from '../../character/wotr-character-actions';
 import {
   chooseCharacter,
-  eliminateCharacter
+  eliminateCharacter,
 } from '../../character/wotr-character-actions';
-import type {
-  WotrAction} from '../../commons/wotr-action-models';
-import {
-  findAction,
-  findActions
-} from '../../commons/wotr-action-models';
+import type { WotrAction } from '../../commons/wotr-action-models';
+import { findAction, findActions } from '../../commons/wotr-action-models';
 import type { WotrFrontId } from '../../front/wotr-front-models';
 import { WotrGameQuery } from '../../game/wotr-game-query';
 import type { WotrGameUiContext } from '../../game/wotr-game-ui-context';
@@ -30,10 +27,9 @@ import type {
   WotrEliteUnitDowngrade,
   WotrEliteUnitElimination,
   WotrLeaderElimination,
-  WotrRegularUnitElimination} from '../../unit/wotr-unit-actions';
-import {
-  eliminateLeader
+  WotrRegularUnitElimination,
 } from '../../unit/wotr-unit-actions';
+import { eliminateLeader } from '../../unit/wotr-unit-actions';
 import type {
   WotrArmy,
   WotrForfeitLeadershipParams,
@@ -41,17 +37,16 @@ import type {
 } from '../../unit/wotr-unit-models';
 import { WotrUnitRules } from '../../unit/wotr-unit-rules';
 import { WotrUnitUtils } from '../../unit/wotr-unit-utils';
-import type {
-  WotrCombatRoll,
-  WotrLeaderForfeit} from '../wotr-battle-actions';
-import {
-  retreat
-} from '../wotr-battle-actions';
+import type { WotrCombatRoll, WotrLeaderForfeit } from '../wotr-battle-actions';
+import { retreat } from '../wotr-battle-actions';
 import type { WotrCombatFront, WotrCombatRound } from '../wotr-battle-models';
 
 export interface WotrCombatCard {
   canBePlayed?: (params: WotrCombatCardParams) => boolean;
-  effect: (card: WotrCard, params: WotrCombatCardEffectParams) => Promise<void>;
+  effect: (
+    card: WotrCard,
+    params: WotrCombatCardEffectParams,
+  ) => void | Promise<void>;
 }
 
 export interface WotrCombatCardParams {
@@ -134,7 +129,7 @@ export class WotrCombatCards {
     'Advantageous Position': {
       canBePlayed: (params) =>
         this.q.region(params.toRegion).isFreePeoplesRegion(),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.combatModifiers.push(-1);
       },
     },
@@ -257,7 +252,7 @@ export class WotrCombatCards {
     'Brave Stand': {
       canBePlayed: (params) =>
         this.unitUtils.hasCompanions(params.freePeoples.army()),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.lessNCombatDice = this.unitUtils.nCompanions(
           params.freePeoples.army(),
         );
@@ -291,7 +286,7 @@ export class WotrCombatCards {
     // Every unmodified die result of '1' in the Shadow player's Combat roll scores one hit against the Shadow Army.
     // Any such result cannot be rolled again during the Shadow player's Leader re-roll.
     Confusion: {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         const oneResults = params.shadow.combatRoll!.filter(
           (result) => result === 1,
         ).length;
@@ -343,15 +338,15 @@ export class WotrCombatCards {
     // Daylight (Initiative 3)
     // The Shadow player rolls a maximum of three dice in his Combat roll.
     Daylight: {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.maxNCombatDice = 3;
       },
     },
     // Deadly Strife (Initiative 3)
     // Both Armies add 2 to all dice on their Combat roll and Leader re-roll.
     'Deadly Strife': {
-      canBePlayed: (params) => true,
-      effect: async (card, params) => {
+      canBePlayed: () => true,
+      effect: (_card, params) => {
         params.shadow.combatModifiers.push(2);
         params.shadow.leaderModifiers.push(2);
         params.freePeoples.combatModifiers.push(2);
@@ -373,14 +368,14 @@ export class WotrCombatCards {
         if (!params.combatRound.siege) return false;
         return true;
       },
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.combatRound.shadow.combatModifiers.push(1);
       },
     },
     // Desperate Battle (Initiative 3)
     // Both Armies add 1 to all dice on their Combat roll and Leader re-roll.
     'Desperate Battle': {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.combatModifiers.push(1);
         params.shadow.leaderModifiers.push(1);
         params.freePeoples.combatModifiers.push(1);
@@ -419,7 +414,7 @@ export class WotrCombatCards {
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async (ui) => {
-            const action = await ui.battleUi.rollCombatDice(3, 'shadow');
+            const action = await ui.battleUi.rollCombatDice(3);
             return [action];
           },
         };
@@ -448,7 +443,7 @@ export class WotrCombatCards {
         this.q.region(params.toRegion).isNation('rohan') ||
         params.toRegion === 'fangorn' ||
         params.toRegion === 'orthanc',
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.freePeoples.combatModifiers.push(2);
       },
     },
@@ -459,7 +454,7 @@ export class WotrCombatCards {
     'Fateful Strike': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length || army.characters?.length);
+        return !!(army.leaders?.length ?? army.characters?.length);
       },
       effect: async (card, params) => {
         const nHits = params.freePeoples.nLeaderSuccesses;
@@ -481,7 +476,7 @@ export class WotrCombatCards {
     // If the Nazgûl Leadership equals or exceeds the total Free Peoples Leadership, the Free Peoples Leader re-roll is cancelled.
     'Foul Stench': {
       canBePlayed: (params) => this.unitUtils.hasNazgul(params.shadow.army()),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (params.shadow.negateNazgulLeadership) return;
         const nazgulLeadership = this.unitUtils.nazgulLeadership(
           params.shadow.army(),
@@ -519,7 +514,7 @@ export class WotrCombatCards {
     'Heroic Death': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length || army.characters?.length);
+        return !!(army.leaders?.length ?? army.characters?.length);
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
@@ -564,7 +559,7 @@ export class WotrCombatCards {
               const characterId = characterElim.characters[0];
               const character = this.q.character(characterId);
               params.shadow.hitsModifiers.push(
-                -Math.min(character.level, params.shadow.nTotalHits || 0),
+                -Math.min(character.level, params.shadow.nTotalHits ?? 0),
               );
             }
           }
@@ -579,7 +574,7 @@ export class WotrCombatCards {
         this.q.region(params.toRegion).isNation('rohan') ||
         params.toRegion === 'fangorn' ||
         params.toRegion === 'orthanc',
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.maxNCombatDice = 2;
       },
     },
@@ -588,7 +583,7 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Combat roll and Leader re-roll.
     'It is a Gift': {
       canBePlayed: (params) => this.q.region(params.toRegion).hasFellowship(),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.freePeoples.combatModifiers.push(1);
         params.freePeoples.leaderModifiers.push(1);
       },
@@ -630,7 +625,7 @@ export class WotrCombatCards {
         !!params.shadow
           .army()
           .elites?.some((e) => e.nation === 'southrons' && e.quantity),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (params.timing === 3) {
           params.shadow.combatModifiers.push(1);
         } else {
@@ -655,7 +650,7 @@ export class WotrCombatCards {
           region.id() === 'orthanc'
         );
       },
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (params.freePeoples.nTotalHits! > 0) {
           params.freePeoples.hitsModifiers.push(2);
         }
@@ -664,7 +659,7 @@ export class WotrCombatCards {
     // No Quarter (Initiative 5)
     // If your Combat roll or Leader re-roll scores at least one hit, score one additional hit.
     'No Quarter': {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (
           params.freePeoples.nCombatSuccesses ||
           params.freePeoples.nLeaderSuccesses
@@ -678,7 +673,7 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Combat roll and Leader re-roll.
     'One for the Dark Lord': {
       canBePlayed: (params) => this.q.region(params.toRegion).hasFellowship(),
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.shadow.combatModifiers.push(1);
         params.shadow.leaderModifiers.push(1);
       },
@@ -821,14 +816,14 @@ export class WotrCombatCards {
           fpArmyCharacters.includes('gandalf-the-white')
         );
       },
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.freePeoples.combatModifiers.push(1);
       },
     },
     // Shield-wall (Initiative 6)
     // Before you remove casualties inflicted by your opponent's Combat roll and Leader re-roll, if your opponent scored two or more hits, cancel one hit.
     'Shield-Wall': {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (params.shadow.nTotalHits! >= 2) {
           params.shadow.hitsModifiers.push(-1);
         }
@@ -840,7 +835,7 @@ export class WotrCombatCards {
     'Sudden Strike': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length || army.characters?.length);
+        return !!(army.leaders?.length ?? army.characters?.length);
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
@@ -850,7 +845,7 @@ export class WotrCombatCards {
             );
             const nDice = Math.min(leadership, 5);
             if (nDice === 0) return [];
-            return [await ui.battleUi.rollCombatDice(nDice, 'free-peoples')];
+            return [await ui.battleUi.rollCombatDice(nDice)];
           },
         };
         const actions = await this.activateCombatCard(
@@ -869,7 +864,7 @@ export class WotrCombatCards {
     // Cancel the effects of the Combat card played by the Free Peoples player.
     // If the Free Peoples player did not play a card, add 1 to all dice on your Leader re-roll.
     'Swarm of Bats': {
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         if (params.freePeoples.combatCard) {
           params.freePeoples.combatCard = undefined;
         } else {
@@ -906,7 +901,7 @@ export class WotrCombatCards {
           params.freePeoples.army().elites?.some((u) => u.quantity) ?? false
         );
       },
-      effect: async (card, params) => {
+      effect: (_card, params) => {
         params.freePeoples.combatModifiers.push(1);
       },
     },
@@ -923,7 +918,7 @@ export class WotrCombatCards {
             const nElites = this.unitUtils.getNEliteUnits(params.shadow.army());
             const nDice = Math.min(nElites, 5);
             if (nDice === 0) return [];
-            return [await ui.battleUi.rollCombatDice(nDice, 'shadow')];
+            return [await ui.battleUi.rollCombatDice(nDice)];
           },
         };
         const actions = await this.activateCombatCard(
@@ -984,8 +979,10 @@ export class WotrCombatCards {
     // to cancel the Leader re-roll of the Shadow player.
     "The King's Banner": {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {},
+      canBePlayed: () => false,
+      effect: () => {
+        /*empty*/
+      },
     },
     // Like a King of Old (Initiative 2)
     // Play if an Awakened Sovereign is in the battle.
@@ -994,8 +991,8 @@ export class WotrCombatCards {
     // and score one hit for each result of 3+.
     'Like a God of Old': {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {
+      canBePlayed: () => false,
+      effect: () => {
         // params.freePeoples.nPreCombatHits = nHits;
       },
     },
@@ -1005,8 +1002,10 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Leader re-roll.
     'There is Hope for Victory': {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {},
+      canBePlayed: () => false,
+      effect: () => {
+        /*empty*/
+      },
     },
     // Servant of the Shadow (Initiative 3)
     // Play if a Shadow Minion is in the battle.
@@ -1015,8 +1014,10 @@ export class WotrCombatCards {
     // (to a minimum of one) for every point of Leadership you forfeited.
     'Servant of the Shadow': {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {},
+      canBePlayed: () => false,
+      effect: () => {
+        /*empty*/
+      },
     },
     // Battle is Vain (Initiative 1)
     // Play if the total Nazgûl Leadership is 1 or more.
@@ -1024,8 +1025,10 @@ export class WotrCombatCards {
     // to reduce the Free Peoples Leadership by the same amount.
     'Battle is Vain': {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {},
+      canBePlayed: () => false,
+      effect: () => {
+        /*empty*/
+      },
     },
     // His Power Waxes (Initiative 3)
     // Play if the defending Army is in a region with a Sovereign.
@@ -1034,8 +1037,10 @@ export class WotrCombatCards {
     // and Leader re-roll of both Armies.
     'His Power Waxes': {
       // TODO KOME
-      canBePlayed: (params) => false,
-      effect: async (card, params) => {},
+      canBePlayed: () => false,
+      effect: () => {
+        /*empty*/
+      },
     },
   };
 

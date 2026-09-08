@@ -5,16 +5,16 @@ import type { WotrCombatFront, WotrCombatRound } from './wotr-battle-models';
 
 export type WotrBeforeCombatRound = (
   combatRound: WotrCombatRound,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrBeforeCombatCardRevealing = (
   combatRound: WotrCombatRound,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrAfterCombatCardRevealing = (
   combatRound: WotrCombatRound,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrAfterCombatRound = (
   combatRound: WotrCombatRound,
-) => Promise<void>;
+) => void | Promise<void>;
 export type WotrCanUseCombatCardModifier = (
   combatFront: WotrCombatFront,
   combatRound: WotrCombatRound,
@@ -34,9 +34,9 @@ export type WotrCardLessCombatDice = (
 export class WotrBattleModifiers {
   public readonly beforeCombatRound = new WotrModifier<WotrBeforeCombatRound>();
   async onBeforeCombatRound(combatRound: WotrCombatRound): Promise<void> {
-    await Promise.all(
-      this.beforeCombatRound.get().map((handler) => handler(combatRound)),
-    );
+    for (const handler of this.beforeCombatRound.get()) {
+      await handler(combatRound);
+    }
   }
 
   public readonly beforeCombatCardRevealing =
@@ -44,11 +44,9 @@ export class WotrBattleModifiers {
   async onBeforeCombatCardRevealing(
     combatRound: WotrCombatRound,
   ): Promise<void> {
-    await Promise.all(
-      this.beforeCombatCardRevealing
-        .get()
-        .map((handler) => handler(combatRound)),
-    );
+    for (const handler of this.beforeCombatCardRevealing.get()) {
+      await handler(combatRound);
+    }
   }
 
   public readonly afterCombatCardRevealing =
@@ -56,18 +54,16 @@ export class WotrBattleModifiers {
   async onAfterCombatCardRevealing(
     combatRound: WotrCombatRound,
   ): Promise<void> {
-    await Promise.all(
-      this.afterCombatCardRevealing
-        .get()
-        .map((handler) => handler(combatRound)),
-    );
+    for (const handler of this.afterCombatCardRevealing.get()) {
+      await handler(combatRound);
+    }
   }
 
   public readonly afterCombatRound = new WotrModifier<WotrAfterCombatRound>();
   async onAfterCombatRound(combatRound: WotrCombatRound): Promise<void> {
-    await Promise.all(
-      this.afterCombatRound.get().map((handler) => handler(combatRound)),
-    );
+    for (const handler of this.afterCombatRound.get()) {
+      await handler(combatRound);
+    }
   }
 
   public readonly canUseCombatCardModifier =
