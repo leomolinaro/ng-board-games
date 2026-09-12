@@ -1,14 +1,13 @@
 import { Component, inject, model } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiCheckbox, TuiLabel } from '@taiga-ui/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
-import type {
-  WotrActionTokenOption} from './wotr-action-die-models';
+import type { WotrActionTokenOption } from './wotr-action-die-models';
 import {
   ACTION_TOKEN_OPTIONS,
-  getActionTokenName
+  getActionTokenName,
 } from './wotr-action-die-models';
 
 @Component({
@@ -58,13 +57,21 @@ export class WotrActionTokenOptionsForm {
   }
 
   protected toggleToken(option: WotrActionTokenOption, checked: boolean): void {
-    const next = checked
-      ? this.tokens().some((token) => this.compareTokens(token, option))
-        ? this.tokens()
-        : [...this.tokens(), option]
-      : this.tokens().filter((token) => !this.compareTokens(token, option));
-
+    const next = this.getNextToogledToken(this.tokens(), option, checked);
     this.tokens.set(next);
+  }
+
+  private getNextToogledToken(
+    tokens: WotrActionTokenOption[],
+    option: WotrActionTokenOption,
+    checked: boolean,
+  ): WotrActionTokenOption[] {
+    if (checked) {
+      return tokens.some((token) => this.compareTokens(token, option))
+        ? tokens
+        : [...tokens, option];
+    }
+    return tokens.filter((token) => !this.compareTokens(token, option));
   }
 
   protected tokenImage: BgTransformFn<WotrActionTokenOption, string> = (

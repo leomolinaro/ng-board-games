@@ -46,12 +46,17 @@ export class WotrVariantOptionsForm {
     false;
 
   protected toggleVariant(optionId: WotrVariantId, checked: boolean): void {
-    const next = checked
-      ? this.variants().includes(optionId)
-        ? this.variants()
-        : [...this.variants(), optionId]
-      : this.variants().filter((variantId) => variantId !== optionId);
-
+    const next = this.getNextToogledVariant(this.variants(), optionId, checked);
     this.variants.set(next);
+  }
+
+  private getNextToogledVariant(
+    variants: WotrVariantId[],
+    optionId: WotrVariantId,
+    checked: boolean,
+  ): WotrVariantId[] {
+    if (checked)
+      return variants.includes(optionId) ? variants : [...variants, optionId];
+    return variants.filter((variantId) => variantId !== optionId);
   }
 }

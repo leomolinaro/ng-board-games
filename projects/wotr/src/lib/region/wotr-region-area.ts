@@ -652,7 +652,7 @@ export class WotrRegionArea {
     b: WotrCharacter | WotrNationId,
   ) {
     if (typeof a === 'string')
-      return typeof b === 'string' ? (a < b ? -1 : a === b ? 0 : 1) : -1;
+      return typeof b === 'string' ? a.localeCompare(b) : -1;
     if (typeof b === 'string') return 1;
     for (const c of SORTED_COMPANIONS) {
       if (a.id === c) return -1;

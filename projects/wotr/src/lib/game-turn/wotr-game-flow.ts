@@ -231,7 +231,7 @@ export class WotrGameFlow {
       return false;
     }
     const freePeoples = this.frontStore.freePeoplesFront();
-    return !(freePeoples.victoryPoints >= 4);
+    return freePeoples.victoryPoints < 4;
   }
 
   private getFirstResolutionFrontId(): WotrPlayer | null {

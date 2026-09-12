@@ -55,10 +55,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async firstPhaseDiscard(frontId: WotrFrontId): Promise<WotrStory> {
-    return {
-      type: 'base',
-      actions: [await this.cardDrawUi.discardExcessCards(frontId)],
-    };
+    return this.discardExcessCards(frontId);
   }
 
   async fellowshipPhase(): Promise<WotrStory> {
@@ -86,14 +83,16 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async separateCompanions(
     params: WotrSeparateCompanionsOptions,
   ): Promise<WotrStory> {
-    return params.cardId ? {
-        type: 'card-effect',
-        card: params.cardId,
-        actions: await this.fellowshipUi.separateCompanions(params),
-      } : {
-        type: 'base',
-        actions: await this.fellowshipUi.separateCompanions(params),
-      };
+    return params.cardId
+      ? {
+          type: 'card-effect',
+          card: params.cardId,
+          actions: await this.fellowshipUi.separateCompanions(params),
+        }
+      : {
+          type: 'base',
+          actions: await this.fellowshipUi.separateCompanions(params),
+        };
   }
 
   async rollHuntDice(): Promise<WotrStory> {
@@ -214,7 +213,9 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
       frontId,
     );
     if (cardId) {
-      return this.battleStore.battleInProgress() ? { type: 'combat-card-effect', card: cardId, actions } : { type: 'card-effect', card: cardId, actions };
+      return this.battleStore.battleInProgress()
+        ? { type: 'combat-card-effect', card: cardId, actions }
+        : { type: 'card-effect', card: cardId, actions };
     }
     return { type: 'base', actions };
   }
@@ -225,7 +226,9 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
     frontId: WotrFrontId,
   ): Promise<WotrBaseStory | WotrCardEffectStory> {
     const actions = await this.battleUi.eliminateArmy(regionId, frontId);
-    return cardId ? { type: 'card-effect', card: cardId, actions } : { type: 'base', actions };
+    return cardId
+      ? { type: 'card-effect', card: cardId, actions }
+      : { type: 'base', actions };
   }
 
   async battleAdvance(): Promise<WotrBaseStory> {

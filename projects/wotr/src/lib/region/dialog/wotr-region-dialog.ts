@@ -58,9 +58,7 @@ export type WotrRegionDialogResult =
     </div>
     @if (data.regionSelection || data.unitSelection) {
       @if (canConfirm() !== true) {
-        <p>
-          {{ canConfirm() }}
-        </p>
+        <p>{{ canConfirm() }}</p>
       }
       <button
         class="confirm-button"
@@ -140,7 +138,7 @@ export class WotrRegionDialog implements OnInit {
         this.selectedNodes(),
         this.data.region,
       );
-    return false;
+    return 'Cannot confirm';
   });
 
   ngOnInit() {

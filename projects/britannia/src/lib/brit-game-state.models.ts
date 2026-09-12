@@ -22,8 +22,6 @@ export interface BritGameState {
   backupState: BritGameState | null;
 }
 
-export type BritAreaUnitId = string;
-
 interface ABritAreaUnit {
   nationId: BritNationId;
   areaId: BritAreaId;

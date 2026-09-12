@@ -78,38 +78,57 @@ export class WotrMapSlotsGenerator {
       Record<number, WotrMapRegionPoint>
     > = {};
 
-    // Calcolo i punti interni e la mappa dei punti by coordinates.
+    this.collectRegionPoints(
+      xMax,
+      yMax,
+      coordinatesToAreaId,
+      regionPointsById,
+      regionPointByYByX,
+    );
+    this.calculateBordersAndNeighbours(
+      regions,
+      regionPointsById,
+      regionPointByYByX,
+    );
+    this.calculateCentralEnergies(regions, regionPointsById);
+
+    return regionPointsById;
+  }
+
+  private collectRegionPoints(
+    xMax: number,
+    yMax: number,
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
+    regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
+    regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
+  ) {
     for (let x = 0; x < xMax; x++) {
       for (let y = 0; y < yMax; y++) {
         const areaId = coordinatesToAreaId(x, y);
-        if (areaId) {
-          const regionPoint: WotrMapRegionPoint = {
-            centralEnergy: 0,
-            regionId: areaId,
-            neighbours: [],
-            x: x,
-            y: y,
-          };
-          let regionPointByY = regionPointByYByX[x];
-          if (!regionPointByY) {
-            regionPointByY = {};
-            regionPointByYByX[x] = regionPointByY;
-          }
-          regionPointByY[y] = regionPoint;
-          let regionPoints = regionPointsById[areaId];
-          if (!regionPoints) {
-            regionPoints = {
-              innerPoints: [],
-              outerBorderPoints: [],
-            };
-            regionPointsById[areaId] = regionPoints;
-          }
-          regionPoints.innerPoints.push(regionPoint);
-        }
+        if (!areaId) continue;
+        const regionPoint: WotrMapRegionPoint = {
+          centralEnergy: 0,
+          regionId: areaId,
+          neighbours: [],
+          x,
+          y,
+        };
+        const regionPointByY = (regionPointByYByX[x] ??= {});
+        regionPointByY[y] = regionPoint;
+        const regionPoints = (regionPointsById[areaId] ??= {
+          innerPoints: [],
+          outerBorderPoints: [],
+        });
+        regionPoints.innerPoints.push(regionPoint);
       }
     }
+  }
 
-    // Calcolo i punti esterni di confine di ogni area e i vicini di ogni punto interno.
+  private calculateBordersAndNeighbours(
+    regions: WotrRegion[],
+    regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
+    regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
+  ) {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       if (!regionPoints)
@@ -151,8 +170,12 @@ export class WotrMapSlotsGenerator {
       }
       regionPoints.outerBorderPoints = outerPoints;
     }
+  }
 
-    // Calcolo l'energia "centrale", ovvero l'energia dei punti inversamente proporzionale alla distanza dal confine.
+  private calculateCentralEnergies(
+    regions: WotrRegion[],
+    regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
+  ) {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       if (!regionPoints)
@@ -165,8 +188,6 @@ export class WotrMapSlotsGenerator {
         innerPoint.centralEnergy = cenralEnergy;
       }
     }
-
-    return regionPointsById;
   }
 
   private getRegionPointByCoordinates(

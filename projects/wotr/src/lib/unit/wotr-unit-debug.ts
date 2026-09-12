@@ -1,9 +1,9 @@
 import { computed, effect, inject } from '@angular/core';
 import type { WotrFrontId } from '../front/wotr-front-models';
+import { WotrGameQuery } from '../game/wotr-game-query';
 import type { WotrNationId } from '../nation/wotr-nation-models';
 import { frontOfNation } from '../nation/wotr-nation-models';
 import { WotrNationStore } from '../nation/wotr-nation-store';
-import { WotrRegionStore } from '../region/wotr-region-store';
 import type { WotrArmy } from './wotr-unit-models';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
@@ -14,27 +14,21 @@ export class WotrUnitDebug {
 
   private frontId: WotrFrontId;
   private nationStore = inject(WotrNationStore);
-  private regionStore = inject(WotrRegionStore);
   private unitUtils = inject(WotrUnitUtils);
+  private query = inject(WotrGameQuery);
 
   private nation = computed(() => this.nationStore.nation(this.nationId));
 
-  private armies = computed<WotrArmy[]>(() =>
-    this.regionStore
-      .regions()
-      .map((r) => {
-        let army =
-          r.army?.front === this.frontId
-            ? r.army
-            : r.underSiegeArmy?.front === this.frontId
-              ? r.underSiegeArmy
-              : null;
-        if (army && !this.unitUtils.hasArmyUnitsOfNation(this.nationId, army))
-          army = null;
-        return army;
-      })
-      .filter<WotrArmy>((a) => !!a),
-  );
+  private armies = computed<WotrArmy[]>(() => {
+    const armies: WotrArmy[] = [];
+    for (const r of this.query.regions()) {
+      const army = r.army(this.frontId);
+      if (!army) continue;
+      if (this.unitUtils.hasArmyUnitsOfNation(this.nationId, army))
+        armies.push(army);
+    }
+    return armies;
+  });
 
   private nRegularReinforcements = computed(
     () => this.nation().reinforcements.regular,

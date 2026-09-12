@@ -86,10 +86,4 @@ export class WotrNationQuery {
       this.nation(),
     );
   }
-
-  settlementRegions(): WotrRegion[] {
-    return this.regionStore
-      .regions()
-      .filter((r) => r.nationId === this.nationId && r.settlement);
-  }
 }

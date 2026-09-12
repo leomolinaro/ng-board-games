@@ -117,12 +117,11 @@ export class BritLogRow {
         return [this.string(this.components.NATION[l.nationId].label)];
       case 'phase':
         return [this.string(this.getPhaseLabel(l.phase))];
-      case 'population-marker-set':
-        return [
-          this.string(
-            `Population marker ${l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`}`,
-          ),
-        ];
+      case 'population-marker-set': {
+        const action =
+          l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`;
+        return [this.string(`Population marker ${action}`)];
+      }
       case 'infantry-placement':
         return [
           this.string(

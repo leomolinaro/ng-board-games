@@ -1,8 +1,8 @@
 // @ts-check
 
 import js from "@eslint/js";
-// import sonarjs from "eslint-plugin-sonarjs";
 import angular from "angular-eslint";
+import sonarjs from "eslint-plugin-sonarjs";
 import unicorn from "eslint-plugin-unicorn";
 import tseslint from "typescript-eslint";
 
@@ -40,10 +40,9 @@ export default tseslint.config(
 
       // Modern JS/TS idioms
       unicorn.configs.recommended,
-      // unicorn.configs.unopinionated,
 
-      // // Code smells / complexity
-      // sonarjs.configs.recommended,
+      // Code smells / complexity
+      sonarjs.configs.recommended,
     ],
 
     languageOptions: {
@@ -87,13 +86,6 @@ export default tseslint.config(
       // -----------------------------------------------------------------------
       // Unicorn
       // -----------------------------------------------------------------------
-      // // Often annoying in Angular code:
-      // //   @Input() is sometimes intentionally written in Angular style.
-      // "unicorn/prefer-ternary": "off",
-      // // Can conflict with Angular APIs / framework conventions.
-      // "unicorn/prefer-number-properties": "error",
-      // // Don't force obscure Unicode escapes / alternatives.
-      // "unicorn/prefer-code-point": "off",
       "unicorn/switch-case-braces": "off", // Too verbose for my taste
       "unicorn/no-null": "off", // Nice, maybe later
       "unicorn/consistent-boolean-name": "off", // Good, maybe later
@@ -131,15 +123,15 @@ export default tseslint.config(
       "unicorn/no-computed-property-existence-check": "off", // Hard to follow
       "unicorn/max-nested-calls": ["error", { max: 5 }],
       "unicorn/no-await-expression-member": "off", // Too verbose otherwise
-      // // -----------------------------------------------------------------------
-      // // SonarJS
-      // // -----------------------------------------------------------------------
-      // // Too opinionated for general application code.
-      // "sonarjs/cognitive-complexity": ["warn", 20],
-      // // Often produces noise with Angular template-driven callback code.
-      // "sonarjs/no-nested-functions": "off",
-      // // Useful, but not something I would block CI on initially.
-      // "sonarjs/no-duplicated-branches": "warn",
+      // -----------------------------------------------------------------------
+      // SonarJS
+      // -----------------------------------------------------------------------
+      "sonarjs/max-switch-cases": "off", // Switch are bad in everycase, but sometimes simpler
+      "sonarjs/no-duplicated-branches": "off", // Seems ok, but difficult for TODOs and switch cases
+      "sonarjs/pseudo-random": "off", // Not concerned with pseudo-random number generation in this project
+      "sonarjs/todo-tag": "off", // I'm using TODOs freely
+      "sonarjs/cognitive-complexity": ["error", 50], // For now, allowing higher complexity in functions
+      "sonarjs/function-return-type": "off", // Really I don't agree with this
     },
   },
 

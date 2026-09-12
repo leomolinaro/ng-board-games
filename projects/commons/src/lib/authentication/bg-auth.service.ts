@@ -65,9 +65,11 @@ export class BgAuthService {
     const loginType = localStorage.getItem(
       LOCALSTORAGE_BG_LOGIN_TYPE_KEY,
     ) as BgUserLoginType | null;
-    return loginType ? this.provider(loginType)
-        .autoSignIn$()
-        .pipe(switchMap((user) => this.login$(user))) : of(null);
+    return loginType
+      ? this.provider(loginType)
+          .autoSignIn$()
+          .pipe(switchMap((user) => this.login$(user)))
+      : of(null);
   }
 
   signIn$(type: BgUserLoginType) {
@@ -75,9 +77,9 @@ export class BgAuthService {
       .signIn$()
       .pipe(
         switchMap((user) => this.login$(user)),
-        catchError((e) => {
+        catchError((e: Error) => {
           this.setUser(null);
-          return throwError(e);
+          return throwError(() => e);
         }),
       );
   }
@@ -94,9 +96,11 @@ export class BgAuthService {
 
   deleteUser$() {
     const user = this.$user.getValue();
-    return user ? this.signOut$().pipe(
-        switchMap(() => this.cloud.delete$(user.id, this.users())),
-      ) : of(void 0);
+    return user
+      ? this.signOut$().pipe(
+          switchMap(() => this.cloud.delete$(user.id, this.users())),
+        )
+      : of(void 0);
   }
 
   private provider(type: BgUserLoginType): IBgAuthProvider {

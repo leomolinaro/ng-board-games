@@ -182,17 +182,14 @@ export class WotrHuntUi {
     triggeredCardId: WotrCardId | null,
   ): Promise<WotrHuntTileDraw> {
     const card = triggeredCardId ? getCard(triggeredCardId) : null;
+    const forCard = card ? ` for ${card.label}` : '';
     if (n === 1) {
-      await this.ui.askContinue(
-        `Draw hunt tile${card ? ` for ${card.label}` : ''}`,
-      );
+      await this.ui.askContinue(`Draw hunt tile${forCard}`);
       const huntTile = randomUtil.getRandomElement(this.huntStore.huntPool());
       return drawHuntTile(huntTile);
     }
     n = Math.min(n, this.huntStore.huntPool().length);
-    await this.ui.askContinue(
-      `Draw ${n} hunt tiles${card ? ` for ${card.label}` : ''}`,
-    );
+    await this.ui.askContinue(`Draw ${n} hunt tiles${forCard}`);
     const huntTiles = randomUtil.getRandomElements(
       n,
       n,

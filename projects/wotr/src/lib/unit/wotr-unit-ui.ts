@@ -42,7 +42,7 @@ import type {
 } from './wotr-unit-models';
 import { character, elite, leader, nazgul } from './wotr-unit-models';
 import { WotrUnitModifiers } from './wotr-unit-modifiers';
-import { WotrUnitRules } from './wotr-unit-rules';
+import { type WotrUnitMoveRequirement, WotrUnitRules } from './wotr-unit-rules';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
 export interface WotrMovingUnits {
@@ -65,7 +65,7 @@ export class WotrUnitUi {
   async moveArmies(
     frontId: WotrFrontId,
     numberOfMoves: number,
-    requiredUnits: ('anyLeader' | 'anyNazgul' | WotrCharacterId)[],
+    requiredUnits: WotrUnitMoveRequirement[],
   ): Promise<WotrAction[]> {
     let continueMoving = true;
     const doneMovements: WotrMovingUnits[] = [];
@@ -100,7 +100,7 @@ export class WotrUnitUi {
 
   async moveArmy(
     frontId: WotrFrontId,
-    requiredUnits: ('anyLeader' | 'anyNazgul' | WotrCharacterId)[],
+    requiredUnits: WotrUnitMoveRequirement[],
     doneMovements: WotrMovingUnits[],
   ): Promise<[WotrAction[], WotrRegionUnits]> {
     const candidateRegions = this.unitRules.armyMovementStartingRegions(
@@ -837,15 +837,9 @@ export class WotrUnitUi {
   private forfeitLeadershipPoints(
     params: WotrForfeitLeadershipParams,
   ): 'all' | { min: number } {
-    if (params.points === 'oneOrMore') {
-      return { min: 1 };
-    }
-    if (typeof params.points === 'number') {
-      return { min: params.points };
-    }
-    if (params.points === 'all') {
-      return 'all';
-    }
+    if (params.points === 'oneOrMore') return { min: 1 };
+    if (typeof params.points === 'number') return { min: params.points };
+    if (params.points === 'all') return 'all';
     throw new Error(`Invalid points value`);
   }
 

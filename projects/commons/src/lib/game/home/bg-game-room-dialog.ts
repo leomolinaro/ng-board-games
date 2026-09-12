@@ -157,7 +157,7 @@ export class BgGameRoomDialog<
           return false;
       }
     }
-    return !(nPlayers < 2);
+    return nPlayers >= 2;
   });
 
   private autoStartGame() {

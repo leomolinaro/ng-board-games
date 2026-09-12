@@ -17,6 +17,9 @@ import type {
 import { WotrUnitModifiers } from './wotr-unit-modifiers';
 import { WotrUnitUtils } from './wotr-unit-utils';
 
+export type WotrUnitMoveRequirement =
+  'anyLeader' | 'anyNazgul' | WotrCharacterId;
+
 @Injectable()
 export class WotrUnitRules {
   private regionStore = inject(WotrRegionStore);
@@ -102,7 +105,7 @@ export class WotrUnitRules {
 
   armyMovementStartingRegions(
     frontId: WotrFrontId,
-    requiredUnits: ('anyLeader' | 'anyNazgul' | WotrCharacterId)[],
+    requiredUnits: WotrUnitMoveRequirement[],
   ): WotrRegionId[] {
     return this.q
       .regions()

@@ -44,12 +44,23 @@ export class WotrExpansionOptionsForm {
     optionId: WotrExpansionId,
     isChecked: boolean,
   ): void {
-    const next = isChecked
-      ? this.expansions().includes(optionId)
-        ? this.expansions()
-        : [...this.expansions(), optionId]
-      : this.expansions().filter((expansionId) => expansionId !== optionId);
-
+    const next = this.getNextToogledExpansion(
+      this.expansions(),
+      optionId,
+      isChecked,
+    );
     this.expansions.set(next);
+  }
+
+  private getNextToogledExpansion(
+    expansions: WotrExpansionId[],
+    optionId: WotrExpansionId,
+    isChecked: boolean,
+  ): WotrExpansionId[] {
+    if (isChecked)
+      return expansions.includes(optionId)
+        ? expansions
+        : [...expansions, optionId];
+    return expansions.filter((expansionId) => expansionId !== optionId);
   }
 }

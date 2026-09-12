@@ -232,7 +232,6 @@ export class BritMap implements OnChanges, OnInit {
         this.nationToPopulationNode(nationId, oldNode),
     );
     this.nationPopulationNodeMap = map;
-    this.populationNodes.map((pn) => ({ id: pn.id, nationNodes: [] }));
     for (const pn of this.populationNodes) pn.nationNodes = [];
     for (const nationNode of nodes) {
       const population = nationNode.state.population;

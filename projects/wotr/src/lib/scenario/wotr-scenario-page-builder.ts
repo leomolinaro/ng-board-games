@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { WotrScenarioPage } from './wotr-scenario-page';
 
@@ -13,7 +12,7 @@ export class WotrScenarioPageBuilder {
 
   async build(): Promise<WotrScenarioPage> {
     await TestBed.configureTestingModule({
-      imports: [WotrScenarioPage, NoopAnimationsModule],
+      imports: [WotrScenarioPage],
       providers: [
         {
           provide: ActivatedRoute,

@@ -725,7 +725,7 @@ export class WotrFreePeoplesStrategyCards {
         return {
           play: async (ui) => {
             const availableRegions = this.q.rohan
-              .settlementRegions()
+              .settlements()
               .filter((r) => this.q.rohan.canRecruit(r.id))
               .map((r) => r.id);
             if (availableRegions.length === 0) {

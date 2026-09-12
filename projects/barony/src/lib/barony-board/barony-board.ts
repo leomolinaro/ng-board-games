@@ -48,7 +48,7 @@ import { BaronyScoreboard } from './barony-scoreboard';
 export class BaronyBoard {
   constructor() {
     effect(() => {
-      void this.openEndGameDialog();
+      this.openEndGameDialog();
     });
   }
 

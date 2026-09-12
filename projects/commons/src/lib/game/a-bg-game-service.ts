@@ -33,11 +33,6 @@ type BgPlayer<Id extends string> = BgAiPlayer<Id> | BgRealPlayer<Id>;
 
 export type BgStoryDoc<Pid, St> = St & { time: number; playerId: Pid };
 
-export interface BgStoryTask$<Pid extends string, St, PlSrv> {
-  playerId: Pid;
-  task$: (playerService: PlSrv) => Observable<St>;
-}
-
 export interface BgStoryTask<Pid extends string, St, PlSrv> {
   playerId: Pid;
   task: (playerService: PlSrv) => Promise<St>;
@@ -105,17 +100,17 @@ export abstract class ABgGameService<
     return user.id === gameOwner.id;
   }
 
-  private isCurrentPlayer(playerId: string) {
+  private isCurrentPlayer(playerId: Pid) {
     const currentPlayerId = this.getCurrentPlayerId();
     return currentPlayerId === playerId;
   }
 
-  private isAiPlayer(playerId: string) {
+  private isAiPlayer(playerId: Pid) {
     const player = this.getPlayer(playerId);
     return player.isAi;
   }
 
-  private autoRefreshCurrentPlayer(player: string) {
+  private autoRefreshCurrentPlayer(player: Pid) {
     if (this.isLocalPlayer(player)) {
       this.setCurrentPlayer(player);
       return true;
@@ -127,7 +122,9 @@ export abstract class ABgGameService<
     if (this.isLocalPlayer(playerId) && this.isCurrentPlayer(playerId)) {
       return this.localPlayer;
     }
-    return this.isAiPlayer(playerId) && this.isOwnerUser() ? this.aiPlayer : null;
+    return this.isAiPlayer(playerId) && this.isOwnerUser()
+      ? this.aiPlayer
+      : null;
   }
 
   private async getLocalStory<R extends St>(
@@ -169,14 +166,16 @@ export abstract class ABgGameService<
     task: (playerService: PlSrv) => Promise<R>,
   ): Observable<R | null> {
     const playerService = this.getPlayerService(playerId);
-    return playerService ? race(
-        this.getLocalStory(time, playerId, () => task(playerService)),
-        this.currentPlayerChange$().pipe(map(() => null)),
-        this.cancelChange$().pipe(
-          tap(() => this.endTemporaryState()),
-          map(() => null),
-        ),
-      ) : this.currentPlayerChange$().pipe(map(() => null));
+    return playerService
+      ? race(
+          this.getLocalStory(time, playerId, () => task(playerService)),
+          this.currentPlayerChange$().pipe(map(() => null)),
+          this.cancelChange$().pipe(
+            tap(() => this.endTemporaryState()),
+            map(() => null),
+          ),
+        )
+      : this.currentPlayerChange$().pipe(map(() => null));
   }
 
   private getStoryWrap$<R extends St>(

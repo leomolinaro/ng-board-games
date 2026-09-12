@@ -156,11 +156,8 @@ export class WotrActionDieHandler {
   }
 
   private dieTypeLabel(
-    die: WotrActionDie & { type: WotrSpecialActionDieType },
+    _die: WotrActionDie & { type: WotrSpecialActionDieType },
   ): string {
-    switch (die.type) {
-      case 'ruler':
-        return 'Ruler die';
-    }
+    return 'Ruler die';
   }
 }

@@ -315,13 +315,9 @@ export class WotrAssetsStore {
   }
 
   actionDieImage(actionDie: WotrActionDie, front: WotrFrontId) {
-    if (typeof actionDie === 'string') {
+    if (typeof actionDie === 'string')
       return `${BASE_PATH}/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie}.png`;
-    }
-    switch (actionDie.type) {
-      case 'ruler':
-        return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
-    }
+    return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
   }
   actionTokenImage(actionToken: WotrActionToken, front: WotrFrontId) {
     return `${BASE_PATH}/action-tokens/${front === 'free-peoples' ? 'fp' : 's'}-${actionToken}.png`;
