@@ -39,7 +39,7 @@ export class WotrFellowshipStore {
     return this.state().guide;
   }
   isOnMordorTrack(): boolean {
-    return this.state().mordorTrack != null;
+    return this.state().mordorTrack != undefined;
   }
   mordorTrack(): WotrMordorTrack | undefined {
     return this.state().mordorTrack;
@@ -102,7 +102,7 @@ export class WotrFellowshipStore {
     this.update('moveOnMordorTrack', (state) => ({
       ...state,
       mordorTrack:
-        state.mordorTrack == null
+        state.mordorTrack == undefined
           ? 0
           : ((state.mordorTrack + 1) as WotrMordorTrack),
     }));

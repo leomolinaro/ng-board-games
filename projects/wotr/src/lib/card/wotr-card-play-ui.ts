@@ -26,7 +26,7 @@ export class WotrCardPlayUi {
   }
 
   playEventCardChoice(cartTypes: WotrCardType[] | 'any'): WotrUiChoice {
-    let chosenCardId: WotrCardId | null = null;
+    let chosenCardId: WotrCardId | undefined;
     return {
       label: () => 'Play an event card',
       isAvailable: (frontId) => this.hasPlayableCards(cartTypes, frontId),

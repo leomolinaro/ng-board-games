@@ -28,7 +28,7 @@ export interface WotrRegionDialogData {
   characterById: Record<WotrCharacterId, WotrCharacter>;
   fellowship: WotrFellowship;
   regionSelection: boolean;
-  unitSelection: WotrRegionUnitSelection | null;
+  unitSelection: WotrRegionUnitSelection | undefined;
 }
 
 export type WotrRegionDialogResult =
@@ -127,7 +127,7 @@ export class WotrRegionDialog implements OnInit {
         this.unitModifiers,
         this.unitUtils,
       )
-    : null;
+    : undefined;
 
   private casualtiesMode = this.data.unitSelection?.type === 'chooseCasualties';
 
@@ -162,7 +162,7 @@ export class WotrRegionDialog implements OnInit {
         id: 'fellowship',
         type: 'fellowship',
         group: 'fellowship',
-        nationId: null,
+        nationId: undefined,
         frontId: 'free-peoples',
         label: 'Fellowship',
         ...this.scale(image),
@@ -252,7 +252,7 @@ export class WotrRegionDialog implements OnInit {
           type: 'character',
           character,
           group,
-          nationId: null,
+          nationId: undefined,
           frontId: character.frontId,
           label: d.characterById[characterId].name,
           ...this.scale(image),

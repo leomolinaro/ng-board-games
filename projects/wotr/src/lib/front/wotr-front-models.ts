@@ -21,9 +21,9 @@ export interface WotrFront {
   characterDiscardPile: WotrCharacterCardId[];
   strategyDiscardPile: WotrStrategyCardId[];
   actionDice: WotrActionDie[];
-  currentActionDie: WotrActionDie | null;
+  currentActionDie: WotrActionDie | undefined;
   actionTokens: WotrActionToken[];
-  currentActionToken: WotrActionToken | null;
+  currentActionToken: WotrActionToken | undefined;
   elvenRings: WotrElvenRing[];
   elvenRingUsed: boolean;
   victoryPoints: number;

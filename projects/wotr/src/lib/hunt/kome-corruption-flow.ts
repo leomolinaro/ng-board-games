@@ -12,7 +12,7 @@ export class KomeCorruptionFlow {
   private shadow = inject(WotrShadowPlayer);
 
   async corruptionAttempt(): Promise<void> {
-    let choosenTile: WotrHuntTileId | null = null;
+    let choosenTile: WotrHuntTileId | undefined;
     while (!choosenTile) {
       const story = await this.shadow.chooseCorruptionTile();
       if (!('actions' in story))

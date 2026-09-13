@@ -44,7 +44,7 @@ import type { NewGame } from '../bg-proto-game-service';
         <button
           appearance="secondary"
           tuiButton
-          (click)="context.complete(null)"
+          (click)="context.complete(undefined)"
         >
           Cancel
         </button>

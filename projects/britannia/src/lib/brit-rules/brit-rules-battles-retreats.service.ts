@@ -20,7 +20,7 @@ export class BritRulesBattlesRetreatsService {
 
   private isBattleArea(landId: BritLandAreaId, game: BritGameStore): boolean {
     const areaState = game.getArea(landId);
-    let nationId: BritNationId | null = null;
+    let nationId: BritNationId | undefined;
     for (const unit of areaState.units) {
       if (nationId) {
         if (unit.nationId !== nationId) {

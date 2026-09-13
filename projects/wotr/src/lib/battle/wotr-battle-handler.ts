@@ -793,7 +793,7 @@ export class WotrBattleHandler {
       defenderHits,
       attackingArmy,
       battle.action.fromRegion,
-      null,
+      undefined,
       combatRound.attacker.player,
     );
     const attackedArmy = this.defendingArmy(
@@ -807,7 +807,7 @@ export class WotrBattleHandler {
       attackerHits,
       attackedArmy,
       battle.action.toRegion,
-      null,
+      undefined,
       combatRound.defender.player,
     );
   }

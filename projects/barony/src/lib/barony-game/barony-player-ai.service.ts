@@ -203,14 +203,14 @@ export class BaronyPlayerAiService {
         fromLand: sourceLand.coordinates,
         toLand: targetLand.coordinates,
         conflict: true,
-        gainedResource: null,
+        gainedResource: undefined,
       };
     }
     return {
       fromLand: sourceLand.coordinates,
       toLand: targetLand.coordinates,
       conflict: false,
-      gainedResource: null,
+      gainedResource: undefined,
     };
   }
 }

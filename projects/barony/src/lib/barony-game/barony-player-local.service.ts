@@ -52,7 +52,10 @@ export class BaronyPlayerLocalService {
         } satisfies BaronyTurnMovement;
       }
       case 'construction': {
-        const constructions = await this.chooseConstructions(playerId, null);
+        const constructions = await this.chooseConstructions(
+          playerId,
+          undefined,
+        );
         return {
           action: 'construction',
           constructions: constructions,
@@ -181,14 +184,14 @@ export class BaronyPlayerLocalService {
   private async chooseSecondMovement(
     player: BaronyColor,
     firstMovement: BaronyMovement,
-  ): Promise<BaronyMovement | null> {
+  ): Promise<BaronyMovement | undefined> {
     const movementSource = await this.chooseLandSourceOrPassForSecondMovement(
       player,
       firstMovement,
     );
     return movementSource
       ? this.chooseMovementTargetAndConflict(movementSource.coordinates, player)
-      : null;
+      : undefined;
   }
 
   private async chooseMovementTargetAndConflict(
@@ -233,14 +236,14 @@ export class BaronyPlayerLocalService {
         fromLand: movementSource,
         toLand: movementTarget.coordinates,
         conflict: true,
-        gainedResource: null,
+        gainedResource: undefined,
       };
     }
     return {
       fromLand: movementSource,
       toLand: movementTarget.coordinates,
       conflict: false,
-      gainedResource: null,
+      gainedResource: undefined,
     };
   }
 
@@ -319,7 +322,7 @@ export class BaronyPlayerLocalService {
 
   private async chooseConstructions(
     player: BaronyColor,
-    prevConstructions: BaronyConstruction[] | null,
+    prevConstructions: BaronyConstruction[] | undefined,
   ): Promise<BaronyConstruction[]> {
     if (prevConstructions) {
       const construction = await this.chooseConstructionOrPass(player);

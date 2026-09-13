@@ -29,22 +29,22 @@ import { WotrGameUiContext } from './wotr-game-ui-context';
 import type { WotrDieCardStory, WotrDieStory } from './wotr-story-models';
 
 interface WotrGameUiState {
-  currentPlayerId: WotrFrontId | null;
+  currentPlayerId: WotrFrontId | undefined;
   canCancel: boolean;
-  message: string | null;
-  options: WotrUiOption[] | null;
-  regionSelection: WotrRegionId[] | null;
-  nationSelection: WotrNationId[] | null;
-  elvenRingSelection: WotrElvenRingSelection | null;
-  actionBoxSelection: WotrActionBoxSelection | null;
+  message: string | undefined;
+  options: WotrUiOption[] | undefined;
+  regionSelection: WotrRegionId[] | undefined;
+  nationSelection: WotrNationId[] | undefined;
+  elvenRingSelection: WotrElvenRingSelection | undefined;
+  actionBoxSelection: WotrActionBoxSelection | undefined;
   eyeSelection: boolean;
-  reinforcementUnitSelection: WotrReinforcementUnitSelection | null;
-  regionUnitSelection: WotrRegionUnitSelection | null;
-  handCardSelection: WotrCardSelection | null;
-  tableCardSelection: WotrCardSelection | null;
+  reinforcementUnitSelection: WotrReinforcementUnitSelection | undefined;
+  regionUnitSelection: WotrRegionUnitSelection | undefined;
+  handCardSelection: WotrCardSelection | undefined;
+  tableCardSelection: WotrCardSelection | undefined;
   inputQuantitySelection: WotrInputQuantitySelection | false;
-  fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | null;
-  sovereignSelection: KomeSovereignId[] | null;
+  fellowshipCompanionsSelection: WotrFellowshipCompanionSelection | undefined;
+  sovereignSelection: KomeSovereignId[] | undefined;
 }
 
 export interface WotrElvenRingSelection {
@@ -99,22 +99,22 @@ export interface WotrInputQuantitySelection {
 }
 
 export const initialState: WotrGameUiState = {
-  currentPlayerId: null,
+  currentPlayerId: undefined,
   canCancel: false,
-  message: null,
-  regionSelection: null,
-  nationSelection: null,
-  elvenRingSelection: null,
-  actionBoxSelection: null,
+  message: undefined,
+  regionSelection: undefined,
+  nationSelection: undefined,
+  elvenRingSelection: undefined,
+  actionBoxSelection: undefined,
   eyeSelection: false,
-  options: null,
-  reinforcementUnitSelection: null,
-  regionUnitSelection: null,
-  handCardSelection: null,
-  tableCardSelection: null,
+  options: undefined,
+  reinforcementUnitSelection: undefined,
+  regionUnitSelection: undefined,
+  handCardSelection: undefined,
+  tableCardSelection: undefined,
   inputQuantitySelection: false,
-  fellowshipCompanionsSelection: null,
-  sovereignSelection: null,
+  fellowshipCompanionsSelection: undefined,
+  sovereignSelection: undefined,
 };
 
 export interface WotrUiOption<O = unknown> {
@@ -131,7 +131,7 @@ export interface WotrUiChoice<P = WotrFrontId> {
     ui: WotrGameUiContext,
   ): WotrAction[] | Promise<WotrAction[]>;
   character?: WotrCharacterId;
-  card?: () => WotrCardId | null;
+  card?: () => WotrCardId | undefined;
 }
 
 export interface WotrUiCharacterChoice extends WotrUiChoice<WotrFrontId> {
@@ -146,11 +146,11 @@ export class WotrGameUi extends signalStore(
   private playerInfoStore = inject(WotrPlayerInfoStore);
   private ui = lazyInject(WotrGameUiContext);
 
-  currentPlayer = computed<WotrPlayerInfo | null>(() => {
+  currentPlayer = computed<WotrPlayerInfo | undefined>(() => {
     const currentPlayerId = this.currentPlayerId();
     return currentPlayerId
       ? this.playerInfoStore.playerMap()[currentPlayerId]
-      : null;
+      : undefined;
   });
 
   pass = uiEvent<void>();
@@ -171,7 +171,9 @@ export class WotrGameUi extends signalStore(
   }
 
   async askContinue(message: string): Promise<void> {
-    await this.askOption<null>(message, [{ value: null, label: message }]);
+    await this.askOption<undefined>(message, [
+      { value: undefined, label: message },
+    ]);
   }
 
   async askConfirm(
@@ -198,7 +200,7 @@ export class WotrGameUi extends signalStore(
     const quantity = await this.inputQuantity.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
       inputQuantitySelection: false,
     }));
@@ -214,9 +216,9 @@ export class WotrGameUi extends signalStore(
     const region = await this.region.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      regionSelection: null,
+      regionSelection: undefined,
     }));
     return region;
   }
@@ -230,9 +232,9 @@ export class WotrGameUi extends signalStore(
     const cards = await this.handCards.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      handCardSelection: null,
+      handCardSelection: undefined,
     }));
     return cards;
   }
@@ -244,9 +246,9 @@ export class WotrGameUi extends signalStore(
     const cards = await this.handCards.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      handCardSelection: null,
+      handCardSelection: undefined,
     }));
     return cards[0];
   }
@@ -264,9 +266,9 @@ export class WotrGameUi extends signalStore(
     const card = await this.tableCard.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      tableCardSelection: null,
+      tableCardSelection: undefined,
     }));
     return card;
   }
@@ -280,9 +282,9 @@ export class WotrGameUi extends signalStore(
     const nation = await this.nation.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      nationSelection: null,
+      nationSelection: undefined,
     }));
     return nation;
   }
@@ -296,9 +298,9 @@ export class WotrGameUi extends signalStore(
     const elvenRing = await this.elvenRing.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      elvenRingSelection: null,
+      elvenRingSelection: undefined,
     }));
     return elvenRing;
   }
@@ -324,9 +326,9 @@ export class WotrGameUi extends signalStore(
     const actionDie = await this.actionDieChoice.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      actionBoxSelection: null,
+      actionBoxSelection: undefined,
     }));
     return actionDie;
   }
@@ -372,10 +374,10 @@ export class WotrGameUi extends signalStore(
     ]);
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      actionBoxSelection: null,
-      elvenRingSelection: null,
+      actionBoxSelection: undefined,
+      elvenRingSelection: undefined,
       eyeSelection: false,
     }));
     return actionDieOrTokenOrElvenRing;
@@ -406,10 +408,10 @@ export class WotrGameUi extends signalStore(
     ]);
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      actionBoxSelection: null,
-      options: null,
+      actionBoxSelection: undefined,
+      options: undefined,
     }));
     if ('type' in actionDieOrStop && actionDieOrStop.type === 'die') {
       return actionDieOrStop.die;
@@ -429,9 +431,9 @@ export class WotrGameUi extends signalStore(
     const sovereign = await this.sovereign.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      sovereignSelection: null,
+      sovereignSelection: undefined,
     }));
     return sovereign;
   }
@@ -442,9 +444,9 @@ export class WotrGameUi extends signalStore(
     const option = await this.option.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      options: null,
+      options: undefined,
     }));
     return option.value as O;
   }
@@ -452,7 +454,7 @@ export class WotrGameUi extends signalStore(
   async askOptionOrElvenRing<O>(
     message: string,
     options: WotrUiOption<O>[],
-    elvenRingSelection: WotrElvenRingSelection | null,
+    elvenRingSelection: WotrElvenRingSelection | undefined,
   ): Promise<O | WotrElvenRing> {
     this.updateUi((s) => ({
       ...s,
@@ -467,10 +469,10 @@ export class WotrGameUi extends signalStore(
     ]);
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      options: null,
-      elvenRingSelection: null,
+      options: undefined,
+      elvenRingSelection: undefined,
     }));
     return optionOrElvenRing;
   }
@@ -488,7 +490,7 @@ export class WotrGameUi extends signalStore(
       ...s,
       message,
       reinforcementUnitSelection,
-      options: options?.length ? options : null,
+      options: options?.length ? options : undefined,
     }));
     const choice = await Promise.race([
       this.reinforcementUnit.get(),
@@ -496,10 +498,10 @@ export class WotrGameUi extends signalStore(
     ]);
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      reinforcementUnitSelection: null,
-      options: null,
+      reinforcementUnitSelection: undefined,
+      options: undefined,
     }));
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return 'value' in choice ? (false as any) : choice;
@@ -518,10 +520,10 @@ export class WotrGameUi extends signalStore(
     const regionUnits = await this.regionUnits.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      regionUnitSelection: null,
-      regionSelection: null,
+      regionUnitSelection: undefined,
+      regionSelection: undefined,
     }));
     return regionUnits;
   }
@@ -539,9 +541,9 @@ export class WotrGameUi extends signalStore(
     const casualtyUnits = await this.casualtyUnits.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      regionUnitSelection: null,
+      regionUnitSelection: undefined,
     }));
     return casualtyUnits;
   }
@@ -559,9 +561,9 @@ export class WotrGameUi extends signalStore(
     const companions = await this.fellowshipCompanions.get();
     this.updateUi((s) => ({
       ...s,
-      message: null,
+      message: undefined,
       canCancel: true,
-      fellowshipCompanionsSelection: null,
+      fellowshipCompanionsSelection: undefined,
     }));
     return companions;
   }
@@ -597,7 +599,7 @@ export class WotrGameUi extends signalStore(
       })),
     );
     const actions = await choice.actions(params, this.ui);
-    const card = choice.card ? choice.card() : null;
+    const card = choice.card ? choice.card() : undefined;
     if (card) {
       const story: WotrDieCardStory = {
         type: 'die-card',
@@ -625,8 +627,8 @@ export class WotrGameUi extends signalStore(
     }));
   }
 
-  player = uiEvent<WotrFrontId | null>();
-  setCurrentPlayerId(playerId: WotrFrontId | null): void {
+  player = uiEvent<WotrFrontId | undefined>();
+  setCurrentPlayerId(playerId: WotrFrontId | undefined): void {
     this.player.emit(playerId);
     patchState(this, { currentPlayerId: playerId });
   }

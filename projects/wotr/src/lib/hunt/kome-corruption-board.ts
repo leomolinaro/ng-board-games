@@ -110,12 +110,11 @@ export class KomeCorruptionBoard {
 
   protected currentFront = this.ui.currentPlayerId;
 
-  protected sovereignSelectionMap = computed<Record<
-    KomeSovereignId,
-    boolean
-  > | null>(() => {
+  protected sovereignSelectionMap = computed<
+    Record<KomeSovereignId, boolean> | undefined
+  >(() => {
     const selection = this.ui.sovereignSelection();
-    if (!selection) return null;
+    if (!selection) return;
     const map: Record<KomeSovereignId, boolean> = {
       brand: false,
       dain: false,
@@ -136,7 +135,7 @@ export class KomeCorruptionBoard {
   protected huntTileImage: BgTransformFn<
     WotrHuntTileId,
     string,
-    { currentFront: WotrFrontId | null }
+    { currentFront: WotrFrontId | undefined }
   > = (tileId: WotrHuntTileId, params) =>
     this.visibleCorruptionTiles() || params.currentFront === 'shadow'
       ? this.assets.huntTileImage(tileId)

@@ -72,7 +72,7 @@ export interface BaronyMovement {
   fromLand: BaronyLandCoordinates;
   toLand: BaronyLandCoordinates;
   conflict: boolean;
-  gainedResource: BaronyResourceType | null;
+  gainedResource: BaronyResourceType | undefined;
 }
 
 export interface BaronyConstruction {

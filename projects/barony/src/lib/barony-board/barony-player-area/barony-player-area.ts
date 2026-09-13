@@ -38,8 +38,8 @@ export class BaronyPlayerArea implements OnChanges {
 
   readonly player = input.required<BaronyPlayer>();
   readonly currentPlayer = input<boolean>(false);
-  readonly validBuildings = input<BaronyBuilding[] | null>(null);
-  readonly validResources = input<BaronyResourceType[] | null>(null);
+  readonly validBuildings = input<BaronyBuilding[] | undefined>(undefined);
+  readonly validResources = input<BaronyResourceType[] | undefined>(undefined);
   readonly selectPlayer = output<void>();
   readonly clickPawn = output<BaronyPawnType>();
   readonly clickResource = output<BaronyResourceType>();

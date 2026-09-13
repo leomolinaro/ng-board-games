@@ -70,27 +70,27 @@ function getNearbyLands(
   const z = land.z;
   const toReturn: BaronyLand[] = [];
   let lt;
-  lt = game.getLandOrNull({ x: x + 1, y: y - 1, z });
+  lt = game.getLandOrundefined({ x: x + 1, y: y - 1, z });
   if (lt) {
     toReturn.push(lt);
   }
-  lt = game.getLandOrNull({ x: x - 1, y: y + 1, z });
+  lt = game.getLandOrundefined({ x: x - 1, y: y + 1, z });
   if (lt) {
     toReturn.push(lt);
   }
-  lt = game.getLandOrNull({ x: x, y: y + 1, z: z - 1 });
+  lt = game.getLandOrundefined({ x: x, y: y + 1, z: z - 1 });
   if (lt) {
     toReturn.push(lt);
   }
-  lt = game.getLandOrNull({ x: x, y: y - 1, z: z + 1 });
+  lt = game.getLandOrundefined({ x: x, y: y - 1, z: z + 1 });
   if (lt) {
     toReturn.push(lt);
   }
-  lt = game.getLandOrNull({ x: x - 1, y, z: z + 1 });
+  lt = game.getLandOrundefined({ x: x - 1, y, z: z + 1 });
   if (lt) {
     toReturn.push(lt);
   }
-  lt = game.getLandOrNull({ x: x + 1, y, z: z - 1 });
+  lt = game.getLandOrundefined({ x: x + 1, y, z: z - 1 });
   if (lt) {
     toReturn.push(lt);
   }
@@ -523,7 +523,7 @@ function hasOneOrMoreOpponentKnight(
   return hasPawnsByColor(
     land,
     (nPawns) => nPawns >= 1,
-    null,
+    undefined,
     (c) => c !== player.id,
     game,
   );
@@ -568,7 +568,7 @@ function hasTwoOrMorePawnsOfSameOpponent(
   return hasPawnsByColor(
     land,
     (nPawns) => nPawns >= 2,
-    null,
+    undefined,
     (c) => c !== player.id,
     game,
   );
@@ -577,8 +577,8 @@ function hasTwoOrMorePawnsOfSameOpponent(
 function hasPawnsByColor(
   landCoordinates: BaronyLandCoordinates,
   some: (nPawns: number) => boolean,
-  pawnFilter: ((p: BaronyPawnType) => boolean) | null,
-  colorFilter: ((c: BaronyColor) => boolean) | null,
+  pawnFilter: ((p: BaronyPawnType) => boolean) | undefined,
+  colorFilter: ((c: BaronyColor) => boolean) | undefined,
   game: BaronyGameStore,
 ): boolean {
   const land = game.getLand(landCoordinates);

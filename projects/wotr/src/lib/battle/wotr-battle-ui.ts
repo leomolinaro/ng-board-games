@@ -94,7 +94,7 @@ export class WotrBattleUi {
         regionIds: [regionId],
         isUnderSiege: underSiege,
         hitPoints,
-        retroguard: null,
+        retroguard: undefined,
       },
     );
     return this.eliminateUnitActions(units, regionId);
@@ -110,7 +110,7 @@ export class WotrBattleUi {
       regionIds: [regionId],
       isUnderSiege: underSiege,
       hitPoints: 'full',
-      retroguard: null,
+      retroguard: undefined,
     });
     return this.eliminateUnitActions(units, regionId);
   }
@@ -153,7 +153,7 @@ export class WotrBattleUi {
       {
         type: 'moveArmy',
         regionIds: [fromRegion.id],
-        retroguard: battle.retroguard ?? null,
+        retroguard: battle.retroguard ?? undefined,
         requiredUnits: [],
         required: false,
         doneMovements: [],
@@ -344,7 +344,7 @@ export class WotrBattleUi {
     frontId: WotrFrontId,
     combatRound: WotrCombatRound,
     params: WotrCombatCardParams,
-  ): Promise<WotrCardId | null> {
+  ): Promise<WotrCardId | undefined> {
     const combatFront =
       combatRound.attacker.frontId === frontId
         ? combatRound.attacker
@@ -357,13 +357,13 @@ export class WotrBattleUi {
       const card = getCard(c);
       return this.combatCards.canBePlayed(card.combatLabel, params);
     });
-    if (playableCards.length === 0) return null;
+    if (playableCards.length === 0) return undefined;
     const confirm = await this.ui.askConfirm(
       'Do you want to play a combat card from the table?',
       'Choose table combat card',
       'Skip',
     );
-    if (!confirm) return null;
+    if (!confirm) return undefined;
     const cardId = await this.ui.askTableCard(
       'Choose a table combat card to play',
       {

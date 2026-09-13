@@ -51,7 +51,7 @@ export class BaronyGameService extends ABgGameService<
   private ui = inject(BaronyUiStore);
   private remote = inject(BaronyRemoteService);
 
-  protected storyDocs: BaronyStoryDoc[] | null = null;
+  protected storyDocs: BaronyStoryDoc[] | undefined = undefined;
 
   async game(stories: BaronyStoryDoc[]): Promise<void> {
     this.storyDocs = stories;
@@ -221,13 +221,13 @@ export class BaronyGameService extends ABgGameService<
     return this.remote.selectStory$(storyId, gameId);
   }
 
-  protected getCurrentPlayerId(): BaronyColor | null {
+  protected getCurrentPlayerId(): BaronyColor | undefined {
     return this.ui.currentPlayer();
   }
   protected setCurrentPlayer(playerId: BaronyColor): void {
     this.ui.setCurrentPlayer(playerId);
   }
-  protected currentPlayerChange$(): Observable<BaronyColor | null> {
+  protected currentPlayerChange$(): Observable<BaronyColor | undefined> {
     return this.ui.currentPlayerChange$();
   }
   protected cancelChange$(): Observable<void> {

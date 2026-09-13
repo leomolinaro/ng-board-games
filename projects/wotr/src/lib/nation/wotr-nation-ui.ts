@@ -7,7 +7,7 @@ import { WotrGameUiContext } from '../game/wotr-game-ui-context';
 import { advanceNation } from './wotr-nation-actions';
 import { WotrNationHandler } from './wotr-nation-handler';
 import type { WotrNationId } from './wotr-nation-models';
-import type { WotrNationAdvanceSource} from './wotr-nation-rules';
+import type { WotrNationAdvanceSource } from './wotr-nation-rules';
 import { WotrNationRules } from './wotr-nation-rules';
 import { WotrNationStore } from './wotr-nation-store';
 
@@ -50,9 +50,10 @@ export class WotrNationUi {
   async advanceNation(
     nationId: WotrNationId,
     source: WotrNationAdvanceSource,
-  ): Promise<WotrAction | null> {
+  ): Promise<WotrAction | undefined> {
     const nation = this.nation.nation(nationId);
-    if (!this.nationRules.canAdvancePoliticalTrack(nation, source)) return null;
+    if (!this.nationRules.canAdvancePoliticalTrack(nation, source))
+      return undefined;
     await this.ui.askContinue(`Advance the ${nation.name} nation`);
     this.nationHandler.advanceNation(1, nationId, source);
     return advanceNation(nationId);

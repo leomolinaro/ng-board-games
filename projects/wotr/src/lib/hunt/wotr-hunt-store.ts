@@ -16,7 +16,7 @@ export interface WotrHuntState {
   nFreePeopleDice: number;
   previousTurnNFreePeopleDice: number;
   inProgress: boolean;
-  corruptionAttempt: KomeCorruptionAttemptState | null;
+  corruptionAttempt: KomeCorruptionAttemptState | undefined;
 }
 
 export interface KomeCorruptionAttemptState {
@@ -66,7 +66,7 @@ export function initialeState(): WotrHuntState {
     nFreePeopleDice: 0,
     previousTurnNFreePeopleDice: 0,
     inProgress: false,
-    corruptionAttempt: null,
+    corruptionAttempt: undefined,
   };
 }
 
@@ -98,7 +98,7 @@ export class WotrHuntStore {
   huntPool(): WotrHuntTileId[] {
     return this.state().huntPool;
   }
-  getCorruptionAttempt(): KomeCorruptionAttemptState | null {
+  getCorruptionAttempt(): KomeCorruptionAttemptState | undefined {
     return this.state().corruptionAttempt;
   }
 
@@ -259,14 +259,14 @@ export class WotrHuntStore {
             ...state.corruptionAttempt,
             drawnTiles: [...state.corruptionAttempt.drawnTiles, tile],
           }
-        : null,
+        : undefined,
     }));
   }
 
   resetCorruptionAttempt(choosenTile: WotrHuntTileId): void {
     this.update('resetCorruptionAttempt', (state) => ({
       ...state,
-      corruptionAttempt: null,
+      corruptionAttempt: undefined,
       huntPool: immutableUtil.listPush(
         state.corruptionAttempt!.drawnTiles.filter((t) => t !== choosenTile),
         state.huntPool,

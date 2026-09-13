@@ -97,9 +97,9 @@ export class WotrCardDrawUi {
 
   async drawStrategyEventCardByCard(
     frontId: WotrFrontId,
-  ): Promise<WotrAction | null> {
+  ): Promise<WotrAction | undefined> {
     await this.ui.askContinue('Draw a strategy card');
-    if (!this.q.front(frontId).canDrawStrategyCard()) return null;
+    if (!this.q.front(frontId).canDrawStrategyCard()) return undefined;
     return this.drawCardFromDeck(this.q.front(frontId).strategyDeck(), frontId);
   }
 

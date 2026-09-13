@@ -57,12 +57,12 @@ export abstract class ABgGameService<
   protected abstract aiPlayer: PlSrv;
 
   protected storyTime = 0;
-  protected abstract storyDocs: BgStoryDoc<Pid, St>[] | null;
+  protected abstract storyDocs: BgStoryDoc<Pid, St>[] | undefined;
 
   protected abstract getGameId(): string;
   protected abstract getPlayer(playerId: string): Pl;
   protected abstract getGameOwner(): BgUser;
-  protected abstract getCurrentPlayerId(): Pid | null;
+  protected abstract getCurrentPlayerId(): Pid | undefined;
   protected abstract setCurrentPlayer(playerId: string): void;
   protected abstract currentPlayerChange$(): Observable<unknown>;
   protected abstract cancelChange$(): Observable<void>;
@@ -73,7 +73,7 @@ export abstract class ABgGameService<
 
   clear(): void {
     this.storyTime = 0;
-    this.storyDocs = null;
+    this.storyDocs = undefined;
   }
 
   protected abstract insertStoryDoc$(
@@ -121,20 +121,20 @@ export abstract class ABgGameService<
     return false;
   }
 
-  private getPlayerService(playerId: Pid): PlSrv | null {
+  private getPlayerService(playerId: Pid): PlSrv | undefined {
     if (this.isLocalPlayer(playerId) && this.isCurrentPlayer(playerId)) {
       return this.localPlayer;
     }
     return this.isAiPlayer(playerId) && this.isOwnerUser()
       ? this.aiPlayer
-      : null;
+      : undefined;
   }
 
   private async getLocalStory<R extends St>(
     time: number,
     playerId: Pid,
     task: () => Promise<R>,
-  ): Promise<R | null> {
+  ): Promise<R | undefined> {
     this.startTemporaryState();
     const story = await task();
     await this.insertStory(story, time, playerId);
@@ -171,18 +171,18 @@ export abstract class ABgGameService<
     time: number,
     playerId: Pid,
     task: (playerService: PlSrv) => Promise<R>,
-  ): Observable<R | null> {
+  ): Observable<R | undefined> {
     const playerService = this.getPlayerService(playerId);
     return playerService
       ? race(
           this.getLocalStory(time, playerId, () => task(playerService)),
-          this.currentPlayerChange$().pipe(map(() => null)),
+          this.currentPlayerChange$().pipe(map(() => undefined)),
           this.cancelChange$().pipe(
             tap(() => this.endTemporaryState()),
-            map(() => null),
+            map(() => undefined),
           ),
         )
-      : this.currentPlayerChange$().pipe(map(() => null));
+      : this.currentPlayerChange$().pipe(map(() => undefined));
   }
 
   private getStoryWrap$<R extends St>(
@@ -303,10 +303,10 @@ export abstract class ABgGameService<
       const story = await firstValueFrom(
         race(
           this.getLocalStory(time, playerId!, () => task.task(playerService)),
-          this.currentPlayerChange$().pipe(map(() => null)),
+          this.currentPlayerChange$().pipe(map(() => undefined)),
           this.cancelChange$().pipe(
             tap(() => this.endTemporaryState()),
-            map(() => null),
+            map(() => undefined),
           ),
         ),
       );

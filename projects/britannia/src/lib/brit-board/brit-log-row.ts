@@ -119,7 +119,7 @@ export class BritLogRow {
         return [this.string(this.getPhaseLabel(l.phase))];
       case 'population-marker-set': {
         const action =
-          l.populationMarker == null ? 'unset' : `set to ${l.populationMarker}`;
+          l.populationMarker == undefined ? 'unset' : `set to ${l.populationMarker}`;
         return [this.string(`Population marker ${action}`)];
       }
       case 'infantry-placement':

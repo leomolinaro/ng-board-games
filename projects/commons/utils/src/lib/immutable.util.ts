@@ -95,7 +95,7 @@ export function listReplaceByIndex<T>(
 
 export function listInsert<T>(element: T, index: number, list: T[]): T[] {
   if (list) {
-    if (index != null && index >= 0) {
+    if (index != undefined && index >= 0) {
       if (index > list.length) {
         error('index greater than list length');
         return list;

@@ -30,7 +30,7 @@ export abstract class SovereingFateOf implements WotrAbility<WotrBeforeCombatRou
 
   modifier;
 
-  private combatRound: WotrCombatRound | null = null;
+  private combatRound: WotrCombatRound | undefined = undefined;
 
   handler: WotrBeforeCombatRound = (combatRound: WotrCombatRound): void => {
     const battle = this.battleStore.battle();
@@ -48,6 +48,6 @@ export abstract class SovereingFateOf implements WotrAbility<WotrBeforeCombatRou
     if (battle.region !== this.strongholdRegion) return;
     if (!this.combatRound) return;
     this.combatRound.shadow.canRemoveRegularToContinueSiege = false;
-    this.combatRound = null;
+    this.combatRound = undefined;
   }
 }

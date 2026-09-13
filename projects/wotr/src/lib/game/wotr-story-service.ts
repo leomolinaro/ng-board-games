@@ -45,7 +45,7 @@ export class WotrStoryService extends ABgGameService<
     this.localPlayer = localPlayer;
   }
 
-  protected storyDocs: WotrStoryDoc[] | null = null;
+  protected storyDocs: WotrStoryDoc[] | undefined = undefined;
   setStoryDocs(storyDocs: WotrStoryDoc[]): void {
     this.storyDocs = storyDocs;
   }
@@ -78,13 +78,15 @@ export class WotrStoryService extends ABgGameService<
   ): Observable<WotrStoryDoc | undefined> {
     return this.remote.selectStory$(storyId, gameId);
   }
-  protected override getCurrentPlayerId(): WotrFrontId | null {
+  protected override getCurrentPlayerId(): WotrFrontId | undefined {
     return this.ui.currentPlayerId();
   }
   protected override setCurrentPlayer(playerId: WotrFrontId): void {
     this.ui.setCurrentPlayerId(playerId);
   }
-  protected override currentPlayerChange$(): Observable<WotrFrontId | null> {
+  protected override currentPlayerChange$(): Observable<
+    WotrFrontId | undefined
+  > {
     return from(this.ui.player.get());
   }
   protected override cancelChange$(): Observable<void> {
@@ -99,8 +101,8 @@ export class WotrStoryService extends ABgGameService<
     this.replayToLastStory = !isReplayMode;
   }
 
-  private currentStory: WotrStory | null = null;
-  getCurrentStory(): WotrStory | null {
+  private currentStory: WotrStory | undefined = undefined;
+  getCurrentStory(): WotrStory | undefined {
     return this.currentStory;
   }
 
@@ -191,6 +193,6 @@ export class WotrStoryService extends ABgGameService<
   ): Promise<void> {
     this.currentStory = story;
     await this.actionRegistry.applyStory(story, front);
-    this.currentStory = null;
+    this.currentStory = undefined;
   }
 }

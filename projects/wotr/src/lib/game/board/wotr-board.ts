@@ -229,13 +229,13 @@ export class WotrBoard {
   private focusHandCards = effect(() => {
     const cardSelection = this.ui.handCardSelection();
     if (!cardSelection) return;
-    void this.openHandCardsDialog(null, cardSelection.frontId);
+    void this.openHandCardsDialog(undefined, cardSelection.frontId);
   });
 
   private focusTableCards = effect(() => {
     const cardSelection = this.ui.tableCardSelection();
     if (!cardSelection) return;
-    void this.openTableCardsDialog(null, cardSelection.frontId);
+    void this.openTableCardsDialog(undefined, cardSelection.frontId);
   });
 
   private focusFellowship = effect(() => {
@@ -250,7 +250,7 @@ export class WotrBoard {
   }
 
   private async openHandCardsDialog(
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<void> {
     const front = this.frontStore.front(frontId);
@@ -265,7 +265,7 @@ export class WotrBoard {
   }
 
   private async openTableCardsDialog(
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<void> {
     const front = this.frontStore.front(frontId);
@@ -281,10 +281,10 @@ export class WotrBoard {
   }
 
   private async openCardDialog(
-    focusedCardId: WotrCardId | null,
+    focusedCardId: WotrCardId | undefined,
     cardIds: WotrCardId[],
-    selectableCards: WotrCardSelection | null,
-  ): Promise<WotrCardId[] | null> {
+    selectableCards: WotrCardSelection | undefined,
+  ): Promise<WotrCardId[] | undefined> {
     return this.dialogs.open<WotrCardsDialogData, WotrCardId[]>(
       WotrCardsDialog,
       {
@@ -312,7 +312,7 @@ export class WotrBoard {
           this.ui.regionSelection()?.includes(region.id) ?? false,
         unitSelection: regionUnitSelection?.regionIds.includes(region.id)
           ? regionUnitSelection
-          : null,
+          : undefined,
       },
       label: region.name,
       injector: this.injector,

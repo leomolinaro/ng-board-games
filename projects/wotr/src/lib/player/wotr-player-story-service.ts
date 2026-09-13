@@ -54,12 +54,12 @@ export interface WotrPlayerStoryService {
   chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<WotrStory>;
   eliminateArmy(
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<WotrStory>;
   battleAdvance(frontId: WotrFrontId): Promise<WotrStory>;
@@ -84,12 +84,12 @@ export interface WotrPlayerStoryService {
   faramirsRangersRecruit(cardId: WotrCardId): Promise<WotrStory>;
   deadMenOfDunharrowRecruit(
     regionId: string,
-    cardId: string | null,
+    cardId: string | undefined,
   ): Promise<WotrStory>;
   deadMenOfDunharrowCasualties(
     nHits: number,
     regionId: string,
-    cardId: string | null,
+    cardId: string | undefined,
   ): Promise<WotrStory>;
   chooseCorruptionTile(): Promise<WotrStory>;
   makeRulerDieChoice(frontId: WotrFrontId): Promise<WotrStory>;

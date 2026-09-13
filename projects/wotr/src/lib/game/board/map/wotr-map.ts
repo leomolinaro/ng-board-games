@@ -157,10 +157,10 @@ export class WotrMap {
     const height = +splittedViewBox[3];
     const screenCTM = this.mapElementRef().nativeElement.getScreenCTM()!;
     const pt = this.bgSvg().createSVGPoint();
-    const coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null = (
-      x,
-      y,
-    ) => {
+    const coordinatesToAreaId: (
+      x: number,
+      y: number,
+    ) => WotrRegionId | undefined = (x, y) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;
       // this.testGridPoints.push ({ x: pt.x, y: pt.y, color: "black" });
@@ -171,7 +171,7 @@ export class WotrMap {
       )?.id;
       return elementId?.startsWith('wotr-region-')
         ? (elementId.slice(12) as WotrRegionId)
-        : null;
+        : undefined;
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;

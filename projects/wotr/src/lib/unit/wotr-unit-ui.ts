@@ -111,7 +111,7 @@ export class WotrUnitUi {
       regionIds: candidateRegions,
       type: 'moveArmy',
       requiredUnits,
-      retroguard: null,
+      retroguard: undefined,
       required: true,
       doneMovements,
     });
@@ -570,14 +570,14 @@ export class WotrUnitUi {
   async recruitRegularByCard(
     regionId: WotrRegionId,
     nationId: WotrNationId,
-  ): Promise<WotrAction | null> {
+  ): Promise<WotrAction | undefined> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId))
-      return null;
+      return undefined;
     const units: WotrReinforcementUnit[] = [];
     if (this.q.nation(nationId).hasRegularReinforcements())
       units.push({ nation: nationId, type: 'regular' });
-    if (units.length === 0) return null;
+    if (units.length === 0) return undefined;
     await this.ui.askReinforcementUnit('Choose a unit to recruit', {
       frontId,
       units,
@@ -590,14 +590,14 @@ export class WotrUnitUi {
   async recruitEliteByCard(
     regionId: WotrRegionId,
     nationId: WotrNationId,
-  ): Promise<WotrAction | null> {
+  ): Promise<WotrAction | undefined> {
     const frontId = this.nationStore.nation(nationId).front;
     if (!this.q.region(regionId).isFreeForRecruitmentByCard(frontId))
-      return null;
+      return undefined;
     const units: WotrReinforcementUnit[] = [];
     if (this.q.nation(nationId).hasEliteReinforcements())
       units.push({ nation: nationId, type: 'elite' });
-    if (units.length === 0) return null;
+    if (units.length === 0) return undefined;
     await this.ui.askReinforcementUnit('Choose a unit to recruit', {
       frontId,
       units,
@@ -672,7 +672,7 @@ export class WotrUnitUi {
 
   async eliminateUnit(
     selection: WotrRegionUnitMatch,
-    regionIds: WotrRegionId[] | null,
+    regionIds: WotrRegionId[] | undefined,
   ): Promise<WotrAction[]> {
     const actions: WotrAction[] = [];
     if (!regionIds) {
@@ -686,7 +686,7 @@ export class WotrUnitUi {
         regionIds,
         type: 'eliminateUnit',
         unitType: selection.unitType,
-        nationId: selection.nationId ?? null,
+        nationId: selection.nationId ?? undefined,
       },
     );
     if (units.regulars?.length) {
@@ -781,7 +781,7 @@ export class WotrUnitUi {
       frontId: params.frontId,
       message,
       points,
-      leaderRestriction: params.only ?? null,
+      leaderRestriction: params.only ?? undefined,
     });
     const unitComposers: WotrUnitComposer[] = [];
     if (units.elites)

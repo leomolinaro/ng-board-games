@@ -12,7 +12,7 @@ import type { WotrFellowshipCompanionSelection } from '../game/wotr-game-ui';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
 
 export interface WotrFellowshipDialogData {
-  selection: WotrFellowshipCompanionSelection | null;
+  selection: WotrFellowshipCompanionSelection | undefined;
 }
 
 export type WotrFellowshipDialogResult = WotrCompanionId[];

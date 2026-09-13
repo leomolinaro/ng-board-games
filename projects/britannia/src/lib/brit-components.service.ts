@@ -942,13 +942,13 @@ export class BritComponents {
 class BritEventBuilder {
   constructor(private nation: BritNationId) {}
 
-  private _invasions: BritInvasion[] | null = null;
-  private _revolt: BritRevolt | null = null;
+  private _invasions: BritInvasion[] | undefined = undefined;
+  private _revolt: BritRevolt | undefined = undefined;
   private _majorInvasion = false;
   private _raiding = false;
   private _boats = false;
-  private _special: BritSpecialEvent | null = null;
-  private _leader: BritLeaderId | null = null;
+  private _special: BritSpecialEvent | undefined = undefined;
+  private _leader: BritLeaderId | undefined = undefined;
 
   leader(leader: BritLeaderId): this {
     this._leader = leader;

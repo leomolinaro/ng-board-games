@@ -1,7 +1,7 @@
 import { firstValueFrom, Subject } from 'rxjs';
 
 export class UiEvent<E> {
-  private subject: Subject<E> | null = null;
+  private subject: Subject<E> | undefined = undefined;
 
   emit(event: E): void {
     if (!this.subject) {

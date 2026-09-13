@@ -156,7 +156,7 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     const player: BgProtoPlayer<Pid> = {
       id: id,
       name: '',
-      controller: null,
+      controller: undefined,
       type: 'closed',
       ready: false,
     };

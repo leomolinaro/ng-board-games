@@ -10,19 +10,19 @@ import type { BritAreaUnit } from '../brit-game-state.models';
 import { BritGameStore } from './brit-game.store';
 
 interface BritUiState {
-  currentPlayer: BritColor | null;
+  currentPlayer: BritColor | undefined;
   turnPlayer: BritColor;
   canCancel: boolean;
-  message: string | null;
-  validAreas: BritAreaId[] | null;
-  validUnits: BritAreaUnit[] | null;
-  selectedUnits: BritAreaUnit[] | null;
+  message: string | undefined;
+  validAreas: BritAreaId[] | undefined;
+  validUnits: BritAreaUnit[] | undefined;
+  selectedUnits: BritAreaUnit[] | undefined;
   // validResources: {
   //   player: string;
   //   resources: BritResourceType[]
-  // } | null;
-  // validActions: BritAction[] | null;
-  // validBuildings: ("stronghold" | "village")[] | null;
+  // } | undefined;
+  // validActions: BritAction[] | undefined;
+  // validBuildings: ("stronghold" | "village")[] | undefined;
   canPass: boolean;
   canConfirm: boolean;
 }
@@ -31,16 +31,16 @@ interface BritUiState {
 export class BritUiStore extends signalStore(
   { protectedState: false },
   withState<BritUiState>({
-    currentPlayer: null,
+    currentPlayer: undefined,
     turnPlayer: 'yellow',
     canCancel: false,
-    message: null,
-    validAreas: null,
-    validUnits: null,
-    selectedUnits: null,
-    // validActions: null,
-    // validBuildings: null,
-    // validResources: null,
+    message: undefined,
+    validAreas: undefined,
+    validUnits: undefined,
+    selectedUnits: undefined,
+    // validActions: undefined,
+    // validBuildings: undefined,
+    // validResources: undefined,
     canPass: false,
     canConfirm: false,
   }),
@@ -58,8 +58,8 @@ export class BritUiStore extends signalStore(
   passChange = uiEvent<void>();
   confirmChange = uiEvent<void>();
 
-  player = uiEvent<BritColor | null>();
-  setCurrentPlayerId(playerId: BritColor | null): void {
+  player = uiEvent<BritColor | undefined>();
+  setCurrentPlayerId(playerId: BritColor | undefined): void {
     this.player.emit(playerId);
     patchState(this, { currentPlayer: playerId });
   }
@@ -74,17 +74,17 @@ export class BritUiStore extends signalStore(
 
   resetUi(): Partial<BritUiState> {
     return {
-      message: null,
-      validAreas: null,
-      validUnits: null,
-      selectedUnits: null,
+      message: undefined,
+      validAreas: undefined,
+      validUnits: undefined,
+      selectedUnits: undefined,
       // canPass: false,
       // canCancel: true,
-      // maxNumberOfKnights: null,
-      // validActions: null,
-      // validBuildings: null,
-      // validLands: null,
-      // validResources: null
+      // maxNumberOfKnights: undefined,
+      // validActions: undefined,
+      // validBuildings: undefined,
+      // validLands: undefined,
+      // validResources: undefined
     };
   }
 
@@ -95,7 +95,7 @@ export class BritUiStore extends signalStore(
   //   };
   // }
 
-  setCurrentPlayer(playerId: BritColor | null): void {
+  setCurrentPlayer(playerId: BritColor | undefined): void {
     this.updateUi('Set current player', (s) => ({
       ...s,
       currentPlayer: playerId,

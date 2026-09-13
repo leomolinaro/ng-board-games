@@ -7,5 +7,5 @@ import type { WotrAbility } from '../../ability/wotr-ability';
 // reveal it to reduce the Hunt damage by one (to a minimum of zero).
 
 export class GollumGuideAbility implements WotrAbility<unknown> {
-  public handler = null;
+  public handler = undefined;
 }

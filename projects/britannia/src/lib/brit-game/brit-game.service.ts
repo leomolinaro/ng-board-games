@@ -35,7 +35,7 @@ export class BritGameService extends ABgGameService<
   protected localPlayer = inject(BritPlayerLocalService);
   private components = inject(BritComponents);
 
-  protected storyDocs: BritStoryDoc[] | null = null;
+  protected storyDocs: BritStoryDoc[] | undefined = undefined;
 
   protected getGameId(): string {
     return this.gameStore.gameId();
@@ -69,13 +69,13 @@ export class BritGameService extends ABgGameService<
     return this.remoteService.selectStory$(storyId, gameId);
   }
 
-  protected override getCurrentPlayerId(): BritColor | null {
+  protected override getCurrentPlayerId(): BritColor | undefined {
     return this.ui.currentPlayer();
   }
   protected override setCurrentPlayer(playerId: BritColor): void {
     this.ui.setCurrentPlayer(playerId);
   }
-  protected override currentPlayerChange$(): Observable<BritColor | null> {
+  protected override currentPlayerChange$(): Observable<BritColor | undefined> {
     return from(this.ui.player.get());
   }
   protected override cancelChange$(): Observable<void> {
@@ -180,7 +180,7 @@ export class BritGameService extends ABgGameService<
       case 'roman-reinforcements': {
         if (data.nInfantries) {
           this.gameStore.applyPopulationIncrease(
-            null,
+            undefined,
             [{ areaId: 'english-channel', quantity: data.nInfantries }],
             nationId,
           );

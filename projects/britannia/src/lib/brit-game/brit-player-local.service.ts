@@ -109,7 +109,9 @@ export class BritPlayerLocalService implements BritPlayerService {
       movements,
     );
     const armyMovementOrPass =
-      unitsOrPass === 'pass' ? 'pass' : { units: unitsOrPass, toAreaId: null! };
+      unitsOrPass === 'pass'
+        ? 'pass'
+        : { units: unitsOrPass, toAreaId: undefined! };
     if (armyMovementOrPass === 'pass') return 'pass';
     if (armyMovementOrPass.toAreaId) return armyMovementOrPass;
     this.ui.updateUi('Units selected', (s) => ({

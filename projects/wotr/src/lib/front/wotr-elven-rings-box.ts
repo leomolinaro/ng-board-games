@@ -106,7 +106,7 @@ export class WotrElvenRingsBox {
     const elvenRingSelection = this.ui.elvenRingSelection();
     const selectableFront = elvenRingSelection
       ? elvenRingSelection.frontId
-      : null;
+      : undefined;
     return [
       ...this.freePeoplesElvenRings().map((e) =>
         this.elvenRingToNode(

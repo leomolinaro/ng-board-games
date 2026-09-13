@@ -479,9 +479,9 @@ export class WotrUnitHandler {
   async chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     player: WotrPlayer,
-  ): Promise<WotrAction[] | null> {
+  ): Promise<WotrAction[] | undefined> {
     const region = this.regionStore.region(regionId);
     const underSiege = region.underSiegeArmy?.front === player.frontId;
     const army = underSiege ? region.underSiegeArmy! : region.army!;
@@ -492,10 +492,10 @@ export class WotrUnitHandler {
     nTotalHits: number,
     army: WotrArmy,
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     player: WotrPlayer,
-  ): Promise<WotrAction[] | null> {
-    if (!nTotalHits) return null;
+  ): Promise<WotrAction[] | undefined> {
+    if (!nTotalHits) return undefined;
     const nHits = this.unitUtils.nHits(army);
     if (nTotalHits < nHits) {
       const story = await player.chooseCasualties(nTotalHits, regionId, cardId);

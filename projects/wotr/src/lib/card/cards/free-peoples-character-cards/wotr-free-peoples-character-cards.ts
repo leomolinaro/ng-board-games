@@ -126,7 +126,7 @@ export class WotrFreePeoplesCharacterCards {
         return {
           play: () => [playCardOnTable('Mithril Coat and Sting')],
           onTableAbilities: () => {
-            let originalTile: WotrHuntTileId | null = null;
+            let originalTile: WotrHuntTileId | undefined;
             const redrawAbility: WotrUiAbility<WotrAfterTileDrawn> = {
               modifier: this.huntModifiers.afterTileDrawn,
               handler: async (tile) => {

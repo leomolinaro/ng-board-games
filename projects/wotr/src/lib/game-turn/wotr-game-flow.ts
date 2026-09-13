@@ -183,7 +183,7 @@ export class WotrGameFlow {
 
   private async actionResolution(): Promise<boolean> {
     this.logger.logPhase(5);
-    let player: WotrPlayer | null = this.getFirstResolutionFrontId();
+    let player: WotrPlayer | undefined = this.getFirstResolutionFrontId();
     while (player) {
       const story = await this.chooseAction(player);
       player = this.getNextResolutionFrontId(player, story);
@@ -234,20 +234,20 @@ export class WotrGameFlow {
     return freePeoples.victoryPoints < 4;
   }
 
-  private getFirstResolutionFrontId(): WotrPlayer | null {
+  private getFirstResolutionFrontId(): WotrPlayer | undefined {
     const freePeoplesFrontQ = this.q.front('free-peoples');
     if (freePeoplesFrontQ.hasActionDice()) return this.freePeoples;
     if (freePeoplesFrontQ.hasActionTokens()) return this.freePeoples;
     const shadowFrontQ = this.q.front('shadow');
     if (shadowFrontQ.hasActionDice()) return this.shadow;
     if (shadowFrontQ.hasActionTokens()) return this.shadow;
-    return null;
+    return undefined;
   }
 
   private getNextResolutionFrontId(
     player: WotrPlayer,
     story: WotrStory,
-  ): WotrPlayer | null {
+  ): WotrPlayer | undefined {
     const otherPlayer =
       oppositeFront(player.frontId) === 'free-peoples'
         ? this.freePeoples
@@ -259,7 +259,7 @@ export class WotrGameFlow {
     const frontQ = this.q.front(player.frontId);
     if (frontQ.hasActionDice()) return player;
     if (frontQ.hasActionTokens() && story.type !== 'token-skip') return player;
-    return null;
+    return undefined;
   }
 
   async rollActionDice(): Promise<void> {

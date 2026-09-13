@@ -47,15 +47,15 @@ export class BritBoardComponent {
   readonly players = input.required<BritPlayer[]>();
   readonly logs = input.required<BritLog[]>();
   readonly turnPlayer = input<BritColor>();
-  readonly currentPlayer = input<BritColor | null>(null);
+  readonly currentPlayer = input<BritColor | undefined>(undefined);
   // @Input () otherPlayers!: BaronyPlayer[];
-  readonly message = input<string | null>(null);
-  readonly validAreas = input<BritAreaId[] | null>(null);
-  readonly validUnits = input<BritAreaUnit[] | null>(null);
-  readonly selectedUnits = input<BritAreaUnit[] | null>(null);
-  // @Input () validActions: BaronyAction[] | null = null;
-  // @Input () validBuildings: ("stronghold" | "village")[] | null = null;
-  // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | null = null;
+  readonly message = input<string | undefined>(undefined);
+  readonly validAreas = input<BritAreaId[] | undefined>(undefined);
+  readonly validUnits = input<BritAreaUnit[] | undefined>(undefined);
+  readonly selectedUnits = input<BritAreaUnit[] | undefined>(undefined);
+  // @Input () validActions: BaronyAction[] | undefined = undefined;
+  // @Input () validBuildings: ("stronghold" | "village")[] | undefined = undefined;
+  // @Input () validResources: { player: string; resources: BaronyResourceType[]; } | undefined = undefined;
   readonly canPass = input<boolean>(false);
   readonly canConfirm = input<boolean>(false);
   readonly canCancel = input<boolean>(false);
@@ -97,8 +97,8 @@ export class BritBoardComponent {
   // }
   // onResourceSelect (resource: BritResourceType) { this.resourceSelect.emit (resource); }
 
-  private lastBottomSheet: 'nation-card' | 'unit-number-selection' | null =
-    null;
+  private lastBottomSheet: 'nation-card' | 'unit-number-selection' | undefined =
+    undefined;
 
   onPlayerNationClick(nationId: BritNationId): void {
     const nationState = this.nationStates()?.[nationId];
@@ -118,7 +118,7 @@ export class BritBoardComponent {
         (u) => this.getUnitNodeId(u) === unitId,
       );
       const selectedUnit =
-        selectedIndex === -1 ? null : selectedUnits[selectedIndex];
+        selectedIndex === -1 ? undefined : selectedUnits[selectedIndex];
       const newSelectedUnits =
         selectedIndex === -1
           ? [...selectedUnits]
@@ -137,7 +137,7 @@ export class BritBoardComponent {
             : 1,
           unit.quantity,
         ).subscribe((quantity) => {
-          if (quantity == null) return;
+          if (quantity == undefined) return;
           if (quantity > 0) newSelectedUnits.push({ ...unit, quantity });
           this.selectedUnitsChange.emit(newSelectedUnits);
         });

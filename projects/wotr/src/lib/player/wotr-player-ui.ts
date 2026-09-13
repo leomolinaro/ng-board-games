@@ -77,7 +77,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async actionResolution(frontId: WotrFrontId): Promise<WotrStory> {
-    return this.uiContext.actionDieUi.actionResolution(frontId, null);
+    return this.uiContext.actionDieUi.actionResolution(frontId, undefined);
   }
 
   async separateCompanions(
@@ -111,7 +111,10 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   }
 
   async drawHuntTile(): Promise<WotrStory> {
-    return { type: 'base', actions: [await this.huntUi.drawHuntTile(1, null)] };
+    return {
+      type: 'base',
+      actions: [await this.huntUi.drawHuntTile(1, undefined)],
+    };
   }
 
   async huntEffect(huntResolution: WotrHuntEffectParams): Promise<WotrStory> {
@@ -204,7 +207,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
   async chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<WotrBaseStory | WotrCardEffectStory | WotrCombatCardEffectStory> {
     const actions = await this.battleUi.chooseCasualties(
@@ -222,7 +225,7 @@ export class WotrPlayerUi implements WotrPlayerStoryService {
 
   async eliminateArmy(
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
     frontId: WotrFrontId,
   ): Promise<WotrBaseStory | WotrCardEffectStory> {
     const actions = await this.battleUi.eliminateArmy(regionId, frontId);

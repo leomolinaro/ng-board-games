@@ -218,7 +218,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     this.story.clear();
   }
 
-  private storiesDialogRef: WotrStoriesDialogRef | null = null;
+  private storiesDialogRef: WotrStoriesDialogRef | undefined = undefined;
 
   editStories(): void {
     void this.dialogs.open<WotrStoriesDialogData, void>(WotrStoriesDialog, {

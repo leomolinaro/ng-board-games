@@ -14,9 +14,9 @@ import type { WotrCardId } from './wotr-card-models';
 import { WotrCardTooltipService } from './wotr-card-tooltip.service';
 
 export interface WotrCardsDialogData {
-  focusedCardId: WotrCardId | null;
+  focusedCardId: WotrCardId | undefined;
   cardIds: WotrCardId[];
-  selectableCards: WotrCardSelection | null;
+  selectableCards: WotrCardSelection | undefined;
 }
 
 @Component({
@@ -136,7 +136,7 @@ export class WotrCardsDialog {
   }
 
   protected cardIds: WotrCardId[];
-  protected focusedCardId: WotrCardId | null = this.data.focusedCardId;
+  protected focusedCardId: WotrCardId | undefined = this.data.focusedCardId;
   protected cardImage: BgTransformFn<WotrCardId, string> = (cardId) =>
     this.assets.cardImage(cardId);
 
@@ -159,7 +159,7 @@ export class WotrCardsDialog {
 
   @HostListener('mouseover')
   onMouseHover(): void {
-    this.focusedCardId = null;
+    this.focusedCardId = undefined;
   }
 
   onCardClick(cardId: WotrCardId): void {

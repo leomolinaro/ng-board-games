@@ -7,11 +7,11 @@ import { firstValueFrom } from 'rxjs';
 
 export class DialogContext<TData, TResult> {
   constructor(
-    private readonly tuiContext: TuiDialogContext<TResult | null, TData>,
+    private readonly tuiContext: TuiDialogContext<TResult | undefined, TData>,
   ) {}
 
-  complete(result?: TResult | null): void {
-    this.tuiContext.completeWith(result ?? null);
+  complete(result?: TResult): void {
+    this.tuiContext.completeWith(result ?? undefined);
   }
 
   get data(): TData extends void ? undefined : TData {
@@ -23,7 +23,8 @@ export function injectDialogContext<
   TData = void,
   TResult = void,
 >(): DialogContext<TData, TResult> {
-  const tuiContext = injectContext<TuiDialogContext<TResult | null, TData>>();
+  const tuiContext =
+    injectContext<TuiDialogContext<TResult | undefined, TData>>();
   return new DialogContext<TData, TResult>(tuiContext);
 }
 
@@ -48,12 +49,12 @@ export class BgDialogService {
   open<TData, TResult>(
     component: Type<DialogComponent<TData, TResult>>,
     options: DialogOptions<TData>,
-  ): Promise<TResult | null> {
+  ): Promise<TResult | undefined> {
     const { injector, ...dialogOptions } = options;
-    const resultObs = this.dialogs.open<TResult | null>(
+    const resultObs = this.dialogs.open<TResult | undefined>(
       new PolymorpheusComponent(component, injector),
       dialogOptions,
     );
-    return firstValueFrom(resultObs, { defaultValue: null });
+    return firstValueFrom(resultObs, { defaultValue: undefined });
   }
 }

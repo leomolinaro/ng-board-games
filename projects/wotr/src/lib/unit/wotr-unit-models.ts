@@ -46,7 +46,7 @@ export interface WotrReinforcementUnit {
 }
 
 export interface WotrEliminateUnitsParams {
-  regionIds: WotrRegionId[] | null;
+  regionIds: WotrRegionId[] | undefined;
   units: WotrRegionUnitMatch[];
 }
 

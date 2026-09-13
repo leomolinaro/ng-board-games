@@ -56,7 +56,7 @@ export class BritMapSlotsGeneratorService {
   generateSlots(
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
+    coordinatesToAreaId: (x: number, y: number) => BritAreaId | undefined,
   ): BritAreaSlots {
     const areaSlots = {} as Record<BritAreaId, Record<number, BritMapPoint[]>>;
     const landPointsById = this.generateLandPoints(
@@ -90,7 +90,7 @@ export class BritMapSlotsGeneratorService {
   private generateLandPoints(
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
+    coordinatesToAreaId: (x: number, y: number) => BritAreaId | undefined,
   ): Record<BritLandAreaId, BritLandPoints> {
     const landPointsById = {} as Record<BritLandAreaId, BritLandPoints>;
     const landPointByYByX: Record<
@@ -146,7 +146,7 @@ export class BritMapSlotsGeneratorService {
             nY,
             landPointByYByX,
           );
-          let outerPoint: BritMapPoint | null = null;
+          let outerPoint: BritMapPoint | undefined;
           if (landPoint) {
             if (landPoint.landId === landId) {
               point.neighbours.push(landPoint);
@@ -187,14 +187,14 @@ export class BritMapSlotsGeneratorService {
     x: number,
     y: number,
     landPointByYByX: Record<number, Record<number, BritMapLandPoint>>,
-  ): BritMapLandPoint | null {
+  ): BritMapLandPoint | undefined {
     const landPointByY = landPointByYByX[x];
     if (!landPointByY) {
-      return null;
+      return undefined;
     }
     const landPoint = landPointByY[y];
     if (!landPoint) {
-      return null;
+      return undefined;
     }
     return landPoint;
   }

@@ -48,5 +48,5 @@ import type { WotrFrontId } from '../front/wotr-front-models';
   ],
 })
 export class WotrPlayerBadge {
-  playerId = input.required<WotrFrontId | null>();
+  playerId = input.required<WotrFrontId | undefined>();
 }

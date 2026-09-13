@@ -89,11 +89,11 @@ export class WotrPoliticalTrack {
   protected nations = this.nationStore.nations;
   private validNations = this.ui.nationSelection;
   private politicalNodeMap!: Record<WotrNationId, WotrPoliticalNode>;
-  protected validNationMap: Signal<Partial<
-    Record<WotrNationId, boolean>
-  > | null> = computed(() => {
+  protected validNationMap: Signal<
+    Partial<Record<WotrNationId, boolean>> | undefined
+  > = computed(() => {
     const validNations = this.validNations();
-    if (!validNations) return null;
+    if (!validNations) return;
     return arrayUtil.toMap(
       validNations,
       (n) => n,

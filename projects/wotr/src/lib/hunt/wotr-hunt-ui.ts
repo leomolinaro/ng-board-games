@@ -179,9 +179,9 @@ export class WotrHuntUi {
 
   async drawHuntTile(
     n: number,
-    triggeredCardId: WotrCardId | null,
+    triggeredCardId: WotrCardId | undefined,
   ): Promise<WotrHuntTileDraw> {
-    const card = triggeredCardId ? getCard(triggeredCardId) : null;
+    const card = triggeredCardId ? getCard(triggeredCardId) : undefined;
     const forCard = card ? ` for ${card.label}` : '';
     if (n === 1) {
       await this.ui.askContinue(`Draw hunt tile${forCard}`);

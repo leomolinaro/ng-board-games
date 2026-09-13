@@ -26,11 +26,11 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
     return Boolean(this.striderValidRegion());
   }
 
-  private striderValidRegion(): WotrRegionId | null {
+  private striderValidRegion(): WotrRegionId | undefined {
     if (this.striderInRegion('minas-tirith')) return 'minas-tirith';
     if (this.striderInRegion('dol-amroth')) return 'dol-amroth';
     if (this.striderInRegion('pelargir')) return 'pelargir';
-    return null;
+    return undefined;
   }
 
   private striderInRegion(regionId: WotrRegionId): boolean {
@@ -38,7 +38,9 @@ export class WotrAragorn extends WotrPlayableCharacterCard {
     if (region.army?.front === 'free-peoples') {
       return !!region.army.characters?.includes('strider');
     }
-    return region.underSiegeArmy?.front === 'free-peoples' ? !!region.underSiegeArmy.characters?.includes('strider') : !!region.freeUnits?.characters?.includes('strider');
+    return region.underSiegeArmy?.front === 'free-peoples'
+      ? !!region.underSiegeArmy.characters?.includes('strider')
+      : !!region.freeUnits?.characters?.includes('strider');
   }
 
   override bringIntoPlay(): WotrAction {

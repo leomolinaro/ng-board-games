@@ -398,7 +398,7 @@ export class WotrShadowCharacterCards {
               return;
             }
             let damage = huntTile.quantity;
-            if (damage == null) {
+            if (damage == undefined) {
               if (!huntTile.dice)
                 throw new Error(`Unexpected hunt tile: ${huntTile.id}`);
               damage = (await this.huntFlow.rollShelobsLairDie()).die;
@@ -740,7 +740,7 @@ export class WotrShadowCharacterCards {
           canBePlayed: () => this.q.saruman.isInPlay(),
           play: () => [playCardOnTableId('scha21')],
           onTableAbilities: () => {
-            let playedCard: WotrCardId | null = null;
+            let playedCard: WotrCardId | undefined;
             const drawAbility: WotrUiAbility<WotrAfterActionDieCardResolution> =
               {
                 modifier: this.actionDieModifiers.afterActionDieCardResolution,

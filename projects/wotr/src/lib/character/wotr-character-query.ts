@@ -47,7 +47,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     return this.data().activationNation;
   }
 
-  region(): WotrRegion | null {
+  region(): WotrRegion | undefined {
     return this.regionStore.characterRegion(this.id);
   }
 

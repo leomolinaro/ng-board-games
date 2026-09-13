@@ -79,7 +79,6 @@ export default tseslint.config(
       // Unicorn
       // -----------------------------------------------------------------------
       "unicorn/switch-case-braces": "off", // Too verbose for my taste
-      "unicorn/no-null": "off", // Nice, maybe later
       "unicorn/consistent-boolean-name": "off", // Good, maybe later
       "unicorn/name-replacements": [
         "off",
@@ -113,6 +112,10 @@ export default tseslint.config(
       "unicorn/no-nested-ternary": "off", // Conflicting with Prettier
       "unicorn/no-break-in-nested-loop": "off", // Good, maybe later
       "unicorn/no-computed-property-existence-check": "off", // Hard to follow
+      "unicorn/no-useless-undefined": [
+        "error",
+        { checkArrowFunctionBody: false }, // Too verbose otherwise
+      ],
       "unicorn/max-nested-calls": ["error", { max: 5 }],
       "unicorn/no-await-expression-member": "off", // Too verbose otherwise
       // -----------------------------------------------------------------------
@@ -156,23 +159,5 @@ export default tseslint.config(
       angular.configs.templateRecommended,
       // angular.configs.templateAccessibility,
     ],
-  },
-
-  // ---------------------------------------------------------------------------
-  // Tests
-  // ---------------------------------------------------------------------------
-  {
-    files: [
-      "**/*.spec.ts",
-      "**/*.test.ts",
-      "**/test/**/*.ts",
-      "**/tests/**/*.ts",
-    ],
-
-    rules: {
-      // Tests are intentionally less strict in some respects.
-      "@typescript-eslint/no-explicit-any": "off",
-      "sonarjs/no-duplicate-string": "off",
-    },
   },
 );

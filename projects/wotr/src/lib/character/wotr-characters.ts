@@ -222,7 +222,7 @@ export class WotrCharacters {
             this.actionDieModifiers,
           ),
           new CaptainOfTheWestAbility('strider', this.q, this.battleModifiers),
-          // new HeirToIsildurAbility(null as any)
+          // new HeirToIsildurAbility(undefined as any)
         ];
       case 'gandalf-the-grey':
         return [
@@ -237,7 +237,7 @@ export class WotrCharacters {
             this.q,
             this.battleModifiers,
           ),
-          // new EmissaryFromTheWestAbility(null as any)
+          // new EmissaryFromTheWestAbility(undefined as any)
         ];
       case 'peregrin':
         return [

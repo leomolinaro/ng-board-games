@@ -156,7 +156,7 @@ function initialShadowNation(
     nNazgul,
     regularLabel,
     eliteLabel,
-    null,
+    undefined,
   );
 }
 
@@ -171,7 +171,7 @@ function initialNation(
   nNazgul: number,
   regularLabel: string,
   eliteLabel: string,
-  leaderLabel: string | null,
+  leaderLabel: string | undefined,
 ): WotrNation {
   return {
     id,

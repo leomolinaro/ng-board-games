@@ -119,7 +119,7 @@ export abstract class WotrPlayer {
   chooseCasualties(
     hitPoints: number,
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
   ): Promise<WotrStory> {
     return this.storyService.story(this.frontId, (p) =>
       p.chooseCasualties(hitPoints, regionId, cardId, this.frontId),
@@ -127,7 +127,7 @@ export abstract class WotrPlayer {
   }
   eliminateArmy(
     regionId: WotrRegionId,
-    cardId: WotrCardId | null,
+    cardId: WotrCardId | undefined,
   ): Promise<WotrStory> {
     return this.storyService.story(this.frontId, (p) =>
       p.eliminateArmy(regionId, cardId, this.frontId),

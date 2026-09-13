@@ -81,7 +81,7 @@ export class WotrTableCardsComponent {
         cardIds: isFreePeoples
           ? this.freePeoples().tableCards
           : this.shadow().tableCards,
-        selectableCards: null,
+        selectableCards: undefined,
       },
       size: 'l',
       closable: false,

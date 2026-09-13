@@ -220,7 +220,7 @@ export class WotrShadowStrategyCards {
                   type: 'eliminateUnit',
                   regionIds: ['minas-tirith'],
                   unitType: 'leader',
-                  nationId: null,
+                  nationId: undefined,
                 },
               );
               if (units.leaders?.length) {
@@ -348,7 +348,7 @@ export class WotrShadowStrategyCards {
             const nationId = action.nation;
             await this.freePeoples.eliminateUnits(
               {
-                regionIds: null,
+                regionIds: undefined,
                 units: [
                   { unitType: 'leader', nationId },
                   { unitType: 'army', nationId },
@@ -376,7 +376,7 @@ export class WotrShadowStrategyCards {
                 regionIds: regionIds,
                 required: true,
                 requiredUnits: [],
-                retroguard: null,
+                retroguard: undefined,
                 doneMovements: [],
               },
             );
@@ -422,7 +422,7 @@ export class WotrShadowStrategyCards {
                   regionIds: regionIds,
                   required: true,
                   requiredUnits: [],
-                  retroguard: null,
+                  retroguard: undefined,
                   doneMovements,
                 },
               );
@@ -493,7 +493,7 @@ export class WotrShadowStrategyCards {
                   regionIds: regionIds,
                   required: true,
                   requiredUnits: [],
-                  retroguard: null,
+                  retroguard: undefined,
                   doneMovements,
                 },
               );
@@ -557,7 +557,7 @@ export class WotrShadowStrategyCards {
                 regionIds: ['umbar'],
                 required: true,
                 requiredUnits: [],
-                retroguard: null,
+                retroguard: undefined,
                 doneMovements: [],
               },
             );
@@ -574,7 +574,7 @@ export class WotrShadowStrategyCards {
             if (toRegion.hasArmyNotUnderSiege('free-peoples')) {
               const fromRegion = this.q.region('umbar');
               const retroguard = this.unitUtils.splitUnits(
-                fromRegion.army('shadow')!,
+                fromRegion.army('shadow'),
                 units,
               );
               return [attack('umbar', toRegionId, retroguard)];

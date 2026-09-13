@@ -50,7 +50,7 @@ export interface WotrMovingArmyUnitSelection extends AWotrRegionUnitSelection {
   requiredUnits: (
     'anyLeader' | 'anyNazgul' | 'anyCharacter' | WotrCharacterId
   )[];
-  retroguard: WotrUnits | null;
+  retroguard: WotrUnits | undefined;
   required: boolean;
   doneMovements: WotrMovingUnits[];
 }
@@ -73,7 +73,7 @@ export interface WotrChooseCasualtiesUnitSelection extends AWotrRegionUnitSelect
   type: 'chooseCasualties';
   hitPoints: number | 'full';
   isUnderSiege: boolean;
-  retroguard: WotrUnits | null;
+  retroguard: WotrUnits | undefined;
 }
 
 export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
@@ -85,14 +85,14 @@ export interface WotrDowngradingUnitSelection extends AWotrRegionUnitSelection {
 export interface WotrEliminateUnitSelection extends AWotrRegionUnitSelection {
   type: 'eliminateUnit';
   unitType: WotrRegionUnitTypeMatch;
-  nationId: WotrNationId | null;
+  nationId: WotrNationId | undefined;
 }
 
 export interface WotrForfeitLeadershipSelection extends AWotrRegionUnitSelection {
   type: 'forfeitLeadership';
   frontId: WotrFrontId;
   points: 'all' | { min: number };
-  leaderRestriction: 'nazgul' | 'companions' | WotrCharacterId | null;
+  leaderRestriction: 'nazgul' | 'companions' | WotrCharacterId | undefined;
   message: string;
 }
 
@@ -583,7 +583,7 @@ export class DowngradeUnitSelectionMode implements WotrRegionUnitSelectionMode {
 export class EliminateUnitSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(
     private unitType: WotrRegionUnitTypeMatch,
-    private nationId: WotrNationId | null,
+    private nationId: WotrNationId | undefined,
   ) {}
 
   initialize(unitNodes: UnitNode[]): void {

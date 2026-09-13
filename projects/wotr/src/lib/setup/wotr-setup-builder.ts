@@ -5,7 +5,10 @@ import type {
 } from '../character/wotr-character-models';
 import type { WotrGameOptions } from '../game/options/wotr-game-options';
 import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
-import type { WotrNationId, WotrPoliticalStep } from '../nation/wotr-nation-models';
+import type {
+  WotrNationId,
+  WotrPoliticalStep,
+} from '../nation/wotr-nation-models';
 import type { WotrRegionId } from '../region/wotr-region-models';
 import type {
   WotrFrontDecksSetup,
@@ -83,7 +86,7 @@ export class WotrSetupBuilder {
       nElites: units.nElites ?? 0,
       nLeaders: units.nLeaders ?? 0,
       nNazgul: units.nNazgul ?? 0,
-      ruler: units.ruler ?? null,
+      ruler: units.ruler ?? undefined,
     });
     return this;
   }

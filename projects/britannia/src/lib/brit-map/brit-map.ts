@@ -85,7 +85,7 @@ interface BritRoundNode {
   round: BritRound;
   path: string;
   eventNodes: BritEventNode[];
-  scoringPath: string | null;
+  scoringPath: string | undefined;
   tooltip: string;
 }
 
@@ -113,9 +113,9 @@ export class BritMap implements OnChanges, OnInit {
   readonly areaStates = input.required<Record<BritAreaId, BritAreaState>>();
   readonly nationStates =
     input.required<Record<BritNationId, BritNationState>>();
-  readonly validAreas = input<BritAreaId[] | null>(null);
-  readonly validUnits = input<BritAreaUnit[] | null>(null);
-  readonly selectedUnits = input<BritAreaUnit[] | null>(null);
+  readonly validAreas = input<BritAreaId[] | undefined>(undefined);
+  readonly validUnits = input<BritAreaUnit[] | undefined>(undefined);
+  readonly selectedUnits = input<BritAreaUnit[] | undefined>(undefined);
   // in caso di update dell'unità in un'area, bisogna cambiare il riferimento delle BritArea.units
 
   readonly areaClick = output<BritAreaId>();
@@ -146,9 +146,9 @@ export class BritMap implements OnChanges, OnInit {
 
   testGridPoints: { x: number; y: number; color: string }[] | undefined = [];
 
-  isValidArea: Record<string, boolean> | null = null;
-  isValidUnit: Record<string, boolean> | null = null;
-  nSelectedUnits: Record<string, number> | null = null;
+  isValidArea: Record<string, boolean> | undefined = undefined;
+  isValidUnit: Record<string, boolean> | undefined = undefined;
+  nSelectedUnits: Record<string, number> | undefined = undefined;
 
   private bgSvg = viewChild.required(BgSvg);
   private mapElementRef =
@@ -173,9 +173,9 @@ export class BritMap implements OnChanges, OnInit {
             (id) => id,
             () => true,
           )
-        : null;
+        : undefined;
       if (!validUnits) {
-        this.isValidUnit = this.validAreas() ? {} : null;
+        this.isValidUnit = this.validAreas() ? {} : undefined;
       }
     }
     if (changes['validUnits']) {
@@ -185,9 +185,9 @@ export class BritMap implements OnChanges, OnInit {
             (u) => this.getUnitNodeId(u),
             () => true,
           )
-        : null;
+        : undefined;
       if (!this.validAreas()) {
-        this.isValidArea = validUnits ? {} : null;
+        this.isValidArea = validUnits ? {} : undefined;
       }
     }
     if (changes['selectedUnits']) {
@@ -199,7 +199,7 @@ export class BritMap implements OnChanges, OnInit {
             selectedUnit.type === 'leader' ? 1 : selectedUnit.quantity;
         }
       } else {
-        this.nSelectedUnits = null;
+        this.nSelectedUnits = undefined;
       }
     }
   }
@@ -235,7 +235,7 @@ export class BritMap implements OnChanges, OnInit {
     for (const pn of this.populationNodes) pn.nationNodes = [];
     for (const nationNode of nodes) {
       const population = nationNode.state.population;
-      if (population != null) {
+      if (population != undefined) {
         const populationNode = this.populationNodes[population];
         populationNode.nationNodes.push(nationNode);
       }
@@ -268,7 +268,7 @@ export class BritMap implements OnChanges, OnInit {
 
   private areaToNode(
     areaId: BritAreaId,
-    oldNode: BritAreaNode | null,
+    oldNode: BritAreaNode | undefined,
   ): BritAreaNode {
     const path = this.mapService.getAreaPath(areaId);
     const area = this.components.AREA[areaId];
@@ -278,7 +278,7 @@ export class BritMap implements OnChanges, OnInit {
       area,
       state,
       path,
-      unitNodes: null!,
+      unitNodes: undefined!,
       tooltip: area.name,
     };
     node.unitNodes =
@@ -324,14 +324,14 @@ export class BritMap implements OnChanges, OnInit {
     unitIndex: number,
     nAreaUnits: number,
     areaId: BritAreaId,
-  ): BritMapPoint | null {
+  ): BritMapPoint | undefined {
     const slots = this.mapService.getAreaSlots(nAreaUnits, areaId);
     return slots[unitIndex];
   }
 
   private nationToTurnNode(
     nationId: BritNationId,
-    oldNode: BritNationTurnNode | null,
+    oldNode: BritNationTurnNode | undefined,
   ): BritNationTurnNode {
     if (oldNode) return oldNode;
     const nation = this.components.NATION[nationId];
@@ -346,7 +346,7 @@ export class BritMap implements OnChanges, OnInit {
 
   private roundToNode(
     roundId: BritRoundId,
-    oldNode: BritRoundNode | null,
+    oldNode: BritRoundNode | undefined,
   ): BritRoundNode {
     if (oldNode) return oldNode;
     const round = this.components.ROUND[roundId];
@@ -360,7 +360,7 @@ export class BritMap implements OnChanges, OnInit {
       id: roundId,
       round: round,
       path: this.mapService.getRoundPath(round.id),
-      scoringPath: this.mapService.getScoringRoundPath(round.id) || null,
+      scoringPath: this.mapService.getScoringRoundPath(round.id) || undefined,
       eventNodes,
       tooltip: `Round ${round.id}\n(${round.fromYear}-${round.toYear})`,
     };
@@ -368,7 +368,7 @@ export class BritMap implements OnChanges, OnInit {
 
   private nationToPopulationNode(
     nationId: BritNationId,
-    _oldNode: BritNationPopulationNode | null,
+    _oldNode: BritNationPopulationNode | undefined,
   ): BritNationPopulationNode {
     const nation = this.components.NATION[nationId];
     return {
@@ -409,10 +409,10 @@ export class BritMap implements OnChanges, OnInit {
     const height = +splittedViewBox[3];
     const screenCTM = this.mapElementRef().nativeElement.getScreenCTM()!;
     const pt = this.bgSvg().createSVGPoint();
-    const coordinatesToAreaId: (x: number, y: number) => BritAreaId | null = (
-      x,
-      y,
-    ) => {
+    const coordinatesToAreaId: (
+      x: number,
+      y: number,
+    ) => BritAreaId | undefined = (x, y) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;
       const clientP = pt.matrixTransform(screenCTM);
@@ -422,7 +422,7 @@ export class BritMap implements OnChanges, OnInit {
       )?.id;
       return elementId?.startsWith('brit-area-')
         ? (elementId.slice(10) as BritAreaId)
-        : null;
+        : undefined;
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;

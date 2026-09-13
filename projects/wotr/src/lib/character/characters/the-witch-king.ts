@@ -86,7 +86,7 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
 
   modifier;
 
-  private lastCombatCard: WotrCard | null = null;
+  private lastCombatCard: WotrCard | undefined = undefined;
 
   public handler: WotrAfterCombatRound = async (
     combatRound: WotrCombatRound,

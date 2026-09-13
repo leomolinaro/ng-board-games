@@ -32,8 +32,8 @@ export class BgSvg {
   createSVGPoint(): SVGPoint {
     return this.elementRef.nativeElement.createSVGPoint();
   }
-  getScreenCTM(): DOMMatrix | null {
-    return this.elementRef.nativeElement.getScreenCTM();
+  getScreenCTM(): DOMMatrix | undefined {
+    return this.elementRef.nativeElement.getScreenCTM() ?? undefined;
   }
 }
 
@@ -66,8 +66,8 @@ export class BgMapZoom implements OnInit {
   private translateStep!: number;
 
   private grabbing = false;
-  private grabbingX: number | null = null;
-  private grabbingY: number | null = null;
+  private grabbingX: number | undefined = undefined;
+  private grabbingY: number | undefined = undefined;
 
   ngOnInit(): void {
     this.parseConfig();
@@ -224,8 +224,8 @@ export class BgMapZoom implements OnInit {
 
   private endGrabbing(): void {
     this.grabbing = false;
-    this.grabbingX = null;
-    this.grabbingY = null;
+    this.grabbingX = undefined;
+    this.grabbingY = undefined;
   }
 
   onMouseWheel(event: Event): void {

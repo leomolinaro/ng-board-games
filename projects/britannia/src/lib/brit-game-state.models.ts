@@ -11,7 +11,7 @@ import type {
 
 export interface BritGameState {
   gameId: string;
-  gameOwner: BgUser | null;
+  gameOwner: BgUser | undefined;
   players: {
     map: Partial<Record<BritColor, BritPlayer>>;
     colors: BritColor[];
@@ -19,7 +19,7 @@ export interface BritGameState {
   areas: Record<BritAreaId, BritAreaState>;
   nations: Record<BritNationId, BritNationState>;
   logs: BritLog[];
-  backupState: BritGameState | null;
+  backupState: BritGameState | undefined;
 }
 
 interface ABritAreaUnit {
@@ -74,7 +74,7 @@ export interface BritNationState {
   nCavalries: number;
   nBuildings: number;
   leaderIds: BritLeaderId[];
-  population: BritPopulation | null;
+  population: BritPopulation | undefined;
   active: boolean;
 }
 
@@ -117,7 +117,7 @@ export interface BritLogPhase {
 }
 export interface BritLogPopulationMarkerSet {
   type: 'population-marker-set';
-  populationMarker: number | null;
+  populationMarker: number | undefined;
 }
 export interface BritLogInfantryPlacement {
   type: 'infantry-placement';
@@ -146,7 +146,7 @@ export type BritLog =
   | BritLogArmyMovement;
 
 export interface BritSetup {
-  areas: Record<BritAreaId, [BritNationId, number] | BritNationId | null>;
+  areas: Record<BritAreaId, [BritNationId, number] | BritNationId | undefined>;
   populationMarkers: BritNationId[];
   activeNations: BritNationId[];
 }

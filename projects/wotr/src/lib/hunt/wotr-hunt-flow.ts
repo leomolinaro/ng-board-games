@@ -152,7 +152,7 @@ export class WotrHuntFlow {
         !options.ignoreRevealIcon &&
         (this.fellowshipStore.guide() !== 'gollum' ||
           huntTile.type !== 'standard' ||
-          huntTile.quantity == null)) ??
+          huntTile.quantity == undefined)) ??
       false;
 
     let isRevealing = shouldReveal;

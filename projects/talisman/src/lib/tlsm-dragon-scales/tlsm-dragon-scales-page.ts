@@ -144,7 +144,7 @@ export class TlsmDragonScalesPage {
 
   protected async openSettings(): Promise<void> {
     const result = await firstValueFrom(
-      this.dialogs.open<Settings | null>(
+      this.dialogs.open<Settings | undefined>(
         new PolymorpheusComponent(TlsmSettingsDialog),
         {
           label: 'Settings',

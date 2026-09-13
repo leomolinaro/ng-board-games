@@ -471,7 +471,7 @@ export class WotrFreePeoplesStrategyCards {
                 regionIds: fromRegions.map((r) => r.id()),
                 doneMovements: [],
                 required: true,
-                retroguard: null,
+                retroguard: undefined,
                 requiredUnits: [],
               },
             );
@@ -503,7 +503,7 @@ export class WotrFreePeoplesStrategyCards {
               regionIds: regions.map((r) => r.id()),
               doneMovements: [],
               required: true,
-              retroguard: null,
+              retroguard: undefined,
               requiredUnits: ['anyCharacter'],
             });
             const fromRegion = units.regionId;

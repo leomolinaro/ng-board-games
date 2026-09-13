@@ -29,7 +29,7 @@ export class GandalfGuideAbility implements WotrUiAbility<WotrAfterActionDieCard
 
   modifier;
 
-  private playedCard: WotrCardId | null = null;
+  private playedCard: WotrCardId | undefined = undefined;
 
   handler: WotrAfterActionDieCardResolution = async (story, frontId) => {
     if (frontId !== 'free-peoples') return;

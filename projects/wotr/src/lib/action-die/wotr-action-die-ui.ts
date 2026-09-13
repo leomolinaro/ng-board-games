@@ -89,7 +89,7 @@ export class WotrActionDieUi {
 
   async actionResolution(
     frontId: WotrFrontId,
-    elvenRing: WotrElvenRingAction | null,
+    elvenRing: WotrElvenRingAction | undefined,
   ): Promise<WotrStory> {
     const canSkipTokens = this.q.front(frontId).canSkipTokens();
     if (canSkipTokens) {
@@ -113,8 +113,8 @@ export class WotrActionDieUi {
 
   private async askPassDie(
     frontId: WotrFrontId,
-    elvenRing: WotrElvenRingAction | null,
-  ): Promise<WotrStory | null> {
+    elvenRing: WotrElvenRingAction | undefined,
+  ): Promise<WotrStory | undefined> {
     const availableRings = this.q.front(frontId).playableElvenRings();
     const pass = await this.ui.askOptionOrElvenRing<'S' | 'P'>(
       'Do you want to pass?',
@@ -131,7 +131,7 @@ export class WotrActionDieUi {
         return diePass;
       }
       case 'P':
-        return null;
+        return undefined;
       default: {
         const elvenRingAction = await this.ui.frontUi.useElvenRing(
           pass,
@@ -144,7 +144,7 @@ export class WotrActionDieUi {
 
   private async askAndResolveActionDie(
     frontId: WotrFrontId,
-    elvenRing: WotrElvenRingAction | null,
+    elvenRing: WotrElvenRingAction | undefined,
   ): Promise<WotrStory> {
     const playableTokens = this.actionDieRules.playableTokens(frontId);
     const availableRings = this.q.front(frontId).playableElvenRings();
@@ -368,7 +368,7 @@ export class WotrActionDieUi {
   }
 
   private changeCharacterDieChoice(die: WotrActionDie): WotrUiChoice {
-    let chosenCardId: WotrCardId | null = null;
+    let chosenCardId: WotrCardId | undefined;
     return {
       label: () => 'Character result',
       actions: async (frontId: WotrFrontId) => {
@@ -381,7 +381,7 @@ export class WotrActionDieUi {
   }
 
   private changeArmyDieChoice(die: WotrActionDie): WotrUiChoice {
-    let chosenCardId: WotrCardId | null = null;
+    let chosenCardId: WotrCardId | undefined;
     return {
       label: () => 'Army result',
       actions: async (frontId: WotrFrontId) => {
@@ -394,7 +394,7 @@ export class WotrActionDieUi {
   }
 
   private changeMusterDieChoice(die: WotrActionDie): WotrUiChoice {
-    let chosenCardId: WotrCardId | null = null;
+    let chosenCardId: WotrCardId | undefined;
     return {
       label: () => 'Muster result',
       actions: async (frontId: WotrFrontId) => {
@@ -407,7 +407,7 @@ export class WotrActionDieUi {
   }
 
   private changeEventDieChoice(die: WotrActionDie): WotrUiChoice {
-    let chosenCardId: WotrCardId | null = null;
+    let chosenCardId: WotrCardId | undefined;
     return {
       label: () => 'Event result',
       actions: async (frontId: WotrFrontId) => {

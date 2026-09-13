@@ -26,7 +26,7 @@ export interface BgProtoGame<Opt = unknown> {
 
 export interface BgProtoPlayer<Pid extends string = string> {
   id: Pid;
-  controller: BgUser | null;
+  controller: BgUser | undefined;
   type: BgProtoPlayerType;
   name: string;
   ready: boolean;

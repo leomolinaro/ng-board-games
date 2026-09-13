@@ -39,7 +39,7 @@ export interface WotrCardDecks {
 export class WotrCardUtils {
   private frontStore = inject(WotrFrontStore);
 
-  private _komeExpansionCards: ExpansionCards | null = null;
+  private _komeExpansionCards: ExpansionCards | undefined = undefined;
   private get komeExpansionCards(): ExpansionCards {
     this._komeExpansionCards ??= {
       fpchaReplacements: {

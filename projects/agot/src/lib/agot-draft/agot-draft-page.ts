@@ -146,7 +146,7 @@ export class AgotDraftPage {
   protected factions = this.data.factions;
   protected packs = this.data.packs;
 
-  protected draftCards: AgotCard[] | null = null;
+  protected draftCards: AgotCard[] | undefined = undefined;
 
   protected isHandset$: Observable<boolean> = this.breakpointObserver
     .observe(Breakpoints.Handset)

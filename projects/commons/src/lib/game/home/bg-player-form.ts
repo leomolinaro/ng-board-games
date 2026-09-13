@@ -153,7 +153,7 @@ export class BgPlayerForm {
   }
 
   protected setNextPlayerType(): void {
-    const controllerPatch: { controller?: BgUser | null } = {};
+    const controllerPatch: { controller?: BgUser } = {};
     const namePatch: { name?: string } = {};
     const readyPatch: { ready?: boolean } = {};
     const nextPlayerType = this.getNextPlayerType(this.player().type);
@@ -167,19 +167,19 @@ export class BgPlayerForm {
         break;
       }
       case 'closed': {
-        controllerPatch.controller = null;
+        controllerPatch.controller = undefined;
         namePatch.name = '';
         readyPatch.ready = false;
         break;
       }
       case 'open': {
-        controllerPatch.controller = null;
+        controllerPatch.controller = undefined;
         namePatch.name = '';
         readyPatch.ready = false;
         break;
       }
       case 'ai': {
-        controllerPatch.controller = null;
+        controllerPatch.controller = undefined;
         namePatch.name = 'AI';
         readyPatch.ready = true;
         break;

@@ -8,7 +8,7 @@ import type {
 interface AUnitNode {
   id: string;
   group: 'army' | 'underSiege' | 'freeUnits' | 'fellowship';
-  nationId: WotrNationId | null;
+  nationId: WotrNationId | undefined;
   frontId: WotrFrontId;
   source: string;
   label: string;

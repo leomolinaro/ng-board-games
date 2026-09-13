@@ -24,7 +24,7 @@ interface WotrRegionNode {
   region: WotrRegion;
   path: string;
   tooltip: string;
-  army: WotrArmyNode | null;
+  army: WotrArmyNode | undefined;
   freeGroups: WotrFreeGroupNode[];
   controlMarker?: {
     image: string;
@@ -59,8 +59,8 @@ export type WotrLeaderUnitType = 'leader' | 'character' | 'nazgul';
 
 interface WotrLeaderUnitNode {
   unitType: WotrLeaderUnitType;
-  nationId: WotrNationId | null;
-  character: WotrCharacterId | null;
+  nationId: WotrNationId | undefined;
+  character: WotrCharacterId | undefined;
   image: WotrUnitImage;
   svgX: number;
   svgY: number;
@@ -93,7 +93,7 @@ interface WotrFreePeoplesFreeUnitNode {
 
 interface WotrShadowFreeUnitNode {
   unitType: Extract<WotrFreeUnitType, 'minion' | 'nazgul'>;
-  character: WotrCharacterId | null;
+  character: WotrCharacterId | undefined;
   image: WotrUnitImage;
   svgX: number;
   svgY: number;
@@ -279,14 +279,14 @@ export class WotrRegionArea {
   private assets = inject(WotrAssetsStore);
 
   region = input.required<WotrRegion>();
-  fellowship = input.required<WotrFellowship | null>();
+  fellowship = input.required<WotrFellowship | undefined>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
   valid = input.required<boolean>();
 
   regionClick = output<void>();
 
-  isValidUnit: Record<string, boolean> | null = null;
-  nSelectedUnits: Record<string, number> | null = null;
+  isValidUnit: Record<string, boolean> | undefined = undefined;
+  nSelectedUnits: Record<string, number> | undefined = undefined;
 
   regionNode: Signal<WotrRegionNode> = computed(() => {
     const region = this.region();
@@ -368,9 +368,9 @@ export class WotrRegionArea {
     }
   }
 
-  private regionToArmyNode(region: WotrRegion): WotrArmyNode | null {
+  private regionToArmyNode(region: WotrRegion): WotrArmyNode | undefined {
     if (!region.army) {
-      return null;
+      return undefined;
     }
 
     const armyFront = region.army.front;
@@ -478,7 +478,7 @@ export class WotrRegionArea {
       return typeof leader === 'string'
         ? {
             unitType: 'leader',
-            character: null,
+            character: undefined,
             nationId: leader,
             image: this.assets.leaderImage(leader),
             svgX: 0,
@@ -487,7 +487,7 @@ export class WotrRegionArea {
         : {
             unitType: 'character',
             character: leader.id,
-            nationId: null,
+            nationId: undefined,
             image: this.characterImage(leader),
             svgX: 0,
             svgY: 0,
@@ -517,8 +517,8 @@ export class WotrRegionArea {
       return leader === 'nazgul'
         ? {
             unitType: 'nazgul',
-            character: null,
-            nationId: null,
+            character: undefined,
+            nationId: undefined,
             image: this.assets.nazgulImage(),
             svgX: 0,
             svgY: 0,
@@ -526,7 +526,7 @@ export class WotrRegionArea {
         : {
             unitType: 'character',
             character: leader.id,
-            nationId: null,
+            nationId: undefined,
             image: this.characterImage(leader),
             svgX: 0,
             svgY: 0,
@@ -537,7 +537,7 @@ export class WotrRegionArea {
 
   private regionToFreeGroups(
     region: WotrRegion,
-    fellowhip: WotrFellowship | null,
+    fellowhip: WotrFellowship | undefined,
   ): WotrFreeGroupNode[] {
     const freeGroups: WotrFreeGroupNode[] = [];
 
@@ -634,7 +634,7 @@ export class WotrRegionArea {
         return freeUnit === 'nazgul'
           ? {
               unitType: 'nazgul',
-              character: null,
+              character: undefined,
               image: this.assets.nazgulImage(),
               svgX: 0,
               svgY: 0,

@@ -70,7 +70,7 @@ import type { BaronyAction } from '../barony-models';
   `,
 })
 export class BaronyActionsArea {
-  readonly validActions = input<BaronyAction[] | null>(null);
+  readonly validActions = input<BaronyAction[] | undefined>(undefined);
   readonly canPass = input.required<boolean>();
   readonly canCancel = input.required<boolean>();
   readonly actionClick = output<BaronyAction>();
@@ -98,7 +98,7 @@ export class BaronyActionsArea {
           (a) => a,
           () => true,
         )
-      : null;
+      : undefined;
   });
 
   onActionClick(action: BaronyAction): void {

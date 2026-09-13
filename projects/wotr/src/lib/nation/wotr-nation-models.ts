@@ -16,7 +16,7 @@ export interface WotrNation {
   front: WotrFrontId;
   regularLabel: string;
   eliteLabel: string;
-  leaderLabel: string | null;
+  leaderLabel: string | undefined;
   units: {
     regular: number;
     elite: number;

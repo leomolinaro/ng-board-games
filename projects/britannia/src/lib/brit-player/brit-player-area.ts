@@ -109,8 +109,8 @@ export class BritPlayerComponent implements OnInit {
 
   readonly player = input.required<BritPlayer>();
   readonly currentPlayer = input(false, { transform: booleanAttribute });
-  // @Input () validBuildings: BritBuilding[] | null = null;
-  // @Input () validResources: BritResourceType[] | null = null;
+  // @Input () validBuildings: BritBuilding[] | undefined = undefined;
+  // @Input () validResources: BritResourceType[] | undefined = undefined;
   readonly selectPlayer = output<void>();
   readonly nationClick = output<BritNationId>();
   // @Output () clickPawn = new EventEmitter<BritPawnType> ();
@@ -121,7 +121,7 @@ export class BritPlayerComponent implements OnInit {
 
   nationNodes: BritNationNode[] = [];
 
-  selectedNationNode: BritNationNode | null = null;
+  selectedNationNode: BritNationNode | undefined = undefined;
 
   ngOnInit(): void {
     for (const nationId of this.player().nationIds) {

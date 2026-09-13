@@ -15,7 +15,9 @@ import { WotrPlayerInfoStore } from './wotr-player-info-store';
       [class]="{
         'can-change-player': !!selectablePlayers().length,
       }"
-      [tuiDropdown]="selectablePlayers().length ? selectablePlayersMenu : null"
+      [tuiDropdown]="
+        selectablePlayers().length ? selectablePlayersMenu : undefined
+      "
       tuiDropdownAuto
     >
     </wotr-player-badge>

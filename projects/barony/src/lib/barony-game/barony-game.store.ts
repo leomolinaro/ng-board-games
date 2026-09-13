@@ -23,7 +23,7 @@ interface BaronyGameBox {
 
 interface BaronyGameState {
   gameId: string;
-  gameOwner: null | BgUser;
+  gameOwner: undefined | BgUser;
   players: {
     map: Partial<Record<BaronyColor, BaronyPlayer>>;
     ids: BaronyColor[];
@@ -35,7 +35,7 @@ interface BaronyGameState {
   gameBox: BaronyGameBox;
   logs: BaronyLog[];
   endGame: boolean;
-  backupState: BaronyGameState | null;
+  backupState: BaronyGameState | undefined;
 }
 
 @Injectable()
@@ -43,13 +43,13 @@ export class BaronyGameStore extends signalStore(
   { protectedState: false },
   withState<BaronyGameState>({
     gameId: '',
-    gameOwner: null,
+    gameOwner: undefined,
     players: { map: {}, ids: [] },
     lands: { map: {}, coordinates: [] },
     gameBox: { removedPawns: [] },
     logs: [],
     endGame: false,
-    backupState: null,
+    backupState: undefined,
   }),
 ) {
   setInitialState(
@@ -77,7 +77,7 @@ export class BaronyGameStore extends signalStore(
           },
           logs: [],
           endGame: false,
-          backupState: null,
+          backupState: undefined,
         }) satisfies BaronyGameState,
     );
   }
@@ -90,7 +90,7 @@ export class BaronyGameStore extends signalStore(
   }
   endTemporaryState(): void {
     if (this.backupState()) {
-      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
+      patchState(this, (s) => ({ ...s.backupState, backupState: undefined }));
     } else {
       throw new Error('endTemporaryState without startTemporaryState');
     }
@@ -115,8 +115,8 @@ export class BaronyGameStore extends signalStore(
       (coordinate) => map[landCoordinatesToId(coordinate)],
     );
   }
-  getLandOrNull(land: BaronyLandCoordinates): BaronyLand | null {
-    return this.getLand(land) || null;
+  getLandOrundefined(land: BaronyLandCoordinates): BaronyLand | undefined {
+    return this.getLand(land) || undefined;
   }
 
   private updatePlayer(
@@ -295,7 +295,7 @@ export class BaronyGameStore extends signalStore(
     this.addPawnToLandTile('knight', playerId, movement.toLand);
     if (movement.conflict) {
       const land = this.getLand(movement.toLand);
-      let villagePlayer: BaronyPlayer | null = null;
+      let villagePlayer: BaronyPlayer | undefined;
       const playerPawns = land.pawns.filter((pawn) => pawn.color !== playerId);
       for (const pawn of playerPawns) {
         const pawnPlayer = this.playerList().find((p) => p.id === pawn.color)!;

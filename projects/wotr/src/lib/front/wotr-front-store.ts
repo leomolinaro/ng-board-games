@@ -20,7 +20,7 @@ import type {
 export interface WotrFrontState {
   ids: WotrFrontId[];
   map: Record<WotrFrontId, WotrFront>;
-  currentCard: WotrCardId | null;
+  currentCard: WotrCardId | undefined;
   skipDiscardExcessCards: boolean;
 }
 
@@ -35,7 +35,7 @@ export function initialState(): WotrFrontState {
       ]),
       shadow: initialFront('shadow', 'Shadow', []),
     },
-    currentCard: null,
+    currentCard: undefined,
     skipDiscardExcessCards: false,
   };
 }
@@ -55,9 +55,9 @@ function initialFront(
     characterDiscardPile: [],
     strategyDiscardPile: [],
     actionDice: [],
-    currentActionDie: null,
+    currentActionDie: undefined,
     actionTokens: [],
-    currentActionToken: null,
+    currentActionToken: undefined,
     elvenRings,
     elvenRingUsed: false,
     victoryPoints: 0,
@@ -96,7 +96,7 @@ export class WotrFrontStore {
     }));
   }
 
-  currentCard(): WotrCardId | null {
+  currentCard(): WotrCardId | undefined {
     return this.state().currentCard;
   }
 
@@ -125,7 +125,7 @@ export class WotrFrontStore {
   }
 
   clearCurrentCard(): void {
-    this.update('clearCurrentCard', (s) => ({ ...s, currentCard: null }));
+    this.update('clearCurrentCard', (s) => ({ ...s, currentCard: undefined }));
   }
 
   setCurrentCard(currentCard: WotrCardId): void {
@@ -235,7 +235,7 @@ export class WotrFrontStore {
   removeCurrentActionDie(frontId: WotrFrontId): void {
     this.updateFront('removeCurrentActionDie', frontId, (front) => ({
       ...front,
-      currentActionDie: null,
+      currentActionDie: undefined,
     }));
   }
 
@@ -321,7 +321,7 @@ export class WotrFrontStore {
   removeCurrentActionToken(frontId: WotrFrontId): void {
     this.updateFront('removeCurrentActionToken', frontId, (front) => ({
       ...front,
-      currentActionToken: null,
+      currentActionToken: undefined,
     }));
   }
 

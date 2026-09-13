@@ -30,14 +30,14 @@ function initialState(): BritGameState {
   const components = new BritComponents();
   return {
     gameId: '',
-    gameOwner: null,
+    gameOwner: undefined,
     players: { map: {}, colors: [] },
     areas: components.areasToMap(() => ({ units: [] })),
     nations: components.nationsToMap((nationId) => {
       const nation = components.NATION[nationId];
       return {
         active: false,
-        population: null,
+        population: undefined,
         nInfantries: nation.nInfantries,
         nCavalries: nation.nCavalries,
         nBuildings: nation.nBuildings,
@@ -45,7 +45,7 @@ function initialState(): BritGameState {
       };
     }),
     logs: [],
-    backupState: null,
+    backupState: undefined,
   };
 }
 
@@ -82,7 +82,7 @@ export class BritGameStore extends signalStore(
   }
   endTemporaryState(): void {
     if (this.backupState()) {
-      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
+      patchState(this, (s) => ({ ...s.backupState, backupState: undefined }));
     } else {
       throw new Error('endTemporaryState without startTemporaryState');
     }
@@ -115,7 +115,7 @@ export class BritGameStore extends signalStore(
   //   const coordinates = this.get (s => s.lands.coordinates);
   //   return coordinates.map (coordinate => map[landCoordinatesToId (coordinate)]);
   // }
-  // getLandOrNull (land: BritLandCoordinates): BritLand | null { return this.getLand (land) || null; }
+  // getLandOrundefined (land: BritLandCoordinates): BritLand | undefined { return this.getLand (land) || undefined; }
 
   // private selectLandTileMap$ () { return this.select$ (s => s.lands.map); }
   // private selectLandTileKeys$ () { return this.select$ (s => s.lands.coordinates); }
@@ -256,7 +256,7 @@ export class BritGameStore extends signalStore(
   }
 
   private setNationPopulation(
-    population: BritPopulation | null,
+    population: BritPopulation | undefined,
     nationId: BritNationId,
     s: BritGameState,
   ): BritGameState {
@@ -524,7 +524,7 @@ export class BritGameStore extends signalStore(
   }
 
   applyPopulationIncrease(
-    population: BritPopulation | null,
+    population: BritPopulation | undefined,
     infantryPlacement: { areaId: BritAreaId; quantity: number }[],
     nationId: BritNationId,
   ): void {
@@ -656,7 +656,7 @@ export class BritGameStore extends signalStore(
   //   this.addPawnToLandTile ("knight", player.color, movement.toLand);
   //   if (movement.conflict) {
   //     const land = this.getLand (movement.toLand);
-  //     let villagePlayer: BritPlayer | null = null;
+  //     let villagePlayer: BritPlayer | undefined = undefined;
   //     land.pawns
   //     .filter (pawn => pawn.color !== player.color)
   //     .forEach (pawn => {
@@ -722,7 +722,7 @@ export class BritGameStore extends signalStore(
   logPhase(phase: BritPhase): void {
     this.addLog({ type: 'phase', phase: phase });
   }
-  logPopulationMarkerSet(populationMarker: number | null): void {
+  logPopulationMarkerSet(populationMarker: number | undefined): void {
     this.addLog({ type: 'population-marker-set', populationMarker });
   }
   logInfantryPlacement(landId: BritLandAreaId, quantity: number): void {

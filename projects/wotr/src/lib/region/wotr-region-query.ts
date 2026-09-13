@@ -106,27 +106,27 @@ export class WotrRegionQuery {
   }
 
   hasArmy(frontId: WotrFrontId): boolean {
-    return this.army(frontId) != null;
+    return this.army(frontId) != undefined;
   }
 
-  army(frontId: WotrFrontId): WotrArmy | null {
+  army(frontId: WotrFrontId): WotrArmy | undefined {
     const region = this.regionStore.region(this.regionId);
     const a = region.army;
     if (a?.front === frontId && !this.unitUtils.isEmptyArmy(a)) return a;
     const u = region.underSiegeArmy;
     if (u?.front === frontId && !this.unitUtils.isEmptyArmy(u)) return u;
-    return null;
+    return undefined;
   }
 
   hasArmyNotUnderSiege(frontId: WotrFrontId): boolean {
-    return this.armyNotUnderSiege(frontId) != null;
+    return this.armyNotUnderSiege(frontId) != undefined;
   }
 
-  armyNotUnderSiege(frontId: WotrFrontId): WotrArmy | null {
+  armyNotUnderSiege(frontId: WotrFrontId): WotrArmy | undefined {
     const region = this.regionStore.region(this.regionId);
     const a = region.army;
     if (a?.front === frontId && !this.unitUtils.isEmptyArmy(a)) return a;
-    return null;
+    return undefined;
   }
 
   isBesiegedBy(frontId: WotrFrontId): boolean {

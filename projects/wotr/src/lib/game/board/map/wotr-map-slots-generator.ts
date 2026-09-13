@@ -38,7 +38,7 @@ export class WotrMapSlotsGenerator {
     regions: WotrRegion[],
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | undefined,
   ): WotrRegionSlots {
     const areaSlots: Partial<
       Record<WotrRegionId, Record<number, WotrMapPoint[]>>
@@ -69,7 +69,7 @@ export class WotrMapSlotsGenerator {
     regions: WotrRegion[],
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | undefined,
   ): Partial<Record<WotrRegionId, WotrRegionPoints>> {
     const regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>> =
       {};
@@ -98,7 +98,7 @@ export class WotrMapSlotsGenerator {
   private collectRegionPoints(
     xMax: number,
     yMax: number,
-    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
+    coordinatesToAreaId: (x: number, y: number) => WotrRegionId | undefined,
     regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
     regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
   ): void {
@@ -149,7 +149,7 @@ export class WotrMapSlotsGenerator {
             nY,
             regionPointByYByX,
           );
-          let outerPoint: WotrMapPoint | null = null;
+          let outerPoint: WotrMapPoint | undefined;
           if (regionPoint) {
             if (regionPoint.regionId === region.id) {
               point.neighbours.push(regionPoint);
@@ -194,14 +194,14 @@ export class WotrMapSlotsGenerator {
     x: number,
     y: number,
     regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
-  ): WotrMapRegionPoint | null {
+  ): WotrMapRegionPoint | undefined {
     const regionPointByY = regionPointByYByX[x];
     if (!regionPointByY) {
-      return null;
+      return undefined;
     }
     const regionPoint = regionPointByY[y];
     if (!regionPoint) {
-      return null;
+      return undefined;
     }
     return regionPoint;
   }

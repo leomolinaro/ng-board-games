@@ -14,7 +14,7 @@ import { AgotHttp } from './agot-http';
 export class AgotData {
   private http = inject(AgotHttp);
 
-  private cards: AgotCard[] | null = null;
+  private cards: AgotCard[] | undefined = undefined;
   private cardMap: Record<string, AgotCard> = {};
 
   private officialPackCodes: Record<AgotPackCode, boolean> = {

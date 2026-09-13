@@ -57,19 +57,24 @@ export class BaronyBoard {
   readonly lands = input.required<BaronyLand[]>();
   readonly logs = input.required<BaronyLog[]>();
   readonly turnPlayer = input<BaronyColor>();
-  readonly currentPlayer = input<BaronyColor | null>(null);
+  readonly currentPlayer = input<BaronyColor | undefined>(undefined);
   readonly players = input.required<BaronyPlayer[]>();
-  readonly message = input<string | null>(null);
-  readonly validLands = input<BaronyLandCoordinates[] | null>(null);
-  readonly validActions = input<BaronyAction[] | null>(null);
-  readonly validBuildings = input<('stronghold' | 'village')[] | null>(null);
-  readonly validResources = input<{
-    player: string;
-    resources: BaronyResourceType[];
-  } | null>(null);
+  readonly message = input<string | undefined>(undefined);
+  readonly validLands = input<BaronyLandCoordinates[] | undefined>(undefined);
+  readonly validActions = input<BaronyAction[] | undefined>(undefined);
+  readonly validBuildings = input<('stronghold' | 'village')[] | undefined>(
+    undefined,
+  );
+  readonly validResources = input<
+    | {
+        player: string;
+        resources: BaronyResourceType[];
+      }
+    | undefined
+  >(undefined);
   readonly canPass = input<boolean>(false);
   readonly canCancel = input<boolean>(false);
-  readonly maxNumberOfKnights = input<number | null>(null);
+  readonly maxNumberOfKnights = input<number | undefined>(undefined);
   readonly endGame = input<boolean>(false);
 
   readonly playerSelect = output<BaronyPlayer>();

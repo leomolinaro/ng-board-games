@@ -14,7 +14,7 @@ import type { BritGameStore } from '../brit-game/brit-game.store';
 export interface BritPopulationIncreaseData {
   nInfantries: number;
   type: 'infantry-placement' | 'roman-reinforcements';
-  populationMarker: BritPopulation | null;
+  populationMarker: BritPopulation | undefined;
 }
 
 @Injectable({
@@ -48,8 +48,8 @@ export class BritRulesPopulationIncreaseService {
     }
     const validLands: BritLandAreaId[] = [];
     const fullLands: BritLandAreaId[] = [];
-    let overstackedLand: BritLandArea | null = null;
-    let overstackedArmiesCount: number | null = null;
+    let overstackedLand: BritLandArea | undefined;
+    let overstackedArmiesCount: number | undefined;
     const lands = this.getOccupiedLandsByNation(nationId, game);
     for (const land of lands) {
       const nArmies = this.getNPlacedArmiesByArea(land.id, game);
@@ -96,7 +96,7 @@ export class BritRulesPopulationIncreaseService {
       return {
         nInfantries: this.getRomanReinforcements(nArmies, roundId),
         type: 'roman-reinforcements',
-        populationMarker: null,
+        populationMarker: undefined,
       };
     }
     const lands = this.getOccupiedLandsByNation(nationId, game);
@@ -121,7 +121,7 @@ export class BritRulesPopulationIncreaseService {
     // Check the stacking limits. The only limiting case is when there are only difficult terrains.
     if (onlyDifficultTerrains) {
       let availableSlots = 0;
-      let overstackedArmiesCount: number | null = null;
+      let overstackedArmiesCount: number | undefined;
       for (const land of lands) {
         const nArmies = this.getNPlacedArmiesByArea(land.id, game);
         if (nArmies <= this.DIFFICULT_TERRAIN_STACKING_LIMIT) {

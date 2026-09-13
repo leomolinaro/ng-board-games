@@ -38,7 +38,7 @@ import { WotrStrongholdBox } from './wotr-stronghold-box';
       <svg:g
         wotrRegion
         [region]="region"
-        [fellowship]="region.fellowship ? fellowship() : null"
+        [fellowship]="region.fellowship ? fellowship() : undefined"
         [characterById]="characterById()"
         [valid]="(!validRegions() || validRegionById()[region.id]) ?? false"
         (regionClick)="onRegionClick(region)"
@@ -70,12 +70,11 @@ export class WotrRegionAreas {
   regions = input.required<WotrRegion[]>();
   fellowship = input.required<WotrFellowship>();
   characterById = input.required<Record<WotrCharacterId, WotrCharacter>>();
-  protected validRegions = computed<WotrRegionId[] | null>(() => {
+  protected validRegions = computed<WotrRegionId[] | undefined>(() => {
     const regionSelection = this.ui.regionSelection();
     if (regionSelection) return regionSelection;
     const unitSelection = this.ui.regionUnitSelection();
-    if (unitSelection) return unitSelection.regionIds;
-    return null;
+    return unitSelection?.regionIds;
   });
   protected validRegionById = computed<Partial<Record<WotrRegionId, boolean>>>(
     () => {
@@ -94,15 +93,15 @@ export class WotrRegionAreas {
 
   testGridPoints: { x: number; y: number; color: string }[] = [];
 
-  isValidRegion: Record<string, boolean> | null = null;
-  isValidUnit: Record<string, boolean> | null = null;
-  nSelectedUnits: Record<string, number> | null = null;
+  isValidRegion: Record<string, boolean> | undefined = undefined;
+  isValidUnit: Record<string, boolean> | undefined = undefined;
+  nSelectedUnits: Record<string, number> | undefined = undefined;
 
   protected helmsDeepIsengardOverlay = computed(() => {
     const region = this.regionStore.region('helms-deep');
     return region.nationId === 'isengard'
       ? { image: this.assets.helmsDeepIsengardOverlay() }
-      : null;
+      : undefined;
   });
 
   onRegionClick(region: WotrRegion): void {

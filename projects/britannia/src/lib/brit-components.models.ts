@@ -200,13 +200,13 @@ export type BritPhase =
 
 export interface BritEvent {
   nation: BritNationId;
-  invasions: BritInvasion[] | null;
-  revolt: BritRevolt | null;
+  invasions: BritInvasion[] | undefined;
+  revolt: BritRevolt | undefined;
   majorInvasion: boolean;
   raiding: boolean;
   boats: boolean;
-  special: BritSpecialEvent | null;
-  leader: BritLeaderId | null;
+  special: BritSpecialEvent | undefined;
+  leader: BritLeaderId | undefined;
 }
 
 export type BritSpecialEvent =

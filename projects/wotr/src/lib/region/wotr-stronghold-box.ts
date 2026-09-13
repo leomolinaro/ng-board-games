@@ -29,12 +29,14 @@ interface WotrRegionNode {
   region: WotrRegion;
   path: string;
   tooltip: string;
-  army: WotrArmyNode | null;
-  shadowFrame: {
-    image: string;
-    svgX: number;
-    svgY: number;
-  } | null;
+  army: WotrArmyNode | undefined;
+  shadowFrame:
+    | {
+        image: string;
+        svgX: number;
+        svgY: number;
+      }
+    | undefined;
 }
 
 interface WotrArmyNode {
@@ -63,8 +65,8 @@ export type WotrLeaderUnitType = 'leader' | 'character' | 'nazgul';
 
 interface WotrLeaderUnitNode {
   unitType: WotrLeaderUnitType;
-  nationId: WotrNationId | null;
-  character: WotrCharacterId | null;
+  nationId: WotrNationId | undefined;
+  character: WotrCharacterId | undefined;
   image: WotrUnitImage;
   svgX: number;
   svgY: number;
@@ -262,9 +264,9 @@ export class WotrStrongholdBox {
 
   @Output() regionClick = new EventEmitter<void>();
 
-  isValidRegion: Record<string, boolean> | null = null;
-  isValidUnit: Record<string, boolean> | null = null;
-  nSelectedUnits: Record<string, number> | null = null;
+  isValidRegion: Record<string, boolean> | undefined = undefined;
+  isValidUnit: Record<string, boolean> | undefined = undefined;
+  nSelectedUnits: Record<string, number> | undefined = undefined;
 
   regionNode: Signal<WotrRegionNode> = computed(() => {
     const region = this.region();
@@ -277,7 +279,7 @@ export class WotrStrongholdBox {
       id: region.id,
       region,
       path,
-      army: army ? this.regionToArmyNode(army) : null,
+      army: army ? this.regionToArmyNode(army) : undefined,
       tooltip: region.name,
       shadowFrame: shadowFrame
         ? {
@@ -285,7 +287,7 @@ export class WotrStrongholdBox {
             svgX: svgX(region.id) - 22,
             svgY: svgY(region.id) - 15,
           }
-        : null,
+        : undefined,
     };
     this.setNodeCoordinates(region.id, node);
     return node;
@@ -429,7 +431,7 @@ export class WotrStrongholdBox {
       return typeof leader === 'string'
         ? {
             unitType: 'leader',
-            character: null,
+            character: undefined,
             nationId: leader,
             image: this.assets.leaderImage(leader),
             svgX: 0,
@@ -438,7 +440,7 @@ export class WotrStrongholdBox {
         : {
             unitType: 'character',
             character: leader.id,
-            nationId: null,
+            nationId: undefined,
             image: this.assets.regionCharacterImage(leader),
             svgX: 0,
             svgY: 0,
@@ -468,8 +470,8 @@ export class WotrStrongholdBox {
       return leader === 'nazgul'
         ? {
             unitType: 'nazgul',
-            character: null,
-            nationId: null,
+            character: undefined,
+            nationId: undefined,
             image: this.assets.nazgulImage(),
             svgX: 0,
             svgY: 0,
@@ -477,7 +479,7 @@ export class WotrStrongholdBox {
         : {
             unitType: 'character',
             character: leader.id,
-            nationId: null,
+            nationId: undefined,
             image: this.assets.regionCharacterImage(leader),
             svgX: 0,
             svgY: 0,

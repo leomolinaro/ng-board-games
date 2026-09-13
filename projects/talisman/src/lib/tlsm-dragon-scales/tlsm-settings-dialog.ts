@@ -1,13 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import type {
-  TuiDialogContext} from '@taiga-ui/core';
-import {
-  TuiButton,
-  TuiInput,
-  TuiLabel,
-  TuiTextfield,
-} from '@taiga-ui/core';
+import type { TuiDialogContext } from '@taiga-ui/core';
+import { TuiButton, TuiInput, TuiLabel, TuiTextfield } from '@taiga-ui/core';
 import { TuiForm } from '@taiga-ui/layout';
 import { injectContext } from '@taiga-ui/polymorpheus';
 
@@ -94,7 +88,7 @@ export interface Settings {
 })
 export class TlsmSettingsDialog {
   protected readonly context =
-    injectContext<TuiDialogContext<Settings | null, Settings>>();
+    injectContext<TuiDialogContext<Settings | undefined, Settings>>();
   protected readonly settings = signal<Settings>(
     this.context.data ?? {
       players: [],
@@ -134,7 +128,7 @@ export class TlsmSettingsDialog {
   }
 
   protected cancel(): void {
-    this.context.completeWith(null);
+    this.context.completeWith(undefined);
   }
 
   protected confirm(): void {

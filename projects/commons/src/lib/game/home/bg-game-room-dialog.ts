@@ -105,7 +105,7 @@ export class BgGameRoomDialog<
 
   readonly context = injectDialogContext<
     BgRoomDialogInput<Pid, Opt>,
-    BgRoomDialogOutput | null
+    BgRoomDialogOutput | undefined
   >();
 
   private protoGameService = inject(BgProtoGameService);

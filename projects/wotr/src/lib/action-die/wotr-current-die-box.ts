@@ -35,8 +35,8 @@ export class WotrCurrentDieBox {
     if (c) return this.assets.actionDieImage(c, 'free-peoples');
     const s = this.frontStore.front('shadow');
     c = s.currentActionDie;
-    if (c) return this.assets.actionDieImage(c, 'shadow');
-    return null;
+    if (!c) return;
+    return this.assets.actionDieImage(c, 'shadow');
   });
 
   protected currentTokenImage = computed(() => {
@@ -45,7 +45,7 @@ export class WotrCurrentDieBox {
     if (c) return this.assets.actionTokenImage(c, 'free-peoples');
     const s = this.frontStore.front('shadow');
     c = s.currentActionToken;
-    if (c) return this.assets.actionTokenImage(c, 'shadow');
-    return null;
+    if (!c) return;
+    return this.assets.actionTokenImage(c, 'shadow');
   });
 }

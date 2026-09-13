@@ -47,7 +47,7 @@
     "no-input-rename": false,
     "no-inputs-metadata-property": true,
     "no-irregular-whitespace": true,
-    "no-non-null-assertion": false,
+    "no-non-undefined-assertion": false,
     "no-output-native": true,
     "no-output-on-prefix": true,
     "no-output-rename": true,
@@ -80,7 +80,7 @@
     "ter-func-call-spacing": [true, "always"],
     "ter-indent": [true, 2, { "SwitchCase": 1 }],
     "trailing-comma": false,
-    "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
+    "triple-equals": [true, "allow-undefined-check", "allow-undefined-check"],
     "typedef": [true, "parameter"],
     "typedef-whitespace": {
       "options": {

@@ -4,10 +4,10 @@ import type { WotrCardId } from '../card/wotr-card-models';
 import type { WotrCharacterId } from '../character/wotr-character-models';
 import type { WotrBattle } from './wotr-battle-models';
 
-export type WotrBattleState = WotrBattle | null;
+export type WotrBattleState = WotrBattle | undefined;
 
 export function initialeState(): WotrBattleState {
-  return null;
+  return undefined;
 }
 
 @Injectable()
@@ -16,7 +16,7 @@ export class WotrBattleStore {
     actionName: string,
     updater: (a: WotrBattleState) => WotrBattleState,
   ) => void;
-  state!: Signal<WotrBattleState | null>;
+  state!: Signal<WotrBattleState | undefined>;
 
   battle = computed(() => this.state());
   battleInProgress = computed(() => !!this.state());
@@ -40,7 +40,7 @@ export class WotrBattleStore {
     }));
   }
   endBattle(): void {
-    this.update('endBattle', () => null);
+    this.update('endBattle', () => undefined);
   }
   addNRegularCasualtiesToContinueSiege(n: number): void {
     this.update('addNRegularCasualtiesToContinueSiege', (s) => {

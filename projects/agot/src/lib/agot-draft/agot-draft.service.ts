@@ -33,7 +33,7 @@ export class AgotDraftService {
     factions: string[],
     packs: string[],
     duplicates: boolean,
-  ): AgotCard[] | null {
+  ): AgotCard[] | undefined {
     const poolCards = this.getPool(types, factions, packs);
     const draftCards = this.getRandom(poolCards, nCards, duplicates);
     draftCards?.sort((a, b) => {
@@ -83,9 +83,9 @@ export class AgotDraftService {
     array: T[],
     num: number,
     duplicates: boolean,
-  ): T[] | null {
+  ): T[] | undefined {
     if (num > array.length) {
-      return null;
+      return undefined;
     }
     const copy = [...array];
     const result = [];

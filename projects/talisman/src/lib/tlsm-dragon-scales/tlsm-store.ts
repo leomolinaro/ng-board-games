@@ -95,7 +95,7 @@ export class TlsmStore {
   public readonly pool = computed(() => this.store().pool);
   public readonly logs = computed(() => this.store().logs);
   public readonly king = computed(
-    () => this.dragons().find((d) => d.crowned) ?? null,
+    () => this.dragons().find((d) => d.crowned) ?? undefined,
   );
 
   dragon(dragonId: TlsmDragonId): Dragon {

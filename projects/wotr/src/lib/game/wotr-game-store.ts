@@ -54,7 +54,7 @@ import type { WotrGameOptions } from './options/wotr-game-options';
 
 export interface WotrGameState {
   gameId: string;
-  gameOwner: BgUser | null;
+  gameOwner: BgUser | undefined;
   gameOptions: WotrGameOptions;
   players: WotrPlayerInfoState;
   frontState: WotrFrontState;
@@ -65,13 +65,13 @@ export interface WotrGameState {
   hunt: WotrHuntState;
   logs: WotrLog[];
   battle: WotrBattleState;
-  backupState: WotrGameState | null;
+  backupState: WotrGameState | undefined;
 }
 
 function initialState(): WotrGameState {
   return {
     gameId: '',
-    gameOwner: null,
+    gameOwner: undefined,
     gameOptions: {
       expansions: [],
       variants: [],
@@ -86,7 +86,7 @@ function initialState(): WotrGameState {
     hunt: huntInitialeState(),
     logs: lognitialeState(),
     battle: battleInitialeState(),
-    backupState: null,
+    backupState: undefined,
   };
 }
 
@@ -174,7 +174,7 @@ export class WotrGameStore extends signalStore(
   }
   endTemporaryState(): void {
     if (this.backupState()) {
-      patchState(this, (s) => ({ ...s.backupState, backupState: null }));
+      patchState(this, (s) => ({ ...s.backupState, backupState: undefined }));
     } else {
       throw new Error('endTemporaryState without startTemporaryState');
     }

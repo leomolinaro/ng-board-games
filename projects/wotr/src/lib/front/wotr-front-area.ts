@@ -308,12 +308,11 @@ export class WotrFrontArea {
     this.selectedTabIndex.set(0);
   });
 
-  protected reinforcementUnitSelection = computed<Record<
-    WotrNationId,
-    ValidUnits
-  > | null>(() => {
+  protected reinforcementUnitSelection = computed<
+    Record<WotrNationId, ValidUnits> | undefined
+  >(() => {
     const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
-    if (!reinforcementUnitSelection) return null;
+    if (!reinforcementUnitSelection) return;
     const validUnitsByNation: Record<WotrNationId, ValidUnits> = {
       dwarves: initValidUnits(),
       elves: initValidUnits(),

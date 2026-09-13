@@ -93,7 +93,7 @@ export class BritActionsComponent {
     cancel: 'Cancel',
   };
 
-  isValid: Record<string, boolean> | null = null;
+  isValid: Record<string, boolean> | undefined = undefined;
 
   onPassClick(): void {
     if (this.canPass()) {

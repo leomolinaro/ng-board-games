@@ -13,35 +13,37 @@ import type {
 import { BaronyGameStore } from './barony-game.store';
 
 interface BaronyUiState {
-  currentPlayer: BaronyColor | null;
+  currentPlayer: BaronyColor | undefined;
   turnPlayer: BaronyColor;
   canCancel: boolean;
-  message: string | null;
-  validLands: BaronyLandCoordinates[] | null;
-  validResources: {
-    player: string;
-    resources: BaronyResourceType[];
-  } | null;
-  validActions: BaronyAction[] | null;
-  validBuildings: ('stronghold' | 'village')[] | null;
+  message: string | undefined;
+  validLands: BaronyLandCoordinates[] | undefined;
+  validResources:
+    | {
+        player: string;
+        resources: BaronyResourceType[];
+      }
+    | undefined;
+  validActions: BaronyAction[] | undefined;
+  validBuildings: ('stronghold' | 'village')[] | undefined;
   canPass: boolean;
-  maxNumberOfKnights: number | null;
+  maxNumberOfKnights: number | undefined;
 }
 
 @Injectable()
 export class BaronyUiStore extends signalStore(
   { protectedState: false },
   withState<BaronyUiState>({
-    currentPlayer: null,
+    currentPlayer: undefined,
     turnPlayer: 'blue',
     canCancel: false,
-    message: null,
-    validLands: null,
-    validActions: null,
-    validBuildings: null,
-    validResources: null,
+    message: undefined,
+    validLands: undefined,
+    validActions: undefined,
+    validBuildings: undefined,
+    validResources: undefined,
     canPass: false,
-    maxNumberOfKnights: null,
+    maxNumberOfKnights: undefined,
   }),
 ) {
   private game = inject(BaronyGameStore);
@@ -57,7 +59,7 @@ export class BaronyUiStore extends signalStore(
   private currentPlayerId$ = toObservable(this.currentPlayer);
   private turnPlayerId$ = toObservable(this.turnPlayer);
 
-  currentPlayerChange$(): Observable<BaronyColor | null> {
+  currentPlayerChange$(): Observable<BaronyColor | undefined> {
     return this.currentPlayerId$.pipe(skip(1), first());
   }
 
@@ -71,14 +73,14 @@ export class BaronyUiStore extends signalStore(
 
   resetUi(): Partial<BaronyUiState> {
     return {
-      message: null,
+      message: undefined,
       canPass: false,
       canCancel: true,
-      maxNumberOfKnights: null,
-      validActions: null,
-      validBuildings: null,
-      validLands: null,
-      validResources: null,
+      maxNumberOfKnights: undefined,
+      validActions: undefined,
+      validBuildings: undefined,
+      validLands: undefined,
+      validResources: undefined,
     };
   }
 
@@ -89,7 +91,7 @@ export class BaronyUiStore extends signalStore(
     };
   }
 
-  setCurrentPlayer(playerId: BaronyColor | null): void {
+  setCurrentPlayer(playerId: BaronyColor | undefined): void {
     this.updateUi('Set current player', (s) => ({
       ...s,
       currentPlayer: playerId,

@@ -41,10 +41,13 @@ export interface WotrCardText {
 @Injectable({ providedIn: 'root' })
 export class WotrAssetsStore {
   private readonly http = inject(HttpClient);
-  private readonly cardTextCache = new Map<WotrCardId, WotrCardText | null>();
+  private readonly cardTextCache = new Map<
+    WotrCardId,
+    WotrCardText | undefined
+  >();
   private readonly cardTextLoaders = new Map<
     WotrCardId,
-    Promise<WotrCardText | null>
+    Promise<WotrCardText | undefined>
   >();
 
   constructor() {
@@ -278,7 +281,7 @@ export class WotrAssetsStore {
     return `${BASE_PATH}/cards/${cardId}.png`;
   }
 
-  async cardText(cardId: WotrCardId): Promise<WotrCardText | null> {
+  async cardText(cardId: WotrCardId): Promise<WotrCardText | undefined> {
     if (this.cardTextCache.has(cardId)) {
       return this.cardTextCache.get(cardId)!;
     }
@@ -291,7 +294,9 @@ export class WotrAssetsStore {
     return loadPromise;
   }
 
-  private async loadCardText(cardId: WotrCardId): Promise<WotrCardText | null> {
+  private async loadCardText(
+    cardId: WotrCardId,
+  ): Promise<WotrCardText | undefined> {
     try {
       const cardText = await firstValueFrom(
         this.http.get<WotrCardText>(`${BASE_PATH}/card-texts/${cardId}.json`),
@@ -299,8 +304,8 @@ export class WotrAssetsStore {
       this.cardTextCache.set(cardId, cardText);
       return cardText;
     } catch {
-      this.cardTextCache.set(cardId, null);
-      return null;
+      this.cardTextCache.set(cardId, undefined);
+      return undefined;
     } finally {
       this.cardTextLoaders.delete(cardId);
     }

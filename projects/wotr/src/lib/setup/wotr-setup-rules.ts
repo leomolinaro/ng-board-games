@@ -56,7 +56,7 @@ export interface WotrRegionSetup {
   nElites: number;
   nLeaders: number;
   nNazgul: number;
-  ruler: KomeSovereignId | null;
+  ruler: KomeSovereignId | undefined;
 }
 
 export interface WotrInPlayCharacterSetup {
@@ -207,7 +207,7 @@ export class WotrSetupRules {
       nElites,
       nLeaders,
       nNazgul: 0,
-      ruler: null,
+      ruler: undefined,
     };
     if (ruler && this.gameStore.kome()) setup.ruler = ruler;
     return setup;
@@ -227,7 +227,7 @@ export class WotrSetupRules {
       nElites,
       nLeaders: 0,
       nNazgul,
-      ruler: null,
+      ruler: undefined,
     };
   }
 }

@@ -111,12 +111,12 @@ import { BaronyLandComponent } from './barony-land-tile';
 })
 export class BaronyMap {
   readonly lands = input.required<BaronyLand[]>();
-  readonly validLands = input<BaronyLandCoordinates[] | null>(null);
+  readonly validLands = input<BaronyLandCoordinates[] | undefined>(undefined);
   readonly landTileClick = output<BaronyLand>();
 
   bgMapZoom = viewChild.required(BgMapZoom);
 
-  protected isValid = computed<Record<string, boolean> | null>(() => {
+  protected isValid = computed<Record<string, boolean> | undefined>(() => {
     const validLands = this.validLands();
     return validLands
       ? arrayUtil.toMap(
@@ -124,7 +124,7 @@ export class BaronyMap {
           (lt) => landCoordinatesToId(lt),
           () => true,
         )
-      : null;
+      : undefined;
   });
 
   onLandTileClick(landTile: BaronyLand): void {
