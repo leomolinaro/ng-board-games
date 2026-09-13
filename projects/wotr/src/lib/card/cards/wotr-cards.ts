@@ -58,7 +58,7 @@ export class WotrCards {
     return this.cards[cardId];
   }
 
-  activateTableAbilities(card: WotrCardId) {
+  activateTableAbilities(card: WotrCardId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getTableAbilities(card);
     for (const ability of abilities) {
@@ -68,7 +68,7 @@ export class WotrCards {
     }
   }
 
-  deactivateTableAbilities(cardId: WotrCardId) {
+  deactivateTableAbilities(cardId: WotrCardId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getTableAbilities(cardId);
     for (const ability of abilities) {
@@ -92,7 +92,7 @@ export class WotrCards {
     return abilities;
   }
 
-  activateBattleAbilities(cardId: WotrCardId) {
+  activateBattleAbilities(cardId: WotrCardId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getBattleAbilities(cardId);
     for (const ability of abilities) {
@@ -102,7 +102,7 @@ export class WotrCards {
     }
   }
 
-  deactivateBattleAbilities(cardId: WotrCardId) {
+  deactivateBattleAbilities(cardId: WotrCardId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getBattleAbilities(cardId);
     for (const ability of abilities) {
@@ -132,10 +132,12 @@ export class WotrCards {
     if (isFreePeopleStrategyCard(cardId)) {
       return this.freePeopleStrategyCards.createCard(cardId);
     }
-    return isShadowCharacterCard(cardId) ? this.shadowCharacterCards.createCard(cardId) : this.shadowStrategyCards.createCard(cardId);
+    return isShadowCharacterCard(cardId)
+      ? this.shadowCharacterCards.createCard(cardId)
+      : this.shadowStrategyCards.createCard(cardId);
   }
 
-  isPlayableCard(cardId: WotrCardId) {
+  isPlayableCard(cardId: WotrCardId): boolean {
     const card = this.getCard(cardId);
     return card.canBePlayed ? card.canBePlayed() : true;
   }
@@ -160,7 +162,10 @@ export class WotrCards {
       .filter((cardId) => this.isPlayableCard(cardId));
   }
 
-  async triggerCardEffect(story: WotrDieCardStory, front: WotrFrontId) {
+  async triggerCardEffect(
+    story: WotrDieCardStory,
+    front: WotrFrontId,
+  ): Promise<void> {
     const card = this.getCard(story.card);
     if (card.effect) await card.effect({ front, story, cardId: story.card });
   }

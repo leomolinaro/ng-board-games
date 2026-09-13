@@ -71,7 +71,7 @@ export class WotrActionDieModifiers {
     );
   }
 
-  clear() {
+  clear(): void {
     this.actionDieChoices.clear();
     this.afterActionDieResolution.clear();
     this.afterActionDieCardResolution.clear();

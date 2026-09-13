@@ -48,7 +48,7 @@ export class BritUiStore extends signalStore(
   private game = inject(BritGameStore);
 
   cancel = uiEvent<void>();
-  setCanCancel(canCancel: boolean) {
+  setCanCancel(canCancel: boolean): void {
     patchState(this, { canCancel });
   }
   areaChange = uiEvent<BritAreaId>();
@@ -59,7 +59,7 @@ export class BritUiStore extends signalStore(
   confirmChange = uiEvent<void>();
 
   player = uiEvent<BritColor | null>();
-  setCurrentPlayerId(playerId: BritColor | null) {
+  setCurrentPlayerId(playerId: BritColor | null): void {
     this.player.emit(playerId);
     patchState(this, { currentPlayer: playerId });
   }
@@ -68,7 +68,7 @@ export class BritUiStore extends signalStore(
     S extends BritUiState & {
       [K in keyof S]: K extends keyof BritUiState ? BritUiState[K] : never;
     },
-  >(_actionName: string, updater: (state: BritUiState) => S) {
+  >(_actionName: string, updater: (state: BritUiState) => S): void {
     patchState(this, updater);
   }
 
@@ -95,7 +95,7 @@ export class BritUiStore extends signalStore(
   //   };
   // }
 
-  setCurrentPlayer(playerId: BritColor | null) {
+  setCurrentPlayer(playerId: BritColor | null): void {
     this.updateUi('Set current player', (s) => ({
       ...s,
       currentPlayer: playerId,

@@ -32,7 +32,7 @@ export class WotrNationHandler {
   private storyService = inject(WotrStoryService);
   private q = inject(WotrGameQuery);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerAction<WotrPoliticalActivation>(
       'political-activation',
       (action) => this.activateNation(action.nation, 'card-ability'),
@@ -88,7 +88,7 @@ export class WotrNationHandler {
   checkNationActivationByArmyMovement(
     regionId: WotrRegionId,
     armyFront: WotrFrontId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
@@ -102,7 +102,7 @@ export class WotrNationHandler {
     }
   }
 
-  checkNationActivationByAttack(attack: WotrArmyAttack) {
+  checkNationActivationByAttack(attack: WotrArmyAttack): void {
     const nations = this.nationOfAttackedUnits(attack.toRegion);
     for (const nationId of nations) {
       const nation = this.nationStore.nation(nationId);
@@ -112,7 +112,7 @@ export class WotrNationHandler {
     }
   }
 
-  checkNationAdvanceByAttack(regionId: WotrRegionId) {
+  checkNationAdvanceByAttack(regionId: WotrRegionId): void {
     const nations = this.nationOfAttackedUnits(regionId);
     for (const nationId of nations) {
       const nation = this.nationStore.nation(nationId);
@@ -122,7 +122,7 @@ export class WotrNationHandler {
     }
   }
 
-  private nationOfAttackedUnits(regionId: WotrRegionId) {
+  private nationOfAttackedUnits(regionId: WotrRegionId): Set<WotrNationId> {
     const region = this.regionStore.region(regionId);
     const defendingArmy = region.underSiegeArmy ?? region.army!;
     const nations = new Set<WotrNationId>();
@@ -133,7 +133,7 @@ export class WotrNationHandler {
     return nations;
   }
 
-  checkNationAdvanceByCapture(regionId: WotrRegionId) {
+  checkNationAdvanceByCapture(regionId: WotrRegionId): void {
     const region = this.regionStore.region(regionId);
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
@@ -146,7 +146,7 @@ export class WotrNationHandler {
   checkNationActivationByCharacters(
     regionId: WotrRegionId,
     characters: WotrCharacterId[],
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
@@ -172,7 +172,7 @@ export class WotrNationHandler {
     }
   }
 
-  checkNationActivationByFellowshipDeclaration(regionId: WotrRegionId) {
+  checkNationActivationByFellowshipDeclaration(regionId: WotrRegionId): void {
     const region = this.regionStore.region(regionId);
     if (region.nationId) {
       const nation = this.nationStore.nation(region.nationId);
@@ -186,7 +186,10 @@ export class WotrNationHandler {
     }
   }
 
-  activateNation(nation: WotrNationId, source: WotrNationActivationSource) {
+  activateNation(
+    nation: WotrNationId,
+    source: WotrNationActivationSource,
+  ): void {
     if (this.nationModifiers.canActivateNation(nation, source)) {
       this.nationStore.activate(true, nation);
       this.nationModifiers.onAfterNationActivation(nation, source);
@@ -198,7 +201,7 @@ export class WotrNationHandler {
   activateNationEffect(
     nation: WotrNationId,
     source: WotrNationActivationSource,
-  ) {
+  ): void {
     if (this.nationModifiers.canActivateNation(nation, source)) {
       const action: WotrPoliticalActivation = {
         type: 'political-activation',
@@ -211,7 +214,7 @@ export class WotrNationHandler {
     }
   }
 
-  advanceNationEffect(quantity: number, nation: WotrNationId) {
+  advanceNationEffect(quantity: number, nation: WotrNationId): void {
     if (this.canAdvanceForActiveState(quantity, nation)) {
       const action: WotrPoliticalAdvance = {
         type: 'political-advance',
@@ -229,7 +232,7 @@ export class WotrNationHandler {
     quantity: number,
     nation: WotrNationId,
     source: WotrNationAdvanceSource,
-  ) {
+  ): void {
     if (this.canAdvanceForActiveState(quantity, nation)) {
       this.nationStore.advance(quantity, nation);
       this.nationModifiers.onAfterNationAdvance(nation, source);
@@ -238,7 +241,7 @@ export class WotrNationHandler {
     }
   }
 
-  advanceAtWar(nation: WotrNationId, source: WotrNationAdvanceSource) {
+  advanceAtWar(nation: WotrNationId, source: WotrNationAdvanceSource): void {
     if (this.canAdvanceForActiveState('war', nation)) {
       const action: WotrPoliticalAdvanceAtWar = {
         type: 'political-advance-at-war',

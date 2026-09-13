@@ -56,21 +56,13 @@ export default tseslint.config(
       // -----------------------------------------------------------------------
       // TypeScript
       // -----------------------------------------------------------------------
-      // Prefer the TS-aware versions of these rules.
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
-      // Allow void expressions such as:
-      //   signal.update(...)
-      //   observable.subscribe(...)
-      "@typescript-eslint/no-confusing-void-expression": "off",
-      // I prefer this to be explicit rather than relying on inference.
-      "@typescript-eslint/consistent-type-imports": [
+      "@typescript-eslint/explicit-function-return-type": [
         "error",
         {
-          prefer: "type-imports",
-          fixStyle: "separate-type-imports",
+          allowExpressions: true, // For callbacks defined in maps
         },
       ],
+      "@typescript-eslint/no-confusing-void-expression": "off", // Less curly braces
       "@typescript-eslint/no-unused-vars": [
         "error",
         {

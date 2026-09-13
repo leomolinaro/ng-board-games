@@ -47,34 +47,34 @@ export class BritMapService {
   private width!: number;
   private areaSlots!: BritAreaSlots;
 
-  getAreaPath(areaId: BritAreaId) {
+  getAreaPath(areaId: BritAreaId): string {
     return this.areaPaths[areaId];
   }
-  getPopulationTrackPath(populationId: BritPopulation) {
+  getPopulationTrackPath(populationId: BritPopulation): string {
     return this.populationTrackPaths[populationId];
   }
-  getNationTurnPath(nationId: BritNationId) {
+  getNationTurnPath(nationId: BritNationId): string {
     return this.nationTurnPaths[nationId];
   }
-  getRoundPath(roundId: BritRoundId) {
+  getRoundPath(roundId: BritRoundId): string {
     return this.roundPaths[roundId];
   }
-  getEventPath(roundId: BritRoundId, nationId: BritNationId) {
+  getEventPath(roundId: BritRoundId, nationId: BritNationId): string {
     return this.eventPaths[roundId][nationId];
   }
-  getScoringRoundPath(roundId: BritRoundId) {
+  getScoringRoundPath(roundId: BritRoundId): string {
     return this.scoringRoundPaths[roundId];
   }
 
-  getViewBox() {
+  getViewBox(): string {
     return this.viewBox;
   }
 
-  getWidth() {
+  getWidth(): number {
     return this.width;
   }
 
-  loadAreaPaths$() {
+  loadAreaPaths$(): Observable<boolean> {
     return this.svgLoaded
       ? of(true)
       : this.http
@@ -138,7 +138,7 @@ export class BritMapService {
     groupId: string,
     dom: Document,
     pathIdToId: (pathId: string) => K,
-  ) {
+  ): Record<K, string> {
     const britGroup = dom.querySelector(`#${groupId}`);
     const paths: Record<K, string> = {} as never;
     britGroup?.childNodes.forEach((childNode) => {

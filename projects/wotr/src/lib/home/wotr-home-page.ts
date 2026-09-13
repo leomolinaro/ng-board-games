@@ -94,7 +94,7 @@ export class WotrHomePage {
   private async createGame(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<WotrFrontId>[],
-  ) {
+  ): Promise<void> {
     const game: WotrGameDoc = {
       id: protoGame.id,
       owner: protoGame.owner,

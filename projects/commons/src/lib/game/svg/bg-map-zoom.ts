@@ -29,10 +29,10 @@ interface BgMapZoomRefreshParams {
 export class BgSvg {
   elementRef = inject<ElementRef<SVGSVGElement>>(ElementRef);
 
-  createSVGPoint() {
+  createSVGPoint(): SVGPoint {
     return this.elementRef.nativeElement.createSVGPoint();
   }
-  getScreenCTM() {
+  getScreenCTM(): DOMMatrix | null {
     return this.elementRef.nativeElement.getScreenCTM();
   }
 }
@@ -69,12 +69,12 @@ export class BgMapZoom implements OnInit {
   private grabbingX: number | null = null;
   private grabbingY: number | null = null;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.parseConfig();
     this.transform = `matrix (${this.scale}, 0, 0, ${this.scale}, ${this.translateX}, ${this.translateY})`;
   }
 
-  private parseConfig() {
+  private parseConfig(): void {
     this.scale = this.config().scale ?? 1;
     this.translateX = this.config().translateX ?? 0;
     this.translateY = this.config().translateY ?? 0;
@@ -83,7 +83,7 @@ export class BgMapZoom implements OnInit {
   }
 
   @HostListener('mousedown', ['$event'])
-  onMouseDown(event: MouseEvent) {
+  onMouseDown(event: MouseEvent): void {
     if (event.button === 0) {
       this.grabbing = true;
       this.grabbingX = event.clientX;
@@ -95,21 +95,21 @@ export class BgMapZoom implements OnInit {
   }
 
   @HostListener('mouseup', ['$event'])
-  onMouseUp(event: MouseEvent) {
+  onMouseUp(event: MouseEvent): void {
     if (event.button === 0) {
       this.endGrabbing();
     }
   }
 
   @HostListener('mouseleave')
-  onMouseLeave() {
+  onMouseLeave(): void {
     if (this.grabbing) {
       this.endGrabbing();
     }
   }
 
   @HostListener('mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
+  onMouseMove(event: MouseEvent): void {
     if (!this.grabbing) {
       return;
     }
@@ -129,7 +129,7 @@ export class BgMapZoom implements OnInit {
   }
 
   // @HostListener ("touchmove", ["$event"]) TODO
-  onTouchMove(event: TouchEvent) {
+  onTouchMove(event: TouchEvent): void {
     if (this.grabbing) {
       const xt = event.touches[0].clientX - this.grabbingX!;
       const yt = event.touches[0].clientY - this.grabbingY!;
@@ -152,25 +152,25 @@ export class BgMapZoom implements OnInit {
     }
   }
 
-  public moveUp() {
+  public moveUp(): void {
     this.move(0, -MOVE_STEP);
   }
-  public moveDown() {
+  public moveDown(): void {
     this.move(0, MOVE_STEP);
   }
-  public moveLeft() {
+  public moveLeft(): void {
     this.move(-MOVE_STEP, 0);
   }
-  public moveRight() {
+  public moveRight(): void {
     this.move(MOVE_STEP, 0);
   }
-  public zoomIn() {
+  public zoomIn(): void {
     this.zoom(1 + ZOOM_STEP);
   }
-  public zoomOut() {
+  public zoomOut(): void {
     this.zoom(1 - ZOOM_STEP);
   }
-  public reset() {
+  public reset(): void {
     this.refreshTransform({ zoom: 1, x0: 0, y0: 0, xt: 0, yt: 0, reset: true });
     if (this.grabbing) {
       this.endGrabbing();
@@ -178,7 +178,7 @@ export class BgMapZoom implements OnInit {
     this.cd.markForCheck();
   }
 
-  public autoSize() {
+  public autoSize(): void {
     // const containerEl = this.bgSvg.elementRef.nativeElement;
     // const childEl = this.elementRef.nativeElement.getBoundingClientRect ();
     // const scaleX = containerEl.clientWidth / childEl.width;
@@ -198,7 +198,7 @@ export class BgMapZoom implements OnInit {
     // this.cd.markForCheck ();
   }
 
-  private move(xt: number, yt: number) {
+  private move(xt: number, yt: number): void {
     this.refreshTransform({
       zoom: 1,
       x0: 0,
@@ -210,7 +210,7 @@ export class BgMapZoom implements OnInit {
     this.cd.markForCheck();
   }
 
-  private zoom(zoom: number) {
+  private zoom(zoom: number): void {
     this.refreshTransform({
       zoom: zoom,
       x0: 0,
@@ -222,13 +222,13 @@ export class BgMapZoom implements OnInit {
     this.cd.markForCheck();
   }
 
-  private endGrabbing() {
+  private endGrabbing(): void {
     this.grabbing = false;
     this.grabbingX = null;
     this.grabbingY = null;
   }
 
-  onMouseWheel(event: Event) {
+  onMouseWheel(event: Event): void {
     const wEvent = event as WheelEvent;
     event.preventDefault();
     const zoom = wEvent.deltaY > 0 ? 1 - this.zoomStep : 1 + this.zoomStep;
@@ -247,7 +247,7 @@ export class BgMapZoom implements OnInit {
   }
 
   // @HostListener ("keydown", ["$event"]) TODO
-  onKeyDown(event: KeyboardEvent) {
+  onKeyDown(event: KeyboardEvent): void {
     // N.B.: onKeyDown non viene lanciato!!!
     const refreshParams: BgMapZoomRefreshParams = {
       zoom: 1,
@@ -276,7 +276,7 @@ export class BgMapZoom implements OnInit {
     this.refreshTransform(refreshParams);
   }
 
-  private refreshTransform(refreshParams: BgMapZoomRefreshParams) {
+  private refreshTransform(refreshParams: BgMapZoomRefreshParams): void {
     if (refreshParams.reset) {
       this.parseConfig();
     } else {

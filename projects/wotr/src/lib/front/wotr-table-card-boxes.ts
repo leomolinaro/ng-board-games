@@ -73,7 +73,7 @@ export class WotrTableCardsComponent {
     };
   }
 
-  protected openCardsDialog(cardId: WotrCardId) {
+  protected openCardsDialog(cardId: WotrCardId): void {
     const isFreePeoples = isFreePeoplesCard(cardId);
     void this.dialogs.open<WotrCardsDialogData, WotrCardId[]>(WotrCardsDialog, {
       data: {

@@ -31,7 +31,7 @@ export class BaronyLogs {
 
   readonly logs = input.required<BaronyLog[]>();
 
-  private scrollToBottom() {
+  private scrollToBottom(): void {
     this.logs();
     setTimeout(() => {
       this.elementRef.nativeElement.scrollTop =

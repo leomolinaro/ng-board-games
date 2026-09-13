@@ -19,6 +19,6 @@ export class UiEvent<E> {
   }
 }
 
-export function uiEvent<E>() {
+export function uiEvent<E>(): UiEvent<E> {
   return new UiEvent<E>();
 }

@@ -79,16 +79,16 @@ export class BritNationCardSheet implements OnInit {
   nationCardImageSource!: string;
   unitNodes!: BritUnitNode[];
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.refresh(this.data[0], this.data[1]);
   }
 
-  setNation(nationId: BritNationId, nationState: BritNationState) {
+  setNation(nationId: BritNationId, nationState: BritNationState): void {
     this.refresh(nationId, nationState);
     this.cd.markForCheck();
   }
 
-  private refresh(nationId: BritNationId, nationState: BritNationState) {
+  private refresh(nationId: BritNationId, nationState: BritNationState): void {
     const nation = this.components.NATION[nationId];
     this.nationCardImageSource = this.assetsService.getNationCardImageSource(
       nation.id,

@@ -61,37 +61,37 @@ export class BaronyGamePage implements OnInit {
 
   private gameId = this.route.snapshot.paramMap.get('gameId')!;
 
-  ngOnInit() {
+  ngOnInit(): void {
     void this.init();
   }
 
-  private async init() {
+  private async init(): Promise<void> {
     const stories = await this.gameService.loadGame(this.gameId);
     await this.gameService.game(stories);
   }
 
-  onPlayerSelect(player: BaronyPlayer) {
+  onPlayerSelect(player: BaronyPlayer): void {
     this.ui.setCurrentPlayer(player.id);
   }
-  onBuildingSelect(building: BaronyBuilding) {
+  onBuildingSelect(building: BaronyBuilding): void {
     this.ui.buildingSelect.emit(building);
   }
-  onLandTileClick(landTile: BaronyLand) {
+  onLandTileClick(landTile: BaronyLand): void {
     this.ui.landSelect.emit(landTile);
   }
-  onActionClick(action: BaronyAction) {
+  onActionClick(action: BaronyAction): void {
     this.ui.actionSelect.emit(action);
   }
-  onPassClick() {
+  onPassClick(): void {
     this.ui.passSelect.emit();
   }
-  onCancelClick() {
+  onCancelClick(): void {
     this.ui.cancelSelect.emit();
   }
-  onKnightsConfirm(numberOfKnights: number) {
+  onKnightsConfirm(numberOfKnights: number): void {
     this.ui.numberOfKnightsSelect.emit(numberOfKnights);
   }
-  onResourceSelect(resource: BaronyResourceType) {
+  onResourceSelect(resource: BaronyResourceType): void {
     this.ui.resourceSelect.emit(resource);
   }
 }

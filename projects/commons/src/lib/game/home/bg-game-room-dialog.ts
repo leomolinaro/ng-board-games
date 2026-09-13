@@ -126,7 +126,8 @@ export class BgGameRoomDialog<
   });
 
   protected optionsRef = viewChild('options', { read: ViewContainerRef });
-  roleToCssClass = (role: Pid) => this.context.data.playerIdToCssClass(role);
+  roleToCssClass: (role: Pid) => string = (role) =>
+    this.context.data.playerIdToCssClass(role);
 
   protected players = rxResource({
     stream: () =>
@@ -160,13 +161,13 @@ export class BgGameRoomDialog<
     return nPlayers >= 2;
   });
 
-  private autoStartGame() {
+  private autoStartGame(): void {
     if (this.protoGame()?.state === 'running') {
       this.closeDialog(true);
     }
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     const optionsRef = this.optionsRef();
     if (optionsRef && this.optionsComponent) {
       const componentRef = optionsRef.createComponent(this.optionsComponent);
@@ -181,14 +182,14 @@ export class BgGameRoomDialog<
     }
   }
 
-  private updateOptions(options: Opt) {
+  private updateOptions(options: Opt): Promise<void> {
     return this.protoGameService.updateProtoGame(
       { options: options },
       this.protoGame().id,
     );
   }
 
-  changePlayer(player: BgProtoPlayer<string>, playerId: string) {
+  changePlayer(player: BgProtoPlayer<string>, playerId: string): Promise<void> {
     return this.protoGameService.updateProtoPlayer(
       player,
       playerId,
@@ -196,7 +197,7 @@ export class BgGameRoomDialog<
     );
   }
 
-  async startGame() {
+  async startGame(): Promise<void> {
     if (this.protoGame().state === 'open') {
       const protoPlayers = this.players()!;
       await this.context.data.createGame(this.protoGame(), protoPlayers);
@@ -206,14 +207,14 @@ export class BgGameRoomDialog<
     }
   }
 
-  private closeDialog(startGame: boolean) {
+  private closeDialog(startGame: boolean): void {
     this.context.complete({
       startGame: startGame,
       gameId: this.protoGame().id,
     });
   }
 
-  async deleteGame() {
+  async deleteGame(): Promise<void> {
     await this.context.data.deleteGame(this.protoGame().id);
     this.closeDialog(false);
   }

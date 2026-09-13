@@ -142,7 +142,7 @@ export class KomeCorruptionBoard {
       ? this.assets.huntTileImage(tileId)
       : this.assets.huntTileBack();
 
-  selectSovereign(sovereignId: KomeSovereignId) {
+  selectSovereign(sovereignId: KomeSovereignId): void {
     const sovereignSelectionMap = this.sovereignSelectionMap();
     if (!sovereignSelectionMap) return;
     if (!sovereignSelectionMap[sovereignId]) return;

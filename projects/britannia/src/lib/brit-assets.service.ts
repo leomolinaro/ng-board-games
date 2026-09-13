@@ -10,17 +10,17 @@ import type { BritAreaUnit } from './brit-game-state.models';
   providedIn: 'root',
 })
 export class BritAssetsService {
-  getNationIconImageSource(nationId: BritNationId) {
+  getNationIconImageSource(nationId: BritNationId): string {
     return `assets/britannia/population-markers/${nationId}.png`;
   }
-  getNationCardImageSource(nationId: BritNationId) {
+  getNationCardImageSource(nationId: BritNationId): string {
     return `assets/britannia/nation-cards/${nationId}.png`;
   }
-  getNationPopulationMarkerImageSource(nationId: BritNationId) {
+  getNationPopulationMarkerImageSource(nationId: BritNationId): string {
     return `assets/britannia/population-markers/${nationId}.png`;
   }
 
-  getUnitImageSource(unit: BritAreaUnit) {
+  getUnitImageSource(unit: BritAreaUnit): string {
     switch (unit.type) {
       case 'infantry':
         return `assets/britannia/infantries/${unit.nationId}.png`;
@@ -39,7 +39,7 @@ export class BritAssetsService {
     unitType: BritUnitType,
     nationId: BritNationId,
     leaderId?: BritLeaderId,
-  ) {
+  ): string {
     switch (unitType) {
       case 'infantry':
         return `assets/britannia/infantries/${nationId}.png`;

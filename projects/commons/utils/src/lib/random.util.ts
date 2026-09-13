@@ -1,14 +1,17 @@
-export function getRandomInteger(minIncluded: number, maxExcluded: number) {
+export function getRandomInteger(
+  minIncluded: number,
+  maxExcluded: number,
+): number {
   return Math.floor(Math.random() * (maxExcluded - minIncluded)) + minIncluded;
 }
 
-export function getRandomFloat(min: number, max: number) {
+export function getRandomFloat(min: number, max: number): number {
   const integer = getRandomInteger(min, max);
   const decimal = getRandomInteger(0, 100);
   return integer + decimal / 100;
 }
 
-export function getRandomBoolean() {
+export function getRandomBoolean(): boolean {
   return Math.random() < 0.5;
 }
 
@@ -47,7 +50,7 @@ export function getRandomArrayLength<T>(
   return array;
 }
 
-export function getRandomDraws<T>(n: number, pool: T[]) {
+export function getRandomDraws<T>(n: number, pool: T[]): T[] {
   const toReturn: T[] = [];
   pool = [...pool];
   for (let i = 0; i < n; i++) {
@@ -80,10 +83,8 @@ export class BgSimulatedAnnealing<S> {
     return s;
   }
 
-  private probability(e: number, eNew: number, t: number) {
-    if (eNew === e) {
-      return 0;
-    }
+  private probability(e: number, eNew: number, t: number): number {
+    if (eNew === e) return 0;
     return eNew > e ? Math.exp((e - eNew) / t) : 1;
   }
 }

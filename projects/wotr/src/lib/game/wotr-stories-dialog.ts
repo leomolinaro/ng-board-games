@@ -135,7 +135,7 @@ export class WotrStoriesDialog {
   private remote = inject(WotrRemoteService);
   protected content = viewChild<ElementRef<HTMLDivElement>>('content');
 
-  private scrollToBottom() {
+  private scrollToBottom(): void {
     this.stories();
     setTimeout(() => {
       const content = this.content();
@@ -146,7 +146,7 @@ export class WotrStoriesDialog {
 
   protected stories = toSignal(this.remote.selectStories$(this.data.gameId));
 
-  async delete() {
+  async delete(): Promise<void> {
     const lastStory = this.stories()!.at(-1);
     if (lastStory) {
       await this.remote.deleteStory(
@@ -156,7 +156,7 @@ export class WotrStoriesDialog {
     }
   }
 
-  reload() {
+  reload(): void {
     location.reload();
   }
 }

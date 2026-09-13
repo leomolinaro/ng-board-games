@@ -16,7 +16,7 @@ export class WotrRegionHandler {
   private regionStore = inject(WotrRegionStore);
   private regionModifiers = inject(WotrRegionModifiers);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
@@ -39,7 +39,7 @@ export class WotrRegionHandler {
     };
   }
 
-  setControlledBy(front: WotrFrontId, regionId: WotrRegionId) {
+  setControlledBy(front: WotrFrontId, regionId: WotrRegionId): void {
     this.regionStore.setControlledBy(front, regionId);
     this.regionModifiers.onAfterRegionControlChange(regionId, front);
   }

@@ -140,19 +140,19 @@ export class BgPlayerForm {
     return (player.type === 'ai' && this.isOwner()) || this.isPlayer();
   });
 
-  protected playerNameActive = (player: BgProtoPlayer) => {
+  protected playerNameActive: (player: BgProtoPlayer) => boolean = (player) => {
     return (player.type === 'ai' && this.isOwner()) || this.isPlayer();
   };
 
-  protected changeName(name: string) {
+  protected changeName(name: string): void {
     this.player.set({ ...this.player(), name });
   }
 
-  protected changeReady(ready: boolean) {
+  protected changeReady(ready: boolean): void {
     this.player.set({ ...this.player(), ready });
   }
 
-  protected setNextPlayerType() {
+  protected setNextPlayerType(): void {
     const controllerPatch: { controller?: BgUser | null } = {};
     const namePatch: { name?: string } = {};
     const readyPatch: { ready?: boolean } = {};

@@ -1,5 +1,5 @@
 import { Component, inject, resource } from '@angular/core';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { BgTransformPipe } from '@leobg/commons/utils';
 import { TuiTabBar } from '@taiga-ui/addon-mobile';
 import { TuiTable, TuiTableControl } from '@taiga-ui/addon-table';
@@ -7,7 +7,7 @@ import { TuiDropdown, TuiTitle } from '@taiga-ui/core';
 import { TuiCell } from '@taiga-ui/core/components/cell';
 import { TuiItemsWithMore, TuiProgress } from '@taiga-ui/kit';
 import { AgotData } from '../agot-services/agot-data';
-import type { AgotFcDeck} from './agot-fc-decks';
+import type { AgotFcDeck } from './agot-fc-decks';
 import { DECKS } from './agot-fc-decks';
 
 @Component({
@@ -88,10 +88,11 @@ export class AgotFcDecksPage {
   protected getDeckFactionImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
     return `assets/agot/factions/${deck.faction}.png`;
   };
-  protected getDeckAgendaImage: BgTransformFn<AgotFcDeck, string> = (deck) => {
-    const card = this.data.getCard(deck.agenda);
-    return card?.image_url;
-  };
+  protected getDeckAgendaImage: BgTransformFn<AgotFcDeck, string | undefined> =
+    (deck) => {
+      const card = this.data.getCard(deck.agenda);
+      return card?.image_url;
+    };
 
   private dataLoad = resource({
     loader: () => this.data.load(),

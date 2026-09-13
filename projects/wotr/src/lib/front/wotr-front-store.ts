@@ -78,11 +78,11 @@ export class WotrFrontStore {
   });
   freePeoplesFront = computed(() => this.state().map['free-peoples']);
   shadowFront = computed(() => this.state().map.shadow);
-  frontIds() {
+  frontIds(): WotrFrontId[] {
     return this.state().ids;
   }
 
-  front(id: WotrFrontId) {
+  front(id: WotrFrontId): WotrFront {
     return this.state().map[id];
   }
 
@@ -96,7 +96,7 @@ export class WotrFrontStore {
     }));
   }
 
-  currentCard() {
+  currentCard(): WotrCardId | null {
     return this.state().currentCard;
   }
 
@@ -117,36 +117,42 @@ export class WotrFrontStore {
     actionName: string,
     frontId: WotrFrontId,
     updater: (a: WotrFront) => WotrFront,
-  ) {
+  ): void {
     this.update(actionName, (s) => ({
       ...s,
       map: { ...s.map, [frontId]: updater(s.map[frontId]) },
     }));
   }
 
-  clearCurrentCard() {
+  clearCurrentCard(): void {
     this.update('clearCurrentCard', (s) => ({ ...s, currentCard: null }));
   }
 
-  setCurrentCard(currentCard: WotrCardId) {
+  setCurrentCard(currentCard: WotrCardId): void {
     this.update('setCurrentCard', (s) => ({ ...s, currentCard }));
   }
 
-  setCharacterDeck(characterDeck: WotrCharacterCardId[], frontId: WotrFrontId) {
+  setCharacterDeck(
+    characterDeck: WotrCharacterCardId[],
+    frontId: WotrFrontId,
+  ): void {
     this.updateFront('setCharacterDeck', frontId, (front) => ({
       ...front,
       characterDeck,
     }));
   }
 
-  setStrategyDeck(strategyDeck: WotrStrategyCardId[], frontId: WotrFrontId) {
+  setStrategyDeck(
+    strategyDeck: WotrStrategyCardId[],
+    frontId: WotrFrontId,
+  ): void {
     this.updateFront('setStrategyDeck', frontId, (front) => ({
       ...front,
       strategyDeck,
     }));
   }
 
-  discardCards(cardIds: WotrCardId[], frontId: WotrFrontId) {
+  discardCards(cardIds: WotrCardId[], frontId: WotrFrontId): void {
     this.updateFront('discardCards', frontId, (front) => {
       let characterDiscardPile = front.characterDiscardPile;
       let strategyDiscardPile = front.strategyDiscardPile;
@@ -179,7 +185,7 @@ export class WotrFrontStore {
     });
   }
 
-  drawCards(cardIds: WotrCardId[], frontId: WotrFrontId) {
+  drawCards(cardIds: WotrCardId[], frontId: WotrFrontId): void {
     this.updateFront('drawCards', frontId, (front) => {
       let characterDeck = front.characterDeck;
       let strategyDeck = front.strategyDeck;
@@ -347,7 +353,7 @@ export class WotrFrontStore {
     }));
   }
 
-  setVictoryPoints(victoryPoints: number, front: WotrFrontId) {
+  setVictoryPoints(victoryPoints: number, front: WotrFrontId): void {
     this.updateFront('setVictoryPoints', front, (f) => ({
       ...f,
       victoryPoints,

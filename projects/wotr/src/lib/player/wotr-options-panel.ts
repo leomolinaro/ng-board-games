@@ -56,7 +56,7 @@ export class WotrOptionsPanel {
     return inputQuantity ? inputQuantity.default : 0;
   });
 
-  onInputSumbit(quantity: number) {
+  onInputSumbit(quantity: number): void {
     const inputQuantity = this.ui.inputQuantitySelection();
     if (
       !inputQuantity ||

@@ -343,7 +343,7 @@ export class WotrHuntUi {
       : [eliminateCharacter(character)];
   }
 
-  private async startCorruptionAttempt() {
+  private async startCorruptionAttempt(): Promise<WotrAction> {
     const awailableSovereigns = this.q.sovereigns.filter(
       (s) => !s.isAwakened() && !s.isCorrupted(),
     );

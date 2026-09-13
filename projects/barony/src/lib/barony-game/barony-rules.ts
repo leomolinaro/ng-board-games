@@ -144,7 +144,7 @@ export function getValidTargetLandsForMovement(
 export function getValidLandsForConstruction(
   player: BaronyColor,
   game: BaronyGameStore,
-) {
+): BaronyLand[] {
   return game
     .landList()
     .filter((lt) => isValidLandTileForConstruction(lt, player, game));
@@ -218,7 +218,7 @@ export function getVillageDestroyedPlayer(
 export function getValidResourcesForVillageDestruction(
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): BaronyResourceType[] {
   const player = game.getPlayer(playerId);
   return BARONY_RESOURCE_TYPES.filter((r) => player.resources[r]);
 }
@@ -242,7 +242,7 @@ export function getFinalScores(game: BaronyGameStore): BaronyFinalScores {
   return { victoryPointsByPlayer, winnerPlayer: winner.id };
 }
 
-function getPlayerVictoryPoints(player: BaronyPlayer) {
+function getPlayerVictoryPoints(player: BaronyPlayer): number {
   let victoryPoints = player.score;
   for (const resource of BARONY_RESOURCE_TYPES) {
     const n = player.resources[resource];
@@ -293,7 +293,7 @@ function isValidSecondMovementSource(
   player: BaronyColor,
   firstMovement: BaronyMovement,
   game: BaronyGameStore,
-) {
+): boolean {
   return (
     ((land.coordinates !== firstMovement.toLand &&
       hasOneOrMoreOwnKnight(land.coordinates, player, game)) ||
@@ -309,7 +309,7 @@ function isValidFirstMovementSource(
   land: BaronyLand,
   player: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   return (
     hasOneOrMoreOwnKnight(land.coordinates, player, game) &&
     getNearbyLands(land.coordinates, game).some((nlt) =>
@@ -322,7 +322,7 @@ function isValidMovementTarget(
   land: BaronyLand,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return (
     land.type !== 'lake' &&
@@ -352,7 +352,7 @@ function isValidLandTileForConstruction(
   land: BaronyLand,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   if (!hasOneOrMoreOwnKnight(land.coordinates, playerId, game)) {
     return false;
@@ -382,7 +382,7 @@ function isValidLandForNewCity(
   landCoordinates: BaronyLandCoordinates,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const land = game.getLand(landCoordinates);
   const player = game.getPlayer(playerId);
   return (
@@ -398,7 +398,7 @@ function isValidLandForNewCity(
 function isValidLandForExpedition(
   landCoordinates: BaronyLandCoordinates,
   game: BaronyGameStore,
-) {
+): boolean {
   const land = game.getLand(landCoordinates);
   return (
     land.type !== 'lake' &&
@@ -426,7 +426,10 @@ export function isNobleTitleValid(
   return getPlayerResourcePoints(playerId, game) >= 15;
 }
 
-function getPlayerResourcePoints(playerId: BaronyColor, game: BaronyGameStore) {
+function getPlayerResourcePoints(
+  playerId: BaronyColor,
+  game: BaronyGameStore,
+): number {
   const player = game.getPlayer(playerId);
   let sum = 0;
   for (const resource of BARONY_RESOURCE_TYPES) {
@@ -443,7 +446,7 @@ export function isPlayerWinning(
   return BARONY_WINNING_POINTS.includes(player.score);
 }
 
-export function getResourcePoints(resource: BaronyResourceType) {
+export function getResourcePoints(resource: BaronyResourceType): number {
   switch (resource) {
     case 'fields':
       return 5;
@@ -456,7 +459,7 @@ export function getResourcePoints(resource: BaronyResourceType) {
   }
 }
 
-export function getResourceVicotryPoints(resource: BaronyResourceType) {
+export function getResourceVicotryPoints(resource: BaronyResourceType): number {
   switch (resource) {
     case 'fields':
       return 3;
@@ -515,7 +518,7 @@ function hasOneOrMoreOpponentKnight(
   land: BaronyLandCoordinates,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return hasPawnsByColor(
     land,
@@ -530,7 +533,7 @@ function hasOneOrMoreOwnKnight(
   land: BaronyLandCoordinates,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return hasPawnsByColor(
     land,
@@ -545,7 +548,7 @@ function hasTwoOrMoreOwnKigths(
   land: BaronyLandCoordinates,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return hasPawnsByColor(
     land,
@@ -560,7 +563,7 @@ function hasTwoOrMorePawnsOfSameOpponent(
   land: BaronyLandCoordinates,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return hasPawnsByColor(
     land,
@@ -577,7 +580,7 @@ function hasPawnsByColor(
   pawnFilter: ((p: BaronyPawnType) => boolean) | null,
   colorFilter: ((c: BaronyColor) => boolean) | null,
   game: BaronyGameStore,
-) {
+): boolean {
   const land = game.getLand(landCoordinates);
   const pawns: Record<BaronyColor, number> = {
     yellow: 0,
@@ -599,7 +602,7 @@ function hasPawnInReserve(
   pawnType: BaronyPawnType,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   return hasPawnsInReserve(1, pawnType, playerId, game);
 }
 
@@ -608,7 +611,7 @@ function hasPawnsInReserve(
   pawnType: BaronyPawnType,
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return player.pawns[pawnType] >= quantity;
 }
@@ -616,7 +619,7 @@ function hasPawnsInReserve(
 export function hasResourcesToTakeForVillageDestruction(
   playerId: BaronyColor,
   game: BaronyGameStore,
-) {
+): boolean {
   const player = game.getPlayer(playerId);
   return BARONY_RESOURCE_TYPES.some((r) => player.resources[r]);
 }

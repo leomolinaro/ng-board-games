@@ -3,6 +3,7 @@ import type { WotrCardId } from '../card/wotr-card-models';
 import type { WotrCompanionId } from '../character/wotr-character-models';
 import { WotrCharacterRules } from '../character/wotr-character-rules';
 import { WotrGameQuery } from '../game/wotr-game-query';
+import type { WotrRegionId } from '../region/wotr-region-models';
 import { WotrRegionStore } from '../region/wotr-region-store';
 import { WotrFellowshipStore } from './wotr-fellowship-store';
 
@@ -36,7 +37,7 @@ export class WotrFellowshipRules {
     return maxLevelCompanions.length > 1;
   }
 
-  validRegionsForDeclaration() {
+  validRegionsForDeclaration(): WotrRegionId[] {
     const startingRegion = this.regionStore.fellowshipRegion();
     const progress = this.fellowshipStore.progress();
     const reachableRegions = this.regionStore.reachableRegions(
@@ -49,7 +50,7 @@ export class WotrFellowshipRules {
   companionSeparationTargetRegions(
     companions: WotrCompanionId[],
     options?: WotrSeparateCompanionsOptions,
-  ) {
+  ): WotrRegionId[] {
     const totalMovement = this.companionSeparationTotalMovement(
       companions,
       options,

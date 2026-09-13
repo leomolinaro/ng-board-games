@@ -217,7 +217,7 @@ export class WotrLogRow implements OnInit {
     return 'during' in log && log.during === 'hunt';
   });
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.debugBreakpoint() && isDevMode()) {
       // eslint-disable-next-line no-debugger
       debugger;
@@ -256,7 +256,9 @@ export class WotrLogRow implements OnInit {
           l.front,
           FRAGMENT_CREATOR,
         );
-        const parsed: WotrLogParsedFragment[] = Array.from(fragments, f => this.parseFragment(f));
+        const parsed: WotrLogParsedFragment[] = Array.from(fragments, (f) =>
+          this.parseFragment(f),
+        );
         if ('card' in l.story) {
           // TODO WOTR combat card label
           parsed.push(
@@ -353,7 +355,9 @@ export class WotrLogRow implements OnInit {
           l.effect,
           FRAGMENT_CREATOR,
         );
-        const parsed: WotrLogParsedFragment[] = Array.from(fragments, f => this.parseFragment(f));
+        const parsed: WotrLogParsedFragment[] = Array.from(fragments, (f) =>
+          this.parseFragment(f),
+        );
         return parsed;
       }
       case 'combat-card':

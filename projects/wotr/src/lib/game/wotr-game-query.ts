@@ -97,13 +97,13 @@ export class WotrGameQuery {
       this.fellowshipStore,
     );
   }
-  messengerOfTheDarkTowerUsed() {
+  messengerOfTheDarkTowerUsed(): boolean {
     return this.characterStore.messengerOfTheDarkTowerUsed();
   }
-  setMessengerOfTheDarkTowerUsed() {
+  setMessengerOfTheDarkTowerUsed(): void {
     this.characterStore.setMessengerOfTheDarkTowerUsed();
   }
-  resetMessengerOfTheDarkTower() {
+  resetMessengerOfTheDarkTower(): void {
     this.characterStore.resetMessengerOfTheDarkTower();
   }
   minions = [
@@ -205,7 +205,7 @@ export class WotrGameQuery {
     return this.regions().filter((region) => region.isStronghold());
   }
 
-  nEyesInHuntBox() {
+  nEyesInHuntBox(): number {
     return this.huntStore.nHuntDice();
   }
 }

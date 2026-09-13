@@ -91,13 +91,13 @@ export class BaronyKnightsSelector {
   protected enableIncrease = computed(() => this.number() < this.max());
   protected enableDecrease = computed(() => this.number() > this.min());
 
-  increase() {
+  increase(): void {
     if (this.enableIncrease()) {
       this.numberChange.emit(this.number() + 1);
     }
   }
 
-  decrease() {
+  decrease(): void {
     if (this.enableDecrease()) {
       this.numberChange.emit(this.number() - 1);
     }

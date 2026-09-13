@@ -1,9 +1,12 @@
-import type { WotrCharacterId } from '../character/wotr-character-models';
+import type {
+  WotrCharacterId,
+  WotrCompanionId,
+} from '../character/wotr-character-models';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrNationId } from '../nation/wotr-nation-models';
 import type { WotrArmy } from '../unit/wotr-unit-models';
 import type { WotrUnitUtils } from '../unit/wotr-unit-utils';
-import type { WotrRegionId } from './wotr-region-models';
+import type { WotrRegion, WotrRegionId } from './wotr-region-models';
 import type { WotrRegionStore } from './wotr-region-store';
 
 export class WotrRegionQuery {
@@ -13,19 +16,19 @@ export class WotrRegionQuery {
     private unitUtils: WotrUnitUtils,
   ) {}
 
-  private query(regionId: WotrRegionId) {
+  private query(regionId: WotrRegionId): WotrRegionQuery {
     return new WotrRegionQuery(regionId, this.regionStore, this.unitUtils);
   }
 
-  id() {
+  id(): WotrRegionId {
     return this.regionId;
   }
 
-  region() {
+  region(): WotrRegion {
     return this.regionStore.region(this.regionId);
   }
 
-  isCoastal() {
+  isCoastal(): boolean {
     return this.region().seaside;
   }
 
@@ -78,15 +81,15 @@ export class WotrRegionQuery {
       .map((r) => this.query(r));
   }
 
-  isStronghold() {
+  isStronghold(): boolean {
     return this.region().settlement === 'stronghold';
   }
 
-  isCity() {
+  isCity(): boolean {
     return this.region().settlement === 'city';
   }
 
-  isFreePeoplesRegion() {
+  isFreePeoplesRegion(): boolean {
     return this.region().frontId === 'free-peoples';
   }
 
@@ -102,7 +105,7 @@ export class WotrRegionQuery {
     return this.regionStore.isFreeForArmyMovement(this.regionId, frontId);
   }
 
-  hasArmy(frontId: WotrFrontId) {
+  hasArmy(frontId: WotrFrontId): boolean {
     return this.army(frontId) != null;
   }
 
@@ -115,7 +118,7 @@ export class WotrRegionQuery {
     return null;
   }
 
-  hasArmyNotUnderSiege(frontId: WotrFrontId) {
+  hasArmyNotUnderSiege(frontId: WotrFrontId): boolean {
     return this.armyNotUnderSiege(frontId) != null;
   }
 
@@ -126,13 +129,13 @@ export class WotrRegionQuery {
     return null;
   }
 
-  isBesiegedBy(frontId: WotrFrontId) {
+  isBesiegedBy(frontId: WotrFrontId): boolean {
     const region = this.regionStore.region(this.regionId);
     if (!region.underSiegeArmy) return false;
     return region.underSiegeArmy.front !== frontId;
   }
 
-  hasRegularUnitsOfNation(nationId: WotrNationId) {
+  hasRegularUnitsOfNation(nationId: WotrNationId): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army &&
@@ -146,7 +149,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasEliteUnitsOfNation(nationId: WotrNationId) {
+  hasEliteUnitsOfNation(nationId: WotrNationId): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army &&
@@ -160,7 +163,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasArmyUnitsOfNation(nationId: WotrNationId) {
+  hasArmyUnitsOfNation(nationId: WotrNationId): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army &&
@@ -171,7 +174,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasLeadersOfNation(nationId: WotrNationId) {
+  hasLeadersOfNation(nationId: WotrNationId): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasUnitsOfNation(nationId, region.army)) ??
@@ -181,7 +184,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasNazgul() {
+  hasNazgul(): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasNazgul(region.army)) ??
@@ -192,7 +195,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasCompanions() {
+  hasCompanions(): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasCompanions(region.army)) ??
@@ -203,7 +206,7 @@ export class WotrRegionQuery {
     );
   }
 
-  companions() {
+  companions(): WotrCompanionId[] {
     const region = this.regionStore.region(this.regionId);
     if (region.army && this.unitUtils.hasCompanions(region.army))
       return this.unitUtils.getCompanions(region.army);
@@ -217,7 +220,7 @@ export class WotrRegionQuery {
     return [];
   }
 
-  hasMinions() {
+  hasMinions(): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       (region.army && this.unitUtils.hasMinions(region.army)) ??
@@ -228,7 +231,7 @@ export class WotrRegionQuery {
     );
   }
 
-  hasCharacter(characterId: WotrCharacterId) {
+  hasCharacter(characterId: WotrCharacterId): boolean {
     const region = this.regionStore.region(this.regionId);
     return (
       region.army?.characters?.includes(characterId) ??
@@ -238,16 +241,16 @@ export class WotrRegionQuery {
     );
   }
 
-  hasFellowship() {
+  hasFellowship(): boolean {
     const region = this.regionStore.region(this.regionId);
     return region.fellowship;
   }
 
-  isUnconquered() {
+  isUnconquered(): boolean {
     return this.regionStore.isUnconquered(this.regionId);
   }
 
-  isUnderSiege(frontId: WotrFrontId) {
+  isUnderSiege(frontId: WotrFrontId): boolean {
     const region = this.region();
     return region.underSiegeArmy?.front === frontId;
   }

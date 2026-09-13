@@ -34,7 +34,7 @@ export class WotrHuntHandler {
   private logger = inject(WotrLogWriter);
   private characters = lazyInject(WotrCharacters);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<KomeCorruptSovereign>(
@@ -172,15 +172,15 @@ export class WotrHuntHandler {
     return { hideFor: 'free-peoples' };
   }
 
-  private nDice(quantity: number) {
+  private nDice(quantity: number): string {
     return `${quantity} ${quantity === 1 ? 'die' : 'dice'}`;
   }
 
-  private dice(dice: number[]) {
+  private dice(dice: number[]): string {
     return dice.join(', ');
   }
 
-  lidlessEyeChange(dice: WotrActionDie[]) {
+  lidlessEyeChange(dice: WotrActionDie[]): void {
     for (const die of dice) {
       this.frontStore.removeActionDie(die, 'shadow');
     }
@@ -200,18 +200,18 @@ export class WotrHuntHandler {
   async startCorruptionAttempt(
     sovereign: KomeSovereignId,
     tile: WotrHuntTileId,
-  ) {
+  ): Promise<void> {
     this.huntStore.drawCorruptionTile(tile);
     this.huntStore.startCorruptionAttempt(sovereign, tile);
     await this.corruptionFlow.corruptionAttempt();
   }
 
-  continueCorruptionAttempt(tile: WotrHuntTileId) {
+  continueCorruptionAttempt(tile: WotrHuntTileId): void {
     this.huntStore.drawCorruptionTile(tile);
     this.huntStore.continueCorruptionAttempt(tile);
   }
 
-  stopCorruptionAttempt(tile: WotrHuntTileId) {
+  stopCorruptionAttempt(tile: WotrHuntTileId): void {
     const corruptionAttempt = this.huntStore.getCorruptionAttempt();
     if (!corruptionAttempt)
       throw new Error('No corruption attempt in progress');

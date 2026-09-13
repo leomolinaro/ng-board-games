@@ -20,7 +20,7 @@ import {
 } from '@taiga-ui/kit';
 import { TuiNavigation } from '@taiga-ui/layout';
 import type { Observable } from 'rxjs';
-import { map, of } from 'rxjs';
+import { map } from 'rxjs';
 import { BgAuthService } from '../../authentication';
 import { BgAccountButton } from '../../authentication/bg-account-button';
 import { BgIfUserDirective } from '../../authentication/bg-if-user-of.directive';
@@ -125,7 +125,7 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     );
   }
 
-  protected async openNewGameDialog() {
+  protected async openNewGameDialog(): Promise<void> {
     const game = await this.dialogs.open<void, NewGame>(BgNewGameDialog, {
       label: 'New Game',
       size: 's',
@@ -134,7 +134,7 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     await this.createGame(game);
   }
 
-  private async createGame(game: NewGame) {
+  private async createGame(game: NewGame): Promise<void> {
     const user = this.authService.getUser();
     const protoGame: Omit<BgProtoGame, 'id'> = {
       ...game,
@@ -149,7 +149,10 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     await this.playersRoom(savedProtoGame);
   }
 
-  private insertProtoPlayer(id: Pid, gameId: string) {
+  private insertProtoPlayer(
+    id: Pid,
+    gameId: string,
+  ): Promise<BgProtoPlayer<Pid>> {
     const player: BgProtoPlayer<Pid> = {
       id: id,
       name: '',
@@ -160,15 +163,17 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     return this.protoGameService.insertProtoPlayer(player, gameId);
   }
 
-  deleteGame(game: BgProtoGame) {
+  deleteGame(game: BgProtoGame): void {
     void this.deleteGameId(game.id);
   }
 
-  async enterGame(game: BgProtoGame) {
-    return game.state === 'running' ? this.config().startGame(game.id) : this.playersRoom(game);
+  async enterGame(game: BgProtoGame): Promise<void> {
+    return game.state === 'running'
+      ? this.config().startGame(game.id)
+      : this.playersRoom(game);
   }
 
-  private async playersRoom(game: BgProtoGame) {
+  private async playersRoom(game: BgProtoGame): Promise<void> {
     const output = await this.dialogs.open<
       BgRoomDialogInput<Pid, Opt>,
       BgRoomDialogOutput
@@ -184,13 +189,12 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
       },
     });
     if (output?.startGame) return this.config().startGame(output.gameId);
-    return of(void 0);
   }
 
   private async createGame$(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<Pid>[],
-  ) {
+  ): Promise<void> {
     const activeProtoPlayers = protoPlayers.filter(
       (p) => p.type === 'user' || p.type === 'ai',
     );
@@ -201,7 +205,7 @@ export class BgHome<Pid extends string, Opt> implements OnInit {
     );
   }
 
-  private async deleteGameId(gameId: string) {
+  private async deleteGameId(gameId: string): Promise<void> {
     await this.config().deleteGame(gameId);
     await this.protoGameService.deleteProtoPlayers(gameId);
     await this.protoGameService.deleteProtoGame(gameId);

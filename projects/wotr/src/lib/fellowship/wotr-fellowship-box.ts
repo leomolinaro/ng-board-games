@@ -1,12 +1,5 @@
-import type {
-  Signal} from '@angular/core';
-import {
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import type { Signal } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameQuery } from '../game/wotr-game-query';
 import type { WotrFellowship } from './wotr-fellowship-models';
@@ -80,10 +73,10 @@ export class WotrFellowshipBox {
 
   private assets = inject(WotrAssetsStore);
 
-  private getX(index: number) {
+  private getX(index: number): number {
     return X0 + (index % NPERROW) * XSTEP;
   }
-  private getY(index: number) {
+  private getY(index: number): number {
     return Y0 + Math.floor(index / NPERROW) * YSTEP;
   }
 

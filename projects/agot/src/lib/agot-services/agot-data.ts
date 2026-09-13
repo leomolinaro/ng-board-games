@@ -69,30 +69,36 @@ export class AgotData {
   readonly packs = signal<AgotPack[]>([]);
   readonly types = signal<AgotType[]>([]);
 
-  getCards(options?: { onlyOfficial: boolean }) {
+  getCards(options?: { onlyOfficial: boolean }): AgotCard[] {
     return this.filterCards(this.cards!, options);
   }
-  getPacks(options?: { onlyOfficial: boolean }) {
+  getPacks(options?: { onlyOfficial: boolean }): AgotPack[] {
     return this.filterPacks(this.packs(), options);
   }
-  getCard(cardCode: string) {
+  getCard(cardCode: string): AgotCard | undefined {
     return this.cardMap[cardCode];
   }
-  getFactions() {
+  getFactions(): AgotFaction[] {
     return this.factions();
   }
 
-  private filterCards(cards: AgotCard[], options?: { onlyOfficial: boolean }) {
+  private filterCards(
+    cards: AgotCard[],
+    options?: { onlyOfficial: boolean },
+  ): AgotCard[] {
     if (options?.onlyOfficial) {
-        return cards.filter((c) => this.officialPackCodes[c.pack_code]);
-      }
+      return cards.filter((c) => this.officialPackCodes[c.pack_code]);
+    }
     return cards;
   }
 
-  private filterPacks(packs: AgotPack[], options?: { onlyOfficial: boolean }) {
+  private filterPacks(
+    packs: AgotPack[],
+    options?: { onlyOfficial: boolean },
+  ): AgotPack[] {
     if (options?.onlyOfficial) {
-        return packs.filter((p) => this.officialPackCodes[p.code]);
-      }
+      return packs.filter((p) => this.officialPackCodes[p.code]);
+    }
     return packs;
   }
 

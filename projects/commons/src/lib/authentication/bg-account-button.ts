@@ -90,18 +90,18 @@ export class BgAccountButton {
 
   protected dropdownOpen = false;
 
-  onSignInClick(type: BgUserLoginType) {
+  onSignInClick(type: BgUserLoginType): void {
     this.authService.signIn$(type).subscribe();
   }
 
-  onSignOutClick() {
+  onSignOutClick(): void {
     this.authService
       .signOut$()
       .pipe(switchMap(() => this.router.navigate([''])))
       .subscribe();
   }
 
-  onDeleteAccountClick() {
+  onDeleteAccountClick(): void {
     this.authService
       .deleteUser$()
       .pipe(switchMap(() => this.router.navigate([''])))

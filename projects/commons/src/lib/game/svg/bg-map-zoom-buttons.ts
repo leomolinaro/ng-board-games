@@ -145,28 +145,28 @@ import type { BgMapZoom } from './bg-map-zoom';
 export class BgMapZoomButtons {
   readonly controls = input.required<BgMapZoom>();
 
-  onMoveUp() {
+  onMoveUp(): void {
     this.controls().moveUp();
   }
-  onMoveDown() {
+  onMoveDown(): void {
     this.controls().moveDown();
   }
-  onMoveLeft() {
+  onMoveLeft(): void {
     this.controls().moveLeft();
   }
-  onMoveRight() {
+  onMoveRight(): void {
     this.controls().moveRight();
   }
-  onZoomIn() {
+  onZoomIn(): void {
     this.controls().zoomIn();
   }
-  onZoomOut() {
+  onZoomOut(): void {
     this.controls().zoomOut();
   }
-  onReset() {
+  onReset(): void {
     this.controls().reset();
   }
-  onAutoSize() {
+  onAutoSize(): void {
     this.controls().autoSize();
   }
 }

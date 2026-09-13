@@ -118,10 +118,8 @@ export class SorcererAbility implements WotrUiAbility<WotrAfterCombatRound> {
   private isCharacterInBattle(
     character: WotrCharacterId,
     combatRound: WotrCombatRound,
-  ) {
-    if (this.battleStore.isCharacterInRetroguard(character)) {
-      return false;
-    }
+  ): boolean {
+    if (this.battleStore.isCharacterInRetroguard(character)) return false;
     return this.q.character(character).isIn(combatRound.action.fromRegion);
   }
 }

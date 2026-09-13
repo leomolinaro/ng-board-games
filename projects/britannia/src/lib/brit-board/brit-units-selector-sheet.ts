@@ -38,7 +38,7 @@ export class BritUnitsSelectorSheet implements OnInit {
   imageSource!: string;
   quantity!: number;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.quantity = this.data.quantity;
     this.imageSource = this.assetsService.getUnitImageSourceByType(
       this.data.unit.type,
@@ -46,11 +46,11 @@ export class BritUnitsSelectorSheet implements OnInit {
     );
   }
 
-  onCloseClick() {
+  onCloseClick(): void {
     this.context.completeWith(undefined);
   }
 
-  onConfirm() {
+  onConfirm(): void {
     this.context.completeWith(this.quantity);
   }
 }

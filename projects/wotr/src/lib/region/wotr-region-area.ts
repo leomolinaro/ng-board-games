@@ -312,7 +312,10 @@ export class WotrRegionArea {
     return node;
   });
 
-  private setNodeCoordinates(regionId: WotrRegionId, node: WotrRegionNode) {
+  private setNodeCoordinates(
+    regionId: WotrRegionId,
+    node: WotrRegionNode,
+  ): void {
     const nGroups = (node.army ? 1 : 0) + node.freeGroups.length;
     let index = 0;
     const army = node.army;
@@ -650,7 +653,7 @@ export class WotrRegionArea {
   private compareFreePeopleLeaders(
     a: WotrCharacter | WotrNationId,
     b: WotrCharacter | WotrNationId,
-  ) {
+  ): number {
     if (typeof a === 'string')
       return typeof b === 'string' ? a.localeCompare(b) : -1;
     if (typeof b === 'string') return 1;
@@ -664,25 +667,20 @@ export class WotrRegionArea {
   private compareShadowLeaders(
     a: WotrCharacter | 'nazgul',
     b: WotrCharacter | 'nazgul',
-  ) {
-    if (a === 'nazgul') {
-      return b === 'nazgul' ? 0 : 1;
-    }
-    if (b === 'nazgul') {
-      return -1;
-    }
+  ): number {
+    if (a === 'nazgul') return b === 'nazgul' ? 0 : 1;
+    if (b === 'nazgul') return -1;
     for (const m of SORTED_MINIONS) {
-      if (a.id === m) {
-        return -1;
-      }
-      if (b.id === m) {
-        return 1;
-      }
+      if (a.id === m) return -1;
+      if (b.id === m) return 1;
     }
     return 0;
   }
 
-  private compareFreePeopleFreeUnits(a: WotrCharacter, b: WotrCharacter) {
+  private compareFreePeopleFreeUnits(
+    a: WotrCharacter,
+    b: WotrCharacter,
+  ): number {
     for (const c of SORTED_COMPANIONS) {
       if (a.id === c) {
         return -1;
@@ -697,7 +695,7 @@ export class WotrRegionArea {
   private compareShadowFreeUnits(
     a: WotrCharacter | 'nazgul',
     b: WotrCharacter | 'nazgul',
-  ) {
+  ): number {
     return this.compareShadowLeaders(a, b);
   }
 

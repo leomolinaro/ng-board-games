@@ -93,19 +93,19 @@ export function unitTypeMatchLabel(type: WotrRegionUnitTypeMatch): string {
   }
 }
 
-export function regular(nation: WotrNationId, quantity = 1) {
+export function regular(nation: WotrNationId, quantity = 1): WotrUnitComposer {
   return new WotrNationUnitComposer('regulars', nation, quantity);
 }
-export function elite(nation: WotrNationId, quantity = 1) {
+export function elite(nation: WotrNationId, quantity = 1): WotrUnitComposer {
   return new WotrNationUnitComposer('elites', nation, quantity);
 }
-export function leader(nation: WotrNationId, quantity = 1) {
+export function leader(nation: WotrNationId, quantity = 1): WotrUnitComposer {
   return new WotrNationUnitComposer('leaders', nation, quantity);
 }
-export function nazgul(quantity = 1) {
+export function nazgul(quantity = 1): WotrUnitComposer {
   return new WotrNazgulComposer(quantity);
 }
-export function character(...characters: WotrCharacterId[]) {
+export function character(...characters: WotrCharacterId[]): WotrUnitComposer {
   return new WotrCharacterComposer(characters);
 }
 
@@ -118,7 +118,7 @@ class WotrNationUnitComposer implements WotrUnitComposer {
     private nationId: WotrNationId,
     private quantity: number,
   ) {}
-  addTo(units: WotrUnits) {
+  addTo(units: WotrUnits): WotrUnits {
     let slot = units[this.field];
     if (!slot) {
       slot = [];
@@ -130,7 +130,7 @@ class WotrNationUnitComposer implements WotrUnitComposer {
 }
 class WotrNazgulComposer implements WotrUnitComposer {
   constructor(private quantity: number) {}
-  addTo(units: WotrUnits) {
+  addTo(units: WotrUnits): WotrUnits {
     units.nNazgul ??= 0;
     units.nNazgul += this.quantity;
     return units;
@@ -138,7 +138,7 @@ class WotrNazgulComposer implements WotrUnitComposer {
 }
 class WotrCharacterComposer implements WotrUnitComposer {
   constructor(private characters: WotrCharacterId[]) {}
-  addTo(units: WotrUnits) {
+  addTo(units: WotrUnits): WotrUnits {
     units.characters ??= [];
     for (const m of this.characters) units.characters.push(m);
     return units;

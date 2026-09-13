@@ -55,7 +55,7 @@ export class WotrGameFlow {
 
   private setupService = inject(WotrSetupRules);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerStory('base', this.baseStory);
   }
 
@@ -66,7 +66,7 @@ export class WotrGameFlow {
     }
   };
 
-  async game(config: WotrGameConfig) {
+  async game(config: WotrGameConfig): Promise<void> {
     this.setup(config);
     try {
       let roundNumber = 0;
@@ -84,7 +84,7 @@ export class WotrGameFlow {
     this.logger.logEndGame();
   }
 
-  private setup(config: WotrGameConfig) {
+  private setup(config: WotrGameConfig): void {
     const gameSetup = this.setupService.getGameSetup(config);
     this.logger.logSetup();
     this.applySetup(gameSetup);
@@ -93,7 +93,7 @@ export class WotrGameFlow {
     );
   }
 
-  private async round(roundNumber: number) {
+  private async round(roundNumber: number): Promise<boolean> {
     this.logger.logRound(roundNumber);
     let continueGame = await this.firstPhase();
     if (!continueGame) return false;
@@ -109,7 +109,7 @@ export class WotrGameFlow {
     return !!continueGame;
   }
 
-  private async firstPhase() {
+  private async firstPhase(): Promise<boolean> {
     this.logger.logPhase(1);
     this.huntStore.resetHuntBox();
     this.frontStore.resetElvenRingUsed('free-peoples');
@@ -123,7 +123,7 @@ export class WotrGameFlow {
     return true;
   }
 
-  private async checkFirstPhaseDiscard() {
+  private async checkFirstPhaseDiscard(): Promise<void> {
     const players: WotrPlayer[] = [];
     if (this.q.freePeoples.hasExcessCards()) {
       players.push(this.freePeoples);
@@ -138,14 +138,14 @@ export class WotrGameFlow {
     }
   }
 
-  private async fellowshipPhase() {
+  private async fellowshipPhase(): Promise<boolean> {
     this.logger.logPhase(2);
     await this.freePeoples.fellowshipPhase();
     this.checkMoveToMordorTrack();
     return true;
   }
 
-  private checkMoveToMordorTrack() {
+  private checkMoveToMordorTrack(): void {
     const fellowshipRegion = this.regionStore.fellowshipRegion();
     if (
       fellowshipRegion === 'morannon' ||
@@ -158,13 +158,13 @@ export class WotrGameFlow {
     }
   }
 
-  private async huntAllocation() {
+  private async huntAllocation(): Promise<boolean> {
     this.logger.logPhase(3);
     await this.shadow.huntAllocationPhase();
     return true;
   }
 
-  private async actionRoll() {
+  private async actionRoll(): Promise<boolean> {
     this.logger.logPhase(4);
     await this.rollActionDice();
     if (this.q.kome()) await this.rulerDiceChoice();
@@ -172,7 +172,7 @@ export class WotrGameFlow {
     return true;
   }
 
-  private eyeResultsToHuntBox() {
+  private eyeResultsToHuntBox(): void {
     let nEyeResults = 0;
     for (const die of this.frontStore.shadowFront().actionDice) {
       if (die === 'eye') nEyeResults++;
@@ -181,7 +181,7 @@ export class WotrGameFlow {
     this.huntStore.addHuntDice(nEyeResults);
   }
 
-  private async actionResolution() {
+  private async actionResolution(): Promise<boolean> {
     this.logger.logPhase(5);
     let player: WotrPlayer | null = this.getFirstResolutionFrontId();
     while (player) {
@@ -224,7 +224,7 @@ export class WotrGameFlow {
     }
   }
 
-  private victoryCheck() {
+  private victoryCheck(): boolean {
     this.logger.logPhase(6);
     const shadow = this.frontStore.shadowFront();
     if (shadow.victoryPoints >= 10) {
@@ -277,7 +277,7 @@ export class WotrGameFlow {
     }
   }
 
-  private applySetup(setup: WotrSetup) {
+  private applySetup(setup: WotrSetup): void {
     for (const d of setup.decks) {
       this.frontStore.setCharacterDeck(d.characterDeck, d.front);
       this.frontStore.setStrategyDeck(d.strategyDeck, d.front);

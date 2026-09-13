@@ -64,15 +64,16 @@ export class BgNewGameDialog {
 
   protected game = signal<NewGame>({ name: '', online: false });
 
-  protected typeGameStringify = ({ $implicit }: { $implicit: string }) =>
-    $implicit === 'online' ? 'Online' : 'Local';
-  protected gameValid = () => this.game().name.trim().length > 0;
+  protected typeGameStringify: (context: { $implicit: string }) => string = ({
+    $implicit,
+  }) => ($implicit === 'online' ? 'Online' : 'Local');
+  protected gameValid: () => boolean = () => this.game().name.trim().length > 0;
 
-  protected nameChange(name: string) {
+  protected nameChange(name: string): void {
     this.game.update((game) => ({ ...game, name }));
   }
 
-  protected onlineChange(online: boolean) {
+  protected onlineChange(online: boolean): void {
     this.game.update((game) => ({ ...game, online }));
   }
 }

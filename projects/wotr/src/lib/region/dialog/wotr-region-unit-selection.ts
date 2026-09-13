@@ -184,7 +184,7 @@ class DisbandSelectionMode implements WotrRegionUnitSelectionMode {
     private underSiege: boolean,
   ) {}
 
-  initialize(unitNodes: UnitNode[]) {
+  initialize(unitNodes: UnitNode[]): void {
     const group = this.underSiege ? 'underSiege' : 'army';
     for (const unitNode of unitNodes) {
       if (
@@ -215,7 +215,7 @@ export class MoveArmySelectionMode implements WotrRegionUnitSelectionMode {
     private unitUtils: WotrUnitUtils,
   ) {}
 
-  initialize(unitNodes: UnitNode[], region: WotrRegion) {
+  initialize(unitNodes: UnitNode[], region: WotrRegion): void {
     if (this.unitSelection.retroguard)
       unitNodes = removeUnitNodes(unitNodes, this.unitSelection.retroguard);
     for (const doneMovement of this.unitSelection.doneMovements) {
@@ -363,7 +363,7 @@ export class AttackSelectionMode implements WotrRegionUnitSelectionMode {
     private unitModifiers: WotrUnitModifiers,
   ) {}
 
-  initialize(unitNodes: UnitNode[], region: WotrRegion) {
+  initialize(unitNodes: UnitNode[], region: WotrRegion): void {
     const isUnderSiegeArmy =
       region.underSiegeArmy?.front === this.selection.frontId;
     for (const unitNode of unitNodes) {
@@ -436,7 +436,7 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
     private q: WotrGameQuery,
   ) {}
 
-  initialize(unitNodes: UnitNode[]) {
+  initialize(unitNodes: UnitNode[]): void {
     for (const unitNode of unitNodes) {
       if (unitNode.type !== 'character') continue;
       if (
@@ -466,7 +466,7 @@ export class MoveCharactersSelectionMode implements WotrRegionUnitSelectionMode 
 export class MoveNazgulSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(private unitSelection: WotrMovingNazgulUnitSelection) {}
 
-  initialize(unitNodes: UnitNode[]) {
+  initialize(unitNodes: UnitNode[]): void {
     for (const unitNode of unitNodes) {
       if (!(
         unitNode.type === 'nazgul' ||
@@ -491,7 +491,7 @@ export class MoveNazgulSelectionMode implements WotrRegionUnitSelectionMode {
 export class ChooseCasualtiesSelectionMode implements WotrRegionUnitSelectionMode {
   constructor(private unitSelection: WotrChooseCasualtiesUnitSelection) {}
 
-  initialize(unitNodes: UnitNode[]) {
+  initialize(unitNodes: UnitNode[]): void {
     if (this.unitSelection.retroguard) {
       unitNodes = removeUnitNodes(unitNodes, this.unitSelection.retroguard);
     }

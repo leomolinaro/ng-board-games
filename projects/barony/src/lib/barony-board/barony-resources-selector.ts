@@ -40,7 +40,7 @@ export class BaronyResourcesSelector {
   readonly resources = input.required<BaronyResourceType[]>();
   readonly resourceClick = output<BaronyResourceType>();
 
-  onResourceClick(resource: BaronyResourceType) {
+  onResourceClick(resource: BaronyResourceType): void {
     this.resourceClick.emit(resource);
   }
 }

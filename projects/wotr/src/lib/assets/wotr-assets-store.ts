@@ -51,7 +51,7 @@ export class WotrAssetsStore {
     this.init();
   }
 
-  private init() {
+  private init(): void {
     this.initNations();
     this.initCharacters();
   }
@@ -59,10 +59,10 @@ export class WotrAssetsStore {
   mapSlotsPath(): string {
     return `${BASE_PATH}/wotr-map-slots.json`;
   }
-  mapImageSource() {
+  mapImageSource(): string {
     return `${BASE_PATH}/map.jpg`;
   }
-  mapSvgSource() {
+  mapSvgSource(): string {
     return `${BASE_PATH}/map.svg`;
   }
 
@@ -72,7 +72,7 @@ export class WotrAssetsStore {
     { regular: WotrUnitImage; elite: WotrUnitImage; leader?: WotrUnitImage }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   > = {} as any;
-  armyUnitImage(type: WotrArmyUnitType, nationId: WotrNationId) {
+  armyUnitImage(type: WotrArmyUnitType, nationId: WotrNationId): WotrUnitImage {
     switch (type) {
       case 'regular':
         return this.NATION_BY_ID[nationId].regular;
@@ -80,10 +80,10 @@ export class WotrAssetsStore {
         return this.NATION_BY_ID[nationId].elite;
     }
   }
-  leaderImage(nationId: WotrNationId) {
+  leaderImage(nationId: WotrNationId): WotrUnitImage {
     return this.NATION_BY_ID[nationId].leader!;
   }
-  private initNations() {
+  private initNations(): void {
     this.NATION_BY_ID.dwarves = {
       regular: this.unitImage('dwarven-regular', 23, 34),
       elite: this.unitImage('dwarven-elite', 27, 42),
@@ -124,13 +124,13 @@ export class WotrAssetsStore {
   }
 
   private NAZGUL: WotrUnitImage = this.unitImage('nazgul', 42, 67);
-  nazgulImage() {
+  nazgulImage(): WotrUnitImage {
     return this.NAZGUL;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   private CHARACTER_BY_ID: Record<WotrCharacterId, WotrUnitImage> = {} as any;
-  frontCharacterImage(characterId: WotrCharacterId) {
+  frontCharacterImage(characterId: WotrCharacterId): WotrUnitImage {
     return this.CHARACTER_BY_ID[characterId];
   }
   regionCharacterImage(character: WotrCharacter): WotrUnitImage {
@@ -190,7 +190,7 @@ export class WotrAssetsStore {
     };
   }
 
-  private initCharacters() {
+  private initCharacters(): void {
     this.CHARACTER_BY_ID['gandalf-the-grey'] = this.initCharacterImage(
       'gandalf-the-grey',
       31,
@@ -253,11 +253,11 @@ export class WotrAssetsStore {
     this.CHARACTER_BY_ID.ugluk = this.initKomeCharacterImage('ugluk', 49, 57);
   }
 
-  sovereignToken(sovereignId: KomeSovereignId, used: boolean) {
+  sovereignToken(sovereignId: KomeSovereignId, used: boolean): string {
     return `${BASE_PATH}/kome/sovereign-tokens/${sovereignId}${used ? '-used' : ''}.png`;
   }
 
-  sovereignAvatar(sovereignId: KomeSovereignId) {
+  sovereignAvatar(sovereignId: KomeSovereignId): string {
     return `${BASE_PATH}/kome/sovereign-avatars/${sovereignId}.png`;
   }
 
@@ -267,14 +267,14 @@ export class WotrAssetsStore {
     47,
     47,
   );
-  fellowshipImage(revealed: boolean) {
+  fellowshipImage(revealed: boolean): WotrUnitImage {
     return revealed ? this.FELLOWSHIP_REVEALED : this.FELLOWSHIP;
   }
 
-  cardPreviewImage(cardId: WotrCardId) {
+  cardPreviewImage(cardId: WotrCardId): string {
     return `${BASE_PATH}/card-previews/${cardId}.png`;
   }
-  cardImage(cardId: WotrCardId) {
+  cardImage(cardId: WotrCardId): string {
     return `${BASE_PATH}/cards/${cardId}.png`;
   }
 
@@ -314,48 +314,48 @@ export class WotrAssetsStore {
     return { source: `${BASE_PATH}/units/${fileName}.png`, width, height };
   }
 
-  actionDieImage(actionDie: WotrActionDie, front: WotrFrontId) {
+  actionDieImage(actionDie: WotrActionDie, front: WotrFrontId): string {
     if (typeof actionDie === 'string')
       return `${BASE_PATH}/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie}.png`;
     return `${BASE_PATH}/kome/action-dice/${front === 'free-peoples' ? 'fp' : 's'}-${actionDie.result}.png`;
   }
-  actionTokenImage(actionToken: WotrActionToken, front: WotrFrontId) {
+  actionTokenImage(actionToken: WotrActionToken, front: WotrFrontId): string {
     return `${BASE_PATH}/action-tokens/${front === 'free-peoples' ? 'fp' : 's'}-${actionToken}.png`;
   }
-  huntTileImage(huntTile: WotrHuntTileId) {
+  huntTileImage(huntTile: WotrHuntTileId): string {
     if (huntTile.endsWith('km'))
       return `${BASE_PATH}/kome/hunt-tiles/${huntTile}.png`;
     return `${BASE_PATH}/hunt-tiles/${huntTile}.png`;
   }
-  huntTileBack() {
+  huntTileBack(): string {
     return `${BASE_PATH}/hunt-tiles/back.png`;
   }
-  politicalMarkerImage(nationId: WotrNationId, active: boolean) {
+  politicalMarkerImage(nationId: WotrNationId, active: boolean): string {
     return `${BASE_PATH}/political-markers/${nationId}-${active ? 'active' : 'inactive'}.png`;
   }
-  fellowshipProgressCounter(revealed: boolean) {
+  fellowshipProgressCounter(revealed: boolean): string {
     return `${BASE_PATH}/fellowship-counters/fellowship-progress-counter-${revealed ? 'back' : 'front'}.png`;
   }
-  corruptionCounter() {
+  corruptionCounter(): string {
     return `${BASE_PATH}/fellowship-counters/corruption-counter.png`;
   }
-  elvenRingImage(elvenRing: WotrElvenRing) {
+  elvenRingImage(elvenRing: WotrElvenRing): string {
     return `${BASE_PATH}/elven-rings/${elvenRing}.png`;
   }
-  victoryMarker(front: WotrFrontId, points: number) {
+  victoryMarker(front: WotrFrontId, points: number): string {
     return points <= 10
       ? `${BASE_PATH}/victory-markers/${front}.png`
       : `${BASE_PATH}/victory-markers/${front}-10.png`;
   }
-  controlMarker(front: WotrFrontId) {
+  controlMarker(front: WotrFrontId): string {
     return `${BASE_PATH}/control-markers/${front}.png`;
   }
 
-  strongholdShadowFrame() {
+  strongholdShadowFrame(): string {
     return `${BASE_PATH}/settlements/stronghold-shadow-frame.png`;
   }
 
-  helmsDeepIsengardOverlay() {
+  helmsDeepIsengardOverlay(): string {
     return `${BASE_PATH}/settlements/helms-deep-isengard-overlay.png`;
   }
 }

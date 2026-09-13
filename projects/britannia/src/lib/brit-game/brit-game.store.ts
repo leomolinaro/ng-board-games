@@ -54,7 +54,11 @@ export class BritGameStore extends signalStore(
   { protectedState: false },
   withState<BritGameState>(initialState()),
 ) {
-  initGameState(players: BritPlayer[], gameId: string, gameOwner: BgUser) {
+  initGameState(
+    players: BritPlayer[],
+    gameId: string,
+    gameOwner: BgUser,
+  ): void {
     patchState(
       this,
       (s) =>
@@ -70,13 +74,13 @@ export class BritGameStore extends signalStore(
     );
   }
 
-  isTemporaryState() {
+  isTemporaryState(): boolean {
     return !!this.backupState();
   }
-  startTemporaryState() {
+  startTemporaryState(): void {
     patchState(this, (s) => ({ ...s, backupState: s }));
   }
-  endTemporaryState() {
+  endTemporaryState(): void {
     if (this.backupState()) {
       patchState(this, (s) => ({ ...s.backupState, backupState: null }));
     } else {
@@ -91,13 +95,13 @@ export class BritGameStore extends signalStore(
   getPlayer(color: BritColor): BritPlayer {
     return this.players.map()[color]!;
   }
-  getNation(nationId: BritNationId) {
+  getNation(nationId: BritNationId): BritNationState {
     return this.nations()[nationId];
   }
-  getArea(areaId: BritAreaId) {
+  getArea(areaId: BritAreaId): BritAreaState {
     return this.areas()[areaId];
   }
-  getPlayerByNation(nationId: BritNationId) {
+  getPlayerByNation(nationId: BritNationId): BritPlayer | undefined {
     return this.playerList().find((p) => p.nationIds.includes(nationId));
   }
 
@@ -244,7 +248,7 @@ export class BritGameStore extends signalStore(
   //   }));
   // }
 
-  private addLog(log: BritLog) {
+  private addLog(log: BritLog): void {
     patchState(this, (s) => ({
       ...s,
       logs: [...s.logs, log],
@@ -468,7 +472,7 @@ export class BritGameStore extends signalStore(
     );
   }
 
-  applySetup(setup: BritSetup) {
+  applySetup(setup: BritSetup): void {
     patchState(this, (s) => {
       const components = new BritComponents();
       let state = s;
@@ -515,7 +519,7 @@ export class BritGameStore extends signalStore(
     return s;
   }
 
-  applyInfantryPlacement(areaId: BritAreaId, nationId: BritNationId) {
+  applyInfantryPlacement(areaId: BritAreaId, nationId: BritNationId): void {
     patchState(this, (s) => this.placeInfantry(areaId, nationId, s));
   }
 
@@ -523,7 +527,7 @@ export class BritGameStore extends signalStore(
     population: BritPopulation | null,
     infantryPlacement: { areaId: BritAreaId; quantity: number }[],
     nationId: BritNationId,
-  ) {
+  ): void {
     patchState(this, (s) => {
       s = this.setNationPopulation(population, nationId, s);
       for (const ip of infantryPlacement) {
@@ -538,7 +542,7 @@ export class BritGameStore extends signalStore(
   applyArmyMovements(
     armyMovements: BritArmyMovements,
     shouldCountMovements: boolean,
-  ) {
+  ): void {
     patchState(this, (s) => {
       for (const movement of armyMovements.movements) {
         s = this.armyMovement(movement, shouldCountMovements, s);
@@ -588,7 +592,7 @@ export class BritGameStore extends signalStore(
   applyArmyMovement(
     armyMovement: BritArmyMovement,
     shouldCountMovements: boolean,
-  ) {
+  ): void {
     patchState(this, (s) =>
       this.armyMovement(armyMovement, shouldCountMovements, s),
     );
@@ -706,28 +710,28 @@ export class BritGameStore extends signalStore(
   //   this.addVictoryPoints (15, playerId);
   // }
 
-  logSetup() {
+  logSetup(): void {
     this.addLog({ type: 'setup' });
   }
-  logRound(roundId: BritRoundId) {
+  logRound(roundId: BritRoundId): void {
     this.addLog({ type: 'round', roundId: roundId });
   }
-  logNationTurn(nationId: BritNationId) {
+  logNationTurn(nationId: BritNationId): void {
     this.addLog({ type: 'nation-turn', nationId: nationId });
   }
-  logPhase(phase: BritPhase) {
+  logPhase(phase: BritPhase): void {
     this.addLog({ type: 'phase', phase: phase });
   }
-  logPopulationMarkerSet(populationMarker: number | null) {
+  logPopulationMarkerSet(populationMarker: number | null): void {
     this.addLog({ type: 'population-marker-set', populationMarker });
   }
-  logInfantryPlacement(landId: BritLandAreaId, quantity: number) {
+  logInfantryPlacement(landId: BritLandAreaId, quantity: number): void {
     this.addLog({ type: 'infantry-placement', landId, quantity });
   }
-  logInfantryReinforcements(areaId: BritAreaId, quantity: number) {
+  logInfantryReinforcements(areaId: BritAreaId, quantity: number): void {
     this.addLog({ type: 'infantry-reinforcement', areaId, quantity });
   }
-  logArmyMovement(units: BritAreaUnit[], toAreaId: BritAreaId) {
+  logArmyMovement(units: BritAreaUnit[], toAreaId: BritAreaId): void {
     this.addLog({ type: 'army-movement', units, toAreaId });
   }
   // logMovement (movement: BritMovement, player: string) { this.addLog ({ type: "movement", movement: movement, player: player }); }

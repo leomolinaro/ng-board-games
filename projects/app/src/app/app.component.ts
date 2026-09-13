@@ -24,7 +24,7 @@ import { TUI_DARK_MODE, TuiRoot } from '@taiga-ui/core';
 export class AppComponent implements OnInit {
   title = 'app';
   protected readonly darkMode = inject(TUI_DARK_MODE);
-  ngOnInit() {
+  ngOnInit(): void {
     this.darkMode.set(true);
   }
 }

@@ -10,7 +10,7 @@ export class DialogContext<TData, TResult> {
     private readonly tuiContext: TuiDialogContext<TResult | null, TData>,
   ) {}
 
-  complete(result?: TResult | null) {
+  complete(result?: TResult | null): void {
     this.tuiContext.completeWith(result ?? null);
   }
 

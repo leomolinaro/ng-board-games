@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { uiEvent } from '@leobg/commons/utils';
 import { patchState, signalStore, withState } from '@ngrx/signals';
-import { first, skip } from 'rxjs';
+import { first, type Observable, skip } from 'rxjs';
 import type {
   BaronyAction,
   BaronyColor,
@@ -57,7 +57,7 @@ export class BaronyUiStore extends signalStore(
   private currentPlayerId$ = toObservable(this.currentPlayer);
   private turnPlayerId$ = toObservable(this.turnPlayer);
 
-  currentPlayerChange$() {
+  currentPlayerChange$(): Observable<BaronyColor | null> {
     return this.currentPlayerId$.pipe(skip(1), first());
   }
 
@@ -65,7 +65,7 @@ export class BaronyUiStore extends signalStore(
     S extends BaronyUiState & {
       [K in keyof S]: K extends keyof BaronyUiState ? BaronyUiState[K] : never;
     },
-  >(_actionName: string, updater: (state: BaronyUiState) => S) {
+  >(_actionName: string, updater: (state: BaronyUiState) => S): void {
     patchState(this, updater);
   }
 
@@ -89,7 +89,7 @@ export class BaronyUiStore extends signalStore(
     };
   }
 
-  setCurrentPlayer(playerId: BaronyColor | null) {
+  setCurrentPlayer(playerId: BaronyColor | null): void {
     this.updateUi('Set current player', (s) => ({
       ...s,
       currentPlayer: playerId,

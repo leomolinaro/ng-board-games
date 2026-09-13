@@ -59,11 +59,11 @@ export class BritGamePage implements OnInit {
 
   private gameId: string = this.route.snapshot.paramMap.get('gameId')!;
 
-  ngOnInit() {
+  ngOnInit(): void {
     void this.init();
   }
 
-  private async init() {
+  private async init(): Promise<void> {
     const [game, players, stories] = await Promise.all([
       this.remote.getGame(this.gameId),
       this.remote.getPlayers(this.gameId, (ref) => ref.orderBy('sort')),
@@ -86,18 +86,20 @@ export class BritGamePage implements OnInit {
     playerDoc: BritPlayerDoc,
     user: BgUser,
   ): BritPlayer {
-    return playerDoc.isAi ? {
-        ...this.playerDocToAPlayerInit(playerDoc),
-        isAi: true,
-        isLocal: false,
-        isRemote: false,
-      } : {
-        ...this.playerDocToAPlayerInit(playerDoc),
-        isAi: false,
-        controller: playerDoc.controller,
-        isLocal: user.id === playerDoc.controller.id,
-        isRemote: user.id !== playerDoc.controller.id,
-      };
+    return playerDoc.isAi
+      ? {
+          ...this.playerDocToAPlayerInit(playerDoc),
+          isAi: true,
+          isLocal: false,
+          isRemote: false,
+        }
+      : {
+          ...this.playerDocToAPlayerInit(playerDoc),
+          isAi: false,
+          controller: playerDoc.controller,
+          isLocal: user.id === playerDoc.controller.id,
+          isRemote: user.id !== playerDoc.controller.id,
+        };
   }
 
   private playerDocToAPlayerInit(playerDoc: BritPlayerDoc): ABritPlayer {

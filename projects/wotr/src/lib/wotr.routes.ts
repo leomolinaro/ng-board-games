@@ -1,13 +1,15 @@
 import { inject } from '@angular/core';
 import type { Routes } from '@angular/router';
+import { type Observable } from 'rxjs';
 import { WotrMapService } from './game/board/map/wotr-map.service';
 import { WotrGamePage } from './game/wotr-game-page';
 import { WotrHomePage } from './home/wotr-home-page';
 import { WotrScenarioPage } from './scenario/wotr-scenario-page';
 
 const gameResolvers = {
-  mapPaths: () => inject(WotrMapService).loadMapPaths$(),
-  regionSlots: () => inject(WotrMapService).loadRegionSlots$(),
+  mapPaths: (): Observable<boolean> => inject(WotrMapService).loadMapPaths$(),
+  regionSlots: (): Observable<boolean> =>
+    inject(WotrMapService).loadRegionSlots$(),
 };
 
 export const routes: Routes = [

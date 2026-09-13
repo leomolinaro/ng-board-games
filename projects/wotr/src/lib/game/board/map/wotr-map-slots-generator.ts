@@ -70,7 +70,7 @@ export class WotrMapSlotsGenerator {
     xMax: number,
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
-  ) {
+  ): Partial<Record<WotrRegionId, WotrRegionPoints>> {
     const regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>> =
       {};
     const regionPointByYByX: Record<
@@ -101,7 +101,7 @@ export class WotrMapSlotsGenerator {
     coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null,
     regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
     regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
-  ) {
+  ): void {
     for (let x = 0; x < xMax; x++) {
       for (let y = 0; y < yMax; y++) {
         const areaId = coordinatesToAreaId(x, y);
@@ -128,7 +128,7 @@ export class WotrMapSlotsGenerator {
     regions: WotrRegion[],
     regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
     regionPointByYByX: Record<number, Record<number, WotrMapRegionPoint>>,
-  ) {
+  ): void {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       if (!regionPoints)
@@ -175,7 +175,7 @@ export class WotrMapSlotsGenerator {
   private calculateCentralEnergies(
     regions: WotrRegion[],
     regionPointsById: Partial<Record<WotrRegionId, WotrRegionPoints>>,
-  ) {
+  ): void {
     for (const region of regions) {
       const regionPoints = regionPointsById[region.id];
       if (!regionPoints)
@@ -206,18 +206,24 @@ export class WotrMapSlotsGenerator {
     return regionPoint;
   }
 
-  private centralEnergy(innerPoint: WotrMapPoint, outerPoint: WotrMapPoint) {
+  private centralEnergy(
+    innerPoint: WotrMapPoint,
+    outerPoint: WotrMapPoint,
+  ): number {
     return 1 / this.quadDistance(innerPoint, outerPoint);
   }
 
-  private manyBodyEnergy(innerPoint1: WotrMapPoint, innerPoint2: WotrMapPoint) {
+  private manyBodyEnergy(
+    innerPoint1: WotrMapPoint,
+    innerPoint2: WotrMapPoint,
+  ): number {
     return 2 / this.quadDistance(innerPoint1, innerPoint2);
   }
 
   private quadDistance(
     pointA: { x: number; y: number },
     pointB: { x: number; y: number },
-  ) {
+  ): number {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   }
 
@@ -239,7 +245,7 @@ export class WotrMapSlotsGenerator {
     return slots.map((s) => ({ x: s.x, y: s.y }));
   }
 
-  private energy(points: WotrMapRegionPoint[]) {
+  private energy(points: WotrMapRegionPoint[]): number {
     let totEnergy = 0;
     for (let i = 0; i < points.length; i++) {
       const p1 = points[i];

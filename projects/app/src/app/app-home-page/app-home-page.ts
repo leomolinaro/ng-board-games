@@ -90,7 +90,7 @@ export class AppHomePage implements OnInit {
 
   games = GAMES;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.authService.autoSignIn$().subscribe();
   }
 }

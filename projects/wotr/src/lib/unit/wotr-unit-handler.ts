@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import type { WotrCardId } from '../card/wotr-card-models';
 import type { WotrCharacterElimination } from '../character/wotr-character-actions';
 import type {
+  WotrAction,
   WotrActionApplierMap,
   WotrActionLoggerMap,
 } from '../commons/wotr-action-models';
@@ -53,7 +54,7 @@ export class WotrUnitHandler {
   private frontHandler = inject(WotrFrontHandler);
   private q = inject(WotrGameQuery);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
@@ -98,12 +99,12 @@ export class WotrUnitHandler {
     nNazgul: number,
     fromRegion: WotrRegionId,
     toRegion: WotrRegionId,
-  ) {
+  ): void {
     this.removeNazgulFromRegion(nNazgul, fromRegion);
     this.addNazgulToRegion(nNazgul, toRegion);
   }
 
-  moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId) {
+  moveArmy(movement: WotrArmyMovement, frontId: WotrFrontId): void {
     this.regionStore.moveArmy(
       movement.fromRegion,
       movement.toRegion,
@@ -126,7 +127,7 @@ export class WotrUnitHandler {
     }
   }
 
-  recruitNazgul(quantity: number, regionId: WotrRegionId) {
+  recruitNazgul(quantity: number, regionId: WotrRegionId): void {
     this.nationStore.removeNazgulFromReinforcements(quantity);
     this.addNazgulToRegion(quantity, regionId);
   }
@@ -135,7 +136,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeLeadersFromReinforcements(quantity, nationId);
     this.addLeadersToRegion(quantity, nationId, region);
@@ -145,7 +146,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeElitesFromReinforcements(quantity, nationId);
     this.addElitesToRegion(quantity, nationId, region);
@@ -155,7 +156,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     const frontId = frontOfNation(nationId);
     this.removeElitesFromRegion(quantity, nationId, region);
@@ -173,7 +174,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     this.removeElitesFromRegion(quantity, nationId, region);
     this.nationStore.addElitesToReinforcements(quantity, nationId);
@@ -183,7 +184,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     this.nationStore.removeRegularsFromReinforcements(quantity, nationId);
     this.addRegularsToRegion(quantity, nationId, region);
@@ -193,7 +194,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     const frontId = frontOfNation(nationId);
     this.removeRegularsFromRegion(quantity, nationId, region);
@@ -211,7 +212,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.recruitEliteUnit(quantity, nationId, regionId);
     this.eliminateRegularUnit(quantity, nationId, regionId);
   }
@@ -220,7 +221,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const casualties = this.q.nation(nationId).nRegularCasualties();
     const reinforcements = this.q.nation(nationId).nRegularReinforcements();
     const available = casualties + reinforcements;
@@ -248,7 +249,7 @@ export class WotrUnitHandler {
     quantity: number,
     nationId: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     this.removeRegularsFromRegion(quantity, nationId, region);
     this.nationStore.addRegularsToReinforcements(quantity, nationId);
@@ -258,7 +259,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.addRegularsToArmyUnderSiege(quantity, nation, region.id);
     } else {
@@ -270,7 +271,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.removeRegularsFromArmyUnderSiege(
         quantity,
@@ -286,7 +287,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.addElitesToArmyUnderSiege(quantity, nation, region.id);
     } else {
@@ -298,7 +299,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.removeElitesFromArmyUnderSiege(
         quantity,
@@ -314,7 +315,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.addLeadersToArmyUnderSiege(quantity, nation, region.id);
     } else {
@@ -326,12 +327,12 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.removeLeadersFromRegion(quantity, nation, regionId);
     this.nationStore.addLeadersToCasualties(quantity, nation);
   }
 
-  eliminateNazgul(quantity: number, regionId: WotrRegionId) {
+  eliminateNazgul(quantity: number, regionId: WotrRegionId): void {
     this.removeNazgulFromRegion(quantity, regionId);
     this.nationStore.addNazgulToReinforcements(quantity);
   }
@@ -340,7 +341,7 @@ export class WotrUnitHandler {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === frontOfNation(nation)) {
       this.regionStore.removeLeadersFromArmyUnderSiege(
@@ -353,7 +354,7 @@ export class WotrUnitHandler {
     }
   }
 
-  private addNazgulToRegion(quantity: number, regionId: WotrRegionId) {
+  private addNazgulToRegion(quantity: number, regionId: WotrRegionId): void {
     const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === 'shadow') {
       this.regionStore.addNazgulToArmyUnderSiege(quantity, region.id);
@@ -364,7 +365,10 @@ export class WotrUnitHandler {
     }
   }
 
-  private removeNazgulFromRegion(quantity: number, regionId: WotrRegionId) {
+  private removeNazgulFromRegion(
+    quantity: number,
+    regionId: WotrRegionId,
+  ): void {
     const region = this.regionStore.region(regionId);
     if (region.underSiegeArmy?.front === 'shadow') {
       this.regionStore.removeNazgulFromArmyUnderSiege(quantity, region.id);
@@ -457,7 +461,7 @@ export class WotrUnitHandler {
     };
   }
 
-  private logUnit(quantity: number, unitType: WotrGenericUnitType) {
+  private logUnit(quantity: number, unitType: WotrGenericUnitType): string {
     switch (unitType) {
       case 'regular':
         return `${quantity} regular unit${quantity > 1 ? 's' : ''}`;
@@ -477,7 +481,7 @@ export class WotrUnitHandler {
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
     player: WotrPlayer,
-  ) {
+  ): Promise<WotrAction[] | null> {
     const region = this.regionStore.region(regionId);
     const underSiege = region.underSiegeArmy?.front === player.frontId;
     const army = underSiege ? region.underSiegeArmy! : region.army!;
@@ -490,7 +494,7 @@ export class WotrUnitHandler {
     regionId: WotrRegionId,
     cardId: WotrCardId | null,
     player: WotrPlayer,
-  ) {
+  ): Promise<WotrAction[] | null> {
     if (!nTotalHits) return null;
     const nHits = this.unitUtils.nHits(army);
     if (nTotalHits < nHits) {

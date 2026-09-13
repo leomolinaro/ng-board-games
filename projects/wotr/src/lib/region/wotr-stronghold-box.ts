@@ -106,11 +106,11 @@ const STRONGHOLD: Partial<Record<WotrRegionId, [number, number]>> = {
   umbar: [7, 1],
 };
 
-function svgX(regionId: WotrRegionId) {
+function svgX(regionId: WotrRegionId): number {
   return STRONGHOLD[regionId]![1] * 54 + 26;
 }
 
-function svgY(regionId: WotrRegionId) {
+function svgY(regionId: WotrRegionId): number {
   return STRONGHOLD[regionId]![0] * 54 + 155;
 }
 
@@ -291,7 +291,10 @@ export class WotrStrongholdBox {
     return node;
   });
 
-  private setNodeCoordinates(regionId: WotrRegionId, node: WotrRegionNode) {
+  private setNodeCoordinates(
+    regionId: WotrRegionId,
+    node: WotrRegionNode,
+  ): void {
     const army = node.army;
     if (army) {
       army.svgX = svgX(regionId);
@@ -486,7 +489,7 @@ export class WotrStrongholdBox {
   private compareFreePeopleLeaders(
     a: WotrCharacter | WotrNationId,
     b: WotrCharacter | WotrNationId,
-  ) {
+  ): number {
     if (typeof a === 'string') {
       if (typeof b !== 'string') return 1;
       return a.localeCompare(b);
@@ -502,20 +505,12 @@ export class WotrStrongholdBox {
   private compareShadowLeaders(
     a: WotrCharacter | 'nazgul',
     b: WotrCharacter | 'nazgul',
-  ) {
-    if (a === 'nazgul') {
-      return b === 'nazgul' ? 0 : 1;
-    }
-    if (b === 'nazgul') {
-      return -1;
-    }
+  ): number {
+    if (a === 'nazgul') return b === 'nazgul' ? 0 : 1;
+    if (b === 'nazgul') return -1;
     for (const m of SORTED_MINIONS) {
-      if (a.id === m) {
-        return -1;
-      }
-      if (b.id === m) {
-        return 1;
-      }
+      if (a.id === m) return -1;
+      if (b.id === m) return 1;
     }
     return 0;
   }

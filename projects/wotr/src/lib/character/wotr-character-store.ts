@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Injectable, computed } from '@angular/core';
 import type { WotrHuntTileId } from '../hunt/wotr-hunt-models';
 import type { WotrNationId } from '../nation/wotr-nation-models';
@@ -206,17 +206,17 @@ export class WotrCharacterStore {
   sovereigns = computed(() => {
     return sovereigns.map((id) => this.character(id) as KomeSovereign);
   });
-  sovereign(sovereignId: KomeSovereignId) {
+  sovereign(sovereignId: KomeSovereignId): KomeSovereign {
     return this.character(sovereignId) as KomeSovereign;
   }
   character(characterId: WotrCharacterId): WotrCharacter {
     return this.state().map[characterId];
   }
-  messengerOfTheDarkTowerUsed() {
+  messengerOfTheDarkTowerUsed(): boolean {
     return this.state().messengerOfTheDarkTowerUsed;
   }
 
-  setCharactersIds(ids: WotrCharacterId[]) {
+  setCharactersIds(ids: WotrCharacterId[]): void {
     this.update('setCharactersIds', (s) => ({
       ...s,
       ids,
@@ -227,7 +227,7 @@ export class WotrCharacterStore {
     actionName: string,
     characterId: WotrCharacterId,
     updater: (a: WotrCharacter) => WotrCharacter,
-  ) {
+  ): void {
     this.update(actionName, (s) => ({
       ...s,
       map: { ...s.map, [characterId]: updater(s.map[characterId]) },
@@ -238,7 +238,7 @@ export class WotrCharacterStore {
     actionName: string,
     sovereignId: KomeSovereignId,
     updater: (a: KomeSovereign) => KomeSovereign,
-  ) {
+  ): void {
     this.update(actionName, (s) => ({
       ...s,
       map: {
@@ -248,49 +248,52 @@ export class WotrCharacterStore {
     }));
   }
 
-  setEliminated(characterId: WotrCharacterId) {
+  setEliminated(characterId: WotrCharacterId): void {
     this.updateCharacter('setEliminated', characterId, (character) => ({
       ...character,
       status: 'eliminated',
     }));
   }
 
-  setInPlay(characterId: WotrCharacterId) {
+  setInPlay(characterId: WotrCharacterId): void {
     this.updateCharacter('setInPlay', characterId, (character) => ({
       ...character,
       status: 'inPlay',
     }));
   }
 
-  setInFellowship(characterId: WotrCharacterId) {
+  setInFellowship(characterId: WotrCharacterId): void {
     this.updateCharacter('setInFellowship', characterId, (character) => ({
       ...character,
       status: 'inFellowship',
     }));
   }
 
-  setMessengerOfTheDarkTowerUsed() {
+  setMessengerOfTheDarkTowerUsed(): void {
     this.update('setMessengerOfTheDarkTowerUsed', (s) => ({
       ...s,
       messengerOfTheDarkTowerUsed: true,
     }));
   }
 
-  resetMessengerOfTheDarkTower() {
+  resetMessengerOfTheDarkTower(): void {
     this.update('resetMessengerOfTheDarkTower', (s) => ({
       ...s,
       messengerOfTheDarkTowerUsed: false,
     }));
   }
 
-  addSovereignCorruption(sovereign: KomeSovereignId, tile: WotrHuntTileId) {
+  addSovereignCorruption(
+    sovereign: KomeSovereignId,
+    tile: WotrHuntTileId,
+  ): void {
     this.updateSovereign('addSovereignCorruption', sovereign, (s) => ({
       ...s,
       corruptionTiles: [...s.corruptionTiles, tile],
     }));
   }
 
-  corruptSovereign(sovereign: KomeSovereignId) {
+  corruptSovereign(sovereign: KomeSovereignId): void {
     this.updateSovereign('corruptSovereign', sovereign, (s) => ({
       ...s,
       sovereignStatus: 'corrupted',
@@ -298,7 +301,7 @@ export class WotrCharacterStore {
     }));
   }
 
-  awakeSovereign(sovereign: KomeSovereignId) {
+  awakeSovereign(sovereign: KomeSovereignId): void {
     this.updateSovereign('awakeSovereign', sovereign, (s) => ({
       ...s,
       sovereignStatus: 'awakened',

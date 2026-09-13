@@ -42,7 +42,7 @@ export class WotrFellowshipQuery {
     return this.fellowshipStore.guide() === characterId;
   }
 
-  isInFreePeoplesSettlement() {
+  isInFreePeoplesSettlement(): boolean {
     if (this.fellowshipStore.isOnMordorTrack()) return false;
     const region = this.regionStore.region(this.regionId());
     if (!region.settlement) return false;
@@ -50,7 +50,7 @@ export class WotrFellowshipQuery {
     return nation.front === 'free-peoples';
   }
 
-  isInFreePeoplesCityOrStronghold() {
+  isInFreePeoplesCityOrStronghold(): boolean {
     const region = this.regionStore.region(this.regionId());
     if (region.settlement === 'city' || region.settlement === 'stronghold') {
       const nation = this.nationStore.nation(region.nationId!);

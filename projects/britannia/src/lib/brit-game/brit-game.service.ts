@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { ABgGameService, BgAuthService } from '@leobg/commons';
-import { from } from 'rxjs';
+import { ABgGameService, BgAuthService, type BgUser } from '@leobg/commons';
+import { from, type Observable } from 'rxjs';
 import type {
   BritColor,
   BritLandAreaId,
@@ -37,21 +37,21 @@ export class BritGameService extends ABgGameService<
 
   protected storyDocs: BritStoryDoc[] | null = null;
 
-  protected getGameId() {
+  protected getGameId(): string {
     return this.gameStore.gameId();
   }
-  protected getPlayer(playerColor: BritColor) {
+  protected getPlayer(playerColor: BritColor): BritPlayer {
     return this.gameStore.getPlayer(playerColor);
   }
-  protected getGameOwner() {
+  protected getGameOwner(): BgUser {
     const owner = this.gameStore.gameOwner();
     if (!owner) throw new Error('Game owner not set');
     return owner;
   }
-  protected startTemporaryState() {
+  protected startTemporaryState(): void {
     this.gameStore.startTemporaryState();
   }
-  protected endTemporaryState() {
+  protected endTemporaryState(): void {
     this.gameStore.endTemporaryState();
   }
 
@@ -59,27 +59,30 @@ export class BritGameService extends ABgGameService<
     storyId: string,
     story: BritStoryDoc,
     gameId: string,
-  ) {
+  ): Observable<BritStoryDoc> {
     return from(this.remoteService.insertStory(storyId, story, gameId));
   }
-  protected selectStoryDoc$(storyId: string, gameId: string) {
+  protected selectStoryDoc$(
+    storyId: string,
+    gameId: string,
+  ): Observable<BritStoryDoc | undefined> {
     return this.remoteService.selectStory$(storyId, gameId);
   }
 
-  protected override getCurrentPlayerId() {
+  protected override getCurrentPlayerId(): BritColor | null {
     return this.ui.currentPlayer();
   }
-  protected override setCurrentPlayer(playerId: BritColor) {
+  protected override setCurrentPlayer(playerId: BritColor): void {
     this.ui.setCurrentPlayer(playerId);
   }
-  protected override currentPlayerChange$() {
+  protected override currentPlayerChange$(): Observable<BritColor | null> {
     return from(this.ui.player.get());
   }
-  protected override cancelChange$() {
+  protected override cancelChange$(): Observable<void> {
     return from(this.ui.cancel.get());
   }
 
-  protected resetUi(turnPlayer: BritColor) {
+  protected resetUi(turnPlayer: BritColor): void {
     this.ui.updateUi('Reset UI', (s) => ({
       ...s,
       turnPlayer: turnPlayer,
@@ -101,7 +104,7 @@ export class BritGameService extends ABgGameService<
     }));
   }
 
-  setup() {
+  setup(): void {
     this.gameStore.logSetup();
     const gameSetup = this.rules.setup.getGameSetup();
     this.gameStore.applySetup(gameSetup);
@@ -220,11 +223,11 @@ export class BritGameService extends ABgGameService<
     }
   }
 
-  private raiderWithdrawalPhase() {
+  private raiderWithdrawalPhase(): void {
     this.gameStore.logPhase('raiderWithdrawal');
   }
 
-  private overpopulationPhase() {
+  private overpopulationPhase(): void {
     this.gameStore.logPhase('overpopulation');
   }
 }

@@ -39,7 +39,7 @@ export class WotrFrontStoryComposer {
     private time: number,
   ) {}
 
-  protected story() {
+  protected story(): { time: number; playerId: WotrFrontId } {
     return { time: this.time, playerId: this.front };
   }
 
@@ -274,7 +274,7 @@ export class WotrFreePeoplesStoryComposer extends WotrFrontStoryComposer {
   constructor(time: number) {
     super('free-peoples', time);
   }
-  willOfTheWestDie(...actions: WotrAction[]) {
+  willOfTheWestDie(...actions: WotrAction[]): WotrStoryDoc & WotrDieStory {
     return this.actionDie('will-of-the-west', ...actions);
   }
   huntEffect(...actions: WotrAction[]): WotrStoryDoc & WotrBaseStory {
@@ -309,16 +309,16 @@ export class WotrShadowStoryComposer extends WotrFrontStoryComposer {
 
 export class WotrStoriesBuilder {
   private time = 1;
-  fp() {
+  fp(): WotrFreePeoplesStoryComposer {
     return new WotrFreePeoplesStoryComposer(this.time++);
   }
-  s() {
+  s(): WotrShadowStoryComposer {
     return new WotrShadowStoryComposer(this.time++);
   }
-  fpT() {
+  fpT(): WotrFreePeoplesStoryComposer {
     return new WotrFreePeoplesStoryComposer(this.time);
   }
-  sT() {
+  sT(): WotrShadowStoryComposer {
     return new WotrShadowStoryComposer(this.time);
   }
 }

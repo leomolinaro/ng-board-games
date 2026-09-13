@@ -156,7 +156,7 @@ export class BritMap implements OnChanges, OnInit {
 
   protected isDevMode = isDevMode();
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['areaStates']) {
       this.refreshAreaNodes();
     }
@@ -204,7 +204,7 @@ export class BritMap implements OnChanges, OnInit {
     }
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.refreshRoundNodes();
   }
 
@@ -222,7 +222,7 @@ export class BritMap implements OnChanges, OnInit {
     return refreshedUnits;
   }
 
-  private refreshPopulationNodes() {
+  private refreshPopulationNodes(): void {
     const { nodes, map } = arrayUtil.entitiesToNodes(
       this.components.NATION_IDS,
       this.nationPopulationNodeMap || {},
@@ -242,7 +242,7 @@ export class BritMap implements OnChanges, OnInit {
     }
   }
 
-  private refreshNationTurnNodes() {
+  private refreshNationTurnNodes(): void {
     const { nodes, map } = arrayUtil.entitiesToNodes(
       this.components.NATION_IDS,
       this.nationTurnNodeMap || {},
@@ -254,7 +254,7 @@ export class BritMap implements OnChanges, OnInit {
     this.nationTurnNodeMap = map;
   }
 
-  private refreshRoundNodes() {
+  private refreshRoundNodes(): void {
     const { nodes, map } = arrayUtil.entitiesToNodes(
       this.components.ROUND_IDS,
       this.roundNodeMap || {},
@@ -290,7 +290,7 @@ export class BritMap implements OnChanges, OnInit {
     return node;
   }
 
-  private getUnitNodeId(unit: BritAreaUnit) {
+  private getUnitNodeId(unit: BritAreaUnit): string {
     return unit.type === 'leader'
       ? unit.leaderId
       : `${unit.nationId}-${unit.type}-${unit.areaId}`;
@@ -382,34 +382,37 @@ export class BritMap implements OnChanges, OnInit {
     };
   }
 
-  onAreaClick(areaNode: BritAreaNode, _event: MouseEvent) {
+  onAreaClick(areaNode: BritAreaNode, _event: MouseEvent): void {
     if (this.validAreas()?.includes(areaNode.id)) {
       this.areaClick.emit(areaNode.id);
     }
   }
 
-  onUnitClick(unitNode: BritUnitNode) {
+  onUnitClick(unitNode: BritUnitNode): void {
     if (this.isValidUnit?.[unitNode.id]) this.unitClick.emit(unitNode.unit);
   }
 
-  protected getNationPopulationNodeX = (
+  protected getNationPopulationNodeX: (
     index: number,
     populationNode: BritPopulationNode,
-  ) => {
+  ) => number = (index, populationNode) => {
     return this.mapService.getPopulationX(populationNode.id, index) * GRID_STEP;
   };
 
-  protected getNationPopulationNodeY = (index: number) => {
+  protected getNationPopulationNodeY: (index: number) => number = (index) => {
     return this.mapService.getPopulationY(index) * GRID_STEP;
   };
 
-  calculateSlots() {
+  calculateSlots(): void {
     const splittedViewBox = this.viewBox.split(' ');
     const width = +splittedViewBox[2];
     const height = +splittedViewBox[3];
     const screenCTM = this.mapElementRef().nativeElement.getScreenCTM()!;
     const pt = this.bgSvg().createSVGPoint();
-    const coordinatesToAreaId = (x: number, y: number) => {
+    const coordinatesToAreaId: (x: number, y: number) => BritAreaId | null = (
+      x,
+      y,
+    ) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;
       const clientP = pt.matrixTransform(screenCTM);

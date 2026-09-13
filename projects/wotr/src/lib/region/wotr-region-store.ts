@@ -523,7 +523,10 @@ export class WotrRegionStore {
   region(regionId: WotrRegionId): WotrRegion {
     return this.state().map[regionId];
   }
-  isCharacterInRegion(character: WotrCharacterId, regionId: WotrRegionId) {
+  isCharacterInRegion(
+    character: WotrCharacterId,
+    regionId: WotrRegionId,
+  ): boolean {
     const region = this.region(regionId);
     return (
       region.army?.characters?.includes(character) ??
@@ -538,7 +541,7 @@ export class WotrRegionStore {
       null
     );
   }
-  isNazgulInRegion(regionId: WotrRegionId) {
+  isNazgulInRegion(regionId: WotrRegionId): boolean {
     const region = this.region(regionId);
     return (
       !!region.army?.nNazgul ||
@@ -546,14 +549,14 @@ export class WotrRegionStore {
       this.isCharacterInRegion('the-witch-king', regionId)
     );
   }
-  isArmyInRegion(frontId: WotrFrontId, regionId: WotrRegionId) {
+  isArmyInRegion(frontId: WotrFrontId, regionId: WotrRegionId): boolean {
     const region = this.region(regionId);
     return region.army?.front === frontId;
   }
-  canMoveNazgul() {
+  canMoveNazgul(): boolean {
     return this.regions().some((region) => this.isNazgulInRegion(region.id));
   }
-  isUnconquered(regionId: WotrRegionId) {
+  isUnconquered(regionId: WotrRegionId): boolean {
     const region = this.region(regionId);
     return region.frontId === region.controlledBy;
   }
@@ -650,7 +653,7 @@ export class WotrRegionStore {
     actionName: string,
     regionId: WotrRegionId,
     updater: (a: WotrRegion) => WotrRegion,
-  ) {
+  ): void {
     this.update(actionName, (s) => ({
       ...s,
       map: { ...s.map, [regionId]: updater(s.map[regionId]) },
@@ -661,7 +664,7 @@ export class WotrRegionStore {
     actionName: string,
     regionId: WotrRegionId,
     updater: (a: WotrArmy | undefined) => WotrArmy | undefined,
-  ) {
+  ): void {
     this.updateRegion(actionName, regionId, (region) => {
       const { army, ...restRegion } = region;
       const newArmy = updater(army);
@@ -675,7 +678,7 @@ export class WotrRegionStore {
     actionName: string,
     regionId: WotrRegionId,
     updater: (a: WotrArmy | undefined) => WotrArmy | undefined,
-  ) {
+  ): void {
     this.updateRegion(actionName, regionId, (region) => {
       const { underSiegeArmy, ...restRegion } = region;
       const newArmy = updater(underSiegeArmy);
@@ -689,7 +692,7 @@ export class WotrRegionStore {
     actionName: string,
     regionId: WotrRegionId,
     updater: (a: WotrFreeUnits | undefined) => WotrFreeUnits,
-  ) {
+  ): void {
     this.updateRegion(actionName, regionId, (region) => {
       const { freeUnits, ...restRegion } = region;
       const newFreeUnits = updater(freeUnits);
@@ -700,7 +703,7 @@ export class WotrRegionStore {
     });
   }
 
-  private joinNazgulToArmy(regionId: WotrRegionId) {
+  private joinNazgulToArmy(regionId: WotrRegionId): void {
     const region = this.region(regionId);
     if (region.army?.front === 'shadow') {
       const nNazgul = region.freeUnits?.nNazgul;
@@ -711,7 +714,7 @@ export class WotrRegionStore {
     }
   }
 
-  private joinCharactersToArmy(regionId: WotrRegionId) {
+  private joinCharactersToArmy(regionId: WotrRegionId): void {
     const region = this.region(regionId);
     if (!region.army?.front) {
       return;
@@ -730,7 +733,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('addRegularsToArmy', regionId, (army) =>
       this.unitUtils.addRegulars(quantity, nation, army),
     );
@@ -739,7 +742,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('removeRegularsFromArmy', regionId, (army) =>
       this.unitUtils.removeRegulars(quantity, nation, army),
     );
@@ -748,7 +751,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('addElitesToArmy', regionId, (army) =>
       this.unitUtils.addElites(quantity, nation, army),
     );
@@ -757,7 +760,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('removeElitesFromArmy', regionId, (army) =>
       this.unitUtils.removeElites(quantity, nation, army),
     );
@@ -766,7 +769,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('addLeadersToArmy', regionId, (army) =>
       this.unitUtils.addLeaders(quantity, nation, army),
     );
@@ -775,17 +778,17 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('removeLeadersFromArmy', regionId, (army) =>
       this.unitUtils.removeLeaders(quantity, nation, army),
     );
   }
-  addNazgulToArmy(quantity: number, regionId: WotrRegionId) {
+  addNazgulToArmy(quantity: number, regionId: WotrRegionId): void {
     this.updateArmy('addNazgulToArmy', regionId, (army) =>
       this.unitUtils.addNazgul(quantity, army),
     );
   }
-  removeNazgulFromArmy(quantity: number, regionId: WotrRegionId) {
+  removeNazgulFromArmy(quantity: number, regionId: WotrRegionId): void {
     this.updateArmy('removeNazgulFromArmy', regionId, (army) =>
       this.unitUtils.removeNazgul(quantity, army),
     );
@@ -795,7 +798,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege('addRegularsToArmyUnderSiege', regionId, (army) =>
       this.unitUtils.addRegulars(quantity, nation, army),
     );
@@ -804,7 +807,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege(
       'removeRegularsFromArmyUnderSiege',
       regionId,
@@ -815,7 +818,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege('addElitesToArmyUnderSiege', regionId, (army) =>
       this.unitUtils.addElites(quantity, nation, army),
     );
@@ -824,7 +827,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege(
       'removeElitesFromArmyUnderSiege',
       regionId,
@@ -835,7 +838,7 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege('addLeadersToArmyUnderSiege', regionId, (army) =>
       this.unitUtils.addLeaders(quantity, nation, army),
     );
@@ -844,19 +847,22 @@ export class WotrRegionStore {
     quantity: number,
     nation: WotrNationId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege(
       'removeLeadersFromArmyUnderSiege',
       regionId,
       (army) => this.unitUtils.removeLeaders(quantity, nation, army),
     );
   }
-  addNazgulToArmyUnderSiege(quantity: number, regionId: WotrRegionId) {
+  addNazgulToArmyUnderSiege(quantity: number, regionId: WotrRegionId): void {
     this.updateArmyUnderSiege('addNazgulToArmyUnderSiege', regionId, (army) =>
       this.unitUtils.addNazgul(quantity, army),
     );
   }
-  removeNazgulFromArmyUnderSiege(quantity: number, regionId: WotrRegionId) {
+  removeNazgulFromArmyUnderSiege(
+    quantity: number,
+    regionId: WotrRegionId,
+  ): void {
     this.updateArmyUnderSiege(
       'removeNazgulFromArmyUnderSiege',
       regionId,
@@ -864,14 +870,14 @@ export class WotrRegionStore {
     );
   }
 
-  addNazgulToFreeUnits(quantity: number, regionId: WotrRegionId) {
+  addNazgulToFreeUnits(quantity: number, regionId: WotrRegionId): void {
     this.updateFreeUnits('addNazgulToFreeUnits', regionId, (freeUnits) => {
       freeUnits ??= {};
       return { ...freeUnits, nNazgul: (freeUnits.nNazgul ?? 0) + quantity };
     });
   }
 
-  removeNazgulFromFreeUnits(quantity: number, regionId: WotrRegionId) {
+  removeNazgulFromFreeUnits(quantity: number, regionId: WotrRegionId): void {
     this.updateFreeUnits('removeNazgulFromFreeUnits', regionId, (freeUnits) => {
       if (!freeUnits) {
         throw new Error('removeNazgulFromFreeUnits');
@@ -880,7 +886,10 @@ export class WotrRegionStore {
     });
   }
 
-  addCharacterToArmy(characterId: WotrCharacterId, regionId: WotrRegionId) {
+  addCharacterToArmy(
+    characterId: WotrCharacterId,
+    regionId: WotrRegionId,
+  ): void {
     this.updateArmy('addCharacterToArmy', regionId, (army) =>
       this.unitUtils.addCharacter(characterId, army),
     );
@@ -889,7 +898,7 @@ export class WotrRegionStore {
   addCharacterToUnderSiegeArmy(
     characterId: WotrCharacterId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege(
       'addCharacterToUnderSiegeArmy',
       regionId,
@@ -900,7 +909,7 @@ export class WotrRegionStore {
   removeCharacterFromArmy(
     characterId: WotrCharacterId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmy('removeCharacterFromArmy', regionId, (army) =>
       this.unitUtils.removeCharacter(characterId, army),
     );
@@ -908,7 +917,7 @@ export class WotrRegionStore {
   removeCharacterFromUnderSiegeArmy(
     characterId: WotrCharacterId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateArmyUnderSiege(
       'removeCharacterFromUnderSiegeArmy',
       regionId,
@@ -921,7 +930,7 @@ export class WotrRegionStore {
     toRegionId: WotrRegionId,
     frontId: WotrFrontId,
     leftUnits?: WotrUnits,
-  ) {
+  ): void {
     const fromRegion = this.region(fromRegionId);
     const toRegion = this.region(toRegionId);
     const fromArmy = fromRegion.army;
@@ -948,7 +957,7 @@ export class WotrRegionStore {
     this.updateArmy('moveArmy', toRegionId, () => mergedArmy);
   }
 
-  private freeNazgulFromArmy(regionId: WotrRegionId) {
+  private freeNazgulFromArmy(regionId: WotrRegionId): void {
     const region = this.region(regionId);
     const army = region.army;
     if (army?.nNazgul && !this.unitUtils.hasArmyUnits(army)) {
@@ -957,7 +966,7 @@ export class WotrRegionStore {
     }
   }
 
-  private freeCharactersFromArmy(regionId: WotrRegionId) {
+  private freeCharactersFromArmy(regionId: WotrRegionId): void {
     const region = this.region(regionId);
     const army = region.army;
     if (army?.characters && !this.unitUtils.hasArmyUnits(army)) {
@@ -971,7 +980,7 @@ export class WotrRegionStore {
   addCharacterToFreeUnits(
     characterId: WotrCharacterId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateFreeUnits('addCharacterToFreeUnits', regionId, (freeunits) => {
       freeunits ??= {};
       return {
@@ -987,7 +996,7 @@ export class WotrRegionStore {
   removeCharacterFromFreeUnits(
     characterId: WotrCharacterId,
     regionId: WotrRegionId,
-  ) {
+  ): void {
     this.updateFreeUnits(
       'removeCharacterFromFreeUnits',
       regionId,
@@ -1005,7 +1014,7 @@ export class WotrRegionStore {
     );
   }
 
-  moveArmyIntoSiege(regionId: WotrRegionId) {
+  moveArmyIntoSiege(regionId: WotrRegionId): void {
     this.updateRegion('moveArmyIntoSiege', regionId, (region) => {
       const { army, ...newRegion } = region;
       if (!army) {
@@ -1018,7 +1027,7 @@ export class WotrRegionStore {
     });
   }
 
-  moveArmyOutOfSiege(regionId: WotrRegionId) {
+  moveArmyOutOfSiege(regionId: WotrRegionId): void {
     this.updateRegion('moveArmyOutOfSiege', regionId, (region) => {
       const { underSiegeArmy, ...newRegion } = region;
       if (!underSiegeArmy) throw new Error('moveArmyOutOfSiege');
@@ -1032,14 +1041,14 @@ export class WotrRegionStore {
     });
   }
 
-  addFellowshipToRegion(regionId: WotrRegionId) {
+  addFellowshipToRegion(regionId: WotrRegionId): void {
     this.updateRegion('addFellowshipToRegion', regionId, (units) => ({
       ...units,
       fellowship: true,
     }));
   }
 
-  removeFellowshipFromRegion() {
+  removeFellowshipFromRegion(): void {
     this.updateRegion(
       'removeFellowshipFromRegion',
       this.fellowshipRegion(),
@@ -1050,12 +1059,12 @@ export class WotrRegionStore {
     );
   }
 
-  fellowshipRegion() {
+  fellowshipRegion(): WotrRegionId {
     const state = this.state();
     return this.state().ids.find((r) => state.map[r].fellowship)!;
   }
 
-  moveFellowshipToRegion(regionId: WotrRegionId) {
+  moveFellowshipToRegion(regionId: WotrRegionId): void {
     this.update('moveFellowshipToRegion', (state) => {
       const fromRegionId = state.ids.find((r) => state.map[r].fellowship)!;
       const toRegionId = state.ids.find((r) => r === regionId)!;
@@ -1070,7 +1079,7 @@ export class WotrRegionStore {
     });
   }
 
-  setControlledBy(front: WotrFrontId, regionId: WotrRegionId) {
+  setControlledBy(front: WotrFrontId, regionId: WotrRegionId): void {
     this.updateRegion('setControlledBy', regionId, (region) => ({
       ...region,
       controlledBy: front,
@@ -1162,7 +1171,7 @@ export class WotrRegionStore {
     return paths.every((path) => path.some((regionId) => filter(regionId)));
   }
 
-  changeNation(regionId: WotrRegionId, nationId: WotrNationId) {
+  changeNation(regionId: WotrRegionId, nationId: WotrNationId): void {
     this.updateRegion('changeNation', regionId, (region) => ({
       ...region,
       nationId,

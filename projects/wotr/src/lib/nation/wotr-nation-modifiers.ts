@@ -45,8 +45,8 @@ export class WotrNationModifiers {
     nationId: WotrNationId,
     source: WotrNationAdvanceSource,
   ): void {
-    for (const handler of this.afterNationAdvance
-      .get()) handler(nationId, source);
+    for (const handler of this.afterNationAdvance.get())
+      handler(nationId, source);
   }
 
   public readonly canActivateNationModifier =
@@ -66,11 +66,11 @@ export class WotrNationModifiers {
     nationId: WotrNationId,
     source: WotrNationActivationSource,
   ): void {
-    for (const handler of this.afterNationActivation
-      .get()) handler(nationId, source);
+    for (const handler of this.afterNationActivation.get())
+      handler(nationId, source);
   }
 
-  clear() {
+  clear(): void {
     this.canAdvanceNationModifier.clear();
     this.afterNationAdvance.clear();
     this.canActivateNationModifier.clear();

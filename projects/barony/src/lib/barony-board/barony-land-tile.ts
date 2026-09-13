@@ -192,15 +192,15 @@ export class BaronyLandComponent implements OnChanges {
     }
   }
 
-  private getPawnNodeDeltaX(index: number, total: number) {
+  private getPawnNodeDeltaX(index: number, total: number): number {
     return total === 1 ? 0 : Math.sin((2 * Math.PI * index) / total);
   }
 
-  private getPawnNodeDeltaY(index: number, total: number) {
+  private getPawnNodeDeltaY(index: number, total: number): number {
     return total === 1 ? 0 : -Math.cos((2 * Math.PI * index) / total);
   }
 
-  onLandTileClick() {
+  onLandTileClick(): void {
     this.landTileClick.emit();
   }
 }

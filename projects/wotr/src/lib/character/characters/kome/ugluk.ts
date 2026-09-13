@@ -44,9 +44,11 @@ export class Ugluk extends WotrPlayableCharacterCard {
   public readonly characterId = 'ugluk';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    return ((this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
+    return (
+      (this.q.rohan.isAtWar() || this.q.fellowship.isRevealed()) &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some((r) => this.isValidRegion(r)));
+      this.q.regions().some((r) => this.isValidRegion(r))
+    );
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {
@@ -99,7 +101,7 @@ export class ICommandAbility implements WotrUiAbility<WotrBeforeCombatCardReveal
     }
   };
 
-  play() {
+  play(): WotrAction[] {
     const combatCard = this.round?.shadow.combatCard;
     if (!combatCard) throw new Error('No combat card to forfeit.');
     return [forfeitCombatCardById(combatCard.id)];

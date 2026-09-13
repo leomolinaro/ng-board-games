@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Component, computed, inject, input } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import { WotrGameUi } from '../game/wotr-game-ui';
@@ -136,7 +136,7 @@ export class WotrElvenRingsBox {
     };
   }
 
-  selectElvenRing(elvenRingNode: WotrElvenRingNode) {
+  selectElvenRing(elvenRingNode: WotrElvenRingNode): void {
     if (!this.ui.elvenRingSelection() || !elvenRingNode.selectable) return;
     this.ui.elvenRing.emit(elvenRingNode.id);
   }

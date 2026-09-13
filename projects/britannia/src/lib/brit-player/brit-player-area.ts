@@ -134,7 +134,7 @@ export class BritPlayerComponent implements OnInit {
     }
   }
 
-  onCardClick() {
+  onCardClick(): void {
     const player = this.player();
     if (
       !player.isAi &&
@@ -145,7 +145,7 @@ export class BritPlayerComponent implements OnInit {
     }
   }
 
-  onNationClick(nationNode: BritNationNode, event: MouseEvent) {
+  onNationClick(nationNode: BritNationNode, event: MouseEvent): void {
     this.nationClick.emit(nationNode.id);
     event.stopPropagation();
   }

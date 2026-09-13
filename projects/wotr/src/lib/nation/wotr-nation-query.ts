@@ -1,6 +1,7 @@
+import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
 import type { WotrRegionStore } from '../region/wotr-region-store';
-import type { WotrNationId } from './wotr-nation-models';
+import type { WotrNation, WotrNationId } from './wotr-nation-models';
 import type { WotrNationStore } from './wotr-nation-store';
 
 export class WotrNationQuery {
@@ -10,15 +11,15 @@ export class WotrNationQuery {
     private regionStore: WotrRegionStore,
   ) {}
 
-  id() {
+  id(): WotrNationId {
     return this.nationId;
   }
 
-  nation() {
+  nation(): WotrNation {
     return this.nationStore.nation(this.nationId);
   }
 
-  frontId() {
+  frontId(): WotrFrontId {
     return this.nation().front;
   }
 

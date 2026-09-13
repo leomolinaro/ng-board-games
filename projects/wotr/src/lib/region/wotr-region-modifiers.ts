@@ -16,11 +16,11 @@ export class WotrRegionModifiers {
     regionId: WotrRegionId,
     frontId: WotrFrontId,
   ): void {
-    for (const handler of this.afterRegionControlChange
-      .get()) handler(regionId, frontId);
+    for (const handler of this.afterRegionControlChange.get())
+      handler(regionId, frontId);
   }
 
-  clear() {
+  clear(): void {
     this.afterRegionControlChange.clear();
   }
 }

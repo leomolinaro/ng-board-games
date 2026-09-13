@@ -69,13 +69,13 @@ export class WotrUnitModifiers {
   public readonly recruitmentConstraintsModifier =
     new WotrModifier<WotrRecruitmentConstraintsModifier>();
 
-  modifyRecruitmentConstraints(constraints: WotrRecruitmentConstraints) {
+  modifyRecruitmentConstraints(constraints: WotrRecruitmentConstraints): void {
     for (const modifier of this.recruitmentConstraintsModifier.get()) {
       modifier(constraints);
     }
   }
 
-  clear() {
+  clear(): void {
     this.leaderModifier.clear();
     this.canMoveIntoRegionModifier.clear();
     this.canAttackRegionModifier.clear();

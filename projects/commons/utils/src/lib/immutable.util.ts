@@ -1,10 +1,10 @@
 export type Key = string | number;
 
-function error(msg: string) {
+function error(msg: string): never {
   throw new Error(msg);
 }
 
-export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
+export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]): T[] {
   if (list) {
     const index = list.findIndex((element) => matcher(element));
     if (index === -1) {
@@ -17,7 +17,7 @@ export function listRemoveFirst<T>(matcher: (e: T) => boolean, list: T[]) {
   return list;
 }
 
-export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
+export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]): T[] {
   if (list) {
     return list.filter((e) => !matcher(e));
   }
@@ -25,7 +25,7 @@ export function listRemoveAll<T>(matcher: (e: T) => boolean, list: T[]) {
   return list;
 }
 
-export function listRemoveByIndex<T>(index: number, list: T[]) {
+export function listRemoveByIndex<T>(index: number, list: T[]): T[] {
   return list.filter((_el, i) => i !== index);
 }
 
@@ -33,7 +33,7 @@ export function listReplaceFirst<T>(
   matcher: (e: T) => boolean,
   element: T,
   list: T[],
-) {
+): T[] {
   if (list) {
     const index = list.findIndex((element) => matcher(element));
     if (index === -1) {
@@ -51,7 +51,7 @@ export function listReplaceFirstOrInsert<T>(
   element: T,
   insertIndex: number,
   list: T[],
-) {
+): T[] {
   if (list) {
     const index = list.findIndex((element) => matcher(element));
     return index === -1
@@ -66,7 +66,7 @@ export function listUpdateFirstOrPush<T>(
   updater: (e: T) => T,
   pusher: () => T,
   list: T[],
-) {
+): T[] {
   const index = list.findIndex((element) => matcher(element));
   if (index === -1) {
     const newElement = pusher();
@@ -83,13 +83,17 @@ export function listUpdateFirstOrPush<T>(
  * @param list La lista.
  * @return La lista risultante.
  */
-export function listReplaceByIndex<T>(index: number, element: T, list: T[]) {
+export function listReplaceByIndex<T>(
+  index: number,
+  element: T,
+  list: T[],
+): T[] {
   const newList = [...list];
   newList[index] = element;
   return newList;
 }
 
-export function listInsert<T>(element: T, index: number, list: T[]) {
+export function listInsert<T>(element: T, index: number, list: T[]): T[] {
   if (list) {
     if (index != null && index >= 0) {
       if (index > list.length) {
@@ -105,7 +109,7 @@ export function listInsert<T>(element: T, index: number, list: T[]) {
   return [element];
 }
 
-export function listPush<T>(toPush: T[], list: T[]) {
+export function listPush<T>(toPush: T[], list: T[]): T[] {
   if (toPush && toPush.length > 0) {
     return list ? [...list, ...toPush] : [...toPush];
   }

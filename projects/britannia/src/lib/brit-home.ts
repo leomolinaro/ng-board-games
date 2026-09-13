@@ -81,7 +81,7 @@ export class BritHome {
   private async createGame$(
     protoGame: BgProtoGame,
     protoPlayers: BgProtoPlayer<BritColor>[],
-  ) {
+  ): Promise<void> {
     const game = await this.gameService.insertGame({
       id: protoGame.id,
       owner: protoGame.owner,

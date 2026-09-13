@@ -5,6 +5,7 @@ import type {
   WotrAfterCombatCardRevealing,
   WotrBattleModifiers,
 } from '../../../battle/wotr-battle-modifiers';
+import type { WotrAction } from '../../../commons/wotr-action-models';
 import type { WotrGameQuery } from '../../../game/wotr-game-query';
 import type { WotrLogWriter } from '../../../log/wotr-log-writer';
 import type { WotrShadowPlayer } from '../../../player/wotr-shadow-player';
@@ -100,10 +101,10 @@ export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardReveal
     combatRound.shadow.forfeitedCombatCard = true;
   };
 
-  play = () => {
+  play(): WotrAction[] {
     const combatCard = this.round?.shadow.combatCard;
     if (!combatCard) throw new Error('No combat card to forfeit.');
     if (!this.round) throw new Error('No combat round.');
     return [forfeitCombatCardById(combatCard.id)];
-  };
+  }
 }

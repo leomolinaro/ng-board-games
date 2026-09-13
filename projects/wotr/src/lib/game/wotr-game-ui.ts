@@ -156,7 +156,7 @@ export class WotrGameUi extends signalStore(
   pass = uiEvent<void>();
 
   cancel = uiEvent<void>();
-  setCanCancel(canCancel: boolean) {
+  setCanCancel(canCancel: boolean): void {
     patchState(this, { canCancel });
   }
 
@@ -166,7 +166,7 @@ export class WotrGameUi extends signalStore(
         ? WotrGameUiState[K]
         : never;
     },
-  >(updater: (state: WotrGameUiState) => S) {
+  >(updater: (state: WotrGameUiState) => S): void {
     patchState(this, updater);
   }
 
@@ -616,7 +616,7 @@ export class WotrGameUi extends signalStore(
     return story;
   }
 
-  resetUi(turnPlayer: WotrFrontId) {
+  resetUi(turnPlayer: WotrFrontId): void {
     this.updateUi((s) => ({
       ...initialState,
       message: `${this.playerInfoStore.player(turnPlayer).name} is thinking...`,
@@ -626,7 +626,7 @@ export class WotrGameUi extends signalStore(
   }
 
   player = uiEvent<WotrFrontId | null>();
-  setCurrentPlayerId(playerId: WotrFrontId | null) {
+  setCurrentPlayerId(playerId: WotrFrontId | null): void {
     this.player.emit(playerId);
     patchState(this, { currentPlayerId: playerId });
   }

@@ -111,7 +111,7 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
     return expansionLabels.join(', ');
   });
 
-  expansionsChange(expansions: WotrExpansionId[]) {
+  expansionsChange(expansions: WotrExpansionId[]): void {
     for (const expansion of expansions) {
       const requiredExpansions = getExpansion(expansion).requires ?? [];
       if (requiredExpansions.some((required) => !expansions.includes(required)))
@@ -133,7 +133,7 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
     return variantLabels.join(', ');
   });
 
-  variantsChange(variants: WotrVariantId[]) {
+  variantsChange(variants: WotrVariantId[]): void {
     this.options.update((o) => ({ ...o, variants }));
   }
 
@@ -143,7 +143,7 @@ export class WotrGameOptionsFormComponent implements BgGameOptionsComponent<Wotr
       .join(', ');
   });
 
-  tokensChange(tokens: WotrActionTokenOption[]) {
+  tokensChange(tokens: WotrActionTokenOption[]): void {
     this.options.update((o) => ({ ...o, tokens }));
   }
 }

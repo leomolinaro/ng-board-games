@@ -1,4 +1,4 @@
-export function downloadJson(jsonObject: object, fileName: string) {
+export function downloadJson(jsonObject: object, fileName: string): void {
   const sJson = JSON.stringify(jsonObject);
   const element = document.createElement('a');
   element.setAttribute(

@@ -172,7 +172,7 @@ export class WotrUnitUtils {
     return this.isEmptyArmy(army) ? undefined : army;
   }
 
-  isEmptyArmy(army: WotrUnits) {
+  isEmptyArmy(army: WotrUnits): boolean {
     if (army.regulars?.length) return false;
     if (army.elites?.length) return false;
     if (army.characters?.length) return false;
@@ -181,26 +181,26 @@ export class WotrUnitUtils {
     return true;
   }
 
-  hasUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  hasUnitsOfNation(nation: WotrNationId, units: WotrUnits): boolean {
     if (units.regulars?.some((u) => u.nation === nation)) return true;
     if (units.elites?.some((u) => u.nation === nation)) return true;
     if (units.leaders?.some((u) => u.nation === nation)) return true;
     return false;
   }
 
-  hasArmyUnits(units: WotrUnits) {
+  hasArmyUnits(units: WotrUnits): boolean {
     if (units.regulars?.length) return true;
     if (units.elites?.length) return true;
     return false;
   }
 
-  hasArmyUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  hasArmyUnitsOfNation(nation: WotrNationId, units: WotrUnits): boolean {
     if (units.regulars?.some((u) => u.nation === nation)) return true;
     if (units.elites?.some((u) => u.nation === nation)) return true;
     return false;
   }
 
-  hasArmyUnitsOfDifferentNations(units: WotrUnits) {
+  hasArmyUnitsOfDifferentNations(units: WotrUnits): boolean {
     let count = 0;
     if (this.hasArmyUnitsOfNation('sauron', units)) count++;
     if (this.hasArmyUnitsOfNation('isengard', units)) count++;
@@ -208,41 +208,41 @@ export class WotrUnitUtils {
     return count > 1;
   }
 
-  hasRegularUnits(units: WotrUnits) {
+  hasRegularUnits(units: WotrUnits): boolean {
     return Boolean(units.regulars?.length);
   }
 
-  hasRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  hasRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits): boolean {
     return Boolean(units.regulars?.some((u) => u.nation === nation));
   }
 
-  getNRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  getNRegularUnitsOfNation(nation: WotrNationId, units: WotrUnits): number {
     if (!units.regulars?.length) return 0;
     const unit = units.regulars.find((u) => u.nation === nation);
     return unit ? unit.quantity : 0;
   }
 
-  hasEliteUnits(units: WotrUnits) {
+  hasEliteUnits(units: WotrUnits): boolean {
     return Boolean(units.elites?.length);
   }
 
-  getNEliteUnits(units: WotrUnits) {
+  getNEliteUnits(units: WotrUnits): number {
     let count = 0;
     if (units.elites) for (const unit of units.elites) count += unit.quantity;
     return count;
   }
 
-  getNEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  getNEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits): number {
     if (!units.elites?.length) return 0;
     const unit = units.elites.find((u) => u.nation === nation);
     return unit ? unit.quantity : 0;
   }
 
-  hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits) {
+  hasEliteUnitsOfNation(nation: WotrNationId, units: WotrUnits): boolean {
     return Boolean(units.elites?.some((u) => u.nation === nation));
   }
 
-  hasNazgul(units: WotrUnits) {
+  hasNazgul(units: WotrUnits): boolean {
     if (units.nNazgul) return true;
     if (units.characters?.includes('the-witch-king')) return true;
     return false;
@@ -321,7 +321,7 @@ export class WotrUnitUtils {
     );
   }
 
-  getNArmyUnits(units: WotrUnits) {
+  getNArmyUnits(units: WotrUnits): number {
     let n = 0;
     if (units.regulars) for (const unit of units.regulars) n += unit.quantity;
     if (units.elites) for (const unit of units.elites) n += unit.quantity;
@@ -396,7 +396,7 @@ export class WotrUnitUtils {
     return totalArmyUnits;
   }
 
-  nHits(army: WotrArmy) {
+  nHits(army: WotrArmy): number {
     const { regulars, elites } = army;
     let totalHits = 0;
     if (regulars) for (const unit of regulars) totalHits += unit.quantity;

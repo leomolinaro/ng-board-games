@@ -146,11 +146,14 @@ export class BritRulesPopulationIncreaseService {
     };
   }
 
-  hasPopulationMarker(nationId: BritNationId) {
+  hasPopulationMarker(nationId: BritNationId): boolean {
     return nationId !== 'romans';
   }
 
-  private getRomanReinforcements(nArmies: number, roundId: BritRoundId) {
+  private getRomanReinforcements(
+    nArmies: number,
+    roundId: BritRoundId,
+  ): number {
     if (roundId < 2 || roundId > 5) {
       return 0;
     }
@@ -180,7 +183,10 @@ export class BritRulesPopulationIncreaseService {
     }
   }
 
-  private getNPlacedArmiesByArea(areaId: BritAreaId, game: BritGameStore) {
+  private getNPlacedArmiesByArea(
+    areaId: BritAreaId,
+    game: BritGameStore,
+  ): number {
     let armiesCount = 0;
     for (const unit of game.getArea(areaId).units) {
       // const unit = this.components.UNIT[unitId];
@@ -194,7 +200,7 @@ export class BritRulesPopulationIncreaseService {
   private getNPlacedArmiesByNation(
     nationId: BritNationId,
     game: BritGameStore,
-  ) {
+  ): number {
     let counter = 0;
     for (const area of this.getOccupiedAreasByNation(nationId, game)) {
       counter += this.getNPlacedArmiesByArea(area.id, game);
@@ -205,7 +211,7 @@ export class BritRulesPopulationIncreaseService {
   private getOccupiedLandsByNation(
     nationId: BritNationId,
     game: BritGameStore,
-  ) {
+  ): BritLandArea[] {
     const lands: BritLandArea[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
       const landState = game.getArea(landId);
@@ -219,7 +225,7 @@ export class BritRulesPopulationIncreaseService {
   private getOccupiedAreasByNation(
     nationId: BritNationId,
     game: BritGameStore,
-  ) {
+  ): BritArea[] {
     const areas: BritArea[] = [];
     for (const areaId of this.components.AREA_IDS) {
       const areaState = game.getArea(areaId);

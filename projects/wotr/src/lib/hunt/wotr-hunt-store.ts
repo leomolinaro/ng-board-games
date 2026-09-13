@@ -211,7 +211,7 @@ export class WotrHuntStore {
     }));
   }
 
-  moveDrawnEyeTilesToAvailable() {
+  moveDrawnEyeTilesToAvailable(): void {
     this.update('moveDrawnEyeTilesToAvailable', (state) => {
       const eyeTiles = state.huntDrawn.filter((t) => !!state.map[t].eye);
       const newHuntDrawn = immutableUtil.listRemoveAll(
@@ -223,7 +223,7 @@ export class WotrHuntStore {
     });
   }
 
-  moveReadyTilesToPool() {
+  moveReadyTilesToPool(): void {
     this.update('moveReadyTilesToPool', (state) => {
       const newHuntPool = immutableUtil.listPush(
         state.huntReady,
@@ -274,7 +274,7 @@ export class WotrHuntStore {
     }));
   }
 
-  resetCorruptionTiles(corruptionTiles: WotrHuntTileId[]) {
+  resetCorruptionTiles(corruptionTiles: WotrHuntTileId[]): void {
     const huntTile = this.getHighestNumberedTile(corruptionTiles);
     this.update('resetCorruptionTiles', (state) => ({
       ...state,

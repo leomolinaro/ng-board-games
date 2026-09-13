@@ -73,22 +73,20 @@ export class WotrMapService {
       throw new Error(`Region path not found for regionId: ${regionId}`);
     return path;
   }
-  getStrongholdPath(regionId: WotrRegionId) {
+  getStrongholdPath(regionId: WotrRegionId): string | undefined {
     return this.strongholdPaths[regionId];
   }
 
-  getViewBox() {
+  getViewBox(): string {
     return this.viewBox;
   }
 
-  getWidth() {
+  getWidth(): number {
     return this.width;
   }
 
-  loadMapPaths$() {
-    if (this.svgLoaded) {
-      return of(true);
-    }
+  loadMapPaths$(): Observable<boolean> {
+    if (this.svgLoaded) return of(true);
     return this.http
       .get(this.assets.mapSvgSource(), { responseType: 'text' })
       .pipe(

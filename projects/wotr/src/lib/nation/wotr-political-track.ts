@@ -179,15 +179,21 @@ export class WotrPoliticalTrack {
     },
   };
 
-  private getPoliticalMakerX(nationId: WotrNationId, step: WotrPoliticalStep) {
+  private getPoliticalMakerX(
+    nationId: WotrNationId,
+    step: WotrPoliticalStep,
+  ): number {
     return this.politicalMakerXY[nationId][step].x;
   }
 
-  private getPoliticalMakerY(nationId: WotrNationId, step: WotrPoliticalStep) {
+  private getPoliticalMakerY(
+    nationId: WotrNationId,
+    step: WotrPoliticalStep,
+  ): number {
     return this.politicalMakerXY[nationId][step].y;
   }
 
-  protected onNationClick(nationId: WotrNationId) {
+  protected onNationClick(nationId: WotrNationId): void {
     const validNationMap = this.validNationMap();
     if (!validNationMap) return;
     if (!validNationMap[nationId]) return;

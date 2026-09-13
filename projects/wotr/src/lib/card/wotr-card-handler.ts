@@ -32,7 +32,7 @@ export class WotrCardHandler {
   private freePeoples = inject(WotrFreePeoplesPlayer);
   private shadow = inject(WotrShadowPlayer);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<WotrCardDiscardFromTable>(
@@ -87,11 +87,14 @@ export class WotrCardHandler {
     };
   }
 
-  private nCards(cards: WotrCardId[]) {
+  private nCards(cards: WotrCardId[]): string {
     return `${cards.length} ${cards.length === 1 ? 'card' : 'cards'}`;
   }
 
-  private async drawCards(cards: WotrCardId[], frontId: WotrFrontId) {
+  private async drawCards(
+    cards: WotrCardId[],
+    frontId: WotrFrontId,
+  ): Promise<void> {
     this.frontStore.drawCards(cards, frontId);
     if (this.q.front(frontId).hasExcessCards()) {
       if (this.frontStore.shouldSkipDiscardExcessCards()) return;
@@ -103,11 +106,11 @@ export class WotrCardHandler {
     }
   }
 
-  discardCards(cards: WotrCardId[], frontId: WotrFrontId) {
+  discardCards(cards: WotrCardId[], frontId: WotrFrontId): void {
     this.frontStore.discardCards(cards, frontId);
   }
 
-  discardCardFromTable(cardId: WotrCardId) {
+  discardCardFromTable(cardId: WotrCardId): void {
     this.frontStore.discardCardFromTable(
       cardId,
       isFreePeoplesCard(cardId) ? 'free-peoples' : 'shadow',
@@ -115,12 +118,12 @@ export class WotrCardHandler {
     this.cards.deactivateTableAbilities(cardId);
   }
 
-  discardCardFromTableEffect(cardId: WotrCardId) {
+  discardCardFromTableEffect(cardId: WotrCardId): void {
     this.discardCardFromTable(cardId);
     this.logger.logEffect(discardCardFromTableById(cardId));
   }
 
-  async drawCard(cardId: WotrCardId, frontId: WotrFrontId) {
+  async drawCard(cardId: WotrCardId, frontId: WotrFrontId): Promise<void> {
     await this.drawCards([cardId], frontId);
     this.logger.logEffect(drawCardIds(cardId));
   }

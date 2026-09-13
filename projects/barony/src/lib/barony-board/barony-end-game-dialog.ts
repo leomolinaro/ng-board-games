@@ -144,7 +144,7 @@ export class BaronyEndGameDialog {
 
   resourceTypes = BARONY_RESOURCE_TYPES;
 
-  getResourceImageSource(resourceType: BaronyResourceType) {
+  getResourceImageSource(resourceType: BaronyResourceType): string {
     return `assets/barony/resources/${resourceType}.png`;
   }
 }

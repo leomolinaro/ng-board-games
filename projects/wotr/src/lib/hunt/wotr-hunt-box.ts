@@ -1,5 +1,4 @@
-import type {
-  Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -75,10 +74,10 @@ export class WotrHuntBox {
   private nHuntDice = computed(() => this.hunt().nHuntDice);
   private nFreePeopleDice = computed(() => this.hunt().nFreePeopleDice);
 
-  private getX(index: number) {
+  private getX(index: number): number {
     return X0 + (index % NPERROW) * XSTEP;
   }
-  private getY(index: number) {
+  private getY(index: number): number {
     return Y0 + Math.floor(index / NPERROW) * YSTEP;
   }
 
@@ -106,7 +105,7 @@ export class WotrHuntBox {
     return nodes;
   });
 
-  selectEyeDie() {
+  selectEyeDie(): void {
     if (this.eyeSelection()) {
       this.ui.eyeChoice.emit();
     }

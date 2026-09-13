@@ -1,4 +1,5 @@
 import type { WotrFellowshipStore } from '../fellowship/wotr-fellowship-store';
+import type { WotrFrontId } from '../front/wotr-front-models';
 import type { WotrNationId } from '../nation/wotr-nation-models';
 import type { WotrRegion, WotrRegionId } from '../region/wotr-region-models';
 import type { WotrRegionStore } from '../region/wotr-region-store';
@@ -30,7 +31,7 @@ export class WotrCharacterQuery<ID extends WotrCharacterId = WotrCharacterId> {
     return this.data().level;
   }
 
-  get frontId() {
+  get frontId(): WotrFrontId {
     return this.data().front;
   }
 
@@ -126,7 +127,7 @@ export class KomeSovereignQuery extends WotrCharacterQuery<KomeSovereignId> {
     return this.characterStore.sovereign(this.id);
   }
 
-  get rulerStatus() {
+  get rulerStatus(): 'leader' | 'awakened' | 'corrupted' {
     return this.data().sovereignStatus;
   }
 

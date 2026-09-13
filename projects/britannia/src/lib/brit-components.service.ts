@@ -168,7 +168,7 @@ export class BritComponents {
   getUnitTypeLabel(
     unitType: Exclude<BritUnitType, 'leader'>,
     isSingular: boolean,
-  ) {
+  ): string {
     switch (unitType) {
       case 'infantry':
         return isSingular ? 'Infantry' : 'Infantries';
@@ -181,7 +181,7 @@ export class BritComponents {
     }
   }
 
-  init() {
+  init(): void {
     // Land areas
     this.initLandArea('avalon', 'Avalon', 'england', false, [
       'devon',
@@ -866,7 +866,7 @@ export class BritComponents {
     region: BritRegionId,
     isDifficultTerrain: boolean,
     neighbors: BritNeighbor[],
-  ) {
+  ): void {
     this.AREA[id] = {
       id: id,
       name: name,
@@ -881,7 +881,7 @@ export class BritComponents {
     id: BritSeaAreaId,
     name: string,
     neighbors: BritAreaId[],
-  ) {
+  ): void {
     this.AREA[id] = {
       id: id,
       name: name,
@@ -898,7 +898,7 @@ export class BritComponents {
     nCavalries: number,
     nBuildings: number,
     leaderIdAndNames: [BritLeaderId, string][],
-  ) {
+  ): void {
     for (const [leaderId, leaderName] of leaderIdAndNames) {
       this.initLeader(leaderId, leaderName);
     }
@@ -913,7 +913,7 @@ export class BritComponents {
     };
   }
 
-  private initLeader(leaderId: BritLeaderId, leaderName: string) {
+  private initLeader(leaderId: BritLeaderId, leaderName: string): void {
     this.LEADER[leaderId] = {
       id: leaderId,
       name: leaderName,
@@ -926,7 +926,7 @@ export class BritComponents {
     toYear: number,
     types: ('scoring' | 'bretwalda' | 'king')[],
     ...events: BritEvent[]
-  ) {
+  ): void {
     this.ROUND[roundId] = {
       id: roundId,
       fromYear,
@@ -950,34 +950,34 @@ class BritEventBuilder {
   private _special: BritSpecialEvent | null = null;
   private _leader: BritLeaderId | null = null;
 
-  leader(leader: BritLeaderId) {
+  leader(leader: BritLeaderId): this {
     this._leader = leader;
     return this;
   }
-  special(special: BritSpecialEvent) {
+  special(special: BritSpecialEvent): this {
     this._special = special;
     return this;
   }
-  majorInvasion() {
+  majorInvasion(): this {
     this._majorInvasion = true;
     return this;
   }
-  raiding() {
+  raiding(): this {
     this._raiding = true;
     return this;
   }
-  boats() {
+  boats(): this {
     this._boats = true;
     return this;
   }
-  revolt(infantries: number, cavalries?: number) {
+  revolt(infantries: number, cavalries?: number): this {
     this._revolt = {
       infantries,
       cavalries: cavalries ?? 0,
     };
     return this;
   }
-  invasion(area: BritSeaAreaId, infantries: number, cavalries?: number) {
+  invasion(area: BritSeaAreaId, infantries: number, cavalries?: number): this {
     this._invasions ??= [];
     this._invasions.push({
       area,

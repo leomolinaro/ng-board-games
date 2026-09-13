@@ -245,14 +245,14 @@ export class WotrBoard {
     void this.openFellowshipBoxDialog();
   });
 
-  onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId) {
+  onPreviewCardClick(cardId: WotrCardId, frontId: WotrFrontId): void {
     void this.openHandCardsDialog(cardId, frontId);
   }
 
   private async openHandCardsDialog(
     cardId: WotrCardId | null,
     frontId: WotrFrontId,
-  ) {
+  ): Promise<void> {
     const front = this.frontStore.front(frontId);
     const result = await this.openCardDialog(
       cardId,
@@ -267,7 +267,7 @@ export class WotrBoard {
   private async openTableCardsDialog(
     cardId: WotrCardId | null,
     frontId: WotrFrontId,
-  ) {
+  ): Promise<void> {
     const front = this.frontStore.front(frontId);
 
     const result = await this.openCardDialog(
@@ -284,7 +284,7 @@ export class WotrBoard {
     focusedCardId: WotrCardId | null,
     cardIds: WotrCardId[],
     selectableCards: WotrCardSelection | null,
-  ) {
+  ): Promise<WotrCardId[] | null> {
     return this.dialogs.open<WotrCardsDialogData, WotrCardId[]>(
       WotrCardsDialog,
       {
@@ -300,7 +300,7 @@ export class WotrBoard {
     );
   }
 
-  private async openRegionDialog(region: WotrRegion) {
+  private async openRegionDialog(region: WotrRegion): Promise<void> {
     const regionUnitSelection = this.ui.regionUnitSelection();
     const result = await this.dialogs.open(WotrRegionDialog, {
       data: {
@@ -330,15 +330,15 @@ export class WotrBoard {
     }
   }
 
-  onRegionClick(region: WotrRegion) {
+  onRegionClick(region: WotrRegion): void {
     void this.openRegionDialog(region);
   }
 
-  onFellowshipBoxClick() {
+  onFellowshipBoxClick(): void {
     void this.openFellowshipBoxDialog();
   }
 
-  private async openFellowshipBoxDialog() {
+  private async openFellowshipBoxDialog(): Promise<void> {
     const result = await this.dialogs.open(WotrFellowshipDialog, {
       data: {
         selection: this.ui.fellowshipCompanionsSelection(),

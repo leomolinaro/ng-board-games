@@ -68,7 +68,7 @@ export class WotrCharacterModifiers {
     return modifier;
   }
 
-  clear() {
+  clear(): void {
     this.beforeCharacterElimination.clear();
     this.afterCharacterElimination.clear();
     this.afterCompanionLeavingTheFellowship.clear();

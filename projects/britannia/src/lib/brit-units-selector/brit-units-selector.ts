@@ -56,19 +56,19 @@ export class BritUnitsSelector {
     () => this.number() > this.min(),
   );
 
-  onIncrease() {
+  onIncrease(): void {
     if (this.enableIncrease()) {
       this.numberChange.emit(this.number() + 1);
     }
   }
 
-  onDecrease() {
+  onDecrease(): void {
     if (this.enableDecrease()) {
       this.numberChange.emit(this.number() - 1);
     }
   }
 
-  onConfirm() {
+  onConfirm(): void {
     this.confirm.emit();
   }
 }

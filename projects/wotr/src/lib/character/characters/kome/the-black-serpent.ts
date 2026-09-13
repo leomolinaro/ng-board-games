@@ -40,9 +40,11 @@ export class TheBlackSerpent extends WotrPlayableCharacterCard {
   public readonly characterId = 'the-black-serpent';
 
   override canBeBroughtIntoPlay(die: WotrActionDie): boolean {
-    return (this.q.gondor.isAtWar() &&
+    return (
+      this.q.gondor.isAtWar() &&
       validChieftainPlayingDie(die) &&
-      this.q.regions().some((r) => this.isValidRegion(r)));
+      this.q.regions().some((r) => this.isValidRegion(r))
+    );
   }
 
   private isValidRegion(r: WotrRegionQuery): boolean {
@@ -90,7 +92,7 @@ export class RedWrath implements WotrUiAbility<WotrBeforeCombatCardRevealing> {
     );
   };
 
-  async play() {
+  async play(): Promise<WotrAction[]> {
     const combatCard = this.round?.shadow.combatCard;
     if (!combatCard) throw new Error('No combat card to forfeit.');
     if (!this.round) throw new Error('No combat round.');

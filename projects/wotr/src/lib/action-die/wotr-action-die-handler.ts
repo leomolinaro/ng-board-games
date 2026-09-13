@@ -33,7 +33,7 @@ export class WotrActionDieHandler {
   private frontHandler = inject(WotrFrontHandler);
   private actionDieModifiers = inject(WotrActionDieModifiers);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerStory('die', this.die);
@@ -58,7 +58,7 @@ export class WotrActionDieHandler {
     await this.actionDieModifiers.onAfterActionDieResolution(story, front);
   };
 
-  setCurrentActionDie(die: WotrActionDie, front: WotrFrontId) {
+  setCurrentActionDie(die: WotrActionDie, front: WotrFrontId): void {
     if (die === 'eye') {
       this.huntStore.removeHuntDice(1);
     } else {
@@ -67,7 +67,7 @@ export class WotrActionDieHandler {
     this.frontStore.setCurrentActionDie(die, front);
   }
 
-  setCurrentActionToken(token: WotrActionToken, front: WotrFrontId) {
+  setCurrentActionToken(token: WotrActionToken, front: WotrFrontId): void {
     this.frontStore.setCurrentActionToken(token, front);
     this.frontStore.removeActionToken(token, front);
   }
@@ -120,7 +120,7 @@ export class WotrActionDieHandler {
     die: WotrActionDie,
     toDie: WotrActionDie,
     front: WotrFrontId,
-  ) {
+  ): void {
     this.frontStore.changeActionDie(die, toDie, front);
   }
 
@@ -146,7 +146,7 @@ export class WotrActionDieHandler {
     };
   }
 
-  private dice(dice: WotrActionDie[]) {
+  private dice(dice: WotrActionDie[]): string {
     return `${dice.map((d) => this.dieLabel(d)).join(', ')} ${dice.length === 1 ? 'die' : 'dice'}`;
   }
 

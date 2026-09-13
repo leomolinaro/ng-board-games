@@ -1,19 +1,19 @@
-import { of } from 'rxjs';
+import { type Observable, of } from 'rxjs';
 
 export class WotrMapServiceMock {
-  loadMapPaths$() {
+  loadMapPaths$(): Observable<boolean> {
     return of(true);
   }
-  loadRegionSlots$() {
+  loadRegionSlots$(): Observable<boolean> {
     return of(true);
   }
-  getViewBox() {
+  getViewBox(): string {
     return '0 0 0 0';
   }
-  getWidth() {
+  getWidth(): string {
     return '0';
   }
-  getRegionPath() {
+  getRegionPath(): string {
     return '';
   }
 }

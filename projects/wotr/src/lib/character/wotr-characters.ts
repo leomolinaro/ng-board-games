@@ -480,7 +480,7 @@ export class WotrCharacters {
     );
   }
 
-  activateInPlayAbilities(characters: WotrCharacterId[]) {
+  activateInPlayAbilities(characters: WotrCharacterId[]): void {
     if (this.gameStore.isTemporaryState()) return;
     for (const character of characters) {
       const abilities = this.getInPlayAbilities(character);
@@ -500,7 +500,7 @@ export class WotrCharacters {
     );
   }
 
-  deactivateAbilities(characterId: WotrCharacterId) {
+  deactivateAbilities(characterId: WotrCharacterId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getInPlayAbilities(characterId);
     for (const ability of abilities) {
@@ -516,7 +516,7 @@ export class WotrCharacters {
     }
   }
 
-  activateAwakenAbilities(sovereignId: KomeSovereignId) {
+  activateAwakenAbilities(sovereignId: KomeSovereignId): void {
     if (this.gameStore.isTemporaryState()) return;
     const abilities = this.getAwakenAbilities(sovereignId);
     for (const ability of abilities) {
@@ -524,7 +524,7 @@ export class WotrCharacters {
     }
   }
 
-  activateCorruptionAbilities(sovereignId: KomeSovereignId) {
+  activateCorruptionAbilities(sovereignId: KomeSovereignId): void {
     if (this.gameStore.isTemporaryState()) return;
     const corruptionAbilities = this.getCorruptionAbilities(sovereignId);
     for (const ability of corruptionAbilities) {

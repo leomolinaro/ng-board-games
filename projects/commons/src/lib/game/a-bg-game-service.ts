@@ -38,7 +38,10 @@ export interface BgStoryTask<Pid extends string, St, PlSrv> {
   task: (playerService: PlSrv) => Promise<St>;
 }
 
-export function unexpectedStory<St>(actualStoryDoc: St, expected: string) {
+export function unexpectedStory<St>(
+  actualStoryDoc: St,
+  expected: string,
+): Error {
   console.error('Unexpected story', actualStoryDoc, 'Expected:', expected);
   return new Error('Unexpected story');
 }
@@ -68,7 +71,7 @@ export abstract class ABgGameService<
   protected abstract endTemporaryState(): void;
   protected abstract resetUi(playerId: string): void;
 
-  clear() {
+  clear(): void {
     this.storyTime = 0;
     this.storyDocs = null;
   }
@@ -83,34 +86,34 @@ export abstract class ABgGameService<
     gameId: string,
   ): Observable<BgStoryDoc<Pid, St> | undefined>;
 
-  private isRemotePlayer(playerId: string) {
+  private isRemotePlayer(playerId: string): boolean {
     const player = this.getPlayer(playerId);
     return player.isRemote;
   }
 
-  private isLocalPlayer(playerId: string) {
+  private isLocalPlayer(playerId: string): boolean {
     const user = this.auth.getUser();
     const player = this.getPlayer(playerId);
     return player.isAi ? false : player.controller.id === user.id;
   }
 
-  private isOwnerUser() {
+  private isOwnerUser(): boolean {
     const user = this.auth.getUser();
     const gameOwner = this.getGameOwner();
     return user.id === gameOwner.id;
   }
 
-  private isCurrentPlayer(playerId: Pid) {
+  private isCurrentPlayer(playerId: Pid): boolean {
     const currentPlayerId = this.getCurrentPlayerId();
     return currentPlayerId === playerId;
   }
 
-  private isAiPlayer(playerId: Pid) {
+  private isAiPlayer(playerId: Pid): boolean {
     const player = this.getPlayer(playerId);
     return player.isAi;
   }
 
-  private autoRefreshCurrentPlayer(player: Pid) {
+  private autoRefreshCurrentPlayer(player: Pid): boolean {
     if (this.isLocalPlayer(player)) {
       this.setCurrentPlayer(player);
       return true;
@@ -118,7 +121,7 @@ export abstract class ABgGameService<
     return false;
   }
 
-  private getPlayerService(playerId: Pid) {
+  private getPlayerService(playerId: Pid): PlSrv | null {
     if (this.isLocalPlayer(playerId) && this.isCurrentPlayer(playerId)) {
       return this.localPlayer;
     }
@@ -139,7 +142,11 @@ export abstract class ABgGameService<
     return story;
   }
 
-  private async insertStory(story: St, time: number, playerId: Pid) {
+  private async insertStory(
+    story: St,
+    time: number,
+    playerId: Pid,
+  ): Promise<BgStoryDoc<Pid, St>> {
     const storyDoc: BgStoryDoc<Pid, St> = { ...story, time, playerId };
     const storyId = getStoryId(storyDoc.time, playerId);
     await firstValueFrom(
@@ -329,7 +336,7 @@ export abstract class ABgGameService<
   }
 }
 
-export function getStoryId(time: number, playerId: string) {
+export function getStoryId(time: number, playerId: string): string {
   const timeString = time.toString();
   const zerosToAdd = 4 - timeString.length;
   return `${'0'.repeat(zerosToAdd)}${timeString}.${playerId}`;

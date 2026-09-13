@@ -93,7 +93,7 @@ export class WotrHuntModifiers {
     return false;
   }
 
-  clear() {
+  clear(): void {
     this.afterTileDrawn.clear();
     this.huntEffectChoices.clear();
     this.beforeHuntRoll.clear();

@@ -263,7 +263,7 @@ export class WotrUnitRules {
     return unitCount;
   }
 
-  private getLeadersLeadership(leaders: WotrNationUnit[]) {
+  private getLeadersLeadership(leaders: WotrNationUnit[]): number {
     let leadership = 0;
     for (const unit of leaders) {
       leadership += unit.quantity;
@@ -271,7 +271,7 @@ export class WotrUnitRules {
     return leadership;
   }
 
-  private getNazgulLeadership(nNazgul: number) {
+  private getNazgulLeadership(nNazgul: number): number {
     return nNazgul;
   }
 

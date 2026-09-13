@@ -121,7 +121,7 @@ export class WotrBattleModifiers {
     return Math.max(...results);
   }
 
-  clear() {
+  clear(): void {
     this.beforeCombatRound.clear();
     this.beforeCombatCardRevealing.clear();
     this.afterCombatCardRevealing.clear();

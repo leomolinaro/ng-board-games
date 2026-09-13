@@ -43,7 +43,7 @@ export class WotrFellowshipHandler {
   private fellowshipModifiers = inject(WotrFellowshipModifiers);
   private huntModifiers = inject(WotrHuntModifiers);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<WotrFellowshipCorruption>(
@@ -129,18 +129,18 @@ export class WotrFellowshipHandler {
     this.regionStore.moveFellowshipToRegion(regionId);
   }
 
-  private characters(characters: WotrCharacterId[]) {
+  private characters(characters: WotrCharacterId[]): string {
     return characters.map((c) => this.q.character(c).name).join(', ');
   }
 
-  private nCorruptionPoints(quantity: number) {
+  private nCorruptionPoints(quantity: number): string {
     return `${quantity} corruption point${quantity === 1 ? '' : 's'}`;
   }
 
   async separateCompanions(
     companions: WotrCompanionId[],
     toRegionId: WotrRegionId,
-  ) {
+  ): Promise<void> {
     for (const companionId of companions) {
       this.fellowshipStore.removeCompanion(companionId);
     }
@@ -153,24 +153,24 @@ export class WotrFellowshipHandler {
     this.characterHandler.checkGollumEnterPlay();
   }
 
-  corrupt(nCorruption: number) {
+  corrupt(nCorruption: number): void {
     this.fellowshipStore.corrupt(nCorruption);
     if (this.fellowshipStore.corruption() >= 12) {
       throw new WotrRingBearerCorrupted();
     }
   }
 
-  corruptEffect(nCorruption: number) {
+  corruptEffect(nCorruption: number): void {
     this.corrupt(nCorruption);
     this.logger.logEffect(corruptFellowship(nCorruption));
   }
 
-  healEffect(nHealed: number) {
+  healEffect(nHealed: number): void {
     this.fellowshipStore.corrupt(-nHealed);
     this.logger.logEffect(corruptFellowship(-nHealed));
   }
 
-  checkFellowshipMovingInMordor() {
+  checkFellowshipMovingInMordor(): void {
     if (
       this.fellowshipStore.isOnMordorTrack() &&
       !this.fellowshipStore.hasMovedOrHid()

@@ -57,7 +57,7 @@ export class BaronyGameStore extends signalStore(
     lands: BaronyLand[],
     gameId: string,
     gameOwner: BgUser,
-  ) {
+  ): void {
     patchState(
       this,
       () =>
@@ -82,13 +82,13 @@ export class BaronyGameStore extends signalStore(
     );
   }
 
-  isTemporaryState() {
+  isTemporaryState(): boolean {
     return !!this.backupState();
   }
-  startTemporaryState() {
+  startTemporaryState(): void {
     patchState(this, (s) => ({ ...s, backupState: s }));
   }
-  endTemporaryState() {
+  endTemporaryState(): void {
     if (this.backupState()) {
       patchState(this, (s) => ({ ...s.backupState, backupState: null }));
     } else {
@@ -105,7 +105,7 @@ export class BaronyGameStore extends signalStore(
   getNumberOfPlayers(): number {
     return this.playerList().length;
   }
-  getLand(land: BaronyLandCoordinates) {
+  getLand(land: BaronyLandCoordinates): BaronyLand {
     return this.lands.map()[landCoordinatesToId(land)];
   }
   landList(): BaronyLand[] {
@@ -123,7 +123,7 @@ export class BaronyGameStore extends signalStore(
     _actionName: string,
     playerId: BaronyColor,
     updater: (p: BaronyPlayer) => BaronyPlayer,
-  ) {
+  ): void {
     patchState(this, (s) => ({
       ...s,
       players: {
@@ -139,7 +139,7 @@ export class BaronyGameStore extends signalStore(
   private updateGameBox(
     _actionName: string,
     updater: (gameBox: BaronyGameBox) => BaronyGameBox,
-  ) {
+  ): void {
     patchState(this, (s) => ({
       ...s,
       gameBox: updater(s.gameBox),
@@ -150,7 +150,7 @@ export class BaronyGameStore extends signalStore(
     _actionName: string,
     land: BaronyLandCoordinates,
     updater: (lt: BaronyLand) => BaronyLand,
-  ) {
+  ): void {
     const key = landCoordinatesToId(land);
     patchState(this, (s) => ({
       ...s,
@@ -164,7 +164,10 @@ export class BaronyGameStore extends signalStore(
     }));
   }
 
-  private addPawnToPlayer(pawnType: BaronyPawnType, playerId: BaronyColor) {
+  private addPawnToPlayer(
+    pawnType: BaronyPawnType,
+    playerId: BaronyColor,
+  ): void {
     this.updatePlayer('Add pawn to player', playerId, (p) => ({
       ...p,
       pawns: {
@@ -177,7 +180,7 @@ export class BaronyGameStore extends signalStore(
   private removePawnFromPlayer(
     pawnType: BaronyPawnType,
     playerId: BaronyColor,
-  ) {
+  ): void {
     this.updatePlayer('Remove pawn from player', playerId, (p) => ({
       ...p,
       pawns: {
@@ -191,7 +194,7 @@ export class BaronyGameStore extends signalStore(
     pawnType: BaronyPawnType,
     pawnColor: BaronyColor,
     land: BaronyLandCoordinates,
-  ) {
+  ): void {
     this.updateLand('Add pawn to land tile', land, (lt) => ({
       ...lt,
       pawns: immutableUtil.listPush(
@@ -205,7 +208,7 @@ export class BaronyGameStore extends signalStore(
     pawnType: BaronyPawnType,
     pawnColor: BaronyColor,
     land: BaronyLandCoordinates,
-  ) {
+  ): void {
     this.updateLand('Remove pawn from land tile', land, (lt) => ({
       ...lt,
       pawns: immutableUtil.listRemoveFirst(
@@ -218,7 +221,7 @@ export class BaronyGameStore extends signalStore(
   private addResourceToPlayer(
     resource: BaronyResourceType,
     playerId: BaronyColor,
-  ) {
+  ): void {
     this.updatePlayer('Add resource to player', playerId, (p) => ({
       ...p,
       resources: {
@@ -231,7 +234,7 @@ export class BaronyGameStore extends signalStore(
   private removeResourceFromPlayer(
     resource: BaronyResourceType,
     playerId: BaronyColor,
-  ) {
+  ): void {
     this.updatePlayer('Remove resource from player', playerId, (p) => ({
       ...p,
       resources: {
@@ -248,14 +251,17 @@ export class BaronyGameStore extends signalStore(
     return land?.type as BaronyResourceType;
   }
 
-  private addVictoryPoints(victoryPoints: number, playerId: BaronyColor) {
+  private addVictoryPoints(victoryPoints: number, playerId: BaronyColor): void {
     this.updatePlayer('Add victory points', playerId, (p) => ({
       ...p,
       score: p.score + victoryPoints,
     }));
   }
 
-  private addPawnToGameBox(pawnType: BaronyPawnType, pawnColor: BaronyColor) {
+  private addPawnToGameBox(
+    pawnType: BaronyPawnType,
+    pawnColor: BaronyColor,
+  ): void {
     this.updateGameBox('Add pawn to gameBox', (gameBox) => ({
       ...gameBox,
       removedPawns: immutableUtil.listPush(
@@ -265,26 +271,26 @@ export class BaronyGameStore extends signalStore(
     }));
   }
 
-  private addLog(_actionName: string, log: BaronyLog) {
+  private addLog(_actionName: string, log: BaronyLog): void {
     patchState(this, (s) => ({
       ...s,
       logs: [...s.logs, log],
     }));
   }
 
-  applySetup(land: BaronyLandCoordinates, player: BaronyColor) {
+  applySetup(land: BaronyLandCoordinates, player: BaronyColor): void {
     this.removePawnFromPlayer('knight', player);
     this.addPawnToLandTile('knight', player, land);
     this.removePawnFromPlayer('city', player);
     this.addPawnToLandTile('city', player, land);
   }
 
-  applyRecruitment(land: BaronyLandCoordinates, playerId: BaronyColor) {
+  applyRecruitment(land: BaronyLandCoordinates, playerId: BaronyColor): void {
     this.removePawnFromPlayer('knight', playerId);
     this.addPawnToLandTile('knight', playerId, land);
   }
 
-  applyMovement(movement: BaronyMovement, playerId: BaronyColor) {
+  applyMovement(movement: BaronyMovement, playerId: BaronyColor): void {
     this.removePawnFromLandTile('knight', playerId, movement.fromLand);
     this.addPawnToLandTile('knight', playerId, movement.toLand);
     if (movement.conflict) {
@@ -309,7 +315,10 @@ export class BaronyGameStore extends signalStore(
     }
   }
 
-  applyConstruction(construction: BaronyConstruction, playerId: BaronyColor) {
+  applyConstruction(
+    construction: BaronyConstruction,
+    playerId: BaronyColor,
+  ): void {
     this.removePawnFromLandTile('knight', playerId, construction.land);
     this.removePawnFromPlayer(construction.building, playerId);
     this.addPawnToLandTile(construction.building, playerId, construction.land);
@@ -318,7 +327,7 @@ export class BaronyGameStore extends signalStore(
     this.addResourceToPlayer(resource, playerId);
   }
 
-  applyNewCity(land: BaronyLandCoordinates, playerId: BaronyColor) {
+  applyNewCity(land: BaronyLandCoordinates, playerId: BaronyColor): void {
     this.removePawnFromLandTile('village', playerId, land);
     this.addPawnToLandTile('city', playerId, land);
     this.addPawnToPlayer('village', playerId);
@@ -326,14 +335,14 @@ export class BaronyGameStore extends signalStore(
     this.addVictoryPoints(10, playerId);
   }
 
-  applyExpedition(land: BaronyLandCoordinates, playerId: BaronyColor) {
+  applyExpedition(land: BaronyLandCoordinates, playerId: BaronyColor): void {
     this.removePawnFromPlayer('knight', playerId);
     this.addPawnToLandTile('knight', playerId, land);
     this.removePawnFromPlayer('knight', playerId);
     this.addPawnToGameBox('knight', playerId);
   }
 
-  applyEndGame(finalScores: BaronyFinalScores) {
+  applyEndGame(finalScores: BaronyFinalScores): void {
     patchState(this, (s) => ({
       ...s,
       players: {
@@ -352,64 +361,67 @@ export class BaronyGameStore extends signalStore(
     }));
   }
 
-  discardResource(resource: BaronyResourceType, playerId: BaronyColor) {
+  discardResource(resource: BaronyResourceType, playerId: BaronyColor): void {
     this.removeResourceFromPlayer(resource, playerId);
   }
 
-  applyNobleTitle(resources: BaronyResourceType[], playerId: BaronyColor) {
+  applyNobleTitle(
+    resources: BaronyResourceType[],
+    playerId: BaronyColor,
+  ): void {
     for (const resource of resources) this.discardResource(resource, playerId);
     this.addVictoryPoints(15, playerId);
   }
 
-  logMovement(movement: BaronyMovement, player: BaronyColor) {
+  logMovement(movement: BaronyMovement, player: BaronyColor): void {
     this.addLog('Log movement', {
       type: 'movement',
       movement: movement,
       player: player,
     });
   }
-  logExpedition(land: BaronyLandCoordinates, player: BaronyColor) {
+  logExpedition(land: BaronyLandCoordinates, player: BaronyColor): void {
     this.addLog('Log expedition', {
       type: 'expedition',
       land: land,
       player: player,
     });
   }
-  logNobleTitle(resources: BaronyResourceType[], player: BaronyColor) {
+  logNobleTitle(resources: BaronyResourceType[], player: BaronyColor): void {
     this.addLog('Log nobleTitle', {
       type: 'nobleTitle',
       resources: resources,
       player: player,
     });
   }
-  logNewCity(land: BaronyLandCoordinates, player: BaronyColor) {
+  logNewCity(land: BaronyLandCoordinates, player: BaronyColor): void {
     this.addLog('Log newCity', { type: 'newCity', land: land, player: player });
   }
-  logConstruction(construction: BaronyConstruction, player: BaronyColor) {
+  logConstruction(construction: BaronyConstruction, player: BaronyColor): void {
     this.addLog('Log construction', {
       type: 'construction',
       construction: construction,
       player: player,
     });
   }
-  logRecuitment(land: BaronyLandCoordinates, player: BaronyColor) {
+  logRecuitment(land: BaronyLandCoordinates, player: BaronyColor): void {
     this.addLog('Log recuitment', {
       type: 'recruitment',
       land: land,
       player: player,
     });
   }
-  logTurn(player: BaronyColor) {
+  logTurn(player: BaronyColor): void {
     this.addLog('Log turn', { type: 'turn', player: player });
   }
-  logSetupPlacement(land: BaronyLandCoordinates, player: BaronyColor) {
+  logSetupPlacement(land: BaronyLandCoordinates, player: BaronyColor): void {
     this.addLog('Log setupPlacement', {
       type: 'setupPlacement',
       land: land,
       player: player,
     });
   }
-  logSetup() {
+  logSetup(): void {
     this.addLog('Log setup', { type: 'setup' });
   }
 }

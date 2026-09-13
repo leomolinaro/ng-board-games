@@ -6,25 +6,25 @@ export function lazyInject<T extends object>(token: ProviderToken<T>): T {
 
   let instance: T | undefined;
 
-  const getInstance = () => {
+  const getInstance: () => T = () => {
     instance ??= runInInjectionContext(injector, () => inject(token));
     return instance;
   };
 
   return new Proxy({} as T, {
-    get(_, prop) {
+    get(_, prop): unknown {
       return Reflect.get(getInstance(), prop);
     },
-    set(_, prop, value) {
+    set(_, prop, value): boolean {
       return Reflect.set(getInstance(), prop, value);
     },
-    has(_, prop) {
+    has(_, prop): boolean {
       return prop in getInstance();
     },
-    ownKeys() {
+    ownKeys(): (string | symbol)[] {
       return Reflect.ownKeys(getInstance());
     },
-    getOwnPropertyDescriptor(_, prop) {
+    getOwnPropertyDescriptor(_, prop): PropertyDescriptor | undefined {
       return Object.getOwnPropertyDescriptor(getInstance(), prop);
     },
   });

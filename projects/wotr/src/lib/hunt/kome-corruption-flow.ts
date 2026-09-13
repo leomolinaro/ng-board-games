@@ -11,7 +11,7 @@ import type { WotrHuntTileId } from './wotr-hunt-models';
 export class KomeCorruptionFlow {
   private shadow = inject(WotrShadowPlayer);
 
-  async corruptionAttempt() {
+  async corruptionAttempt(): Promise<void> {
     let choosenTile: WotrHuntTileId | null = null;
     while (!choosenTile) {
       const story = await this.shadow.chooseCorruptionTile();

@@ -4,6 +4,7 @@ import { battleScenarios } from '../battle/wotr-battle-scenarios';
 import { cardScenarios } from '../card/wotr-card-scenarios';
 import { characterScenarios } from '../character/wotr-character-scenarios';
 import { huntScenarios } from '../hunt/wotr-hunt-scenarios';
+import { unitScenarios } from '../unit/wotr-unit-scenarios';
 import { fullGameScenarios } from './full-games/wotr-full-game-scenarios';
 import type {
   WotrScenario,
@@ -11,7 +12,6 @@ import type {
   WotrScenarioGroupInfo,
   WotrScenarioInfo,
 } from './wotr-scenario';
-import { unitScenarios } from '../unit/wotr-unit-scenarios';
 
 @Injectable({ providedIn: 'root' })
 export class WotrScenarios {
@@ -33,7 +33,7 @@ export class WotrScenarios {
   private addScenarioGroup(
     group: WotrScenarioGroup,
     groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[],
-  ) {
+  ): void {
     const scenarioGroupInfo: WotrScenarioGroupInfo = {
       id: group.id,
       type: 'group',
@@ -55,7 +55,7 @@ export class WotrScenarios {
   private addScenarios(
     scenarios: WotrScenario[],
     groupInfos: (WotrScenarioGroupInfo | WotrScenarioInfo)[],
-  ) {
+  ): void {
     for (const scenario of scenarios) {
       this.map[scenario.id] = scenario;
       const scenarioInfo: WotrScenarioInfo = {
@@ -68,7 +68,7 @@ export class WotrScenarios {
     }
   }
 
-  getScenarioInfos() {
+  getScenarioInfos(): WotrScenarioGroupInfo[] {
     return this.infos;
   }
 

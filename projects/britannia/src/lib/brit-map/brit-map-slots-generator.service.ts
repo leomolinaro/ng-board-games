@@ -91,7 +91,7 @@ export class BritMapSlotsGeneratorService {
     xMax: number,
     yMax: number,
     coordinatesToAreaId: (x: number, y: number) => BritAreaId | null,
-  ) {
+  ): Record<BritLandAreaId, BritLandPoints> {
     const landPointsById = {} as Record<BritLandAreaId, BritLandPoints>;
     const landPointByYByX: Record<
       number,
@@ -199,18 +199,24 @@ export class BritMapSlotsGeneratorService {
     return landPoint;
   }
 
-  private centralEnergy(innerPoint: BritMapPoint, outerPoint: BritMapPoint) {
+  private centralEnergy(
+    innerPoint: BritMapPoint,
+    outerPoint: BritMapPoint,
+  ): number {
     return 1 / this.quadDistance(innerPoint, outerPoint);
   }
 
-  private manyBodyEnergy(innerPoint1: BritMapPoint, innerPoint2: BritMapPoint) {
+  private manyBodyEnergy(
+    innerPoint1: BritMapPoint,
+    innerPoint2: BritMapPoint,
+  ): number {
     return 2 / this.quadDistance(innerPoint1, innerPoint2);
   }
 
   private quadDistance(
     pointA: { x: number; y: number },
     pointB: { x: number; y: number },
-  ) {
+  ): number {
     return (pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2;
   }
 
@@ -242,7 +248,7 @@ export class BritMapSlotsGeneratorService {
     return slots.map((s) => ({ x: s.x, y: s.y }));
   }
 
-  private energy(points: BritMapLandPoint[]) {
+  private energy(points: BritMapLandPoint[]): number {
     let totEnergy = 0;
     for (let i = 0; i < points.length; i++) {
       const p1 = points[i];

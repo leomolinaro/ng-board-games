@@ -92,22 +92,24 @@ export class BaronyActionsArea {
 
   protected isValid = computed(() => {
     const validActions = this.validActions();
-    return validActions ? arrayUtil.toMap(
-        validActions,
-        (a) => a,
-        () => true,
-      ) : null;
+    return validActions
+      ? arrayUtil.toMap(
+          validActions,
+          (a) => a,
+          () => true,
+        )
+      : null;
   });
 
-  onActionClick(action: BaronyAction) {
+  onActionClick(action: BaronyAction): void {
     if (this.isValid()?.[action]) this.actionClick.emit(action);
   }
 
-  onPassClick() {
+  onPassClick(): void {
     if (this.canPass()) this.passClick.emit();
   }
 
-  onCancelClick() {
+  onCancelClick(): void {
     if (this.canCancel()) this.cancelClick.emit();
   }
 }

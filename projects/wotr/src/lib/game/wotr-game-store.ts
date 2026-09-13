@@ -68,7 +68,7 @@ export interface WotrGameState {
   backupState: WotrGameState | null;
 }
 
-function initialeState(): WotrGameState {
+function initialState(): WotrGameState {
   return {
     gameId: '',
     gameOwner: null,
@@ -94,7 +94,7 @@ function initialeState(): WotrGameState {
 export class WotrGameStore extends signalStore(
   { protectedState: false },
   // withDevtools("WotrGameStore"),
-  withState<WotrGameState>(initialeState()),
+  withState<WotrGameState>(initialState()),
 ) {
   constructor() {
     const frontStore = inject(WotrFrontStore);
@@ -140,8 +140,8 @@ export class WotrGameStore extends signalStore(
     battleStore.state = this.battle;
   }
 
-  clear() {
-    patchState(this, () => initialeState());
+  clear(): void {
+    patchState(this, () => initialState());
   }
 
   initGameState(
@@ -149,7 +149,7 @@ export class WotrGameStore extends signalStore(
     gameId: string,
     gameOwner: BgUser,
     gameOptions: WotrGameOptions,
-  ) {
+  ): void {
     patchState(this, (s) => ({
       ...s,
       gameId,
@@ -166,13 +166,13 @@ export class WotrGameStore extends signalStore(
     }));
   }
 
-  isTemporaryState() {
+  isTemporaryState(): boolean {
     return !!this.backupState();
   }
-  startTemporaryState() {
+  startTemporaryState(): void {
     patchState(this, (s) => ({ ...s, backupState: s }));
   }
-  endTemporaryState() {
+  endTemporaryState(): void {
     if (this.backupState()) {
       patchState(this, (s) => ({ ...s.backupState, backupState: null }));
     } else {

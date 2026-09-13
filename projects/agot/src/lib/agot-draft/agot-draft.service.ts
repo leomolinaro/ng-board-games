@@ -8,7 +8,7 @@ import type { AgotCard } from '../agot.models';
 export class AgotDraftService {
   private dataService = inject(AgotData);
 
-  private getTypeSort(type: string) {
+  private getTypeSort(type: string): number {
     switch (type) {
       case 'agenda':
         return 1;
@@ -33,32 +33,30 @@ export class AgotDraftService {
     factions: string[],
     packs: string[],
     duplicates: boolean,
-  ) {
+  ): AgotCard[] | null {
     const poolCards = this.getPool(types, factions, packs);
     const draftCards = this.getRandom(poolCards, nCards, duplicates);
     draftCards?.sort((a, b) => {
       const typeA = this.getTypeSort(a.type_code);
       const typeB = this.getTypeSort(b.type_code);
       let comparison = typeA - typeB;
-      if (comparison !== 0) {
-        return comparison;
-      }
+      if (comparison !== 0) return comparison;
       const goldA = a.type_code === 'plot' ? a.income : a.cost;
       const goldB = b.type_code === 'plot' ? b.income : b.cost;
       comparison = goldA - goldB;
-      if (comparison !== 0) {
-        return comparison;
-      }
+      if (comparison !== 0) return comparison;
       comparison = a.initiative - b.initiative;
-      if (comparison !== 0) {
-        return comparison;
-      }
+      if (comparison !== 0) return comparison;
       return comparison;
     });
     return draftCards;
   }
 
-  private getPool(types: string[], factions: string[], packs: string[]) {
+  private getPool(
+    types: string[],
+    factions: string[],
+    packs: string[],
+  ): AgotCard[] {
     const typeIds: Record<string, boolean> = {};
     const factionIds: Record<string, boolean> = {};
     const packIds: Record<string, boolean> = {};

@@ -47,10 +47,10 @@ export class WotrActionTokenOptionsForm {
   tokens = model.required<WotrActionTokenOption[]>();
   readOnly = model.required<boolean>();
 
-  protected compareTokens = (
+  protected compareTokens: (
     a: WotrActionTokenOption,
     b: WotrActionTokenOption,
-  ) => a.token === b.token && a.front === b.front;
+  ) => boolean = (a, b) => a.token === b.token && a.front === b.front;
 
   protected isSelected(option: WotrActionTokenOption): boolean {
     return this.tokens().some((token) => this.compareTokens(token, option));

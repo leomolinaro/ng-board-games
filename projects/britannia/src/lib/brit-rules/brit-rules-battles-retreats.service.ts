@@ -9,7 +9,7 @@ import type { BritGameStore } from '../brit-game/brit-game.store';
 export class BritRulesBattlesRetreatsService {
   private components = inject(BritComponents);
 
-  hasBattlesToResolve(game: BritGameStore) {
+  hasBattlesToResolve(game: BritGameStore): boolean {
     for (const landId of this.components.LAND_AREA_IDS) {
       if (this.isBattleArea(landId, game)) {
         return true;
@@ -18,7 +18,7 @@ export class BritRulesBattlesRetreatsService {
     return false;
   }
 
-  private isBattleArea(landId: BritLandAreaId, game: BritGameStore) {
+  private isBattleArea(landId: BritLandAreaId, game: BritGameStore): boolean {
     const areaState = game.getArea(landId);
     let nationId: BritNationId | null = null;
     for (const unit of areaState.units) {
@@ -33,7 +33,7 @@ export class BritRulesBattlesRetreatsService {
     return false;
   }
 
-  getValidAreasForBattle(game: BritGameStore) {
+  getValidAreasForBattle(game: BritGameStore): BritLandAreaId[] {
     const validAreas: BritLandAreaId[] = [];
     for (const landId of this.components.LAND_AREA_IDS) {
       if (this.isBattleArea(landId, game)) {

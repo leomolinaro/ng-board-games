@@ -51,7 +51,7 @@ export class WotrCardPlayUi {
   private hasPlayableCards(
     cardTypes: WotrCardType[] | 'any',
     frontId: WotrFrontId,
-  ) {
+  ): boolean {
     return this.frontStore.front(frontId).handCards.some((cardId) => {
       if (cardTypes !== 'any' && !cardTypes.includes(getCard(cardId).type))
         return false;

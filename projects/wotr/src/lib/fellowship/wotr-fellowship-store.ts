@@ -26,69 +26,69 @@ export class WotrFellowshipStore {
   ) => void;
   state!: Signal<WotrFellowship>;
 
-  corruption() {
+  corruption(): number {
     return this.state().corruption;
   }
-  isRevealed() {
+  isRevealed(): boolean {
     return this.state().status === 'revealed';
   }
-  isHidden() {
+  isHidden(): boolean {
     return this.state().status === 'hidden';
   }
-  guide() {
+  guide(): WotrCompanionId {
     return this.state().guide;
   }
-  isOnMordorTrack() {
+  isOnMordorTrack(): boolean {
     return this.state().mordorTrack != null;
   }
-  mordorTrack() {
+  mordorTrack(): WotrMordorTrack | undefined {
     return this.state().mordorTrack;
   }
-  hasMovedOrHid() {
+  hasMovedOrHid(): boolean {
     return this.state().moveOrHideAttempt;
   }
-  progress() {
+  progress(): number {
     return this.state().progress;
   }
-  numberOfCompanions() {
+  numberOfCompanions(): number {
     return this.state().companions.length;
   }
-  companions() {
+  companions(): WotrCompanionId[] {
     return this.state().companions;
   }
 
-  setCompanions(companions: WotrCompanionId[]) {
+  setCompanions(companions: WotrCompanionId[]): void {
     this.update('setCompanions', (state) => ({ ...state, companions }));
   }
-  setGuide(guide: WotrCompanionId) {
+  setGuide(guide: WotrCompanionId): void {
     this.update('setGuide', (state) => ({ ...state, guide }));
   }
-  setProgress(progress: number) {
+  setProgress(progress: number): void {
     this.update('setProgress', (state) => ({ ...state, progress }));
   }
-  increaseProgress() {
+  increaseProgress(): void {
     this.update('increaseProgress', (state) => ({
       ...state,
       progress: state.progress + 1,
     }));
   }
-  corrupt(delta: number) {
+  corrupt(delta: number): void {
     this.update('changeCorruption', (state) => ({
       ...state,
       corruption: state.corruption + delta,
     }));
   }
-  hide() {
+  hide(): void {
     this.update('hide', (state) => ({ ...state, status: 'hidden' }));
   }
-  reveal() {
+  reveal(): void {
     this.update('reveal', (state) => ({
       ...state,
       status: 'revealed',
       progress: 0,
     }));
   }
-  removeCompanion(companionId: WotrCharacterId) {
+  removeCompanion(companionId: WotrCharacterId): void {
     this.update('removeCompanion', (state) => ({
       ...state,
       companions: immutableUtil.listRemoveFirst(
@@ -98,7 +98,7 @@ export class WotrFellowshipStore {
     }));
   }
 
-  moveOnMordorTrack() {
+  moveOnMordorTrack(): void {
     this.update('moveOnMordorTrack', (state) => ({
       ...state,
       mordorTrack:
@@ -108,19 +108,19 @@ export class WotrFellowshipStore {
     }));
   }
 
-  setMoveAttempt() {
+  setMoveAttempt(): void {
     this.update('setMoveAttempt', (state) => ({
       ...state,
       moveOrHideAttempt: true,
     }));
   }
-  setHideAttempt() {
+  setHideAttempt(): void {
     this.update('setHideAttempt', (state) => ({
       ...state,
       moveOrHideAttempt: true,
     }));
   }
-  resetMoveOrHideAttempt() {
+  resetMoveOrHideAttempt(): void {
     this.update('resetMoveOrHideAttempt', (state) => ({
       ...state,
       moveOrHideAttempt: false,

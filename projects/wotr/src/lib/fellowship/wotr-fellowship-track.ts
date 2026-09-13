@@ -1,4 +1,4 @@
-import type { Signal} from '@angular/core';
+import type { Signal } from '@angular/core';
 import { Component, computed, inject, input } from '@angular/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import type { WotrFellowship } from './wotr-fellowship-models';
@@ -63,7 +63,7 @@ export class WotrFellowshipTrack {
     };
   });
 
-  private getX(index: number) {
+  private getX(index: number): number {
     return X0 + index * XSTEP;
   }
 }

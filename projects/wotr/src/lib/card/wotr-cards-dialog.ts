@@ -152,17 +152,17 @@ export class WotrCardsDialog {
     return this.data.selectableCards?.nCards === this.selectedCards().length;
   });
 
-  onConfirm() {
+  onConfirm(): void {
     if (!this.canConfirm()) return;
     this.context.complete(this.selectedCards());
   }
 
   @HostListener('mouseover')
-  onMouseHover() {
+  onMouseHover(): void {
     this.focusedCardId = null;
   }
 
-  onCardClick(cardId: WotrCardId) {
+  onCardClick(cardId: WotrCardId): void {
     if (this.data.selectableCards) {
       if (this.selectedCards().includes(cardId)) {
         this.selectedCards.update((cards) => cards.filter((c) => c !== cardId));

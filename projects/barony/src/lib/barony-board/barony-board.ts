@@ -90,33 +90,33 @@ export class BaronyBoard {
     () => this.maxNumberOfKnights() ?? 0,
   );
 
-  protected onPlayerSelect(player: BaronyPlayer) {
+  protected onPlayerSelect(player: BaronyPlayer): void {
     this.playerSelect.emit(player);
   }
-  protected onBuildingSelect(building: BaronyBuilding) {
+  protected onBuildingSelect(building: BaronyBuilding): void {
     this.buildingSelect.emit(building);
   }
-  protected onLandTileClick(landTile: BaronyLand) {
+  protected onLandTileClick(landTile: BaronyLand): void {
     this.landTileClick.emit(landTile);
   }
-  protected onActionClick(action: BaronyAction) {
+  protected onActionClick(action: BaronyAction): void {
     this.actionClick.emit(action);
   }
-  protected onPassClick() {
+  protected onPassClick(): void {
     this.passClick.emit();
   }
-  protected onCancelClick() {
+  protected onCancelClick(): void {
     this.cancelClick.emit();
   }
-  protected onKnightsConfirm() {
+  protected onKnightsConfirm(): void {
     this.knightsConfirm.emit(this.numberOfKnights());
     this.numberOfKnights.set(1);
   }
-  protected onResourceSelect(resource: BaronyResourceType) {
+  protected onResourceSelect(resource: BaronyResourceType): void {
     this.resourceSelect.emit(resource);
   }
 
-  private openEndGameDialog() {
+  private openEndGameDialog(): void {
     if (!this.endGame()) return;
     void this.dialogs.open(BaronyEndGameDialog, {
       label: 'End Game',

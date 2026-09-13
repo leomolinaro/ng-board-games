@@ -864,7 +864,7 @@ export class WotrFreePeoplesCharacterCards {
   private discardCompanionCardAbility(
     cardId: WotrCardId,
     ...characters: WotrCharacterQuery[]
-  ) {
+  ): WotrAbility<WotrAfterCompanionLeavingTheFellowship> {
     const discardAbility: WotrAbility<WotrAfterCompanionLeavingTheFellowship> =
       {
         modifier: this.characterModifiers.afterCompanionLeavingTheFellowship,

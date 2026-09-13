@@ -1,7 +1,7 @@
-import type { OnInit} from '@angular/core';
+import type { OnInit } from '@angular/core';
 import { Component, computed, inject, signal } from '@angular/core';
 import { injectDialogContext } from '@leobg/commons';
-import type { BgTransformFn} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
 import { arrayUtil } from '@leobg/commons/utils';
 import { TuiHint } from '@taiga-ui/core';
 import type { WotrUnitImage } from '../assets/wotr-assets-store';
@@ -119,7 +119,7 @@ export class WotrFellowshipDialog implements OnInit {
     return true;
   });
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.unitNodes = this.unitsToUnitNodes(this.fellowshipStore.companions());
     const companionSelection = this.data.selection;
     if (companionSelection) {
@@ -158,7 +158,7 @@ export class WotrFellowshipDialog implements OnInit {
 
   protected range: BgTransformFn<number, number[]> = (n) => arrayUtil.range(n);
 
-  onConfirm() {
+  onConfirm(): void {
     if (!this.canConfirm()) return;
 
     const output: WotrCompanionId[] = [];
@@ -171,7 +171,7 @@ export class WotrFellowshipDialog implements OnInit {
     this.context.complete(output);
   }
 
-  onUnitClick(unitNode: CompanionNode) {
+  onUnitClick(unitNode: CompanionNode): void {
     if (unitNode.disabled || !unitNode.selectable) return;
     if (unitNode.selected) {
       unitNode.selected = false;

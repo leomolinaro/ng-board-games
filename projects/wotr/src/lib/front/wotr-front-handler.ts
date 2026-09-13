@@ -20,7 +20,7 @@ export class WotrFrontHandler {
   private huntStore = inject(WotrHuntStore);
   private actionRegistry = inject(WotrActionRegistry);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
   }
@@ -41,34 +41,38 @@ export class WotrFrontHandler {
     };
   }
 
-  refreshVictoryPoints() {
+  refreshVictoryPoints(): void {
     const points: Record<WotrFrontId, number> = {
       'free-peoples': 0,
       shadow: 0,
     };
 
     for (const region of this.regionStore.regions()) {
-      if ((region.settlement === 'stronghold' || region.settlement === 'city') && 
-          region.frontId &&
-          region.controlledBy &&
-          region.controlledBy !== region.frontId
-        ) {
-          points[region.controlledBy] +=
-            region.settlement === 'stronghold' ? 2 : 1;
-        }
+      if (
+        (region.settlement === 'stronghold' || region.settlement === 'city') &&
+        region.frontId &&
+        region.controlledBy &&
+        region.controlledBy !== region.frontId
+      ) {
+        points[region.controlledBy] +=
+          region.settlement === 'stronghold' ? 2 : 1;
+      }
     }
     this.frontStore.setVictoryPoints(points['free-peoples'], 'free-peoples');
     this.frontStore.setVictoryPoints(points.shadow, 'shadow');
   }
 
-  private useElvenRing(elvenRing: WotrElvenRing, front: WotrFrontId) {
+  private useElvenRing(elvenRing: WotrElvenRing, front: WotrFrontId): void {
     this.frontStore.removeElvenRing(elvenRing, front);
     if (front === 'free-peoples') {
       this.frontStore.addElvenRing(elvenRing, 'shadow');
     }
   }
 
-  convertDieWithElvenRing(elvenRing: WotrElvenRingAction, front: WotrFrontId) {
+  convertDieWithElvenRing(
+    elvenRing: WotrElvenRingAction,
+    front: WotrFrontId,
+  ): void {
     this.logger.logElvenRingUse(elvenRing, front);
     this.frontStore.removeActionDie(elvenRing.fromDie, front);
     if (elvenRing.toDie === 'eye') {

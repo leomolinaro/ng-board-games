@@ -7,12 +7,8 @@ import {
   output,
   signal,
 } from '@angular/core';
-import type {
-  BgTransformFn} from '@leobg/commons/utils';
-import {
-  arrayUtil,
-  BgTransformPipe,
-} from '@leobg/commons/utils';
+import type { BgTransformFn } from '@leobg/commons/utils';
+import { arrayUtil, BgTransformPipe } from '@leobg/commons/utils';
 import { TuiButton, tuiButtonOptionsProvider, TuiHint } from '@taiga-ui/core';
 import { WotrAssetsStore } from '../assets/wotr-assets-store';
 import type { WotrCardId } from '../card/wotr-card-models';
@@ -348,7 +344,10 @@ export class WotrFrontArea {
     return validUnitsByNation;
   });
 
-  onReinforcementUnitSelect(type: WotrGenericUnitType, nationId: WotrNationId) {
+  onReinforcementUnitSelect(
+    type: WotrGenericUnitType,
+    nationId: WotrNationId,
+  ): void {
     const reinforcementUnitSelection = this.ui.reinforcementUnitSelection();
     if (!reinforcementUnitSelection) return;
     if (

@@ -20,29 +20,29 @@ export class WotrBattleStore {
 
   battle = computed(() => this.state());
   battleInProgress = computed(() => !!this.state());
-  isCharacterInRetroguard(character: WotrCharacterId) {
-    return this.state()?.retroguard?.characters?.includes(character);
+  isCharacterInRetroguard(character: WotrCharacterId): boolean {
+    return this.state()?.retroguard?.characters?.includes(character) ?? false;
   }
 
-  startBattle(battle: WotrBattle) {
+  startBattle(battle: WotrBattle): void {
     this.update('startBattle', () => battle);
   }
-  addAttackerCombatCard(card: WotrCardId) {
+  addAttackerCombatCard(card: WotrCardId): void {
     this.update('addAttackerCombatCard', (s) => ({
       ...s!,
       attackerCombatCard: card,
     }));
   }
-  addDefenderCombatCard(card: WotrCardId) {
+  addDefenderCombatCard(card: WotrCardId): void {
     this.update('addDefenderCombatCard', (s) => ({
       ...s!,
       defenderCombatCard: card,
     }));
   }
-  endBattle() {
+  endBattle(): void {
     this.update('endBattle', () => null);
   }
-  addNRegularCasualtiesToContinueSiege(n: number) {
+  addNRegularCasualtiesToContinueSiege(n: number): void {
     this.update('addNRegularCasualtiesToContinueSiege', (s) => {
       if (!s) throw new Error('No battle in progress');
       return {

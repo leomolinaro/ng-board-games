@@ -19,7 +19,7 @@ export class WotrFellowshipModifiers {
     }
   }
 
-  clear() {
+  clear(): void {
     this.afterDeclaration.clear();
   }
 }

@@ -144,11 +144,11 @@ export class WotrGamePage implements OnInit, OnDestroy {
 
   gameConfig = input<WotrGameConfig>();
 
-  ngOnInit() {
+  ngOnInit(): void {
     void this.init();
   }
 
-  private async init() {
+  private async init(): Promise<void> {
     const [game, players, stories] = await Promise.all([
       this.remote.getGame(this.gameId),
       this.remote.getPlayers(this.gameId, (ref) => ref.orderBy('sort')),
@@ -205,7 +205,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     };
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.actionDieModifiers.clear();
     this.actionRegistry.clear();
     this.battleModifiers.clear();
@@ -220,7 +220,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
 
   private storiesDialogRef: WotrStoriesDialogRef | null = null;
 
-  editStories() {
+  editStories(): void {
     void this.dialogs.open<WotrStoriesDialogData, void>(WotrStoriesDialog, {
       data: {
         gameId: this.gameId,
@@ -229,7 +229,7 @@ export class WotrGamePage implements OnInit, OnDestroy {
     });
   }
 
-  protected reloadPage(shouldReplay: boolean) {
+  protected reloadPage(shouldReplay: boolean): void {
     setTimeout(() => location.reload());
     void this.router.navigate([], {
       relativeTo: this.route,

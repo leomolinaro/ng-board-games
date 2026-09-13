@@ -141,7 +141,7 @@ export class WotrRegionDialog implements OnInit {
     return 'Cannot confirm';
   });
 
-  ngOnInit() {
+  ngOnInit(): void {
     const region = this.data.region;
     this.unitNodes = [];
     if (region.army)
@@ -271,7 +271,7 @@ export class WotrRegionDialog implements OnInit {
 
   protected range: BgTransformFn<number, number[]> = (n) => arrayUtil.range(n);
 
-  onConfirm() {
+  onConfirm(): void {
     if (!this.canConfirm()) return;
     if (this.data.unitSelection) {
       if (this.casualtiesMode) {
@@ -303,7 +303,7 @@ export class WotrRegionDialog implements OnInit {
     }
   }
 
-  private addNodeToUnits(unitNode: UnitNode, units: WotrUnits) {
+  private addNodeToUnits(unitNode: UnitNode, units: WotrUnits): void {
     switch (unitNode.type) {
       case 'regular': {
         units.regulars ??= [];
@@ -361,7 +361,7 @@ export class WotrRegionDialog implements OnInit {
     }
   }
 
-  onUnitClick(unitNode: UnitNode) {
+  onUnitClick(unitNode: UnitNode): void {
     if (!unitNode.selectable) return;
     if (this.casualtiesMode) {
       if (unitNode.removing) {

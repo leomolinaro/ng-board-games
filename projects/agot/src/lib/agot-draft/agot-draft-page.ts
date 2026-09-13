@@ -200,7 +200,7 @@ export class AgotDraftPage {
     this.selectedPackIds = [];
   }
 
-  protected generate() {
+  protected generate(): void {
     this.draftCards = this.draft.generateDraft(
       this.nCards,
       this.selectedTypeIds,

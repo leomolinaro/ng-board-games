@@ -146,8 +146,7 @@ export class WotrCombatCards {
           .characters?.some((c) => c === 'strider' || c === 'aragorn') ?? false,
       effect: async (card, params) => {
         const isAragorn =
-          params.freePeoples.army().characters?.includes('aragorn') ??
-          false;
+          params.freePeoples.army().characters?.includes('aragorn') ?? false;
         await this.forfeitLeadership(
           {
             cardId: card.id,
@@ -1045,7 +1044,7 @@ export class WotrCombatCards {
     },
   };
 
-  private casualtyHits(actions: WotrAction[]) {
+  private casualtyHits(actions: WotrAction[]): number {
     const regularEliminations = findActions<WotrRegularUnitElimination>(
       actions,
       'regular-unit-elimination',
@@ -1070,7 +1069,7 @@ export class WotrCombatCards {
     defendingFront: WotrCombatFront,
     card: WotrCard,
     params: WotrCombatCardParams,
-  ) {
+  ): Promise<void> {
     if (!nHits) return;
     const armyHitPoints = this.unitUtils.nHits(defendingFront.army());
     if (nHits >= armyHitPoints) {

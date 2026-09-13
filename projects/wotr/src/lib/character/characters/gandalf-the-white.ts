@@ -125,7 +125,7 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
     round.shadow.negateNazgulLeadership = true;
   };
 
-  play() {
+  play(): WotrAction[] {
     return [forfeitLeadership(character('gandalf-the-white'))];
   }
 }

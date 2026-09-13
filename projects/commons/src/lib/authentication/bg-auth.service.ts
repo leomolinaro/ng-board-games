@@ -9,7 +9,8 @@ import {
 } from 'firebase/auth';
 import { BehaviorSubject, from, Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { BgCloudService } from '../cloud/bg-cloud-service';
+import type { BgCloudCollection } from '../cloud';
+import { BgCloudService } from '../cloud';
 
 export type BgUserLoginType = 'guest' | 'google';
 
@@ -40,28 +41,28 @@ export class BgAuthService {
   private $user = new BehaviorSubject<BgUser | null>(null);
   // TO MOCK
   // private $user = new BehaviorSubject<BgUser | null> ({ email: "rhapsody.leo@gmail.com" } as any);
-  private setUser(user: BgUser | null) {
+  private setUser(user: BgUser | null): void {
     this.$user.next(user);
   }
 
-  private users() {
+  private users(): BgCloudCollection<BgUser> {
     return this.cloud.collection<BgUser>('users');
   }
 
-  getUser$() {
+  getUser$(): Observable<BgUser | null> {
     return this.$user.asObservable();
   }
-  getUser() {
+  getUser(): BgUser {
     return this.$user.getValue()!;
   }
-  hasUser() {
+  hasUser(): boolean {
     return !!this.$user.getValue();
   }
-  isUserId(userId: string) {
+  isUserId(userId: string): boolean {
     return this.getUser()?.id === userId;
   }
 
-  autoSignIn$() {
+  autoSignIn$(): Observable<BgUser | null> {
     const loginType = localStorage.getItem(
       LOCALSTORAGE_BG_LOGIN_TYPE_KEY,
     ) as BgUserLoginType | null;
@@ -72,7 +73,7 @@ export class BgAuthService {
       : of(null);
   }
 
-  signIn$(type: BgUserLoginType) {
+  signIn$(type: BgUserLoginType): Observable<BgUser | null> {
     return this.provider(type)
       .signIn$()
       .pipe(
@@ -84,7 +85,7 @@ export class BgAuthService {
       );
   }
 
-  signOut$() {
+  signOut$(): Observable<void> {
     const user = this.$user.getValue();
     if (user) {
       this.setUser(null);
@@ -94,7 +95,7 @@ export class BgAuthService {
     return of(void 0);
   }
 
-  deleteUser$() {
+  deleteUser$(): Observable<void> {
     const user = this.$user.getValue();
     return user
       ? this.signOut$().pipe(
@@ -114,7 +115,7 @@ export class BgAuthService {
     }
   }
 
-  private login$(user: BgUser | null) {
+  private login$(user: BgUser | null): Observable<BgUser | null> {
     if (user) {
       this.setUser(user);
       localStorage.setItem(LOCALSTORAGE_BG_LOGIN_TYPE_KEY, user.loginType);
@@ -124,7 +125,7 @@ export class BgAuthService {
     return of(null);
   }
 
-  private upsertUser$(user: BgUser) {
+  private upsertUser$(user: BgUser): Observable<BgUser | null> {
     const users = this.users();
     return this.cloud.set$<BgUser>(user.id, user, users);
   }
@@ -142,7 +143,7 @@ class BgGoogleAuthProvider implements IBgAuthProvider {
     );
   }
 
-  signOut$() {
+  signOut$(): Observable<void> {
     return from(signOut(this.auth));
   }
 
@@ -184,7 +185,7 @@ class BgGuestAuthProvider implements IBgAuthProvider {
     return of(user);
   }
 
-  signOut$() {
+  signOut$(): Observable<void> {
     localStorage.removeItem(LOCALSTORAGE_BG_PROVIDER_GUEST_KEY);
     return of(void 0);
   }

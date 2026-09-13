@@ -98,15 +98,18 @@ export class TlsmStore {
     () => this.dragons().find((d) => d.crowned) ?? null,
   );
 
-  dragon(dragonId: TlsmDragonId) {
+  dragon(dragonId: TlsmDragonId): Dragon {
     return this.store()[dragonId];
   }
 
-  private update(_action: string, updater: (state: IAppState) => IAppState) {
+  private update(
+    _action: string,
+    updater: (state: IAppState) => IAppState,
+  ): void {
     this.store.update(updater);
   }
 
-  discardScale(dragonId: TlsmDragonId) {
+  discardScale(dragonId: TlsmDragonId): void {
     this.update('Discard scale', (s) => ({
       ...s,
       [dragonId]: {
@@ -116,7 +119,7 @@ export class TlsmStore {
     }));
   }
 
-  saveOpt(players: string[], scalesPerCrown: number) {
+  saveOpt(players: string[], scalesPerCrown: number): void {
     this.update('Save opt', (s) => ({
       ...s,
       players: players,
@@ -127,14 +130,14 @@ export class TlsmStore {
     }));
   }
 
-  clearLog() {
+  clearLog(): void {
     this.update('Clear log', (s) => ({
       ...s,
       logs: [],
     }));
   }
 
-  resetScale(dragonId: string) {
+  resetScale(dragonId: string): void {
     this.update('Reset scale', (s) => {
       switch (dragonId) {
         case 'varthrax':
@@ -149,7 +152,7 @@ export class TlsmStore {
     });
   }
 
-  crown(dragonId: string, crown: boolean) {
+  crown(dragonId: string, crown: boolean): void {
     this.update('Reset scale', (s) => {
       switch (dragonId) {
         case 'varthrax':
@@ -164,7 +167,7 @@ export class TlsmStore {
     });
   }
 
-  addLog(message: string, tokenSource: string) {
+  addLog(message: string, tokenSource: string): void {
     this.update('Reset scale', (s) => {
       return {
         ...s,
@@ -173,25 +176,25 @@ export class TlsmStore {
     });
   }
 
-  drawStrike() {
+  drawStrike(): void {
     this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, strikes: s.pool.strikes - 1 } };
     });
   }
 
-  drawRage() {
+  drawRage(): void {
     this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, rages: s.pool.rages - 1 } };
     });
   }
 
-  drawSlumber() {
+  drawSlumber(): void {
     this.update('Reset scale', (s) => {
       return { ...s, pool: { ...s.pool, slumbers: s.pool.slumbers - 1 } };
     });
   }
 
-  drawScale(dragonId: string, resolved: boolean) {
+  drawScale(dragonId: string, resolved: boolean): void {
     this.update('Reset scale', (s) => {
       switch (dragonId) {
         case 'varthrax':

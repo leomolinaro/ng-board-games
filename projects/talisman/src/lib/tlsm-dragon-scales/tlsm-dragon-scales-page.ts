@@ -138,11 +138,11 @@ export class TlsmDragonScalesPage {
   private completeTokenResolver: CompleteTokenResolver;
   private askTokenResolver: AskTokenResolver;
 
-  protected discardScale(dragonId: TlsmDragonId) {
+  protected discardScale(dragonId: TlsmDragonId): void {
     this.store.discardScale(dragonId);
   }
 
-  protected async openSettings() {
+  protected async openSettings(): Promise<void> {
     const result = await firstValueFrom(
       this.dialogs.open<Settings | null>(
         new PolymorpheusComponent(TlsmSettingsDialog),

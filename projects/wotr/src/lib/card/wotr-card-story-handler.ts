@@ -22,7 +22,7 @@ export class WotrCardStoryHandler {
 
   private cards = inject(WotrCards);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerStory('die-card', this.dieCard);
     this.actionRegistry.registerStory('card-effect', this.reactionCard);
     this.actionRegistry.registerStory(

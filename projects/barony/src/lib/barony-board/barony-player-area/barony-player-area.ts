@@ -91,7 +91,7 @@ export class BaronyPlayerArea implements OnChanges {
     }
   }
 
-  onCardClick() {
+  onCardClick(): void {
     const player = this.player();
     if (
       !player.isAi &&
@@ -102,13 +102,13 @@ export class BaronyPlayerArea implements OnChanges {
     }
   }
 
-  onPawnClick(pawnNode: BaronyPawnNode) {
+  onPawnClick(pawnNode: BaronyPawnNode): void {
     if (pawnNode.active) {
       this.clickPawn.emit(pawnNode.type);
     }
   }
 
-  onResourceClick(resourceNode: BaronyResourceNode) {
+  onResourceClick(resourceNode: BaronyResourceNode): void {
     if (resourceNode.active) {
       this.clickResource.emit(resourceNode.type);
     }

@@ -95,19 +95,19 @@ export class BritActionsComponent {
 
   isValid: Record<string, boolean> | null = null;
 
-  onPassClick() {
+  onPassClick(): void {
     if (this.canPass()) {
       this.passClick.emit();
     }
   }
 
-  onConfirmClick() {
+  onConfirmClick(): void {
     if (this.canConfirm()) {
       this.confirmClick.emit();
     }
   }
 
-  onCancelClick() {
+  onCancelClick(): void {
     if (this.canCancel()) {
       this.cancelClick.emit();
     }

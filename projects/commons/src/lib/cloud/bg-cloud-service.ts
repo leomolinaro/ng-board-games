@@ -7,6 +7,7 @@ import type {
   OrderByDirection,
   Query,
   QueryConstraint,
+  QuerySnapshot,
   WhereFilterOp,
 } from 'firebase/firestore';
 import {
@@ -32,17 +33,24 @@ export type BgCloudCollectionQuery<_T> = (
 export class BgCloudQueryContraintFactory {
   private qc: QueryConstraint[] = [];
 
-  where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
+  where(
+    fieldPath: string | FieldPath,
+    opStr: WhereFilterOp,
+    value: unknown,
+  ): this {
     this.qc.push(where(fieldPath, opStr, value));
     return this;
   }
 
-  orderBy(fieldPath: string | FieldPath, directionStr?: OrderByDirection) {
+  orderBy(
+    fieldPath: string | FieldPath,
+    directionStr?: OrderByDirection,
+  ): this {
     this.qc.push(orderBy(fieldPath, directionStr));
     return this;
   }
 
-  get() {
+  get(): QueryConstraint[] {
     return this.qc;
   }
 }
@@ -96,7 +104,7 @@ export class BgCloudService {
   private async getDocs<T>(
     coll: BgCloudCollection<T>,
     queryFn?: BgCloudCollectionQuery<T>,
-  ) {
+  ): Promise<QuerySnapshot<T>> {
     if (queryFn) {
       const qf = new BgCloudQueryContraintFactory();
       queryFn(qf);
@@ -204,7 +212,7 @@ export class BgCloudService {
     return from(this.deleteAll(coll));
   }
 
-  async deleteAll<T>(coll: BgCloudCollection<T>) {
+  async deleteAll<T>(coll: BgCloudCollection<T>): Promise<void> {
     const snapshot = await this.getDocs(coll);
     const deletes: Promise<void>[] = [];
     snapshot.forEach((r) => {
@@ -213,16 +221,18 @@ export class BgCloudService {
     await Promise.all(deletes);
   }
 
-  delete$<T>(path: string, coll: BgCloudCollection<T>) {
+  delete$<T>(path: string, coll: BgCloudCollection<T>): Observable<void> {
     return from(this.delete(path, coll));
   }
 
-  async delete<T>(path: string, coll: BgCloudCollection<T>) {
+  async delete<T>(path: string, coll: BgCloudCollection<T>): Promise<void> {
     const docRef = this.getDocRef(coll, path);
     await deleteDoc(docRef);
   }
 
-  private collectionData$<T>(ref: Query<T> | CollectionReference<T>) {
+  private collectionData$<T>(
+    ref: Query<T> | CollectionReference<T>,
+  ): Observable<T[]> {
     return new Observable<T[]>((subscriber) => {
       const unsubscribe = onSnapshot(
         ref,
@@ -236,7 +246,7 @@ export class BgCloudService {
     });
   }
 
-  private docData$<T>(ref: DocumentReference<T>) {
+  private docData$<T>(ref: DocumentReference<T>): Observable<T | undefined> {
     return new Observable<T | undefined>((subscriber) => {
       const unsubscribe = onSnapshot(
         ref,

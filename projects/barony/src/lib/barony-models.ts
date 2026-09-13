@@ -64,7 +64,7 @@ export interface BaronyLandPiece {
   quantity: number;
 }
 
-export function landCoordinatesToId(c: BaronyLandCoordinates) {
+export function landCoordinatesToId(c: BaronyLandCoordinates): string {
   return `${c.x}_${c.y}_${c.z}`;
 }
 

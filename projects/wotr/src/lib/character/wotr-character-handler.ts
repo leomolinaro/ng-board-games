@@ -53,7 +53,7 @@ export class WotrCharacterHandler {
 
   private characterAbilities = lazyInject(WotrCharacters);
 
-  init() {
+  init(): void {
     this.actionRegistry.registerActions(this.getActionAppliers());
     this.actionRegistry.registerActionLoggers(this.getActionLoggers());
     this.actionRegistry.registerEffectLogger<WotrGollumEnterFellowship>(
@@ -123,7 +123,7 @@ export class WotrCharacterHandler {
     };
   }
 
-  playCharacters(characters: WotrCharacterId[], regionId: WotrRegionId) {
+  playCharacters(characters: WotrCharacterId[], regionId: WotrRegionId): void {
     const region = this.regionStore.region(regionId);
     const removingCharacters: WotrCharacterId[] = [];
     for (const characterId of characters) {
@@ -152,7 +152,10 @@ export class WotrCharacterHandler {
     this.characterAbilities.activateInPlayAbilities(characters);
   }
 
-  separateCompanions(companions: WotrCompanionId[], toRegion: WotrRegionId) {
+  separateCompanions(
+    companions: WotrCompanionId[],
+    toRegion: WotrRegionId,
+  ): void {
     const region = this.regionStore.region(toRegion);
     for (const characterId of companions) {
       const character = this.characterStore.character(characterId);
@@ -192,7 +195,7 @@ export class WotrCharacterHandler {
     this.checkGollumEnterPlay();
   }
 
-  checkGollumEnterPlay() {
+  checkGollumEnterPlay(): void {
     if (this.q.fellowship.hasCompanions()) return;
     if (!this.q.gollum.isAvailable()) return;
     this.fellowshipStore.setGuide('gollum');
@@ -230,7 +233,7 @@ export class WotrCharacterHandler {
     );
   }
 
-  addCharacterToRegion(character: WotrCharacter, region: WotrRegion) {
+  addCharacterToRegion(character: WotrCharacter, region: WotrRegion): void {
     if (region.army?.front === character.front) {
       this.regionStore.addCharacterToArmy(character.id, region.id);
     } else if (region.underSiegeArmy?.front === character.front) {
@@ -243,7 +246,7 @@ export class WotrCharacterHandler {
   private removeCharacterFromRegion(
     character: WotrCharacter,
     region: WotrRegion,
-  ) {
+  ): void {
     if (region.army?.front === character.front) {
       this.regionStore.removeCharacterFromArmy(character.id, region.id);
     } else if (region.underSiegeArmy?.front === character.front) {
@@ -309,7 +312,7 @@ export class WotrCharacterHandler {
     };
   }
 
-  private charactersLog(characters: WotrCharacterId[]) {
+  private charactersLog(characters: WotrCharacterId[]): string {
     return characters
       .map((c) => this.characterStore.character(c).name)
       .join(', ');

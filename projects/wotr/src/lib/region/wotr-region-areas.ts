@@ -105,11 +105,11 @@ export class WotrRegionAreas {
       : null;
   });
 
-  onRegionClick(region: WotrRegion) {
+  onRegionClick(region: WotrRegion): void {
     this.regionClick.emit(region);
   }
 
-  onStrongholdClick(region: WotrRegion) {
+  onStrongholdClick(region: WotrRegion): void {
     // if (this.validRegions?.includes (regionNode.id)) {
     this.regionClick.emit(region);
     // }

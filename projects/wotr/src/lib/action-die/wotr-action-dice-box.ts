@@ -119,12 +119,12 @@ export class WotrActionDiceBox {
     }));
   });
 
-  onActionDieClick(actionDieNode: ActionDieNode) {
+  onActionDieClick(actionDieNode: ActionDieNode): void {
     if (!actionDieNode.selectable) return;
     this.ui.actionDieChoice.emit(actionDieNode.id);
   }
 
-  onActionTokenClick(actionTokenNode: ActionTokendNode) {
+  onActionTokenClick(actionTokenNode: ActionTokendNode): void {
     if (!actionTokenNode.selectable) return;
     this.ui.actionTokenChoice.emit(actionTokenNode.id);
   }

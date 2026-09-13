@@ -43,7 +43,7 @@ export class BaronyBuildingsSelector {
   readonly player = input.required<BaronyColor>();
   readonly buildingClick = output<BaronyBuilding>();
 
-  onBuildingClick(building: BaronyBuilding) {
+  onBuildingClick(building: BaronyBuilding): void {
     this.buildingClick.emit(building);
   }
 }

@@ -144,7 +144,7 @@ function initialShadowNation(
   nNazgul: number,
   regularLabel: string,
   eliteLabel: string,
-) {
+): WotrNation {
   return initialNation(
     id,
     name,
@@ -215,7 +215,7 @@ export class WotrNationStore {
     return s.sNationIds.map((id) => s.map[id]);
   });
   nationById = computed(() => this.state().map);
-  nation(id: WotrNationId) {
+  nation(id: WotrNationId): WotrNation {
     return this.state().map[id];
   }
   nations = computed(() => {
@@ -223,7 +223,7 @@ export class WotrNationStore {
     return [...s.fpNationIds, ...s.sNationIds].map((id) => s.map[id]);
   });
 
-  hasReinforcements(nation: WotrNation, recruitmentPoints: number) {
+  hasReinforcements(nation: WotrNation, recruitmentPoints: number): boolean {
     const reinforcements = nation.reinforcements;
     if (
       reinforcements.regular > 0 ||
@@ -273,7 +273,7 @@ export class WotrNationStore {
     actionName: string,
     nationId: WotrNationId,
     updater: (a: WotrNation) => WotrNation,
-  ) {
+  ): void {
     this.update(actionName, (s) => ({
       ...s,
       map: { ...s.map, [nationId]: updater(s.map[nationId]) },
@@ -284,7 +284,7 @@ export class WotrNationStore {
     unitType: WotrGenericUnitType,
     deltaQuantity: number,
     nationId: WotrNationId,
-  ) {
+  ): void {
     this.updateNation('updateUnitReinforcements', nationId, (nation) => ({
       ...nation,
       reinforcements: {
@@ -294,28 +294,37 @@ export class WotrNationStore {
     }));
   }
 
-  addRegularsToReinforcements(quantity: number, nationId: WotrNationId) {
+  addRegularsToReinforcements(quantity: number, nationId: WotrNationId): void {
     this.updateUnitReinforcements('regular', quantity, nationId);
   }
-  removeRegularsFromReinforcements(quantity: number, nationId: WotrNationId) {
+  removeRegularsFromReinforcements(
+    quantity: number,
+    nationId: WotrNationId,
+  ): void {
     this.updateUnitReinforcements('regular', -quantity, nationId);
   }
-  addElitesToReinforcements(quantity: number, nationId: WotrNationId) {
+  addElitesToReinforcements(quantity: number, nationId: WotrNationId): void {
     this.updateUnitReinforcements('elite', quantity, nationId);
   }
-  removeElitesFromReinforcements(quantity: number, nationId: WotrNationId) {
+  removeElitesFromReinforcements(
+    quantity: number,
+    nationId: WotrNationId,
+  ): void {
     this.updateUnitReinforcements('elite', -quantity, nationId);
   }
-  addLeadersToReinforcements(quantity: number, nationId: WotrNationId) {
+  addLeadersToReinforcements(quantity: number, nationId: WotrNationId): void {
     this.updateUnitReinforcements('leader', quantity, nationId);
   }
-  removeLeadersFromReinforcements(quantity: number, nationId: WotrNationId) {
+  removeLeadersFromReinforcements(
+    quantity: number,
+    nationId: WotrNationId,
+  ): void {
     this.updateUnitReinforcements('leader', -quantity, nationId);
   }
-  addNazgulToReinforcements(quantity: number) {
+  addNazgulToReinforcements(quantity: number): void {
     this.updateUnitReinforcements('nazgul', quantity, 'sauron');
   }
-  removeNazgulFromReinforcements(quantity: number) {
+  removeNazgulFromReinforcements(quantity: number): void {
     this.updateUnitReinforcements('nazgul', -quantity, 'sauron');
   }
 
@@ -323,7 +332,7 @@ export class WotrNationStore {
     unitType: WotrFreeGenericUnitType,
     deltaQuantity: number,
     nationId: WotrNationId,
-  ) {
+  ): void {
     this.updateNation('updateUnitCasualties', nationId, (nation) => ({
       ...nation,
       casualties: {
@@ -333,40 +342,43 @@ export class WotrNationStore {
     }));
   }
 
-  addRegularsToCasualties(quantity: number, nationId: WotrNationId) {
+  addRegularsToCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('regular', quantity, nationId);
   }
-  removeRegularsFromCasualties(quantity: number, nationId: WotrNationId) {
+  removeRegularsFromCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('regular', -quantity, nationId);
   }
-  addElitesToCasualties(quantity: number, nationId: WotrNationId) {
+  addElitesToCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('elite', quantity, nationId);
   }
-  removeElitesFromCasualties(quantity: number, nationId: WotrNationId) {
+  removeElitesFromCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('elite', -quantity, nationId);
   }
-  addLeadersToCasualties(quantity: number, nationId: WotrNationId) {
+  addLeadersToCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('leader', quantity, nationId);
   }
-  removeLeadersFromCasualties(quantity: number, nationId: WotrNationId) {
+  removeLeadersFromCasualties(quantity: number, nationId: WotrNationId): void {
     this.updateUnitCasualties('leader', -quantity, nationId);
   }
 
-  activate(active: boolean, nationId: WotrNationId) {
+  activate(active: boolean, nationId: WotrNationId): void {
     this.updateNation('setActive', nationId, (nation) => ({
       ...nation,
       active,
     }));
   }
 
-  setPoliticalStep(politicalStep: WotrPoliticalStep, nationId: WotrNationId) {
+  setPoliticalStep(
+    politicalStep: WotrPoliticalStep,
+    nationId: WotrNationId,
+  ): void {
     this.updateNation('setPoliticalStep', nationId, (nation) => ({
       ...nation,
       politicalStep,
     }));
   }
 
-  advance(quantity: number, nationId: WotrNationId) {
+  advance(quantity: number, nationId: WotrNationId): void {
     this.updateNation('advancePoliticalStep', nationId, (nation) => {
       let next: WotrPoliticalStep;
       for (let i = 0; i < quantity; i++) {
@@ -379,7 +391,7 @@ export class WotrNationStore {
     });
   }
 
-  recede(quantity: number, nationId: WotrNationId) {
+  recede(quantity: number, nationId: WotrNationId): void {
     this.updateNation('recedePoliticalStep', nationId, (nation) => {
       let prev: WotrPoliticalStep = nation.politicalStep;
       for (let i = 0; i < quantity; i++) {
@@ -392,7 +404,7 @@ export class WotrNationStore {
     });
   }
 
-  advanceAtWar(nationId: WotrNationId) {
+  advanceAtWar(nationId: WotrNationId): void {
     this.updateNation('advancePoliticalAtWar', nationId, (nation) => ({
       ...nation,
       politicalStep: 'atWar',

@@ -31,7 +31,7 @@ export class BritLogs {
 
   readonly logs = input.required<BritLog[]>();
 
-  private scrollToBottom() {
+  private scrollToBottom(): void {
     this.logs();
     setTimeout(() => {
       this.elementRef.nativeElement.scrollTop =

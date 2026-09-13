@@ -21,7 +21,7 @@ export class WotrActionRegistry {
   private actionLoggers = new Map<string, WotrActionLogger<WotrAction>>();
   private effectLoggers = new Map<string, WotrEffectLogger<WotrAction>>();
 
-  clear() {
+  clear(): void {
     this.actionAppliers.clear();
     this.storyAppliers.clear();
     this.actionLoggers.clear();
@@ -30,12 +30,11 @@ export class WotrActionRegistry {
 
   registerActions<A extends WotrAction>(
     actionAppliers: WotrActionApplierMap<A>,
-  ) {
-    for (const [actionType, value] of Object.entries(actionAppliers as WotrActionApplierMap<WotrAction>)) {
-      this.actionAppliers.set(
-        actionType,
-        value,
-      );
+  ): void {
+    for (const [actionType, value] of Object.entries(
+      actionAppliers as WotrActionApplierMap<WotrAction>,
+    )) {
+      this.actionAppliers.set(actionType, value);
     }
   }
 
@@ -43,7 +42,7 @@ export class WotrActionRegistry {
     actionType: A['type'],
     actionApplier: WotrActionApplier<A>,
     actionLogger?: WotrActionLogger<A>,
-  ) {
+  ): void {
     this.actionAppliers.set(
       actionType,
       actionApplier as WotrActionApplier<WotrAction>,
@@ -55,7 +54,7 @@ export class WotrActionRegistry {
       );
   }
 
-  async applyAction(action: WotrAction, frontId: WotrFrontId) {
+  async applyAction(action: WotrAction, frontId: WotrFrontId): Promise<void> {
     const actionApplier = this.actionAppliers.get(action.type);
     if (actionApplier) await actionApplier(action, frontId);
   }
@@ -63,14 +62,14 @@ export class WotrActionRegistry {
   registerStory<S extends WotrStory>(
     storyType: S['type'],
     storyApplier: WotrStoryApplier<S>,
-  ) {
+  ): void {
     this.storyAppliers.set(
       storyType,
       storyApplier as WotrStoryApplier<WotrStory>,
     );
   }
 
-  async applyStory(story: WotrStory, frontId: WotrFrontId) {
+  async applyStory(story: WotrStory, frontId: WotrFrontId): Promise<void> {
     const storyApplier = this.storyAppliers.get(story.type);
     if (!storyApplier) throw new Error(`Unknown story applier ${story.type}`);
     await storyApplier(story, frontId);
@@ -78,7 +77,7 @@ export class WotrActionRegistry {
 
   registerActionLoggers<A extends WotrAction>(
     actionLoggers: WotrActionLoggerMap<A>,
-  ) {
+  ): void {
     objectUtil.forEachProp<string, WotrActionLogger<WotrAction>>(
       actionLoggers as unknown as Record<string, WotrActionLogger<WotrAction>>,
       (actionType, actionLogger: WotrActionLogger<WotrAction>) =>
@@ -99,7 +98,7 @@ export class WotrActionRegistry {
   registerEffectLogger<A extends WotrAction>(
     effectType: A['type'],
     effectLogger: WotrEffectLogger<A>,
-  ) {
+  ): void {
     this.effectLoggers.set(
       effectType,
       effectLogger as WotrEffectLogger<WotrAction>,

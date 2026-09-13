@@ -1,6 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { ABgGameService, BgAuthService, getStoryId } from '@leobg/commons';
-import { Subject, firstValueFrom, from } from 'rxjs';
+import {
+  ABgGameService,
+  BgAuthService,
+  type BgUser,
+  getStoryId,
+} from '@leobg/commons';
+import { type Observable, Subject, firstValueFrom, from } from 'rxjs';
 import { WotrActionRegistry } from '../commons/wotr-action-registry';
 import type { WotrFrontId } from '../front/wotr-front-models';
 import { WotrFrontStore } from '../front/wotr-front-store';
@@ -36,50 +41,53 @@ export class WotrStoryService extends ABgGameService<
   protected override localPlayer!: WotrPlayerUi;
   private actionRegistry = inject(WotrActionRegistry);
 
-  init(localPlayer: WotrPlayerUi) {
+  init(localPlayer: WotrPlayerUi): void {
     this.localPlayer = localPlayer;
   }
 
   protected storyDocs: WotrStoryDoc[] | null = null;
-  setStoryDocs(storyDocs: WotrStoryDoc[]) {
+  setStoryDocs(storyDocs: WotrStoryDoc[]): void {
     this.storyDocs = storyDocs;
   }
 
-  protected override getGameId() {
+  protected override getGameId(): string {
     return this.store.getGameId();
   }
-  protected override getPlayer(playerId: WotrFrontId) {
+  protected override getPlayer(playerId: WotrFrontId): WotrPlayerInfo {
     return this.playerStore.player(playerId);
   }
-  protected override getGameOwner() {
+  protected override getGameOwner(): BgUser {
     return this.store.getGameOwner();
   }
-  protected override startTemporaryState() {
+  protected override startTemporaryState(): void {
     this.store.startTemporaryState();
   }
-  protected override endTemporaryState() {
+  protected override endTemporaryState(): void {
     this.store.endTemporaryState();
   }
   protected override insertStoryDoc$(
     storyId: string,
     story: WotrStoryDoc,
     gameId: string,
-  ) {
+  ): Observable<WotrStoryDoc> {
     return from(this.remote.insertStory(storyId, story, gameId));
   }
-  protected override selectStoryDoc$(storyId: string, gameId: string) {
+  protected override selectStoryDoc$(
+    storyId: string,
+    gameId: string,
+  ): Observable<WotrStoryDoc | undefined> {
     return this.remote.selectStory$(storyId, gameId);
   }
-  protected override getCurrentPlayerId() {
+  protected override getCurrentPlayerId(): WotrFrontId | null {
     return this.ui.currentPlayerId();
   }
-  protected override setCurrentPlayer(playerId: WotrFrontId) {
+  protected override setCurrentPlayer(playerId: WotrFrontId): void {
     this.ui.setCurrentPlayerId(playerId);
   }
-  protected override currentPlayerChange$() {
+  protected override currentPlayerChange$(): Observable<WotrFrontId | null> {
     return from(this.ui.player.get());
   }
-  protected override cancelChange$() {
+  protected override cancelChange$(): Observable<void> {
     return from(this.ui.cancel.get());
   }
 
@@ -87,12 +95,12 @@ export class WotrStoryService extends ABgGameService<
   private replayToLastStory = true;
   private $replayCall = new Subject<void>();
 
-  setReplayMode(isReplayMode: boolean) {
+  setReplayMode(isReplayMode: boolean): void {
     this.replayToLastStory = !isReplayMode;
   }
 
   private currentStory: WotrStory | null = null;
-  getCurrentStory() {
+  getCurrentStory(): WotrStory | null {
     return this.currentStory;
   }
 
@@ -109,7 +117,7 @@ export class WotrStoryService extends ABgGameService<
     return super.executeTasks(tasks);
   }
 
-  private async replayCall() {
+  private async replayCall(): Promise<void> {
     if (this.storyDocs?.length) {
       if (!this.replayToLastStory && this.nReplayStories <= 0) {
         await firstValueFrom(this.$replayCall);
@@ -124,7 +132,7 @@ export class WotrStoryService extends ABgGameService<
     this.nReplayStories--;
   }
 
-  nextReplay(nReplayStories: number) {
+  nextReplay(nReplayStories: number): void {
     if (nReplayStories > 0) {
       this.nReplayStories = nReplayStories;
       this.$replayCall.next();
@@ -133,19 +141,19 @@ export class WotrStoryService extends ABgGameService<
     }
   }
 
-  async eraseLast() {
+  async eraseLast(): Promise<void> {
     await this.remote.deleteStory(
       getStoryId(this.storyTime, 'free-peoples'),
       this.getGameId(),
     );
   }
 
-  lastReplay() {
+  lastReplay(): void {
     this.replayToLastStory = true;
     this.$replayCall.next();
   }
 
-  protected override resetUi(turnPlayer: WotrFrontId) {
+  protected override resetUi(turnPlayer: WotrFrontId): void {
     this.ui.resetUi(turnPlayer);
   }
 
@@ -171,13 +179,16 @@ export class WotrStoryService extends ABgGameService<
   async story(
     front: WotrFrontId,
     task: (playerService: WotrPlayerStoryService) => Promise<WotrStory>,
-  ) {
+  ): Promise<WotrStory> {
     const story = await this.executeTask2(front, task);
     await this.applyStory(story, front);
     return story;
   }
 
-  private async applyStory(story: WotrStory, front: WotrFrontId) {
+  private async applyStory(
+    story: WotrStory,
+    front: WotrFrontId,
+  ): Promise<void> {
     this.currentStory = story;
     await this.actionRegistry.applyStory(story, front);
     this.currentStory = null;

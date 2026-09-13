@@ -70,7 +70,7 @@ export class WotrHuntFlow {
   private huntModifiers = inject(WotrHuntModifiers);
   private huntHandler = inject(WotrHuntHandler);
 
-  async resolveHunt() {
+  async resolveHunt(): Promise<void> {
     this.huntStore.setInProgress(true);
     if (this.fellowshipStore.isOnMordorTrack()) {
       await this.resolveHuntOnMordorTrack();
@@ -80,7 +80,7 @@ export class WotrHuntFlow {
     this.huntStore.setInProgress(false);
   }
 
-  private async resolveStandardHunt() {
+  private async resolveStandardHunt(): Promise<void> {
     if (!this.huntStore.hasHuntDice()) return;
     this.logger.logHuntResolution();
     const modifiers = new WotrHuntRollModifiers();
@@ -106,7 +106,7 @@ export class WotrHuntFlow {
     });
   }
 
-  private async resolveHuntOnMordorTrack() {
+  private async resolveHuntOnMordorTrack(): Promise<void> {
     this.logger.logHuntResolution();
     const isPrevented = await this.huntModifiers.isHuntDrawPrevented();
     if (isPrevented) return;
@@ -224,7 +224,10 @@ export class WotrHuntFlow {
     );
   }
 
-  private getNSuccesses(huntRoll: WotrCombatDie[], modifiers: number[]) {
+  private getNSuccesses(
+    huntRoll: WotrCombatDie[],
+    modifiers: number[],
+  ): number {
     const hunt = this.huntStore.state();
     let rollModifiers = 0;
     for (const modifier of modifiers) {

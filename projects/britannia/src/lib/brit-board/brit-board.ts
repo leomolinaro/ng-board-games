@@ -76,19 +76,19 @@ export class BritBoardComponent {
   logsFixed = false;
   zoomFixed = false;
 
-  onPlayerSelect(player: BritPlayer) {
+  onPlayerSelect(player: BritPlayer): void {
     this.playerSelect.emit(player);
   }
   // onBuildingSelect (building: BritBuilding) { this.buildingSelect.emit (building); }
   // onLandTileClick (landTile: BritLand) { this.landTileClick.emit (landTile); }
   // onActionClick (action: BritAction) { this.actionClick.emit (action); }
-  onPassClick() {
+  onPassClick(): void {
     this.passClick.emit();
   }
-  onConfirmClick() {
+  onConfirmClick(): void {
     this.confirmClick.emit();
   }
-  onCancelClick() {
+  onCancelClick(): void {
     this.cancelClick.emit();
   }
   // onKnightsConfirm () {
@@ -100,7 +100,7 @@ export class BritBoardComponent {
   private lastBottomSheet: 'nation-card' | 'unit-number-selection' | null =
     null;
 
-  onPlayerNationClick(nationId: BritNationId) {
+  onPlayerNationClick(nationId: BritNationId): void {
     const nationState = this.nationStates()?.[nationId];
     this.lastBottomSheet = 'nation-card';
     this.sheets
@@ -110,7 +110,7 @@ export class BritBoardComponent {
       .subscribe();
   }
 
-  onUnitClick(unit: BritAreaUnit) {
+  onUnitClick(unit: BritAreaUnit): void {
     const selectedUnits = this.selectedUnits();
     if (selectedUnits) {
       const unitId = this.getUnitNodeId(unit);
@@ -147,7 +147,7 @@ export class BritBoardComponent {
     }
   }
 
-  private getUnitNodeId(unit: BritAreaUnit) {
+  private getUnitNodeId(unit: BritAreaUnit): string {
     return unit.type === 'leader'
       ? unit.leaderId
       : `${unit.nationId}-${unit.type}-${unit.areaId}`;

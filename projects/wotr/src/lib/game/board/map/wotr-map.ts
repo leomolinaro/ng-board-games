@@ -151,13 +151,16 @@ export class WotrMap {
 
   protected mapImageSource = this.assets.mapImageSource();
 
-  calculateSlots() {
+  calculateSlots(): void {
     const splittedViewBox = this.viewBox.split(' ');
     const width = +splittedViewBox[2];
     const height = +splittedViewBox[3];
     const screenCTM = this.mapElementRef().nativeElement.getScreenCTM()!;
     const pt = this.bgSvg().createSVGPoint();
-    const coordinatesToAreaId = (x: number, y: number) => {
+    const coordinatesToAreaId: (x: number, y: number) => WotrRegionId | null = (
+      x,
+      y,
+    ) => {
       pt.x = x * GRID_STEP;
       pt.y = y * GRID_STEP;
       // this.testGridPoints.push ({ x: pt.x, y: pt.y, color: "black" });
@@ -166,7 +169,9 @@ export class WotrMap {
         clientP.x,
         clientP.y,
       )?.id;
-      return elementId?.startsWith('wotr-region-') ? (elementId.slice(12) as WotrRegionId) : null;
+      return elementId?.startsWith('wotr-region-')
+        ? (elementId.slice(12) as WotrRegionId)
+        : null;
     };
     const xMax = width / GRID_STEP;
     const yMax = height / GRID_STEP;

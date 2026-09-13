@@ -45,14 +45,14 @@ export class WotrLogList implements OnInit {
   logs = input.required<WotrLog[]>();
   protected debugIndexes: Record<string, boolean> = {};
 
-  ngOnInit() {
+  ngOnInit(): void {
     const indexes = localStorage.getItem(DEBUG_LOG_INDEXES);
     if (indexes) {
-      for (const i of indexes.split(',')) (this.debugIndexes[i] = true);
+      for (const i of indexes.split(',')) this.debugIndexes[i] = true;
     }
   }
 
-  private scrollToBottom() {
+  private scrollToBottom(): void {
     this.logs();
     setTimeout(() => {
       this.elementRef.nativeElement.scrollTop =
@@ -60,9 +60,9 @@ export class WotrLogList implements OnInit {
     });
   }
 
-  onLogClick(index: number) {
+  onLogClick(index: number): void {
     if (!isDevMode()) {
-    	return;
+      return;
     }
 
     if (this.debugIndexes[index]) {

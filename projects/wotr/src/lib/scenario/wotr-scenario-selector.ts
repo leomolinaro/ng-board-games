@@ -78,7 +78,7 @@ export class WotrScenarioSelectorDialog {
   protected async onNodeClick(
     node: TuiTreeItem,
     value: WotrScenarioGroupInfo | WotrScenarioInfo,
-  ) {
+  ): Promise<void> {
     if ('scenarios' in value) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       (node as any).controller.toggle(node);
@@ -88,7 +88,7 @@ export class WotrScenarioSelectorDialog {
     }
   }
 
-  protected async onGameClick(info: WotrScenarioInfo) {
+  protected async onGameClick(info: WotrScenarioInfo): Promise<void> {
     await this.router.navigate(['scenario', info.id], {
       relativeTo: this.activatedRoute,
     });
