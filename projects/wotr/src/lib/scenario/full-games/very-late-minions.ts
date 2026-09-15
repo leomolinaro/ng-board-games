@@ -1,5 +1,3 @@
- 
- 
 // https://www.youtube.com/watch?v=eW9mZqSWKCA&list=PL5jW5oNoeQ7ruXxk1EaQMqeJzE50eECSu&ab_channel=WaroftheRingChamp
 
 import { discardDice } from '../../action-die/wotr-action-die-actions';
@@ -323,7 +321,6 @@ export const scenario: WotrScenarioDefinition = {
     b.fp().pass(),
     b.s().musterArmyDieCard('Corsairs of Umbar', attack('umbar', 'dol-amroth')),
     b.fp().battleStory(retreatIntoSiege('dol-amroth')),
-    b.s().battleStory(advanceArmy(leftUnits(regular('southrons', 1)))),
     b.fp().characterDie(moveFelloswhip()),
     b
       .s()
@@ -399,8 +396,8 @@ export const scenario: WotrScenarioDefinition = {
     b.s().musterDie(upgradeRegularUnit('orthanc', 'isengard', 2)),
     b
       .fp()
-      .armyElvenRingDie(
-        ['narya', 'muster', 'army'],
+      .musterArmyElvenRingDie(
+        ['narya', 'muster', 'muster-army'],
         moveArmy('fords-of-isen', 'helms-deep'),
         moveArmy('westemnet', 'helms-deep'),
       ),
@@ -457,7 +454,6 @@ export const scenario: WotrScenarioDefinition = {
       .s()
       .armyDieCard('The Fighting Uruk-hai', attack('helms-deep', 'helms-deep')),
     b.s().battleStory(combatCard('Grond, Hammer of the Underworld')),
-    b.fp().battleStory(noCombatCard()),
     b
       .s()
       .combatCardReaction(
@@ -722,6 +718,7 @@ export const scenario: WotrScenarioDefinition = {
       ),
     b.fp().willOfTheWestDie(moveFelloswhip()),
     b.s().drawHuntTile('er'),
+    b.fp().skipCardReaction('Mithril Coat and Sting'),
     b.fp().huntEffect(corruptFellowship(3)),
     b
       .s()
@@ -767,10 +764,11 @@ export const scenario: WotrScenarioDefinition = {
     b
       .fp()
       .characterElvenRingDie(
-        ['nenya', 'muster', 'character'],
+        ['nenya', 'muster-army', 'character'],
         moveFelloswhip(),
       ),
     b.s().drawHuntTile('b0'),
+    b.fp().skipCardReaction('Mithril Coat and Sting'),
     b.s().musterArmyDie(attack('erebor', 'erebor')),
     b.s().battleStory(combatCard('A New Power is Rising')),
     b.fp().battleStory(combatCard("Thranduil's Archers")),

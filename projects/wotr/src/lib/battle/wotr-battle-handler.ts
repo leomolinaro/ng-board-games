@@ -344,7 +344,7 @@ export class WotrBattleHandler {
     let attackerWon = false;
     const attackerArmy = combatRound.attacker.army();
     const attackerHasUnitLeft =
-      attackerArmy && !this.unitUtils.isEmptyArmy(combatRound.attacker.army());
+      attackerArmy && !this.unitUtils.isEmptyArmy(attackerArmy);
     if (this.isDefenderDefeated(combatRound)) {
       attackerWon = true;
     } else if (attackerHasUnitLeft) {
@@ -698,6 +698,7 @@ export class WotrBattleHandler {
 
   getCombatStrength(combatFront: WotrCombatFront): number {
     const army = combatFront.army();
+    if (!army) return 0;
     let strength = this.unitRules.getArmyCombatStrength(army);
     for (const modifier of combatFront.combatStrengthModifiers) {
       strength += modifier;
@@ -816,17 +817,20 @@ export class WotrBattleHandler {
     return this.regionStore.region(action.fromRegion);
   }
 
-  private attackingArmy(action: WotrArmyAttack): WotrArmy {
+  private attackingArmy(action: WotrArmyAttack): WotrArmy | undefined {
     return action.retroguard
       ? this.unitUtils.splitUnits(
           this.attackingRegion(action).army,
           action.retroguard,
         )!
-      : this.attackingRegion(action).army!;
+      : this.attackingRegion(action).army;
   }
-  private defendingArmy(action: WotrArmyAttack, siege: boolean): WotrArmy {
+  private defendingArmy(
+    action: WotrArmyAttack,
+    siege: boolean,
+  ): WotrArmy | undefined {
     const attackedRegion = this.attackedRegion(action);
-    return siege ? attackedRegion.underSiegeArmy! : attackedRegion.army!;
+    return siege ? attackedRegion.underSiegeArmy : attackedRegion.army;
   }
 
   private attackedRegion(action: WotrArmyAttack): WotrRegion {
@@ -932,6 +936,7 @@ export class WotrBattleHandler {
   private canContinueSiegeBattle(combatRound: WotrCombatRound): boolean {
     if (combatRound.attacker.canRemoveRegularToContinueSiege) return true;
     const attackingArmy = this.attackingArmy(combatRound.action);
+    if (!attackingArmy) return false;
     return this.unitUtils.hasEliteUnits(attackingArmy);
   }
 

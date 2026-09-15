@@ -113,7 +113,8 @@ export class TheWhiteRiderAbility implements WotrUiAbility<WotrBeforeCombatRound
   public handler = async (round: WotrCombatRound): Promise<void> => {
     if (!round.freePeoples.isCharacterActiveInBattle('gandalf-the-white'))
       return;
-    if (!this.unitUtils.hasNazgul(round.shadow.army())) return;
+    const army = round.shadow.army();
+    if (!army || !this.unitUtils.hasNazgul(army)) return;
     if (
       !(await activateCharacterAbility(
         this,

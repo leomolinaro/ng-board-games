@@ -4,7 +4,6 @@ ARCHITECTURE
 [] ai instructions
 [] copyright
 [] angular closing tag
-[] prettier defaults
 [] reduce/remove rxjs
 [] review bg commons components
 [] remove ignoreDeprecations

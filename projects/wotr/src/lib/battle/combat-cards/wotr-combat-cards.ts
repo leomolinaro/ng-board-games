@@ -143,10 +143,11 @@ export class WotrCombatCards {
       canBePlayed: (params) =>
         params.freePeoples
           .army()
-          .characters?.some((c) => c === 'strider' || c === 'aragorn') ?? false,
+          ?.characters?.some((c) => c === 'strider' || c === 'aragorn') ??
+        false,
       effect: async (card, params) => {
         const isAragorn =
-          params.freePeoples.army().characters?.includes('aragorn') ?? false;
+          params.freePeoples.army()?.characters?.includes('aragorn') === true;
         await this.forfeitLeadership(
           {
             cardId: card.id,
@@ -172,7 +173,11 @@ export class WotrCombatCards {
     // If your Leader re-roll scores at least one hit, you may additionally eliminate one Free Peoples Leader participating in the battle.
     // Alternatively, you can choose to eliminate a Companion in the battle, if the number of hits equals or exceeds the Companion's Level.
     'Black Breath': {
-      canBePlayed: (params) => this.unitUtils.hasNazgul(params.shadow.army()),
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.hasNazgul(army);
+      },
       effect: async (card, params) => {
         const hits = params.shadow.nLeaderSuccesses;
         if (!hits) return;
@@ -207,11 +212,14 @@ export class WotrCombatCards {
     // Use one hit during the Leader re-roll to eliminate one Minion of your choice
     // that is participating in the battle.
     'Blade of Westernesse': {
-      canBePlayed: (params) =>
-        params.freePeoples
-          .army()
-          .characters?.some((c) => c === 'peregrin' || c === 'meriadoc') ??
-        false,
+      canBePlayed: (params) => {
+        const army = params.freePeoples.army();
+        if (!army) return false;
+        return (
+          army.characters?.some((c) => c === 'peregrin' || c === 'meriadoc') ??
+          false
+        );
+      },
       effect: async (card, params) => {
         const leaderHits = params.freePeoples.nLeaderSuccesses;
         if (!leaderHits) return;
@@ -249,11 +257,14 @@ export class WotrCombatCards {
     // Play if a Companion is in the battle.
     // The Shadow player rolls one die less in his Combat roll for each Companion in the battle (to a minimum of one).
     'Brave Stand': {
-      canBePlayed: (params) =>
-        this.unitUtils.hasCompanions(params.freePeoples.army()),
+      canBePlayed: (params) => {
+        const army = params.freePeoples.army();
+        if (!army) return false;
+        return this.unitUtils.hasCompanions(army);
+      },
       effect: (_card, params) => {
         params.shadow.lessNCombatDice = this.unitUtils.nCompanions(
-          params.freePeoples.army(),
+          params.freePeoples.army()!,
         );
       },
     },
@@ -261,11 +272,14 @@ export class WotrCombatCards {
     // Play if a Free Peoples Elite unit is in the battle.
     // Before the Combat roll, roll an additional attack using only the Free Peoples Elite units (up to a maximum of 5) and apply the result immediately.
     Charge: {
-      canBePlayed: (params) =>
-        this.unitUtils.hasEliteUnits(params.freePeoples.army()),
+      canBePlayed: (params) => {
+        const army = params.freePeoples.army();
+        if (!army) return false;
+        return this.unitUtils.hasEliteUnits(army);
+      },
       effect: async (card, params) => {
         const nEliteUnits = this.unitUtils.getNEliteUnits(
-          params.freePeoples.army(),
+          params.freePeoples.army()!,
         );
         if (nEliteUnits > 0) {
           const rollStory = await this.freePeoples.rollCombatDice(nEliteUnits);
@@ -297,8 +311,11 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 2 or more.
     // Forfeit two points of Nazgûl Leadership to add 1 to all dice on your Combat roll.
     'Cruel as Death': {
-      canBePlayed: (params) =>
-        this.unitUtils.nazgulLeadership(params.shadow.army()) >= 2,
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.nazgulLeadership(army) >= 2;
+      },
       effect: async (card, params) => {
         const points = await this.forfeitLeadership(
           {
@@ -318,7 +335,8 @@ export class WotrCombatCards {
     // Forfeit the Leadership of all the Companions participating in the battle to cancel
     // the Combat card played by the Shadow player.
     'Daring Defiance': {
-      canBePlayed: (params) => !!params.freePeoples.army().characters?.length,
+      canBePlayed: (params) =>
+        (params.freePeoples.army()?.characters?.length ?? 0) > 0,
       effect: async (card, params) => {
         const points = await this.forfeitLeadership(
           {
@@ -386,8 +404,11 @@ export class WotrCombatCards {
     // Before the Combat roll, forfeit one or more points of Nazgûl Leadership.
     // During his Combat roll, the Free Peoples player rolls one Combat die less (to a minimum of one) for every point you have chosen to forfeit.
     'Dread and Despair': {
-      canBePlayed: (params) =>
-        this.unitUtils.nazgulLeadership(params.shadow.army()) >= 1,
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.nazgulLeadership(army) >= 1;
+      },
       effect: async (card, params) => {
         const points = await this.forfeitLeadership(
           {
@@ -453,7 +474,10 @@ export class WotrCombatCards {
     'Fateful Strike': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length ?? army.characters?.length);
+        if (!army) return false;
+        return (
+          (army.leaders?.length ?? 0) > 0 || (army.characters?.length ?? 0) > 0
+        );
       },
       effect: async (card, params) => {
         const nHits = params.freePeoples.nLeaderSuccesses;
@@ -474,15 +498,22 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 1 or more.
     // If the Nazgûl Leadership equals or exceeds the total Free Peoples Leadership, the Free Peoples Leader re-roll is cancelled.
     'Foul Stench': {
-      canBePlayed: (params) => this.unitUtils.hasNazgul(params.shadow.army()),
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.hasNazgul(army);
+      },
       effect: (_card, params) => {
         if (params.shadow.negateNazgulLeadership) return;
         const nazgulLeadership = this.unitUtils.nazgulLeadership(
-          params.shadow.army(),
+          params.shadow.army()!,
         );
-        const freePeoplesLeadership = this.unitUtils.leadership(
-          params.freePeoples.army(),
-        );
+        const fpArmy = params.freePeoples.army();
+        if (!fpArmy) {
+          params.freePeoples.leaderRollCancelled = true;
+          return;
+        }
+        const freePeoplesLeadership = this.unitUtils.leadership(fpArmy);
         if (nazgulLeadership >= freePeoplesLeadership)
           params.freePeoples.leaderRollCancelled = true;
       },
@@ -493,9 +524,10 @@ export class WotrCombatCards {
     // score one automatic hit.
     'Great Host': {
       effect: async (card, params) => {
-        const shadowArmny = params.shadow.army();
+        const shadowArmy = params.shadow.army();
         const freePeoplesArmy = params.freePeoples.army();
-        const nShadowUnits = this.unitUtils.getNArmyUnits(shadowArmny);
+        if (!shadowArmy || !freePeoplesArmy) return;
+        const nShadowUnits = this.unitUtils.getNArmyUnits(shadowArmy);
         const nFreePeoplesUnits = this.unitUtils.getNArmyUnits(freePeoplesArmy);
         if (nShadowUnits >= 2 * nFreePeoplesUnits) {
           await this.freePeoples.chooseCasualties(
@@ -513,7 +545,10 @@ export class WotrCombatCards {
     'Heroic Death': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length ?? army.characters?.length);
+        if (!army) return false;
+        return (
+          (army.leaders?.length ?? 0) > 0 || (army.characters?.length ?? 0) > 0
+        );
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
@@ -593,10 +628,12 @@ export class WotrCombatCards {
     // Before rolling the dice for your Leader re-roll, forfeit the Leadership of one Companion
     // participating in the battle to automatically change one missed die roll to a hit.
     'Mighty Attack': {
-      canBePlayed: (params) =>
-        params.freePeoples
-          .army()
-          .characters?.some((c) => this.unitUtils.isCompanion(c)) ?? false,
+      canBePlayed: (params) => {
+        const army = params.freePeoples.army();
+        return (
+          army?.characters?.some((c) => this.unitUtils.isCompanion(c)) ?? false
+        );
+      },
       effect: async (card, params) => {
         await this.forfeitLeadership(
           {
@@ -621,10 +658,14 @@ export class WotrCombatCards {
     // than your opponent (including hits from any Free Peoples pre-Combat
     // attack from a Combat card), score one additional hit.
     Mumakil: {
-      canBePlayed: (params) =>
-        !!params.shadow
-          .army()
-          .elites?.some((e) => e.nation === 'southrons' && e.quantity),
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return (
+          army.elites?.some((e) => e.nation === 'southrons' && e.quantity) ??
+          false
+        );
+      },
       effect: (_card, params) => {
         if (params.timing === 3) {
           params.shadow.combatModifiers.push(1);
@@ -686,7 +727,9 @@ export class WotrCombatCards {
         const ability: WotrCombatCardAbility = {
           play: async (ui) => {
             const shadowArmy = params.shadow.army();
-            const maxHitPoints = this.unitUtils.nHits(shadowArmy);
+            const maxHitPoints = shadowArmy
+              ? this.unitUtils.nHits(shadowArmy)
+              : 0;
             const hitPoints = await ui.askQuantity(
               'Choose number of hit points to inflict',
               {
@@ -718,7 +761,7 @@ export class WotrCombatCards {
           );
           const nHits = rollAction.dice.filter((r) => r >= 4).length;
           const fpArmy = params.freePeoples.army();
-          const fpArmyHitPoints = this.unitUtils.nHits(fpArmy);
+          const fpArmyHitPoints = fpArmy ? this.unitUtils.nHits(fpArmy) : 0;
           if (nHits) {
             if (nHits >= fpArmyHitPoints) {
               await this.freePeoples.eliminateArmy(
@@ -809,7 +852,9 @@ export class WotrCombatCards {
     // Add 1 to all dice on your Combat roll.
     'Servant of the Secret Fire': {
       canBePlayed: (params) => {
-        const fpArmyCharacters = params.freePeoples.army().characters;
+        const army = params.freePeoples.army();
+        if (!army) return false;
+        const fpArmyCharacters = army.characters;
         if (!fpArmyCharacters) return false;
         return (
           fpArmyCharacters.includes('gandalf-the-grey') ||
@@ -835,14 +880,17 @@ export class WotrCombatCards {
     'Sudden Strike': {
       canBePlayed: (params) => {
         const army = params.freePeoples.army();
-        return !!(army.leaders?.length ?? army.characters?.length);
+        if (!army) return false;
+        return (
+          (army.leaders?.length ?? 0) > 0 || (army.characters?.length ?? 0) > 0
+        );
       },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async (ui) => {
-            const leadership = this.unitUtils.leadership(
-              params.freePeoples.army(),
-            );
+            const fpArmy = params.freePeoples.army();
+            if (!fpArmy) return [];
+            const leadership = this.unitUtils.leadership(fpArmy);
             const nDice = Math.min(leadership, 5);
             if (nDice === 0) return [];
             return [await ui.battleUi.rollCombatDice(nDice)];
@@ -876,8 +924,11 @@ export class WotrCombatCards {
     // Play if the total Nazgûl Leadership is 1 or more.
     // Forfeit one point of Nazgûl Leadership to add 1 to all dice on your Leader re-roll.
     'They are Terrible': {
-      canBePlayed: (params) =>
-        this.unitUtils.nazgulLeadership(params.shadow.army()) >= 1,
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.nazgulLeadership(army) >= 1;
+      },
       effect: async (card, params) => {
         const points = await this.forfeitLeadership(
           {
@@ -898,7 +949,7 @@ export class WotrCombatCards {
     Valour: {
       canBePlayed: (params) => {
         return (
-          params.freePeoples.army().elites?.some((u) => u.quantity) ?? false
+          params.freePeoples.army()?.elites?.some((u) => u.quantity) ?? false
         );
       },
       effect: (_card, params) => {
@@ -910,12 +961,17 @@ export class WotrCombatCards {
     // After removing casualties from the Combat roll and Leader re-roll,
     // roll an additional attack using only the Shadow Elite units (up to a maximum of five) and score one hit for each result of 5+.
     'We Come to Kill': {
-      canBePlayed: (params) =>
-        this.unitUtils.hasEliteUnits(params.shadow.army()),
+      canBePlayed: (params) => {
+        const army = params.shadow.army();
+        if (!army) return false;
+        return this.unitUtils.hasEliteUnits(army);
+      },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async (ui) => {
-            const nElites = this.unitUtils.getNEliteUnits(params.shadow.army());
+            const sArmy = params.shadow.army();
+            if (!sArmy) return [];
+            const nElites = this.unitUtils.getNEliteUnits(sArmy);
             const nDice = Math.min(nElites, 5);
             if (nDice === 0) return [];
             return [await ui.battleUi.rollCombatDice(nDice)];
@@ -942,7 +998,11 @@ export class WotrCombatCards {
     // Play if a Nazgûl is in the battle.
     // Choose a Companion. That Companion's Leadership and special abilities are cancelled for this Combat round.
     'Words of Power': {
-      canBePlayed: (params) => this.unitUtils.hasNazgul(params.shadow.army()),
+      canBePlayed: (params) => {
+        const shadowArmy = params.shadow.army();
+        if (!shadowArmy) return false;
+        return this.unitUtils.hasNazgul(shadowArmy);
+      },
       effect: async (card, params) => {
         const ability: WotrCombatCardAbility = {
           play: async (ui) => {
@@ -1071,7 +1131,9 @@ export class WotrCombatCards {
     params: WotrCombatCardParams,
   ): Promise<void> {
     if (!nHits) return;
-    const armyHitPoints = this.unitUtils.nHits(defendingFront.army());
+    const army = defendingFront.army();
+    if (!army) return;
+    const armyHitPoints = this.unitUtils.nHits(army);
     if (nHits >= armyHitPoints) {
       await defendingFront.player.eliminateArmy(params.toRegion, card.id);
       params.combatRound.endBattle = true;

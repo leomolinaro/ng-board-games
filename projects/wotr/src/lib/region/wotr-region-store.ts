@@ -529,10 +529,9 @@ export class WotrRegionStore {
   ): boolean {
     const region = this.region(regionId);
     return (
-      region.army?.characters?.includes(character) ??
-      region.underSiegeArmy?.characters?.includes(character) ??
-      region.freeUnits?.characters?.includes(character) ??
-      false
+      region.army?.characters?.includes(character) === true ||
+      region.underSiegeArmy?.characters?.includes(character) === true ||
+      region.freeUnits?.characters?.includes(character) === true
     );
   }
   characterRegion(character: WotrCharacterId): WotrRegion | undefined {

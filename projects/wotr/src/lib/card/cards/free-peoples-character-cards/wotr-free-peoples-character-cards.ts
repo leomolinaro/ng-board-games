@@ -652,8 +652,7 @@ export class WotrFreePeoplesCharacterCards {
               'character-movement',
             )!;
             const toRegion = this.q.region(move.toRegion);
-            if (!toRegion.hasArmy('shadow'))
-              throw new Error('Unexpected state: no shadow army in the region');
+            if (!toRegion.hasArmy('shadow')) return;
             const roll = findAction<WotrCombatRoll>(
               params.story.actions,
               'combat-roll',

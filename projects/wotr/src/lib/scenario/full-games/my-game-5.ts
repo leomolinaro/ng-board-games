@@ -2,7 +2,10 @@ import type { WotrScenarioDefinition } from '../wotr-scenario';
 
 export const scenario: WotrScenarioDefinition = {
   options: {
-    tokens: [],
+    tokens: [
+      { front: 'free-peoples', token: 'draw-card' },
+      { front: 'free-peoples', token: 'political-advance' },
+    ],
     expansions: [],
     variants: [],
   },

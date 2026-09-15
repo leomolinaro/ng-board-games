@@ -490,11 +490,12 @@ export class WotrUnitHandler {
 
   async chooseArmyCasualties(
     nTotalHits: number,
-    army: WotrArmy,
+    army: WotrArmy | undefined,
     regionId: WotrRegionId,
     cardId: WotrCardId | undefined,
     player: WotrPlayer,
   ): Promise<WotrAction[] | undefined> {
+    if (!army) return undefined;
     if (!nTotalHits) return undefined;
     const nHits = this.unitUtils.nHits(army);
     if (nTotalHits < nHits) {

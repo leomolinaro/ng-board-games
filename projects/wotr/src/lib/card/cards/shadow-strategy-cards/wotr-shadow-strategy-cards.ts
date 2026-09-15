@@ -195,6 +195,7 @@ export class WotrShadowStrategyCards {
                   if (combatFront.frontId !== 'free-peoples') return true;
                   if (combatRound.round !== 1) return true;
                   const freeArmy = combatRound.defender.army();
+                  if (!freeArmy) return false;
                   return this.unitUtils.hasCompanions(freeArmy);
                 },
               },

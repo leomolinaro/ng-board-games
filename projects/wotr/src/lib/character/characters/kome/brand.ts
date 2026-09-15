@@ -84,13 +84,8 @@ export class ShadowInTheNorth implements WotrUiAbility<WotrAfterCombatCardReveal
   handler: WotrAfterCombatCardRevealing = async (
     combatRound: WotrCombatRound,
   ): Promise<void> => {
-    if (
-      !this.unitUtils.hasArmyUnitsOfNation(
-        'north',
-        combatRound.freePeoples.army(),
-      )
-    )
-      return;
+    const army = combatRound.freePeoples.army();
+    if (!army || !this.unitUtils.hasArmyUnitsOfNation('north', army)) return;
     if (!combatRound.attacker.combatCard) return;
     if (!combatRound.defender.combatCard) return;
     this.round = combatRound;

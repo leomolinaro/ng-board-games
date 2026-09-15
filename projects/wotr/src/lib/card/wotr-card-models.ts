@@ -1,5 +1,3 @@
-import { arrayUtil } from '@leobg/commons/utils';
-
 export type WotrCardNumber =
   | '01'
   | '02'
@@ -1070,11 +1068,19 @@ const CARD_BY_ID: Record<WotrCardId, WotrCard> = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-const CARD_BY_LABEL = arrayUtil.toMap(
-  Object.keys(CARD_BY_ID) as WotrCardId[],
-  (cardId) => CARD_BY_ID[cardId].label,
-  (cardId) => CARD_BY_ID[cardId],
-) as Record<WotrCardLabel, WotrCard>;
+const CARD_BY_LABEL = initCardByLabel();
+
+function initCardByLabel(): Record<WotrCardLabel, WotrCard> {
+  const cardByLabel = {} as Record<WotrCardLabel, WotrCard>;
+  const cardIds = Object.keys(CARD_BY_ID) as WotrCardId[];
+  for (const cardId of cardIds) {
+    const lastChar = cardId.at(-1);
+    if (Number.isNaN(Number(lastChar))) continue;
+    const card = CARD_BY_ID[cardId];
+    cardByLabel[card.label] = card;
+  }
+  return cardByLabel;
+}
 
 export function labelToCardId(label: WotrCardLabel): WotrCardId {
   return CARD_BY_LABEL[label].id;

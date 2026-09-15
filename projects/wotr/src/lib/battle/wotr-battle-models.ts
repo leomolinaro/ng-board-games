@@ -24,7 +24,7 @@ export class WotrCombatFront {
   constructor(
     public player: WotrPlayer,
     public isAttacker: boolean,
-    public army: () => WotrArmy,
+    public army: () => WotrArmy | undefined,
     public regionId: WotrRegionId,
   ) {
     this.frontId = this.player.frontId;
@@ -60,7 +60,9 @@ export class WotrCombatFront {
   canRemoveRegularToContinueSiege?: boolean;
 
   isCharacterActiveInBattle(characterId: WotrCharacterId): boolean {
-    if (!this.army().characters?.includes(characterId)) return false;
+    const army = this.army();
+    if (!army) return false;
+    if (!army.characters?.includes(characterId)) return false;
     return !this.cancelledCharacters.includes(characterId);
   }
 }
@@ -70,9 +72,9 @@ export class WotrCombatRound {
     public round: number,
     public action: WotrArmyAttack,
     attacker: WotrPlayer,
-    attackingArmy: () => WotrArmy,
+    attackingArmy: () => WotrArmy | undefined,
     defender: WotrPlayer,
-    defendingArmy: () => WotrArmy,
+    defendingArmy: () => WotrArmy | undefined,
     public siege: boolean,
     public siegeAutoContinueBattle: boolean,
   ) {
